@@ -44,7 +44,7 @@ quarto --version
 ```bash
 quarto install chrome-headless-shell
 ```
-* Per renderitzar PDF
+* Per renderitzar PDF fer-ho amb TinyTex estalvia maldecaps:
 ```bash
 quarto install tinytex
 ```
