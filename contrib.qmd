@@ -1,0 +1,522 @@
+# Contribueix-hi
+
+## Quarto
+
+* Ni les etiquetes (*labels*) ni els IDs poden incloure guions baixos (`_`).
+* Una bona font per aprendre és la [pròpia documentació de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/)
+
+### Centrats
+
+* **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible.
+    * Imatges
+    * Mermaids (diagrames renderitzats in-line)
+* **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100% de l'amplada.
+    * Taules
+    * Elements de bloc
+
+### Callouts
+
+* Tots han d'anar etiquetats (e.g., `::: {#nte-TODO .callout-note}`). Cal substituir el `TODO` de l'etiqueta per una cadena de caràcters única.
+* Sempre s'ha utilitzar l'etiqueta corresponent (e.g. `@nte-TODO`) quan es fa referència a un callout, des del cos del text, altres callouts, etc.
+    * Cal assegurar que no hi ha cap `-TODO` al codi abans d'actualitzar el repositori.
+* `## TODO títol`: No és obligatori, especialment per callouts curts.
+* **Localització dins del cos del text:** A continuació de la referència o explicació al text
+* No hi ha d'haver repeticions de callouts: ús de referències creuades.
+
+#### RISC-V (`.callout-note`)
+
+* **Ús:** Material de referència d'assemblador de RISC-V: Instruccions, pseudoinstruccions, directives, registres
+* **Continguts nous avaluables:** Sí
+* **Introducció al cos del text:** Sempre que sigui possible
+* **Referències des del cos del text:** Sempre que el text hi faci referència (desitjable, però no necessari)
+* **Particularitats:** Si el contingut del callout també va a la secció de compendi "RISC-V", s'ha de fer creant un fitxer a `/riscv/` i emprant [`include`](https://quarto.org/docs/authoring/includes.html) tant al Tema en qüestió com al compendi
+
+::: {#nte-TODO .callout-note}
+## Instruccions de lectura/escriptura a memòria
+{{< include referencies/RV32I_instruccions_lectura_escriptura.qmd >}}
+:::
+
+``` code
+::: {#nte-TODO .callout-note}
+## Instruccions de lectura/escriptura a memòria
+{{{< include referencies/RV32I_instruccions_lectura_escriptura.qmd >}}}
+:::
+```
+
+La referència és @nte-TODO.
+
+#### Criteri EC (`.callout-important`)
+
+::::: {layout="[100,-1,100]"}
+:::: {}
+
+* **Ús:** Criteris de l'assignatura
+* **Continguts nous avaluables:** Sí
+* **Introducció al cos del text:** No
+* **Particularitats:**
+    * Sense títol
+    * Curt
+    * Ressaltats **negretes**
+
+::::
+:::: {}
+
+::: {#imp-TODO .callout-important}
+A **EC**, TODO
+:::
+
+``` code
+::: {#imp-TODO .callout-important}
+A **EC**, TODO
+:::
+```
+
+La referència és @imp-TODO.
+::::
+:::::
+
+#### Essencial (`.callout-caution`)
+
+::::: {layout="[100,-1,100]"}
+:::: {}
+
+* **Ús:** Contingut indispensable, observació fonamental, recordatori bàsic, etc.
+* **Continguts nous avaluables:** Sí
+* **Introducció al cos del text:** No. És tan important que s'ha de llegir com un ressaltat del cos del text.
+* **Particularitats:**
+    * Sense títol
+    * Curt
+    * Ressaltats **negretes**
+
+::::
+:::: {}
+
+::: {#cau-TODO .callout-caution}
+Exemple d'Essencial.
+:::
+
+``` code
+::: {#cau-TODO .callout-caution}
+Exemple d'Essencial.
+:::
+```
+
+La referència és @cau-TODO.
+::::
+:::::
+
+#### Exemple (`.callout-tip`)
+
+* Pot ser en format **Pregunta:** → **Solució:**  → **Resposta:**
+    * A T2 n'hi ha bastants
+
+::::: {layout="[100,-1,100]"}
+:::: {}
+
+* **Ús:** Exemples per il·lustrar explicacions
+* **Continguts nous avaluables:** Marginalment, només detalls, observacions, etc.
+* **Introducció al cos del text:** No
+* **Referències des del cos del text:** Només té sentit fer-hi referència explícita, per exemple per il·lustrar alguna explicació.
+* **Particularitats:** 
+
+::::
+:::: {}
+
+::: {#tip-TODO .callout-tip}
+## TODO títol
+:::
+
+```` code
+::: {#tip-TODO .callout-tip}
+## TODO títol
+
+``` {.C filename="C"}
+
+```
+
+``` {.s filename="asm"}
+
+```
+:::
+````
+
+La referència és @tip-TODO.
+::::
+:::::
+
+#### Aprofundiment (`.callout-warning`) {#sec-contrib-callout-aprofundiment}
+
+::::: {layout="[100,-1,100]"}
+:::: {}
+
+* **Ús:** Contingut addicional, d'enriquiment, etc.
+* **Continguts nous avaluables:** No
+* **Introducció al cos del text:** Mai
+* **Introducció/referència al cos del text:** Mai
+* **Particularitats:** 
+    * Sí hi ha més d'una línia
+        * `collapse=true`
+        * Llavors porta títol
+    * callouts de comparació amb MIPS
+        * `-mips-` infix de label
+        * `## RV32I vs. MIPS, ` o `## RISC-V vs. MIPS, ` inici del títol; text afegit sense majúscula
+
+::::
+:::: {}
+
+::: {#wrn-TODO .callout-warning collapse=true}
+## Això és un Aprofundiment
+Exemple d'Aprofundiment.
+:::
+
+``` code
+::: {#wrn-TODO .callout-warning collapse=true}
+## Això és un Aprofundiment
+Exemple d'Aprofundiment
+:::
+```
+
+La referència és @wrn-TODO.
+::::
+:::::
+
+### Prefixos reservats
+
+| Prefix d'etiqueta | Objecte | Callout | Color (light) |
+| :---    | :---           | :---                  | :---    |
+| `#nte-` | RISC-V         | {.callout-note}       | Verd    |
+| `#imp-` | Criteri EC     | {.callout-important}  | Blau    |
+| `#cau-` | Essencial      | {.callout-caution}    | Vermell |
+| `#tip-` | Exemple        | {.callout-tip}        | Groc    |
+| `#wrn-` | Aprofundiment  | {.callout-warning}    | Lila    |
+| `#fig-` | Figura         |                       |         |
+| `#eq-`  | Equació        |                       |         |
+| `#tbl-` | Taula          |                       |         |
+
+Disponibles:`#lst- #thm- #lem- #cor- #prp- #cnj- #def- #exm- #exr- #sol- #rem- #alg- #sec`
+
+### Blocs de codi
+
+:::: {layout="[100,-1,100]"}
+::: {}
+``` {.C filename="C"}
+int main(){}
+```
+```` code
+``` {.C filename="C"}
+
+```
+````
+:::
+::: {}
+``` {.s filename="RV32I"}
+.text
+        add     x0, x1, x2      # rd = rs1 + rs2;
+```
+```` code
+``` {.s filename="RV32I"}
+
+```
+````
+::: 
+::::
+
+#### Estil de codi
+##### C
+
+* Indentats: múltiples de 4
+* Comentaris
+    * Una sola línia: `//`
+    * Més d'una línia: `/* */`
+
+#### RISC-V
+
+@imp-codi-format-criteris
+
+### Aniuaments
+
+Regla dels `:` addicionals:
+
+* Estrictament, Quarto només imposa pujar un nivell (e.g., `:::` → `::::`) quan s'aniuen `divs` del mateix tipus (e.g., dos `:::` genèrics o dos `::: {.callout-note}` de Quarto).
+* Però a EC s'usa sempre per facilitar-ne la gestió. 
+
+| EC | Quarto |
+| --- | --- |
+| `::::` -- `::: {.callout-note}` -- `:::` -- `::::` | `:::` -- `::: {.callout-note}` -- `:::` -- `:::` |
+| `:::: {.callout-note}` -- `:::` -- `:::` -- `::::` | `::: {.callout-note}` -- `:::` -- `:::` -- `:::` |
+
+:::: {layout="[100,-1,100]"}
+::: {}
+``` code
+::::
+:::
+
+:::
+:::
+
+:::
+::::
+```
+:::
+::: {}
+````` code
+````
+```
+
+```
+```
+
+```
+````
+`````
+:::
+::::
+
+::: {#nte-format-instruccions-S .callout-note}
+## Format S (instruccions d'emmagatzemament)
+:::{style="text-align: center;"}
+<!-- ![](https://docs.riscv.org/reference/isa/unpriv/_images/svg-5d013bc40702f55441bc51b0f78d8e0364674976.svg){width="90%"} -->
+:::
+:::
+
+### Columnes
+
+:::: {layout="[50,-1,100]"}
+::: {}
+* Els valors negatius insereixen una columna espaiadora d'amplada relativa al valor
+:::
+::: {}
+
+```` code
+:::: {layout="[50,-1,100]"}
+::: {}
+
+Columna 1
+
+:::
+
+::: {}
+
+columna 2
+
+:::
+::::
+````
+:::
+::::
+
+#### HTML Comportament en callouts encastats
+
+* Es respecta la separació (`-1` del `layout=`), però no el repartiment (`100` `100` del `layout=`) si hi ha línies de text que no hi caben. També si són al header del callout (e.g. @sec-contrib-callout-aprofundiment)
+
+### Figures
+
+::::: {layout="[50,-1,100]"}
+:::: {}
+![Exemple 1 de figura.](figures/TODO.png){#fig-TODO1 width="60%"}
+
+![Exemple 2 de figura.](figures/TODO.png){#fig-TODO2 width="20%"}
+::::
+:::: {}
+``` code
+![Exemple 1 de figura.](figures/TODO.png){#fig-TODO1 width="60%"}
+
+![Exemple 2 de figura.](figures/TODO.png){#fig-TODO2 width="20%"}
+```
+
+La referència és @fig-TODO1.
+::::
+:::::
+
+### Figures-taula (e.g. representació de memòria)
+
+::::: {layout="[50,-1,100]"}
+:::: {}
+
+::: {#fig-memoria-TODO .taula-vores style="width: 40%; margin: auto;"}
+| Adreces | Dades |
+| :---: | :---: |
+| 0x00000000 | TODO |
+| ... | ... |
+| 0xFFFFFFFF | TODO |
+
+Caption. 
+:::
+
+::::
+:::: {}
+``` code
+::: {#fig-memoria-TODO .taula-vores style="width: 40%; margin: auto;"}
+| Adreces | Dades |
+| :--: | :---: |
+| 0x00000000 | TODO |
+| ... | ... |
+| 0xFFFFFFFF | TODO |
+
+Caption. 
+:::
+```
+
+La referència és @fig-memoria-TODO.
+:::
+::::
+
+### Mermaids
+
+:::: {layout="[50,-1,100]"}
+::: {}
+* TODO: Revisió completa
+* De moment
+    * en PNG (`_quarto.yml` `mermaid-format: png`) perquè SVG té `height=480` hardcoded => espais en blanc (o trim? -no provat)
+    * Centrat: `::: {style="margin: auto;"} :::`
+    * `fig-width: 100%` no respecta el percentatge, però activa el *resize* per amplada del navegador
+        * `::: {style="text-align: center; width=100%;"}` també centra, però no activa *resize* => pitjor
+:::
+::: {}
+``` {mermaid}
+%%| label: fig-mermaid-TODO
+%%| fig-cap: "Exemple de mermaid. El control d'amplada (`fig-width: 1%`, qualsevol percentatge) no és respectat, però si s'omet es perd el resize d'adaptació a l'amplada del navegador."
+%%| fig-width: 100%
+
+flowchart LR
+    A["Host"] <-->|"Control"| B["Sonda"]
+    B <-->|"Control"| C["Target"]
+```
+
+```` code
+``` {mermaid}
+%%| label: fig-mermaid-TODO
+%%| fig-cap: "Exemple de *mermaid*."
+%%| fig-width: 100%
+
+flowchart LR
+    A["Host"] <-->|"Control"| B["Sonda"]
+    B <-->|"Control"| C["Target"]
+```
+````
+
+La referència és @fig-mermaid-TODO
+:::
+::::
+
+### Taules
+
+* Caption només obligatori en el cos del text.
+
+::::: {layout="[50,-1,100]"}
+:::: {}
+::: {#tbl-TODO tbl-colwidths="[15,15,55,15]" style="width: 40%; margin: auto;"}
+| A | B | C | D |
+| --- | :--- | :---: | :--- |
+| defecte | esquerra | centre | dreta |
+: Caption de la taula
+:::
+:::: {}
+::::
+``` code
+::: {#tbl-TODO tbl-colwidths="[15,15,55,15]" style="width: 40%;"}
+| A | B | C | D |
+| --- | :--- | :---: | :--- |
+| defecte | esquerra | centre | dreta |
+: Caption de la taula
+:::
+```
+::::
+:::::
+La referència és @tbl-TODO.
+
+### Equacions
+
+:::: {layout="[20,-1,100]"}
+::: {}
+$$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
+:::
+::: {}
+``` code
+$$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
+```
+:::
+::::
+
+## Normes d'estil
+
+* S'aniran millorant/definint a mesura que s'identifiquin necessitats, patrons, etc. durant la migració.
+
+### Referències lingüístiques
+
+* La norma general és l'IEC (Institut d'Estudis Catalans).
+
+### Criteris generals
+
+* **Camel Case:**
+    * Només en els sintagmes anglesos.
+    * En els sintagmes catalans (títols inclosos) només la primera lletra en majúscula.
+* **Després de dos punts:** minúscula en enumeracions i explicacions breus; majúscula en citacions textuals i paràgrafs independents.
+* **Nombres:** Les quantitats petites (fins a vint) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres, excepte en taules, codi o unitats de magnitud (ex: "5 V").
+* **Veu impersonal:** "Cal verificar que no hi ha errors" (no "hem de verificar que no hi ha errors"), "un PC" (no "el teu PC").
+
+### Excepcions a la norma d'impersonal
+
+La norma d'impersonal admet dues excepcions explícites:
+1. **Preguntes i respostes dins de `{.callout-tip}`:** Els enunciats de problemes i les seves respostes poden usar la segona persona del plural (*calculeu*, *determineu*, *suposeu que...*), ja que es dirigeixen directament a l'estudiant en un context d'exercici.
+2. **Instruccions operatives pas a pas:** Les seqüències numerades d'instruccions tècniques (instal·lació, configuració, execució de comandes) usen l'imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*). Aquesta és la forma recomanada per a manuals d'usuari en català i facilita la comprensió de l'ordre d'accions.
+
+### Puntuació
+* **Punt:** Sempre. Totes les frases del cos del text, incloses les llistes de vinyetes (*bullet lists*), han d'acabar obligatòriament en punt.
+* **Negretes acabades en dos punts:** Els dos punts també en negreta.
+
+### Ressaltat conceptual estratègic (ús de negretes)
+
+* **Conceptes nuclears:** Paraules que defineixen l'essència de la secció (ex: **abstracció**, **ISA**).
+* **Components del sistema:** Elements de l'arquitectura (ex: **registres**, **unitat de control**).
+* **Atributs clau:** Paraules que marquen diferències operatives (ex: **màxim rendiment**, **més lenta**).
+* **Sigles i acrònims:** En la seva definició i aparicions clau.
+* **Referències a objectes:** (ex: "Tal com mostra la **Figura 1.2**").
+
+### Anglicismes
+
+* **Primera aparició:** Traducció al català seguida de l'anglicisme en cursiva i entre parèntesis. Exemple: `biblioteques de funcions` (*libraries*).
+* **Aparicions posteriors:** Es pot utilitzar l'anglicisme directament, sempre sense cursiva.
+* **Triples asteriscs (`***`):** S'utilitzen exclusivament quan el terme és un anglicisme en la seva primera aparició **i alhora** és un concepte nuclear que requereix negreta. Exemple: `**maquinari** (***hardware***)`.
+* **Terminologia obligatòria:** Substituir sistemàticament *hardware* per **maquinari** i *software* per **programari**.
+
+### Sigles
+
+* La primera vegada que apareixen s'han d'escriure les paraules completes seguides de la sigla entre parèntesis en majúscules. Exemple: `***Instruction Set Architecture*** (**ISA**)`.
+* Cada sigla s'ha de definir al fitxer de compendi de sigles `sigles.qmd`.
+
+### Referències creuades
+
+* **Referències:**
+    * **Als temes:** Manual (al [Tema 3](T3.html))
+    * **La resta:** Automàtiques.
+* **Figures i Taules:** No han d'estar necessàriament referenciades al text (ex: "Tal com mostra la **Figura 1.2**").
+
+### RISC-V
+
+* **Llenguatge d'assemblador:** L'arquitectura de referència és **RISC-V** (variant **RV32I**).
+* **Registres:** S'ha d'utilitzar la nomenclatura ABI de RISC-V (ex: `a0-a7` per a paràmetres, `t0-t6` per a temporals, `zero` per a `x0`).
+* **Instruccions:** Adaptar les instruccions de salt i aritmètica (ex: `addiu` de MIPS passa a ser `addi` o `add` en RISC-V segons el context).
+* **Subrutines:** Utilitzar `ret` per al retorn de funcions en lloc de `jr $ra`.
+
+### Gestió d'errades
+
+* Consultar sempre la font `EC_errades_esmenes` per aplicar correccions terminològiques (ex: canviar "fallo" per **fallada** o "anidat" per **aniuat**).
+
+### Substitucions obligatòries
+
+| Terme original | Substitució en català | Observacions |
+| :--- | :--- | :--- |
+| hardware / HW | **maquinari** | Terme preferent. |
+| software / SW | **programari** | Terme preferent. |
+| fallo | **fallada** | Esmena lèxica. |
+| anidat / anidament | **aniuat** / **aniuament** | Esmena lèxica. |
+| event | **esdeveniment** | Esmena lèxica. |
+| empotrat | **encastat** | e.g., *embedded processors*. |
+| cache | **cau** | Especialment en títols. |
+
+## Contingut
+
+* No s'ha de repetir informació
+    * S'ha de fer servir referències
+    * Per recordatoris: essencial (callout-caution)

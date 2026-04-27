@@ -1,0 +1,127 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+#  date: "2026-05-04"
+  date: last-modified
+  title: "Estructura de computadors"
+#  subtitle: ""             # Especificat a cada `format:` per adaptar els salts de línia a cada format (HTML <br> vs. PDF \linebreak)
+  author: "Professors de l'assignatura"
+  sidebar:
+    collapse-level: 1       # les `part` comencen col·lapsades al sidebar
+  navbar:
+    right:
+      - icon: filetype-pdf  # https://icons.getbootstrap.com/
+        href: Estructura-de-computadors.pdf
+      - icon: gitlab
+        href: https://gitlab.upc.edu/projects/new?namespace_id=8519
+  chapters:
+    - index.qmd
+    - part: "Teoria"
+      chapters:
+        - text: "T1 Introducció"
+          file: T1.qmd
+        - text: "T2 Rendiment"
+          file: T2.qmd
+        - text: "T3 Instruccions"
+          file: T3.qmd
+        - text: "T4 Traducció"
+          file: T4.qmd
+        - text: "T5 Matrius"
+          file: T5.qmd
+        - text: "T6 Aritmètica"
+          file: T6.qmd
+        - text: "T7 Memòria cau"
+          file: T7.qmd
+        - text: "T8 Memòria virtual"
+          file: T8.qmd
+        - text: "T9 Interrupcions"
+          file: T9.qmd
+    - part: "Problemes"
+      chapters: 
+        - text: "Enunciats"
+          file: PE.qmd
+        - text: "Solucions"
+          file: PS.qmd
+    - part: "Laboratori"
+      chapters:
+        - text: "S0 Introducció"
+          file: L0.qmd
+        - text: "S1 RISC-V"
+          file: L1.qmd
+        - text: "S2 Traducció"
+          file: L2.qmd
+        - text: "S3 Coma flotant"
+          file: L3.qmd
+        - text: "S4 Dades estructurades"
+          file: L4.qmd
+        - text: "S5 Memòria cau"
+          file: L5.qmd
+    - riscv.qmd
+    - sigles.md
+    - contrib.qmd
+    - LICENSE.md
+
+lang: ca
+
+language:
+  crossref-nte-prefix: "RISC-V"         ## TODO "Programació" permet especificar en cada cas: RARS, RV32I, etc., però xoca una mica amb els blocs de codi?
+  callout-note-title: "RISC-V"
+  crossref-tip-prefix: "Exemple"
+  callout-tip-title: "Exemple"
+  crossref-cau-prefix: "Essencial"
+  callout-caution-title: "Essencial"
+  crossref-wrn-prefix: "Aprofundiment"
+  callout-warning-title: "Aprofundiment"
+  crossref-imp-prefix: "EC"
+  callout-important-title: "EC"
+
+crossref:
+  fig-prefix: "Figura"
+  fig-title: "Figura"
+  tbl-prefix: "Taula"
+  tbl-title: "Taula"
+
+format:
+  html:
+#    subtitle: "Grau en Enginyeria Informàtica (GEI) <br> Facultat d'informàtica de Barcelona (FIB) <br> Universitat politècnica de Catalunya (UPC)"
+#    embed-resources: true  # Incrusta els fitxers de recursos (imatges, fitxers inclosos, etc.) dins del fitxer HTML per evitar problemes de rutes relatives (per exemple, quan es visualitza el fitxer HTML directament des del sistema de fitxers, sense un servidor web)
+    resources:
+      - laboratori/
+      - styles.css
+#    mermaid-format: svg    # Potser que hi ha un bug a Quarto pq les .svg tenen totes `height="480" hardcoded (com a mínim queden espais verticals buits en figures horitzontals)
+    mermaid-format: png     # Cal tornar a .svg quan es pugui
+    mermaid:
+      fig-width: 100%
+    format-links: [pdf]     # Botó a la barra superior per descarregar el PDF
+    highlight-style: a11y   # Accessibilitat: Ressaltat de codi adaptatiu
+    respect-user-color-scheme: true   # light/dark: per defecte el del sistema
+    css:
+      - styles.css          # Cal afegir-lo a `resources:` explícitament
+    theme:                  # Activació commutador light/dark
+      light: 
+        - cosmo             # https://github.com/quarto-dev/quarto-cli/tree/main/src/resources/formats/html/bootstrap/themes
+        - custom_light.scss
+        - custom.scss
+      dark:
+        - darkly            # cyborg
+        - custom_dark.scss
+        - custom.scss
+    code-line-numbers: true
+    code-copy: true         # Icona de "copiar al porta papers"
+    number-sections: false  # `left`: Amaga numeració (activada individualment a cada capítol); el comptatge continua encara que no els mostri al `left` ("Presentació" vs. "1 Presentació"); default: `false`
+    toc: true
+    toc-location: left      # "Taula de continguts" a `left`
+    page-layout: full       # Estén el frame central sobre el dret (per aprofitar l'espai que deixa `toc-location: left`)
+  pdf:
+    header-includes: \AtBeginDocument{\subtitle{Grau en Enginyeria Informàtica \linebreak Facultat d'informàtica de Barcelona \linebreak Universitat politècnica de Catalunya}\date{\today}}
+    documentclass: scrbook  # KOMA: `scrartcl` (~10 pàg.), `scrreport` (~50 pàg.), `scrbook` (+50 pàg.)
+    classoption: twoside    # KOMA: `oneside`, `twoside`
+    papersize: a4           # KOMA: `a4` (default), `letter`
+    fontsize: 11pt
+    number-sections: true
+    keep-tex: true          # Conserva el fitxer .tex generat per Pandoc
+
+bibliography: bibliografia.bib
+csl: ieee.csl
