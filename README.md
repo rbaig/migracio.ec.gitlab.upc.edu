@@ -40,10 +40,17 @@ wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.36/quarto-1
 sudo dpkg -i quarto-1.9.36-linux-amd64.deb
 quarto --version
 ```
-
+* Si no hi ha el navegador Chrome instal·lat (e.g., server)
+```bash
+quarto install chrome-headless-shell
+```
 * Per renderitzar PDF
 ```bash
 quarto install tinytex
+```
+* Per status
+```bash
+quarto check
 ```
 
 ### Contribueix-hi
