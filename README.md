@@ -37,7 +37,7 @@ https://quarto.org/docs/download/
 
 ```bash
 wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.36/quarto-1.9.36-linux-amd64.deb
-sudo sudo dpkg -i quarto-1.9.36-linux-amd64.deb
+sudo dpkg -i quarto-1.9.36-linux-amd64.deb
 quarto --version
 ```
 
