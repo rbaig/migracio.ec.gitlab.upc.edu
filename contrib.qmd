@@ -1,5 +1,103 @@
 # Contribueix-hi
 
+## Flux de treball amb Git
+
+### Requisits previs
+
+Abans de contribuir cal tenir instal·lat:
+
+* **Git** i accés com a **Developer** al [repositori GitLab del projecte](https://gitlab.upc.edu/ec/migracio/). [Cal ser membre del grup `ec`](https://gitlab.upc.edu/groups/ec/).
+* **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/).
+  Extensions recomanades:
+    * [Quarto](https://marketplace.visualstudio.com/items?itemName=quarto.quarto)
+    * [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+* **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
+* **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que
+  s'instal·la des de la pròpia CLI de Quarto:
+
+```bash
+quarto install tinytex
+```
+
+* **RARS** (simulador RISC-V):
+  [github.com/TheThirdOne/rars/releases](https://github.com/TheThirdOne/rars/releases).
+
+### Verificació de l'entorn
+
+Comproveu que tot funciona renderitzant el projecte abans de fer cap canvi:
+
+```bash
+quarto render --to html
+```
+
+Si renderitza sense errors, l'entorn és correcte.
+
+### Protocol de contribució
+
+La branca `main` està **protegida**: ningú hi fa commits directament.
+Tot canvi s'integra a través d'una **Merge Request (MR)**.
+
+El flux per a qualsevol contribució és:
+
+1. Assegureu-vos de tenir `main` actualitzada:
+
+```bash
+git checkout main
+git pull
+```
+
+2. Creeu una branca nova amb un nom descriptiu:
+
+```bash
+git checkout -b contingut/t5-vectors
+```
+
+3. Feu els canvis, afegiu-los i feu commit:
+
+```bash
+git add T5.qmd
+git commit -m "T5: afegeix secció sobre vectors"
+```
+
+4. Pugeu la branca al servidor:
+
+```bash
+git push origin contingut/t5-vectors
+```
+
+5. Obriu una **Merge Request** a GitLab apuntant a `main`.
+
+### Convenció de noms de branques
+
+| Tipus de canvi       | Format                          | Exemple                        |
+| :------------------- | :------------------------------ | :----------------------------- |
+| Contingut nou        | `contingut/<tema>-<descriptor>` | `contingut/t5-vectors`         |
+| Correcció            | `fix/<descriptor>`              | `fix/t3-errada-alineacio`      |
+| Configuració/tooling | `config/<descriptor>`           | `config/quarto-pdf-output`     |
+
+### Commits
+
+* Un commit per canvi lògic — no agrupeu canvis no relacionats en un sol commit.
+* Missatge en català, en present i descriptiu: `"T5: afegeix secció sobre vectors"`, no `"canvis"` ni `"wip"`.
+* Abans de fer commit, assegureu-vos que no hi ha cap etiqueta `-TODO` ni cap `TODO` que pugueu solucionar vosaltres mateixos al codi (vegeu @sec-callouts).
+* Abans de fer commit, verifiqueu que el projecte renderitza correctament.
+
+### Renderitzar el projecte
+
+El projecte té dues sortides independents: **HTML** i **PDF**. Són pipelines completament separades — HTML usa Bootstrap, PDF usa LaTeX (`scrbook`). Cap de les dues es construeix sobre l'altra.
+
+```bash
+quarto render --to html   # ràpid, recomanat durant el desenvolupament
+quarto render --to pdf    # lent (compilació LaTeX), recomanat abans de la MR
+quarto render             # genera les dues sortides
+```
+
+::: {.callout-warning}
+`quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si necessiteu conservar el PDF generat anteriorment, feu `quarto render` (les dues sortides) o guardeu el PDF abans de renderitzar només HTML.
+:::
+
+Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapidesa. Feu `quarto render` complet (HTML + PDF) com a verificació final abans d'obrir la Merge Request.
+
 ## Quarto
 
 * Ni les etiquetes (*labels*) ni els IDs poden incloure guions baixos (`_`).
@@ -14,7 +112,7 @@
     * Taules
     * Elements de bloc
 
-### Callouts
+### Callouts {#sec-callouts}
 
 * Tots han d'anar etiquetats (e.g., `::: {#nte-TODO .callout-note}`). Cal substituir el `TODO` de l'etiqueta per una cadena de caràcters única.
 * Sempre s'ha utilitzar l'etiqueta corresponent (e.g. `@nte-TODO`) quan es fa referència a un callout, des del cos del text, altres callouts, etc.
