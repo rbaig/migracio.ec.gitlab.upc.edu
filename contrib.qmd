@@ -1,5 +1,9 @@
 # Contribueix-hi
 
+## Ús d'aquesta guia
+
+* S'ha d'actualitzar sempre que es prengui una decisió de format, estil, etc.
+
 ## Flux de treball amb Git
 
 ### Requisits previs
@@ -7,10 +11,11 @@
 Abans de contribuir cal tenir instal·lat:
 
 * **Git** i accés com a **Developer** al [repositori GitLab del projecte](https://gitlab.upc.edu/ec/migracio/). [Cal ser membre del grup `ec`](https://gitlab.upc.edu/groups/ec/).
-* **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/).
-  Extensions recomanades:
+* **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/). Extensions recomanades:
     * [Quarto](https://marketplace.visualstudio.com/items?itemName=quarto.quarto)
     * [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+    * [Spell Right](https://marketplace.visualstudio.com/items?itemName=ban.spellright)
+        * L'*spell checker* local (`.vscode/settings.json`) inclou els mnemònics de l'assignatura.
 * **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
 * **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que
   s'instal·la des de la pròpia CLI de Quarto:
@@ -20,7 +25,7 @@ quarto install tinytex
 ```
 
 * **RARS** (simulador RISC-V):
-  [github.com/TheThirdOne/rars/releases](https://github.com/TheThirdOne/rars/releases).
+  [RARS](https://github.com/TheThirdOne/rars/releases).
 
 ### Verificació de l'entorn
 
@@ -69,11 +74,11 @@ git push origin contingut/t5-vectors
 
 ### Convenció de noms de branques
 
-| Tipus de canvi       | Format                          | Exemple                        |
-| :------------------- | :------------------------------ | :----------------------------- |
-| Contingut nou        | `contingut/<tema>-<descriptor>` | `contingut/t5-vectors`         |
-| Correcció            | `fix/<descriptor>`              | `fix/t3-errada-alineacio`      |
-| Configuració/tooling | `config/<descriptor>`           | `config/quarto-pdf-output`     |
+| Tipus de canvi | Format | Exemple |
+| :--- | :--- | :--- |
+| Contingut nou | `contingut/<tema>-<descriptor>` | `contingut/t5-vectors` |
+| Correcció | `fix/<descriptor>` | `fix/t3-errada-alineacio` |
+| Configuració/tooling | `config/<descriptor>` | `config/quarto-pdf-output` |
 
 ### Commits
 
@@ -151,16 +156,35 @@ Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapide
 * **Particularitats:** Si el contingut del callout també va a la secció de compendi "RISC-V", s'ha de fer creant un fitxer a `/riscv/` i emprant [`include`](https://quarto.org/docs/authoring/includes.html) tant al Tema en qüestió com al compendi
 
 ::: {#nte-TODO .callout-note}
-## Instruccions de lectura/escriptura a memòria
-{{< include referencies/RV32I_instruccions_lectura_escriptura.qmd >}}
+## RV32I — Instruccions de lectura/escriptura a memòria
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
 ``` code
 ::: {#nte-TODO .callout-note}
-## Instruccions de lectura/escriptura a memòria
-{{{< include referencies/RV32I_instruccions_lectura_escriptura.qmd >}}}
+## RV32I ISA — Instruccions de lectura/escriptura a memòria
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{{< include referencies/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 ```
+
+Les opcions són:
+
+* Cap per a `RISC-V` (ja és el títol d'aquest callout)
+* `C —`
+* `RARS —`
+* `RV32I Registres —`, `Extensió F Registres —`
+* `RV32I ISA — `, `M ISA —`, `F ISA —`
+* `RV32I ABI —`
+* `Pseudoinstruccions —`
+* `RV32I —`
+* `Directives —`
 
 La referència és @nte-TODO.
 
@@ -391,10 +415,11 @@ Regla dels `:` addicionals:
 :::
 ::::
 
-::: {#nte-format-instruccions-S .callout-note}
-## Format S (instruccions d'emmagatzemament)
+::: {#nte-instruccions-Tipus-S .callout-note}
+## RV32I ISA — Format Tipus-S (instruccions d'emmagatzemament)
 :::{style="text-align: center;"}
 <!-- ![](https://docs.riscv.org/reference/isa/unpriv/_images/svg-5d013bc40702f55441bc51b0f78d8e0364674976.svg){width="90%"} -->
+![](figures/svg-5d875942584dea27_typeR.png){width="90%"}
 :::
 :::
 
@@ -533,7 +558,7 @@ La referència és @fig-mermaid-TODO
 :::: {}
 ::::
 ``` code
-::: {#tbl-TODO tbl-colwidths="[15,15,55,15]" style="width: 40%;"}
+::: {#tbl-TODO tbl-colwidths="[15,15,55,15]" style="width: 40%; margin: auto;"}
 | A | B | C | D |
 | --- | :--- | :---: | :--- |
 | defecte | esquerra | centre | dreta |
@@ -557,7 +582,12 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 :::
 ::::
 
-## Normes d'estil
+### Bibliografia
+
+* Ús: `[@patterson2020riscv]`
+* Definició: al fitxer `bibliografia.qmd` amb format BibTeX.
+
+## Llenguatge
 
 * S'aniran millorant/definint a mesura que s'identifiquin necessitats, patrons, etc. durant la migració.
 
@@ -571,17 +601,15 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
     * Només en els sintagmes anglesos.
     * En els sintagmes catalans (títols inclosos) només la primera lletra en majúscula.
 * **Després de dos punts:** minúscula en enumeracions i explicacions breus; majúscula en citacions textuals i paràgrafs independents.
-* **Nombres:** Les quantitats petites (fins a vint) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres, excepte en taules, codi o unitats de magnitud (ex: "5 V").
-* **Veu impersonal:** "Cal verificar que no hi ha errors" (no "hem de verificar que no hi ha errors"), "un PC" (no "el teu PC").
-
-### Excepcions a la norma d'impersonal
-
-La norma d'impersonal admet dues excepcions explícites:
-1. **Preguntes i respostes dins de `{.callout-tip}`:** Els enunciats de problemes i les seves respostes poden usar la segona persona del plural (*calculeu*, *determineu*, *suposeu que...*), ja que es dirigeixen directament a l'estudiant en un context d'exercici.
-2. **Instruccions operatives pas a pas:** Les seqüències numerades d'instruccions tècniques (instal·lació, configuració, execució de comandes) usen l'imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*). Aquesta és la forma recomanada per a manuals d'usuari en català i facilita la comprensió de l'ordre d'accions.
+* **Nombres:**
+    * Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres
+    * La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`
+* **Veu impersonal:** Sempre: "Cal verificar que no hi ha errors" (no "hem de verificar que no hi ha errors"), "un PC" (no "el teu PC"). Excepte, però preferible en impersonal:
+    * **Preguntes i respostes dins de `{.callout-tip}`:** Els enunciats de problemes i les seves respostes poden usar la segona persona del plural (*calculeu*, *determineu*, *suposeu que...*), ja que es dirigeixen directament a l'estudiant en un context d'exercici.
+    * **Instruccions operatives pas a pas:** Les seqüències numerades d'instruccions tècniques (instal·lació, configuració, execució de comandes) usen l'imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*). Aquesta és la forma recomanada per a manuals d'usuari en català i facilita la comprensió de l'ordre d'accions.
 
 ### Puntuació
-* **Punt:** Sempre. Totes les frases del cos del text, incloses les llistes de vinyetes (*bullet lists*), han d'acabar obligatòriament en punt.
+* **Punt d'acabament de frase:** Sempre. Totes les frases del cos del text, incloses les llistes de vinyetes (*bullet lists*), han d'acabar obligatòriament en punt.
 * **Negretes acabades en dos punts:** Els dos punts també en negreta.
 
 ### Ressaltat conceptual estratègic (ús de negretes)
@@ -601,29 +629,46 @@ La norma d'impersonal admet dues excepcions explícites:
 
 ### Sigles
 
-* La primera vegada que apareixen s'han d'escriure les paraules completes seguides de la sigla entre parèntesis en majúscules. Exemple: `***Instruction Set Architecture*** (**ISA**)`.
-* Cada sigla s'ha de definir al fitxer de compendi de sigles `sigles.qmd`.
+* ***La primera vegada** que apareixen s'han d'escriure les paraules completes seguides de la sigla entre parèntesis en majúscules. Exemple: `***Instruction Set Architecture*** (**ISA**)`.
+* Cada sigla **s'ha de recollir** al de **compendi de sigles** `sigles.qmd`.
+* Un cop definida s'ha d'usar sempre (en majúscules i sense cursiva). Pot anar en negreta.
 
 ### Referències creuades
 
 * **Referències:**
     * **Als temes:** Manual (al [Tema 3](T3.html))
-    * **La resta:** Automàtiques.
+    * **La resta:** Automàtiques (`\@sec-exemple`).
+    * Article
+        * **Amb:** "La `\@sec-exemple` / `\@fig-exemple` / `\@tbl-exemple` mostra ..."
+        * **Sense:** Els callouts "`\@nte-exmpel` recull ..."
 * **Figures i Taules:** No han d'estar necessàriament referenciades al text (ex: "Tal com mostra la **Figura 1.2**").
 
-### RISC-V
+### Backticks (\``)
 
-* **Llenguatge d'assemblador:** L'arquitectura de referència és **RISC-V** (variant **RV32I**).
-* **Registres:** S'ha d'utilitzar la nomenclatura ABI de RISC-V (ex: `a0-a7` per a paràmetres, `t0-t6` per a temporals, `zero` per a `x0`).
-* **Instruccions:** Adaptar les instruccions de salt i aritmètica (ex: `addiu` de MIPS passa a ser `addi` o `add` en RISC-V segons el context).
-* **Subrutines:** Utilitzar `ret` per al retorn de funcions en lloc de `jr $ra`.
+* **Sense:**
+    * RISC-V, RV32I, Extensió "M".
+    * Tipus d'instrucció S, B.
+    * Ctrl + R
+    * A RARS "F3" "Execute" "*Settings*"
+    * Operacions $rd = M_{w}[rs1 + SignExt(offset)]$
+* **Amb:**
+    * Registres ISA `x0--x6`, ABI `a0--a7`.
+    * operands `rd`, `rs1`, `rs2`.
+    * Instruccions `ret`, `addi`, `lw`.
+    * RARS, directives `.text`, `.data`.
+    * Codi `addi    t0, s1, 100`, `int main() { return 0; }`.
+    * Camps de bits `opcode`, `funct3`.
+    * Variables `i` i altres elements de codi `>>`, `i++`.
+    * Comandes `quarto render --to html`.
+    * Noms de fitxers `T1.qmd`, `bibliografia.qmd`.
+    * Noms de branques `contingut/t5-vectors`.
+    * Noms d'etiquetes `#nte-TODO`, `@sec-callouts`.
+    * Adreces de memòria concretes `0x00400000`, `0x10100000--0x10100003`.
 
 ### Gestió d'errades
 
-* Consultar sempre la font `EC_errades_esmenes` per aplicar correccions terminològiques (ex: canviar "fallo" per **fallada** o "anidat" per **aniuat**).
-
-### Substitucions obligatòries
-
+### Substitucions obligatòries (castellanismes, anglicismes i altres termes no adequats)
+<!--- cSpell:disable --->
 | Terme original | Substitució en català | Observacions |
 | :--- | :--- | :--- |
 | hardware / HW | **maquinari** | Terme preferent. |
@@ -633,9 +678,24 @@ La norma d'impersonal admet dues excepcions explícites:
 | event | **esdeveniment** | Esmena lèxica. |
 | empotrat | **encastat** | e.g., *embedded processors*. |
 | cache | **cau** | Especialment en títols. |
+| load/store | **lectura/escriptura** |  |
+<!--- cSpell:enable --->
 
 ## Contingut
 
 * No s'ha de repetir informació
     * S'ha de fer servir referències
     * Per recordatoris: essencial (callout-caution)
+* **Mnemònics:** El primer cop, si no estan prop d'una taula a on se n'indiqui l'expansió, han d'anar seguits de l'expansió entre parèntesis. Ex: `addi` (***add immediate***). 
+
+## Programació
+
+<!-- TODO * Codi sempre testejat. -->
+
+### C
+
+* TODO
+
+### RISC-V
+
+* TODO Retorn de funcions: `ret`?

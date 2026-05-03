@@ -2,10 +2,14 @@
 
 * directives com instros? o una sola taula al compendi i C&P a Tx?
 * adreces 0x00000000 o 0x0000 0000 (Roger: amb espai)
-* .globl xor .global
-* .section ?
+* `.globl` xor `.global` ?
+* `.section` ?
 * validar codi startup.s
-
+* Afegir ISA/ABI a `{.callout-note}`? xor ABI/EC a `{.callout-important}` xor callout addicional per a ABI RV?
+* Callouts, títol, substituir `,` per `—` als títols (e.g. `C,` per `C —`)
+* Passar de `code` a `$funcio$`: `Mw[] = ...` ` -> $Mw[] = ...$`
+* Passar de `code` a text: `rs1` -> rs1
+* Aplicació de `ISA, RV32 — ` a tots els callouts
 
 ## T1
 
@@ -22,7 +26,13 @@
 
 ## Quarto
 
-* The table of contents (placed in right by default; moved to `left` manyally) always shows the first section highlighted regardless of scrolling down or clicking another section. In https://quarto.org (on right) it works well.
+* T3 i T4 import de svg de format d'instruccions, render pdf:
+```
+ERROR: 
+compilation failed- error
+Package svg Error: File `svg-5d875942584dea27_svg-tex.pdf' is missing.
+scrolling down or clicking another section. In https://quarto.org (on right) it works well.
+```
 
 * mermaids en svg (ara estan en png pq sembla que hi ha un bug que hardcoded `height=480` => espais en blanc (i potser retalls -no provat))
 

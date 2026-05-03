@@ -169,7 +169,7 @@ Creat per Dennis Ritchie als laboratoris Bell (anys 70) per reescriure el sistem
 
 A diferència de llenguatges com Java o Python, el C permet accedir a capes molt més pròximes al maquinari:
 
-1. **Gestió de memòria:** Mitjançant els punters, el programador decideix exactament on resideixen les dades. Això és vital en sistemes **bare-metal** per accedir a registres de control del maquinari que estan mapejats en memòria (*Memory-Mapped I/O*).
+1. **Gestió de memòria:** Mitjançant els punters, el programador decideix exactament on resideixen les dades. Això és vital en sistemes **bare-metal** per accedir a registres de control del maquinari que estan "mapajats" en memòria (*Memory-Mapped I/O*).
 2. **Alineament i estructures:** El C permet definir com s'empaqueten els bits (estructures `struct`). L'**ABI** determina com s'ordenen aquests bytes en memòria, i el C té les eines per respectar aquest ordre.
 3. **Eficiència:** Un bon compilador tradueix el C a **ISA** d'una manera extremadament eficient.
 
@@ -219,7 +219,7 @@ suma:
     ret               # Pseudoinstrucció: retorna el control al cridant
 ```
 
-En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir que els paràmetres `a` i `b` es passen a través dels registres `a0` i `a1`. La instrucció `add` és una operació definida per la **ISA** de RISC-V que realitza la suma. Finalment, la instrucció `ret` és una pseudoinstrucció que el compilador tradueix a un salt incondicional a l'adreça de retorn.
+En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir que els paràmetres `a` i `b` es passen a través dels registres `a0` i `a1` (registres d'argument). La instrucció `add` és una operació definida per la **ISA** de RISC-V que realitza la suma i en deixa el resultat a `a0` (registre de retorn). Finalment, la instrucció `ret` és una pseudoinstrucció que el compilador tradueix a un salt incondicional a l'adreça de retorn.
 
 :::
 
@@ -236,7 +236,7 @@ La **[Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe
 
 **Configuració física:**
 
-<!-- TODO estandaritzar mermaid quan bug `height=480` solucionat -->
+<!-- TODO estandarditzar mermaid quan bug `height=480` solucionat -->
 ::: {style="text-align: center;"}
 ``` {mermaid}
 flowchart LR
@@ -260,7 +260,7 @@ flowchart LR
 
 **Fase 2 Càrrega** ( ***Flashing*** / ***Deployment*** )
 
-<!-- TODO estandaritzar mermaid quan bug `height=480` solucionat -->
+<!-- TODO estandarditzar mermaid quan bug `height=480` solucionat -->
 ::: {style="text-align: center;"}
 ``` {mermaid}
 flowchart LR
@@ -283,7 +283,7 @@ flowchart LR
 * **Target (Pi Pico 2):**
     * Respon enviant la informació en temps real: "Estic aturat a l'adreça `0x100`", "El registre `t0` val `42`" o "S'ha produït un error de memòria".
 
-<!-- TODO estandaritzar mermaid quan bug `height=480` solucionat -->
+<!-- TODO estandarditzar mermaid quan bug `height=480` solucionat -->
 ::: {style="text-align: center;"}
 ``` {mermaid}
 flowchart LR
@@ -355,7 +355,7 @@ printf("%d", n);
 
 ### Llenguatges interpretats
 
-<!-- TODO resecriure per evitar bullet list amb un sol bullet -->
+<!-- TODO reescriure per evitar bullet list amb un sol bullet -->
 
 Mentre que C es **compila** (es tradueix tot abans d'executar), altres llenguatges com Python es **interpreten**:
 
@@ -385,7 +385,7 @@ L'arquitectura es divideix en quatre blocs funcionals connectats entre si:
 3.  **Sistema d'entrada/sortida** (**I/O**)**:** Permet la comunicació amb el món exterior (teclat, pantalla, disc dur).
 4.  **Busos:** Les "autopistes" de dades que connecten tots els components.
 
-<!-- TODO estandaritzar mermaid quan bug `height=480` solucionat -->
+<!-- TODO estandarditzar mermaid quan bug `height=480` solucionat -->
 ::: {#fig-von-neumann-eliminar}
 ```{mermaid}
 graph LR
@@ -411,7 +411,7 @@ graph LR
 Arquitectura de Von Neumann: CPU, Memòria Principal i Sistema d'E/S connectats per Busos
 :::
 
-<!-- TODO estandaritzar mermaid quan bug `height=480` solucionat -->
+<!-- TODO estandarditzar mermaid quan bug `height=480` solucionat -->
 ::: {#fig-von-neumann-simple}
 ```{mermaid}
 %%| fig-width: 3
@@ -470,7 +470,7 @@ dividir successivament $x_u$ entre 2, de menor a major pes.
 ::: {#tip-natural-representacio .callout-tip}
 ## Representació d'un natural en binari
 
-**Pregunta:** S'ha depresentar $x_u = 25$ amb 8 bits.
+**Pregunta:** S'ha de representar $x_u = 25$ amb 8 bits.
 
 **Solució:**
 
@@ -512,7 +512,7 @@ El natural $x_u = 25$ es representa amb 8 bits com $0001\,1001_2$.
 Amb 16 bits: $0000\,0000\,0001\,1001_2$. El valor és el mateix.
 :::
 
-## Codificació de nombres enters en base 2
+## Codificació de nombres enters en base 2 {#sec-codificacio-enters}
 
 Un nombre enter $x_s$ de $n$ bits es representa com una cadena de bits
 $X = X_{n-1} \ldots X_1 X_0$, on el bit de més pes $X_{n-1}$ indica el signe:
@@ -625,7 +625,7 @@ bits restants representen el valor absolut com un natural.
 suma diferent al dels naturals. No s'usa en processadors moderns.
 :::
 
-::: {#wrn-ca1 .callout-warning collapse=true}
+::: {#wrn-codificacio-enters-ca1 .callout-warning collapse=true}
 ## Enters en complement a 1 (Ca1)
 
 L'enter negatiu oposat de $x_s$ s'obté complementant tots els bits de la

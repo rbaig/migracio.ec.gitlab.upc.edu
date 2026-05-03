@@ -3,48 +3,24 @@ title: "Tema 4: Traducció de programes"
 number-sections: true
 ---
 
-<!--
-
-TODO
-
-::: {.callout-important}
-## La `gcc` en acció
-TODO 
-
-Tot i que sovint el el compilador `gcc` fa tot el procés de cop i no el veiem, el fitxer d'assemblador (`.s`) és una peça clau en aquesta assignatura. És el punt on el programari encara és llegible per humans però ja té l'estructura exacta que tindrà al maquinari. Durant el curs, molts dels nostres exercicis consistiran a escriure directament aquest fitxer `.s`.
+::: {#imp-traduccions-literals .callout-important}
+A **EC**, les traduccions des de C a codi d'assemblador han de ser **el més literal possible**, si no s'indica explícitament el contrari. Per tant, **sense optimitzacions**.
 :::
-
-
-::: {#imp-TODO .callout-important}
-A **EC**, en traduccions des de C
-        * Cal fer la traducció més literal possible, si no s'indica explícitament el contrari. Per tant, sense optimitzacions.
-        * Al codi d'assemblador és útil afegir la línia traduïda com a comentari.
-:::
-
--->
 
 ## Desplaçaments de bits
 
 ### Desplaçaments lògics
 
-Les instruccions **`sll`** (*Shift Left Logical*) i **`srl`** (*Shift Right Logical*) desplacen el contingut d'un registre font `rs1` a l'esquerra o a la dreta el nombre de posicions indicat, i omplen les posicions vacants amb zeros. El nombre de posicions a desplaçar es pot especificar de dues maneres: com un **immediat de 5 bits** (`shamt`) o bé en un **registre** `rs2`, del qual només s'utilitzen els 5 bits de menor pes.
+Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions especificat als 5 bits de menor pes del registre `rs2`, omplint les posicions vacants amb zeros. Les variants `slli` i `srli` fan la mateixa operació però el nombre de posicions es codifica directament com un immediat de 5 bits (`shamt`, *shift amount*)[^shamt]. En tots els casos, el nombre de posicions s'interpreta com un **natural**.
+
+[^shamt]: La resta de bits de l'immediat de 12 bits s'ignoren.
 
 ::: {#nte-instruccions-desplacament-logic .callout-note}
 ## Instruccions de desplaçament lògic
-
-| Mnemònic | Operands | Descripció | Operació |
-| :--- | :--- | :--- | :--- |
-| `sll` | `rd, rs1, shamt` | Desplaçament lògic a esquerra (immediat) | `rd = rs1 << shamt` |
-| `sll` | `rd, rs1, rs2` | Desplaçament lògic a esquerra (registre) | `rd = rs1 << rs2[4:0]` |
-| `srl` | `rd, rs1, shamt` | Desplaçament lògic a dreta (immediat) | `rd = rs1 >> shamt` (zeros) |
-| `srl` | `rd, rs1, rs2` | Desplaçament lògic a dreta (registre) | `rd = rs1 >> rs2[4:0]` (zeros) |
-:::
-
-::: {#cau-mnemonic-polimorf .callout-caution}
-## Mnemònics polimòrfics
-RV32I té mnemònics que admeten sintaxis d'arguments diferents. És, per exemple el cas dels mnemònics de desplaçament de bits, on un mateix mnemònic admet la quantitat de bits a desplaçar tant especificat a immediat com per registre.
-
-Cal, però, adonar-se que a nivell d'implementació de hardware, hi ha d'haver circuïts dedicats (diferents) per cada sintaxi admesa.
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_desplacament_bits_logics.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
 ::: {#tip-exemple-sll-srl .callout-tip}
@@ -52,32 +28,63 @@ Cal, però, adonar-se que a nivell d'implementació de hardware, hi ha d'haver c
 
 ```{.s filename="RV32I"}
 li      t0, 0x88888888
-sll     t0, t0, 1       # t0 = 0x11111110
+slli    t0, t0, 1       # t0 = 0x11111110
 ```
 
 ```{.s filename="RV32I"}
 li      t0, 0x99999999
-srl     t0, t0, 2       # t0 = 0x26666666
+srli    t0, t0, 2       # t0 = 0x26666666
 ```
 :::
 
-::: {#wrn-mips-no-polimorfisme .callout-warning collapse=true}
-## RV32I vs. MIPS, mnemònics dedicats vs. mnemònics polimòrfics
-* MIPS: Mnemònics diferenciats (`sll` vs. `sllv`). Per tant, correspondència 1 a 1 entre mnemònic i instrucció/opcode. La tria d'instrucció l'ha de fer el programador.
-* RV32I: Mateixos mnemònics. L'ambigüitat la resol l'assemblador.
+::: {#wrn-ca2-a-ca1 .callout-warning collapse=true}
+## Conversió de Ca2 a Ca1 amb instruccions de desplaçament
+
+Donada la representació en Ca2 d'un enter $x_s$, guardada a `t2`,
+
+**Pregunta:** Com s'obté la seva representació en Ca1 (@wrn-codificacio-enters-ca1) i s'assigna a `t1`?
+
+**Solució:**
+
+Les dues fórmules que relacionen el valor explícit $x_u$ amb l'enter representat $x_s$ (@sec-codificacio-enters) són:
+
+* **Ca2:** $x_s = x_u - X_{n-1} \cdot 2^n$
+* **Ca1:** $x_s = x_u' - X_{n-1} \cdot (2^n - 1)$
+
+on $X_{n-1}$ és el bit de signe (el mateix en els dos casos).
+
+Igualant les dues expressions i simplificant:
+
+$$x_u' = x_u - X_{n-1}$$
+
+És a dir: la representació en Ca1 s'obté **restant el bit de signe** a la representació en Ca2. Per extreure el bit de signe de `t2` i fer-ne la resta:
+
+```{.s filename="RV32I"}
+srli    t0, t2, 31      # desplaça el bit de signe a la posició 0
+sub     t1, t2, t0      # resta del bit de signe a la representació Ca2
+```
+
+**Anàlisi**
+
+* Si $x_s \geq 0$: el bit de signe és `0`, de manera que `t0 = 0` i `t1 = t2`. La representació no canvia, cosa que té sentit perquè   els positius es codifiquen igual en Ca1 i Ca2.
+* Si $x_s < 0$: el bit de signe és `1`, de manera que `t0 = 1` i `t1 = t2 - 1`. Efectivament, la representació en Ca1 d'un negatiu és sempre 1 menys que la representació en Ca2 del mateix enter (vegeu la secció de codificació d'enters del Tema 1).
+
+**Exemple:** $x_s = -51$, representat en Ca2 amb 8 bits com `1100 1101`$_2$ (= `0xCD`) i en Ca1 com `1100 1100`$_2$ (= `0xCC`). Fent les extensions a 32 bits, `t2 = 0xFFFFFFCD` i `t1 = 0xFFFFFFCC`.
+
+* `srli t0, t2, 31` → `t0 = 1` (bit de signe)
+* `sub t1, t2, t0` → `t1 = 0xFFFFFFCD - 1 = 0xFFFFFFCC`
 :::
 
 ### Desplaçament aritmètic a la dreta
 
-La instrucció **`sra`** (*Shift Right Arithmetic*) desplaça el contingut de `rs1` a la dreta el nombre de posicions indicat, però en lloc d'omplir les posicions vacants amb zeros, les omple amb una còpia del **bit de signe** de `rs1`. Igual que `srl`, admet tant la variant d'immediat com la de registre.
+La instrucció `sra` desplaça el contingut de `rs1` a la dreta el nombre de posicions indicat, però en lloc d'omplir les posicions vacants amb zeros, les omple amb una còpia del **bit de signe** de `rs1`. Igual que `srl`, admet tant la variant d'immediat com la de registre.
 
 ::: {#nte-instruccions-desplacament-arithmetic .callout-note}
 ## Instrucció de desplaçament aritmètic
-
-| Mnemònic | Operands | Descripció | Operació |
-| :--- | :--- | :--- | :--- |
-| `sra` | `rd, rs1, shamt` | Desplaçament aritmètic a dreta (immediat) | `rd = rs1 >> shamt` (signe) |
-| `sra` | `rd, rs1, rs2` | Desplaçament aritmètic a dreta (registre) | `rd = rs1 >> rs2[4:0]` (signe) |
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
 ::: {#tip-exemple-sra .callout-tip}
@@ -96,7 +103,7 @@ El bit de signe de `0x99999999` és `1`, de manera que les dues posicions que qu
 L'operador `<<` de C es tradueix sempre amb `sll`. L'operador `>>` es tradueix amb `srl` si l'operand és de tipus `unsigned` (natural), o amb `sra` si és un enter amb signe.
 
 ::: {#tip-traduccio-desplacament-c .callout-tip}
-## Traducció de `<<` i `>>` des de C
+## Traducció de `<<` i `>>`
 
 ```{.C filename="C"}
 a = (a << b) >> 2;   /* a i b són enters amb signe */
@@ -110,62 +117,50 @@ sra     t0, t4, 2    # resultat >> 2 (amb extensió de signe)
 ```
 :::
 
-### Aplicacions: multiplicació i divisió per potències de 2
+### Aplicació d'`sll`: multiplicació per potències de 2
 
-Desplaçar a l'esquerra un enter o natural amb `sll` equival a **multiplicar-lo per una potència de 2**: `rd = rs1 · 2^shamt`. El cas més freqüent és calcular l'*offset* d'un element d'un vector quan la mida dels elements és potència de 2 (com ja hem vist a T2).
+Desplaçar a l'esquerra un enter o natural amb `sll` equival a **multiplicar**-lo per una potència de 2: `rd` ← `rs1` × 2^shamt^.
 
-Desplaçar a la dreta amb `srl` (naturals) o `sra` (enters amb signe) equival a **dividir per una potència de 2**: `rd = rs1 / 2^shamt`.
-
-::: {#cau-sra-divisio .callout-caution}
-La semàntica de l'operador `/` de C requereix que el **residu tingui el mateix signe que el dividend**. En canvi, `sra` produeix sempre un residu **no negatiu**. Per tant, `sra` no és equivalent a `/` quan el dividend és negatiu.
-
-Per exemple, la divisió entera $(-15)/4$ dóna quocient $-3$ i residu $-3$, mentre que el desplaçament $(-15)$`>>2` dóna quocient $-4$ i residu $1$. Només cal usar `sra` per traduir `/` si es pot garantir que el dividend no és negatiu.
+::: {#imp-ec-sll-acces-vector .callout-important}
+A **EC**, s'usa `slli` per calcular l'**offset** en bytes en accedir a elements d'un vector quan la mida de l'element és una potència de 2 (@sec-access-vector).
 :::
 
-<!---
-TODO 
+### Aplicació d'`sll`: divisió entera per potències de 2
 
-A few notes before you move on:
+Desplaçar a la dreta naturals amb `srl` o enters (amb signe) `sra` equival a **dividir**-los per una potència de 2: `rd` ← `rs1` / 2^shamt^.
 
-**On the MIPS `sllv`/`srlv`/`srav` distinction:** In MIPS, immediate-shift and register-shift are different instructions. In RV32I they share the same mnemonic (`sll`, `srl`, `sra`) — the assembler distinguishes them by whether the third operand is a register or an immediate. I've noted this implicitly in the table but it's worth you deciding whether to call it out explicitly for students coming from the MIPS notes.
+::: {#cau-sra-divisio .callout-caution}
+La semàntica de l'operador `/` de C requereix que el residu tingui el **mateix signe** que el dividend. En canvi, `sra` produeix sempre un residu **no negatiu**. Per tant, `sra` **no és equivalent** a `/` quan el dividend és negatiu.
 
-**On example 6 from the PDF** (Ca2→Ca1 conversion using `srl` + `subu`): I left it out because `subu` does not exist in RISC-V (just `sub`), and more importantly the example is quite specific and not referenced later in T3. Worth including as an `{.callout-warning collapse=true}` deep-dive if you want, but I'd suggest skipping it for now and adding it back later if needed.
--->
-
-
-
-
-
-
-
-
-
+Per exemple, la divisió entera (-15 / 4) dóna quocient -3 i residu -3, mentre que el desplaçament `-15 >> 2` dóna quocient -4 i residu 1. Només cal usar `sra` per traduir `/` si es pot garantir que el dividend no és negatiu.
+:::
 
 ## Operacions lògiques bit a bit
 
 ### Instruccions `and`, `or`, `xor`
 
-Les instruccions **`and`**, **`or`** i **`xor`** realitzen les corresponents operacions lògiques bit a bit entre dos registres. Cadascuna té també una variant amb immediat (**`andi`**, **`ori`**, **`xori`**), on l'immediat de 12 bits s'estén a 32 bits amb **zeros** (extensió per zero, `ZeroExt`), a diferència de les instruccions aritmètiques que fan extensió de signe.
+Les instruccions `and`, `or` i `xor` realitzen les corresponents operacions lògiques bit a bit entre dos registres.
+
+Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió per zero**.
+
+::: {#cau-TODO .callout-caution}
+És un dels pocs casos on l'immediat s'estén amb **extensió per zero**. La regla genera és l'extensió de signe.
+:::
 
 ::: {#nte-instruccions-logiques .callout-note}
 ## Instruccions lògiques bit a bit
-
-| Mnemònic | Operands | Operació |
-| :--- | :--- | :--- |
-| `and` | `rd, rs1, rs2` | `rd = rs1 AND rs2` |
-| `or` | `rd, rs1, rs2` | `rd = rs1 OR rs2` |
-| `xor` | `rd, rs1, rs2` | `rd = rs1 XOR rs2` |
-| `andi` | `rd, rs1, imm12` | `rd = rs1 AND ZeroExt(imm12)` |
-| `ori` | `rd, rs1, imm12` | `rd = rs1 OR ZeroExt(imm12)` |
-| `xori` | `rd, rs1, imm12` | `rd = rs1 XOR ZeroExt(imm12)` |
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_logiques_bit_a_bit.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
-Aquestes instruccions serveixen per traduir els operadors lògics bit a bit de C: `&` (and), `|` (or) i `^` (xor exclusiva).
+Aquestes instruccions s'empren per traduir els operadors **lògics bit a bit** de **C**: `&` (i, *and*), `|` (o, *or*) i `^` (o exclusiva, *exclusive or*).
 
 ::: {#wrn-nor-riscv .callout-warning collapse=true}
 ## RISC-V no té instrucció `nor`
 
-A diferència de MIPS, **RV32I no inclou la instrucció `nor`**. Això és coherent amb la filosofia de disseny RISC-V de mantenir el repertori mínim, ja que `nor` es pot compondre fàcilment amb dues instruccions:
+A diferència de MIPS, **RV32I no inclou la instrucció `nor`. Això és coherent amb la filosofia de disseny RISC-V de mantenir el repertori mínim, ja que `nor` es pot compondre fàcilment amb dues instruccions:
 
 ```{.s filename="RV32I"}
 or      rd, rs1, rs2    # rd = rs1 OR rs2
@@ -178,66 +173,51 @@ El cas particular de la negació bit a bit (`NOT`) d'un registre, equivalent al 
 xori    rd, rs1, -1     # rd = NOT rs1
 ```
 
-Observem que `xori rd, rs1, -1` funciona perquè `-1` en complement a dos és la cadena de bits `0xFFFFFFFF`, i fer XOR amb tots uns complementa tots els bits.
+`xori rd, rs1, -1` funciona perquè `-1` en Ca2 és la cadena de bits `0xFFFFFFFF`, i fer XOR amb tots uns complementa tots els bits.
 :::
 
-### Aplicació de `and`: seleccionar bits (màscara)
+### Aplicació d'`and`: selecció de bits (màscara)
 
 La instrucció `and` s'usa per **seleccionar determinats bits** d'un registre posant a zero la resta. La tècnica consisteix a construir una **màscara** on els bits que es volen conservar valen `1` i la resta valen `0`.
 
 ::: {#tip-exemple-and-mascara-1 .callout-tip}
 ## Selecció de bits amb màscara `and`
 
-**Seleccionar els 16 bits de menor pes de `rs1`:**
+Selecció dels 16 bits de menor pes de `rs1`:
 
 ```{.s filename="RV32I"}
 andi    rd, rs1, 0xFFFF     # l'immediat s'estén amb zeros
 ```
 :::
 
-### Aplicació de `or`: posar bits a u
+### Aplicació d'`or`: posar bits a u
 
-La instrucció `or` s'usa per **posar a `1`** aquells bits d'un registre que valen `1` a la màscara.
+La instrucció `or` s'usa per **posar a $1$** aquells bits d'un registre que valen `1` a la màscara.
 
 ::: {#tip-exemple-or-mascara .callout-tip}
-## Posar bits a u amb `or`
+## Posar bits a `1` amb `or`
 
-**Escriure uns als 16 bits de menor pes de `t0`:**
+Posada dels 16 bits de menor pes de `t0` a `1`:
 
 ```{.s filename="RV32I"}
 ori     t0, t0, 0xFFFF      # l'immediat s'estén amb zeros
 ```
 :::
 
-### Aplicació de `xor`: complementar bits
+### Aplicació d'`xor`: complementar bits
 
 La instrucció `xor` s'usa per **complementar** aquells bits d'un registre que valen `1` a la màscara.
 
 ::: {#tip-exemple-xor-mascara .callout-tip}
 ## Complementar bits amb `xor`
 
-**Complementar els bits parells de `t0`:**
+Complement dels bits parells de `t0`:
 
 ```{.s filename="RV32I"}
 li      t1, 0x55555555      # màscara amb uns als bits parells
 xor     t0, t0, t1
 ```
 :::
-
-<!--
-TODO
-
-Two notes before continuing:
-
-**On `xori` with `-1` vs `0xFFFFFFFF`:** Both are equivalent in RARS — the assembler sign-extends the 12-bit immediate `-1` (which is `0xFFF`) to `0xFFFFFFFF`. I used `-1` as it's more readable and conventional in RISC-V code.
-
-**On the `andi`/`ori`/`xori` immediate extension:** The PDF explicitly notes that the immediate is a natural extended with zeros — this is important and slightly counterintuitive since most other RV32I immediates use sign extension. I've kept that note in the table.
--->
-
-
-
-
-
 
 ## Comparacions i operacions booleanes
 
@@ -251,17 +231,14 @@ Dues expressions no nul·les s'interpreten com a certes **sense ser iguals**. Ta
 
 ### Instruccions de comparació: `slt` i `sltu`
 
-La instrucció **`slt`** (*Set Less Than*) compara dos enters amb signe i escriu `1` al registre destinació si el primer és menor que el segon, o `0` en cas contrari. La instrucció **`sltu`** fa la mateixa operació però tractant els operands com a naturals. Les variants immediates **`slti`** i `sltiu` comparen amb un immediat de 12 bits amb extensió de signe.
+La instrucció `slt` (***set less than***) compara dos enters amb signe i escriu `1` al registre destinació si el primer és menor que el segon, o `0` en cas contrari. La instrucció `sltu` (***set less than unsigned***) fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` (***set less than immediate***) i `sltiu` (***set less than unsigned immediate***) comparen amb un immediat de 12 bits amb extensió de signe.
 
 ::: {#nte-instruccions-comparacio .callout-note}
 ## Instruccions de comparació
-
-| Mnemònic | Operands | Operació | Tipus |
-| :--- | :--- | :--- | :--- |
-| `slt` | `rd, rs1, rs2` | `rd = (rs1 < rs2) ? 1 : 0` | Enters amb signe |
-| `sltu` | `rd, rs1, rs2` | `rd = (rs1 < rs2) ? 1 : 0` | Naturals |
-| `slti` | `rd, rs1, imm12` | `rd = (rs1 < SignExt(imm12)) ? 1 : 0` | Enters amb signe |
-| `sltiu` | `rd, rs1, imm12` | `rd = (rs1 < SignExt(imm12)) ? 1 : 0` | Naturals |
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_comparacio.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
 ### Traducció de `==` i `!=`
@@ -407,27 +384,22 @@ Two notes before continuing:
 
 ### Salts condicionals relatius al PC: `beq` i `bne`
 
-La instrucció **`beq`** salta a l'adreça especificada per l'etiqueta si els dos operands són iguals; **`bne`** salta si són diferents. En el llenguatge màquina no es codifica l'adreça absoluta de destinació (massa llarga per cabre dins la instrucció), sinó la **distància a saltar** com un immediat de 13 bits en complement a dos (`offset13`), i per això aquests salts s'anomenen **relatius al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
+La instrucció `beq` (***branch equal***) salta a l'adreça especificada per l'etiqueta si els dos operands són iguals; `bne` (***branch not equal***) salta si són diferents. En el llenguatge màquina no es codifica l'adreça absoluta de destinació (massa llarga per cabre dins la instrucció), sinó la **distància a saltar** com un immediat de 13 bits en Ca2 (`offset13`), i per això aquests salts s'anomenen **relatius al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
 
 L'offset permet saltar dins el rang de $[-2^{12}, 2^{12}-1]$ bytes respecte a la instrucció de salt.
 
 ::: {#nte-instruccions-salt-condicional .callout-note}
 ## Instruccions de salt condicional relatiu al PC
-
-| Mnemònic | Operands | Operació |
-| :--- | :--- | :--- |
-| `beq` | `rs1, rs2, label` | Si `rs1 == rs2`: `PC = PC + SignExt(offset13)` |
-| `bne` | `rs1, rs2, label` | Si `rs1 != rs2`: `PC = PC + SignExt(offset13)` |
-| `blt` | `rs1, rs2, label` | Si `rs1 < rs2` (signe): `PC = PC + SignExt(offset13)` |
-| `bge` | `rs1, rs2, label` | Si `rs1 >= rs2` (signe): `PC = PC + SignExt(offset13)` |
-| `bltu` | `rs1, rs2, label` | Si `rs1 < rs2` (natural): `PC = PC + SignExt(offset13)` |
-| `bgeu` | `rs1, rs2, label` | Si `rs1 >= rs2` (natural): `PC = PC + SignExt(offset13)` |
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_salt_condicional_relatiu_PC.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
 ::: {#tip-exemple-and-mascara-2 .callout-tip}
-## Selecció de bits amb màscara `and`
+## Execució condicional `bne`
 
-**Comprovar si la variable `b` té actius els bits 0 i 4, i inactius els bits 2 i 6:**
+Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits 2 i 6:
 
 ```{.C filename="C"}
 a = b & 0x55;       /* màscara: seleccionem bits 0, 2, 4 i 6 */
@@ -445,7 +417,6 @@ bne     t0, t4, endif       # if (a == 0x11) ...
 endif:
 ```
 :::
-
 
 ::: {#wrn-mips-salts .callout-warning collapse=true}
 ## RV32I vs. MIPS, salts condicionals
@@ -465,7 +436,7 @@ Les macros `bgt` i `ble` (i les seves variants `bgtu`/`bleu`) no existeixen com 
 
 ### Salt incondicional relatiu al PC: `j`
 
-La pseudoinstrucció **`j`** realitza un salt incondicional relatiu al PC. S'expandeix en `jal zero, label`, que salta a l'etiqueta sense guardar l'adreça de retorn (escriu el resultat a `zero`, que el descarta).
+La pseudoinstrucció `j` (***jump***) realitza un salt incondicional relatiu al PC. S'expandeix en `jal zero, label`, que salta a l'etiqueta sense guardar l'adreça de retorn (escriu el resultat a `zero`, que el descarta).
 
 ### Salts incondicionals absoluts: `jal` i `jalr` {#sec-jal-jalr}
 
@@ -474,15 +445,17 @@ Quan la distància del salt supera el rang dels salts relatius al PC, o quan l'a
 ::: {#nte-instruccions-salt-incondicional .callout-note}
 ## Instruccions de salt incondicional
 
-| Mnemònic | Operands | Operació | Format |
-| :--- | :--- | :--- | :--- |
-| `jal` | `rd, label` | `rd = PC + 4; PC = PC + SignExt(offset21)` | J |
-| `jalr` | `rd, rs1, imm12` | `rd = PC + 4; PC = rs1 + SignExt(imm12)` | I |
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_salt_incondicional.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
-La instrucció **`jal`** (*Jump and Link*) salta a una adreça especificada per una etiqueta (codificada com un offset de 21 bits relatiu al PC) i guarda l'**adreça de retorn** (`PC + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (vegeu @sec-subrutines). Quan `rd = zero`, simplement salta sense guardar res — aquesta és la base de la pseudoinstrucció `j`.
+RV32I_instruccions_salt_incondicional.qmd
 
-La instrucció **`jalr`** (*Jump and Link Register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits, i guarda l'adreça de retorn a `rd`. S'usa principalment per retornar de subrutines (`jalr zero, ra, 0`, que RARS abreuja com la pseudoinstrucció **`ret`**), o per saltar a adreces llunyanes desconegudes en temps de compilació:
+La instrucció `jal` (***jump and link*) salta a una adreça especificada per una etiqueta (codificada com un offset de 21 bits relatiu a `pc` i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (vegeu @sec-subrutines). Quan `rd = zero`, simplement salta sense guardar res — aquesta és la base de la pseudoinstrucció `j`.
+
+La instrucció `jalr` (***jump and link register***) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits, i guarda l'adreça de retorn a `rd`. S'usa principalment per retornar de subrutines (`jalr zero, ra, 0`, que RARS abreuja com la pseudoinstrucció `ret`), o per saltar a adreces llunyanes desconegudes en temps de compilació:
 
 ```{.s filename="RV32I"}
 la      t0, etiqueta_llunyana
@@ -652,7 +625,7 @@ switch (expressio) {
 }
 ```
 
-El mètode més senzill de traducció és una **cadena de `if-then-else`** que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en un **vector de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
+El mètode més senzill de traducció és una **cadena de `if-then-else` que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en un **vector de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
 
 ::: {#tip-traduccio-switch .callout-tip}
 ## `switch` amb vector de salts
@@ -769,7 +742,7 @@ fiwhile:
 ```
 :::
 
-<!-- Una subsubsecció: s'ha de fusionar -->
+<!-- Una sola subsubsecció: s'ha de passar a la secció -->
 #### Optimització: avaluació de la condició al final del bucle
 
 El patró anterior conté un salt incondicional `j while` al final de cada iteració. Es pot eliminar avaluant la condició al **final** del bucle en lloc de al principi. Però cal assegurar que es manté la semàntica del `while`: si la condició és inicialment falsa, no s'ha d'executar cap iteració. Per això cal una comprovació prèvia a l'entrada:
@@ -956,11 +929,16 @@ Anomenem **subrutina** la generalització d'una estructura de programació que c
 
 Per tal que una subrutina i el programa que la crida puguin ser programats en assemblador (o compilats) de forma independent, cal que la subrutina declari de forma precisa la seva **interfície** (nom, paràmetres, resultats i tipus respectius), i que els respectius codis s'ajustin a un conjunt de regles estrictes que s'explicaran en aquesta secció. Aquestes regles formen part d'un conjunt més ampli anomenat **ABI** (*Application Binary Interface*), ja introduïda al Tema 1. Així, per a cada ISA i sistema operatiu es defineix una ABI específica que permet compartir les subrutines emmagatzemades en biblioteques.
 
+::: {#cau-TODO .callout-caution}
+## Macros vs. subrutines
+Una **macro** és una seqüència d'instruccions amb nom i paràmetres, definida pel programador dins del seu programa. Cada cop que s'invoca, l'assemblador la **substitueix** pel seu contingut amb els paràmetres reals substituïts. A diferència d'una pseudoinstrucció, una macro no forma part del repertori de l'assemblador: cal definir-la explícitament al programa.
+:::
+
 ### Crida i retorn {#sec-crida-retorn}
 
-Per cridar una subrutina des de múltiples punts del programa cal que, abans de fer el salt, l'adreça de retorn es guardi en un lloc prèviament convingut, de manera que la subrutina pugui retornar al punt adequat. En RV32I, el registre **`ra`** (*return address*, `x1`) està reservat per a aquest propòsit.
+Per cridar una subrutina des de múltiples punts del programa cal que, abans de fer el salt, l'adreça de retorn es guardi en un lloc prèviament convingut, de manera que la subrutina pugui retornar al punt adequat. En RV32I, el registre `ra` (***return address***, `x1`) està reservat per a aquest propòsit.
 
-La instrucció **`jal ra, label`** (ja vista a @sec-jal-jalr) salta a l'adreça indicada per `label` i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar de la subrutina s'usa la pseudoinstrucció **`ret`**, que s'expandeix en `jalr zero, ra, 0` i salta a l'adreça continguda a `ra`.
+La instrucció `jal ra, label` (ja vista a @sec-jal-jalr) salta a l'adreça indicada per `label` i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar de la subrutina s'usa la pseudoinstrucció `ret`, que s'expandeix en `jalr zero, ra, 0` i salta a l'adreça continguda a `ra`.
 
 ```{.s filename="RV32I"}
 # Codi que fa les crides
@@ -983,9 +961,9 @@ El pas de paràmetres i resultats implica una comunicació entre el codi que inv
 
 En EC seguim el conjunt reduït de regles de l'ABI de RV32I:
 
-- Els **paràmetres** de tipus escalars es passen als registres `a0`–`a7`, en ordre d'escriptura. El primer paràmetre va a `a0`, el segon a `a1`, etc.
-- El **resultat** es retorna al registre `a0` (o `a0`/`a1` si ocupa 64 bits).
-- Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), s'estén a 32 bits dins el registre assignat, fent extensió de signe o de zeros segons estigui declarat `signed` o `unsigned`.
+* Els **paràmetres** de tipus escalars es passen als registres `a0`–`a7`, en ordre d'escriptura. El primer paràmetre va a `a0`, el segon a `a1`, etc.
+* El **resultat** es retorna al registre `a0` (o `a0`/`a1` si ocupa 64 bits).
+* Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), s'estén a 32 bits dins el registre assignat, fent extensió de signe o de zeros segons estigui declarat `signed` o `unsigned`.
 
 ::: {#cau-abi-ec .callout-caution}
 Per simplicitat, en EC no considerarem el cas en què hi ha més de 8 paràmetres, ni el cas en què paràmetres o resultats són de tipus `struct` o de tipus `double` / `long long`. Aquests casos requereixen regles addicionals de l'ABI que no s'estudien en aquest curs.
@@ -1068,9 +1046,58 @@ funcB:
 ```
 :::
 
+:::: {#tip-exemple-crides-capçaleres .callout-tip}
+## Correspondència entre crides i capçaleres de funcions
+
+Donades les declaracions de variables i capçaleres de funcions següents:
+
+```{.C filename="C"}
+short V1[10];
+char  V2[20];
+int   a;
+int  *p;
+
+int f(int i);
+int f(char c);
+int f(short *pi);
+int f(char vc[]);
+int f(int vi[]);
+```
+
+**Pregunta:** A quina capçalera correspon cada crida del codi següent?
+
+```{.C filename="C"}
+a = f(V1);          /* (1) */
+a = f(p);           /* (2) */
+a = f(&V2[10]);     /* (3) */
+a = f(V2[10]);      /* (4) */
+a = f(*p);          /* (5) */
+```
+
+**Solució:**
+
+::: {tbl-colwidths="[1,35,35]" style="width: 85%; margin: auto;"}
+| Crida | Tipus del paràmetre real | Capçalera |
+| :--- | :--- | :--- |
+| `f(V1)` | `V1` és `short[10]`, equivalent a `short *` | `int f(short *pi)` |
+| `f(p)` | `p` és `int *` | `int f(int vi[])` (equivalent a `int *`) |
+| `f(&V2[10])` | `&V2[10]` és `char *` (adreça d'un element de `V2`) | `int f(char vc[])` (equivalent a `char *`) |
+| `f(V2[10])` | `V2[10]` és `char` (valor d'un element de `V2`) | `int f(char c)` |
+| `f(*p)` | `*p` és `int` (desreferència de `p`) | `int f(int i)` |
+:::
+
+**Anàlisi:**
+
+* El nom d'un vector (`V1`, `V2`) sense índex equival a un punter al   primer element: `V1` té tipus `short *` i `V2` té tipus `char *`.
+* `int vi[]` com a paràmetre formal és equivalent a `int *vi`: tots dos reben un punter.
+* `&V2[10]` és l'adreça de l'element 10 de `V2`, és a dir un `char *`.
+* `V2[10]` (sense `&`) és el valor de l'element 10, és a dir un `char`.
+* `*p` desreferencia el punter `p` de tipus `int *`, donant un `int`.
+::::
+
 #### Pas de paràmetres per valor i per referència
 
-En C només existeix el **pas per valor**: la funció rep una còpia del paràmetre real i pot modificar-la sense afectar l'original. Per aconseguir un efecte equivalent al pas per referència, es passa com a paràmetre un **punter** a la dada original. La funció pot llavors modificar la dada original desreferenciant el punter:
+En **C** només existeix el **pas per valor**: la funció rep una còpia del paràmetre real i pot modificar-la sense afectar l'original. Per aconseguir un efecte equivalent al pas per referència, es passa com a paràmetre un **punter** a la dada original. La funció pot llavors modificar la dada original desreferenciant el punter:
 
 ```{.C filename="C"}
 void sub(int *p) {
@@ -1092,7 +1119,7 @@ Per defecte, les variables locals d'una funció es creen cada cop que s'invoca i
 
 Les funcions que necessiten guardar variables locals en memòria han de reservar-hi l'espai necessari en iniciar l'execució i alliberar-lo just abans de finalitzar. Aquest espai s'anomena **bloc d'activació** (*stack frame*) de la subrutina.
 
-L'estructura de dades ideal per gestionar els blocs d'activació de les crides aniuades és una **pila**: els blocs s'alliberen en ordre invers a com s'han reservat (LIFO). En RV32I, el registre **`sp`** (*stack pointer*, `x2`) apunta sempre al cim de la pila. La pila **creix cap a adreces més baixes**: per reservar espai es decrementa `sp`, i per alliberar-lo s'incrementa.
+L'estructura de dades ideal per gestionar els blocs d'activació de les crides aniuades és una **pila**: els blocs s'alliberen en ordre invers a com s'han reservat (LIFO). En RV32I, el registre `sp` (***stack pointer***, `x2`) apunta sempre al cim de la pila. La pila **creix cap a adreces més baixes**: per reservar espai es decrementa `sp`, i per alliberar-lo s'incrementa.
 
 ::: {#cau-alineacio-pila .callout-caution}
 La mida del bloc d'activació i el valor de `sp` han de ser sempre **múltiples de 16 bytes** seguint l'ABI estàndard de RV32I. En EC, per simplicitat, admetrem múltiples de **4 bytes**.
@@ -1113,17 +1140,17 @@ void funcB() { sentB; }
 
 En RV32I, les variables locals d'una subrutina s'assignen seguint aquestes regles:
 
-- Les variables **escalars** es guarden preferentment en registres.
-- Les variables **estructurades** (vectors, matrius, etc.) es guarden a la pila.
-- Si no hi ha prou registres per a totes les variables escalars, les sobrants es guarden també a la pila.
-- Si en el cos de la funció apareix una variable local escalar `x` precedida de l'operador `&`, aquesta variable s'ha de guardar a la pila a fi que tingui una adreça de memòria.
+* Les variables **escalars** es guarden preferentment en registres.
+* Les variables **estructurades** (vectors, matrius, etc.) es guarden a la pila.
+* Si no hi ha prou registres per a totes les variables escalars, les sobrants es guarden també a la pila.
+* Si en el cos de la funció apareix una variable local escalar `x` precedida de l'operador `&`, aquesta variable s'ha de guardar a la pila a fi que tingui una adreça de memòria.
 
 El bloc d'activació respecta les normes de format següents:
 
-- Les variables locals ocupen les **primeres adreces** del bloc (a partir del cim de la pila, on apunta `sp` un cop reservat l'espai).
-- Es col·loquen en **ordre textual** de declaració, amb l'alineació corresponent al seu tipus.
-- Els registres salvats ocupen les **últimes adreces** del bloc, a continuació de les variables locals, alineats a adreces múltiples de 4.
-- La mida total del bloc i el valor de `sp` han de ser múltiples de 4 (en EC).
+* Les variables locals ocupen les **primeres adreces** del bloc (a partir del cim de la pila, on apunta `sp` un cop reservat l'espai).
+* Es col·loquen en **ordre textual** de declaració, amb l'alineació corresponent al seu tipus.
+* Els registres salvats ocupen les **últimes adreces** del bloc, a continuació de les variables locals, alineats a adreces múltiples de 4.
+* La mida total del bloc i el valor de `sp` han de ser múltiples de 4 (en EC).
 
 ::: {#tip-exemple-variables-pila .callout-tip}
 ## Funció amb variables locals a la pila
@@ -1207,8 +1234,8 @@ A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`), de m
 
 El bloc d'activació d'una subrutina multinivell pot incloure:
 
-- **Variables locals** de tipus estructurat, o escalars que no caben en registres o que requereixen adreça.
-- **Registres segurs salvats**, incloent-hi `ra` si la subrutina és multinivell.
+* **Variables locals** de tipus estructurat, o escalars que no caben en registres o que requereixen adreça.
+* **Registres segurs salvats**, incloent-hi `ra` si la subrutina és multinivell.
 
 La disposició dins el bloc segueix l'ordre següent, de les adreces més baixes (cim de la pila, on apunta `sp`) a les més altes:
 
@@ -1452,7 +1479,7 @@ El simulador RARS organitza l'espai d'adreces de 32 bits del processador RV32I e
 
 ![Mapa de memòria de RARS: regions `.text`, `.data`, heap i pila, amb les adreces d'inici de cada regió.](figures/TODO.png){#fig-mapa-memoria}
 
-::: {#nte-mapa-memoria-rars .callout-note}
+::: {#imp-mapa-memoria-rars .callout-important}
 ## Regions de memòria a RARS
 
 | Regió | Adreça d'inici | Contingut | Creix |
@@ -1491,26 +1518,42 @@ L'accés eficient a variables globals és una qüestió important en processador
 
 Si s'accedeix diverses vegades a la mateixa variable dins una mateixa funció, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la, tal com s'ha fet en els exemples de subrutines de la secció anterior.
 
-::: {#wrn-la-auipc .callout-warning collapse=true}
-## Com s'expandeix realment `la` en RV32I
+::: {#nte-la-auipc .callout-note}
+## RARS — Expansió de `la`
 
-A T2 es va presentar l'expansió de `la` com `lui` + `addi`, que és l'expansió equivalent en MIPS. En RV32I, l'expansió real de `la` és diferent:
+La instrucció **`auipc`** (*add upper immediate to PC*) suma un immediat
+de 20 bits desplaçat als 12 bits superiors amb el valor actual del **PC**,
+i escriu el resultat al registre destinació. Això produeix una adreça
+**relativa al PC**, en lloc d'una adreça absoluta.
+
+`la` s'expandeix en dues instruccions amb adreces **relatives al PC**:
 
 ```{.s filename="RV32I"}
-        auipc   t0, %pcrel_hi(label)
-        addi    t0, t0, %pcrel_lo(label)
+auipc   rd, hi_20(offset)     # rd ← PC + hi_20(offset) << 12
+addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
 ```
 
-La instrucció **`auipc`** (*Add Upper Immediate to PC*) suma un immediat de 20 bits desplaçat als 12 bits superiors amb el valor actual del **PC**, i escriu el resultat al registre destinació. Això produeix una adreça **relativa al PC**, en lloc d'una adreça absoluta.
+on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció
+`auipc`, i `hi_20` i `lo_12` en són la part alta i baixa respectivament
+(amb l'ajust de signe habitual si `lo_12[11] == 1`).
 
-La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte reubicable les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació. Veurem això amb més detall a la secció de compilació, assemblatge i enllaçat (@sec-compilacio).
+**Exemple:** `la t0, AA` amb `@AA = 0x10010000` i `auipc` al PC `0x00400000`:
+
+* `offset = 0x10010000 - 0x00400000 = 0x0fc10000`
+* `hi_20 = 0x0fc10`, `lo_12 = 0x000`
+* `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
+* `addi x5, x5, 0` → `x5 = 0x10010000` ✓
+
+La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable" les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació. Veurem això amb més detall a la secció de compilació, assemblatge i enllaçat (@sec-compilacio).
+
+::: {#wrn-la-vs-mips .callout-warning collapse=true}
+## RV32I vs. MIPS — Expansió de `la`
+
+A **MARS**, `la` s'expandeix amb `lui` + `ori` usant l'adreça **absoluta** del símbol, no relativa al PC. Això fa que el codi no sigui *position-independent*.
+:::
 :::
 
 <!--
-
-Two notes before Section 9:
-
-**On the `wrn-la-auipc` callout:** This is the `auipc` introduction we planned for Option B — placed here in Section 8 as a deep-dive, with the forward reference to Section 9 where relocation is explained in full. It also corrects the T2 `la` expansion note, as planned.
 
 **On the memory map figure:** The `{#fig-mapa-memoria}` placeholder will need a diagram showing the four regions with their addresses, the heap growing upward and the stack growing downward. This is a standard diagram that appears in P&H and should be straightforward to draw.
 -->
@@ -1575,8 +1618,8 @@ L'assemblador expandeix les macros i pseudoinstruccions en les seqüències d'in
 
 El llenguatge assemblador usa **etiquetes** per referir-se a adreces, tant al codi com a les dades. Una etiqueta pot ser usada dins el fitxer fins i tot abans de ser definida (**referència anticipada**). Per gestionar-ho, l'assemblador fa **dues passades** sobre el fitxer:
 
-- **Primera passada:** llegeix tot el codi font i construeix una **taula de símbols** que associa cada etiqueta amb la seva posició (offset en bytes respecte a l'inici de la secció on està definida).
-- **Segona passada:** codifica les instruccions, usant la taula de símbols per resoldre les etiquetes.
+* **Primera passada:** llegeix tot el codi font i construeix una **taula de símbols** que associa cada etiqueta amb la seva posició (offset en bytes respecte a l'inici de la secció on està definida).
+* **Segona passada:** codifica les instruccions, usant la taula de símbols per resoldre les etiquetes.
 
 Cal notar que les adreces que assigna l'assemblador **no són les adreces definitives** en memòria, ja que l'assemblador no coneix el codi i les dades definits en altres mòduls. Les adreces definitives les assignarà l'enllaçador.
 
@@ -1584,17 +1627,17 @@ Cal notar que les adreces que assigna l'assemblador **no són les adreces defini
 
 Algunes instruccions necessiten l'adreça absoluta d'una etiqueta per ser codificades completament:
 
-- Els **salts relatius al PC** (`beq`, `bne`, `blt`, etc.) codifiquen un offset relatiu, que no depèn de l'adreça absoluta del codi. L'assemblador pot codificar-los completament si l'etiqueta de destinació és al mateix mòdul.
-- La pseudoinstrucció **`la`** i els **salts en mode registre** (`jal`, `jalr`) necessiten l'adreça absoluta. Si l'etiqueta és al mateix mòdul, l'assemblador hi escriu l'offset provisional; si és en un altre mòdul, hi escriu un zero provisional.
+* Els **salts relatius al PC** (`beq`, `bne`, `blt`, etc.) codifiquen un offset relatiu, que no depèn de l'adreça absoluta del codi. L'assemblador pot codificar-los completament si l'etiqueta de destinació és al mateix mòdul.
+* La pseudoinstrucció `la` i els **salts en mode registre** (`jal`, `jalr`) necessiten l'adreça absoluta. Si l'etiqueta és al mateix mòdul, l'assemblador hi escriu l'offset provisional; si és en un altre mòdul, hi escriu un zero provisional.
 
 L'assemblador genera per a cada fitxer objecte:
 
-- Una **llista de reubicació**: posició de cada instrucció que conté una adreça provisional que caldrà corregir, el seu tipus, i l'offset provisional.
-- Una **taula de símbols globals**: etiquetes declarades amb `.globl` i les seves adreces provisionals, visibles des d'altres mòduls.
-- Una **llista de referències externes no resoltes**: instruccions que fan referència a etiquetes definides en altres mòduls.
+* Una **llista de reubicació**: posició de cada instrucció que conté una adreça provisional que caldrà corregir, el seu tipus, i l'offset provisional.
+* Una **taula de símbols globals**: etiquetes declarades amb `.globl` i les seves adreces provisionals, visibles des d'altres mòduls.
+* Una **llista de referències externes no resoltes**: instruccions que fan referència a etiquetes definides en altres mòduls.
 
 ::: {#cau-globl .callout-caution}
-Si una etiqueta ha de ser referenciada des d'un altre mòdul, cal declarar-la amb la directiva **`.globl`**, altrament només és visible localment dins el seu mòdul.
+Si una etiqueta ha de ser referenciada des d'un altre mòdul, cal declarar-la amb la directiva `.globl`, altrament només és visible localment dins el seu mòdul.
 :::
 
 El fitxer objecte generat per l'assemblador conté els components següents:
@@ -1646,13 +1689,13 @@ g:      ...
 Els fitxers objecte contindran:
 
 **Mòdul A:**
-- Reubicació: posició `+36` (text), tipus `la`, offset `+4` (data)
-- Símbols globals: `X` a offset `+0` (data)
-- Referències externes: posició `+60` (text), tipus `jal`, etiqueta `g`
+* Reubicació: posició `+36` (text), tipus `la`, offset `+4` (data)
+* Símbols globals: `X` a offset `+0` (data)
+* Referències externes: posició `+60` (text), tipus `jal`, etiqueta `g`
 
 **Mòdul B:**
-- Símbols globals: `g` a offset `+16` (text)
-- Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`
+* Símbols globals: `g` a offset `+16` (text)
+* Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`
 :::
 
 ### Enllaçat {#sec-enllacat}
@@ -1711,7 +1754,7 @@ Quan la funció `main` retorna, la rutina de *startup* invoca la crida al sistem
 ::: {#wrn-flux-gcc-complet .callout-warning collapse=true}
 ## Flux de generació detallat amb GCC/Clang
 
-El flux de generació d'un executable amb la toolchain GCC/Clang es pot desglossar en les etapes següents. En EC fem servir el **compilador creusat** (*cross-compiler*) `riscv32-unknown-elf-gcc`, que s'executa al *host* (x86) però genera codi per al *target* (RV32I), com s'ha explicat al Tema 1.
+El flux de generació d'un executable amb la toolchain GCC/Clang es pot desglossar en les etapes següents. En EC fem servir el **compilador creuat** (*cross-compiler*) `riscv32-unknown-elf-gcc`, que s'executa al *host* (x86) però genera codi per al *target* (RV32I), com s'ha explicat al Tema 1.
 
 ```{mermaid}
 graph TD
@@ -1757,33 +1800,31 @@ graph TD
 **0. Programador \[API\]:** escriu la lògica i utilitza l'API del llenguatge (fitxers `.c` i `.h`).
 
 **1. Preprocessador (`cpp`) \[agnòstic a ABI i ISA\]:**
-- Expandeix macros i símbols (vegeu @sec-compilacio).
-- Substitueix el contingut dels fitxers de capçalera en la posició de les directives `#include`.
-- Processa les directives de compilació condicional (`#ifdef`, `#ifndef`, `#if`).
-- Suprimeix tots els comentaris.
-- Resultat: un fitxer `.i` per cada fitxer `.c`.
+* Expandeix macros i símbols (vegeu @sec-compilacio).
+* Substitueix el contingut dels fitxers de capçalera en la posició de les directives `#include`.
+* Processa les directives de compilació condicional (`#ifdef`, `#ifndef`, `#if`).
+* Suprimeix tots els comentaris.
+* Resultat: un fitxer `.i` per cada fitxer `.c`.
 
 **2. Compilador (`cc1`) \[ABI + ISA\]:**
-- Tradueix la lògica de C a assemblador RV32I.
-- Aplica les regles de l'ABI per decidir quins registres usar per a cada variable.
-- Genera la combinació d'instruccions més eficient per al repertori RV32I.
-- Resultat: un fitxer `.s` per cada fitxer `.i`.
+* Tradueix la lògica de C a assemblador RV32I.
+* Aplica les regles de l'ABI per decidir quins registres usar per a cada variable.
+* Genera la combinació d'instruccions més eficient per al repertori RV32I.
+* Resultat: un fitxer `.s` per cada fitxer `.i`.
 
 **3. Assemblador (`as`) \[ISA\]:**
-- Expandeix pseudoinstruccions.
-- Construeix la taula de símbols (dues passades).
-- Genera el codi màquina amb adreces provisionals on calgui.
-- Resultat: un fitxer `.o` per cada fitxer `.s`, amb llistes de reubicació i símbols globals.
+* Expandeix pseudoinstruccions.
+* Construeix la taula de símbols (dues passades).
+* Genera el codi màquina amb adreces provisionals on calgui.
+* Resultat: un fitxer `.o` per cada fitxer `.s`, amb llistes de reubicació i símbols globals.
 
 **4. Enllaçador (`ld`) \[ISA + ABI\]:**
-- Resol símbols globals i referències externes.
-- Combina les seccions de tots els mòduls.
-- Corregeix les adreces provisionals (reubicació).
-- Resultat: el binari executable, llest per ser carregat pel sistema operatiu o el simulador.
+* Resol símbols globals i referències externes.
+* Combina les seccions de tots els mòduls.
+* Corregeix les adreces provisionals (reubicació).
+* Resultat: el binari executable, llest per ser carregat pel sistema operatiu o el simulador.
 :::
 
 <!--
 **On the decision point I flagged inline:** Whether to use the full coloured Mermaid diagram for the compilation overview figure (`#fig-compilacio-separada`) or the simplified one. I used the simplified version to avoid duplicating the detailed one that now lives in `#wrn-flux-gcc-complet`. If you prefer the detailed one at the top of the section instead, just move it up and remove the `wrn`.
-
-**On the `auipc` forward reference:** The `#wrn-la-auipc` callout in S8 now points to `@sec-compilacio` for the relocation explanation. That cross-reference resolves correctly with the `{#sec-compilacio}` ID on this section's heading.
 -->
