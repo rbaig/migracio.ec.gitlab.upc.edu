@@ -1,6 +1,8 @@
 # todo
 
-* directives com instros? o una sola taula al compendi i C&P a Tx?
+* directives
+    * A on estan especificades?
+    * quin tag els posem? `RV32I ABI — `? `RARS — `?
 * adreces 0x00000000 o 0x0000 0000 (Roger: amb espai)
 * `.globl` xor `.global` ?
 * `.section` ?
@@ -9,7 +11,7 @@
 * Callouts, títol, substituir `,` per `—` als títols (e.g. `C,` per `C —`)
 * Passar de `code` a `$funcio$`: `Mw[] = ...` ` -> $Mw[] = ...$`
 * Passar de `code` a text: `rs1` -> rs1
-* Aplicació de `ISA, RV32 — ` a tots els callouts
+* Aplicació de `RV32 ISA — ` a tots els callouts
 
 ## T1
 

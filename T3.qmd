@@ -246,13 +246,18 @@ L'arquitectura **RV32I** defineix sis formats bàsics d'instrucció, anomenats *
 
 ::: {#nte-instruccions-tipus .callout-note}
 ## RV32I ISA — Tipus de format de les instruccions RV32I.
+| Tipus | 7 bits <br> [31–25] | 5 bits <br> [24–20] | 5 bits <br> [19–15] | 3 bits <br> [14–12] | 5 bits <br> [11–7] | 7 bits <br> [6–0] |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 {{< include referencies/RV32I_format_instruccions.qmd >}}
+: {.striped}
 :::
+
+ 
 
 Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant l'operació concreta dins d'una mateixa categoria. Els camps `rs1`, `rs2` (registres font, *source registers*) i `rd` (registre destinació, *destination register*) codifiquen operands en **mode registre**. El camp `imm` codifica operands en **mode immediat**; a diferència de MIPS, en **RV32I** els bits dels immediats estan distribuïts per mantenir els registres font i destinació en posicions fixes, la qual cosa simplifica la descodificació en el **maquinari**.
 
 :::: {#tip-codificacio-instruccions .callout-tip}
-## Codificació d'instruccions amb mnemònics
+## Codificació amb mnemònics vs. codificació en codi màquina
 
 **Nota:** L'objectiu d'aquest exemple és, simplement, il·lustrar la correspondència entre la sintaxi d'algunes instruccions i els camps de bits de les seves codificacions. La sintaxi i semàntica d'aquestes i moltes altres instruccions s'aniran estudiant progressivament durant el curs.
 
@@ -275,7 +280,22 @@ Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant
 | `sw` | `rs2, offset(rs1)` | S | `0x23` | - | `0x2` | `rs1` | `rs2` | `offset` |
 | `jal` | `rd, label` | J | `0x6F` | `rd` | - | - | - | `offset` |
 :::
+
+``` {.code filename="Binari, hexadecimal, basic, font"}
+00000000000010010000001010110011  0x000902b3  add x5,x18,x0      add     t0, s2, zero
+01000001010010011000001100110011  0x41498333  sub x6,x19,x20     sub     t1, s3, s4
+00000000101010101000001110010011  0x00aa8393  addi x7,x21,10     addi    t2, s5, 10
+00000000010010110010111000000011  0x004b2e03  lw x28,4(x22)      lw      t3, 4(s6)
+00000001011111000010010000100011  0x017c2423  sw x23,8(x24)      sw      s7, 8(s8)
+00000000010000000000000011101111  0x004000ef  jal x1,0x00000004  jal     ra, label
+```
 ::::
+
+::: {#imp-nmemonics-llegir-los-sencers .callout-important}
+A **EC**, codificarem sempre en mnemònics, si no s'especifica el contrari.
+
+**Recomanació:** Aconsellem aprendre's de memòria el significat dels mnemònics i que l'empreu quan "llegiu" codi d'assemblador.
+:::
 
 ::: {#tip-codificacio-instruccio-binari .callout-tip}
 ## Codificació d'instruccions en binari i hexadecimal
@@ -409,9 +429,8 @@ Les instruccions són les operacions que el processador executa directament. A d
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-| `add` | `rd, rs1, rs2` | `rd ← rs1 + rs2` | *Add* | R |
-| `sub` | `rd, rs1, rs2` | `rd ← rs1 - rs2` | *Subtract* | R |
-| `addi` | `rd, rs1, imm12` | `rd ← rs1 + SignExt(imm12)` | *Add Immediate* | I |
+{{< include referencies/RV32I_instruccions_aritmetiques.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]" .striped}
 :::
 
 En aquestes instruccions tots els enters són en **Ca2**. A `add` i `sub`, en ser de Tipus-R, tant els operands (`rs1`i `rs2`) com el resultat (`rd`) són registres i, per tant, tots tres són de 32 bits. A `addi`, el primer operand (`rs1`) és un registre, però el segon és un **immediat de 12 bits** (`imm12$`) que s'estén amb signe a 32 bits ($SignExt(imm12)$) abans de ser sumat al registre font. El resultat també és un registre (`rd`).
@@ -458,7 +477,8 @@ sub     t0, t4, t5      # f = (g + h) - (i - 100)
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-| `lui` | `rd, imm20` | `rd ← imm20 << 12` | *Load Upper Immediate* | U |
+{{< include referencies/RV32I_instruccions_lui.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]" .striped}
 
 `lui` carrega un immediat de 20 bits als **20 bits superiors** del registre destinació i posa els 12 bits inferiors a zero. Aquesta instrucció és especialment útil per a la càrrega d'immediats de 32 bits, que es poden construir combinant `lui` amb una instrucció de suma immediata `addi` per afegir els bits inferiors, que és el que fa la pseudoinstrucció `li` (@nte-pseudoinstruccio-li).
 :::
@@ -507,15 +527,14 @@ On hi~20~(imm32) són els 20 bits superiors i lo~12~(imm32) els 12 bits inferior
     2. `addi t1, t1, 0xFFFFF800` — fent l'extensió de signe -2048 ⇒ el resultat és correcte.
 :::
 
-::: {#nte-pseudoinstruccio-la .callout-note}
+:::: {#nte-pseudoinstruccio-la .callout-note}
 ## Pseudoinstrucció — Càrrega d'adreça de memòria: `la`
 
-La pseudoinstrucció `la` (***load address***) inicialitza un registre amb una adreça de memòria constant, expressada normalment com una etiqueta i, opcionalment, un desplaçament addicional.
+La pseudoinstrucció **`la`** (***load address***) inicialitza un registre amb una adreça de memòria constant, expressada com una etiqueta.
 
-| Variants |
+| Sintaxi |
 | :--- |
 | `la rd, label` |
-| `la rd, label + offset` |
 
 ```{.s filename="RV32I"}
 .data
@@ -523,9 +542,32 @@ La pseudoinstrucció `la` (***load address***) inicialitza un registre amb una a
 y:      .word 14, -1   # Es suposa que y està a l'adreça 0x10010024
 
 .text
-        la t0, y        # t0 <- @y       (0x10010024)
-        la t1, y+4      # t1 <- @y + 4   (0x10010028)
+        la      t0, y           # t0 <- @y        (0x10010024)
+        addi    t1, t0, 4       # t1 <- @y + 4    (0x10010028)
 ```
+
+::: {#wrn-rars-expansio-la .callout-warning collapse=true}
+## RARS — Expansió de `la`
+
+L'expansió de `la` es tracta a @nte-la-auipc.
+:::
+::::
+
+::: {#imp-ec-la-offset .callout-important}
+
+A **EC**, s'admet la sintaxi `la rd, label+offset` com a notació més llegible a la teoria i problemes i als exàmens, si no s'indica el contrari.
+
+Però **RARS no la suporta**. Per tant, al laboratori cal substituir-la per `la` + `addi`:
+
+```{.s filename="RV32I"}
+        # Notació EC (pissarra i exàmens):
+        la      t1, y+4         # t1 <- @y + 4
+
+        # Equivalent a RARS (laboratori):
+        la      t0, y
+        addi    t1, t0, 4       # t1 <- @y + 4
+```
+
 :::
 
 #### Macros
@@ -814,14 +856,14 @@ En **C**, la **mida** en bytes d'una variable **depèn** del seu **tipus** i de 
 
 <!-- TODO decidir si es mereix la categoria d'important -->
 ::: {#cau-long-long-2-regs .callout-caution}
-Com que els registres són de 32 bits, per allotjar-hi un `long long` en cal dos, un per als bits de menys pes, l'altre pels de més pes; cal gestionar-los corresponentment.
+Com que els registres són de 32 bits, per allotjar-hi un `long long` en calen dos, un per als bits de menys pes, l'altre pels de més pes; cal gestionar-los corresponentment.
 :::
 
 ## La memòria
 
 <!-- TODO decidir si incloem Relaxed Memory Model => FENCE, FENCE.TSO, FENCE.I?, FENCE.RW? -->
 :::: {#nte-rv32i-model-memoria .callout-note}
-## **RV32I** model de memòria — Característiques bàsiques
+## RV32I ISA — Model de memòria — Característiques bàsiques
 
 * És **unificat**: Instruccions i dades comparteixen el mateix espai d’adreces (Model Von Neumann, @sec-von-neumann).
 * L'**espai d’adreces** (quantitat de línies del bus d'adreces) és de **32** bits (/línies). Per tant, el rang adreçable és [**0x00000000**--**0xFFFFFFFF**].
@@ -1106,8 +1148,11 @@ Com que hi ha 32 registres, cal un camp de 5 bits per identificar-los unívocame
 La **ISA** de RV32I especifica **32 registres** de 32 bits de **propòsit general** (*general purpose registers*, GPR): `x0`–`x31`. De tots ells, l'únic registre especial és `x0`, que sempre conté el valor zero i no es pot modificar. Així doncs, mantenint-se estrictament en el pla de l'ISA, la resta de registres poden ser usats per a qualsevol propòsit. @nte-registres-proposit-general mostra com l'**ABI** assigna els **31 registres** restants.
 
 ::: {#nte-registres-proposit-general .callout-note}
-## RV32I — ISA i ABI — Registres de propòsit general
+## RV32I ISA i ABI — Registres de propòsit general
+| ISA | ABI | Propòsit | Qui el guarda |
+| :---: | :---: | :--- | :--- | :--- |
 {{< include referencies/RV32I_registres_proposit_general.qmd >}}
+: {tbl-colwidths="[15,15,55,15]" .striped}
 :::
 
 En llenguatge assemblador, els registres es poden referenciar per l'identificador de l'**ISA** (`x0`–`x31`) o pel de l'**ABI**, essent aquest darrer criteri el més habitual i el comú a **EC**.
@@ -1115,7 +1160,7 @@ En llenguatge assemblador, els registres es poden referenciar per l'identificado
 ::: {#nte-program-counter .callout-note}
 ## El *program counter* (PC)
 
-El registre `pc` (comptador de programa, ***program counter***, PC) no és un registre de propòsit general. És un registre que conté l'adreça de la instrucció que s'està executant; un cop finalitzada aquesta execució, el `pc` pren el valor de l'adreça de la instrucció següent a executar. Aquesta instrucció no ha de ser, necessàriament, la que hi ha a continuació de la que s'acaba d'executar ja que és a través de la gestió dels valors de `pc` com s'implementen els salts condicionals, crides a subrutines, etc.
+El registre `pc` (comptador de programa, ***program counter***, PC) no és un registre de propòsit general. És un registre que conté l'adreça de la instrucció que s'està executant; un cop finalitzada aquesta execució, el PC pren el valor de l'adreça de la instrucció següent a executar. Aquesta instrucció no ha de ser, necessàriament, la que hi ha a continuació de la que s'acaba d'executar ja que és a través de la gestió dels valors de PC com s'implementen els salts condicionals, crides a subrutines, etc.
 :::
 
 ### Operands en mode immediat {#sec-operands-immediat}
@@ -1178,6 +1223,16 @@ Les instruccions d'**emmagatzemament** (*store*) són de format **tipus-S** (@nt
 :::
 ::::
 
+El comportament específic de moltes operacions depèn de les característiques dels operands o el resultat, sent les més habituals el tipus o la longitud. Això fa que, en les arquitectures RISC, per implementar-les, calguin diverses **variants** d'un mateix tipus d'instrucció
+
+Per les instruccions de càrrega i emmagatzematge, els factors rellevants i la influència en els mnemònics són:
+
+* La direcció del flux de dades: si es tracta d'una instrucció de càrrega (`l`, load) o d'emmagatzematge (`s`, store).
+* La longitud de les dades a accedir: 4 bytes (`w`, word), 2 bytes (`h`, half-word) o 1 byte (`b`, byte).
+* Si les dades a carregar són enters sense signe (`u`, unsigned), és a dir, naturals, o enters amb signe (sense lletra específica als mnemònics).
+
+Aquesta nomenclatura es manté a totes les variants d'instruccions de RV32I.
+
 @nte-load-store mostra totes les instruccions de **càrrega** i **emmagatzemament** de **RV32I**.
 
 ::: {#nte-load-store .callout-note}
@@ -1185,7 +1240,7 @@ Les instruccions d'**emmagatzemament** (*store*) són de format **tipus-S** (@nt
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
 {{< include referencies/RV32I_instruccions_lectura_escriptura.qmd >}}
-: {tbl-colwidths="[5,20,40,15,5]"}
+: {tbl-colwidths="[5,20,40,15,5]" .striped}
 :::
 
 ::: {#imp-memoria-mw-mh-mb .callout-important}
@@ -1201,17 +1256,19 @@ El mode d'adreçament de memòria és el més lent, ja que implica un accés a m
 ## Operands en mode memòria
 ```{.s filename="RV32I"}
 .text
-        lw      t0, 4(s1)       # t0 <- Mw[s1 + SignExt(4)]
-        sb      a0, 7(t1)       # Mb[t1 + SignExt(7)] <- a0
+        sw      t0, 4(s1)       # Mw[s1 + SignExt(4)] <- t0
+        lb      a0, 7(t1)       # a0 <- SignExt(Mb[t1 + SignExt(7)])
+        lbu     a0, 7(t1)       # a0 <- ZeroExt(Mbu[t1 + SignExt(7)])
 ```
 :::
+
 
 #### Accessos a paraula: `lw`, `sw`
 
 La instrucció `lw` (*load word*) copia **quatre bytes** consecutius de la **memòria**, a partir de l'**adreça efectiva**, el **LSB**, al **registre** destinació. Per la seva banda, `sw` (*store word*) copia els **quatre bytes** del registre font a altres tantes posicions consecutives de memòria a partir de l'adreça efectiva.
 
 ::: {#cau-instruccions-no-lwu .callout-caution}
-No existeix la instrucció `lwu`.
+No existeix la instrucció ~~`lwu`~~.
 :::
 
 #### Accés a enters de mig paraula o byte: `lh`, `lb`, `sh`, `sb`
