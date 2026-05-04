@@ -251,39 +251,41 @@ La instrucció `slt` compara dos enters amb signe i **posa a** `1` (LSB a `1` i 
 
 ::: {#tip-traduccio-igualtat .callout-tip}
 ## Traducció de `==` i `!=`
+Si `t0`, `t1` i `t2` són enters amb signe:
 
 **Comparació amb zero:**
 
 ```{.C filename="C"}
-rc = (ra == 0);
+t2 = (t0 == 0);
 ```
 ```{.s filename="RV32I"}
-sltiu   rc, ra, 1       # si ra < 1 com a natural, llavors ra == 0
+sltiu   t2, t0, 1       # si t0 < 1 com a natural, llavors t0 == 0
 ```
+* **Atenció:** Funciona per a `t0 == 0` perquè comparar `t0` com a natural amb `1` dona `1` si i només si `t0 == 0` (ja que `0` és l'únic natural estrictament menor que `1`).
 
 ```{.C filename="C"}
-rc = (ra != 0);
+t2 = (t0 != 0);
 ```
 ```{.s filename="RV32I"}
-sltu    rc, zero, ra    # si 0 < ra com a natural, llavors ra != 0
+sltu    t2, zero, t0    # si 0 < t0 com a natural, llavors t0 != 0
 ```
 
 **Comparació entre dos registres:**
 
 ```{.C filename="C"}
-rc = (ra == rb);        /* equival a: rc = ((ra - rb) == 0) */
+t2 = (t0 == t1);        /* equival a: t2 = ((t0 - t1) == 0) */
 ```
 ```{.s filename="RV32I"}
-sub     rc, ra, rb
-sltiu   rc, rc, 1
+sub     t2, t0, t1
+sltiu   t2, t2, 1
 ```
 
 ```{.C filename="C"}
-rc = (ra != rb);        /* equival a: rc = ((ra - rb) != 0) */
+t2 = (t0 != t1);        /* equival a: t2 = ((t0 - t1) != 0) */
 ```
 ```{.s filename="RV32I"}
-sub     rc, ra, rb
-sltu    rc, zero, rc
+sub     t2, t0, t1
+sltu    t2, zero, t2
 ```
 :::
 
@@ -293,18 +295,19 @@ La negació booleana no es pot traduir amb `xori rd, rs, -1` (NOT bit a bit), ja
 
 ::: {#tip-traduccio-negacio .callout-tip}
 ## Traducció de `!`
+Si `t0` i `t1` són enters amb signe:
 
 ```{.C filename="C"}
-rc = !ra;               /* equival a: rc = (ra == 0) */
+t1 = !t0;               /* equival a: t1 = (t0 == 0) */
 ```
 ```{.s filename="RV32I"}
-sltiu   rc, ra, 1
+sltiu   t1, t0, 1
 ```
 
-Si sabem amb certesa que `ra` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
+* Si se sap amb certesa que `t0` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
 
 ```{.s filename="RV32I"}
-xori    rc, ra, 1       # complementa el bit 0 (inverteix 0↔1)
+xori    t1, t0, 1       # complementa el bit 0 (inverteix 0↔1)
 ```
 :::
 
@@ -313,78 +316,52 @@ xori    rc, ra, 1       # complementa el bit 0 (inverteix 0↔1)
 ::: {#tip-traduccio-comparacions .callout-tip}
 ## Traducció de `<`, `>`, `<=`, `>=`
 
-Suposem que `ra`, `rb` i `rc` son enters amb signe:
+Si `t0`, `t1` i `t2` són enters amb signe:
 
 ```{.C filename="C"}
-rc = (ra < rb);
+t2 = (t0 < t1);
 ```
 ```{.s filename="RV32I"}
-slt     rc, ra, rb
-```
-
-```{.C filename="C"}
-rc = (ra > rb);         /* equival a: rb < ra */
-```
-```{.s filename="RV32I"}
-slt     rc, rb, ra
+slt     t2, t0, t1
 ```
 
 ```{.C filename="C"}
-rc = (ra <= rb);        /* equival a: !(ra > rb) */
+t2 = (t0 > t1);        /* equival a: t1 < t0 */
 ```
 ```{.s filename="RV32I"}
-slt     rc, rb, ra
-sltiu   rc, rc, 1       # negació
+slt     t2, t1, t0
 ```
 
 ```{.C filename="C"}
-rc = (ra >= rb);        /* equival a: !(ra < rb) */
+t2 = (t0 <= t1);       /* equival a: !(t0 > t1) */
 ```
 ```{.s filename="RV32I"}
-slt     rc, ra, rb
-sltiu   rc, rc, 1       # negació
+slt     t2, t1, t0
+sltiu   t2, t2, 1       # negació
 ```
 
-Per a operands de tipus `unsigned`, substituir `slt` per `sltu`.
+```{.C filename="C"}
+t2 = (t0 >= t1);       /* equival a: !(t0 < t1) */
+```
+```{.s filename="RV32I"}
+slt     t2, t0, t1
+sltiu   t2, t2, 1       # negació
+```
+
+* **Atenció:** Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu`.
 :::
 
-### Traducció de `&&` i `||`
+### Traducció de `&&` i `||`: Avaluació *lazy*
 
-Els operadors booleans `&&` i `||` s'han d'avaluar de forma **lazy** (gandula): si el valor del primer operand ja determina el resultat de tota la condició, el segon operand **no s'ha d'avaluar**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert.
+En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de forma ***lazy*** (gandula): si el valor del primer operand ja determina el resultat de tota la condició, **el segon operand no s'avalua**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert. La seva traducció implica l'ús d'instruccions de salt i s'estudia a la secció de sentències alternatives (@sec-if-then-else).
 
 ::: {#cau-lazy-evaluation .callout-caution}
-L'avaluació lazy de `&&` i `||` **no és opcional** en C: és una condició obligatòria imposada per la semàntica del llenguatge. La seva traducció implica l'ús d'instruccions de salt i s'estudiarà a la secció de sentències alternatives (@sec-if-then-else).
+En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**, sinó que és una condició obligatòria imposada per la semàntica del llenguatge.
 :::
 
-<!--
-
-Two notes before continuing:
-
-**On `sltiu rc, ra, 1` for `ra == 0`:** This works because comparing `ra` as an unsigned natural with `1` gives `1` if and only if `ra == 0` (since `0` is the only natural smaller than `1`). Worth making sure students see this reasoning — I've kept the inline comment for it.
-
-**On the `&&`/`||` forward reference:** The PDF also defers this to the `if` section. I've kept the forward reference but pointed it to `@sec-if-then-else` — you'll need to add that ID to the `if-then-else` section heading when we write it.
--->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+::: {#imp-ec-lazy-evaluation .callout-important}
+A **EC**, la traducció de `&&` i `||` ha de respectar l'avaluació lazy.
+:::
 
 ## Salts {#sec-salts}
 
@@ -557,11 +534,9 @@ fisi:
 ```
 :::
 
-### Avaluació *lazy* de `&&` i `||`
+### Avaluació *lazy* de `&&` i `||` en salts condicionals encadenats
 
-En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de forma **lazy**: si el valor del primer operand ja determina el resultat de tota la condició, **el segon operand no s'avalua**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert.
-
-L'avaluació lazy es tradueix naturalment amb salts condicionals encadenats:
+L'avaluació lazy es tradueix naturalment amb salts condicionals encadenats.
 
 ::: {#tip-traduccio-if-and .callout-tip}
 ## `if` amb operador `&&`
