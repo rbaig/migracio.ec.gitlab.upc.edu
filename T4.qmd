@@ -247,6 +247,22 @@ La instrucció `slt` compara dos enters amb signe i **posa a** `1` (LSB a `1` i 
 : {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
+::: {#nte-pseudoinstruccions-comparacio-zero .callout-note}
+## RV32I ABI — Pseudoinstruccions de comparació amb zero
+
+Per a comparacions freqüents amb zero, l'especificació RISC-V defineix
+pseudoinstruccions que abreugen la seqüència `slt`/`sltu` + `beq`/`bne`:
+
+| Pseudoinstrucció | Expansió | Condició |
+| :--- | :--- | :--- |
+| `beqz rs, label` | `beq rs, zero, label` | salta si `rs == 0` |
+| `bnez rs, label` | `bne rs, zero, label` | salta si `rs != 0` |
+| `bltz rs, label` | `blt rs, zero, label` | salta si `rs < 0` |
+| `bgez rs, label` | `bge rs, zero, label` | salta si `rs ≥ 0` |
+| `bgtz rs, label` | `blt zero, rs, label` | salta si `rs > 0` |
+| `blez rs, label` | `bge zero, rs, label` | salta si `rs ≤ 0` |
+:::
+
 ### Traducció de `==` i `!=`
 
 ::: {#tip-traduccio-igualtat .callout-tip}
@@ -261,7 +277,7 @@ t2 = (t0 == 0);
 ```{.s filename="RV32I"}
 sltiu   t2, t0, 1       # si t0 < 1 com a natural, llavors t0 == 0
 ```
-* **Atenció:** Funciona per a `t0 == 0` perquè comparar `t0` com a natural amb `1` dona `1` si i només si `t0 == 0` (ja que `0` és l'únic natural estrictament menor que `1`).
+* **Atenció:** És vàlid per a `t0 == 0` perquè comparar `t0` com a natural amb `1` dona `1` si i només si `t0 == 0` (ja que `0` és l'únic natural estrictament menor que `1`).
 
 ```{.C filename="C"}
 t2 = (t0 != 0);
@@ -347,8 +363,7 @@ t2 = (t0 >= t1);       /* equival a: !(t0 < t1) */
 slt     t2, t0, t1
 sltiu   t2, t2, 1       # negació
 ```
-
-* **Atenció:** Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu`.
+* **Atenció:** Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes les traduccions d'aquest exemple.
 :::
 
 ### Traducció de `&&` i `||`: Avaluació *lazy*
@@ -363,9 +378,260 @@ En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**, sinó que és un
 A **EC**, la traducció de `&&` i `||` ha de respectar l'avaluació lazy.
 :::
 
+
+
+
+
+
+
+
+
 ## Salts {#sec-salts}
 
-### Salts condicionals relatius al PC
+Les instruccions de salt modifiquen el flux d'execució transferint el control
+a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen
+dos eixos de classificació:
+
+* **Condicional vs. incondicional:** els salts condicionals (`beq`, `bne`,
+  etc.) salten només si es compleix una condició; els incondicionals (`jal`,
+  `jalr`) salten sempre.
+* **Relatiu al PC vs. indirecte:** els salts relatius al PC calculen
+  l'adreça de destinació sumant un offset al valor actual del PC; els
+  salts indirectes la calculen a partir d'un registre base (mode
+  base + desplaçament, com `jalr`).
+
+La combinació d'aquests dos eixos dona lloc a tres categories:
+
+| | Relatiu al PC | Indirecte |
+| :--- | :--- | :--- |
+| **Condicional** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu` | — |
+| **Incondicional** | `jal`, `j` | `jalr`, `jr`, `ret` |
+
+No existeix cap salt condicional indirecte a RV32I.
+
+### Salts condicionals {#sec-salts-condicionals}
+
+Els salts condicionals salten a l'adreça especificada per l'etiqueta si es
+compleix la condició, o continuen a la instrucció següent si no es compleix.
+En el llenguatge màquina no es codifica l'adreça absoluta de destinació
+(massa llarga per cabre dins la instrucció), sinó la **distància a saltar**
+com un immediat de **12 bits** en Ca2 expressat en **múltiples de 4 bytes**.
+L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
+El rang efectiu és de **±4 KiB** respecte a la instrucció de salt.
+
+::: {#cau-salts-condicionals-relatius-pc .callout-caution}
+A **RV32I**, tots els salts condicionals són **relatius al PC**. No
+existeix cap salt condicional absolut ni indirecte.
+:::
+
+::: {#nte-instruccions-salt-condicional .callout-note}
+## RV32I ISA — Instruccions de salt condicional
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_salt_condicional_relatiu_PC.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
+:::
+
+::: {#nte-pseudoinstruccions-salt-condicional .callout-note}
+## RV32I ABI — Pseudoinstruccions de salt condicional
+
+| Pseudoinstrucció | Expansió |
+| :--- | :--- |
+| `bgt rs1, rs2, label` | `blt rs2, rs1, label` |
+| `ble rs1, rs2, label` | `bge rs2, rs1, label` |
+| `bgtu rs1, rs2, label` | `bltu rs2, rs1, label` |
+| `bleu rs1, rs2, label` | `bgeu rs2, rs1, label` |
+:::
+
+::: {#nte-pseudoinstruccions-comparacio-zero .callout-note}
+## RV32I ABI — Pseudoinstruccions de salt condicional amb zero
+
+| Pseudoinstrucció | Expansió | Condició |
+| :--- | :--- | :--- |
+| `beqz rs, label` | `beq rs, zero, label` | salta si `rs == 0` |
+| `bnez rs, label` | `bne rs, zero, label` | salta si `rs != 0` |
+| `bltz rs, label` | `blt rs, zero, label` | salta si `rs < 0` |
+| `bgez rs, label` | `bge rs, zero, label` | salta si `rs ≥ 0` |
+| `bgtz rs, label` | `blt zero, rs, label` | salta si `rs > 0` |
+| `blez rs, label` | `bge zero, rs, label` | salta si `rs ≤ 0` |
+:::
+
+::: {#wrn-offset-multiples-2 .callout-warning collapse=true}
+## Format B — Per què múltiples de 2 bytes?
+
+L'especificació oficial de RISC-V defineix l'offset del tipus B com un
+immediat de 12 bits en **múltiples de 2 bytes**, no de 4. La raó és la
+compatibilitat amb l'extensió **C** (*Compressed*), que defineix
+instruccions de 16 bits alineades a 2 bytes.
+
+A **RV32I** base (sense l'extensió C, cas d'**EC**), totes les instruccions
+tenen 32 bits i estan alineades a 4 bytes. Per tant, el bit de menor pes de
+l'offset és sempre `0` i els salts sempre es fan en múltiples de 4 bytes.
+El rang efectiu continua sent **±4 KiB**.
+:::
+
+::: {#tip-exemple-beq-offset .callout-tip}
+## Càlcul de l'offset d'un salt condicional
+
+Sigui el programa següent i el seu *memory dump*:
+
+```{.s filename="RV32I"}
+        beq     zero, zero, etiqueta    # 0x00400000
+        nop                             # 0x00400004
+        nop                             # 0x00400008
+etiqueta:
+        sub     zero, zero, zero        # 0x0040000C
+```
+
+| Adreça | Codi | Bàsic | Font |
+| :--- | :--- | :--- | :--- |
+| `0x00400000` | `0x00000663` | `beq x0, x0, 0x0000000c` | `beq zero, zero, etiqueta` |
+| `0x00400004` | `0x00000013` | `addi x0, x0, 0` | `nop` |
+| `0x00400008` | `0x00000013` | `addi x0, x0, 0` | `nop` |
+| `0x0040000C` | `0x40000033` | `sub x0, x0, x0` | `sub zero, zero, zero` |
+
+L'assemblador ha calculat l'offset com:
+
+$$\text{offset} = @\text{etiqueta} - @\text{beq} = \texttt{0x0040000C} - \texttt{0x00400000} = 12 = \texttt{0x0000000C}$$
+
+Aquest valor apareix directament al panell *Basic* de RARS com `0x0000000c`,
+confirmat per la codificació binària de la instrucció: `0x00000663`.
+
+**Per què `0x0040000C` i no `0x00400008`?**
+
+L'offset es calcula respecte a l'adreça de la instrucció de salt
+(`0x00400000`), no respecte a la instrucció següent. L'adreça de `etiqueta`
+és `0x0040000C` perquè hi ha 3 instruccions de 4 bytes entre `beq` i
+`etiqueta` (`beq` + dues `nop`).
+:::
+
+::: {#tip-exemple-and-mascara-2 .callout-tip}
+## Execució condicional amb `bne`
+
+Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits
+2 i 6:
+
+```{.C filename="C"}
+a = b & 0x55;       /* màscara: seleccionem bits 0, 2, 4 i 6 */
+if (a == 0x11)      /* bits 0 i 4 actius, 2 i 6 inactius */
+    { ... }
+```
+
+Suposant que `a` i `b` ocupen els registres `t0` i `t1`:
+
+```{.s filename="RV32I"}
+andi    t0, t1, 0x0055      # seleccionem els bits 0, 2, 4 i 6
+li      t4, 0x0011
+bne     t0, t4, endif       # if (a == 0x11) ...
+...                         # codi si es compleix la condició
+endif:
+```
+:::
+
+Les instruccions de salt condicional són la base per implementar les
+sentències alternatives (`if-then-else`, @sec-if-then-else) i els bucles
+(`while`, `for`, @sec-bucles).
+
+### Salts incondicionals relatius al PC {#sec-salts-incondicionals-relatius}
+
+La instrucció `jal` (*jump and link*) salta a una adreça especificada per
+una etiqueta, codificada com un offset de **21 bits** relatiu al PC, i
+guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu
+és de **±1 MiB**. Quan `rd = ra`, s'usa per cridar subrutines
+(@sec-subrutines). Quan `rd = zero`, simplement salta sense guardar res.
+
+::: {#nte-instruccions-salt-incondicional-relatiu .callout-note}
+## RV32I ISA — Instrucció de salt incondicional relatiu al PC
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_salt_incondicional.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
+:::
+
+::: {#nte-pseudoinstruccio-j .callout-note}
+## RV32I ABI — Pseudoinstrucció de salt incondicional relatiu al PC
+
+| Pseudoinstrucció | Expansió | Ús |
+| :--- | :--- | :--- |
+| `j label` | `jal zero, label` | Salt incondicional relatiu al PC (±1 MiB) |
+:::
+
+### Salts incondicionals indirectes {#sec-salts-incondicionals-indirectes}
+
+La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada
+sumant el registre `rs1` i un immediat de 12 bits (**mode base +
+desplaçament**), i guarda l'adreça de retorn a `rd`. A diferència de `jal`,
+l'adreça de destinació no és relativa al PC sinó que depèn del contingut
+d'un registre — d'aquí el terme **salt indirecte**. S'usa principalment
+per retornar de subrutines i per saltar a adreces llunyanes desconegudes
+en temps de compilació.
+
+::: {#nte-instruccions-salt-incondicional-indirecte .callout-note}
+## RV32I ISA — Instrucció de salt incondicional indirecte
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include referencies/RV32I_instruccions_salt_incondicional_indirecte.qmd >}}
+: {tbl-colwidths="[5,20,35,35,5]"}
+:::
+
+::: {#nte-pseudoinstruccions-salt-indirecte .callout-note}
+## RV32I ABI — Pseudoinstruccions de salt incondicional indirecte
+
+| Pseudoinstrucció | Expansió | Ús |
+| :--- | :--- | :--- |
+| `jr rs` | `jalr zero, rs, 0` | Salt a l'adreça continguda a `rs` |
+| `ret` | `jalr zero, ra, 0` | Retorn de subrutina |
+:::
+
+::: {#tip-salt-llunya .callout-tip}
+## Salt a adreça llunyana amb `jr`
+
+```{.s filename="RV32I"}
+la      t0, etiqueta_llunyana
+jalr    zero, t0, 0             # equivalent a: jr t0
+```
+:::
+
+::: {#imp-ec-rol-salts .callout-important}
+A **EC**, els salts tenen rols ben diferenciats: els salts **relatius al
+PC** s'usen per implementar estructures de control de flux local
+(`if-then-else`, bucles), mentre que els salts **indirectes** (`jalr`,
+`jr`, `ret`) s'usen per a crides i retorns de subrutines.
+:::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+## Salts {#sec-salts}
+
+### Salts condicionals relatius al PC {#sec-salts-relatius-pc}
 
 La instrucció `beq` **salta** a l'adreça especificada per l'etiqueta si els dos operands són iguals; `bne` salta si són diferents. En el llenguatge
 màquina no es codifica l'adreça absoluta de destinació (massa llarga per cabre dins la instrucció), sinó la **distància a saltar** com un immediat
@@ -450,7 +716,8 @@ Les pseudoinstruccions `bgt` i `ble` (i les seves variants `bgtu`/`bleu`) no exi
 :::
 
 Les instruccions de salt relatiu al PC són la base per implementar les sentències alternatives `if-then` i `if-then-else` de **C** (@sec-if-then-else), així com els bucles `while` i `for` (@sec-bucles).
-### Salts incondicionals: `jal` i `jalr` {#sec-jal-jalr}
+
+### Salts incondicionals {#sec-jal-jalr}
 
 Quan la distància del salt supera el rang dels salts relatius al PC, o quan l'adreça de destinació no es coneix en temps de compilació, s'utilitzen les
 instruccions de salt incondicional:
@@ -464,54 +731,82 @@ instruccions de salt incondicional:
 : {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
-La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta (codificada com un offset de 21 bits relatiu al `pc`) i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu és de **±1 MiB**. Quan `rd = ra`, s'usa per cridar subrutines (vegeu @sec-subrutines). Quan `rd = zero`, simplement salta sense guardar res — aquesta és la base de la pseudoinstrucció `j`.
+La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta (codificada com un offset de 21 bits relatiu al `pc`) i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu és de **±1 MiB**. Quan el registre destinació (`rd`) és el registre de retorn (`ra`), s'usa per cridar subrutines (@sec-subrutines). Quan `rd` val zero, simplement salta sense guardar res — aquesta és la base de la pseudoinstrucció `j`.
 
 La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits, i guarda l'adreça de retorn a `rd`. S'usa principalment per retornar de subrutines (`jalr zero, ra, 0`, que RARS abreuja com la pseudoinstrucció `ret`), o per saltar a adreces llunyanes desconegudes en temps de compilació:
 
+::: {#nte-pseudoinstruccions-salt-incondicional .callout-note}
+## RV32I ABI — Pseudoinstruccions de salt incondicional
+
+| Pseudoinstrucció | Expansió | Ús |
+| :--- | :--- | :--- |
+| `jr rs` | `jalr zero, rs, 0` | Salt incondicional a l'adreça continguda a `rs` |
+| `ret` | `jalr zero, ra, 0` | Retorn de subrutina |
+:::
+
+::: {#tip-pseudoinstruccions-salt-incondicional .callout-tip}
+## Salt a adreça llunyana amb `jr`
 ```{.s filename="RV32I"}
 la      t0, etiqueta_llunyana
 jalr    zero, t0, 0             # Expansió de la pseudoinstrucció `jr`
 
 ```
+:::
 
 ::: {#imp-ec-rol-salts .callout-important}
 A **EC**, els dos tipus de salt tenen rols ben diferenciats: els salts **relatius al PC** (`beq`, `bne`, `blt`, etc.) s'usen per implementar estructures de control de flux local (`if-then-else`, bucles), mentre que els salts **incondicionals** (`jal`, `jalr`) s'usen per a crides i retorns de subrutines.
 :::
 
-### Salt incondicional relatiu al PC: `j`
+### Salts incondicionals relatius al PC
 
 La pseudoinstrucció `j` (*jump*) realitza un salt incondicional relatiu al PC amb un rang de **±1 MiB**. S'expandeix en `jal zero, label`, que salta a l'etiqueta sense guardar l'adreça de retorn (escriu el resultat a `zero`, que el descarta).
 
-### Recapitulació: modes d'adreçament de RV32I
+::: {#nte-pseudoinstruccions-salt-incondicional-relatiu-al-pc .callout-note}
+## RV32I ABI — Pseudoinstrucció de salt incondicional
 
-Recapitulant els modes d'adreçament que hem estudiat fins ara a EC:
-
-| Mode | Exemple | Com s'obté l'operand |
+| Pseudoinstrucció | Expansió | Ús |
 | :--- | :--- | :--- |
-| **Immediat** | `addi t0, t1, 4` | Valor constant codificat a la instrucció |
-| **Registre** | `add t0, t1, t2` | Contingut d'un registre |
-| **Base + desplaçament** | `lw t0, 8(t1)` | `M[rs1 + imm]` |
-| **Relatiu al PC** | `beq t0, t1, label` | `PC + offset` |
-| **Registre indirecte** | `jalr zero, t0, 0` | Contingut d'un registre (per a salts) |
-
-::: {#wrn-mips-mode-pseudodirecte .callout-warning collapse=true}
-## RV32I i MIPS, desaparició del mode d'adreçament pseudodirecte
-
-El mode **pseudodirecte** de MIPS (instruccions `j` i `jal`) no existeix en RV32I. En MIPS, `j` i `jal` codifiquen 26 bits de l'adreça directament a la instrucció, completant els 4 bits de major pes amb els del PC actual. Aquesta restricció implica que sols es pot saltar dins del mateix bloc de 256 MB.
-
-En canvi, en RV32I, la instrucció `jal` usa un **offset de 21 bits relatiu al PC**, de manera que permet saltar fins a $\pm 1$ MB respecte a la instrucció de salt, sense restriccions sobre la posició absoluta en memòria. Per a salts a adreces arbitràries, s'usa `jalr` amb un registre que contingui l'adreça de destinació completa de 32 bits.
+| `j label` | `jal zero, label` | Salt incondicional relatiu al PC (±1 MiB) |
 :::
 
-<!--
 
-Three notes before continuing:
+ -->
 
-**On the offset size:** MIPS uses a 16-bit offset for branches (in instruction counts, so ×4). RV32I uses a 13-bit offset in bytes (but always a multiple of 2 due to compressed instruction alignment). The practical range is similar. I've kept the description in bytes to be consistent with how RV32I is specified.
 
-**On `bgt`/`ble` as real instructions vs pseudoinstructions:** In MIPS these are macros using `$at`. In RV32I, `blt`/`bge` are real instructions, and `bgt`/`ble` are pseudoinstructions that simply swap operands — no temporary register needed. I've made this distinction explicit since it's a meaningful improvement over MIPS.
 
-**On the addressing modes table:** The PDF lists 5 MIPS modes including pseudodirect. I've replaced it with the 5 RV32I modes, moving pseudodirect to the `{.callout-warning}` deep-dive where the MIPS comparison lives.
--->
+
+
+
+
+
+
+
+
+
+
+## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
+
+Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@sec-rv32i-instruccions), tret de `auipc` (@nte-la-auipc) i `ecall` ([Tema 9](T9.qmd)), l'exercici de classificar-les segons el **mode d'adreçament**
+(@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de la ISA, sinó també, a nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
+
+La classificació proposada inclou quatre decisions que cal justificar:
+
+* **`lui`** s'ha classificat com a mode **immediat** perquè el seu únic operand font és un valor constant de 20 bits codificat directament a la instrucció; no hi ha cap registre base ni cap referència al PC.
+* **`auipc`** s'ha classificat com a mode **relatiu al PC** perquè suma un immediat de 20 bits al valor actual del PC per construir adreces relatives a la posició actual del programa.
+* **`jalr`** s'ha classificat com a mode **base + desplaçament** perquè calcula l'adreça de salt sumant un registre base (`rs1`) i un immediat de 12 bits, exactament com fan les instruccions de càrrega i emmagatzematge. L'única diferència és que el resultat s'usa com a adreça de salt en lloc d'adreça de memòria.
+* **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una trucada al sistema operatiu ([Tema 9](T9.qmd)).
+
+| Mode | Instruccions |
+| :--- | :--- |
+| **Registre** | `add`, `sub`, `and`, `or`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu` |
+| **Immediat** | `addi`, `andi`, `ori`, `xori`, `slli`, `srli`, `srai`, `slti`, `sltiu`, `lui` |
+| **Base + desplaçament** | `lw`, `lh`, `lb`, `lhu`, `lbu`, `sw`, `sh`, `sb`, `jalr` |
+| **Relatiu al PC** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu`, `jal`, `auipc` |
+
+
+
+
+
 
 
 
@@ -520,18 +815,6 @@ Three notes before continuing:
 
 
 ## Sentències alternatives: `if-then-else` i `switch` {#sec-if-then-else}
-
-
-
-
-TODO Posar-ho (Segurament a subrutines) a algun lloc: Les sentències `if-then-else` i els bucles `while/for` s'implementen únicament amb salts relatius al PC (`beq`, `bne`, `blt`, etc.) — els salts absoluts (`jal`, `jalr`) s'usen per a crides a subrutines, no per a estructures de control de flux locals. Per tant la frase és correcta. Els salts absoluts no són necessaris per a if-then-else ni per a bucles en el cas general.
-
-
-
-
-
-
-
 
 ### Sentència `if-then-else`
 
@@ -582,7 +865,7 @@ fisi:
 ```
 :::
 
-### Avaluació *lazy* de `&&` i `||` en salts condicionals encadenats
+### Avaluació *lazy* als salts condicionals encadenats
 
 L'avaluació lazy es tradueix naturalment amb salts condicionals encadenats.
 
@@ -650,7 +933,7 @@ switch (expressio) {
 }
 ```
 
-El mètode més senzill de traducció és una **cadena de `if-then-else` que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en un **vector de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
+El mètode més senzill de traducció és una **cadena de `if-then-else`** que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en un **vector de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
 
 ::: {#tip-traduccio-switch .callout-tip}
 ## `switch` amb vector de salts
@@ -659,7 +942,7 @@ Suposant que `t0` conté el resultat de l'expressió del `switch` i que `switch_
 
 ```{.s filename="RV32I"}
         la      t1, switch_vec  # adreça base del vector
-        sll     t2, t0, 2       # offset = índex * 4 (mida d'una paraula)
+        slli     t2, t0, 2       # offset = índex * 4 (mida d'una paraula)
         add     t1, t1, t2      # adreça efectiva de l'element
         lw      t3, 0(t1)       # carreguem l'adreça de la clàusula
         jalr    zero, t3, 0     # saltem al codi de la clàusula
@@ -670,10 +953,10 @@ El vector de salts es declara a la secció `.data`:
 ```{.s filename="RV32I"}
 .data
 switch_vec:
-        .word   case0           # apunta al codi de case 0
-        .word   case1           # apunta al codi de case 1
-        .word   case2           # apunta al codi de case 2
-        .word   default_case    # apunta al codi de default
+        .word   cas_0           # apunta al codi de case 0
+        .word   cas_1           # apunta al codi de case 1
+        .word   cas_2           # apunta al codi de case 2
+        .word   cas_defecte     # apunta al codi de default
 ```
 :::
 
@@ -685,28 +968,31 @@ El vector de salts és eficient quan les constants del `switch` formen un rang d
 Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor mínim al resultat de l'expressió abans d'indexar el vector. Per exemple, si les constants van de `5` a `8`:
 
 ```{.s filename="RV32I"}
-        addi    t0, t0, -5      # normalitzem l'índex (resta el valor mínim)
-        bltu    t0, t0, 4, default_case  # comprovem rang: si t0 >= 4, anem a default
+        addi    t0, t0, -5          # normalitza l'índex (resta el valor mínim)
+        li      t4, 4
+        bgeu    t0, t4, cas_defecte # si t0 >= 4, fora de rang
         la      t1, switch_vec
-        sll     t2, t0, 2
+        slli     t2, t0, 2
         add     t1, t1, t2
         lw      t3, 0(t1)
-        jalr    zero, t3, 0
+        jalr    zero, t3, 0         # equivalent a: jr t3
 ```
 
-A més, el `break` al final de cada `case` es tradueix amb un salt incondicional `j` a l'etiqueta que marca el final del `switch`. Si no hi ha `break`, l'execució continua (*fall-through*) al codi del `case` següent, sense necessitat de cap instrucció addicional.
+**Nota:** El `break` al final de cada `case` s'ha de traduir amb un salt incondicional `j` a l'etiqueta que marca el final del `switch`. Si no hi ha `break`, l'execució continua (*fall-through*) al codi del `case` següent, sense necessitat de cap instrucció addicional.
 :::
 
-<!--
 
-Three notes before continuing:
 
-**On `jalr zero, t3, 0` for the jump table:** This is the correct RV32I way to jump to an address stored in a register. RARS also accepts the pseudoinstruction `jr t3` which expands to exactly this — you may prefer `jr t3` for readability, consistent with how `ret` is used.
 
-**On the `bltu` range check in the deep-dive:** I used `bltu` (unsigned comparison) intentionally — after subtracting the minimum value, the index is either a valid small natural or a very large number (if the original value was below the minimum, the subtraction wraps around as unsigned). A single `bltu t0, t0, 4` catches both out-of-range cases. Worth flagging this as a neat trick if you want to highlight it.
 
-**On label naming:** I've used `sino`/`fisi`/`llavors` consistently with the Catalan convention from T2's examples. If you prefer a different convention (e.g. `else`/`endif`) just let me know and I'll apply it from Section 6 onwards.
--->
+
+
+
+
+
+
+
+
 
 
 

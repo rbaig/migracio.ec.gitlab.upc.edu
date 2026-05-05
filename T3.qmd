@@ -135,7 +135,7 @@ Un cop assentats els conceptes fonamentals amb RV32I, la transició a RV64 és r
 * Nombre d'instruccions: **42**
 :::
 
-:::: {#nte-rv32i-instruccions-llista .callout-note}
+::: {#nte-rv32i-instruccions-llista .callout-note}
 ## RV32I — Totes les instruccions
 
 L'especificació base defineix les instruccions següents:
@@ -150,14 +150,13 @@ L'especificació base defineix les instruccions següents:
 * **Sistema:** `ecall`, `ebreak`, `fence`, `fence.tso`
 
 A **EC**, s'estudien totes excepte les de sistema, de les quals només es tracta `ecall`. En aquest tema es veuen les instruccions de càrrega/emmagatzematge i la resta al [Tema 4](T4.qmd).
-::::
+:::
 
-:::: {#wrn-riscv-ec-toolchain .callout-warning collapse=true}
+::: {#wrn-riscv-ec-toolchain .callout-warning collapse=true}
 ## RISC-V GNU Compiler Toolchain — Paràmetres rellevants i traducció de C a RV32I comprensible
 
 A **EC**, els paràmetres més rellevants del compilador creuat `riscv32-unknown-elf-gcc` ([RISC-V GNU Compiler Toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain)) són:
 
-::: {#tbl-gcc-rvimf tbl-colwidths="[15,5,55]" style="width: 90%;"}
 | Paràmetre | Valor | Significat |
 | :--- | :--- | :--- |
 | `-march` | `rv32i` | ISA de destí: només la base entera (**I**) |
@@ -167,8 +166,7 @@ A **EC**, els paràmetres més rellevants del compilador creuat `riscv32-unknown
 | `-S` | | Atura la compilació després de generar el fitxer assemblador (`.s`); no assembla ni enllaça |
 | `-O0` | | Desactiva totes les optimitzacions del compilador |
 | `-fno-omit-frame-pointer` | | Preserva el punter de marc (*frame pointer*) per facilitar la lectura del codi assemblador generat |
-: GCC, paràmetres per la generació de codi d'assemblador sense optimitzacions
-:::
+: GCC, paràmetres per la generació de codi d'assemblador sense optimitzacions {#tbl-gcc-rvimf tbl-colwidths="[15,5,55]" style="width: 90%;"}
 
 Per obtenir el fitxer d'assemblador el més comprensible possible, cal deshabilitar qualsevol optimització:
 
@@ -181,7 +179,7 @@ riscv32-unknown-elf-gcc -march=rv32imf -mabi=ilp32f -S -O0 -fno-omit-frame-point
 ```
 
 El resultat és un fitxer `fitxer.s` amb el codi assemblador RV32I generat pel compilador, sense optimitzacions i amb el marc de pila preservat, proper a la traducció manual que es practica a EC.
-::::
+:::
 
 ### L'extensió M {#sec-extensio-m}
 
@@ -1108,17 +1106,15 @@ A **EC**, es fa referència als tipus de variables usant tant la terminologia C 
 
 La majoria d'instruccions en **RV32I**, igual que en la majoria de processadors **RISC**, tenen tres **operands** (***operands***) explícits. Aquesta regularitat respon al **principi de disseny** que la **regularitat** (***regularity***) en el disseny afavoreix implementacions simples i que s'executen en menys temps, encara que algunes instruccions poden tenir-ne menys o, fins i tot, cap.
 
-La manera com s'especifica un operand en una instrucció rep el nom de **mode d'adreçament** (***addressing mode***). El mode d'adreçament defineix la ruta que segueix la CPU per trobar la informació que necessita processar. Els operands en **RV32I** es poden agrupar principalment en **quatre modes d'adreçament**:
+La manera com s'especifica un operand en una instrucció rep el nom de **mode d'adreçament** (***addressing mode***). Tot i que l'especificació oficial de **RV32I** no explicita formalment els modes d'adreçament, sinó que descriu el comportament de cada instrucció individualment, aquesta caracterització és útil per a comprendre i categoritzar les diferents maneres d'especificar els operands en les instruccions.
 
-1. **Mode registre** (***register mode***): Els operands es troben en els registres de propòsit general (32 registres en la base, x0-x31). La majoria d'instruccions aritmètico-lògiques operen d'aquesta manera.
-2. **Mode immediat** (***immediate mode***): S'utilitza un valor constant (immediat) inclòs directament en la instrucció. Per exemple, instruccions com addi (add immediate) sumen un valor immediat de 12 bits amb signe a un registre.
-3. **Mode memòria** (***memory mode*** o ***base addressing***): És l'utilitzat per accedir a la memòria (instruccions de tipus load/store com lw, sw). Es calcula l'adreça efectiva sumant un valor immediat (desplaçament) a un registre base.
-4. **Mode relatiu al PC** (***PC-relative mode***) (s'estudiarà al [Tema 4](T4.qmd)): S'utilitza en instruccions de salt (branch) i crides a funcions (`jal`) per saltar a una adreça propera a la posició actual del comptador de programa (PC).
+::: {#imp-modes-arecament-llista .callout-important}
+A **EC**, distingim **quatre modes d'adreçament**:
 
-<!-- TODO considerar si afegim gràfic tipus Figure 2.17 P&H -->
-
-::: {#cau-ortogonalitat-registres .callout-caution}
-La **ISA** de **RV32I** és **ortogonal** pel que fa als registres: tret de `x0` (fixat a zero per maquinari), **no imposa cap restricció sobre l'ús dels registres de propòsit general**. Qualsevol registre pot actuar com a operand font o destinació en qualsevol instrucció. És l'**ABI** qui estableix les convencions d'ús (registres de paràmetres, de valors de retorn, temporals, etc.).
+1. **Mode registre** (***register mode***): Els operands es troben en els registres de propòsit general (`x0`–`x31`). La majoria d'instruccions aritmètico-lògiques operen d'aquesta manera.
+2. **Mode immediat** (***immediate mode***): S'utilitza un valor constant inclòs directament en la instrucció. Per exemple, `addi` suma un valor immediat de 12 bits amb signe a un registre; `lui` carrega un immediat de 20 bits als bits superiors del registre destinació.
+3. **Mode base + desplaçament** (***base + offset mode***): L'adreça efectiva es calcula sumant un valor immediat (desplaçament) a un registre base. S'usa en instruccions de tipus *load*/*store* (`lw`, `sw`, etc.) i també en salts indirectes (`jalr`), on el resultat és una adreça de salt en lloc d'una adreça de memòria.
+4. **Mode relatiu al PC** (***PC-relative mode***): L'adreça efectiva es calcula sumant un offset al valor actual del **PC**. S'usa en instruccions de salt condicional (`beq`, `bne`, etc.) i en `jal` (@sec-salts-relatius-pc).
 :::
 
 ### Operands en mode registre {#sec-operands-registre}
@@ -1148,6 +1144,10 @@ Com que hi ha 32 registres, cal un camp de 5 bits per identificar-los unívocame
 :::
 
 La **ISA** de RV32I especifica **32 registres** de 32 bits de **propòsit general** (*general purpose registers*, GPR): `x0`–`x31`. De tots ells, l'únic registre especial és `x0`, que sempre conté el valor zero i no es pot modificar. Així doncs, mantenint-se estrictament en el pla de l'ISA, la resta de registres poden ser usats per a qualsevol propòsit. @nte-registres-proposit-general mostra com l'**ABI** assigna els **31 registres** restants.
+
+::: {#cau-ortogonalitat-registres .callout-caution}
+La **ISA** de **RV32I** és **ortogonal** pel que fa als registres: tret de `x0` (fixat a zero per maquinari), **no imposa cap restricció sobre l'ús dels registres de propòsit general**. Qualsevol registre pot actuar com a operand font o destinació en qualsevol instrucció. És l'**ABI** qui estableix les convencions d'ús (registres de paràmetres, de valors de retorn, temporals, etc.).
+:::
 
 ::: {#nte-registres-proposit-general .callout-note}
 ## RV32I ISA i ABI — Registres de propòsit general
