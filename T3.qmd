@@ -252,15 +252,14 @@ L'arquitectura **RV32I** defineix sis formats bàsics d'instrucció, anomenats *
 : {.striped}
 :::
 
- 
-
 Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant l'operació concreta dins d'una mateixa categoria. Els camps `rs1`, `rs2` (registres font, *source registers*) i `rd` (registre destinació, *destination register*) codifiquen operands en **mode registre**. El camp `imm` codifica operands en **mode immediat**; a diferència de MIPS, en **RV32I** els bits dels immediats estan distribuïts per mantenir els registres font i destinació en posicions fixes, la qual cosa simplifica la descodificació en el **maquinari**.
 
-:::: {#tip-codificacio-instruccions .callout-tip}
+::: {#tip-codificacio-instruccions .callout-tip}
 ## Codificació amb mnemònics vs. codificació en codi màquina
 
 **Nota:** L'objectiu d'aquest exemple és, simplement, il·lustrar la correspondència entre la sintaxi d'algunes instruccions i els camps de bits de les seves codificacions. La sintaxi i semàntica d'aquestes i moltes altres instruccions s'aniran estudiant progressivament durant el curs.
 
+Codi font (a titol purament il·lustratiu):
 ``` {.s filename="RV32I"}
         add     t0, s2, zero
         sub     t1, s3, s4
@@ -270,7 +269,8 @@ Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant
         jal     ra, label
 ```
 
-::: {tbl-colwidths="[5,15,5,5,5,5,5,5,7]" style="width: 95%; margin: auto;"}
+Associació als camps de bits de la codificació de les instruccions:
+
 | Instrucció | Operands | Tipus | `opcode` | `rd` | `funct3` | `rs1` | `rs2` | `funct7` / `imm` |
 | :--- | :--- | :---: | :--- | :--- | :--- | :--- | :--- | :--- |
 | `add` | `rd, rs1, rs2` | R | `0x33` | `rd` | `0x0` | `rs1` | `rs2` | `0x00` |
@@ -279,9 +279,13 @@ Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant
 | `lw` | `rd, offset(rs1)` | I | `0x03` | `rd` | `0x2` | `rs1` | - | `offset[11:0]` |
 | `sw` | `rs2, offset(rs1)` | S | `0x23` | - | `0x2` | `rs1` | `rs2` | `offset` |
 | `jal` | `rd, label` | J | `0x6F` | `rd` | - | - | - | `offset` |
-:::
+: {tbl-colwidths="[5,15,5,5,5,5,5,5,7]"}
 
-``` {.code filename="Binari, hexadecimal, basic, font"}
+RARS Abocament de memòria de les instruccions:
+
+``` {.code filename="Abocament de memòria"}
+Binari                            Hexadecimal Basic              Codi font
+
 00000000000010010000001010110011  0x000902b3  add x5,x18,x0      add     t0, s2, zero
 01000001010010011000001100110011  0x41498333  sub x6,x19,x20     sub     t1, s3, s4
 00000000101010101000001110010011  0x00aa8393  addi x7,x21,10     addi    t2, s5, 10
@@ -289,7 +293,12 @@ Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant
 00000001011111000010010000100011  0x017c2423  sw x23,8(x24)      sw      s7, 8(s8)
 00000000010000000000000011101111  0x004000ef  jal x1,0x00000004  jal     ra, label
 ```
-::::
+:::
+
+::: {#nte-rars-file-dump-memory .callout-note}
+## RARS — Abocament de memòria
+A **RARS**, per obtenir el contingut de memòria (*memory dump*) de `.text` o `.data`: *File → Dump Memory*
+:::
 
 ::: {#imp-nmemonics-llegir-los-sencers .callout-important}
 A **EC**, codificarem sempre en mnemònics, si no s'especifica el contrari.
@@ -324,14 +333,7 @@ Camps de la instrucció `add` (format **Tipus-R**):
 * **Binari**: `0000000 00000 10010 000 00101 0110011`.
 * **Hexadecimal**: `0x000902B3`.
 
-**Comprovació:**
-
-A **RARS**, a "Execute" (F3), la codificació en hexadecimal es pot comprovar tant a la pestanya "Text Segment", columna "Code", com a la "Data Segment", àrea de memòria `0x00400000 (.text)`. El binari es pot obtenir mitjançant @nte-rars-file-dump-memory triant `.text`. 
-:::
-
-::: {#nte-rars-file-dump-memory .callout-note}
-## RARS — Abocament de memòria a fitxer (*memory dump*)
-A **RARS**, per obtenir el contingut de memòria (`.text` o `.data`): *File → Dump Memory*
+**Comprovació:** A RARS, a "Execute" (F3) o fent un abocament de memòria de la secció `.text` (@nte-rars-file-dump-memory).
 :::
 
 ::: {#wrn-formats-patterson .callout-warning collapse=true}
