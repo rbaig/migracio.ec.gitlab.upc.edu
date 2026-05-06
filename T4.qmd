@@ -378,27 +378,12 @@ En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**, sinó que és un
 A **EC**, la traducció de `&&` i `||` ha de respectar l'avaluació lazy.
 :::
 
-
-
-
-
-
-
-
-
 ## Salts {#sec-salts}
 
-Les instruccions de salt modifiquen el flux d'execució transferint el control
-a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen
-dos eixos de classificació:
+Les instruccions de salt modifiquen el flux d'execució **desviant-lo** a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen dos eixos de classificació:
 
-* **Condicional vs. incondicional:** els salts condicionals (`beq`, `bne`,
-  etc.) salten només si es compleix una condició; els incondicionals (`jal`,
-  `jalr`) salten sempre.
-* **Relatiu al PC vs. indirecte:** els salts relatius al PC calculen
-  l'adreça de destinació sumant un offset al valor actual del PC; els
-  salts indirectes la calculen a partir d'un registre base (mode
-  base + desplaçament, com `jalr`).
+* **Condicional vs. incondicional:** els salts condicionals (`beq`, `bne`, etc.) salten només si es compleix una condició; els incondicionals (`jal`, `jalr`) salten sempre.
+* **Relatiu al PC vs. indirecte:** els salts relatius al PC calculen l'adreça de destinació sumant un offset al valor actual del PC; els salts indirectes la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
 
 La combinació d'aquests dos eixos dona lloc a tres categories:
 
@@ -411,17 +396,10 @@ No existeix cap salt condicional indirecte a RV32I.
 
 ### Salts condicionals {#sec-salts-condicionals}
 
-Els salts condicionals salten a l'adreça especificada per l'etiqueta si es
-compleix la condició, o continuen a la instrucció següent si no es compleix.
-En el llenguatge màquina no es codifica l'adreça absoluta de destinació
-(massa llarga per cabre dins la instrucció), sinó la **distància a saltar**
-com un immediat de **12 bits** en Ca2 expressat en **múltiples de 4 bytes**.
-L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
-El rang efectiu és de **±4 KiB** respecte a la instrucció de salt.
+Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació (massa llarga per cabre dins la instrucció), sinó la **distància a saltar** com un immediat de **12 bits** en Ca2 expressat en **múltiples de 4 bytes**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta. El rang efectiu és de **±4 KiB** respecte a la instrucció de salt.
 
 ::: {#cau-salts-condicionals-relatius-pc .callout-caution}
-A **RV32I**, tots els salts condicionals són **relatius al PC**. No
-existeix cap salt condicional absolut ni indirecte.
+A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existeix cap salt condicional indirecte.
 :::
 
 ::: {#nte-instruccions-salt-condicional .callout-note}
@@ -460,15 +438,9 @@ existeix cap salt condicional absolut ni indirecte.
 ::: {#wrn-offset-multiples-2 .callout-warning collapse=true}
 ## Format B — Per què múltiples de 2 bytes?
 
-L'especificació oficial de RISC-V defineix l'offset del tipus B com un
-immediat de 12 bits en **múltiples de 2 bytes**, no de 4. La raó és la
-compatibilitat amb l'extensió **C** (*Compressed*), que defineix
-instruccions de 16 bits alineades a 2 bytes.
+L'especificació oficial de RISC-V defineix l'offset del tipus B com un immediat de 12 bits en **múltiples de 2 bytes**, no de 4. La raó és la compatibilitat amb l'extensió **C** (*Compressed*), que defineix instruccions de 16 bits alineades a 2 bytes.
 
-A **RV32I** base (sense l'extensió C, cas d'**EC**), totes les instruccions
-tenen 32 bits i estan alineades a 4 bytes. Per tant, el bit de menor pes de
-l'offset és sempre `0` i els salts sempre es fan en múltiples de 4 bytes.
-El rang efectiu continua sent **±4 KiB**.
+A **RV32I** base (sense l'extensió C, cas d'**EC**), totes les instruccions tenen 32 bits i estan alineades a 4 bytes. Per tant, el bit de menor pes de l'offset és sempre `0` i els salts sempre es fan en múltiples de 4 bytes. El rang efectiu continua sent **±4 KiB**.
 :::
 
 ::: {#tip-exemple-beq-offset .callout-tip}
@@ -500,17 +472,13 @@ confirmat per la codificació binària de la instrucció: `0x00000663`.
 
 **Per què `0x0040000C` i no `0x00400008`?**
 
-L'offset es calcula respecte a l'adreça de la instrucció de salt
-(`0x00400000`), no respecte a la instrucció següent. L'adreça de `etiqueta`
-és `0x0040000C` perquè hi ha 3 instruccions de 4 bytes entre `beq` i
-`etiqueta` (`beq` + dues `nop`).
+L'offset es calcula respecte a l'adreça de la instrucció de salt (`0x00400000`), no respecte a la instrucció següent. L'adreça de `etiqueta` és `0x0040000C` perquè hi ha 3 instruccions de 4 bytes entre `beq` i `etiqueta` (`beq` + dues `nop`).
 :::
 
 ::: {#tip-exemple-and-mascara-2 .callout-tip}
 ## Execució condicional amb `bne`
 
-Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits
-2 i 6:
+Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits 2 i 6:
 
 ```{.C filename="C"}
 a = b & 0x55;       /* màscara: seleccionem bits 0, 2, 4 i 6 */
@@ -529,17 +497,11 @@ endif:
 ```
 :::
 
-Les instruccions de salt condicional són la base per implementar les
-sentències alternatives (`if-then-else`, @sec-if-then-else) i els bucles
-(`while`, `for`, @sec-bucles).
+Les instruccions de salt condicional són la base per implementar les sentències alternatives (`if-then-else`, @sec-if-then-else) i els bucles (`while`, `for`, @sec-bucles).
 
 ### Salts incondicionals relatius al PC {#sec-salts-incondicionals-relatius}
 
-La instrucció `jal` (*jump and link*) salta a una adreça especificada per
-una etiqueta, codificada com un offset de **21 bits** relatiu al PC, i
-guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu
-és de **±1 MiB**. Quan `rd = ra`, s'usa per cridar subrutines
-(@sec-subrutines). Quan `rd = zero`, simplement salta sense guardar res.
+La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un offset de **21 bits** relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu és de **±1 MiB**. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Quan `rd = zero`, simplement salta sense guardar res.
 
 ::: {#nte-instruccions-salt-incondicional-relatiu .callout-note}
 ## RV32I ISA — Instrucció de salt incondicional relatiu al PC
@@ -560,13 +522,7 @@ guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu
 
 ### Salts incondicionals indirectes {#sec-salts-incondicionals-indirectes}
 
-La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada
-sumant el registre `rs1` i un immediat de 12 bits (**mode base +
-desplaçament**), i guarda l'adreça de retorn a `rd`. A diferència de `jal`,
-l'adreça de destinació no és relativa al PC sinó que depèn del contingut
-d'un registre — d'aquí el terme **salt indirecte**. S'usa principalment
-per retornar de subrutines i per saltar a adreces llunyanes desconegudes
-en temps de compilació.
+La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits (**mode base + desplaçament**), i guarda l'adreça de retorn a `rd`. A diferència de `jal`, l'adreça de destinació no és relativa al PC sinó que depèn del contingut d'un registre — d'aquí el terme **salt indirecte**. S'usa principalment per retornar de subrutines i per saltar a adreces llunyanes desconegudes en temps de compilació.
 
 ::: {#nte-instruccions-salt-incondicional-indirecte .callout-note}
 ## RV32I ISA — Instrucció de salt incondicional indirecte
@@ -585,7 +541,7 @@ en temps de compilació.
 | `jr rs` | `jalr zero, rs, 0` | Salt a l'adreça continguda a `rs` |
 | `ret` | `jalr zero, ra, 0` | Retorn de subrutina |
 :::
-
+mol
 ::: {#tip-salt-llunya .callout-tip}
 ## Salt a adreça llunyana amb `jr`
 
@@ -596,193 +552,12 @@ jalr    zero, t0, 0             # equivalent a: jr t0
 :::
 
 ::: {#imp-ec-rol-salts .callout-important}
-A **EC**, els salts tenen rols ben diferenciats: els salts **relatius al
-PC** s'usen per implementar estructures de control de flux local
-(`if-then-else`, bucles), mentre que els salts **indirectes** (`jalr`,
-`jr`, `ret`) s'usen per a crides i retorns de subrutines.
+A **EC**, els salts tenen rols ben diferenciats: els salts **relatius al PC** s'usen per implementar estructures de control de flux local (`if-then-else`, bucles), mentre que els salts **indirectes** (`jalr`, `jr`, `ret`) s'usen per a crides i retorns de subrutines.
 :::
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-## Salts {#sec-salts}
-
-### Salts condicionals relatius al PC {#sec-salts-relatius-pc}
-
-La instrucció `beq` **salta** a l'adreça especificada per l'etiqueta si els dos operands són iguals; `bne` salta si són diferents. En el llenguatge
-màquina no es codifica l'adreça absoluta de destinació (massa llarga per cabre dins la instrucció), sinó la **distància a saltar** com un immediat
-de **12 bits** en Ca2 (`offset12`) expressat en **múltiples de 4 bytes**, i per això aquests salts s'anomenen **relatius al PC**. L'assemblador calcula
-automàticament aquest offset a partir de l'etiqueta. El rang efectiu és de **±4 KiB** respecte a la instrucció de salt (4092 KiB endavant i 4096 KiB endarrere, ~8 KiB en total).
-
-::: {#nte-instruccions-salt-condicional .callout-note}
-## RV32I ISA — Instruccions de salt condicional relatiu al PC
-
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{< include referencies/RV32I_instruccions_salt_condicional_relatiu_PC.qmd >}}
-: {tbl-colwidths="[5,20,35,35,5]"}
+::: {#cau-salts-condicionals-relatius-pc .callout-caution}
+A **RV32I**, tots els salts  **incondicionals** són **indirectes**. No existeix cap salt incondicional relatiu al PC.
 :::
-
-::: {#tip-exemple-beq-offset .callout-tip}
-## Càlcul de l'offset d'un salt relatiu al PC
-
-Sigui el programa següent i el seu *memory dump*:
-
-```{.s filename="RV32I"}
-        beq     zero, zero, etiqueta    # 0x00400000
-        nop                             # 0x00400004
-        nop                             # 0x00400008
-etiqueta:
-        sub     zero, zero, zero        # 0x0040000C
-```
-
-| Adreça | Codi | Bàsic | Font |
-| :--- | :--- | :--- | :--- |
-| `0x00400000` | `0x00000663` | `beq x0, x0, 0x0000000c` | `beq zero, zero, etiqueta` |
-| `0x00400004` | `0x00000013` | `addi x0, x0, 0` | `nop` |
-| `0x00400008` | `0x00000013` | `addi x0, x0, 0` | `nop` |
-| `0x0040000C` | `0x40000033` | `sub x0, x0, x0` | `sub zero, zero, zero` |
-
-L'assemblador ha calculat l'offset com:
-
-$$\text{offset} = @\text{etiqueta} - @\text{beq} = \texttt{0x0040000C} - \texttt{0x00400000} = 12 = \texttt{0x0000000C}$$
-
-Aquest valor apareix directament al panell *Basic* de RARS com `0x0000000c`, confirmat per la codificació binària de la instrucció: `0x00000663`.
-
-**Per què `0x0040000C` i no `0x00400008`?**
-
-L'offset es calcula respecte a l'adreça de la instrucció de salt (`0x00400000`), no respecte a la instrucció següent. L'adreça de `etiqueta` és `0x0040000C` perquè hi ha 3 instruccions de 4 bytes entre `beq` i
-`etiqueta` (`beq` + dues `nop`).
-:::
-
-::: {#tip-exemple-and-mascara-2 .callout-tip}
-## Execució condicional amb `bne`
-
-Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits
-2 i 6:
-
-```{.C filename="C"}
-a = b & 0x55;       /* màscara: seleccionem bits 0, 2, 4 i 6 */
-if (a == 0x11)      /* bits 0 i 4 actius, 2 i 6 inactius */
-    { ... }
-```
-
-Suposant que `a` i `b` ocupen els registres `t0` i `t1`:
-
-```{.s filename="RV32I"}
-andi    t0, t1, 0x0055      # seleccionem els bits 0, 2, 4 i 6
-li      t4, 0x0011
-bne     t0, t4, endif       # if (a == 0x11) ...
-...                         # codi si es compleix la condició
-endif:
-```
-:::
-
-Les pseudoinstruccions `bgt` i `ble` (i les seves variants `bgtu`/`bleu`) no existeixen com a instruccions de **RV32I**, però formen part de les pseudoinstruccions estàndard de l'especificació RISC-V i RARS les suporta:
-
-::: {#nte-pseudoinstruccions-salt .callout-note}
-## RV32I ABI — Pseudoinstruccions de salt condicional relatiu al PC
-
-| Pseudoinstrucció | Expansió |
-| :--- | :--- |
-| `bgt rs1, rs2, label` | `blt rs2, rs1, label` |
-| `ble rs1, rs2, label` | `bge rs2, rs1, label` |
-| `bgtu rs1, rs2, label` | `bltu rs2, rs1, label` |
-| `bleu rs1, rs2, label` | `bgeu rs2, rs1, label` |
-:::
-
-Les instruccions de salt relatiu al PC són la base per implementar les sentències alternatives `if-then` i `if-then-else` de **C** (@sec-if-then-else), així com els bucles `while` i `for` (@sec-bucles).
-
-### Salts incondicionals {#sec-jal-jalr}
-
-Quan la distància del salt supera el rang dels salts relatius al PC, o quan l'adreça de destinació no es coneix en temps de compilació, s'utilitzen les
-instruccions de salt incondicional:
-
-::: {#nte-instruccions-salt-incondicional .callout-note}
-## RV32I ISA — Instruccions de salt incondicional
-
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{< include referencies/RV32I_instruccions_salt_incondicional.qmd >}}
-: {tbl-colwidths="[5,20,35,35,5]"}
-:::
-
-La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta (codificada com un offset de 21 bits relatiu al `pc`) i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu és de **±1 MiB**. Quan el registre destinació (`rd`) és el registre de retorn (`ra`), s'usa per cridar subrutines (@sec-subrutines). Quan `rd` val zero, simplement salta sense guardar res — aquesta és la base de la pseudoinstrucció `j`.
-
-La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits, i guarda l'adreça de retorn a `rd`. S'usa principalment per retornar de subrutines (`jalr zero, ra, 0`, que RARS abreuja com la pseudoinstrucció `ret`), o per saltar a adreces llunyanes desconegudes en temps de compilació:
-
-::: {#nte-pseudoinstruccions-salt-incondicional .callout-note}
-## RV32I ABI — Pseudoinstruccions de salt incondicional
-
-| Pseudoinstrucció | Expansió | Ús |
-| :--- | :--- | :--- |
-| `jr rs` | `jalr zero, rs, 0` | Salt incondicional a l'adreça continguda a `rs` |
-| `ret` | `jalr zero, ra, 0` | Retorn de subrutina |
-:::
-
-::: {#tip-pseudoinstruccions-salt-incondicional .callout-tip}
-## Salt a adreça llunyana amb `jr`
-```{.s filename="RV32I"}
-la      t0, etiqueta_llunyana
-jalr    zero, t0, 0             # Expansió de la pseudoinstrucció `jr`
-
-```
-:::
-
-::: {#imp-ec-rol-salts .callout-important}
-A **EC**, els dos tipus de salt tenen rols ben diferenciats: els salts **relatius al PC** (`beq`, `bne`, `blt`, etc.) s'usen per implementar estructures de control de flux local (`if-then-else`, bucles), mentre que els salts **incondicionals** (`jal`, `jalr`) s'usen per a crides i retorns de subrutines.
-:::
-
-### Salts incondicionals relatius al PC
-
-La pseudoinstrucció `j` (*jump*) realitza un salt incondicional relatiu al PC amb un rang de **±1 MiB**. S'expandeix en `jal zero, label`, que salta a l'etiqueta sense guardar l'adreça de retorn (escriu el resultat a `zero`, que el descarta).
-
-::: {#nte-pseudoinstruccions-salt-incondicional-relatiu-al-pc .callout-note}
-## RV32I ABI — Pseudoinstrucció de salt incondicional
-
-| Pseudoinstrucció | Expansió | Ús |
-| :--- | :--- | :--- |
-| `j label` | `jal zero, label` | Salt incondicional relatiu al PC (±1 MiB) |
-:::
-
-
- -->
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
