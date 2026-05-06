@@ -1839,8 +1839,18 @@ func:
    3. **Vulnerabilitats de seguretat**: Si l'accés ocorre en la pila (*stack*, [Tema 4](T4.qmd)), es pot produir un ***buffer overflow***, fet que podria arribar a permetre a un **atacant** modificar l'adreça de retorn d'una funció i **executar codi maliciós**.
 :::
 
-::: {#tip-exemple-revisio-2-1 .callout-tip collapse=true}
-## Recorregut d'un vector, optimització "extracció d'invariants"
+<!-- 
+Optimitzacions de bucle
+* optimització #0: **Extracció d'invariats**
+* optimització #1: **Accés seqüencial**
+* optimització #2: **Avaluació de la condició al final de bucle**
+* optimització #3: **Eliminació de la variable d'inducció**
+-->
+
+::: {#tip-optimitzacio-bucle-0-extraccio-invariats .callout-tip}
+## Optimització de bucle #0 "extracció d'invariants"
+
+Recorregut d'un vector per accés aleatori.
 
 ```{.C filename="C"}
 #define N 4
@@ -1880,18 +1890,13 @@ while:
 fiwhile:
 ```
 
-En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**extracció d’invariants** (Optimització #0, @TODO-en-algun-altre-lloc?). \@V és una **invariant**, és a dir, el seu valor no varia durant les iteracions. L'optimització consisteix en situar la instrucció que copia aquesta adreça a `t4` abans d’entrar al bucle (`la`) perquè només s'executa una sola vegada. En aquesta versió, la traducció de la infraestructura de control del bucle es fa amb **6 instruccions** (L12, L13, L14, L15, L16 i L18). La instrucció `add` és el cos del bucle, és a dir, no forma part de la infraestructura de control i, per tant, no s'ha de comptar.
+En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**extracció d’invariants** (Optimització de bucle #0, @TODO-en-algun-altre-lloc?). \@V és una **invariant**, és a dir, el seu valor no varia durant les iteracions. L'optimització consisteix en situar la instrucció que copia aquesta adreça a `t4` abans d’entrar al bucle (`la`) perquè només s'executa una sola vegada. En aquesta versió, la traducció de la infraestructura de control del bucle es fa amb **6 instruccions** (L12, L13, L14, L15, L16 i L18). La instrucció `add` és el cos del bucle, és a dir, no forma part de la infraestructura de control i, per tant, no s'ha de comptar.
 :::
 
-::: {#tip-exemple-revisio-2-2 .callout-tip collapse=true}
-## Recorregut d'un vector, optimització "accés seqüencial"
+::: {#tip-optimitzacio-bucle-1-accés-sequencial .callout-tip}
+## Optimització de bucle #1 "accés seqüencial"
 
-<!-- 
-optimització #0: Extracció d'invariats
-optimització #1: Accés seqüencial
-optimització #2: Eliminació de la variable d'inducció
-optimització #3: Avaluació de la condició al final de bucle
--->
+Recorregut d'un vector per accés seqüencial. 
 
 Aquest programa fa servir un punter (`p`) per recórrer el vector i s'accedeix als seus elements desreferenciant el punter.
 
@@ -1935,7 +1940,7 @@ fiwhile:
 ```
 
 <!-- TODO afegir refs a secció específica de [Tema 5](T5.qmd) -->
-En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**accés seqüencial** (Optimització #1, @TODO-T6-subseccio). En aquesta versió, la part iterativa de la traducció del bucle es fa amb **5 instruccions**  (L12, L13, L15, L16 i L17). Al [Tema 6](T6.qmd) es reduirà fins a **3** instruccions aplicant dues optimitzacions més: **eliminació de la variable d’inducció** `i` (optimització #2) i movent l'**avaluació al final del bucle** (Optimització #3).
+En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**accés seqüencial** (Optimització #1, @TODO-T6-subseccio). En aquesta versió, la part iterativa de la traducció del bucle es fa amb **5 instruccions**  (L12, L13, L15, L16 i L17). Al [Tema 6](T6.qmd) es reduirà fins a **3** instruccions aplicant dues optimitzacions més: movent l'**avaluació de la condició al final del bucle** (Optimització #2, @tip-optimitzacio-bucle-2-avaluacio-condicio-final) i l'**eliminació de la variable d’inducció** `i` (optimització #3, @tip-eliminacio-variables-induccio).
 :::
 
 ## Caràcters i cadenes de caràcters

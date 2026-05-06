@@ -541,7 +541,7 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 | `jr rs` | `jalr zero, rs, 0` | Salt a l'adreça continguda a `rs` |
 | `ret` | `jalr zero, ra, 0` | Retorn de subrutina |
 :::
-mol
+
 ::: {#tip-salt-llunya .callout-tip}
 ## Salt a adreça llunyana amb `jr`
 
@@ -577,17 +577,7 @@ La classificació proposada inclou quatre decisions que cal justificar:
 | **Immediat** | `addi`, `andi`, `ori`, `xori`, `slli`, `srli`, `srai`, `slti`, `sltiu`, `lui` |
 | **Base + desplaçament** | `lw`, `lh`, `lb`, `lhu`, `lbu`, `sw`, `sh`, `sb`, `jalr` |
 | **Relatiu al PC** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu`, `jal`, `auipc` |
-
-
-
-
-
-
-
-
-
-
-
+: {tbl-colwidths="[20,80]"}
 
 ## Sentències alternatives: `if-then-else` i `switch` {#sec-if-then-else}
 
@@ -717,7 +707,7 @@ Suposant que `t0` conté el resultat de l'expressió del `switch` i que `switch_
 
 ```{.s filename="RV32I"}
         la      t1, switch_vec  # adreça base del vector
-        slli     t2, t0, 2       # offset = índex * 4 (mida d'una paraula)
+        slli     t2, t0, 2      # offset = índex * 4 (mida d'una paraula)
         add     t1, t1, t2      # adreça efectiva de l'element
         lw      t3, 0(t1)       # carreguem l'adreça de la clàusula
         jalr    zero, t3, 0     # saltem al codi de la clàusula
@@ -755,30 +745,6 @@ Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor 
 
 **Nota:** El `break` al final de cada `case` s'ha de traduir amb un salt incondicional `j` a l'etiqueta que marca el final del `switch`. Si no hi ha `break`, l'execució continua (*fall-through*) al codi del `case` següent, sense necessitat de cap instrucció addicional.
 :::
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Sentències iteratives: `while`, `for` i `do-while` {#sec-iteratives}
 
@@ -828,9 +794,9 @@ fiwhile:
 ```
 :::
 
-<!-- Una sola subsubsecció: s'ha de passar a la secció -->
-#### Optimització: avaluació de la condició al final del bucle
-
+::: {#tip-optimitzacio-bucle-2-avaluacio-condicio-final .callout-tip}
+## Optimització #2: Avaluació de la condició al final del bucle
+        
 El patró anterior conté un salt incondicional `j while` al final de cada iteració. Es pot eliminar avaluant la condició al **final** del bucle en lloc de al principi. Però cal assegurar que es manté la semàntica del `while`: si la condició és inicialment falsa, no s'ha d'executar cap iteració. Per això cal una comprovació prèvia a l'entrada:
 
 ::: {#tip-while-optimitzat .callout-tip}
@@ -893,7 +859,7 @@ Suposant que `sum`, `i`, `N` ocupen `t0`, `t1`, `t2`, i que `v` és un vector gl
         la      t3, v           # adreça base de v
 for:
         bge     t1, t2, fifor   # salta si i >= N
-        sll     t4, t1, 2       # i * 4
+        slli    t4, t1, 2       # i * 4
         add     t4, t3, t4      # @v[i]
         lw      t4, 0(t4)       # v[i]
         add     t0, t0, t4      # sum += v[i]
@@ -936,15 +902,15 @@ Suposant que `dada` i `dada_esperada` ocupen `t0` i `t1`:
 ```{.s filename="RV32I"}
 do:
         jal     ra, obtenir_dada    # dada = obtenir_dada()
-        mv      t0, a0              # recollim el resultat
+        mv      t0, a0              # a0 és un registre de retorn de la subrutina
         bne     t0, t1, do          # salta si dada != dada_esperada
 ```
 
 El `do-while` és especialment útil quan la condició del bucle depèn d'un valor que només es pot calcular executant el cos, evitant així haver de replicar el cos abans del bucle.
 :::
 
-::: {#wrn-eliminacio-variables-induccio .callout-warning collapse=true}
-## Optimització: eliminació de variables d'inducció
+::: {#tip-eliminacio-variables-induccio .callout-tip}
+## Optimització #3: Eliminació de variables d'inducció
 
 Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament.
 
@@ -963,7 +929,7 @@ while (p != fi) {
 ```{.s filename="RV32I"}
         li      t0, 0           # sum = 0
         la      t3, v           # p = @v[0]
-        sll     t4, t2, 2       # N * 4
+        slli    t4, t2, 2       # N * 4
         add     t4, t3, t4      # fi = @v[0] + N*4
 while:
         beq     t3, t4, fiwhile # salta si p == fi
@@ -976,19 +942,6 @@ fiwhile:
 
 Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el nombre d'instruccions per iteració. Els compiladors moderns l'apliquen automàticament.
 :::
-
-<!--
-
-Three notes before continuing:
-
-**On the `do-while` example with `obtenir_dada`:** I've used `jal ra, obtenir_dada` to call the function and `mv t0, a0` to collect the result — but of course the result would be in `a0` only if `obtenir_dada` returns via `a0`. Adjust if you prefer `a0` as the return register consistent with T2's ABI conventions (which follow RV32I ABI where return values go in `a0`/`a1`). Actually `a0` is correct — I should have written `mv t0, a0` collecting the return value from `a0`, which is what I have. ✅
-
-**On the elimination of induction variables:** The PDF mentions this as a preview of T4. I've kept it as a `{.callout-warning collapse=true}` deep-dive so it's available but doesn't interrupt the flow for students seeing it for the first time.
-
-**On label naming consistency:** I've used `while`/`fiwhile`, `for`/`fifor`, `do` throughout — consistent with the Catalan `fi` prefix convention from T2's examples. Let me know if you prefer a different style.
-
--->
-
 
 
 
