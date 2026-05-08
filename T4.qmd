@@ -750,9 +750,11 @@ Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor 
 
 ### Sentència `while`
 
-La sentència `while` executa zero o més iteracions mentre es compleixi la condició. La condició s'avalua **abans** de cada iteració, de manera que si inicialment és falsa no s'executa cap iteració.
+La sentència `while` executa zero o més iteracions mentre es compleixi la
+condició. La condició s'avalua **abans** de cada iteració, de manera que si
+inicialment és falsa no s'executa cap iteració.
 
-Sigui el cas general en C:
+Sintaxi:
 
 ```{.C filename="C"}
 while (condicio)
@@ -762,13 +764,20 @@ while (condicio)
 El patró de traducció a RV32I és:
 
 ```{.s filename="RV32I"}
-while:
+bucle:
         # avaluar condicio
-        # salt si és falsa a fiwhile
+        # salt si és falsa a fibucle
         # traducció de sentencia_cos
-        j       while
-fiwhile:
+        j       bucle
+fibucle:
 ```
+
+::: {#imp-bucle-vs-while-for .callout-important}
+A **EC**, s'usa l'etiqueta `bucle:` tant per al `while` com per al `for`
+i el `do-while` per fer explícit que tots tres tipus de bucles tenen la
+mateixa estructura bàsica de control de flux, i per poder parlar
+d'optimitzacions de bucle de manera genèrica.
+:::
 
 ::: {#tip-traduccio-while .callout-tip}
 ## Divisió entera de nombres positius amb `while`
@@ -785,66 +794,80 @@ Suposant que `dd`, `dr`, `q` ocupen `t1`, `t2`, `t3`:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
-while:
-        blt     t1, t2, fiwhile # salta si dd < dr
+bucle:
+        blt     t1, t2, fibucle # salta si dd < dr
         sub     t1, t1, t2      # dd = dd - dr
         addi    t3, t3, 1       # q++
-        j       while
-fiwhile:
+        j       bucle
+fibucle:
 ```
 :::
 
-::: {#tip-optimitzacio-bucle-2-avaluacio-condicio-final .callout-tip}
-## Optimització #2: Avaluació de la condició al final del bucle
-        
-El patró anterior conté un salt incondicional `j while` al final de cada iteració. Es pot eliminar avaluant la condició al **final** del bucle en lloc de al principi. Però cal assegurar que es manté la semàntica del `while`: si la condició és inicialment falsa, no s'ha d'executar cap iteració. Per això cal una comprovació prèvia a l'entrada:
+::: {#cau-optimitzacio-bucle-2-avaluacio-condicio-final .callout-caution}
+## Optimització de bucle #2: Avaluació de la condició al final del bucle
 
-<!-- TODO Passar a `bloc` i dir que és el mateix per for que per while. el do-while no cal perquè ja avaluem al final.
-::: {#tip-while-optimitzat .callout-tip}
-## `while` optimitzat: avaluació al final -->
+El patró anterior conté un salt incondicional `j bucle` al final de cada
+iteració. Es pot eliminar avaluant la condició al **final** del bucle en
+lloc de al principi. Però cal assegurar que es manté la semàntica del
+`while`: si la condició és inicialment falsa, no s'ha d'executar cap
+iteració. Per això cal una comprovació prèvia a l'entrada:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
-        blt     t1, t2, fiwhile # comprovació inicial: salta si dd < dr
-while:
+        blt     t1, t2, fibucle # comprovació inicial: salta si dd < dr
+bucle:
         sub     t1, t1, t2      # dd = dd - dr
         addi    t3, t3, 1       # q++
-        bge     t1, t2, while   # salta si dd >= dr
-fiwhile:
+        bge     t1, t2, bucle   # salta si dd >= dr
+fibucle:
 ```
 
-El cos del bucle s'executa ara sense cap salt incondicional: el salt condicional al final torna al principi si la condició segueix sent certa, o en cas contrari cau a `fiwhile`. Això estalvia un salt per iteració.
-:::
+El cos del bucle s'executa ara sense cap salt incondicional: el salt
+condicional al final torna al principi si la condició segueix sent certa,
+o en cas contrari cau a `fibucle`. Això estalvia un salt per iteració.
 
-Si la condició és complexa i escriure-la dues vegades seria costós, es pot substituir la comprovació inicial per un salt incondicional a la instrucció d'avaluació al final del bucle:
+Si la condició és complexa i escriure-la dues vegades seria costós, es pot
+substituir la comprovació inicial per un salt incondicional a la instrucció
+d'avaluació al final del bucle:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
         j       test            # salta a la comprovació inicial
-while:
+bucle:
         sub     t1, t1, t2      # dd = dd - dr
         addi    t3, t3, 1       # q++
 test:
-        bge     t1, t2, while   # salta si dd >= dr
-fiwhile:
+        bge     t1, t2, bucle   # salta si dd >= dr
+fibucle:
 ```
+:::
 
 ### Sentència `for`
 
-La sentència `for` és totalment equivalent a un `while` reescrit de la manera següent:
+Al bucle `for`, el més habitual és que `sentència1` inicialitzi la variable
+de control del bucle (típicament un comptador) i que `sentència2`
+l'actualitzi després de cada iteració.
 
 ```{.C filename="C"}
-for (s1; condicio; s2)      /* equivalent a: */      s1;
-    s3;                                               while (condicio) {
-                                                          s3;
-                                                          s2;
-                                                      }
+for (sentència1; condicio; sentència2) {
+    sentència3;
+}
 ```
 
-El costum és que `s1` inicialitzi la variable de control del bucle (típicament un comptador) i que `s2` l'actualitzi després de cada iteració. Quan es fa així, el `for` agrupa tots els elements que controlen el bucle en una única capçalera, cosa que el fa més fàcil de llegir que el `while` equivalent.
+Quan es fa així, el `for` agrupa tots els elements que controlen el bucle
+en una única capçalera, cosa que el fa més fàcil de llegir que el `while`
+equivalent:
+
+```{.C filename="C"}
+sentència1;
+while (condicio) {
+    sentència3;
+    sentència2;
+}
+```
 
 ::: {#tip-traduccio-for .callout-tip}
-## Traducció d'un `for`
+## Traducció naïve del bucle `for`
 
 ```{.C filename="C"}
 int sum = 0;
@@ -852,27 +875,29 @@ for (int i = 0; i < N; i++)
     sum += v[i];
 ```
 
-Suposant que `sum`, `i`, `N` ocupen `t0`, `t1`, `t2`, i que `v` és un vector global d'enters:
+Suposant que `sum`, `i`, `N` ocupen `t0`, `t1`, `t2`, i que `v` és un
+vector global d'enters:
 
 ```{.s filename="RV32I"}
         li      t0, 0           # sum = 0
         li      t1, 0           # i = 0
         la      t3, v           # adreça base de v
-for:
-        bge     t1, t2, fifor   # salta si i >= N
+bucle:
+        bge     t1, t2, fibucle # salta si i >= N
         slli    t4, t1, 2       # i * 4
         add     t4, t3, t4      # @v[i]
         lw      t4, 0(t4)       # v[i]
         add     t0, t0, t4      # sum += v[i]
         addi    t1, t1, 1       # i++
-        j       for
-fifor:
+        j       bucle
+fibucle:
 ```
 :::
 
 ### Sentència `do-while`
 
-La sentència `do-while` executa una o més iteracions: el cos s'executa **sempre almenys una vegada**, i la condició s'avalua al final de cada iteració.
+La sentència `do-while` executa el cos **sempre almenys una vegada**, i la
+condició s'avalua al final de cada iteració.
 
 ```{.C filename="C"}
 do
@@ -880,70 +905,86 @@ do
 while (condicio);
 ```
 
-El patró de traducció és més senzill que el del `while` perquè no cal comprovació inicial: el cos s'executa primer i el salt condicional al final decideix si tornar a iterar:
+El patró de traducció és més senzill que el del `while` perquè no cal
+comprovació inicial: el cos s'executa primer i el salt condicional al final
+decideix si tornar a iterar:
 
 ```{.s filename="RV32I"}
-do:
+bucle:
         # traducció de sentencia_cos
         # avaluar condicio
-        # salt si és certa a do
+        # salt si és certa a bucle
 ```
 
 ::: {#tip-traduccio-do-while .callout-tip}
-## `do-while` per llegir fins a obtenir un valor esperat
+## `do-while`: validació d'un valor dins d'un rang
 
 ```{.C filename="C"}
+int n;
 do {
-    dada = obtenir_dada();
-} while (dada != dada_esperada);
+    n = v[i];
+    i++;
+} while (n < 0);
 ```
 
-Suposant que `dada` i `dada_esperada` ocupen `t0` i `t1`:
+Suposant que `n`, `i` ocupen `t0`, `t1` i `v` és un vector global d'enters:
 
 ```{.s filename="RV32I"}
-do:
-        jal     ra, obtenir_dada    # dada = obtenir_dada()
-        mv      t0, a0              # a0 és un registre de retorn de la subrutina
-        bne     t0, t1, do          # salta si dada != dada_esperada
+        la      t2, v               # adreça base de v
+bucle:
+        slli    t3, t1, 2           # i * 4
+        add     t3, t2, t3          # @v[i]
+        lw      t0, 0(t3)           # n = v[i]
+        addi    t1, t1, 1           # i++
+        bltz    t0, bucle           # n < 0: tornem a iterar
 ```
 
-El `do-while` és especialment útil quan la condició del bucle depèn d'un valor que només es pot calcular executant el cos, evitant així haver de replicar el cos abans del bucle.
+El bucle avança per `v` fins a trobar el primer element no negatiu. La
+condició s'avalua després d'executar el cos, de manera que sempre es llegeix
+almenys un element.
 :::
 
-::: {#tip-eliminacio-variables-induccio .callout-tip}
-## Optimització #3: Eliminació de variables d'inducció
+::: {#cau-eliminacio-variables-induccio .callout-caution}
+## Optimització de bucle #3: Eliminació de variables d'inducció
 
-Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament.
+Una **variable d'inducció** és una variable que s'incrementa o decrementa
+en una quantitat constant a cada iteració d'un bucle. El compilador pot
+eliminar-les substituint-les per l'aritmètica de punters directament.
 
-Per exemple, en el `for` anterior, en lloc de calcular `@v[i] = @v[0] + i*4` a cada iteració, podem mantenir directament un punter `p` que avanci de 4 en 4 bytes:
+Per exemple, en el `for` anterior, en lloc de calcular
+`@v[i] = @v[0] + i*4` a cada iteració, podem mantenir directament un
+punter `p` que avanci de 4 en 4 bytes:
 
 ```{.C filename="C"}
 int sum = 0;
 int *p = v;
-int *fi = v + N;        /* adreça del primer element fora del vector */
+int *fi = v + N;    /* adreça del primer element fora del vector */
 while (p != fi) {
     sum += *p;
     p++;
 }
 ```
 
+Suposant que `sum`, `N`, `p` i `fi` ocupen `t0`, `t2`, `t3`, `t4`:
+
 ```{.s filename="RV32I"}
         li      t0, 0           # sum = 0
         la      t3, v           # p = @v[0]
         slli    t4, t2, 2       # N * 4
         add     t4, t3, t4      # fi = @v[0] + N*4
-while:
-        beq     t3, t4, fiwhile # salta si p == fi
+bucle:
+        beq     t3, t4, fibucle # salta si p == fi
         lw      t5, 0(t3)       # *p
         add     t0, t0, t5      # sum += *p
         addi    t3, t3, 4       # p++
-        j       while
-fiwhile:
+        j       bucle
+fibucle:
 ```
 
-Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el nombre d'instruccions per iteració. Els compiladors moderns l'apliquen automàticament.
+Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix
+el nombre d'instruccions per iteració. Els compiladors moderns l'apliquen
+automàticament.
 :::
-
 
 
 

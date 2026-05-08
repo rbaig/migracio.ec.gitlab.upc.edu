@@ -257,7 +257,7 @@ Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant
 
 **Nota:** L'objectiu d'aquest exemple és, simplement, il·lustrar la correspondència entre la sintaxi d'algunes instruccions i els camps de bits de les seves codificacions. La sintaxi i semàntica d'aquestes i moltes altres instruccions s'aniran estudiant progressivament durant el curs.
 
-Codi font (a titol purament il·lustratiu):
+Codi font (a títol purament il·lustratiu):
 ``` {.s filename="RV32I"}
         add     t0, s2, zero
         sub     t1, s3, s4
@@ -532,9 +532,10 @@ On hi~20~(imm32) són els 20 bits superiors i lo~12~(imm32) els 12 bits inferior
 
 La pseudoinstrucció **`la`** (***load address***) inicialitza un registre amb una adreça de memòria constant, expressada com una etiqueta.
 
-| Sintaxi |
-| :--- |
-| `la rd, label` |
+<!-- TODO Roger unificar format taules pseudoinstruccions -->
+```{.s filename="RISC-V"}
+        la      rd, label
+```
 
 ```{.s filename="RV32I"}
 .data
@@ -554,10 +555,14 @@ L'expansió de `la` es tracta a @nte-la-auipc.
 ::::
 
 ::: {#imp-ec-la-offset .callout-important}
+A **EC**, a la teoria i problemes i als exàmens, si no s'indica explícitament el contrari, s'admet la sintaxi més llegible següent:
 
-A **EC**, s'admet la sintaxi `la rd, label+offset` com a notació més llegible a la teoria i problemes i als exàmens, si no s'indica el contrari.
+<!-- TODO Roger unificar format taules pseudoinstruccions -->
+```{.s filename="RISC-V"}
+        la      rd, label+offset
+```
 
-Però **RARS no la suporta**. Per tant, al laboratori cal substituir-la per `la` + `addi`:
+Però **RARS no la suporta**. Per tant, al **laboratori** cal substituir-la per `la` + `addi`:
 
 ```{.s filename="RV32I"}
         # Notació EC (pissarra i exàmens):
@@ -567,7 +572,6 @@ Però **RARS no la suporta**. Per tant, al laboratori cal substituir-la per `la`
         la      t0, y
         addi    t1, t0, 4       # t1 <- @y + 4
 ```
-
 :::
 
 #### Macros
@@ -1388,7 +1392,7 @@ No s'ha confondre aquest ús en les declaracions amb l'ús en les sentències pr
 
 En **C**, la sintaxi de declaració d'un punter (tenint en consideració la @sec-punters-c-declaracio) és:
 
-``` {.default filename="C"}
+``` {.default filename="Ci"}
 <tipus de la variable apuntada> *<nom del punter> [= adreça d'inicialització]
 ```
 
@@ -1847,7 +1851,7 @@ Optimitzacions de bucle
 * optimització #3: **Eliminació de la variable d'inducció**
 -->
 
-::: {#tip-optimitzacio-bucle-0-extraccio-invariats .callout-tip}
+::: {#cau-optimitzacio-bucle-0-extraccio-invariats .callout-caution}
 ## Optimització de bucle #0 "extracció d'invariants"
 
 Recorregut d'un vector per accés aleatori.
@@ -1893,7 +1897,7 @@ fiwhile:
 En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**extracció d’invariants** (Optimització de bucle #0, @TODO-en-algun-altre-lloc?). \@V és una **invariant**, és a dir, el seu valor no varia durant les iteracions. L'optimització consisteix en situar la instrucció que copia aquesta adreça a `t4` abans d’entrar al bucle (`la`) perquè només s'executa una sola vegada. En aquesta versió, la traducció de la infraestructura de control del bucle es fa amb **6 instruccions** (L12, L13, L14, L15, L16 i L18). La instrucció `add` és el cos del bucle, és a dir, no forma part de la infraestructura de control i, per tant, no s'ha de comptar.
 :::
 
-::: {#tip-optimitzacio-bucle-1-accés-sequencial .callout-tip}
+::: {#cau-optimitzacio-bucle-1-accés-sequencial .callout-caution}
 ## Optimització de bucle #1 "accés seqüencial"
 
 Recorregut d'un vector per accés seqüencial. 
@@ -1940,7 +1944,7 @@ fiwhile:
 ```
 
 <!-- TODO afegir refs a secció específica de [Tema 5](T5.qmd) -->
-En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**accés seqüencial** (Optimització #1, @TODO-T6-subseccio). En aquesta versió, la part iterativa de la traducció del bucle es fa amb **5 instruccions**  (L12, L13, L15, L16 i L17). Al [Tema 6](T6.qmd) es reduirà fins a **3** instruccions aplicant dues optimitzacions més: movent l'**avaluació de la condició al final del bucle** (Optimització #2, @tip-optimitzacio-bucle-2-avaluacio-condicio-final) i l'**eliminació de la variable d’inducció** `i` (optimització #3, @tip-eliminacio-variables-induccio).
+En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**accés seqüencial** (Optimització #1, @TODO-T6-subseccio). En aquesta versió, la part iterativa de la traducció del bucle es fa amb **5 instruccions**  (L12, L13, L15, L16 i L17). Al [Tema 6](T6.qmd) es reduirà fins a **3** instruccions aplicant dues optimitzacions més: movent l'**avaluació de la condició al final del bucle** (Optimització #2, @cau-optimitzacio-bucle-2-avaluacio-condicio-final) i l'**eliminació de la variable d’inducció** `i` (optimització #3, @cau-eliminacio-variables-induccio).
 :::
 
 ## Caràcters i cadenes de caràcters
