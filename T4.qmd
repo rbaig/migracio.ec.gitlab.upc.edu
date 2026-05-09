@@ -750,9 +750,7 @@ Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor 
 
 ### Sentència `while`
 
-La sentència `while` executa zero o més iteracions mentre es compleixi la
-condició. La condició s'avalua **abans** de cada iteració, de manera que si
-inicialment és falsa no s'executa cap iteració.
+La sentència `while` executa zero o més iteracions mentre es compleixi la condició. La condició s'avalua **abans** de cada iteració, de manera que si inicialment és falsa no s'executa cap iteració.
 
 Sintaxi:
 
@@ -773,10 +771,7 @@ fibucle:
 ```
 
 ::: {#imp-bucle-vs-while-for .callout-important}
-A **EC**, s'usa l'etiqueta `bucle:` tant per al `while` com per al `for`
-i el `do-while` per fer explícit que tots tres tipus de bucles tenen la
-mateixa estructura bàsica de control de flux, i per poder parlar
-d'optimitzacions de bucle de manera genèrica.
+A **EC**, s'usa l'etiqueta `bucle:` tant per al `while` com per al `for` i el `do-while` per fer explícit que tots tres tipus de bucles tenen la mateixa estructura bàsica de control de flux, i per poder parlar d'optimitzacions de bucle de manera genèrica.
 :::
 
 ::: {#tip-traduccio-while .callout-tip}
@@ -806,11 +801,7 @@ fibucle:
 ::: {#cau-optimitzacio-bucle-2-avaluacio-condicio-final .callout-caution}
 ## Optimització de bucle #2: Avaluació de la condició al final del bucle
 
-El patró anterior conté un salt incondicional `j bucle` al final de cada
-iteració. Es pot eliminar avaluant la condició al **final** del bucle en
-lloc de al principi. Però cal assegurar que es manté la semàntica del
-`while`: si la condició és inicialment falsa, no s'ha d'executar cap
-iteració. Per això cal una comprovació prèvia a l'entrada:
+El patró anterior conté un salt incondicional `j bucle` al final de cada iteració. Es pot eliminar avaluant la condició al **final** del bucle en lloc de al principi. Però cal assegurar que es manté la semàntica del `while`: si la condició és inicialment falsa, no s'ha d'executar cap iteració. Per això cal una comprovació prèvia a l'entrada:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
@@ -822,13 +813,9 @@ bucle:
 fibucle:
 ```
 
-El cos del bucle s'executa ara sense cap salt incondicional: el salt
-condicional al final torna al principi si la condició segueix sent certa,
-o en cas contrari cau a `fibucle`. Això estalvia un salt per iteració.
+El cos del bucle s'executa ara sense cap salt incondicional: el salt condicional al final torna al principi si la condició segueix sent certa, o en cas contrari cau a `fibucle`. Això estalvia un salt per iteració.
 
-Si la condició és complexa i escriure-la dues vegades seria costós, es pot
-substituir la comprovació inicial per un salt incondicional a la instrucció
-d'avaluació al final del bucle:
+Si la condició és complexa i escriure-la dues vegades seria costós, es pot substituir la comprovació inicial per un salt incondicional a la instrucció d'avaluació al final del bucle:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
@@ -844,9 +831,7 @@ fibucle:
 
 ### Sentència `for`
 
-Al bucle `for`, el més habitual és que `sentència1` inicialitzi la variable
-de control del bucle (típicament un comptador) i que `sentència2`
-l'actualitzi després de cada iteració.
+Al bucle `for`, el més habitual és que `sentència1` inicialitzi la variable de control del bucle (típicament un comptador) i que `sentència2` l'actualitzi després de cada iteració.
 
 ```{.C filename="C"}
 for (sentència1; condicio; sentència2) {
@@ -854,9 +839,7 @@ for (sentència1; condicio; sentència2) {
 }
 ```
 
-Quan es fa així, el `for` agrupa tots els elements que controlen el bucle
-en una única capçalera, cosa que el fa més fàcil de llegir que el `while`
-equivalent:
+Quan es fa així, el `for` agrupa tots els elements que controlen el bucle en una única capçalera, cosa que el fa més fàcil de llegir que el `while` equivalent:
 
 ```{.C filename="C"}
 sentència1;
@@ -875,8 +858,7 @@ for (int i = 0; i < N; i++)
     sum += v[i];
 ```
 
-Suposant que `sum`, `i`, `N` ocupen `t0`, `t1`, `t2`, i que `v` és un
-vector global d'enters:
+Suposant que `sum`, `i`, `N` ocupen `t0`, `t1`, `t2`, i que `v` és un vector global d'enters:
 
 ```{.s filename="RV32I"}
         li      t0, 0           # sum = 0
@@ -896,8 +878,7 @@ fibucle:
 
 ### Sentència `do-while`
 
-La sentència `do-while` executa el cos **sempre almenys una vegada**, i la
-condició s'avalua al final de cada iteració.
+La sentència `do-while` executa el cos **sempre almenys una vegada**, i la condició s'avalua al final de cada iteració.
 
 ```{.C filename="C"}
 do
@@ -905,9 +886,7 @@ do
 while (condicio);
 ```
 
-El patró de traducció és més senzill que el del `while` perquè no cal
-comprovació inicial: el cos s'executa primer i el salt condicional al final
-decideix si tornar a iterar:
+El patró de traducció és més senzill que el del `while` perquè no cal comprovació inicial: el cos s'executa primer i el salt condicional al final decideix si tornar a iterar:
 
 ```{.s filename="RV32I"}
 bucle:
@@ -939,21 +918,15 @@ bucle:
         bltz    t0, bucle           # n < 0: tornem a iterar
 ```
 
-El bucle avança per `v` fins a trobar el primer element no negatiu. La
-condició s'avalua després d'executar el cos, de manera que sempre es llegeix
-almenys un element.
+El bucle avança per `v` fins a trobar el primer element no negatiu. La condició s'avalua després d'executar el cos, de manera que sempre es llegeix almenys un element.
 :::
 
 ::: {#cau-eliminacio-variables-induccio .callout-caution}
 ## Optimització de bucle #3: Eliminació de variables d'inducció
 
-Una **variable d'inducció** és una variable que s'incrementa o decrementa
-en una quantitat constant a cada iteració d'un bucle. El compilador pot
-eliminar-les substituint-les per l'aritmètica de punters directament.
+Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament.
 
-Per exemple, en el `for` anterior, en lloc de calcular
-`@v[i] = @v[0] + i*4` a cada iteració, podem mantenir directament un
-punter `p` que avanci de 4 en 4 bytes:
+Per exemple, en el `for` anterior, en lloc de calcular `@v[i] = @v[0] + i*4` a cada iteració, podem mantenir directament un punter `p` que avanci de 4 en 4 bytes:
 
 ```{.C filename="C"}
 int sum = 0;
@@ -981,9 +954,7 @@ bucle:
 fibucle:
 ```
 
-Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix
-el nombre d'instruccions per iteració. Els compiladors moderns l'apliquen
-automàticament.
+Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el nombre d'instruccions per iteració. Els compiladors moderns l'apliquen automàticament.
 :::
 
 
