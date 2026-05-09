@@ -21,8 +21,9 @@ a la documentació generada fins a 31/12/2025, disponible només en PDF.
 
 La nova estructura **no és un mapatge 1:1** dels PDFs originals:
 - El PDF T1 s'ha dividit: la introducció resta a T1.qmd; Rendiment, Amdahl
-  i Potència s'han separat en un tema nou, T2.qmd.
-- Els PDFs T2–T8 corresponen a T3.qmd–T9.qmd (desplaçats un).
+  i Potència s'han separat en un tema nou, T6.qmd.
+- Els PDFs T2–T8 corresponen a T2.qmd–T9.qmd, amb T6 (Rendiment) desplaçat
+  al final del bloc de teoria bàsica.
 
 ### Volum
 
