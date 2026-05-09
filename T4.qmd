@@ -497,7 +497,7 @@ endif:
 ```
 :::
 
-Les instruccions de salt condicional són la base per implementar les sentències alternatives (`if-then-else`, @sec-if-then-else) i els bucles (`while`, `for`, @sec-bucles).
+Les instruccions de salt condicional són la base per implementar les sentències alternatives (@sec-if-then-else) i els bucles (@sec-bucles).
 
 ### Salts incondicionals relatius al PC {#sec-salts-incondicionals-relatius}
 
@@ -561,7 +561,8 @@ A **RV32I**, tots els salts  **incondicionals** són **indirectes**. No existeix
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
-Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@sec-rv32i-instruccions), tret de `auipc` (@nte-la-auipc) i `ecall` ([Tema 9](T9.qmd)), l'exercici de classificar-les segons el **mode d'adreçament**
+<!-- TODO substuir ([Tema 9](T9.qmd)) per la secció concreta on es presenti `ecall` -->
+Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@nte-rv32i-instruccions-llista), tret de `auipc` (@nte-la-auipc) i `ecall` ([Tema 9](T9.qmd)), l'exercici de classificar-les segons el **mode d'adreçament**
 (@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de la ISA, sinó també, a nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
 
 La classificació proposada inclou quatre decisions que cal justificar:
@@ -746,7 +747,7 @@ Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor 
 **Nota:** El `break` al final de cada `case` s'ha de traduir amb un salt incondicional `j` a l'etiqueta que marca el final del `switch`. Si no hi ha `break`, l'execució continua (*fall-through*) al codi del `case` següent, sense necessitat de cap instrucció addicional.
 :::
 
-## Sentències iteratives: `while`, `for` i `do-while` {#sec-iteratives}
+## Sentències iteratives: `while`, `for` i `do-while` {#sec-bucles}
 
 ### Sentència `while`
 
@@ -769,9 +770,10 @@ bucle:
         j       bucle
 fibucle:
 ```
-
 ::: {#imp-bucle-vs-while-for .callout-important}
-A **EC**, s'usa l'etiqueta `bucle:` tant per al `while` com per al `for` i el `do-while` per fer explícit que tots tres tipus de bucles tenen la mateixa estructura bàsica de control de flux, i per poder parlar d'optimitzacions de bucle de manera genèrica.
+En aquesta secció s'usa l'etiqueta `bucle:` tant per al `while` com per al `for` i el `do-while` per fer explícit que tots tres tipus de bucles tenen la mateixa estructura bàsica de control de flux, i per poder parlar d'optimitzacions de bucle de manera genèrica.
+
+En la pràctica, s'usen etiquetes més descriptives (per exemple, `while:`, `fiwhile:`, `for:`, `fifor:`, `do:`) per facilitar la lectura i el manteniment del codi.
 :::
 
 ::: {#tip-traduccio-while .callout-tip}
@@ -967,7 +969,14 @@ Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el
 
 
 
-
+<!-- TODOs pendents a T4:
+#cau-TODO — hi ha almenys un callout amb etiqueta -TODO pendent d'identificar i resoldre.
+@sec-subrutines — referència creuada pendent a la secció de subrutines (des del #tip-traduccio-do-while i altres llocs).
+Secció ## Subrutines — pendent de revisió completa.
+Secció ## Estructura de la memòria — pendent de revisió.
+Secció ## Compilació, assemblatge, enllaçat i càrrega — pendent de revisió (inclou el callout del flux GCC amb el mermaid a simplificar).
+Fitxer referencies/RV32I_instruccions_salt_incondicional_indirecte.qmd — cal crear-lo o dividir el fitxer existent per separar jal de jalr.
+auipc — pendent de decidir on s'explica formalment com a instrucció (ara només apareix al callout d'expansió de la). -->
 
 
 
@@ -990,7 +999,7 @@ Una **macro** és una seqüència d'instruccions amb nom i paràmetres, definida
 
 Per cridar una subrutina des de múltiples punts del programa cal que, abans de fer el salt, l'adreça de retorn es guardi en un lloc prèviament convingut, de manera que la subrutina pugui retornar al punt adequat. En RV32I, el registre `ra` (***return address***, `x1`) està reservat per a aquest propòsit.
 
-La instrucció `jal ra, label` (ja vista a @sec-jal-jalr) salta a l'adreça indicada per `label` i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar de la subrutina s'usa la pseudoinstrucció `ret`, que s'expandeix en `jalr zero, ra, 0` i salta a l'adreça continguda a `ra`.
+La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu) salta a l'adreça indicada per `label` i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar de la subrutina s'usa la pseudoinstrucció `ret`, que s'expandeix en `jalr zero, ra, 0` i salta a l'adreça continguda a `ra`.
 
 ```{.s filename="RV32I"}
 # Codi que fa les crides
@@ -1614,13 +1623,31 @@ La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable
 
 ## Compilació, assemblatge, enllaçat i càrrega {#sec-compilacio}
 
-En general, el procés pel qual un programa escrit en C es converteix en un programa executable consta de quatre passos: **compilació**, **assemblatge**, **enllaçat** i **càrrega**. Ja hem vist una introducció a aquest procés al Tema 1. En aquesta secció l'estudiarem amb més detall, posant èmfasi en com cada pas gestiona les **etiquetes** i les **adreces** del programa.
+En general, el procés pel qual un programa escrit en **C** es **converteix en** un programa **executable** consta de quatre passos: 
+
+1. **compilació**
+2. **assemblatge**
+3. **enllaçat**
+4. **càrrega**
+
+A la @sec-traduccio-c-asm hi ha una introducció a aquest procés. En aquesta secció s'analitza amb més detall, posant èmfasi en com cada pas gestiona les **etiquetes** i les **adreces** del programa.
 
 ### Compilació separada
 
-Quan es construeixen programes de grans dimensions, resulta convenient separar el codi i les dades en **mòduls** per diverses raons: estructurar racionalment un projecte complex, permetre que equips independents de programadors treballin en paral·lel, i reutilitzar codi en forma de biblioteques de funcions.
+En **C**, un **mòdul** (també anomenat unitat de traducció) és una unitat funcional de programació composta, generalment, per **un o més fitxers de codi font** (`.c`) i **un fitxer de capçalera** (`.h`), el qual conté les declaracions de les funcions i les dades del mòdul volen fer accessibles a altres mòduls (tècnicament, la interfície). La directiva de preprocessament `#include` fa la inclusió textual dels fitxers de capçalera dins de la unitat de traducció, facilitant la propagació de declaracions de tipus, prototips de funcions i macros necessàries per a la resolució de símbols.
 
-En aquests programes és desitjable que una petita modificació en un sol mòdul no obligui a recompilar tots els mòduls, sinó només el que s'ha modificat. Per aconseguir-ho, els mòduls es compilen i assemblen **per separat**, generant fitxers objecte independents que més tard s'**enllaçaran** per crear l'executable.
+Hi ha moltes situacions a on resulta convenient separar el codi i les dades en **mòduls**. Algunes d'aquestes situacions són:
+
+* Fer possible la reutilitzar codi (biblioteques de funcions).
+* Estructurar racionalment projectes complexos.
+* Permetre que equips independents de programadors treballin en paral·lel.
+* Fer que només s'hagin de recompilar els mòduls modificats.
+
+Els mòduls es compilen i assemblen **per separat**, generant fitxers objecte independents que més tard s'**enllaçaran** per crear l'executable.
+
+::: {#cau-abus-llenguate-compilació .callout-caution}
+De vegades, per abús de llenguatge, es diu "compilar" a tot el procés de traducció de codi font a executable, incloent-hi l'assemblatge i l'enllaçat. Cal, però, tenir present que, en realitat, cada un d'aquests passos és una fase diferent del procés de traducció, amb funcions i sortides diferents.
+:::
 
 ::: {#fig-compilacio-separada}
 
@@ -1649,6 +1676,8 @@ Flux de compilació separada: cada mòdul es compila i assembla independentment 
 ### Compilació
 
 El **compilador** pren com a entrada el codi font en C i el tradueix a llenguatge assemblador (fitxer `.s`). Durant aquest procés aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable, i genera les instruccions de la **ISA** de destí.
+
+El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen totes les que fan referència al mòdul mateix, i les que no es poden resoldre (perquè referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combine tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'interfica.
 
 ### Assemblatge {#sec-assemblatge}
 
@@ -1793,12 +1822,12 @@ El **carregador** (*loader*) és un programa del sistema operatiu que llegeix el
 
 Quan la funció `main` retorna, la rutina de *startup* invoca la crida al sistema `exit`, que allibera tots els recursos assignats al programa (memòria, fitxers oberts, etc.).
 
-### GCC/Clang — El flux de generació complet {#sec-flux-gcc}
+### GCC/Clang — El flux de generació complet {#sec-flux-generacio-complet}
 
 ::: {#wrn-flux-gcc-complet .callout-warning collapse=true}
 ## Flux de generació detallat amb GCC/Clang
 
-El flux de generació d'un executable amb la toolchain GCC/Clang es pot desglossar en les etapes següents. En EC fem servir el **compilador creuat** (*cross-compiler*) `riscv32-unknown-elf-gcc`, que s'executa al *host* (x86) però genera codi per al *target* (RV32I), com s'ha explicat al Tema 1.
+El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** fem servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa al *host* (x86) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
 
 ::: {#fig-compilacio-separada}
 ```{mermaid}
@@ -1843,7 +1872,7 @@ graph TD
     style G   fill:#ffbe0b,color:#000,stroke-width:3px
 ```
 
-GCC/Clang — El flux de generació complet
+El flux de generació complet
 :::
 
 **0. Programador \[API\]:** escriu la lògica i utilitza l'API del llenguatge (fitxers `.c` i `.h`).
@@ -1873,7 +1902,3 @@ GCC/Clang — El flux de generació complet
 * Corregeix les adreces provisionals (reubicació).
 * Resultat: el binari executable, llest per ser carregat pel sistema operatiu o el simulador.
 :::
-
-<!--
-**On the decision point I flagged inline:** Whether to use the full coloured Mermaid diagram for the compilation overview figure (`#fig-compilacio-separada`) or the simplified one. I used the simplified version to avoid duplicating the detailed one that now lives in `#wrn-flux-gcc-complet`. If you prefer the detailed one at the top of the section instead, just move it up and remove the `wrn`.
--->

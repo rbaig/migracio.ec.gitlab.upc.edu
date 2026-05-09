@@ -1112,13 +1112,13 @@ La majoria d'instruccions en **RV32I**, igual que en la majoria de processadors 
 
 La manera com s'especifica un operand en una instrucció rep el nom de **mode d'adreçament** (***addressing mode***). Tot i que l'especificació oficial de **RV32I** no explicita formalment els modes d'adreçament, sinó que descriu el comportament de cada instrucció individualment, aquesta caracterització és útil per a comprendre i categoritzar les diferents maneres d'especificar els operands en les instruccions.
 
-::: {#imp-modes-arecament-llista .callout-important}
+::: {#imp-modes-adrecament-llista .callout-important}
 A **EC**, distingim **quatre modes d'adreçament**:
 
 1. **Mode registre** (***register mode***): Els operands es troben en els registres de propòsit general (`x0`–`x31`). La majoria d'instruccions aritmètico-lògiques operen d'aquesta manera.
 2. **Mode immediat** (***immediate mode***): S'utilitza un valor constant inclòs directament en la instrucció. Per exemple, `addi` suma un valor immediat de 12 bits amb signe a un registre; `lui` carrega un immediat de 20 bits als bits superiors del registre destinació.
-3. **Mode base + desplaçament** (***base + offset mode***): L'adreça efectiva es calcula sumant un valor immediat (desplaçament) a un registre base. S'usa en instruccions de tipus *load*/*store* (`lw`, `sw`, etc.) i també en salts indirectes (`jalr`), on el resultat és una adreça de salt en lloc d'una adreça de memòria.
-4. **Mode relatiu al PC** (***PC-relative mode***): L'adreça efectiva es calcula sumant un offset al valor actual del **PC**. S'usa en instruccions de salt condicional (`beq`, `bne`, etc.) i en `jal` (@sec-salts-relatius-pc).
+3. **Mode base + desplaçament** (***base + offset mode***): L'adreça efectiva es calcula sumant un valor immediat (desplaçament) a un registre base. S'usa en instruccions de tipus *load*/*store* (`lw`, `sw`, etc.) i també en salts incondicionals indirectes (`jalr`), on el resultat és una adreça de salt en lloc d'una adreça de memòria.
+4. **Mode relatiu al PC** (***PC-relative mode***): L'adreça efectiva es calcula sumant un offset al valor actual del **PC**. S'usa en les instruccions de salt condicional (`beq`, `bne`, etc.) i la de salt incondicional relatiu al PC `jal`.
 :::
 
 ### Operands en mode registre {#sec-operands-registre}
@@ -1172,8 +1172,7 @@ El registre `pc` (comptador de programa, ***program counter***, PC) no és un re
 ### Operands en mode immediat {#sec-operands-immediat}
 En el **mode immediat**, l'operand és un valor constant (l'immediat o literal) que s'inclou directament en la instrucció. En **RV32I**, els immediats són de **12 bits amb signe**, cosa que permet representar valors entre $-2048$ i $2047$. Per a valors més grans, cal utilitzar una combinació d'instruccions per carregar el valor en un registre abans d'utilitzar-lo.
 
-Les instruccions que usen el mode immediat són de format **Tipus-I** (@nte
--instruccions-Tipus-I). En aquest format, el camp `rd` especifica el **registre destinació**, `rs1` el **registre font**, i `imm[11:0]` codifica l'**immediat de 12 bits** que el processador fa l'**extensió de signe** a 32 bits abans d'operar.
+Les instruccions que usen el mode immediat són de format **Tipus-I** (@nte-instruccions-Tipus-I). En aquest format, el camp `rd` especifica el **registre destinació**, `rs1` el **registre font**, i `imm[11:0]` codifica l'**immediat de 12 bits** que el processador fa l'**extensió de signe** a 32 bits abans d'operar.
 
 :::: {#nte-instruccions-Tipus-I .callout-note}
 ## RV32I ISA — Format Tipus-I
@@ -1944,7 +1943,7 @@ fiwhile:
 ```
 
 <!-- TODO afegir refs a secció específica de [Tema 5](T5.qmd) -->
-En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**accés seqüencial** (Optimització #1, @TODO-T6-subseccio). En aquesta versió, la part iterativa de la traducció del bucle es fa amb **5 instruccions**  (L12, L13, L15, L16 i L17). Al [Tema 6](T6.qmd) es reduirà fins a **3** instruccions aplicant dues optimitzacions més: movent l'**avaluació de la condició al final del bucle** (Optimització #2, @cau-optimitzacio-bucle-2-avaluacio-condicio-final) i l'**eliminació de la variable d’inducció** `i` (optimització #3, @cau-eliminacio-variables-induccio).
+En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**accés seqüencial** (Optimització #1, @TODO-T4-subseccio). En aquesta versió, la part iterativa de la traducció del bucle es fa amb **5 instruccions**  (L12, L13, L15, L16 i L17). Al [Tema 6](T6.qmd) es reduirà fins a **3** instruccions aplicant dues optimitzacions més: movent l'**avaluació de la condició al final del bucle** (Optimització #2, @cau-optimitzacio-bucle-2-avaluacio-condicio-final) i l'**eliminació de la variable d’inducció** `i` (optimització #3, @cau-eliminacio-variables-induccio).
 :::
 
 ## Caràcters i cadenes de caràcters

@@ -55,7 +55,6 @@ El procés de transformació d’una idea abstracta en un fitxer executable no �
 ```{mermaid}
 %%| label: fig-flux-compilacio
 %%| fig-cap: "Flux de generació d'un programa executable, des de la seva implementació amb codi d'alt nivell, fins a l'obtenció d'un fitxer executable."
-%%| fig-width: 100%
 
 flowchart LR
     A["Programador"] -->|"API"| B["Codi font<br/>(.c, .h)"]
@@ -65,8 +64,10 @@ flowchart LR
     E -->|"Enllaçador<br/>ISA + ABI<br/>.a + .so"| F["Binari<br/>executable"]
 ```
 
-::: {#tip-gcc .callout-tip}
-La [**GCC/Clang toolchain**](https://gcc.gnu.org/) és l'estàndard *de facto* de la indústria per a sistemes oberts.
+::: {#tip-gcc-vs-clang .callout-tip}
+La [**GCC toolchain**](https://gcc.gnu.org/) és l'estàndard *de facto* de la indústria per a sistemes oberts. És un projecte de codi obert que ha evolucionat durant dècades, oferint un suport ampli per a múltiples arquitectures i estàndards de llenguatge.
+
+La [**Clang toolchain**](https://clang.llvm.org/) és una alternativa moderna que ha guanyat popularitat per la seva arquitectura modular i millor suport per a noves característiques del llenguatge C/C++.
 :::
 
 ### El flux d'execució: La visió del processador
@@ -115,7 +116,7 @@ Des del punt de vista del programador interfícies actuen com a **normes de cons
 : Impacte del canvi d'interfícies
 ::: 
 
-### La dualitat de l'entorn: *host* vs. *target*
+### La dualitat de l'entorn: *host* vs. *target* {#sec-host-vs-target}
 
 En el desenvolupament de sistemes de baix nivell i, especialment, en els encastats, on el dispositiu que executarà el codi sol mancar dels recursos necessaris per allotjar eines de programació, cal diferenciar clarament entre dos ordinadors que juguen rols diferents:
 
@@ -180,7 +181,7 @@ Tot i que el codi C és portable, el seu comportament final depèn de l'**ABI**:
 * La mida d'un `int` (16, 32 o 64 bits) no la estableix el llenguatge, sinó l'ABI del sistema on s'executarà el programa.
 * El pas de paràmetres a les funcions el gestiona el compilador seguint l'ABI, però el programador de C ha de ser conscient d'aquestes regles quan interactua amb codi escrit directament en **assemblador**.
 
-### Traducció: De C al llenguatge de màquina
+### Traducció: De C al llenguatge de màquina {#sec-traduccio-c-asm}
 
 El procés de traducció no és un pas únic, sinó una cadena de transformacions (coneguda com a *toolchain*) on cada etapa acosta el codi una mica més al maquinari. **El compilador de referència a EC és el GCC**.
 
