@@ -1177,8 +1177,29 @@ a = f(*p);          /* (5) */
 
 
 
+<!-- 
+SUBRUTINES
+* Crida i retorn
+* Pas de paràmetres i resultats	
+* Variables locals
+	* El bloc d'activació
+		* Justificació de la necessitat d'una "àrea de memòria" (TODO: digues si "àrea de memòria") nova: runtime => Ja no es pot emprar el segment .data
+						=> 1) ni variables estructurades perquè sempre van a memòria
+						=> 2) variablmes escalars: possiblitat d'exahurir els registres
+		* Definició
+	* Estructura del bloc d'activació
+	* Regles de l'ABI per assignar variables
+	
 
-
+* Subrutines multinivell 
+	* La pila del programa: una successió de blocs d'activació
+	* El problema de preservar el context
+		* Registres segurs
+	* Salvar i restaurar registres segurs
+		* Pròleg i epíleg
+	* Determinació dels registres segurs necessaris
+	* Exemple complet: subrutina multinivell
+* Exemple avançat: bloc d’activació complet -->
 
 
 
@@ -1201,35 +1222,20 @@ abans de finalitzar. Aquest espai s'anomena **bloc d'activació**
 void funcB() { sentB; }
 ```
 
-![Evolució del bloc d'activació durant la crida a `funcB`. El registre
-`sp` decreix en reservar el bloc d'activació i recupera el valor anterior
-en alliberar-lo.](figures/TODO.png){#fig-func-uninivell-pila}
-:::
-
-::: {#nte-abi-alineacio-pila .callout-note}
-## RV32I ABI — Alineació de la pila
-
-La mida del bloc d'activació i el valor de `sp` han de ser sempre
-**múltiples de 16 bytes** seguint l'ABI estàndard de RV32I.
-:::
-
-<!-- TODO Consens? -->
-::: {#imp-ec-alineacio-pila .callout-important}
-A **EC**, per simplicitat, s'admet múltiples de **4 bytes**.
+![Evolució del bloc d'activació durant la crida a `funcB`. Reserva i alliberament.](figures/TODO.png){#fig-func-uninivell-pila}
 :::
 
 ::: {#nte-abi-variables-locals .callout-note}
 ## RV32I ABI — Assignació de variables locals
 
-Les variables locals s'assignen a registres o a la pila seguint aquestes
+Les variables locals s'assignen a registres o al bloc d'activació seguint aquestes
 regles:
 
-* Les variables **escalars** (enters, caràcters, punters) es guarden
-  preferentment en registres, excepte si:
+* Les variables **escalars** (enters, caràcters, punters) es guarden en registres. Només es guarden al bloc d'activació si:
     * no hi ha prou registres disponibles, o
     * apareixen precedides de l'operador `&` (necessiten adreça de memòria).
 * Les variables **estructurades** (vectors, matrius, etc.) es guarden
-  sempre a la pila.
+  sempre al bloc d'activació.
 
 El bloc d'activació pot incloure:
 
@@ -1309,6 +1315,18 @@ Quan una subrutina multinivell crida una subrutina filla, el bloc
 d'activació de la filla s'apila sobre el de la mare. La pila del programa
 és, doncs, una successió de blocs d'activació que creix i decreix a mesura
 que les subrutines es criden i retornen:
+
+::: {#nte-abi-alineacio-pila .callout-note}
+## RV32I ABI — Alineació de la pila
+
+La mida del bloc d'activació i el valor de `sp` han de ser sempre
+**múltiples de 16 bytes** seguint l'ABI estàndard de RV32I.
+:::
+
+<!-- TODO Consens? -->
+::: {#imp-ec-alineacio-pila .callout-important}
+A **EC**, per simplicitat, s'admet múltiples de **4 bytes**.
+:::
 
 ::: {#tip-exemple-pila-multinivell .callout-tip}
 ## Estat de la pila durant crides aniuades
@@ -1400,10 +1418,9 @@ identificar les dades que compleixen **les dues condicions simultàniament**:
 A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`),
 de manera que la subrutina filla els preservarà automàticament.
 
-#### Exemple complet: subrutina multinivell {#sec-exemple-multinivell}
-
+<!-- #### Exemple 1: Subrutina multinivell {#sec-exemple-1-multinivell} -->
 ::: {#tip-exemple-multi .callout-tip}
-## Subrutina multinivell: `multi`
+## Subrutina multinivell 1
 
 ```{.C filename="C"}
 int multi(int a, int b, int c) {
@@ -1472,10 +1489,9 @@ multi:
 ```
 :::
 
-### Exemple avançat: bloc d'activació complet {#sec-exemple-avançat}
-
+<!-- #### Exemple 2: Subrutina multinivell {#sec-exemple-2-multinivell} -->
 ::: {#tip-exemple-exemple .callout-tip}
-## Subrutina amb variables a la pila i registres segurs: `exemple`
+## Subrutina multinivell 2
 
 ```{.C filename="C"}
 int f(int m, int *n);
