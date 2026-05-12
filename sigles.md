@@ -30,6 +30,8 @@
 
 **ISA** *Instruction Set Architecture*
 
+**LIFO** *Last in, first out*
+
 **LSB** *Least Significant Byte*
 
 **MC** Memòria cau/cache

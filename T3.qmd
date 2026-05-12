@@ -986,21 +986,22 @@ auipc — pendent de decidir on s'explica formalment com a instrucció (ara nom�
 
 ## Subrutines {#sec-subrutines}
 
-Anomenem **subrutina** la generalització d'una estructura de programació que coneixem normalment com a acció o funció (però també procediment, mètode, subprograma, etc.), que permet escriure programes estructurats implementant conceptes com el disseny descendent, la reutilització de codi i la programació modular. Una subrutina és un subprograma que executa una determinada tasca amb determinats paràmetres, podent retornar un resultat, i que pot ser invocada des de múltiples punts del programa sense haver de ser reescrita cada vegada.
+Una **subrutina** és un subprograma que executa una tasca concreta, que pot admetre **paràmetres** d'entrada i retornar un **resultat**. Pot ser invocada des de múltiples punts d'un programa sense haver de ser reescrita cada vegada. És la generalització del que en altres contextos s'anomena acció, **funció** (C), procediment, mètode, etc. Permet escriure programes estructurats aplicant conceptes com el disseny descendent, la reutilització de codi i la programació modular.
 
-Per tal que una subrutina i el programa que la crida puguin ser programats en assemblador (o compilats) de forma independent, cal que la subrutina declari de forma precisa la seva **interfície** (nom, paràmetres, resultats i tipus respectius), i que els respectius codis s'ajustin a un conjunt de regles estrictes que s'explicaran en aquesta secció. Aquestes regles formen part d'un conjunt més ampli anomenat **ABI** (*Application Binary Interface*), ja introduïda al Tema 1. Així, per a cada ISA i sistema operatiu es defineix una ABI específica que permet compartir les subrutines emmagatzemades en biblioteques.
+Per tal que una subrutina i el codi que la **crida** puguin ser programats en llenguatge d'assemblador (o compilats) independentment, cal que la subrutina declari amb precisió la seva **interfície** (nom, paràmetres, resultat i tipus respectius), i que tots dos s'ajustin a les regles de l'**ABI**, la qual, per a cada ISA i sistema operatiu, defineix les convencions que permeten compartir codi emmagatzemat en biblioteques.
 
 ::: {#cau-macros-vs-subrutines .callout-caution}
-## Macros vs. subrutines
-Una **macro** és una seqüència d'instruccions amb nom i paràmetres, definida pel programador dins del seu programa. Cada cop que s'invoca, l'assemblador la **substitueix** pel seu contingut amb els paràmetres reals substituïts. A diferència d'una pseudoinstrucció, una macro no forma part del repertori de l'assemblador: cal definir-la explícitament al programa.
+A diferència d'una subrutina, una macro no genera cap crida: l'assemblador insereix el codi a cada punt d'invocació, de manera que si s'invoca $n$ vegades, el codi apareix $n$ vegades a l'executable. Una subrutina, en canvi, és codi compartit que resideix en un únic lloc de memòria i s'executa per salt, amb el cost d'una crida i un retorn (@sec-macros).
 :::
 
 ### Crida i retorn {#sec-crida-retorn}
 
-Per cridar una subrutina des de múltiples punts del programa cal que, abans de fer el salt, l'adreça de retorn es guardi en un lloc prèviament convingut, de manera que la subrutina pugui retornar al punt adequat. En RV32I, el registre `ra` (***return address***, `x1`) està reservat per a aquest propòsit.
+Des del punt de vista del control del flux d'execució, quan es crida una subrutina cal guardar l'adreça on cal anar un cop executada. Aquesta adreça es coneix com l'**adreça de retorn**. L'ABI de RV32I reserva el registre `ra` (***return address***, `x1`) per a aquest propòsit.
 
-La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu) salta a l'adreça indicada per `label` i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar de la subrutina s'usa la pseudoinstrucció `ret`, que s'expandeix en `jalr zero, ra, 0` i salta a l'adreça continguda a `ra`.
+La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu) salta a l'adreça indicada per `label` (primera instrucció de la subrutina) i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar, s'usa la pseudoinstrucció `ret` (@nte-pseudoinstruccions-salt-indirecte), que salta a l'adreça continguda a `ra`.
 
+::: {#tip-exemple-suma2 .callout-tip}
+## Crida d'una subrutina des de dos punts diferents del programa
 ```{.s filename="RV32I"}
 # Codi que fa les crides
         jal     ra, sub         # ra = adr1; salta a sub
@@ -1013,21 +1014,18 @@ sub:
         ...
         ret                     # salta a ra (adr1 o adr2 segons el cas)
 ```
+:::
 
-### Paràmetres i resultats
+### Pas de paràmetres i retorn de resultats
 
-El pas de paràmetres i resultats implica una comunicació entre el codi que invoca la subrutina i la subrutina cridada. Cal que paràmetres i resultats es dipositin en un lloc prèviament convingut, seguint les regles de l'ABI.
+El pas de paràmetres i el retorn de resultats implica una comunicació entre el codi que invoca la subrutina i la subrutina cridada. Cal que paràmetres i resultats es dipositin en un lloc prèviament convingut, seguint les regles de l'ABI.
 
-#### Regles de pas de paràmetres escalars i resultats
+::: {#nte-abi-pas-parametres .callout-note}
+## RV32I ABI — Pas de paràmetres i retorn de resultats
 
-En EC seguim el conjunt reduït de regles de l'ABI de RV32I:
-
-* Els **paràmetres** de tipus escalars es passen als registres `a0`–`a7`, en ordre d'escriptura. El primer paràmetre va a `a0`, el segon a `a1`, etc.
+* Els **paràmetres** de tipus escalars (inclosos els punters) es passen als registres `a0`–`a7`, en ordre d'escriptura. El primer paràmetre va a `a0`, el segon a `a1`, etc.
 * El **resultat** es retorna al registre `a0` (o `a0`/`a1` si ocupa 64 bits).
 * Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), s'estén a 32 bits dins el registre assignat, fent extensió de signe o de zeros segons estigui declarat `signed` o `unsigned`.
-
-::: {#cau-abi-ec .callout-caution}
-Per simplicitat, en EC no considerarem el cas en què hi ha més de 8 paràmetres, ni el cas en què paràmetres o resultats són de tipus `struct` o de tipus `double` / `long long`. Aquests casos requereixen regles addicionals de l'ABI que no s'estudien en aquest curs.
 :::
 
 ::: {#tip-exemple-suma2 .callout-tip}
@@ -1061,18 +1059,34 @@ suma2:
 ```
 :::
 
-::: {#imp-ec-subrutina-uninivell-sense-ba .callout-important}
-A **EC**, una subrutina **uninivell** sense variables locals a la pila no necessita **pròleg ni epíleg**: no cal reservar espai a la pila ni salvar cap registre.
+::: {#imp-ec-abi-restriccions .callout-important}
+A **EC** no es considera el cas en què hi ha més de 8 paràmetres, ni el cas en què paràmetres o resultats són de tipus `struct` o de tipus `double` / `long long`. Aquests casos requereixen regles addicionals de l'ABI que no s'estudien en aquest curs.
 :::
 
-#### Paràmetres de tipus vector o matriu
+En **C** només existeix el **pas per valor**: la funció rep una còpia del paràmetre real i pot modificar-la sense afectar l'original. Per aconseguir un efecte equivalent al **pas per referència**, es passa com a paràmetre un **punter** a la dada original. D'aquesta manera la funció pot modificar la dada original desreferenciant el punter:
 
-En **C**, el nom d'un vector equival a un punter al seu primer element. Per tant, quan s'escriu el nom d'un vector com a paràmetre real en invocar una funció, s'està passant un punter al primer element. El paràmetre formal a la capçalera de la funció es pot declarar indistintament com a punter (`int *vec`) o com a vector (`int vec[]`).
+::: {#tip-exemple-suma2 .callout-tip}
+## Pas de paràmetres per referència amb punters
 
-De manera anàloga, el nom d'una matriu equival a un punter al seu primer element. El paràmetre formal es declara com una matriu (`int mat[][N]`), on cal especificar totes les dimensions excepte la primera, a fi de poder traduir expressions d'indexació com `mat[i][j]`.
+```{.C filename="C"}
+void sub(int *p) {
+    *p = *p + 10;
+}
+
+void f() {
+    int a, b;
+    sub(&a);        /* passem punter a a */
+    sub(&b);        /* passem punter a b */
+}
+```
+:::
+
+::: {#cau-pas-vector .callout-caution}
+Per passar un **vector** o una matriu com a paràmetre, s'usa el seu nom, que equival a un punter al primer element (@sec-punters-vectors).
+:::
 
 ::: {#tip-exemple-pas-vector .callout-tip}
-## Pas de paràmetres amb vector i variables globals
+## C — Pas de paràmetres amb vector i variables globals
 
 ```{.C filename="C"}
 short x[10], y, z;
@@ -1108,19 +1122,20 @@ funcB:
         lh      a0, 0(a0)       # vec[i] (amb ext. de signe)
         sub     a0, a0, a1      # resultat = vec[i] - n
         ret
+
 ```
 :::
 
-:::: {#tip-exemple-crides-capçaleres .callout-tip}
+:::{#tip-exemple-crides-capçaleres .callout-tip}
 ## Correspondència entre crides i capçaleres de funcions
 
 Donades les declaracions de variables i capçaleres de funcions següents:
 
 ```{.C filename="C"}
 short V1[10];
-char  V2[20];
-int   a;
-int  *p;
+char V2[20];
+int a;
+int *p;
 
 int f(int i);
 int f(char c);
@@ -1129,7 +1144,7 @@ int f(char vc[]);
 int f(int vi[]);
 ```
 
-**Pregunta:** A quina capçalera correspon cada crida del codi següent?
+**Pregunta:** A quina capçalera correspon cada crida?
 
 ```{.C filename="C"}
 a = f(V1);          /* (1) */
@@ -1141,86 +1156,109 @@ a = f(*p);          /* (5) */
 
 **Solució:**
 
-::: {tbl-colwidths="[1,35,35]" style="width: 85%; margin: auto;"}
 | Crida | Tipus del paràmetre real | Capçalera |
 | :--- | :--- | :--- |
-| `f(V1)` | `V1` és `short[10]`, equivalent a `short *` | `int f(short *pi)` |
-| `f(p)` | `p` és `int *` | `int f(int vi[])` (equivalent a `int *`) |
-| `f(&V2[10])` | `&V2[10]` és `char *` (adreça d'un element de `V2`) | `int f(char vc[])` (equivalent a `char *`) |
-| `f(V2[10])` | `V2[10]` és `char` (valor d'un element de `V2`) | `int f(char c)` |
-| `f(*p)` | `*p` és `int` (desreferència de `p`) | `int f(int i)` |
-:::
+| `f(V1)` | `short *` (nom de vector) | `int f(short *pi)` |
+| `f(p)` | `int *` | `int f(int vi[])` |
+| `f(&V2[10])` | `char *` (adreça d'element) | `int f(char vc[])` |
+| `f(V2[10])` | `char` (valor d'element) | `int f(char c)` |
+| `f(*p)` | `int` (desreferència) | `int f(int i)` |
 
 **Anàlisi:**
 
-* El nom d'un vector (`V1`, `V2`) sense índex equival a un punter al   primer element: `V1` té tipus `short *` i `V2` té tipus `char *`.
-* `int vi[]` com a paràmetre formal és equivalent a `int *vi`: tots dos reben un punter.
-* `&V2[10]` és l'adreça de l'element 10 de `V2`, és a dir un `char *`.
-* `V2[10]` (sense `&`) és el valor de l'element 10, és a dir un `char`.
-* `*p` desreferencia el punter `p` de tipus `int *`, donant un `int`.
-::::
-
-#### Pas de paràmetres per valor i per referència
-
-En **C** només existeix el **pas per valor**: la funció rep una còpia del paràmetre real i pot modificar-la sense afectar l'original. Per aconseguir un efecte equivalent al pas per referència, es passa com a paràmetre un **punter** a la dada original. La funció pot llavors modificar la dada original desreferenciant el punter:
-
-```{.C filename="C"}
-void sub(int *p) {
-    *p = *p + 10;
-}
-
-void f() {
-    int a, b;
-    sub(&a);        /* passem punter a a */
-    sub(&b);        /* passem punter a b */
-}
-```
-
-### Les variables locals
-
-Per defecte, les variables locals d'una funció es creen cada cop que s'invoca i es destrueixen en finalitzar. No tenen un espai d'emmagatzemament fix: poden residir en registres o en memòria, seguint les regles de l'ABI que s'expliquen a continuació.
-
-#### El bloc d'activació i la pila del programa
-
-Les funcions que necessiten guardar variables locals en memòria han de reservar-hi l'espai necessari en iniciar l'execució i alliberar-lo just abans de finalitzar. Aquest espai s'anomena **bloc d'activació** (*stack frame*) de la subrutina.
-
-L'estructura de dades ideal per gestionar els blocs d'activació de les crides aniuades és una **pila**: els blocs s'alliberen en ordre invers a com s'han reservat (LIFO). En RV32I, el registre `sp` (***stack pointer***, `x2`) apunta sempre al cim de la pila. La pila **creix cap a adreces més baixes**: per reservar espai es decrementa `sp`, i per alliberar-lo s'incrementa.
-
-::: {#cau-alineacio-pila .callout-caution}
-La mida del bloc d'activació i el valor de `sp` han de ser sempre **múltiples de 16 bytes** seguint l'ABI estàndard de RV32I. En EC, per simplicitat, admetrem múltiples de **4 bytes**.
+* El nom d'un vector sense índex equival a un punter al primer element.
+* `int vi[]` com a paràmetre formal és equivalent a `int *vi`.
+* `&V2[10]` és l'adreça de l'element 10 de `V2`: un `char *`.
+* `V2[10]` és el valor de l'element 10: un `char`.
+* `*p` desreferencia `p` de tipus `int *`, donant un `int`.
 :::
 
-::: {#tip-exemple-pila .callout-tip}
-## Estat de la pila durant crides aniuades
+
+
+
+
+
+
+
+
+
+
+### Variables locals: el bloc d'activació {#sec-variables-locals}
+
+Les variables locals d'una funció es creen cada cop que s'invoca i es
+destrueixen en finalitzar. No tenen un espai d'emmagatzemament fix: poden
+residir en registres o en memòria, seguint les regles de l'ABI.
+
+Les subrutines que necessiten guardar variables locals en memòria han de
+reservar-hi l'espai necessari en iniciar l'execució i alliberar-lo just
+abans de finalitzar. Aquest espai s'anomena **bloc d'activació**
+(***stack frame***) de la subrutina.
+
+::: {#tip-func-uninivell-pila .callout-tip}
+## Estat del bloc d'activació durant la crida a una funció uninivell
 
 ```{.C filename="C"}
-void funcA() { sentA1; funcB(); sentA2; }
 void funcB() { sentB; }
 ```
 
-![Evolució de la pila durant les crides aniuades de `funcA` i `funcB`. El registre `sp` decreix en reservar el bloc d'activació de cada funció i recupera el valor anterior en alliberar-lo.](figures/TODO.png){#fig-pila-crides-aniuades}
+![Evolució del bloc d'activació durant la crida a `funcB`. El registre
+`sp` decreix en reservar el bloc d'activació i recupera el valor anterior
+en alliberar-lo.](figures/TODO.png){#fig-func-uninivell-pila}
 :::
 
-#### Regles de l'ABI per assignar variables locals a registres o a la pila
+::: {#nte-abi-alineacio-pila .callout-note}
+## RV32I ABI — Alineació de la pila
 
-En RV32I, les variables locals d'una subrutina s'assignen seguint aquestes regles:
+La mida del bloc d'activació i el valor de `sp` han de ser sempre
+**múltiples de 16 bytes** seguint l'ABI estàndard de RV32I.
+:::
 
-* Les variables **escalars** es guarden preferentment en registres.
-* Les variables **estructurades** (vectors, matrius, etc.) es guarden a la pila.
-* Si no hi ha prou registres per a totes les variables escalars, les sobrants es guarden també a la pila.
-* Si en el cos de la funció apareix una variable local escalar `x` precedida de l'operador `&`, aquesta variable s'ha de guardar a la pila a fi que tingui una adreça de memòria.
+<!-- TODO Consens? -->
+::: {#imp-ec-alineacio-pila .callout-important}
+A **EC**, per simplicitat, s'admet múltiples de **4 bytes**.
+:::
 
-El bloc d'activació respecta les normes de format següents:
+::: {#nte-abi-variables-locals .callout-note}
+## RV32I ABI — Assignació de variables locals
 
-* Les variables locals ocupen les **primeres adreces** del bloc (a partir del cim de la pila, on apunta `sp` un cop reservat l'espai).
-* Es col·loquen en **ordre textual** de declaració, amb l'alineació corresponent al seu tipus.
-* Els registres salvats ocupen les **últimes adreces** del bloc, a continuació de les variables locals, alineats a adreces múltiples de 4.
-* La mida total del bloc i el valor de `sp` han de ser múltiples de 4 (en EC).
+Les variables locals s'assignen a registres o a la pila seguint aquestes
+regles:
 
-En una subrutina **uninivell**, com que no hi ha cap crida, cap subrutina filla pot sobreescriure els registres temporals `t0`–`t6`. Per tant, les variables escalars d'una subrutina uninivell s'assignen sempre a registres **temporals**, i no cal usar registres segurs `s0`–`s11` (@imp-registres-temporals-segurs).
+* Les variables **escalars** (enters, caràcters, punters) es guarden
+  preferentment en registres, excepte si:
+    * no hi ha prou registres disponibles, o
+    * apareixen precedides de l'operador `&` (necessiten adreça de memòria).
+* Les variables **estructurades** (vectors, matrius, etc.) es guarden
+  sempre a la pila.
+
+El bloc d'activació pot incloure:
+
+* **Variables locals** de tipus estructurat, o escalars que no caben en
+  registres o que requereixen adreça.
+* **Registres segurs salvats**, incloent-hi `ra` si la subrutina és
+  multinivell.
+
+La disposició dins el bloc, de les adreces més baixes a les més altes:
+
+| Zona | Contingut |
+| :--- | :--- |
+| Primera (adreces baixes) | Variables locals, en ordre textual de declaració, alineades segons el seu tipus |
+| Segona (adreces altes) | Registres segurs salvats, alineats a múltiple de 4 |
+:::
+
+![Estructura general del bloc d'activació: variables locals al cim de la
+pila i registres salvats a continuació. El registre `sp` apunta al primer
+byte del bloc durant l'execució de la subrutina.
+](figures/TODO.png){#fig-ba-general}
+
+En una subrutina **uninivell** (sense cap crida a altres subrutines), cap
+subrutina filla pot sobreescriure els registres temporals `t0`–`t6`. Per
+tant, les variables escalars d'una subrutina uninivell s'assignen sempre
+a registres **temporals** i no cal usar registres segurs `s0`–`s11`
+(@imp-registres-temporals-segurs).
 
 ::: {#tip-exemple-variables-pila .callout-tip}
-## Funció amb variables locals a la pila
+## Funció uninivell amb variables locals a la pila
 
 ```{.C filename="C"}
 char func(int i) {          /* i en a0 */
@@ -1231,9 +1269,14 @@ char func(int i) {          /* i en a0 */
 }
 ```
 
-El bloc d'activació conté `v` (10 bytes) i `w` (40 bytes), en ordre textual, amb `k` en el registre `t0`. La mida total és 52 bytes (arrodonit a múltiple de 4).
+El bloc d'activació conté `v` (10 bytes) i `w` (40 bytes), en ordre
+textual, amb `k` en el registre `t0`. La mida total és 52 bytes
+(arrodonit a múltiple de 4).
 
-![Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocupa els bytes 10–11, i el vector `w` ocupa els bytes 12–51. El registre `sp` apunta al byte 0.](figures/TODO.png){#fig-ba-func}
+![Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes
+0–9, l'alineació ocupa els bytes 10–11, i el vector `w` ocupa els bytes
+12–51. El registre `sp` apunta al byte 0.
+](figures/TODO.png){#fig-ba-func}
 
 ```{.s filename="RV32I"}
 func:
@@ -1252,68 +1295,112 @@ func:
 ```
 :::
 
-### Subrutines multinivell {#sec-multinivell}
+### Subrutines multinivell: la pila del programa {#sec-multinivell}
 
-Diem que una subrutina és **multinivell** (*non-leaf*) si el seu codi conté alguna crida a una altra subrutina. Una subrutina és **uninivell** (*leaf*) si no en conté cap.
+Diem que una subrutina és **multinivell** (*non-leaf*) si el seu codi conté
+alguna crida a una altra subrutina. Una subrutina és **uninivell** (*leaf*)
+si no en conté cap.
 
-El **context d'execució** d'una subrutina és el conjunt de totes les seves dades locals (paràmetres, variables locals, adreça de retorn i càlculs intermedis), tant les que es guarden a la pila com en registres.
+El **context d'execució** d'una subrutina és el conjunt de totes les seves
+dades locals (paràmetres, variables locals, adreça de retorn i càlculs
+intermedis), tant les que es guarden a la pila com en registres.
+
+Quan una subrutina multinivell crida una subrutina filla, el bloc
+d'activació de la filla s'apila sobre el de la mare. La pila del programa
+és, doncs, una successió de blocs d'activació que creix i decreix a mesura
+que les subrutines es criden i retornen:
+
+::: {#tip-exemple-pila-multinivell .callout-tip}
+## Estat de la pila durant crides aniuades
+
+```{.C filename="C"}
+void funcA() { sentA1; funcB(); sentA2; }
+void funcB() { sentB; }
+```
+
+![Evolució de la pila durant les crides aniuades de `funcA` i `funcB`.
+El registre `sp` decreix en reservar el bloc d'activació de cada funció
+i recupera el valor anterior en alliberar-lo.
+](figures/TODO.png){#fig-pila-crides-aniuades}
+:::
+
+::: {#tip-rars-main-multinivell .callout-tip}
+## RARS — `main` com a subrutina multinivell
+
+A **RARS**, el fitxer `startup.s` emula el mecanisme d'inici i finalització
+del programa (@imp-exception-handler). Per acabar l'execució correctament
+cal retornar des de `main` amb `ret`, en lloc de saltar a una adreça
+d'aturada com es faria en un sistema real.
+
+Per tant, si `main` és multinivell, cal preservar `ra` i restaurar-lo
+abans de retornar, exactament igual que qualsevol altra subrutina
+multinivell.
+:::
 
 #### El problema de preservar el context
 
-Els registres són compartits per totes les subrutines. Una subrutina multinivell ha de garantir que, en cridar una subrutina filla, el valor dels seus registres importants no es perdi. Per resoldre-ho sense que les dues subrutines hagin de conèixer els detalls interns l'una de l'altra, l'**ABI** defineix dues categories de registres: temporals i segurs. Els registres **temporals** poden ser modificats lliurement; els registres **segurs** han de ser preservats per la subrutina cridada.
+Els registres són compartits per totes les subrutines. Una subrutina
+multinivell ha de garantir que, en cridar una subrutina filla, el valor
+dels seus registres importants no es perdi. Per resoldre-ho sense que les
+dues subrutines hagin de conèixer els detalls interns l'una de l'altra,
+l'**ABI** defineix dues categories de registres: temporals i segurs.
 
-::: {#imp-registres-temporals-segurs .callout-important}
-## Registres temporals i segurs a RV32I
+::: {#nte-abi-registres-temporals-segurs .callout-note}
+## RV32I ABI — Registres temporals i segurs
 
 | Categoria | Registres ABI | Qui els preserva |
 | :--- | :--- | :--- |
 | **Temporals** | `t0`–`t6`, `a0`–`a7` | *Caller* (qui fa la crida) |
 | **Segurs** | `s0`–`s11`, `ra`, `sp` | *Callee* (la subrutina cridada) |
 
-Els registres **temporals** poden ser modificats lliurement per qualsevol subrutina. El codi que fa la crida no pot esperar que es conservin després de la crida.
-
-Els registres **segurs** han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar.
+Els registres **temporals** poden ser modificats lliurement per qualsevol
+subrutina. El codi que fa la crida no pot esperar que es conservin després
+de la crida. Els registres **segurs** han de ser restaurats al seu valor
+original per la subrutina que els modifica, abans de retornar.
 :::
 
-La regla fonamental és:
+::: {#cau-regla-registres-segurs .callout-caution}
+Quan una subrutina retorna, ha de deixar els registres **segurs** en el
+mateix estat que tenien quan ha estat invocada.
+:::
 
-> **Quan una subrutina retorna, ha de deixar els registres segurs en el mateix estat que tenien quan ha estat invocada.**
+::: {#imp-registres-temporals-segurs .callout-important}
+A **EC**, les variables escalars d'una subrutina **uninivell** s'assignen
+sempre a registres **temporals**: cap subrutina filla pot sobreescriure'ls,
+de manera que no cal usar registres segurs `s0`–`s11`.
+:::
 
 #### Salvar i restaurar registres segurs
 
-Per respectar aquesta regla, una subrutina que modifica registres segurs ha de:
+Per respectar la regla anterior, una subrutina que modifica registres
+segurs ha de:
 
-1. **Salvar** els seus valors originals al bloc d'activació (pila) durant el **pròleg**, just a l'inici de la subrutina.
-2. **Restaurar** els seus valors originals durant l'**epíleg**, just abans de retornar.
+1. **Salvar** els seus valors originals al bloc d'activació durant el
+   **pròleg**, just a l'inici de la subrutina.
+2. **Restaurar** els seus valors originals durant l'**epíleg**, just
+   abans de retornar.
 
-A més, tota subrutina multinivell ha de salvar i restaurar `ra`, ja que `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
+A més, tota subrutina multinivell ha de salvar i restaurar `ra`, ja que
+`jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
+
+::: {#cau-ec-subrutina-uninivell-sense-ba .callout-caution}
+Una subrutina **uninivell** només tindrà pròleg i epíleg si té variables
+locals estructurades, i aquests es limitaran a la reserva i alliberament
+d'espai a la pila.
+:::
 
 #### Determinació dels registres segurs necessaris
 
-Per determinar quins registres cal fer segurs, cal analitzar el codi i identificar les dades que compleixen **les dues condicions simultàniament**:
+Per determinar quins registres cal fer segurs, cal analitzar el codi i
+identificar les dades que compleixen **les dues condicions simultàniament**:
 
 1. El seu valor ha estat generat per **última vegada ABANS** d'una crida.
 2. El seu valor s'usa **DESPRÉS** d'aquesta mateixa crida.
 
-A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`), de manera que la subrutina filla els preservarà automàticament.
+A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`),
+de manera que la subrutina filla els preservarà automàticament.
 
-### Estructura del bloc d'activació complet {#sec-bloc-activacio}
-
-El bloc d'activació d'una subrutina multinivell pot incloure:
-
-* **Variables locals** de tipus estructurat, o escalars que no caben en registres o que requereixen adreça.
-* **Registres segurs salvats**, incloent-hi `ra` si la subrutina és multinivell.
-
-La disposició dins el bloc segueix l'ordre següent, de les adreces més baixes (cim de la pila, on apunta `sp`) a les més altes:
-
-| Zona | Contingut |
-| :--- | :--- |
-| Primera (adreces baixes) | Variables locals, en ordre textual de declaració |
-| Segona (adreces altes) | Registres segurs salvats, alineats a múltiple de 4 |
-
-![Estructura general del bloc d'activació: variables locals al cim de la pila i registres salvats a continuació. El registre `sp` apunta al primer byte del bloc durant l'execució de la subrutina.](figures/TODO.png){#fig-ba-general}
-
-### Exemple complet: subrutina multinivell {#sec-exemple-multinivell}
+#### Exemple complet: subrutina multinivell {#sec-exemple-multinivell}
 
 ::: {#tip-exemple-multi .callout-tip}
 ## Subrutina multinivell: `multi`
@@ -1327,19 +1414,30 @@ int multi(int a, int b, int c) {
 }
 ```
 
-**Pas 1. Registres segurs.** Identifiquem les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). Els assignem els registres segurs `s0` i `s1` respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
+**Pas 1. Registres segurs.** Identifiquem les dades que es fan servir
+DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per
+ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat
+a `a+b`). Els assignem els registres segurs `s0` i `s1` respectivament.
+La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS
+de la crida.
 
-![Dependències de dades de la subrutina `multi`. La línia de punts separa el codi anterior i posterior a la crida a `mcm`. Les fletxes indiquen les dades `c` i `d` que travessen la frontera i que s'han de guardar en registres segurs.](figures/TODO.png){#fig-deps-multi}
+![Dependències de dades de la subrutina `multi`. La línia de punts separa
+el codi anterior i posterior a la crida a `mcm`. Les fletxes indiquen les
+dades `c` i `d` que travessen la frontera i que s'han de guardar en
+registres segurs.](figures/TODO.png){#fig-deps-multi}
 
-**Pas 2. Bloc d'activació.** No hi ha variables locals a la pila (totes són escalars). Cal salvar `s0`, `s1` i `ra`: 3 words = 12 bytes.
-
-![Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i `ra` salvats als offsets `+0`, `+4` i `+8` respectivament.](figures/TODO.png){#fig-ba-multi}
+**Pas 2. Bloc d'activació.** No hi ha variables locals a la pila (totes
+són escalars). Cal salvar `s0`, `s1` i `ra`: 3 words = 12 bytes.
 
 | Offset des de `sp` | Contingut |
 | :--- | :--- |
 | `+0` | `s0` salvat |
 | `+4` | `s1` salvat |
 | `+8` | `ra` salvat |
+
+![Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i
+`ra` salvats als offsets `+0`, `+4` i `+8` respectivament.
+](figures/TODO.png){#fig-ba-multi}
 
 **Pas 3. Codi assemblador.**
 
@@ -1400,9 +1498,16 @@ res_g = g(v, w);
 e = res_f + res_g;
 ```
 
-Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS) són: `c`, `d` i `res_f`. Les assignem a `s0`, `s1` i `s2` respectivament. La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0` i `a1`.
+Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS)
+són: `c`, `d` i `res_f`. Les assignem a `s0`, `s1` i `s2` respectivament.
+La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0`
+i `a1`.
 
-![Dependències de dades de la subrutina `exemple`. Les línies de punts separen el codi anterior i posterior a cada crida. Les fletxes indiquen les dades `c`, `d` i `res_f` que travessen fronteres de crides i s'han de guardar en registres segurs `s0`, `s1` i `s2` respectivament.](figures/TODO.png){#fig-deps-exemple}
+![Dependències de dades de la subrutina `exemple`. Les línies de punts
+separen el codi anterior i posterior a cada crida. Les fletxes indiquen
+les dades `c`, `d` i `res_f` que travessen fronteres de crides i s'han de
+guardar en registres segurs `s0`, `s1` i `s2` respectivament.
+](figures/TODO.png){#fig-deps-exemple}
 
 Anotació de registres sobre el codi:
 
@@ -1418,9 +1523,10 @@ char exemple(int a, int b, int c) { /* a → a0, b → a1, c → s0 */
 }
 ```
 
-**Pas 2. Bloc d'activació.** Variables a la pila en ordre textual: `q` (4 bytes), `v` (18 bytes), `w` (20 bytes). Total variables: 42 bytes. Alineació fins a múltiple de 4: 2 bytes. Registres salvats: `s0`, `s1`, `s2`, `ra` = 16 bytes. **Total: 60 bytes.**
-
-![Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i `w` als offsets `+0`, `+4` i `+22`, alineació als bytes `+42`–`+43`, i registres salvats `s0`, `s1`, `s2`, `ra` als offsets `+44`, `+48`, `+52` i `+56`.](figures/TODO.png){#fig-ba-exemple}
+**Pas 2. Bloc d'activació.** Variables a la pila en ordre textual: `q`
+(4 bytes), `v` (18 bytes), `w` (20 bytes). Total variables: 42 bytes.
+Alineació fins a múltiple de 4: 2 bytes. Registres salvats: `s0`, `s1`,
+`s2`, `ra` = 16 bytes. **Total: 60 bytes.**
 
 | Offset des de `sp` | Contingut | Mida |
 | :--- | :--- | :--- |
@@ -1432,6 +1538,11 @@ char exemple(int a, int b, int c) { /* a → a0, b → a1, c → s0 */
 | `+48` | `s1` salvat | 4 bytes |
 | `+52` | `s2` salvat | 4 bytes |
 | `+56` | `ra` salvat | 4 bytes |
+
+![Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i
+`w` als offsets `+0`, `+4` i `+22`, alineació als bytes `+42`–`+43`, i
+registres salvats `s0`, `s1`, `s2`, `ra` als offsets `+44`, `+48`, `+52`
+i `+56`.](figures/TODO.png){#fig-ba-exemple}
 
 **Pas 3. Codi assemblador.**
 
@@ -1492,8 +1603,7 @@ exemple:
 
 
 
-
-
+<!-- TODO Eliminar repeticions amb @sec-programa-segments i @sec-memoria-t2 -->
 ## Estructura de la memòria {#sec-estructura-memoria}
 
 Les variables d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
@@ -1616,6 +1726,8 @@ La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable
 
 
 ## Compilació, assemblatge, enllaçat i càrrega {#sec-compilacio}
+
+<!-- TODO callout d'aprofundiment per presentar https://godbolt.org/ -->
 
 En general, el procés pel qual un programa escrit en **C** es **converteix en** un programa **executable** consta de quatre passos: 
 

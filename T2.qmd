@@ -350,7 +350,7 @@ Un programa en assemblador es compon de:
 * **Instruccions, pseudoinstruccions i macros:** Les operacions que el processador executa o que l'assemblador expandeix en operacions reals.
 * **Comentaris:** Anotacions per al programador que l'assemblador ignora completament.
 
-### Segments
+### Segments {#sec-programa-segments}
 
 Els principals segments són `.text` (instruccions) i `.data` (variables globals). Es declaren amb una **directiva de segment** i tot el contingut que els segueix fins al segment següent hi pertany.
 
@@ -574,7 +574,7 @@ Però **RARS no la suporta**. Per tant, al **laboratori** cal substituir-la per 
 ```
 :::
 
-#### Macros
+#### Macros {#sec-macros}
 
 Una **macro** és una seqüència d'instruccions amb nom i paràmetres, definida pel programador dins del seu programa. Cada cop que s'invoca, l'assemblador la **substitueix** pel seu contingut amb els paràmetres reals substituïts. A diferència d'una pseudoinstrucció, una macro no forma part del repertori de l'assemblador: cal definir-la explícitament al programa.
 
@@ -701,7 +701,7 @@ Per executar correctament aquest esquelet a RARS, cal configurar l'*Exception Ha
 ::::: {#imp-exception-handler .callout-important}
 ## RARS — *Exception Handler:* `startup.s`
 
-Tot i que, a **EC**, l'assumpció general és treballar directament sobre el processador (@imp-directe-sobre-processador) i, per tant, sense SO, a RARS s'emula el **mecanisme d'inici i finalització del programa**: el SO no crida `main` directament, sinó que primer executa `__start`, que inicialitza l'entorn d'execució i crida `main`. Quan `main` retorna, `__start` invoca la crida al sistema `exit` per alliberar els recursos del procés.
+Tot i que, a **EC**, l'assumpció general és treballar directament sobre el processador (@imp-directe-sobre-processador) i, per tant, sense SO, al laboratori es configura RARS per emular el **mecanisme d'inici i finalització del programa**: el SO no crida `main` directament, sinó que primer executa `__start`, que inicialitza l'entorn d'execució i crida `main`. Quan `main` retorna, `__start` invoca la crida al sistema `exit` per alliberar els recursos del procés.
 
 A **EC**, la **configuració per defecte de RARS** inclou l'ús del fitxer `startup.s` (@sec-rars).
 
@@ -863,7 +863,7 @@ En **C**, la **mida** en bytes d'una variable **depèn** del seu **tipus** i de 
 Com que els registres són de 32 bits, per allotjar-hi un `long long` en calen dos, un per als bits de menys pes, l'altre pels de més pes; cal gestionar-los corresponentment.
 :::
 
-## La memòria
+## La memòria {#sec-memoria-t2}
 
 <!-- TODO decidir si incloem Relaxed Memory Model => FENCE, FENCE.TSO, FENCE.I?, FENCE.RW? -->
 :::: {#nte-rv32i-model-memoria .callout-note}
@@ -1351,12 +1351,10 @@ lw      t1, 0(t0)      # Provoca una excepció d'accés no alineat!
 
 ## Punters
 
-Un punter és una **variable** que conté una **adreça de memòria**. Per tant, a **RV32I**, els punters, en ser adreces en una arquitectura de 32 bits, ocupen sempre **32 bits** (**4 bytes**).
+Un punter és una **variable escalar** que conté una **adreça de memòria**. Per tant, a **RV32I**, els punters, en ser adreces en una arquitectura de 32 bits, ocupen sempre **32 bits** (**4 bytes**).
 
-::: {#cau-punters-natural .callout-caution}
+::: {#cau-punters-naturals .callout-caution}
 Els **punters** representen adreces de memòria i, per tant, **només** poden ser **nombres naturals** de l'espai adreçable (@nte-rv32i-model-memoria).
-
-Se'ls pot aplicar operacions aritmètiques (**aritmètica de punters**), però el resultat sempre ha de ser un punter (vàlid).
 :::
 
 ::: {#wrn-punters-x86 .callout-warning}
@@ -1559,6 +1557,10 @@ La primera sentència carrega a la variable local `tmp` el contingut de la posic
 
 En **C**, quan es suma un enter `i` a un punter `p` que apunta a un tipus de mida `T` bytes, el resultat és un punter que apunta `i * T` bytes més endavant. De manera simètrica, restar `i` desplaça el punter `i * T` bytes enrere. Aquesta regla d'escalat permet navegar per elements consecutius d'un vector.
 
+::: {#cau-punters-naturals .callout-caution}
+Se'ls pot aplicar operacions aritmètiques, però el resultat sempre ha de ser una adreça de memòria vàlida, cosa que comporta limitacions de les operacions aritmètiques permeses. Per exemple, C només permet l'increment i el decrement (`++` i `--`), l'adició i la subtracció d'un enter, la subtracció de dos punters, i les comparacions entre punters. No permet la multiplicació, per exemple.
+:::
+
 ::: {#tip-aritmetica-punters-c .callout-tip}
 ## Aritmètica de punters en C
 
@@ -1588,6 +1590,18 @@ p:      .word 0                 # Punter a enter
         sw      t0, 0(t1)       # p = p - 2  (ara p apunta a v[-1]: fora de rang!)
 ```
 :::
+
+
+### C — Absència de control de límits en l'accés a memòria {#sec-c-punters-absencia-control-limits}
+
+L'**estàndard** de C **no especifica** què passa si s'accedeix a una àrea de memòria il·legítima. Es produeix el que es coneix com a **comportament indefinit** (*undefined behavior*). Conseqüentment, l'estàndard no garanteix ni cap error específic ni cap resultat concret. A efectes pràctics, depenent del context i de la memòria, pot ocórrer una d'aquestes tres situacions, per ordre creixent de **perillositat**:
+
+1. **Segmentation Fault** (***Segfault***)**:** És l'error més comú en temps d'execució. El SO detecta que el programa intenta llegir o escriure en una adreça de memòria que no li pertany (una zona protegida o no assignada) i mata el procés immediatament.
+2. **Corrupció de dades (silenciosa)**: Si l'adreça calculada amb l'aritmètica de punters encara cau dins de la memòria que el programa té assignada (per exemple, on hi ha una altra variable), **el programa continuarà funcionant**, però **accedint a dades indeterminades** sense cap indicació d'error.
+<!-- TODO afegir ref a secció concreta -->
+3. **Vulnerabilitats de seguretat**: Si l'accés ocorre en la pila (*stack*, [Tema 3](T3.qmd)), es pot produir un ***buffer overflow***, fet que podria arribar a permetre a un **atacant** modificar l'adreça de retorn d'una funció i **executar codi maliciós**.
+
+<!-- TODO Pensar si afegir un aprofundiment presentant els punters a funcions -->
 
 ## Vectors {#sec-vectors}
 
@@ -1673,7 +1687,7 @@ v:      .space 400      # Reserva 400 bytes (100 enters * 4 bytes)
 ::: {#cau-c-tipus-vector-matriu .callout-caution}
 ## C — cada `<tipus> nom_vector[<quantitat_d_elements>]` constitueix un tipus complet
 
-En **C**, `int vec[<nombre_elements>]` no és només una declaració: constitueix un **tipus complet** (`int[<nombre_elements>]`), diferent de `int[10]` o `int *`. Això té conseqüències pràctiques, tant en vectors (@tip-c-tipus-vector) com en matrius (@tip-c-tipus-vector-matriu).
+En **C**, `int vec[<nombre_elements>]` no és només una declaració: constitueix un **tipus complet** (`int[<nombre_elements>]`). Per exemple, `int[10]` és diferent de `int[5]` i de `int *`. Això té conseqüències pràctiques, tant en vectors (@tip-c-tipus-vector) com en matrius (@tip-c-tipus-vector-matriu).
 :::
 
 ::: {#tip-c-tipus-vector .callout-tip}
@@ -1715,7 +1729,7 @@ Regla d'escalat, (*pointer scaling*):
 $$ @ A[i] = @ A[0] + i \cdot T$$ {#eq-vector-regla-escalat}
 
 ::: {#cau-c-adreca-base .callout-caution}
-En **C**, l'**adreça base** del vector `vec` s'obté de dues maneres equivalents:
+En **C**, l'**adreça base** del vector `vec`es pot obtenir de dues maneres (equivalents) següents:
 
 * `&vec[0]`
 * `vec`[^decau]
@@ -1749,7 +1763,11 @@ En **RV32I**, suposant que `h` ocupa el registre `s2`, i que `A` és una variabl
 ::::
 :::::
 
-### Relació entre punters i vectors
+::: {#cau-TODO .callout-caution}
+Com que C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits) tampoc no comprova si l'índex d'un accés aleatori està dins del límit del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
+:::
+
+### Relació entre punters i vectors {#sec-punters-vectors}
 
 ::: {#cau-vectors-decauen-punters .callout-caution}
 En **C**, en la majoria d'expressions, el nom d'un vector **decau** automàticament a un **punter al seu primer element**:
@@ -1831,15 +1849,8 @@ func:
 :::
 
 ::: {#wrn-index-aritmetica-punters .callout-warning collapse=true}
-## C ,`[]` és aritmètica pura
-
-* **Commutativitat:** Com que la suma és commutativa (`a + i` és el mateix que `i + a`), en C és perfectament vàlid escriure `3[vec]` en lloc de `vec[3]`. El compilador ho tradueix igualment a `*(3 + vec)`.
-* **Absència de control de límits:** C **no comprova** si l'índex està dins del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector. L'**estàndard** C **no especifica** què passa si s'accedeix més enllà del límit d'un vector. Es produeix el que es coneix com a **comportament indefinit** (*undefined behavior*). Per tant, no garanteix ni cap error específic ni cap resultat concret. A efectes pràctics, depenent del context i de la memòria, pot ocórrer una d'aquestes tres situacions, per ordre creixent de **perillositat**:
-
-   1. **Segmentation Fault** (***Segfault***)**:** És l'error més comú en temps d'execució. El SO detecta que el programa intenta llegir o escriure en una adreça de memòria que no li pertany (una zona protegida o no assignada) i mata el procés immediatament.
-   2. **Corrupció de dades (silenciosa)**: Si l'adreça calculada amb l'aritmètica de punters encara cau dins de la memòria que el programa té assignada (per exemple, on hi ha una altra variable), **el programa continuarà funcionant**, però **accedint a dades indeterminades** sense cap indicació d'error.
-   <!-- TODO afegir ref a secció concreta -->
-   3. **Vulnerabilitats de seguretat**: Si l'accés ocorre en la pila (*stack*, [Tema 3](T3.qmd)), es pot produir un ***buffer overflow***, fet que podria arribar a permetre a un **atacant** modificar l'adreça de retorn d'una funció i **executar codi maliciós**.
+## C — Commutativitat de l'operador `[]`
+Com que la suma és commutativa (`a + i` és el mateix que `i + a`), en C és perfectament vàlid escriure `3[vec]` en lloc de `vec[3]`. El compilador ho tradueix igualment a `*(3 + vec)`.
 :::
 
 <!-- 
