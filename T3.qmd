@@ -130,7 +130,7 @@ srai     t0, t4, 2    # resultat >> 2 (amb extensió de signe)
 Desplaçar a l'esquerra un enter o natural amb `sll`/`slli` equival a **multiplicar**-lo per una potència de 2: `rd` ← `rs1` × 2^shamt^.
 
 ::: {#imp-ec-sll-acces-vector .callout-important}
-A **EC**, s'usa `slli` per calcular l'**offset** en bytes en accedir a elements d'un vector quan la mida de l'element és una potència de 2 (@sec-access-vector).
+A **EC**, s'usa `slli` per calcular l'**offset** en bytes en accedir a elements d'un vector quan la mida de l'element és una potència de 2 (@eq-vector-regla-escalat).
 :::
 
 ### Aplicació d'`sll`/`slli`: divisió entera per potències de 2
@@ -145,9 +145,9 @@ Per exemple, la divisió entera (-15 / 4) dóna quocient -3 i residu -3, mentre 
 
 ## Operacions lògiques bit a bit
 
-### Instruccions `&`, `|`, `^` (AND, OR, XOR)
+### Instruccions `&`, `|`, `^` (AND, OR, XOR) {#sec-instruccions-logiques-bit-a-bit}
 
-Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb **and**, **or** i **xor**.
+Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`.
 
 Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió per zero**.
 
@@ -166,7 +166,7 @@ Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'imme
 ::: {#nte-pseudoinstruccio-not .callout-note}
 ## Pseudoinstrucció — `~` (NOT)
 
-**RV32I** no inclou la instrucció `not`. La **negació bit a bit**  d'un registre, equivalent al `~` de **C**, s'obté amb la pseudoinstrucció **`not`**:
+**RV32I** no inclou la instrucció `not`. La **negació bit a bit** (NOT) d'un registre, equivalent al `~` de **C**, s'obté amb la pseudoinstrucció `not`:
 
 | Pseudoinstrucció | Operació | Expansió |
 | :--- | :--- | :--- |
@@ -501,9 +501,9 @@ Les instruccions de salt condicional són la base per implementar les sentèncie
 
 ### Salts incondicionals relatius al PC {#sec-salts-incondicionals-relatius}
 
-La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un offset de **21 bits** relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu és de **±1 MiB**. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Quan `rd = zero`, simplement salta sense guardar res.
+La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un offset de **21 bits** relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu és de **±1 MiB**. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
 
-::: {#nte-instruccions-salt-incondicional-relatiu .callout-note}
+::: {#nte-instruccions-salt-incondicional-relatiu-jal .callout-note}
 ## RV32I ISA — Instrucció de salt incondicional relatiu al PC
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
@@ -994,14 +994,22 @@ Per tal que una subrutina i el codi que la **crida** puguin ser programats en ll
 A diferència d'una subrutina, una macro no genera cap crida: l'assemblador insereix el codi a cada punt d'invocació, de manera que si s'invoca $n$ vegades, el codi apareix $n$ vegades a l'executable. Una subrutina, en canvi, és codi compartit que resideix en un únic lloc de memòria i s'executa per salt, amb el cost d'una crida i un retorn (@sec-macros).
 :::
 
-### Crida i retorn {#sec-crida-retorn}
+<!-- TODO Confirmar eliminació de "(*leaf*)"" i "(*non-leaf*)"" pq no es fa servir enlloc o restitució -->
+::: {#cau-multinivell-vs-uninivell .callout-caution}
+Una subrutina és:
 
-Des del punt de vista del control del flux d'execució, quan es crida una subrutina cal guardar l'adreça on cal anar un cop executada. Aquesta adreça es coneix com l'**adreça de retorn**. L'ABI de RV32I reserva el registre `ra` (***return address***, `x1`) per a aquest propòsit.
+* **Uninivell**, si el seu codi no conté cap crida a una altra subrutina.
+* **Multinivell**, si el seu codi conté alguna crida a una altra subrutina. 
+:::
 
-La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu) salta a l'adreça indicada per `label` (primera instrucció de la subrutina) i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar, s'usa la pseudoinstrucció `ret` (@nte-pseudoinstruccions-salt-indirecte), que salta a l'adreça continguda a `ra`.
+### Crida i retorn (el registre `ra`) {#sec-crida-retorn}
+
+Des del punt de vista del control del flux d'execució, quan es crida una subrutina cal guardar l'**adreça de retorn**, és a dir, l'adreça on cal anar un cop executada. L'ABI de RV32I reserva el registre `ra` (***return address***, `x1`) per a aquest propòsit.
+
+La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu-jal) salta a l'adreça indicada per `label` (primera instrucció de la subrutina cridada) i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar, s'usa la pseudoinstrucció `ret` (@nte-pseudoinstruccions-salt-indirecte), que salta a l'adreça continguda a `ra`.
 
 ::: {#tip-exemple-suma2 .callout-tip}
-## Crida d'una subrutina des de dos punts diferents del programa
+## Crida d'una subrutina des de dos punts diferents d'un programa
 ```{.s filename="RV32I"}
 # Codi que fa les crides
         jal     ra, sub         # ra = adr1; salta a sub
@@ -1016,16 +1024,41 @@ sub:
 ```
 :::
 
-### Pas de paràmetres i retorn de resultats
+::: {#cau-TODO .callout-caution}
+Un codi és:
 
-El pas de paràmetres i el retorn de resultats implica una comunicació entre el codi que invoca la subrutina i la subrutina cridada. Cal que paràmetres i resultats es dipositin en un lloc prèviament convingut, seguint les regles de l'ABI.
+* ***Caller***, si fa una crida una subrutina.
+* ***Callee***, si és la subrutina cridada.
+
+Per analogia, hom pot emprar els termes mare/pare i fill/a, per referir-se als codis caller i al callee respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
+:::
+
+::: {#nte-caller-saved-vs-callee-saved .callout-note}
+## RV32I ISA — Gestió dels registres de propòsit general: *caller-saved* vs *callee-saved*
+La columna "Qui el guarda (*Saver*)" de les taules de registres de la ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
+
+* **Caller-saved:** És el caller qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
+* **Callee-saved:** És el callee qui ha de preservar-lo si vol usar-lo i, per tant, ha restaurar-lo abans de retornar.
+:::
+
+El registre `ra` és **caller-saved**, ja que la instrucció ha d'emprar el pare per fer la crida (`jal`, @nte-instruccions-salt-incondicional-relatiu-jal) escriu a `ra` l'adreça de retorn que el fill utilitzarà per retornar-li el control de flux. Aquesta escriptura implica la **pèrdua per sobreescriptura** de l'adreça de retorn que ell, el pare, ha d'utilitzar per tornar el control de flux a l'avi.
+
+### Pas de paràmetres i retorn de resultats (els registres `a0`–`a7`)
+
+El pas de paràmetres i el retorn de resultats implica una comunicació entre el codi que invoca la subrutina i la subrutina cridada. Aquesta comunicació es fa dipositant paràmetres i resultats en llocs prèviament convinguts, seguint les regles de l'ABI.
 
 ::: {#nte-abi-pas-parametres .callout-note}
 ## RV32I ABI — Pas de paràmetres i retorn de resultats
 
-* Els **paràmetres** de tipus escalars (inclosos els punters) es passen als registres `a0`–`a7`, en ordre d'escriptura. El primer paràmetre va a `a0`, el segon a `a1`, etc.
-* El **resultat** es retorna al registre `a0` (o `a0`/`a1` si ocupa 64 bits).
-* Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), s'estén a 32 bits dins el registre assignat, fent extensió de signe o de zeros segons estigui declarat `signed` o `unsigned`.
+* Els **paràmetres** de tipus **escalar** (inclosos els punters) es passen pels registres `a0`–`a7`, en ordre d'aparició, d'esquerra a dreta.
+* El **resultat** es retorna al registre `a0`.
+* Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), cal estendre'l a 32 bits, dins el registre assignat, fent extensió de signe o de zeros segons hagi estat declarat `signed` o `unsigned`.
+
+**Atenció:** Retornar un valor implica la pèrdua del valor original d'`a0` per sobreescriptura.
+:::
+
+::: {#imp-ec-abi-restriccions .callout-important}
+A **EC**, no es considera el cas en què hi ha més de 8 paràmetres, ni el cas en què paràmetres o resultats són de tipus `struct` o de tipus `double` / `long long`. Aquests casos requereixen regles addicionals de l'ABI que no s'estudien a l'assignatura.
 :::
 
 ::: {#tip-exemple-suma2 .callout-tip}
@@ -1059,40 +1092,70 @@ suma2:
 ```
 :::
 
-::: {#imp-ec-abi-restriccions .callout-important}
-A **EC** no es considera el cas en què hi ha més de 8 paràmetres, ni el cas en què paràmetres o resultats són de tipus `struct` o de tipus `double` / `long long`. Aquests casos requereixen regles addicionals de l'ABI que no s'estudien en aquest curs.
+::: {#imp-pas-valor-referencia .callout-important}
+A **EC**, els modes de pas de paràmetres rellevants són:
+
+* **Pas per valor:** La funció rep una **còpia** del paràmetre. Qualsevol modificació que faci la funció afecta només la còpia, no l'original.
+* **Pas per referència:** La funció rep una **referència** a la dada original, és a dir, la seva **adreça en memòria**. Les modificacions que faci la funció afecten directament la dada original.
 :::
 
-En **C** només existeix el **pas per valor**: la funció rep una còpia del paràmetre real i pot modificar-la sense afectar l'original. Per aconseguir un efecte equivalent al **pas per referència**, es passa com a paràmetre un **punter** a la dada original. D'aquesta manera la funció pot modificar la dada original desreferenciant el punter:
+::: {#cau-mecanisme-vs-semantica .callout-caution}
+Cal distingir el **mecanisme físic** de pas del paràmetre (com es transmet la dada) de la **semàntica** (què representa la dada transmesa):
+
+| Mecanisme | Semàntica | Exemple a RV32I |
+| :--- | :--- | :--- |
+| Registre (`a0`–`a7`) | Valor | Paràmetre escalar (`int`, `char`) |
+| Registre (`a0`–`a7`) | Referència | Paràmetre punter (`int *`) |
+| Pila | Valor | Escalar que no cap en registre |
+
+En **C**, el mecanisme és sempre per registre o pila, però la **semàntica** depèn del tipus: un **escalar** és pas per **valor**, un **punter** és pas per **referència**.
+:::
+
+En **C** només existeix el **pas per valor**: la funció rep una còpia del paràmetre real i pot modificar-la sense afectar l'original. Per aconseguir un efecte equivalent al **pas per referència**, es passa com a paràmetre un **punter** a la dada original. D'aquesta manera la funció pot modificar la dada original desreferenciant el punter.
+
+::: {#tip-exemple-valor-referencia .callout-tip}
+## Pas per valor vs. pas per referència: `printf()` i `scanf()`
+
+Les funcions `printf` (formatat —`%d` per enters— i impressió de dades) i `scanf` (lectura formatada de dades) de la biblioteca `stdio.h` il·lustren bé la diferència entre pas per valor i pas per referència en C:
+
+```{.C filename="C"}
+int x = 42;
+printf("%d", x);    /* pas per valor: printf rep una còpia de x (42) */
+scanf("%d", &x);    /* pas per referència: scanf rep l'adreça de x    */
+                    /* i pot modificar-ne el contingut directament    */
+```
+
+Després de `scanf`, `x` pot tenir un valor diferent de `42`. Després de `printf`, `x` segueix valent `42` — `printf` no pot modificar-lo perquè només n'ha rebut una còpia.
+:::
 
 ::: {#tip-exemple-suma2 .callout-tip}
 ## Pas de paràmetres per referència amb punters
 
 ```{.C filename="C"}
 void sub(int *p) {
-    *p = *p + 10;
+    *p = *p + 10;   /* actualitza el contingut de l'adreça apuntada */
 }
 
 void f() {
     int a, b;
-    sub(&a);        /* passem punter a a */
-    sub(&b);        /* passem punter a b */
+    sub(&a);        /* passa un punter a a */
+    sub(&b);        /* passa un punter a b */
 }
 ```
 :::
 
-::: {#cau-pas-vector .callout-caution}
-Per passar un **vector** o una matriu com a paràmetre, s'usa el seu nom, que equival a un punter al primer element (@sec-punters-vectors).
-:::
+Les variables **escalars globals** es passen igual que les locals: per valor si es passa el seu contingut, o per referència si es passa la seva adreça (`&<nom_variable>`).
+
+Els **vectors** i **matrius**, en canvi, sempre es passen per referència: el seu nom equival a un punter al primer element (@sec-punters-vectors), de manera que la funció pot modificar-los directament.
 
 ::: {#tip-exemple-pas-vector .callout-tip}
-## C — Pas de paràmetres amb vector i variables globals
+## C — Pas de paràmetres: vector i variables globals
 
 ```{.C filename="C"}
 short x[10], y, z;
 
 void funcA() {
-    int k;              /* k en t0 */
+    int k;                      /* k a t0 */
     ...
     z = funcB(x, y, k);
     ...
@@ -1104,25 +1167,32 @@ short funcB(short *vec, short n, int i) {
 ```
 
 ```{.s filename="RV32I"}
+.data
+x:      .space  20              # vector de 10 shorts (20 bytes)
+y:      .half   0               # variable short (2 bytes)
+z:      .half   0               # variable short (2 bytes)
+...
+.text
+...
 funcA:
         ...
-        la      a0, x           # passem l'adreça del vector x (global)
-        la      t4, y
-        lh      a1, 0(t4)       # passem y (global) amb ext. de signe
-        mv      a2, t0          # passem k (local)
-        jal     ra, funcB
-        la      t4, z
-        sh      a0, 0(t4)       # escrivim resultat a z (global)
+        la      a0, x           # a0 <- @x (global)
+        la      t2, y           # t2 <- @y (global)
+        lh      a1, 0(t2)       # a1 <- M_h[@y] (amb extensió de signe)
+        mv      a2, t0          # a2 <- k (local)
+        jal     ra, funcB       # crida a funcB
+        la      t2, z           # t2 <- @z (global)
+        sh      a0, 0(t2)       # M_h[@z] <- a0 (retorn de funcB)
         ...
         ret
-
+...
 funcB:
         slli    a2, a2, 1       # offset = i * 2  (sizeof(short) = 2)
         add     a0, a0, a2      # @vec[i] = vec + offset
         lh      a0, 0(a0)       # vec[i] (amb ext. de signe)
         sub     a0, a0, a1      # resultat = vec[i] - n
         ret
-
+...
 ```
 :::
 
@@ -1195,73 +1265,76 @@ SUBRUTINES
 	* La pila del programa: una successió de blocs d'activació
 	* El problema de preservar el context
 		* Registres segurs
-	* Salvar i restaurar registres segurs
+	* desar i restaurar registres segurs
 		* Pròleg i epíleg
 	* Determinació dels registres segurs necessaris
 	* Exemple complet: subrutina multinivell
 * Exemple avançat: bloc d’activació complet -->
 
 
+Les variables que van a memòria no poden anar a `.data` perquè són dinàmiques: cada cop que s'invoca la funció, cal crear un nou conjunt de variables locals. En canvi, `.data` és una àrea de memòria estàtica on es guarden dades globals i constants que existeixen durant tota l'execució del programa. Per això les variables locals van a la **pila** (vegeu @sec-multinivell-pila), que és una àrea de memòria dinàmica gestionada en temps d'execució (*runtime*).
 
+BA no pot anar a `.data` perquè BA és dinàmic `.data` és estàtic. Per això BAs van a la pila, que és una àrea de memòria dinàmica gestionada en temps d'execució (*runtime*).
 
-### Variables locals: el bloc d'activació {#sec-variables-locals}
+### Variables locals: el bloc d'activació (el registre `sp`) {#sec-variables-locals}
 
-Les variables locals d'una funció es creen cada cop que s'invoca i es
-destrueixen en finalitzar. No tenen un espai d'emmagatzemament fix: poden
-residir en registres o en memòria, seguint les regles de l'ABI.
+* L'assignació d'espai al segment de memòria `.data` (@nte-segments-memoria) es fa en temps de compilació (a través de les directives pertinents @nte-directives-alineacio-inicialitzacio i @nte-directives-align-space)
+* Fer l'assignació d'espai en un segment de memòria en temps de compilació vol dir que l'espai reservat per a cada variable és fix i existeix durant tota l'execució del programa, cosa que és incompatible amb les variables locals d'una funció, que es creen cada cop que s'invoca i es destrueixen en finalitzar.
+* Cal, per tant, disposar d'un segment de memòria dinàmic, això és, gestionat en temps d'execució (*runtime*), on les subrutines puguin desar variables locals a demanda: la **pila** (@sec-multinivell-pila i @TODO-estructura-de-la-memoria).
+* El model de gestió de la pila imposa que les subrutines hi reservin tot l'espai que necessitaran a l'inici de la seva l'execució i que l'alliberin just abans de retornar el control de flux al *caller*. Aquest espai s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
-Les subrutines que necessiten guardar variables locals en memòria han de
-reservar-hi l'espai necessari en iniciar l'execució i alliberar-lo just
-abans de finalitzar. Aquest espai s'anomena **bloc d'activació**
-(***stack frame***) de la subrutina.
+::: {#nte-stack-pointer .callout-note}
+## RV32I ABI — Registre de pila `sp`
+La reserva i l'alliberament d'espai de memòria per al BA es fa mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
+:::
 
-::: {#tip-func-uninivell-pila .callout-tip}
-## Estat del bloc d'activació durant la crida a una funció uninivell
+::: {#nte-stack-pointer .callout-note}
+## RV32I ABI — El bloc d'activació
+
+El BA **creix** cap a **adreces més baixes**.
+
+Durant l'**execució** de la subrutina, l'`sp` **apunta al primer byte** del BA, el **cim de pila**.
+
+Per fer la **reserva** d'espai, cal **decrementar** `sp` la mida del bloc i, per fer l'**alliberament**, restituir-lo al valor original **incrementant-lo** la mateixa quantitat.
+:::
+
+::: {#tip-func-uninivell-bloc-activacio .callout-tip}
+## Evolució del bloc d'activació durant la crida i retorn d'una funció
 
 ```{.C filename="C"}
 void funcB() { sentB; }
 ```
-
-![Evolució del bloc d'activació durant la crida a `funcB`. Reserva i alliberament.](figures/TODO.png){#fig-func-uninivell-pila}
+TODO reducció a funcB de figura de pàg 20 EXEMPLE 20
+![Evolució de l'`sp` durant la crida i retorn de `funcB`. Reserva i alliberament del BA (decrement i increment d'`sp`, respectivament).](figures/TODO.png){#fig-func-uninivell-pila}
 :::
 
 ::: {#nte-abi-variables-locals .callout-note}
-## RV32I ABI — Assignació de variables locals
+## RV32I ABI — Assignació de variables locals a registres o al bloc d'activació
 
-Les variables locals s'assignen a registres o al bloc d'activació seguint aquestes
-regles:
+Les variables locals s'assignen a **registres** o al **BA** seguint aquestes regles:
 
-* Les variables **escalars** (enters, caràcters, punters) es guarden en registres. Només es guarden al bloc d'activació si:
+* Les variables **escalars** (enters, caràcters, punters) es guarden en **registres**. **Només** es guarden al BA si:
     * no hi ha prou registres disponibles, o
-    * apareixen precedides de l'operador `&` (necessiten adreça de memòria).
-* Les variables **estructurades** (vectors, matrius, etc.) es guarden
-  sempre al bloc d'activació.
+    * apareixen precedides de l'operador `&` ("adreça de"), per poder tenir una adreça de memòria.
+* Les variables **estructurades** (vectors, matrius, etc.) es guarden **sempre** al **BA**.
 
-El bloc d'activació pot incloure:
+El BA pot incloure:
 
-* **Variables locals** de tipus estructurat, o escalars que no caben en
-  registres o que requereixen adreça.
-* **Registres segurs salvats**, incloent-hi `ra` si la subrutina és
-  multinivell.
+* **Variables locals** de tipus estructurat i les escalars que no caben en registres o que requereixen adreça.
+* **Registres segurs desats** (vegeu @TODO-multinivell-registres-segurs), si la subrutina és multinivell.
 
-La disposició dins el bloc, de les adreces més baixes a les més altes:
+La disposició dins el BA, de les adreces més baixes a les més altes:
 
 | Zona | Contingut |
 | :--- | :--- |
 | Primera (adreces baixes) | Variables locals, en ordre textual de declaració, alineades segons el seu tipus |
-| Segona (adreces altes) | Registres segurs salvats, alineats a múltiple de 4 |
+| Segona (adreces altes) | Registres segurs desats, alineats a múltiple de 4 |
+| tercera (adreces més altes) | `ra`, alineat a múltiple de 4, si la subrutina és multinivell. |
 :::
 
-![Estructura general del bloc d'activació: variables locals al cim de la
-pila i registres salvats a continuació. El registre `sp` apunta al primer
-byte del bloc durant l'execució de la subrutina.
-](figures/TODO.png){#fig-ba-general}
+![Estructura general del bloc d'activació: variables locals al cim de la pila i registres desats a continuació. El registre `sp` apunta al primer byte del bloc durant l'execució de la subrutina.](figures/TODO.png){#fig-ba-general}
 
-En una subrutina **uninivell** (sense cap crida a altres subrutines), cap
-subrutina filla pot sobreescriure els registres temporals `t0`–`t6`. Per
-tant, les variables escalars d'una subrutina uninivell s'assignen sempre
-a registres **temporals** i no cal usar registres segurs `s0`–`s11`
-(@imp-registres-temporals-segurs).
+En una subrutina **uninivell**, cap subrutina filla pot sobreescriure els registres temporals `t0`–`t6`. Per tant, les variables escalars d'una subrutina uninivell s'assignen sempre a registres **temporals** i no cal usar registres segurs `s0`–`s11` (@imp-registres-temporals-segurs).
 
 ::: {#tip-exemple-variables-pila .callout-tip}
 ## Funció uninivell amb variables locals a la pila
@@ -1301,11 +1374,39 @@ func:
 ```
 :::
 
-### Subrutines multinivell: la pila del programa {#sec-multinivell}
 
-Diem que una subrutina és **multinivell** (*non-leaf*) si el seu codi conté
-alguna crida a una altra subrutina. Una subrutina és **uninivell** (*leaf*)
-si no en conté cap.
+
+
+
+
+
+
+
+
+
+
+
+### Subrutines multinivell: la pila del programa (els registres `s0`--`s11`) {#sec-multinivell-pila}
+
+TODO: Pila és un apilament de blocs d'activació. Cada bloc d'activació és un conjunt de dades locals d'una subrutina. La pila és una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen.
+
+TODO: A RARS fons de pila `0x7fffeffc`
+
+
+ En subrutines multinivell, s'ha de preservar, com a mínim, el valor de `ra` abans de la crida i restaurar-lo després:
+```{.s filename="RV32I"}
+sub:
+        ...
+        sw      ra, 0(sp)       # preservem ra a la pila
+        ...
+        jal     ra, sub2        # crida a sub2 (multinivell)
+        ...
+        lw      ra, 0(sp)       # restaurar ra abans de retornar
+        ret
+```
+
+
+
 
 El **context d'execució** d'una subrutina és el conjunt de totes les seves
 dades locals (paràmetres, variables locals, adreça de retorn i càlculs
@@ -1388,17 +1489,17 @@ sempre a registres **temporals**: cap subrutina filla pot sobreescriure'ls,
 de manera que no cal usar registres segurs `s0`–`s11`.
 :::
 
-#### Salvar i restaurar registres segurs
+#### desar i restaurar registres segurs
 
 Per respectar la regla anterior, una subrutina que modifica registres
 segurs ha de:
 
-1. **Salvar** els seus valors originals al bloc d'activació durant el
+1. **desar** els seus valors originals al bloc d'activació durant el
    **pròleg**, just a l'inici de la subrutina.
 2. **Restaurar** els seus valors originals durant l'**epíleg**, just
    abans de retornar.
 
-A més, tota subrutina multinivell ha de salvar i restaurar `ra`, ja que
+A més, tota subrutina multinivell ha de desar i restaurar `ra`, ja que
 `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
 
 ::: {#cau-ec-subrutina-uninivell-sense-ba .callout-caution}
@@ -1444,16 +1545,16 @@ dades `c` i `d` que travessen la frontera i que s'han de guardar en
 registres segurs.](figures/TODO.png){#fig-deps-multi}
 
 **Pas 2. Bloc d'activació.** No hi ha variables locals a la pila (totes
-són escalars). Cal salvar `s0`, `s1` i `ra`: 3 words = 12 bytes.
+són escalars). Cal desar `s0`, `s1` i `ra`: 3 words = 12 bytes.
 
 | Offset des de `sp` | Contingut |
 | :--- | :--- |
-| `+0` | `s0` salvat |
-| `+4` | `s1` salvat |
-| `+8` | `ra` salvat |
+| `+0` | `s0` desat |
+| `+4` | `s1` desat |
+| `+8` | `ra` desat |
 
 ![Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i
-`ra` salvats als offsets `+0`, `+4` i `+8` respectivament.
+`ra` desats als offsets `+0`, `+4` i `+8` respectivament.
 ](figures/TODO.png){#fig-ba-multi}
 
 **Pas 3. Codi assemblador.**
@@ -1462,9 +1563,9 @@ són escalars). Cal salvar `s0`, `s1` i `ra`: 3 words = 12 bytes.
 multi:
         # pròleg
         addi    sp, sp, -12
-        sw      s0, 0(sp)       # salvem s0
-        sw      s1, 4(sp)       # salvem s1
-        sw      ra, 8(sp)       # salvem ra
+        sw      s0, 0(sp)       # desa s0
+        sw      s1, 4(sp)       # desa s1
+        sw      ra, 8(sp)       # desa ra
         mv      s0, a2          # copiem c a s0
 
         # d = a + b  → s1
@@ -1541,7 +1642,7 @@ char exemple(int a, int b, int c) { /* a → a0, b → a1, c → s0 */
 
 **Pas 2. Bloc d'activació.** Variables a la pila en ordre textual: `q`
 (4 bytes), `v` (18 bytes), `w` (20 bytes). Total variables: 42 bytes.
-Alineació fins a múltiple de 4: 2 bytes. Registres salvats: `s0`, `s1`,
+Alineació fins a múltiple de 4: 2 bytes. Registres desats: `s0`, `s1`,
 `s2`, `ra` = 16 bytes. **Total: 60 bytes.**
 
 | Offset des de `sp` | Contingut | Mida |
@@ -1550,14 +1651,14 @@ Alineació fins a múltiple de 4: 2 bytes. Registres salvats: `s0`, `s1`,
 | `+4` | `v[0]`–`v[17]` | 18 bytes |
 | `+22` | `w[0]`–`w[19]` | 20 bytes |
 | `+42`–`+43` | alineació | 2 bytes |
-| `+44` | `s0` salvat | 4 bytes |
-| `+48` | `s1` salvat | 4 bytes |
-| `+52` | `s2` salvat | 4 bytes |
-| `+56` | `ra` salvat | 4 bytes |
+| `+44` | `s0` desat | 4 bytes |
+| `+48` | `s1` desat | 4 bytes |
+| `+52` | `s2` desat | 4 bytes |
+| `+56` | `ra` desat | 4 bytes |
 
 ![Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i
 `w` als offsets `+0`, `+4` i `+22`, alineació als bytes `+42`–`+43`, i
-registres salvats `s0`, `s1`, `s2`, `ra` als offsets `+44`, `+48`, `+52`
+registres desats `s0`, `s1`, `s2`, `ra` als offsets `+44`, `+48`, `+52`
 i `+56`.](figures/TODO.png){#fig-ba-exemple}
 
 **Pas 3. Codi assemblador.**
@@ -1668,7 +1769,7 @@ RARS organitza l'espai d'adreces de 32 bits del processador RV32I en les regions
 | `.text` | `0x00400000` | Codi màquina (instruccions) | ↑ |
 | `.data` | `0x10010000` | Variables globals i cadenes de caràcters | ↑ |
 | *heap* | A continuació de `.data` | Variables dinàmiques (`malloc`) | ↑ |
-| Pila | `0x7FFFFFFC` | Variables locals, registres salvats | ↓ |
+| Pila | `0x7FFFFFFC` | Variables locals, registres desats | ↓ |
 :::
 
 La regió de **dades estàtiques** conté la secció `.data`, on es guarden les variables globals declarades al programa. L'accés a una variable global comporta que el programa inicialitzi un registre amb la seva adreça de 32 bits mitjançant la pseudoinstrucció `la`:
@@ -1756,7 +1857,7 @@ A la @sec-traduccio-c-asm hi ha una introducció a aquest procés. En aquesta se
 
 ### Compilació separada
 
-En **C**, un **mòdul** (també anomenat unitat de traducció) és una unitat funcional de programació composta, generalment, per **un o més fitxers de codi font** (`.c`) i **un fitxer de capçalera** (`.h`), el qual conté les declaracions de les funcions i les dades del mòdul volen fer accessibles a altres mòduls (tècnicament, la interfície). La directiva de preprocessament `#include` fa la inclusió textual dels fitxers de capçalera dins de la unitat de traducció, facilitant la propagació de declaracions de tipus, prototips de funcions i macros necessàries per a la resolució de símbols.
+En **C**, un **mòdul** (també anomenat unitat de traducció) és una unitat funcional de programació composta, generalment, per **un o més fitxers de codi font** (`.c`) i **un fitxer de capçalera** (`.h`), el qual conté les declaracions de les funcions i les dades del mòdul volen fer accessibles a altres mòduls (tècnicament, la interfície). La directiva de pre-processament `#include` fa la inclusió textual dels fitxers de capçalera dins de la unitat de traducció, facilitant la propagació de declaracions de tipus, prototips de funcions i macros necessàries per a la resolució de símbols.
 
 Hi ha moltes situacions a on resulta convenient separar el codi i les dades en **mòduls**. Algunes d'aquestes situacions són:
 
@@ -1799,7 +1900,7 @@ Flux de compilació separada: cada mòdul es compila i assembla independentment 
 
 El **compilador** pren com a entrada el codi font en C i el tradueix a llenguatge assemblador (fitxer `.s`). Durant aquest procés aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable, i genera les instruccions de la **ISA** de destí.
 
-El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen totes les que fan referència al mòdul mateix, i les que no es poden resoldre (perquè referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combine tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'interfica.
+El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen totes les que fan referència al mòdul mateix, i les que no es poden resoldre (perquè referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combine tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'enllaçarà.
 
 ### Assemblatge {#sec-assemblatge}
 

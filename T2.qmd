@@ -43,7 +43,7 @@ El terme ***Reduced Instruction Set Computer*** (**RISC**) apareix a principis d
 
 Abans que els processadors **RISC** fossin populars, els ràpids avenços en la tecnologia d'integració a escala molt gran (**Very Large Scale Integration**, **VLSI**) havien permès als arquitectes integrar circuits cada cop més complexos, i adoptar llenguatges d'assemblador cada cop més potents, amb l'objectiu de reduir la **diferència semàntica** amb els llenguatges d'alt nivell. Així per exemple, en alguns processadors es podien realitzar amb una sola instrucció de llenguatge màquina operacions tan complexes com avaluar un polinomi en coma flotant, o copiar una cadena de caràcters traduint-los prèviament per mitjà d'una taula de conversió. Per abastar tal varietat i sofisticació de tasques calia un repertori amplíssim d'instruccions, amb un nombre variable d'operands, fent necessari codificar-les amb un **format de mida variable**. Per especificar la ubicació dels operands es necessitaven molts **modes d'adreçament** i **indireccions de memòria complexes**. Algunes instruccions involucraven tantes operacions que per interpretar-les es necessitava executar cada cop un petit programa escrit en **microcodi**, en una ***Read Only Memory*** (**ROM**) interna. Aquestes arquitectures són les que van ser més tard conegudes com **CISC**.
 
-Però aquesta tendència va començar a canviar quan alguns estudis estadístics van mostrar que les **instruccions més complexes a penes es feien servir** en la pràctica, ja que responien a necessitats tan particulars que els compiladors trobaven moltes dificultats per aplicar-les. Aviat es va fer evident que tot i que les instruccions complexes podien resoldre problemes particulars de manera molt eficient, la seva implementació augmentava la complexitat del processador de tal manera que comportava sovint que l'execució de les instruccions més simples s'alentís. La filosofia **RISC** va tendir doncs a suprimir les instruccions complexes i lentes, seguint el principi que la mateixa tasca es pot realitzar amb una seqüència d'**instruccions simples**, i que suprimir-les del repertori permet dissenyar un **maquinari** més simple, capaç d'executar més ràpidament les altres instruccions (***simplicity favors regularity*** [@patterson2020riscv]). La principal característica de les arquitectures **RISC** (**ARM**, **PowerPC**, **MIPS**, **RISC-V**, **Alpha**, **SPARC**, etc.) consistia en un joc d'instruccions dissenyat amb el criteri bàsic del **rendiment**. El més característic dels **RISC** era el fet de tenir **instruccions de mida fixa** (normalment 32 bits), pocs **modes d'adreçament** (solament operands en registre o bé immediats), i que l'**accés a memòria** es feia solament amb instruccions específiques anomenades ***load*** i ***store***.
+Però aquesta tendència va començar a canviar quan alguns estudis estadístics van mostrar que les **instruccions més complexes a penes es feien servir** en la pràctica, ja que responien a necessitats tan particulars que els compiladors trobaven moltes dificultats per aplicar-les. Aviat es va fer evident que tot i que les instruccions complexes podien resoldre problemes particulars de manera molt eficient, la seva implementació augmentava la complexitat del processador de tal manera que comportava sovint que l'execució de les instruccions més simples s'alentís. La filosofia **RISC** va tendir doncs a suprimir les instruccions complexes i lentes, seguint el principi que la mateixa tasca es pot realitzar amb una seqüència d'**instruccions simples**, i que suprimir-les del repertori permet dissenyar un **maquinari** més simple, capaç d'executar més ràpidament les altres instruccions (***simplicity favors regularity*** [@patterson2020riscv]). La principal característica de les arquitectures **RISC** (**ARM**, **PowerPC**, **MIPS**, **RISC-V**, **Alpha**, **SPARC**, etc.) consistia en un joc d'instruccions dissenyat amb el criteri bàsic del **rendiment**. El més característic dels **RISC** era el fet de tenir **instruccions de mida fixa** (normalment 32 bits), pocs **modes d'adreçament** (solament operands en registre o bé immediats), i que l'**accés a memòria** es feia només amb instruccions específiques de càrrega i emmagatzemament a memòria.
 
 Originàriament, els nous microprocessadors de tipus **RISC** eren estructuralment més simples que els de tipus **CISC** i estaven formats per un nombre molt més reduït de transistors, característica que els feia **més barats, ràpids i energèticament eficients**. Moltes de les arquitectures **CISC** van desaparèixer, però algunes que estaven fermament instal·lades en el mercat (com la **x86** d'Intel i **AMD**) simplement van evolucionar, i amb els anys, les diferències entre **CISC** i **RISC** s'han anat difuminant. Per una banda, els processadors **x86** actuals converteixen internament cada una de les instruccions en una o vàries **micro-operacions** del tipus **RISC**. Per l'altra, a mesura que la dissipació de calor ha frenat l'augment de les freqüències de rellotge, aquestes arquitectures han anat incorporant als seus repertoris noves instruccions per augmentar-ne la funcionalitat. Amb aquestes ampliacions, el repertori ha deixat de ser "reduït" però no per això s'ha desvirtuat el criteri **RISC**, que no és pas la llargada del repertori sinó la **millora de rendiment global**.
 
@@ -295,7 +295,7 @@ Binari                            Hexadecimal Basic              Codi font
 
 ::: {#nte-rars-file-dump-memory .callout-note}
 ## RARS — Abocament de memòria
-A **RARS**, per obtenir el contingut de memòria (*memory dump*) de `.text` o `.data`: *File → Dump Memory*
+A **RARS**, per obtenir el contingut de memòria (*memory dump*) de `.text` o `.data` (@nte-segments-memoria): *File → Dump Memory*
 :::
 
 ::: {#imp-nmemonics-llegir-los-sencers .callout-important}
@@ -352,7 +352,7 @@ Un programa en assemblador es compon de:
 
 ### Segments {#sec-programa-segments}
 
-Els principals segments són `.text` (instruccions) i `.data` (variables globals). Es declaren amb una **directiva de segment** i tot el contingut que els segueix fins al segment següent hi pertany.
+Els principals segments d'un programa són: `.text` (instruccions) i `.data` (variables globals). Es declaren amb una **directiva de segment** i tot el contingut que els segueix fins al segment següent hi pertany.
 
 <!-- TODO `.data` és només de RARS? -->
 ::::: {#nte-segments-memoria .callout-note}
@@ -377,7 +377,7 @@ En sistemes Linux reals, l'ABI ELF defineix segments addicionals que RARS no sup
 | Dades no inicialitzades | `.bss` | Variables globals sense valor inicial; inicialitzades a zero pel SO. No ocupa espai al fitxer executable |
 :::
 
-A RARS, tant `.rodata` com `.bss` es substitueixen per `.data`: les constants no estan protegides d'escriptura i les variables no inicialitzades es declaren amb `.space`.
+A RARS, tant `.rodata` com `.bss` es substitueixen per `.data`: les constants no estan protegides d'escriptura i les variables no inicialitzades es declaren amb `.space` (@nte-directives-align-space).
 ::::
 :::::
 
@@ -682,7 +682,7 @@ L'esquelet mínim d'un programa en assemblador té dues variants: la genèrica, 
 ```
 :::
 
-::::: {#imp-programa-esquelet .callout-important}
+::: {#imp-programa-esquelet .callout-important}
 ## Esquelet mínim d'un programa a l'assignatura
 ```{.s filename="esquelet_ec.s"}
 .data
@@ -696,9 +696,9 @@ main:
 ```
 
 Per executar correctament aquest esquelet a RARS, cal configurar l'*Exception Handler* amb el fitxer `startup.s` (@imp-exception-handler).
-:::::
+:::
 
-::::: {#imp-exception-handler .callout-important}
+::: {#imp-exception-handler .callout-important}
 ## RARS — *Exception Handler:* `startup.s`
 
 Tot i que, a **EC**, l'assumpció general és treballar directament sobre el processador (@imp-directe-sobre-processador) i, per tant, sense SO, al laboratori es configura RARS per emular el **mecanisme d'inici i finalització del programa**: el SO no crida `main` directament, sinó que primer executa `__start`, que inicialitza l'entorn d'execució i crida `main`. Quan `main` retorna, `__start` invoca la crida al sistema `exit` per alliberar els recursos del procés.
@@ -715,24 +715,25 @@ __start:
     ecall
 ```
 
-:::: {#wrn-so-start .callout-warning collapse=true}
+::: {#wrn-so-start .callout-warning collapse=true}
 ## El mecanisme d'inici i finalització en detall
 
 Quan RARS carrega el programa amb `startup.s`, les tres primeres instruccions (`0x00400000`--`0x00400008`, `.text`) són:
 
-::: {tbl-colwidths="[15,15,25,55]" style="width: 95%; margin: auto;"}
+:
 | Adreça | Codi | Bàsic | Línia font |
 | :--- | :--- | :--- | :--- |
 | `0x00400000` | `0x00c000ef` | `jal x1, 0x0000000c` | `jal main` |
 | `0x00400004` | `0x00a00893` | `addi x17, x0, 10` | `li a7, 10` |
 | `0x00400008` | `0x00000073` | `ecall` | `ecall` |
-:::
+: {tbl-colwidths="[15,15,25,55]" style="width: 95%; margin: auto;"}
 
 El PC comença a `0x00400000`, on `__start` crida `main`. En retornar, `a7 = 10` activa la **syscall** `exit` (número 10), que allibera els recursos del programa.
 
 Tècnicament, el flux complet és `_start` → `main` → `exit` → `_exit`. A EC, RARS emulen `__start` i la syscall `exit` (número 10), però no la funció `exit` de la libc ni `_exit`.
-::::
-:::::
+:::
+
+:::
 
 ## Variables escalars
 
@@ -1155,13 +1156,15 @@ La **ISA** de **RV32I** és **ortogonal** pel que fa als registres: tret de `x0`
 
 ::: {#nte-registres-proposit-general .callout-note}
 ## RV32I ISA i ABI — Registres de propòsit general
-| ISA | ABI | Propòsit | Qui el guarda |
+| ISA | ABI | Propòsit | Qui el guarda (*Saver*) |
 | :---: | :---: | :--- | :--- | :--- |
 {{< include referencies/RV32I_registres_proposit_general.qmd >}}
 : {tbl-colwidths="[15,15,55,15]" .striped}
 :::
 
+::: {#imp-registres-isa-abi .callout-important}
 En llenguatge assemblador, els registres es poden referenciar per l'identificador de l'**ISA** (`x0`–`x31`) o pel de l'**ABI**, essent aquest darrer criteri el més habitual i el comú a **EC**.
+:::
 
 ::: {#nte-program-counter .callout-note}
 ## El *program counter* (PC)
@@ -1351,67 +1354,55 @@ lw      t1, 0(t0)      # Provoca una excepció d'accés no alineat!
 
 ## Punters
 
-Un punter és una **variable escalar** que conté una **adreça de memòria**. Per tant, a **RV32I**, els punters, en ser adreces en una arquitectura de 32 bits, ocupen sempre **32 bits** (**4 bytes**).
+Un punter és una **variable escalar** que conté una **adreça de memòria**.
+
+::: {#nte-punters-32-bits .callout-note}
+A **RV32I**, com que l'espai d’adreces de 32 bits (@nte-rv32i-model-memoria), els punters ocupen sempre **32 bits** (**4 bytes**, un word).
+:::
 
 ::: {#cau-punters-naturals .callout-caution}
-Els **punters** representen adreces de memòria i, per tant, **només** poden ser **nombres naturals** de l'espai adreçable (@nte-rv32i-model-memoria).
+Els **punters** representen adreces de memòria i, per tant, **només** poden ser **nombres naturals** del rang adreçable.
 :::
 
 ::: {#wrn-punters-x86 .callout-warning}
-A **x86-64**, els punters tenen 8 bytes.
+A **x86-64** i a **RV64I**, els punters tenen 8 bytes.
 :::
 
-::: {#wrn-punters-aritmetica-possible .callout-warning collapse=true}
-## C — aritmètica de punters, úniques operacions permeses
 
-L'estàndard de C és molt restrictiu per evitar accessos a memòria sense sentit. Les úniques operacions permeses amb punters són:
+### "Punter de tipus \<tipus\>" {#sec-punters-c-tipus}
 
-* Suma d'un punter i un enter: `p + n` (desplaça el punter posicions del tipus de dada que apunta).
-* Resta d'un punter i un enter: `p - n`.
-* Resta de dos punters: `p1 - p2` (dona el nombre d'elements entre ells, de tipus `ptrdiff_t`).
-* Increment i decrement: `p++` i `p--`.
-* Comparacions: `p1 < p2`, `p1 == p2`, etc.
+**Aritmèticament**, els punters són **nombres naturals**. En **C**, però, no només es consideren un **tipus de dada específic**, diferent dels naturals, sinó que, hi ha un **tipus de punter** per cada **tipus de dada**. Per exemple, el tipus "punter a tipus enter" és diferent al tipus "punter a tipus caràcter".
 
-La multiplicació, per exemple, no és permesa.
-:::
+Per abús de llenguatge, es sol dir "punter a enter" o "punter a caràcter" en lloc de "punter de tipus enter" i "punter de tipus caràcter", respectivament.
 
-### "Punter de tipus \<tipus variable\>" {#sec-punters-c-tipus}
+### C — `*`: el declarador "variable de tipus punter al \<tipus\>" {#sec-punters-c-declaracio}
 
-**Aritmèticament**, un **punter** és un **nombre natural**, però **C** el considera com un **tipus de dada específic**, diferent dels naturals, fet que es reflecteix en la manera de declarar-lo. A més a més, **C** defineix un **tipus de punter** per cada **tipus de la dada apuntada**. És a dir, **el tipus de dada apuntada** forma part de la **declaració del punter**.
+En **C**, en una **declaració**, el caràcter `*`, si està precedit del nom d'un tipus i seguit del nom d'una variable, indica que aquesta variable és "**de tipus punter al tipus que precedeix el caràcter `*`**".
 
-### C — `*`: el declarador "punter a \<nom variable\>" {#sec-punters-c-declaracio}
+Per exemple, la declaració `int *p;` declara `p` com una variable de tipus punter a tipus enter. Tècnicament, `p` és de tipus `int *`, això és "punter a tipus enter" o, més habitualment, per abús de llenguatge, "punter a enter".
 
-::: {#cau-punters-c-declaracio .callout-caution}
-En **C**, en una **declaració**, entre el tipus i la variable, `*` indica "**punter a**" aquesta variable.
+En **C**, la sintaxi de declaració d'un punter és:
 
-No s'ha confondre aquest ús en les declaracions amb l'ús en les sentències precedint un punter, on és l'operador "contingut de" (desreferència, @sec-punters-desreferencia) l'adreça apuntada pel punter.
-:::
-
-En **C**, la sintaxi de declaració d'un punter (tenint en consideració la @sec-punters-c-declaracio) és:
-
-``` {.default filename="Ci"}
-<tipus de la variable apuntada> *<nom del punter> [= adreça d'inicialització]
+``` {.default filename="C"}
+<tipus_apuntat> *<nom_del_punter> [= adreça_d_inicialització];
 ```
+* **Atenció:** En la sintaxi de declaració, els claudàtors `[]` indiquen opcionalitat: `= adreça d'inicialització` és la inicialització (@sec-punters-inicialitzacio) i pot ometre's.
 
-Els claudàtors `[]` indiquen opcionalitat: `= adreça d'inicialització` és la inicialització (@sec-punters-inicialitzacio) i pot ometre's.
-
-::: {#cau-punters-c-tipus .callout-caution}
-A **C**, no existeix un tipus **punter** genèric, sinó **punter de tipus `<tipus variable>`, a on `<tipus variable>` és el tipus de la dada apuntada (`char`, `int`, etc.).
-
-La manera de referir-se a un punter de manera correcta tècnicament és: "`<punter>` és un punter de <tipus de la variable> que apunta a nom de la`<variable>`". Tot i això, sovint es redueix a "`<punter>` és un punter a <tipus de la variable>" per abús de llenguatge.
+::: {#cau-asterisc-declaracio-vs-sentencia .callout-caution}
+No s'ha confondre l'ús de `*` en les **declaracions** amb l'ús en les **sentències**, on és l'operador de desreferència o indirecció (@sec-punters-desreferencia).
 :::
+
+A l'@tip-punters-c-declaracio, `p1` i `p4` són del tipus `int *`, és a dir, són punters a variables de tipus `int`. Anàlogament, `p2` és un punter del tipus `char *`, és a dir, un punter a una variable de tipus `char`, mentre que `p3` és un punter del tipus `short *`, per tant, un punter a una variable de tipus `short`. El caràcter `*` en les **declaracions** és un modificador que és part del **declarador** que denota "punter a" (essent `*p1` un declarador complet, per exemple). Cal, per tant, no confondre'l amb l'operador "multiplicació" ni amb l'operador "desreferència/indirecció" (@sec-punters-desreferencia) tot i tenir el mateix símbol; en C només té sentit parlar d'operadors en expressions, no en declaracions. Finalment, a @tip-punters-c-declaracio cal adonar-se que `p5` no és un punter, sinó un enter, ja que el declarador `*` només afecta `p4`.
 
 ::: {#tip-punters-c-declaracio .callout-tip}
 ## Declaració de punters en C
 ```{.C filename="C"}
-int *p1;          // Punter a enter
-char *p2;         // Punter a caràcter
-short *p3;        // Punter a short
-int *p4, p5;      // p4 és un punter a enter, però p5 és un enter!
+int *p1;          /* Punter a enter */
+char *p2;         /* Punter a caràcter */
+short *p3;        /* Punter a short */
+int *p4, p5;      /* p4 és un punter a enter, però p5 és un enter! */
 ```
 :::
-
-A @tip-punters-c-declaracio, `p1` i `p4` són del tipus `int *`, és a dir, són punters a variables de tipus `int`. Anàlogament, `p2` és un punter del tipus `char *`, és a dir, un punter a una variable de tipus `char`, mentre que `p3` és un punter del tipus `short *`, per tant, un punter a una variable de tipus `short`. El caràcter `*` en les **declaracions** és un modificador que és part del **declarador** que denota "punter a" (essent `*p1` un declarador complet, per exemple). Cal, per tant, no confondre'l amb l'operador "multiplicació" ni amb l'operador "desreferència/indirecció" (@sec-punters-desreferencia) tot i tenir el mateix símbol; en C només té sentit parlar d'operadors en expressions, no en declaracions. Finalment, a @tip-punters-c-declaracio cal adonar-se que `p5` no és un punter, sinó un enter, ja que el declarador `*` només afecta `p4`.
 
 A l'@tip-punters-rv32i-declaracio es tradueix a **RV32I** de les declaracions en C dels punters $*p1$, $*p2$ i $*p3$ suposant que les variables $p1$, $p2$ i $p3$ són variables globals. En aquest exemple, s'inicialitzen a zero, conegut com a **punter nul** (**null pointer**), per explicitar que no apunten a cap adreça vàlida, per exemple, perquè encara no es coneix l'adreça de les variables a les quals apuntaran. `p1`, `p2` i `p3` són punters a enter, caràcter i short, respectivament, però a **RV32I no hi ha una distinció explícita entre diferents tipus de punters; tots són simplement adreces de 32 bits**.
 
@@ -1427,41 +1418,39 @@ p3:     .word 0       # Punter a short (inicialitzat a null)
 
 ### C — `&`: l'operador "adreça de" {#sec-punters-ampersand}
 
-L'operador `&` ("ampersand"), davant del nom d'una variable, és l'"**operador d'adreça de**" la variable que precedeix. Així doncs, `&x` representa l'adreça de la variable `x`.
+En **C**, l'operador `&` ("ampersand"), davant del nom d'una variable, és l'"**operador d'adreça de**" la variable que precedeix. Així doncs, `&x` representa l'adreça de la variable `x`.
 
-::: {#cau-c-ampersand .callout-caution}
-## `&`, "adreça de"
-`&`, davant del nom d'una variable és l'adreça d'aquesta variable.
-
-No s'ha de confondre amb l'operador "i" lògica bit a bit, tot i emprar el mateix caràcter. En punters, és operador **unari** que precedeix l’operand (el nom d'una variable.). En lògica bit a bit, és un operador **binari** interposat entre dos operands.
+::: {#cau-c-ampersand-adreca-vs-bitwise .callout-caution}
+No s'ha de confondre l'us de `&` en punters, on és un operador **unari**, amb l'ús en lògica bit a bit, on és l'operador **binari** AND (@sec-instruccions-logiques-bit-a-bit).
 :::
 
-### Inicialització i assignació {#sec-punters-inicialitzacio}
+### Assignació i inicialització en la declaració {#sec-punters-inicialitzacio}
 
 En **C**, a un **punter** se li pot **assignar un valor** (una adreça) de tres maneres diferents:
 
-* Mitjançant l'operador `&` aplicat a una variable del tipus del punter.
-   * ``` {.C filename="C"}
-     ptr = &var; 
-     ```
-* Assignant-li un altre punter del mateix tipus.
-   * ``` {.C filename="C"}
-     p1 = p2;
-     ```
-* Explícitament, mitjançant un *type cast* a partir d'una adreça numèrica (ús avançat):
-   * ```{.C filename="C"}
-     ptr = (int *) <adreça>;    // per exemple, 0x10010000
-     ```
+1. Mitjançant l'operador `&` aplicat a una variable del tipus del punter.
+``` {.C filename="C"}
+ptr = &var; 
+```
+2. Assignant-li un altre punter del mateix tipus.
+``` {.C filename="C"}
+p1 = p2;           /* p2 està inicialitzat */
+```
+3. Explícitament, mitjançant un *type cast* a partir d'una adreça numèrica (ús avançat):
+```{.C filename="C"}
+ptr = (int *) <adreça>;    /* per exemple, 0x10010000 */
+```
 
-La **inicialització** en una declaració es pot fer de la mateixa manera que l'**assignació**. 
+En **C**, un **punter** es pot **inicialitzar en la declaració** seguint la sintaxi estàndard, on `<adreça>` pot ser l'adreça d'una variable (obtinguda amb `&`), un altre punter del mateix tipus, o una adreça numèrica explícita mitjançant un *type cast*.
+
+``` {.C filename="C"}
+tipus *nom_variable = <adreça>;
+```
 
 En **RV32I**, l'**assignació** o **inicialització** d'un punter es pot fer:
+
 * Assignant-li l'adreça d'una variable (per exemple, mitjançant la macro `la` en cas d'una variable global).
 * Explícitament (per exemple mitjançant la macro `li`).
-
-::: {#cau-punters-inicialitzacio-explicita .callout-caution}
-Les inicialitzacions són especialment propenses a induir errors.
-:::
 
 ::: {#tip-inicialitzacio-punters-1 .callout-tip}
 ## Inicialització de punters a variables globals
@@ -1508,14 +1497,16 @@ El caràcter `=` és el **delimitador d'inicialització**, que separa el declara
 La distinció entre tipus base i declarador és important: en `int *p1, p2;`, el `*` pertany al declarador de `p1`, no al tipus `int`. Per tant, `p2` és un `int`, no un punter.
 :::
 
-### C — `*`: l'operador desreferència o indirecció {#sec-punters-desreferencia}
+### C — `*`: l'operador "desreferència" o "indirecció" {#sec-punters-desreferencia}
 
-Els punters serveixen per accedir (llegir o escriure) a les variables apuntades. L’operació "**desreferència**" o d'"**indirecció**" d’un punter consisteix a accedir a la posició de memòria apuntada pel punter. S’indica en C precedint el nom del punter amb el caràcter `*`. Així doncs, l’expressió `*p` significa “**contingut de la posició de memòria** apuntada pel punter `p`”. No s’ha de confondre l’operador de desreferència amb el modificador de declarador de punters explicat a la @sec-punters-c-declaracio, tot i que té el mateix símbol. Mentre que el modificador de declarador apareix sempre en una declaració, entre el nom del tipus apuntat i el nom del punter, l’operador de desreferència apareix sempre precedint un punter, en el codi.
+L’operació "**desreferència**" o d'"**indirecció**" d'un punter és l'operació d'accés a la posició de memòria apuntada pel punter, sigui per lectura o escriptura.
 
-::: {#cau-punters-c-desreferencia .callout-caution}
-En **C**, en les sentències precedint un punter, `*` indica "**contingut de**" aquesta variable.
+En **C**, s’expressa precedint el nom del punter amb el caràcter `*`.
 
-Cal no confondre aquest ús en sentencies amb l'ús en declaracions (@sec-punters-c-declaracio), on `*` és l'operador "punter a".
+Així doncs, l’expressió `*p` significa “**contingut de la posició de memòria** apuntada pel punter `p`”.
+
+::: {#cau-asterisc-sentencia-vs-declaracio .callout-caution}
+No s'ha confondre l'ús de `*` en les **sentències** amb l'ús en les **declaracions**, on és el declarador "variable de tipus punter al \<tipus\>" (@sec-punters-c-declaracio).
 :::
 
 ::: {#tip-desreferencia-punters-c .callout-tip}
@@ -1589,8 +1580,23 @@ p:      .word 0                 # Punter a enter
         addi    t0, t0, -8      # p - 2 (retrocedeix 8 bytes: 2 * mida d'un int)
         sw      t0, 0(t1)       # p = p - 2  (ara p apunta a v[-1]: fora de rang!)
 ```
+(Per a la directiva `.space` vegeu @nte-directives-align-space)
 :::
 
+
+::: {#wrn-punters-aritmetica-possible .callout-warning collapse=true}
+## C — Aritmètica de punters: operacions permeses
+
+L'estàndard de C és molt restrictiu per evitar accessos a memòria sense sentit. Les úniques operacions permeses amb punters són:
+
+* Suma d'un punter i un enter: `p + n` (desplaça el punter posicions del tipus de dada que apunta).
+* Resta d'un punter i un enter: `p - n`.
+* Resta de dos punters: `p1 - p2` (dona el nombre d'elements entre ells, de tipus `ptrdiff_t`).
+* Increment i decrement: `p++` i `p--`.
+* Comparacions: `p1 < p2`, `p1 == p2`, etc.
+
+La multiplicació, per exemple, no és permesa.
+:::
 
 ### C — Absència de control de límits en l'accés a memòria {#sec-c-punters-absencia-control-limits}
 
@@ -1599,9 +1605,9 @@ L'**estàndard** de C **no especifica** què passa si s'accedeix a una àrea de 
 1. **Segmentation Fault** (***Segfault***)**:** És l'error més comú en temps d'execució. El SO detecta que el programa intenta llegir o escriure en una adreça de memòria que no li pertany (una zona protegida o no assignada) i mata el procés immediatament.
 2. **Corrupció de dades (silenciosa)**: Si l'adreça calculada amb l'aritmètica de punters encara cau dins de la memòria que el programa té assignada (per exemple, on hi ha una altra variable), **el programa continuarà funcionant**, però **accedint a dades indeterminades** sense cap indicació d'error.
 <!-- TODO afegir ref a secció concreta -->
-3. **Vulnerabilitats de seguretat**: Si l'accés ocorre en la pila (*stack*, @), es pot produir un ***buffer overflow***, fet que podria arribar a permetre a un **atacant** modificar l'adreça de retorn d'una funció i **executar codi maliciós**.
+3. **Vulnerabilitats de seguretat**: Si l'accés és a la pila (*stack*, @sec-multinivell-pila), es pot produir un ***buffer overflow***, fet que podria arribar a permetre a un **atacant** modificar l'adreça de retorn d'una funció i **executar codi maliciós**.
 
-<!-- TODO Pensar si afegir un aprofundiment presentant els punters a funcions -->
+<!-- TODO Valorar si afegir un aprofundiment presentant els punters a funcions -->
 
 ## Vectors {#sec-vectors}
 
@@ -1633,7 +1639,7 @@ En **C**, la **declaració** de **vectors** es pot fer de tres maneres:
 
 ```{.C filename="C"}
 short vec[] = {2, -1, 3, 5, 0};                  // vector
-int mat1[2][3] = {{1, 2, 3}, {4, 5, 6}};        // matriu; [files][columnes]
+int mat1[2][3] = {{1, 2, 3}, {4, 5, 6}};        // matriu [files][columnes]
 int mat2[2][3] = {{11, 12, 13}, {21, 22, 23}};  // matriu
 ```
 :::
@@ -1720,11 +1726,11 @@ int  x = mat[1][2]; // equivalent a *(*(mat + 1) + 2) = 6
 L'emmagatzemament a memòria és **per files** (*row-major order*): primer tots els elements de la fila 0, després els de la fila 1, etc.
 :::
 
-### Accés aleatori a elements d'un vector {#sec-access-vector}
+### C — `[]`: operador "indexació" {#sec-access-vector}
 
 L'accés a un element d'un vector es fa mitjançant el seu **índex**. En **C**, l'índex comença a **zero** i, en **sentències**, `[]` és l'operador d'"**indexació**". L'adreça de l'element `A[i]` es calcula com la suma de l'adreça base del vector `A`, $@ A$, i el desplaçament `i * sizeof(element)`, $T$, on `sizeof(element)` és l'operador unari que retorna la mida d'`element`, podent ser aquest un escalar o una dada estructurada.
 
-Regla d'escalat, (*pointer scaling*):
+**Regla d'escalat:**
 
 $$ @ A[i] = @ A[0] + i \cdot T$$ {#eq-vector-regla-escalat}
 
@@ -1735,6 +1741,10 @@ En **C**, l'**adreça base** del vector `vec`es pot obtenir de dues maneres (equ
 * `vec`[^decau]
 
 [^decau]: Perquè, en **C**, els vector decauen automàticament a punter al primer element (@cau-vectors-decauen-punters).
+:::
+
+::: {#cau-acces-aleatori-significat .callout-caution}
+L'anomenat "accés aleatori" a un vector no implica l'atzar, sinó la capacitat d'accedir directament a qualsevol dels seus elements mitjançant l'índex, amb un temps constant $\mathcal{O}(1)$, gràcies a la regla d'escalat.
 :::
 
 En **RV32I**, l'accés a un element d'un vector es realitza mitjançant les instruccions de **càrrega** i **emmagatzematge** on el registre base conté l'adreça del vector i el desplaçament es calcula com `i * sizeof(element)`. El desplaçament zero correspon a l'adreça base del primer element del vector.
@@ -1764,7 +1774,7 @@ En **RV32I**, suposant que `h` ocupa el registre `s2`, i que `A` és una variabl
 :::::
 
 ::: {#cau-TODO .callout-caution}
-Com que C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits) tampoc no comprova si l'índex d'un accés aleatori està dins del límit del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
+Com que C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits) tampoc no comprova si l'índex d'un accés aleatori està dins del rang del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
 :::
 
 ### Relació entre punters i vectors {#sec-punters-vectors}
@@ -1783,8 +1793,9 @@ Una **conseqüència** del decaïment, és l'**equivalència** entre `vec` i `&v
 :::
 
 ```{.C filename="C"}
-int vec[100]; // Tipus: "vector de 100 enters"
-int *p;       // Tipus: "punter a enter"
+int vec1[100];  /* Tipus: "vector de 100 enters" */
+int vec2[5];    /* Tipus: "vector de 5 enters" */
+int *p;         /* Tipus: "punter a enter" */
 ```
 
 Al codi anterior, tot i que les variables `vec` i `p` tenen tipus diferents, el nom del vector `vec` es converteix automàticament en un punter al seu primer element. La diferència principal és que `vec` representa tot el bloc de memòria reservat, mentre que `p` és només una variable que pot emmagatzemar una adreça de memòria.

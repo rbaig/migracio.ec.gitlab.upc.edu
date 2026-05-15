@@ -4,6 +4,8 @@
 
 **ABI** *Application Binary Interface*
 
+**BA** Bloc d'activació
+
 **AC** Arquitectura de computadors (assignatura del GEI)
 
 **Ca2** Complement a dos
