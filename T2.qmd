@@ -753,9 +753,9 @@ En C i en RV32I, les variables es classifiquen en dos grans grups segons la seva
 
 En **C**, tota variable s'ha de **declarar** abans d'usar-la. La declaració especifica el **tipus** i el **nom** de la variable, i opcionalment un **valor inicial**:
 
-```{.default filename="C"}
-<tipus> <nom> [= valor_inicial];
-```
+* ```{.default filename="C"}
+  <tipus> <nom> [= valor_inicial];
+  ```
 
 El **tipus** determina la mida en memòria (@imp-variables-mida-naturals, @imp-variables-mida-enters) i les operacions vàlides sobre la variable. El **nom** és l'identificador simbòlic que el compilador substitueix per una adreça de memòria o un registre.
 
@@ -1383,10 +1383,10 @@ Per exemple, la declaració `int *p;` declara `p` com una variable de tipus punt
 
 En **C**, la sintaxi de declaració d'un punter és:
 
-``` {.default filename="C"}
-<tipus_apuntat> *<nom_del_punter> [= adreça_d_inicialització];
-```
-* **Atenció:** En la sintaxi de declaració, els claudàtors `[]` indiquen opcionalitat: `= adreça d'inicialització` és la inicialització (@sec-punters-inicialitzacio) i pot ometre's.
+* ``` {.default filename="C"}
+  <tipus_apuntat> *<nom_del_punter> [= adreça_d_inicialització];
+  ```
+    * **Atenció:** Els claudàtors `[]` indiquen l'opcionalitat de la inicialització (@sec-punters-inicialitzacio).
 
 ::: {#cau-asterisc-declaracio-vs-sentencia .callout-caution}
 No s'ha confondre l'ús de `*` en les **declaracions** amb l'ús en les **sentències**, on és l'operador de desreferència o indirecció (@sec-punters-desreferencia).
@@ -1428,24 +1428,24 @@ No s'ha de confondre l'us de `&` en punters, on és un operador **unari**, amb l
 
 En **C**, a un **punter** se li pot **assignar un valor** (una adreça) de tres maneres diferents:
 
-1. Mitjançant l'operador `&` aplicat a una variable del tipus del punter.
-``` {.C filename="C"}
-ptr = &var; 
-```
-2. Assignant-li un altre punter del mateix tipus.
-``` {.C filename="C"}
-p1 = p2;           /* p2 està inicialitzat */
-```
-3. Explícitament, mitjançant un *type cast* a partir d'una adreça numèrica (ús avançat):
-```{.C filename="C"}
-ptr = (int *) <adreça>;    /* per exemple, 0x10010000 */
-```
+* Mitjançant l'operador `&` aplicat a una variable del tipus del punter.
+    * ``` {.C filename="C"}
+      ptr = &var; 
+      ```
+* Assignant-li un altre punter del mateix tipus.
+    * ``` {.C filename="C"}
+      p1 = p2;           /* p2 està inicialitzat */
+     ```
+* Explícitament, mitjançant un *type cast* a partir d'una adreça numèrica (ús avançat):
+    * ```{.C filename="C"}
+      ptr = (int *) <adreça>;    /* per exemple, 0x10010000 */
+    ```
 
-En **C**, un **punter** es pot **inicialitzar en la declaració** seguint la sintaxi estàndard, on `<adreça>` pot ser l'adreça d'una variable (obtinguda amb `&`), un altre punter del mateix tipus, o una adreça numèrica explícita mitjançant un *type cast*.
+En **C**, un **punter** es pot **inicialitzar en la declaració** seguint la sintaxi estàndard, on `<adreça>` pot ser l'adreça d'una variable (obtinguda amb `&`), un altre punter del mateix tipus, o una adreça numèrica explícita mitjançant un *type cast*:
 
-``` {.C filename="C"}
-tipus *nom_variable = <adreça>;
-```
+* ``` {.C filename="C"}
+  tipus *nom_variable = <adreça>;
+  ```
 
 En **RV32I**, l'**assignació** o **inicialització** d'un punter es pot fer:
 
@@ -1623,7 +1623,7 @@ En **C**, la **declaració** de **vectors** es pot fer de tres maneres:
 
 * Especificant el nombre d'elements sense inicialització:
     * ``` {.default filename=C}
-      <tipus_elements> nom_vector[<nombre_elements>];
+      <tipus_elements> nom_vector[<quantitat_elements>];
       ```
 * Inicialitzant-ne elements sense explicitar-ne el nombre:
     * ``` {.default filename=C}
@@ -1631,16 +1631,15 @@ En **C**, la **declaració** de **vectors** es pot fer de tres maneres:
       ```
 * Explicitant-ne el nombre d'elements i inicialitzant-los (combinació de les dues anteriors):
     * ``` {.default filename=C}
-    <tipus_elements> nom_vector[<nombre_elements>] = {valor_element_1, valor_element_2, ...};
+    <tipus_elements> nom_vector[<quantitat_elements>] = {valor_element_1, valor_element_2, ...};
     ```
 
 ::: {#tip-c-declaracio-inicialitzacio-vects-mats .callout-tip}
 ## C — declaració i inicialització de vectors i matrius
 
 ```{.C filename="C"}
-short vec[] = {2, -1, 3, 5, 0};                  // vector
-int mat1[2][3] = {{1, 2, 3}, {4, 5, 6}};        // matriu [files][columnes]
-int mat2[2][3] = {{11, 12, 13}, {21, 22, 23}};  // matriu
+short vec[] = {2, -1, 3, 5, 0};                 /* vector */
+int mat[2][3] = {{11, 12, 13}, {21, 22, 23}};  /* matriu [files][columnes] */
 ```
 :::
 
@@ -1651,14 +1650,15 @@ En **RV32I**, es poden inicialitzar diversos valors separats per comes o espais.
 
 ```{.s filename="RV32I"}
 .data
-vec:   .half 2, -1, 3, 5, 0     # vector
+vec:    .half 2, -1, 3, 5, 0
+mat:    .word 11, 12, 13, 21, 22, 23
 ```
 
-Per a matrius pot ser convenient emprar la segona opció, que permet visualitzar millor la seva estructura bidimensional:
+Per a matrius la opció següent permet visualitzar millor la seva estructura bidimensional:
+
 ```{.s filename="RV32I"}
 .data
-mat1:   .word 1, 2, 3, 4, 5, 6  # matriu
-mat2:   .word 11, 12, 13        # matriu
+mat:    .word 11, 12, 13
         .word 21, 22, 23
 ```
 :::
@@ -1690,49 +1690,77 @@ v:      .space 400      # Reserva 400 bytes (100 enters * 4 bytes)
 
 ### Tipus `<tipus> nom_vector[<quantitat_d_elements>]`
 
-::: {#cau-c-tipus-vector-matriu .callout-caution}
-## C — cada `<tipus> nom_vector[<quantitat_d_elements>]` constitueix un tipus complet
+En **C**, `int vec[<quantitat_elements>]` no és només una declaració: constitueix un **tipus complet** (`int[<quantitat_elements>]`).
 
-En **C**, `int vec[<nombre_elements>]` no és només una declaració: constitueix un **tipus complet** (`int[<nombre_elements>]`). Per exemple, `int[10]` és diferent de `int[5]` i de `int *`. Això té conseqüències pràctiques, tant en vectors (@tip-c-tipus-vector) com en matrius (@tip-c-tipus-vector-matriu).
-:::
+Per exemple, `int[10]` és diferent de `int[5]` i de `int *`.
+
+Aquest fet té conseqüències pràctiques, tant en vectors (@tip-c-tipus-vector) com en matrius (@tip-c-tipus-vector-matriu).
 
 ::: {#tip-c-tipus-vector .callout-tip}
-## `int vec[5]` és un tipus
+## Els tipus dels vectors
+
+```{.C filename="C"}
+int vec1[100];  /* Tipus: "vector de 100 enters" */
+int vec2[5];    /* Tipus: "vector de 5 enters" */
+```
+:::
+
+::: {#tip-c-vector-error-assignacio .callout-tip}
+## Els vectors no són assignables
 
 A diferència dels punters, dos vectors del mateix tipus base (`int`) però de mides diferents **no són assignables** entre ells. Ho il·lustra el codi erroni següent:
 
-```{.C filename="⚠️codi_erroni__vectors.c⚠️"}
+```{.C filename="⚠️ codi_erroni__vectors.c ⚠️"}
 int a[5];
 int b[5];
 int c[10];
 
-b = a;   // ⚠️ ERROR: no es poden assignar vectors directament ⚠️
-c = a;   // ⚠️ ERROR: tipus incompatibles (int[5] vs. int[10]) ⚠️
+b = a;  /* ⚠️ ERROR: no es poden assignar vectors directament ⚠️ */
+c = a;  /* ⚠️ ERROR: + tipus incompatibles (int[5] vs. int[10]) ⚠️ */
 ```
 :::
 
 ::: {#tip-c-tipus-vector-matriu .callout-tip}
 ## Les matrius com a vectors de vectors
 
-En **C**, una matriu `int mat[2][3]` és un **vector de 2 elements**, on cada element és de tipus `int[3]` (un vector de 3 enters). Aquesta interpretació és consistent amb la regla d'escalat (@eq-vector-regla-escalat): accedir a `mat[i]` (@cau-vectors-decauen-punters)  a un al primer element de la fila `i`.
+En **C**, una matriu `int mat[2][3]` és un **vector de 2 elements**, on cada element és de tipus `int[3]` (un vector de 3 enters). 
 
 ```{.C filename="matrius.c"}
-int mat[2][3] = {{1, 2, 3}, {4, 5, 6}};
+int mat[2][3] = {{1, 2, 3}, {4, 5, 60}}; 
 
-int *p = mat[0];    // p apunta al primer element de la fila 0
-int  x = mat[1][2]; // equivalent a *(*(mat + 1) + 2) = 6
+int  x = mat[1][2]; /* equivalent a *(*(mat + 1) + 2) => x <- 60 */
 ```
 
-L'emmagatzemament a memòria és **per files** (*row-major order*): primer tots els elements de la fila 0, després els de la fila 1, etc.
+L'emmagatzemament a memòria és **per files**, de dalt a baix (primer tots els elements de la fila 0, després els de la fila 1, etc) (@-TODO-T4-matrius-memoria-ocupacio).
 :::
 
-### C — `[]`: operador "indexació" {#sec-access-vector}
+En **C**, `sizeof(element)` és un operador unari que retorna la mida d'`element`, podent ser aquest un escalar o una dada estructurada.
 
-L'accés a un element d'un vector es fa mitjançant el seu **índex**. En **C**, l'índex comença a **zero** i, en **sentències**, `[]` és l'operador d'"**indexació**". L'adreça de l'element `A[i]` es calcula com la suma de l'adreça base del vector `A`, $@ A$, i el desplaçament `i * sizeof(element)`, $T$, on `sizeof(element)` és l'operador unari que retorna la mida d'`element`, podent ser aquest un escalar o una dada estructurada.
+::: {#tip-c-tipus-vector-matriu .callout-tip}
+## `sizeof ()`
+
+| Codi | Retorna |
+| :--- | :--- |
+| `sizeof(int)` | La mida d'un enter (4 bytes a RV32I) |
+| `sizeof(int[10])` | La mida d'un vector de 10 enters (40 bytes a RV32I) |
+| `sizeof(mat[2][3])` | La mida d'una matriu de 2x3 enters (24 bytes a RV32I) |
+: Exemples de retorn de `sizeof()` a RV32I {#tbl-sizeof-c}
+
+:::
+
+### C — `[]`: operador "indexació" {#sec-vector-indexacio}
+
+L'accés a un element d'un vector es fa mitjançant el seu **índex**.
+
+En **C**, l'índex comença a **0** i, en **sentències**, `[]` precedit del nom d'un vector in envoltant un nombre natural és l'operador d'"**indexació**".
+
+L'adreça de l'element `A[i]` es calcula com la suma de l'adreça base del vector `A`, $@ A$, i el desplaçament associat a l'índex `i`.
 
 **Regla d'escalat:**
 
 $$ @ A[i] = @ A[0] + i \cdot T$$ {#eq-vector-regla-escalat}
+
+$T$ és la mida en bytes de cada element del vector $A$ ($T$ = `i * sizeof(tipus_element)`).
 
 ::: {#cau-c-adreca-base .callout-caution}
 En **C**, l'**adreça base** del vector `vec`es pot obtenir de dues maneres (equivalents) següents:
@@ -1740,7 +1768,7 @@ En **C**, l'**adreça base** del vector `vec`es pot obtenir de dues maneres (equ
 * `&vec[0]`
 * `vec`[^decau]
 
-[^decau]: Perquè, en **C**, els vector decauen automàticament a punter al primer element (@cau-vectors-decauen-punters).
+[^decau]: Perquè, en **C**, els vector decauen automàticament a punter al primer element (@sec-punters-vectors).
 :::
 
 ::: {#cau-acces-aleatori-significat .callout-caution}
@@ -1774,12 +1802,11 @@ En **RV32I**, suposant que `h` ocupa el registre `s2`, i que `A` és una variabl
 :::::
 
 ::: {#cau-TODO .callout-caution}
-Com que C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits) tampoc no comprova si l'índex d'un accés aleatori està dins del rang del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
+Com que C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits), no comprova si l'índex d'un accés aleatori està fora del rang del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
 :::
 
 ### Relació entre punters i vectors {#sec-punters-vectors}
 
-::: {#cau-vectors-decauen-punters .callout-caution}
 En **C**, en la majoria d'expressions, el nom d'un vector **decau** automàticament a un **punter al seu primer element**:
 
 * El decaïment és **automàtic**: no cal cap operador explícit.
@@ -1790,24 +1817,33 @@ En **C**, en la majoria d'expressions, el nom d'un vector **decau** automàticam
 Tot i el decaïment, en la majoria d'expressions, els vectors mantenen la seva identitat com a blocs de memòria fixos.
 
 Una **conseqüència** del decaïment, és l'**equivalència** entre `vec` i `&vec[0]` (@cau-c-adreca-base).
-:::
 
+::: {#tip-c-vector-decaiment .callout-tip}
+## Decaïment de vectors a punters en C
 ```{.C filename="C"}
-int vec1[100];  /* Tipus: "vector de 100 enters" */
-int vec2[5];    /* Tipus: "vector de 5 enters" */
-int *p;         /* Tipus: "punter a enter" */
+int *p;
+int vec[100];
+
+p = vec;
 ```
 
-Al codi anterior, tot i que les variables `vec` i `p` tenen tipus diferents, el nom del vector `vec` es converteix automàticament en un punter al seu primer element. La diferència principal és que `vec` representa tot el bloc de memòria reservat, mentre que `p` és només una variable que pot emmagatzemar una adreça de memòria.
+Les variables `vec` i `p` tenen tipus diferents: `vec` representa tot el bloc de memòria reservat, mentre que `p` és només una variable que pot emmagatzemar una adreça de memòria.
+
+No obstant això, l'assignació és correcte perquè el nom del vector `vec` decau (es converteix automàticament) en un punter al seu primer element. La diferència principal és que 
+:::
 
 Conseqüències:
 
-* Mida: `sizeof(vec)` retornarà 400 (100 enters × 4 bytes), mentre que `sizeof(p)` retornarà la mida d'una adreça (normalment 8 bytes en sistemes de 64 bits, 4 bytes a RV32I).
-* Assignació: `p = vec;` és una expressió vàlida perquè el vector decau a punter. En canvi, `vec = p;` no ho és ja que el nom d'un vector és un identificador constant que apunta sempre al mateix bloc de memòria.
+* Mida:
+    *  `sizeof(vec)` retorna 400 (100 enters × 4 bytes).
+    *  `sizeof(p)` retorna la mida d'una adreça (4 bytes a RV32I).
+* Assignació:
+    * `p = vec;` és una expressió vàlida perquè el vector decau a punter.
+    * ~~`vec = p;`~~ no és una expressió vàlida és ja que el nom d'un vector és un identificador constant que apunta sempre al mateix bloc de memòria.
 
-Tècnicament, l'operador d'indexació (`[]`) és una **notació abreujada** per a l'aritmètica de punters: l'estàndard de C defineix $a[i]$ com a exactament equivalent a $*(a + i)$.
+Tècnicament, l'operador d'indexació (`[]`) és una **notació abreujada** per a l'aritmètica de punters: l'estàndard de C defineix $vec[i]$ com a exactament equivalent a $*(vec + i)$.
 
-Per tant, l'operador `[]` forma part de l'**aritmètica de punters** perquè el seu funcionament intern depèn de les mateixes regles d'escalat presentades a @eq-vector-regla-escalat.
+Per tant, l'operador `[]` forma part de l'**aritmètica de punters** perquè el seu funcionament intern depèn de les mateixes regles d'escalat presentades a @sec-vector-indexacio.
 
 ::: {#cau-operador-indexacio .callout-caution}
 ## `[]`, l'operador d'indirecció implícit
@@ -1862,6 +1898,18 @@ func:
 ::: {#wrn-index-aritmetica-punters .callout-warning collapse=true}
 ## C — Commutativitat de l'operador `[]`
 Com que la suma és commutativa (`a + i` és el mateix que `i + a`), en C és perfectament vàlid escriure `3[vec]` en lloc de `vec[3]`. El compilador ho tradueix igualment a `*(3 + vec)`.
+:::
+
+::: {#tip-c-tipus-vector-matriu .callout-tip}
+## Matrius com a vectors de vectors
+```{.C filename="matrius.c"}
+int mat[2][3] = {{1, 2, 3},
+                 {4, 5, 60}}; 
+
+int *p = mat[0];    /* p apunta al primer element de mat */
+```
+
+`p` apunta al primer element de la fila 0 perquè mat[0] és el vector de la primera fila de la, el qual amb l'assignació decau a un punter a la seva base.
 :::
 
 <!-- 
@@ -2040,7 +2088,11 @@ En UTF-8, els caràcters ASCII es representen amb un sol byte (igual que en ASCI
 
 ### Cadenes de caràcters
 
-Una **cadena de caràcters** (*string*) és una seqüència de caràcters. En **C**, les cadenes de caràcters es representen com a vectors de caràcters (tipus `char[]`) i sempre acaben amb un caràcter nul (`'\0'`, el sentinella), que indica el final de la cadena. En **RV32I**, les cadenes de caràcters s'emmagatzemen a memòria com a seqüències de bytes, seguint la codificació ASCII, i també han d'acabar amb un byte nul (`0x00`) per indicar el final de la cadena.
+Una **cadena de caràcters** (*string*) és una seqüència de caràcters.
+
+En **C**, les cadenes de caràcters es representen com a vectors de caràcters (tipus `char[<quantitat_caracters>]`) i sempre acaben amb un caràcter nul (`'\0'`, el sentinella), que indica el final de la cadena. El nom de la cadena decau a un punter al seu primer element (el primer caràcter de la cadena).
+
+En **RV32I**, les cadenes de caràcters s'emmagatzemen a memòria com a seqüències de bytes, seguint la codificació ASCII, i també han d'acabar amb un byte nul (`0x00`) per indicar el final de la cadena.
 
 A **RISC-V**, la directiva `.asciz` (*ASCII zero-terminated*) s'utilitza per definir cadenes de caràcters que acaben amb un byte nul, mentre que la directiva `.ascii` defineix cadenes de caràcters sense el byte nul al final. Per tant, només les cadenes definides amb `.asciz` es consideren cadenes de caràcters en el sentit tradicional. `.string` és una directiva equivalent a `.asciz`.
 
