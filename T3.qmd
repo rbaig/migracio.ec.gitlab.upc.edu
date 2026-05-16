@@ -959,40 +959,103 @@ fibucle:
 Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el nombre d'instruccions per iteració. Els compiladors moderns l'apliquen automàticament.
 :::
 
+## Estructura de la memòria {#sec-estructura-memoria}
 
+Les dades (instruccions i variables) d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
 
+A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants simbòliques** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` i `.ktext` ([Tema 9](T9.qmd)) per a les instruccions del programa en assemblador i `.data`: per a les variables globals i constants simbòliques, a les quals en temps de compilació s'hi escriu mitjançant les directives de segment (@nte-segments-memoria).
 
+A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap***. La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el heap s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fa explícitament per part del programador (mitjançant `malloc()` i `free()`).
 
+::: {#tip-exemple-tipus-variables .callout-tip}
+## Els tres tipus d'emmagatzemament
 
+```{.C filename="C"}
+int gvec[100];      /* global: emmagatzemament estàtic (.data) */
+int *pvec;          /* global: punter a dada dinàmica (heap) */
 
+int f() {
+    int lvec[100];  /* local: emmagatzemament dinàmic (pila) */
+    ...
+    pvec = malloc(400);     /* reservem espai al heap */
+    ...
+    pvec[10] = gvec[10] + lvec[10];
+    ...
+}
 
+int g() {
+    ...
+    free(pvec);     /* alliberem espai del heap */
+    ...
+}
+```
+:::
 
+### RARS — Mapa de memòria
 
+<!-- TODO decidir si s'hi inclou `gp` altres segments, etc. -->
+RARS organitza l'espai d'adreces en les regions (segments, àrees, etc.) següents:
 
-<!-- TODOs pendents a T4:
-#cau-TODO — hi ha almenys un callout amb etiqueta -TODO pendent d'identificar i resoldre.
-@sec-subrutines — referència creuada pendent a la secció de subrutines (des del #tip-traduccio-do-while i altres llocs).
-Secció ## Subrutines — pendent de revisió completa.
-Secció ## Estructura de la memòria — pendent de revisió.
-Secció ## Compilació, assemblatge, enllaçat i càrrega — pendent de revisió (inclou el callout del flux GCC amb el mermaid a simplificar).
-Fitxer referencies/RV32I_instruccions_salt_incondicional_indirecte.qmd — cal crear-lo o dividir el fitxer existent per separar jal de jalr.
-auipc — pendent de decidir on s'explica formalment com a instrucció (ara només apareix al callout d'expansió de la). -->
+![Mapa de memòria de RARS: regions `.text`, `.data`, heap i pila, amb les adreces d'inici de cada segment.](figures/TODO.png){#fig-mapa-memoria}
 
+::: {#nte-mapa-memoria-rars .callout-note}
+## RARS — Segments de memòria
+| Regió | Tipus | Adreça d'inici | Contingut | Creix cap a ... |
+| :--- | :--- | :--- | :--- | :--- |
+{{< include referencies/RARS_memoria_regions.qmd >}}
+ {tbl-colwidths="[5,5,5,10,5]"}
+:::
 
+::: {#wrn-rars-mapa-memoria .callout-warning}
+RARS: *Settings* → *Memory Configuration...* mostra totes les regions de memòria.
+:::
 
+### Accés a variables globals
 
+En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que carreguen l'adreça de 32 bits de la variable en un registre. Un cop carregada l'adreça, l'accés a la variable es fa amb una instrucció de `lw`/`sw` (o les variants de byte i mig-word):
 
+```{.s filename="RV32I"}
+        la      t0, variable    # t0 <- adreça de variable
+        lw      t1, 0(t0)       # t1 <- valor de variable
+        addi    t1, t1, 1       # t1++
+        sw      t1, 0(t0)       # variable <- t1
+```
 
+Si s'accedeix diverses vegades a la mateixa variable dins una mateixa funció, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
+
+::: {#nte-la-auipc .callout-note}
+## RARS — Expansió de `la`
+
+La instrucció **`auipc`** (*add upper immediate to PC*) suma un immediat de 20 bits desplaçat als 12 bits superiors amb el valor actual del **PC**, i escriu el resultat al registre destinació. Això produeix una adreça **relativa al PC**, en lloc d'una adreça absoluta.
+
+`la` s'expandeix en dues instruccions amb adreces **relatives al PC**:
+
+```{.s filename="RV32I"}
+auipc   rd, hi_20(offset)     # rd ← PC + hi_20(offset) << 12
+addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
+```
+
+on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `auipc`, i `hi_20` i `lo_12` en són la part alta i baixa respectivament (amb l'ajust de signe habitual si `lo_12[11] == 1`).
+
+**Exemple:** `la t0, AA` amb `@AA = 0x10010000` i `auipc` al PC `0x00400000`:
+
+* `offset = 0x10010000 - 0x00400000 = 0x0fc10000`
+* `hi_20 = 0x0fc10`, `lo_12 = 0x000`
+* `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
+* `addi x5, x5, 0` → `x5 = 0x10010000` ✓
+
+La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable" les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació. Veurem això amb més detall a la secció de compilació, assemblatge i enllaçat (@sec-compilacio).
+:::
 
 ## Subrutines {#sec-subrutines}
 
-Una **subrutina** és un subprograma que executa una tasca concreta, que pot admetre **paràmetres** d'entrada i retornar un **resultat**. Pot ser invocada des de múltiples punts d'un programa sense haver de ser reescrita cada vegada. És la generalització del que en altres contextos s'anomena acció, **funció** (C), procediment, mètode, etc. Permet escriure programes estructurats aplicant conceptes com el disseny descendent, la reutilització de codi i la programació modular.
-
-Per tal que una subrutina i el codi que la **crida** puguin ser programats en llenguatge d'assemblador (o compilats) independentment, cal que la subrutina declari amb precisió la seva **interfície** (nom, paràmetres, resultat i tipus respectius), i que tots dos s'ajustin a les regles de l'**ABI**, la qual, per a cada ISA i sistema operatiu, defineix les convencions que permeten compartir codi emmagatzemat en biblioteques.
+Una **subrutina** és un subprograma que executa una tasca concreta, que pot admetre **paràmetres** d'entrada i retornar **resultats**. Pot ser invocada des de múltiples punts d'un programa sense haver de ser reescrita cada vegada. És la generalització del que en altres contextos s'anomena acció, **funció** (C), procediment, mètode, etc. Permet escriure programes estructurats aplicant conceptes com el disseny descendent, la reutilització de codi i la programació modular.
 
 ::: {#cau-macros-vs-subrutines .callout-caution}
 A diferència d'una subrutina, una macro no genera cap crida: l'assemblador insereix el codi a cada punt d'invocació, de manera que si s'invoca $n$ vegades, el codi apareix $n$ vegades a l'executable. Una subrutina, en canvi, és codi compartit que resideix en un únic lloc de memòria i s'executa per salt, amb el cost d'una crida i un retorn (@sec-macros).
 :::
+
+Per tal que una subrutina i el codi que la **crida** puguin ser programats en llenguatge d'assemblador (o compilats) independentment, cal que la subrutina declari amb precisió la seva **interfície** (nom, paràmetres, resultat i tipus respectius), i que tots dos s'ajustin a les regles de l'**ABI**, la qual, per a cada ISA i sistema operatiu, defineix les convencions que permeten compartir codi emmagatzemat en biblioteques.
 
 <!-- TODO Confirmar eliminació de "(*leaf*)"" i "(*non-leaf*)"" pq no es fa servir enlloc o restitució -->
 ::: {#cau-multinivell-vs-uninivell .callout-caution}
@@ -1004,7 +1067,7 @@ Una subrutina és:
 
 ### Crida i retorn (el registre `ra`) {#sec-crida-retorn}
 
-Des del punt de vista del control del flux d'execució, quan es crida una subrutina cal guardar l'**adreça de retorn**, és a dir, l'adreça on cal anar un cop executada. L'ABI de RV32I reserva el registre `ra` (***return address***, `x1`) per a aquest propòsit.
+Des del punt de vista del control del flux d'execució, quan es crida una subrutina cal guardar l'**adreça de retorn**, és a dir, l'adreça de la instrucció següent a l'execució de la subrutina. L'ABI de RV32I reserva el registre `ra` (***return address***, `x1`) per a aquest propòsit.
 
 La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu-jal) salta a l'adreça indicada per `label` (primera instrucció de la subrutina cridada) i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar, s'usa la pseudoinstrucció `ret` (@nte-pseudoinstruccions-salt-indirecte), que salta a l'adreça continguda a `ra`.
 
@@ -1030,7 +1093,7 @@ Un codi és:
 * ***Caller***, si fa una crida una subrutina.
 * ***Callee***, si és la subrutina cridada.
 
-Per analogia, hom pot emprar els termes mare/pare i fill/a, per referir-se als codis caller i al callee respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
+Per analogia, és comú emprar els termes mare/pare i fill/a, per referir-se als codis caller i al callee respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
 :::
 
 ::: {#nte-caller-saved-vs-callee-saved .callout-note}
@@ -1045,7 +1108,11 @@ El registre `ra` és **caller-saved**, ja que la instrucció ha d'emprar el pare
 
 ### Pas de paràmetres i retorn de resultats (els registres `a0`–`a7`)
 
-El pas de paràmetres i el retorn de resultats implica una comunicació entre el codi que invoca la subrutina i la subrutina cridada. Aquesta comunicació es fa dipositant paràmetres i resultats en llocs prèviament convinguts, seguint les regles de l'ABI.
+El pas de paràmetres i el retorn de resultats implica una comunicació entre el codi que invoca la subrutina i la subrutina cridada. En assemblador aquesta comunicació es fa dipositant paràmetres i resultats en llocs determinats per l'ABI.
+
+::: {#imp-ec-abi-restriccions .callout-important}
+A **EC**, la quantitat màxima de paràmetres és 8 i de resultats 1.
+:::
 
 ::: {#nte-abi-pas-parametres .callout-note}
 ## RV32I ABI — Pas de paràmetres i retorn de resultats
@@ -1055,10 +1122,6 @@ El pas de paràmetres i el retorn de resultats implica una comunicació entre el
 * Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), cal estendre'l a 32 bits, dins el registre assignat, fent extensió de signe o de zeros segons hagi estat declarat `signed` o `unsigned`.
 
 **Atenció:** Retornar un valor implica la pèrdua del valor original d'`a0` per sobreescriptura.
-:::
-
-::: {#imp-ec-abi-restriccions .callout-important}
-A **EC**, no es considera el cas en què hi ha més de 8 paràmetres, ni el cas en què paràmetres o resultats són de tipus `struct` o de tipus `double` / `long long`. Aquests casos requereixen regles addicionals de l'ABI que no s'estudien a l'assignatura.
 :::
 
 ::: {#tip-exemple-suma2 .callout-tip}
@@ -1093,7 +1156,7 @@ suma2:
 :::
 
 ::: {#imp-pas-valor-referencia .callout-important}
-A **EC**, els modes de pas de paràmetres rellevants són:
+A **EC**, els modes de pas de paràmetres són:
 
 * **Pas per valor:** La funció rep una **còpia** del paràmetre. Qualsevol modificació que faci la funció afecta només la còpia, no l'original.
 * **Pas per referència:** La funció rep una **referència** a la dada original, és a dir, la seva **adreça en memòria**. Les modificacions que faci la funció afecten directament la dada original.
@@ -1111,7 +1174,9 @@ Cal distingir el **mecanisme físic** de pas del paràmetre (com es transmet la 
 En **C**, el mecanisme és sempre per registre o pila, però la **semàntica** depèn del tipus: un **escalar** és pas per **valor**, un **punter** és pas per **referència**.
 :::
 
-En **C** només existeix el **pas per valor**: la funció rep una còpia del paràmetre real i pot modificar-la sense afectar l'original. Per aconseguir un efecte equivalent al **pas per referència**, es passa com a paràmetre un **punter** a la dada original. D'aquesta manera la funció pot modificar la dada original desreferenciant el punter.
+En **C** només existeix el **pas per valor**. Per tant la funció cridada rep una còpies del paràmetres i, per tant, les modificacions que hi faci no afectaran els valors de les dades originals.
+
+Per aconseguir un efecte equivalent al **pas per referència**, el que es passa com a paràmetre és un **punter** a la dada original (per tant, aquesta ha d'estar en memòria). D'aquesta manera, les modificacions que faci la funció afectaran directament la dada original.
 
 ::: {#tip-exemple-valor-referencia .callout-tip}
 ## Pas per valor vs. pas per referència: `printf()` i `scanf()`
@@ -1144,9 +1209,9 @@ void f() {
 ```
 :::
 
-Les variables **escalars globals** es passen igual que les locals: per valor si es passa el seu contingut, o per referència si es passa la seva adreça (`&<nom_variable>`).
+Les variables **escalars** (globals i locals) es poden passar per **valor** o per **referència** si es passa la seva adreça.
 
-Els **vectors** i **matrius**, en canvi, sempre es passen per referència: el seu nom equival a un punter al primer element (@sec-punters-vectors), de manera que la funció pot modificar-los directament.
+Els **vectors** i **matrius** només es poden passar per **referència**.
 
 ::: {#tip-exemple-pas-vector .callout-tip}
 ## C — Pas de paràmetres: vector i variables globals
@@ -1243,53 +1308,13 @@ a = f(*p);          /* (5) */
 * `*p` desreferencia `p` de tipus `int *`, donant un `int`.
 :::
 
-
-
-
-
-<!-- 
-SUBRUTINES
-* Crida i retorn
-* Pas de paràmetres i resultats	
-* Variables locals
-	* El bloc d'activació
-		* Justificació de la necessitat d'una "àrea de memòria" (TODO: digues si "àrea de memòria") nova: runtime => Ja no es pot emprar el segment .data
-						=> 1) ni variables estructurades perquè sempre van a memòria
-						=> 2) variablmes escalars: possiblitat d'exahurir els registres
-		* Definició
-	* Estructura del bloc d'activació
-	* Regles de l'ABI per assignar variables
-	
-
-* Subrutines multinivell 
-	* La pila del programa: una successió de blocs d'activació
-	* El problema de preservar el context
-		* Registres segurs
-	* desar i restaurar registres segurs
-		* Pròleg i epíleg
-	* Determinació dels registres segurs necessaris
-	* Exemple complet: subrutina multinivell
-* Exemple avançat: bloc d’activació complet -->
-
-
-Les variables que van a memòria no poden anar a `.data` perquè són dinàmiques: cada cop que s'invoca la funció, cal crear un nou conjunt de variables locals. En canvi, `.data` és una àrea de memòria estàtica on es guarden dades globals i constants que existeixen durant tota l'execució del programa. Per això les variables locals van a la **pila** (vegeu @sec-multinivell-pila), que és una àrea de memòria dinàmica gestionada en temps d'execució (*runtime*).
-
-BA no pot anar a `.data` perquè BA és dinàmic `.data` és estàtic. Per això BAs van a la pila, que és una àrea de memòria dinàmica gestionada en temps d'execució (*runtime*).
-
 ### Variables locals: el bloc d'activació (el registre `sp`) {#sec-variables-locals}
 
-* L'assignació d'espai al segment de memòria `.data` (@nte-segments-memoria) es fa en temps de compilació (a través de les directives pertinents @nte-directives-alineacio-inicialitzacio i @nte-directives-align-space)
-* Fer l'assignació d'espai en un segment de memòria en temps de compilació vol dir que l'espai reservat per a cada variable és fix i existeix durant tota l'execució del programa, cosa que és incompatible amb les variables locals d'una funció, que es creen cada cop que s'invoca i es destrueixen en finalitzar.
-* Cal, per tant, disposar d'un segment de memòria dinàmic, això és, gestionat en temps d'execució (*runtime*), on les subrutines puguin desar variables locals a demanda: la **pila** (@sec-multinivell-pila i @TODO-estructura-de-la-memoria).
-* El model de gestió de la pila imposa que les subrutines hi reservin tot l'espai que necessitaran a l'inici de la seva l'execució i que l'alliberin just abans de retornar el control de flux al *caller*. Aquest espai s'anomena **bloc d'activació** (**BA**, ***stack frame***).
+::: {#nte-bloc-activacio .callout-note}
+## RV32I ABI — El bloc d'activació — Registre de pila `sp`
+L'ABI imposa que les subrutines reservin tot l'espai que necessitaran a l'inici de la seva l'execució i que l'alliberin just abans de retornar el control de flux al caller. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
-::: {#nte-stack-pointer .callout-note}
-## RV32I ABI — Registre de pila `sp`
 La reserva i l'alliberament d'espai de memòria per al BA es fa mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
-:::
-
-::: {#nte-stack-pointer .callout-note}
-## RV32I ABI — El bloc d'activació
 
 El BA **creix** cap a **adreces més baixes**.
 
@@ -1318,6 +1343,7 @@ Les variables locals s'assignen a **registres** o al **BA** seguint aquestes reg
     * apareixen precedides de l'operador `&` ("adreça de"), per poder tenir una adreça de memòria.
 * Les variables **estructurades** (vectors, matrius, etc.) es guarden **sempre** al **BA**.
 
+<!-- TODO revisar si ja es diu o s'ha de passar a multinivell -->
 El BA pot incloure:
 
 * **Variables locals** de tipus estructurat i les escalars que no caben en registres o que requereixen adreça.
@@ -1327,14 +1353,13 @@ La disposició dins el BA, de les adreces més baixes a les més altes:
 
 | Zona | Contingut |
 | :--- | :--- |
-| Primera (adreces baixes) | Variables locals, en ordre textual de declaració, alineades segons el seu tipus |
+| Primera (adreces baixes) | Variables locals, en ordre de declaració, alineades segons el seu tipus |
 | Segona (adreces altes) | Registres segurs desats, alineats a múltiple de 4 |
-| tercera (adreces més altes) | `ra`, alineat a múltiple de 4, si la subrutina és multinivell. |
+| tercera (adreces més altes) | `ra`, alineat a múltiple de 4, si la subrutina és **multinivell**. |
+: {tbl-colwidths="[4,6]"}
 :::
 
 ![Estructura general del bloc d'activació: variables locals al cim de la pila i registres desats a continuació. El registre `sp` apunta al primer byte del bloc durant l'execució de la subrutina.](figures/TODO.png){#fig-ba-general}
-
-En una subrutina **uninivell**, cap subrutina filla pot sobreescriure els registres temporals `t0`–`t6`. Per tant, les variables escalars d'una subrutina uninivell s'assignen sempre a registres **temporals** i no cal usar registres segurs `s0`–`s11` (@imp-registres-temporals-segurs).
 
 ::: {#tip-exemple-variables-pila .callout-tip}
 ## Funció uninivell amb variables locals a la pila
@@ -1348,14 +1373,9 @@ char func(int i) {          /* i en a0 */
 }
 ```
 
-El bloc d'activació conté `v` (10 bytes) i `w` (40 bytes), en ordre
-textual, amb `k` en el registre `t0`. La mida total és 52 bytes
-(arrodonit a múltiple de 4).
+El bloc d'activació conté `v` (10 bytes) i `w` (40 bytes), en ordre textual, amb `k` en el registre `t0`. La mida total és 52 bytes (arrodonit a múltiple de 4).
 
-![Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes
-0–9, l'alineació ocupa els bytes 10–11, i el vector `w` ocupa els bytes
-12–51. El registre `sp` apunta al byte 0.
-](figures/TODO.png){#fig-ba-func}
+![Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocupa els bytes 10–11, i el vector `w` ocupa els bytes 12–51. El registre `sp` apunta al byte 0. ](figures/TODO.png){#fig-ba-func}
 
 ```{.s filename="RV32I"}
 func:
@@ -1374,23 +1394,33 @@ func:
 ```
 :::
 
-
-
-
-
-
-
-
-
-
-
-
-
 ### Subrutines multinivell: la pila del programa (els registres `s0`--`s11`) {#sec-multinivell-pila}
+
+
+
+
+<!--
+* Subrutines multinivell 
+	* La pila del programa: una successió de blocs d'activació
+	* El problema de preservar el context
+		* Registres segurs
+	* Desar i restaurar registres segurs
+		* Pròleg i epíleg
+	* Determinació dels registres segurs necessaris
+	* Exemple complet: subrutina multinivell
+* Exemple avançat: bloc d’activació complet -->
+
+
+
+
+
+
+
+
 
 TODO: Pila és un apilament de blocs d'activació. Cada bloc d'activació és un conjunt de dades locals d'una subrutina. La pila és una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen.
 
-TODO: A RARS fons de pila `0x7fffeffc`
+TODO: A RARS **fons de pila* `0x7fffeffc`
 
 
  En subrutines multinivell, s'ha de preservar, com a mínim, el valor de `ra` abans de la crida i restaurar-lo després:
@@ -1720,117 +1750,19 @@ exemple:
 
 
 
-<!-- TODO Eliminar repeticions amb @sec-programa-segments i @sec-memoria-t2 -->
-## Estructura de la memòria {#sec-estructura-memoria}
-
-Les variables d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
-
-L'emmagatzemament és **estàtic** quan la variable es guarda al mateix lloc durant tot el temps d'execució del programa. En C pertanyen a aquesta categoria les variables globals, que es defineixen a la secció `.data` d'un programa en assemblador. La regió de memòria dedicada a l'emmagatzemament estàtic té una mida fixa per a cada programa.
-
-L'emmagatzemament és **dinàmic** quan la variable es guarda en una àrea de memòria de manera temporal. En C pertanyen a aquesta categoria les variables locals (automàtiques). Com hem vist a la secció anterior, algunes variables locals es guarden en registres, però la resta es guarden a la **pila**.
-
-Les variables pròpiament **dinàmiques** són aquelles on la reserva i l'alliberament de l'espai de memòria es fa explícitament per part del programador, mitjançant les funcions de la biblioteca estàndard `malloc` i `free`. Com que poden invocar-se en qualsevol punt del programa, aquest espai no es reserva i s'allibera de forma ordenada com succeeix amb la pila. Per tant, la seva gestió requereix una estructura de dades que s'anomena ***heap***.
-
-::: {#tip-exemple-tipus-variables .callout-tip}
-## Els tres tipus d'emmagatzemament
-
-```{.C filename="C"}
-int gvec[100];      /* global: emmagatzemament estàtic (.data) */
-int *pvec;          /* global: punter a dada dinàmica (heap) */
-
-int f() {
-    int lvec[100];  /* local: emmagatzemament dinàmic (pila) */
-    ...
-    pvec = malloc(400);     /* reservem espai al heap */
-    ...
-    pvec[10] = gvec[10] + lvec[10];
-    ...
-}
-
-int g() {
-    ...
-    free(pvec);     /* alliberem espai del heap */
-    ...
-}
-```
-:::
-
-### RARS — Mapa de memòria
-
-RARS organitza l'espai d'adreces de 32 bits del processador RV32I en les regions següents:
-
-![Mapa de memòria de RARS: regions `.text`, `.data`, heap i pila, amb les adreces d'inici de cada regió.](figures/TODO.png){#fig-mapa-memoria}
-
-::: {#imp-mapa-memoria-rars .callout-important}
-## Regions de memòria a RARS
-
-| Regió | Adreça d'inici | Contingut | Creix |
-| :--- | :--- | :--- | :--- |
-| `.text` | `0x00400000` | Codi màquina (instruccions) | ↑ |
-| `.data` | `0x10010000` | Variables globals i cadenes de caràcters | ↑ |
-| *heap* | A continuació de `.data` | Variables dinàmiques (`malloc`) | ↑ |
-| Pila | `0x7FFFFFFC` | Variables locals, registres desats | ↓ |
-:::
-
-La regió de **dades estàtiques** conté la secció `.data`, on es guarden les variables globals declarades al programa. L'accés a una variable global comporta que el programa inicialitzi un registre amb la seva adreça de 32 bits mitjançant la pseudoinstrucció `la`:
-
-```{.s filename="RV32I"}
-        la      t0, adreca_dada     # carrega l'adreça de la variable
-        lw      t0, 0(t0)           # carrega el valor
-```
-
-La regió de **dades dinàmiques** comprèn el *heap* i la pila, situats als dos extrems de l'espai disponible a fi d'evitar fragmentar la memòria lliure: el *heap* creix cap a adreces més altes a partir de l'adreça inicial, mentre que la pila creix cap a adreces més baixes a partir de `0x7FFFFFFC`.
 
 
-<!-- TODO Eliminar? Ja no veuran MIPS => no té sentit -->
-::: {#wrn-mapa-memoria-riscv-vs-mips .callout-warning collapse=true}
-## RISC-V vs. MIPS, seccions del mapa de memòria
 
-El mapa de memòria de RARS és pràcticament idèntic al de MIPS, amb una diferència important: **RISC-V no utilitza una secció `.sdata` ni un registre de punter global (`gp`)**. En MIPS, les variables globals de petites dimensions s'emmagatzemaven a la secció `.sdata` (64 KB centrada al voltant de `gp = 0x10008000`) per optimitzar-ne l'accés amb desplaçaments de 16 bits relatius a `gp`. En RV32I totes les variables globals van a `.data` i s'hi accedeix sempre via `la` + instrucció de memòria, sense cap registre base especial.
-:::
 
-### Accés a variables globals
 
-L'accés eficient a variables globals és una qüestió important en processadors RISC. En RV32I, la pseudoinstrucció `la` s'expandeix en dues instruccions que carreguen l'adreça de 32 bits de la variable en un registre. Un cop carregada l'adreça, l'accés a la variable es fa amb una instrucció de `lw`/`sw` (o les variants de byte i mig-word):
 
-```{.s filename="RV32I"}
-        la      t0, variable    # t0 <- adreça de variable
-        lw      t1, 0(t0)       # t1 <- valor de variable
-        addi    t1, t1, 1       # t1++
-        sw      t1, 0(t0)       # variable <- t1
-```
 
-Si s'accedeix diverses vegades a la mateixa variable dins una mateixa funció, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la, tal com s'ha fet en els exemples de subrutines de la secció anterior.
 
-::: {#nte-la-auipc .callout-note}
-## RARS — Expansió de `la`
 
-La instrucció **`auipc`** (*add upper immediate to PC*) suma un immediat de 20 bits desplaçat als 12 bits superiors amb el valor actual del **PC**, i escriu el resultat al registre destinació. Això produeix una adreça **relativa al PC**, en lloc d'una adreça absoluta.
 
-`la` s'expandeix en dues instruccions amb adreces **relatives al PC**:
 
-```{.s filename="RV32I"}
-auipc   rd, hi_20(offset)     # rd ← PC + hi_20(offset) << 12
-addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
-```
 
-on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `auipc`, i `hi_20` i `lo_12` en són la part alta i baixa respectivament (amb l'ajust de signe habitual si `lo_12[11] == 1`).
 
-**Exemple:** `la t0, AA` amb `@AA = 0x10010000` i `auipc` al PC `0x00400000`:
-
-* `offset = 0x10010000 - 0x00400000 = 0x0fc10000`
-* `hi_20 = 0x0fc10`, `lo_12 = 0x000`
-* `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
-* `addi x5, x5, 0` → `x5 = 0x10010000` ✓
-
-La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable" les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació. Veurem això amb més detall a la secció de compilació, assemblatge i enllaçat (@sec-compilacio).
-
-:::
-
-<!--
-
-**On the memory map figure:** The `{#fig-mapa-memoria}` placeholder will need a diagram showing the four regions with their addresses, the heap growing upward and the stack growing downward. This is a standard diagram that appears in P&H and should be straightforward to draw.
--->
 
 
 
