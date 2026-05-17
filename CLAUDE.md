@@ -22,8 +22,8 @@ a la documentació generada fins a 31/12/2025, disponible només en PDF.
 La nova estructura **no és un mapatge 1:1** dels PDFs originals:
 - El PDF T1 s'ha dividit: la introducció resta a T1.qmd; Rendiment, Amdahl
   i Potència s'han separat en un tema nou, T6.qmd.
-- Els PDFs T2–T8 corresponen a T2.qmd–T9.qmd, amb T6 (Rendiment) desplaçat
-  al final del bloc de teoria bàsica.
+- Els PDFs T2–T5 corresponen a T2.qmd–T5.qmd
+- Els PDFs T6–T8 corresponen a T7.qmd–T9.qmd
 
 ### Volum
 
@@ -37,7 +37,7 @@ La nova estructura **no és un mapatge 1:1** dels PDFs originals:
 
 - `riscv.qmd`: compendi de referència RISC-V (inclòs via `{{< include >}}`).
 - `sigles.md`: glossari de sigles.
-- `contrib.qmd`: convencions i normes (llegir abans de generar contingut).
+- `contrib.qmd`: convencions i normes (cal llegir-lo detalladament abans de generar contingut).
 
 ## Convencions
 
@@ -52,3 +52,12 @@ Abans de generar qualsevol contingut, llegeix `contrib.qmd`. Conté:
 - Mostrar sempre el contingut generat en blocs de codi markdown (` ```markdown `).
 - No editar fitxers directament: l'usuari fa el copy-paste manualment.
 - En cas de dubte: atura't, exposa el dubte i, si és possible, proposa una solució.
+
+## Planificació i progress
+
+1. Tota la teoria (T1--19)
+1.1 Temes preparats per a revisió externa:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd`, 
+1.2 Temes WiP: `T4.qmd` 
+2. Laboratori
+3. Problemes
+4. Solucionari

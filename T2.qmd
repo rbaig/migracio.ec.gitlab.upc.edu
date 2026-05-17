@@ -1597,7 +1597,7 @@ L'estàndard de C és molt restrictiu per evitar accessos a memòria sense senti
 La multiplicació, per exemple, no és permesa.
 :::
 
-### C — Absència de control de límits en l'accés a memòria {#sec-c-punters-absencia-control-limits}
+### C — Absència de control en l'accés a memòria {#sec-c-punters-absencia-control-limits}
 
 L'**estàndard** de C **no especifica** què passa si s'accedeix a una àrea de memòria il·legítima. Es produeix el que es coneix com a **comportament indefinit** (*undefined behavior*). Conseqüentment, l'estàndard no garanteix ni cap error específic ni cap resultat concret. A efectes pràctics, depenent del context i de la memòria, pot ocórrer una d'aquestes tres situacions, per ordre creixent de **perillositat**:
 
@@ -1724,7 +1724,7 @@ c = a;  /* ⚠️ ERROR: + tipus incompatibles (int[5] vs. int[10]) ⚠️ */
 
 En **C**, una matriu `int mat[2][3]` és un **vector de 2 elements**, on cada element és de tipus `int[3]` (un vector de 3 enters). 
 
-```{.C filename="matrius.c"}
+```{.C filename="C"}
 int mat[2][3] = {{1, 2, 3}, {4, 5, 60}}; 
 
 int  x = mat[1][2]; /* equivalent a *(*(mat + 1) + 2) => x <- 60 */
@@ -1749,32 +1749,35 @@ En **C**, `sizeof(element)` és un operador unari que retorna la mida d'`element
 
 ### C — `[]`: operador "indexació" {#sec-vector-indexacio}
 
-L'accés a un element d'un vector es fa mitjançant el seu **índex**.
+L'accés a un element d'un vector es fa mitjançant l'**índex** de l'element.
 
-En **C**, l'índex comença a **0** i, en **sentències**, `[]` precedit del nom d'un vector in envoltant un nombre natural és l'operador d'"**indexació**".
+En **C**, l'índex comença a **0** i, en sentències, els símbols `[` i `]`
+precedits del nom d'un vector i envoltant un natural són l'operador
+d'**indexació** (`[]`).
 
-L'adreça de l'element `A[i]` es calcula com la suma de l'adreça base del vector `A`, $@ A$, i el desplaçament associat a l'índex `i`.
+En C és el compilador qui s'encarrega de calcular l'adreça de l'element
+`A[i]` multiplicant automàticament l'índex `i` per la mida de cada element,
+`sizeof(element)`, per obtenir el desplaçament real en bytes. Per tant,
+rarament cal preocupar-se pel desplaçament; n'hi ha prou amb proporcionar
+l'índex.
 
-**Regla d'escalat:**
+En canvi, en **RV32I** cal gestionar manualment l'accés a un element d'un
+vector mitjançant les instruccions de **càrrega** i **emmagatzematge**. En
+aquestes instruccions, el registre base conté l'adreça base i l'immediat
+el desplaçament, tots dos en bytes. Per tant, cal calcular el desplaçament
+com el producte de l'índex per la mida del tipus dels elements:
 
-$$ @ A[i] = @ A[0] + i \cdot T$$ {#eq-vector-regla-escalat}
+$$@A[i] = @A[0] + i \cdot T$$ {#eq-vector-access-assemblador}
 
-$T$ és la mida en bytes de cada element del vector $A$ ($T$ = `i * sizeof(tipus_element)`).
-
-::: {#cau-c-adreca-base .callout-caution}
-En **C**, l'**adreça base** del vector `vec`es pot obtenir de dues maneres (equivalents) següents:
-
-* `&vec[0]`
-* `vec`[^decau]
-
-[^decau]: Perquè, en **C**, els vector decauen automàticament a punter al primer element (@sec-punters-vectors).
-:::
+on $T$ és la mida en bytes de cada element (`T` = `sizeof(tipus_element)`).
 
 ::: {#cau-acces-aleatori-significat .callout-caution}
-L'anomenat "accés aleatori" a un vector no implica l'atzar, sinó la capacitat d'accedir directament a qualsevol dels seus elements mitjançant l'índex, amb un temps constant $\mathcal{O}(1)$, gràcies a la regla d'escalat.
+L'"**accés aleatori**" a un vector no implica atzar, sinó la capacitat
+d'accedir directament a qualsevol element en temps constant
+$\mathcal{O}(1)$, independentment de la seva posició. Això és possible
+perquè tots els elements tenen la mida fixa $T$ i l'adreça de qualsevol
+element es pot calcular directament amb @eq-vector-access-assemblador.
 :::
-
-En **RV32I**, l'accés a un element d'un vector es realitza mitjançant les instruccions de **càrrega** i **emmagatzematge** on el registre base conté l'adreça del vector i el desplaçament es calcula com `i * sizeof(element)`. El desplaçament zero correspon a l'adreça base del primer element del vector.
 
 ::::: {#tip-load-store-word .callout-tip}
 ## Accés a un element d'un vector
@@ -1804,43 +1807,60 @@ En **RV32I**, suposant que `h` ocupa el registre `s2`, i que `A` és una variabl
 Com que C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits), no comprova si l'índex d'un accés aleatori està fora del rang del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
 :::
 
-### Relació entre punters i vectors {#sec-punters-vectors}
-
-En **C**, en la majoria d'expressions, el nom d'un vector **decau** automàticament a un **punter al seu primer element**:
-
-* El decaïment és **automàtic**: no cal cap operador explícit.
-* El decaïment **no** es produeix en dos contextos:
-    * Operand de `&`: retorna l'adreça del vector com a bloc, no del primer element.
-    * Operand de `sizeof`: retorna la mida total del vector.
-
-Tot i el decaïment, en la majoria d'expressions, els vectors mantenen la seva identitat com a blocs de memòria fixos.
-
-Una **conseqüència** del decaïment, és l'**equivalència** entre `vec` i `&vec[0]` (@cau-c-adreca-base).
-
-::: {#tip-c-vector-decaiment .callout-tip}
-## Decaïment de vectors a punters en C
-```{.C filename="C"}
-int *p;
-int vec[100];
-
-p = vec;
-```
-
-Les variables `vec` i `p` tenen tipus diferents: `vec` representa tot el bloc de memòria reservat, mentre que `p` és només una variable que pot emmagatzemar una adreça de memòria.
-
-No obstant això, l'assignació és correcte perquè el nom del vector `vec` decau (es converteix automàticament) en un punter al seu primer element. La diferència principal és que 
+::: {#wrn-index-aritmetica-punters .callout-warning collapse=true}
+## C — Commutativitat de l'operador `[]`
+Com que la suma és commutativa (`a + i` és el mateix que `i + a`), en C és perfectament vàlid escriure `3[vec]` en lloc de `vec[3]`. El compilador ho tradueix igualment a `*(3 + vec)`.
 :::
 
-Conseqüències:
+### Relació entre punters i vectors {#sec-punters-vectors}
 
+En **C**, en la majoria d'expressions, el nom d'un vector **decau** automàticament a un **punter al seu primer element** (del tipus `<tipus_element> *`), excepte en dos contextos específics: quan és operand de l'operador `&` i quan és operand de `sizeof`. Aquest fenomen es coneix com a **decaïment de vectors a punters**.
+
+Una **conseqüència** del decaïment, és l'**equivalència** entre `vec` i `&vec[0]`.
+
+::: {#cau-c-adreca-base .callout-caution}
+Per tant, en **C**, l'**adreça base** del vector `vec`es pot obtenir de dues maneres (equivalents) següents:
+
+* `&vec[0]`
+* `vec`[^decau]
+
+[^decau]: Perquè, en **C**, els vector decauen automàticament a punter al primer element (@sec-punters-vectors).
+:::
+
+::: {#tip-c-vector-decaiment .callout-tip}
+## C — Decaïment de vectors a punters en C
+```{.C filename="C"}
+int vec[100];
+int *p = vec;
+```
+Anàlisi:
+
+* Les variables `vec` i `p` tenen tipus diferents:
+    * `vec` representa tot el bloc de memòria reservat
+    * `p` és una variable que pot emmagatzemar una adreça de memòria.
 * Mida:
     *  `sizeof(vec)` retorna 400 (100 enters × 4 bytes).
     *  `sizeof(p)` retorna la mida d'una adreça (4 bytes a RV32I).
 * Assignació:
-    * `p = vec;` és una expressió vàlida perquè el vector decau a punter.
+    * `*p = vec;` és una expressió vàlida perquè `vec` decau a un punter al seu primer element. `&vec[0]` també seria vàlid.
     * ~~`vec = p;`~~ no és una expressió vàlida és ja que el nom d'un vector és un identificador constant que apunta sempre al mateix bloc de memòria.
+    * `p` és una variable, per tant, pot canviar en el temps
+:::
 
-Tècnicament, l'operador d'indexació (`[]`) és una **notació abreujada** per a l'aritmètica de punters: l'estàndard de C defineix $vec[i]$ com a exactament equivalent a $*(vec + i)$.
+::: {#tip-c-tipus-vector-matriu .callout-tip}
+## C — Decaïment d'un vector a punter
+
+```{.C filename="matrius.c"}
+int mat[2][3] = {{1, 2, 3},
+                 {4, 5, 6}};
+
+int *p = mat[0];    /* p apunta al primer element de la fila 0 */
+```
+
+`mat[0]` és de tipus `int[3]` (el vector de la primera fila de `mat`). En l'assignació a `p`, decau a `int *` apuntant al seu primer element, `mat[0][0]`.
+:::
+
+Tècnicament, l'operador d'indexació (`[]`) és una **notació abreujada** per a l'aritmètica de punters: l'estàndard de C defineix `vec[i]` com a exactament equivalent a `*(vec + i)`.
 
 Per tant, l'operador `[]` forma part de l'**aritmètica de punters** perquè el seu funcionament intern depèn de les mateixes regles d'escalat presentades a @sec-vector-indexacio.
 
@@ -1855,166 +1875,115 @@ En **C**, en sentències, l'operador `[]`, precedit del nom d'una variable de ti
 Per tant, és una forma compacta de realitzar aritmètica de punters i desreferència simultàniament.
 :::
 
-### Exemples
+### Accés a vectors amb bucles
 
-::: {#tip-inicialitzacio-punters-2 .callout-tip}
-## Inicialització de punters a vectors
-```{.C filename="C"}
-int v[100];
-char a=’E’, b=’K’;
-char *pglob = &a;
-void func()
-{
-        int *ploc;
-        ...
-        ploc = &v[8];           // v no inicialitzat; s'agafa l'adreça, no el valor
-        ...
-        pglob = &b;
-        ...
-}
-```
+Per recórrer els elements d'un vector amb un bucle, cal calcular a cada iteració l'adreça de l'element a accedir. Hi ha dues estratègies: l'**accés aleatori**, que calcula l'adreça a partir de l'índex, i l'**accés seqüencial**, que manté un punter que avança element a element.
 
-```{.s filename="RV32I"}
-# Inicialització dins la declaració. Declaració de variables globals.
-.data
-v:      .space 400
-a:      .byte 'E'
-b:      .byte 'K'
-pglob:  .word a                 # Punter a caràcter inicialitzat a &a
+#### Extracció d'invariants
 
-# Inicialització dins el codi de la funció func. Declaració de variables locals.
-.text
-func:
-        ...
-        la      t0, v+32        # càlcul de @v[8] = @v[0] + 8*4
-        ...
-        la      t1, b           # càlcul de @b
-        la      t2, pglob       # obtenció de l’adreça de pglob
-        sw      t1, 0(t2)       # emmagatzemament del valor @b
-        ...
-        
-```
+Un **invariant de bucle** és qualsevol valor que no depèn de la variable
+d'iteració i que, per tant, es pot calcular una sola vegada abans d'entrar
+al bucle. Calcular-lo dins el bucle és un error de rendiment: el processador
+el recomputaria innecessàriament a cada iteració.
+
+::: {#imp-extraccio-invariants .callout-important}
+A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevol bucle, llevat que s'indiqui explícitament el contrari. És un prerequisit implícit de totes les optimitzacions de bucle que es veuran al @sec-optimitzacions-bucle.
 :::
 
-::: {#wrn-index-aritmetica-punters .callout-warning collapse=true}
-## C — Commutativitat de l'operador `[]`
-Com que la suma és commutativa (`a + i` és el mateix que `i + a`), en C és perfectament vàlid escriure `3[vec]` en lloc de `vec[3]`. El compilador ho tradueix igualment a `*(3 + vec)`.
-:::
+#### Accés aleatori
 
-::: {#tip-c-tipus-vector-matriu .callout-tip}
-## Matrius com a vectors de vectors
-```{.C filename="matrius.c"}
-int mat[2][3] = {{1, 2, 3},
-                 {4, 5, 60}}; 
-
-int *p = mat[0];    /* p apunta al primer element de mat */
-```
-
-`p` apunta al primer element de la fila 0 perquè mat[0] és el vector de la primera fila de la, el qual amb l'assignació decau a un punter a la seva base.
-:::
-
-<!-- 
-Optimitzacions de bucle
-* optimització #0: **Extracció d'invariats**
-* optimització #1: **Accés seqüencial**
-* optimització #2: **Avaluació de la condició al final de bucle**
-* optimització #3: **Eliminació de la variable d'inducció**
--->
-
-::: {#cau-optimitzacio-bucle-0-extraccio-invariats .callout-caution}
-## Optimització de bucle #0 "extracció d'invariants"
-
-Recorregut d'un vector per accés aleatori.
+::: {#tip-vector-acces-aleatori .callout-tip}
+## Recorregut d'un vector per accés aleatori
 
 ```{.C filename="C"}
 #define N 4
 
-int V[N] = {0,1,2,3};
+int V[N] = {0, 1, 2, 3};
 
-void main () {
-        int suma=0, i=N;
-        while ( i != 0) {
-                i--;
-                suma = suma + V[i];
-        }
+void main() {
+    int suma = 0, i = N;
+    while (i != 0) {
+        i--;
+        suma = suma + V[i];
+    }
 }
 ```
 
 Suposant que `suma` i `i` ocupen els registres `t0` i `t1`:
 
 ```{.s filename="RV32I"}
-        .eqv N, 4                       # define N 4
-        
+        .eqv N, 4                   # define N 4
+
 .data
-V:      .word 0, 1, 2, 3                # vector d'enters
+V:      .word 0, 1, 2, 3            # vector d'enters
 
 .text
 main:
-        mv      t0, zero                # suma <- 0; o `li t0, 0`
+        mv      t0, zero            # suma <- 0
         li      t1, N
-        la      t4, V                   # t4 <- @V[0]
+        la      t4, V               # invariant: @V[0], extret del bucle
 while:
-        beq     t1, zero, fiwhile       # salt si i=0
-        addi    t1, t1, -1              # i--
-        sll     t3, t1, 2               # i*4
-        add     t3, t3, t4              # @V[0] + i*4
-        lw      t5, 0(t3)               # V[i]
-        add     t0, t0, t5              # suma <- suma + V[i]
-        j       while                   # salt incondicional
+        beq     t1, zero, fiwhile   # [ctrl]
+        addi    t1, t1, -1          # [ctrl] i--
+        slli    t3, t1, 2           # [ctrl] i*4
+        add     t3, t3, t4          # [ctrl] @V[0] + i*4
+        lw      t5, 0(t3)           #        V[i]
+        add     t0, t0, t5          #        suma <- suma + V[i]
+        j       while               # [ctrl]
 fiwhile:
 ```
 
-En aquesta traducció del **bucle d'accés a memòria** s'hi ha aplicat l'**optimització** d’**extracció d’invariants** (Optimització de bucle #0, @TODO-en-algun-altre-lloc?). \@V és una **invariant**, és a dir, el seu valor no varia durant les iteracions. L'optimització consisteix en situar la instrucció que copia aquesta adreça a `t4` abans d’entrar al bucle (`la`) perquè només s'executa una sola vegada. En aquesta versió, la traducció de la infraestructura de control del bucle es fa amb **6 instruccions** (L12, L13, L14, L15, L16 i L18). La instrucció `add` és el cos del bucle, és a dir, no forma part de la infraestructura de control i, per tant, no s'ha de comptar.
+L'adreça base `@V[0]` és un invariant i s'ha extret del bucle (`la t4, V`). La infraestructura de control del bucle ocupa **5 instruccions** per iteració (les marcades `[ctrl]`). Al @sec-optimitzacions-bucle es reduirà fins a **2** aplicant les optimitzacions tres optimitzacions, cadauna de les quals comportarà l'estalvi d'una instrucció.
 :::
 
-::: {#cau-optimitzacio-bucle-1-accés-sequencial .callout-caution}
-## Optimització de bucle #1 "accés seqüencial"
+#### Accés seqüencial
 
-Recorregut d'un vector per accés seqüencial. 
+::: {#tip-optimitzacio-acces-sequencial .callout-tip}
+## Recorregut d'un vector: Accés seqüencial (Optimització #1)
 
-Aquest programa fa servir un punter (`p`) per recórrer el vector i s'accedeix als seus elements desreferenciant el punter.
+Aquest programa fa servir un punter (`p`) per recórrer el vector i accedeix
+als seus elements desreferenciant-lo.
 
 ```{.C filename="C"}
 #define N 4
 
-int V[N] = {0,1,2,3};
+int V[N] = {0, 1, 2, 3};
 
-void main () {
-        int suma=0, i=N, *p;
-        p = V;                          // equival a: p=&V[0]
-        while ( i != 0) {
-                suma = suma + (*p);     // desreferència de p
-                p++;                    // p apunta a l'element següent
-                i--;
-        }
+void main() {
+    int suma = 0, i = N;
+    int *p = V;                 /* equival a: p = &V[0] */
+    while (i != 0) {
+        suma = suma + (*p);     /* desreferència de p */
+        p++;                    /* p apunta a l'element següent */
+        i--;
+    }
 }
 ```
 
 Suposant que `suma`, `i` i `p` ocupen `t0`, `t1` i `t3`:
 
 ```{.s filename="RV32I"}
-        .eqv    N, 4                    # define N 4
+        .eqv    N, 4                # define N 4
 
 .data
-V:      .word   0, 1, 2, 3              # vector d'enters
+V:      .word   0, 1, 2, 3         # vector d'enters
 
 .text
 main:
-        mv      t0, zero                # o `li t0, 0`
+        mv      t0, zero            # suma <- 0
         li      t1, N
-        la      t3, V
+        la      t3, V               # p <- @V[0]
 while:
-        beq     t1, zero, fiwhile       # salt si i == 0
-        lw      t4, 0(t3)               # *p
-        add     t0, t0, t4              # suma <- suma + (*p)
-        addi    t3, t3, 4               # p++
-        addi    t1, t1, -1              # i--
-        j       while                   # salt incondicional
+        beq     t1, zero, fiwhile   # [ctrl]
+        lw      t4, 0(t3)           #        *p
+        add     t0, t0, t4          #        suma <- suma + (*p)
+        addi    t3, t3, 4           # [ctrl] p++ (stride = 4)
+        addi    t1, t1, -1          # [ctrl] i--
+        j       while               # [ctrl]
 fiwhile:
 ```
 
-<!-- TODO afegir refs a secció específica de [Tema 4](T4.qmd) -->
-En aquesta traducció del **bucle d’accés a memòria** s’hi ha aplicat l’**optimització** d’**accés seqüencial** (Optimització #1, @TODO-T4-subseccio). En aquesta versió, la part iterativa de la traducció del bucle es fa amb **5 instruccions**  (L12, L13, L15, L16 i L17). Al [Tema 5](T5.qmd) es reduirà fins a **3** instruccions aplicant dues optimitzacions més: movent l'**avaluació de la condició al final del bucle** (Optimització #2, @cau-optimitzacio-bucle-2-avaluacio-condicio-final) i l'**eliminació de la variable d’inducció** `i` (optimització #3, @cau-eliminacio-variables-induccio).
+Aplicant l'**accés seqüencial** (Optimització #1, @sec-optimitzacions-bucle), la infraestructura de control ha quedat en **4 instruccions** (les marcades `[ctrl]`). Al @sec-optimitzacions-bucle es reduirà fins a **2** avaluant la condició al final (Optimització #2) i eliminant la variable d'inducció `i` (Optimització #3).
 :::
 
 ## Caràcters i cadenes de caràcters
