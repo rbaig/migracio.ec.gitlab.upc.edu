@@ -1312,6 +1312,8 @@ a = f(*p);          /* (5) */
 
 ::: {#nte-bloc-activacio .callout-note}
 ## RV32I ABI — El bloc d'activació — Registre de pila `sp`
+
+<!-- TODO Verificar que ho diu l'ABI -->
 L'ABI imposa que les subrutines reservin tot l'espai que necessitaran a l'inici de la seva l'execució i que l'alliberin just abans de retornar el control de flux al caller. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
 La reserva i l'alliberament d'espai de memòria per al BA es fa mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
@@ -1321,6 +1323,18 @@ El BA **creix** cap a **adreces més baixes**.
 Durant l'**execució** de la subrutina, l'`sp` **apunta al primer byte** del BA, el **cim de pila**.
 
 Per fer la **reserva** d'espai, cal **decrementar** `sp` la mida del bloc i, per fer l'**alliberament**, restituir-lo al valor original **incrementant-lo** la mateixa quantitat.
+:::
+
+::: {#nte-abi-alineacio-pila .callout-note}
+## RV32I ABI — Alineació de la pila
+
+La mida del bloc d'activació i el valor de `sp` han de ser sempre
+**múltiples de 16 bytes** seguint l'ABI estàndard de RV32I.
+:::
+
+<!-- TODO Consens? -->
+::: {#imp-ec-alineacio-pila .callout-important}
+A **EC**, per simplicitat, s'admet múltiples de **4 bytes**.
 :::
 
 ::: {#tip-func-uninivell-bloc-activacio .callout-tip}
@@ -1347,7 +1361,7 @@ Les variables locals s'assignen a **registres** o al **BA** seguint aquestes reg
 El BA pot incloure:
 
 * **Variables locals** de tipus estructurat i les escalars que no caben en registres o que requereixen adreça.
-* **Registres segurs desats** (vegeu @TODO-multinivell-registres-segurs), si la subrutina és multinivell.
+* **Registres segurs desats** (vegeu @sec-multinivell-pila), si la subrutina és multinivell.
 
 La disposició dins el BA, de les adreces més baixes a les més altes:
 
@@ -1396,34 +1410,35 @@ func:
 
 ### Subrutines multinivell: la pila del programa (els registres `s0`--`s11`) {#sec-multinivell-pila}
 
+En un programa multinivell, una subrutina pot cridar una altra subrutina, que al seu torn pot cridar una altra, i així successivament. En aquest cas, el bloc d'activació de cada subrutina s'apila sobre el de la subrutina que la va cridar.
 
+La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política de última en entrar, primera en sortir (*last in, first out*, LIFO), la qual s'implementa mitjançant el registre de pila `sp`.
 
+::: {#nte-TODO .callout-note}
+## RARS — Fons de pila
+A RARS, **fons de pila**, és a dir, el valor inicial d'`sp`, és `0x7fffeffc`.
+:::
 
-<!--
-* Subrutines multinivell 
-	* La pila del programa: una successió de blocs d'activació
-	* El problema de preservar el context
-		* Registres segurs
-	* Desar i restaurar registres segurs
-		* Pròleg i epíleg
-	* Determinació dels registres segurs necessaris
-	* Exemple complet: subrutina multinivell
-* Exemple avançat: bloc d’activació complet -->
+::: {#tip-exemple-pila-multinivell .callout-tip}
+## Evolució de la pila durant crides aniuades
 
+```{.C filename="C"}
+void funcA() { sentA1; funcB(); sentA2; }
+void funcB() { sentB; }
+```
 
+![Evolució de la pila durant les crides aniuades de `funcA` i `funcB`. El registre `sp` decreix en reservar el bloc d'activació de cada funció i recupera el valor anterior en alliberar-lo.](figures/TODO.png){#fig-pila-crides-aniuades}
+:::
 
+::: {#tip-rars-main-multinivell .callout-tip}
+## RARS — `main` com a subrutina multinivell
 
+A **RARS**, el fitxer `startup.s` emula el mecanisme d'inici i finalització del programa  @imp-exception-handler). Per acabar l'execució correctament cal retornar des de `main` amb `ret`, en lloc de saltar a una adreça d'aturada com es faria en un sistema real.
 
+Per tant, si `main` és multinivell, cal preservar `ra` i restaurar-lo abans de retornar, exactament igual que qualsevol altra subrutina multinivell.
+:::
 
-
-
-
-TODO: Pila és un apilament de blocs d'activació. Cada bloc d'activació és un conjunt de dades locals d'una subrutina. La pila és una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen.
-
-TODO: A RARS **fons de pila* `0x7fffeffc`
-
-
- En subrutines multinivell, s'ha de preservar, com a mínim, el valor de `ra` abans de la crida i restaurar-lo després:
+Una subrutina multinivell, ha de preservar, com a mínim, el valor de `ra` abans de la crida al callee i restaurar-lo després:
 ```{.s filename="RV32I"}
 sub:
         ...
@@ -1435,121 +1450,76 @@ sub:
         ret
 ```
 
+#### Preservació del context
 
+Els registres són compartits per totes les subrutines. Per tant, hi ha d'haver algun mecanisme per garantir que el valor d'un registre que s'usa després d'una crida a una subrutina filla no es perdi per sobreescriptura. Aquest és el problema de preservar el context.
 
+L'**ABI** de RV32I resol aquest problema mitjançant una solució elegant i eficient, però que pot semblar contraintuïtiva a primera vista.
 
-El **context d'execució** d'una subrutina és el conjunt de totes les seves
-dades locals (paràmetres, variables locals, adreça de retorn i càlculs
-intermedis), tant les que es guarden a la pila com en registres.
+Aquesta solució es basa en la classificació dels registres en **temporals** i **segurs** i en el repartiment de responsabilitats entre caller i callee per preservar-los: Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat del caller, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és del callee.
 
-Quan una subrutina multinivell crida una subrutina filla, el bloc
-d'activació de la filla s'apila sobre el de la mare. La pila del programa
-és, doncs, una successió de blocs d'activació que creix i decreix a mesura
-que les subrutines es criden i retornen:
+Que el pare hagi de prendre mesures per preservar el seu context sembla raonable, ja que és qui té la necessitat de recuperar-lo després de la crida. El que pot semblar contraintuïtiu és que el fill hagui d'ajudar al pare a preservar el context d'aquest últim preservant-ne els valors dels registres segurs, tot i no tenir-ne cap dependència. No obstant això, aquesta solució és molt eficient perquè permet a **les subrutines** modificar lliurement els registres temporals sense haver de preocupar-se per preservar-los, havent-se de preocupar **només de preservar els registres segurs**, assegurant, així, per economia, que només faran servir aquells registres que realment necessiten.
 
-::: {#nte-abi-alineacio-pila .callout-note}
-## RV32I ABI — Alineació de la pila
-
-La mida del bloc d'activació i el valor de `sp` han de ser sempre
-**múltiples de 16 bytes** seguint l'ABI estàndard de RV32I.
-:::
-
-<!-- TODO Consens? -->
-::: {#imp-ec-alineacio-pila .callout-important}
-A **EC**, per simplicitat, s'admet múltiples de **4 bytes**.
-:::
-
-::: {#tip-exemple-pila-multinivell .callout-tip}
-## Estat de la pila durant crides aniuades
-
-```{.C filename="C"}
-void funcA() { sentA1; funcB(); sentA2; }
-void funcB() { sentB; }
-```
-
-![Evolució de la pila durant les crides aniuades de `funcA` i `funcB`.
-El registre `sp` decreix en reservar el bloc d'activació de cada funció
-i recupera el valor anterior en alliberar-lo.
-](figures/TODO.png){#fig-pila-crides-aniuades}
-:::
-
-::: {#tip-rars-main-multinivell .callout-tip}
-## RARS — `main` com a subrutina multinivell
-
-A **RARS**, el fitxer `startup.s` emula el mecanisme d'inici i finalització
-del programa (@imp-exception-handler). Per acabar l'execució correctament
-cal retornar des de `main` amb `ret`, en lloc de saltar a una adreça
-d'aturada com es faria en un sistema real.
-
-Per tant, si `main` és multinivell, cal preservar `ra` i restaurar-lo
-abans de retornar, exactament igual que qualsevol altra subrutina
-multinivell.
-:::
-
-#### El problema de preservar el context
-
-Els registres són compartits per totes les subrutines. Una subrutina
-multinivell ha de garantir que, en cridar una subrutina filla, el valor
-dels seus registres importants no es perdi. Per resoldre-ho sense que les
-dues subrutines hagin de conèixer els detalls interns l'una de l'altra,
-l'**ABI** defineix dues categories de registres: temporals i segurs.
+Dit de manera informal, el sistema no es basa en la idea que el pare s'hagi de protegir contra les modificacions del fill, sinó que es basa en el seu compromís de preservar els registres segurs del seu pare, és a dir, els de l'avi.
 
 ::: {#nte-abi-registres-temporals-segurs .callout-note}
 ## RV32I ABI — Registres temporals i segurs
+De @nte-registres-proposit-general:
 
 | Categoria | Registres ABI | Qui els preserva |
 | :--- | :--- | :--- |
-| **Temporals** | `t0`–`t6`, `a0`–`a7` | *Caller* (qui fa la crida) |
-| **Segurs** | `s0`–`s11`, `ra`, `sp` | *Callee* (la subrutina cridada) |
-
-Els registres **temporals** poden ser modificats lliurement per qualsevol
-subrutina. El codi que fa la crida no pot esperar que es conservin després
-de la crida. Els registres **segurs** han de ser restaurats al seu valor
-original per la subrutina que els modifica, abans de retornar.
+| **Temporals** | `t0`–`t6`, `a0`–`a7` | **Caller** (la subrutina que fa la crida) |
+| **Segurs** | `s0`–`s11`, `ra`, `sp` | **Callee** (la subrutina cridada) |
 :::
 
 ::: {#cau-regla-registres-segurs .callout-caution}
-Quan una subrutina retorna, ha de deixar els registres **segurs** en el
-mateix estat que tenien quan ha estat invocada.
-:::
+Resumint:
 
-::: {#imp-registres-temporals-segurs .callout-important}
-A **EC**, les variables escalars d'una subrutina **uninivell** s'assignen
-sempre a registres **temporals**: cap subrutina filla pot sobreescriure'ls,
-de manera que no cal usar registres segurs `s0`–`s11`.
-:::
-
-#### desar i restaurar registres segurs
-
-Per respectar la regla anterior, una subrutina que modifica registres
-segurs ha de:
-
-1. **desar** els seus valors originals al bloc d'activació durant el
-   **pròleg**, just a l'inici de la subrutina.
-2. **Restaurar** els seus valors originals durant l'**epíleg**, just
-   abans de retornar.
-
-A més, tota subrutina multinivell ha de desar i restaurar `ra`, ja que
-`jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
-
-::: {#cau-ec-subrutina-uninivell-sense-ba .callout-caution}
-Una subrutina **uninivell** només tindrà pròleg i epíleg si té variables
-locals estructurades, i aquests es limitaran a la reserva i alliberament
-d'espai a la pila.
+* Una subrutina abans de retornar, ha de deixar els registres **segurs** en el mateix estat que tenien quan ha estat invocada.
+* Una multinivell ha de desar `ra` abans de fer la crida i restaurar-lo abans de retornar, ja que `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
 :::
 
 #### Determinació dels registres segurs necessaris
 
-Per determinar quins registres cal fer segurs, cal analitzar el codi i
-identificar les dades que compleixen **les dues condicions simultàniament**:
+Per determinar quins registres cal fer segurs, cal analitzar el codi i identificar les dades que compleixen **les dues condicions simultàniament**:
 
 1. El seu valor ha estat generat per **última vegada ABANS** d'una crida.
 2. El seu valor s'usa **DESPRÉS** d'aquesta mateixa crida.
 
-A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`),
-de manera que la subrutina filla els preservarà automàticament.
+A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`), de manera que la subrutina filla els preservarà automàticament.
 
-<!-- #### Exemple 1: Subrutina multinivell {#sec-exemple-1-multinivell} -->
+#### Estructura general d'una subrutina multinivell
+
+La secció de codi d'una subrutina multinivell es divideix en tres parts:
+
+* **Pròleg:** és el codi que s'executa a l'inici de la subrutina per generar el bloc d'activació.
+* **Cos:** és el codi que implementa la funcionalitat de la subrutina. 
+* **Epíleg:** és el codi que s'executa al final de la subrutina, just abans de retornar el control de flux al caller, per restituir el context.
+
+```{.s filename="RV32I"}
+sub:
+        # pròleg
+        addi    sp, sp, -BA_MIDA    # reserva d'espai per al BA
+        sw      s0, 0(sp)           # desa registres segurs caller
+        sw      s1, 4(sp)
+        ...                         # tants com sigui necessari (màxim 12)
+        sw      ra, BA_MIDA-4(sp)   # desa ra (si és multinivell)
+
+        # cos
+        ...
+
+        # epíleg
+        lw      s0, 0(sp)           # restauració de registres segurs
+        lw      s1, 4(sp)
+        ...                         # tants com sigui necessari (màxim 12)
+        lw      ra, BA_MIDA-4(sp)   # restauració ra (si és multinivell)
+        addi    sp, sp, BA_MIDA     # alliberació d'espai del BA
+
+        ret
+```
+
+#### Exemples
+
 ::: {#tip-exemple-multi .callout-tip}
 ## Subrutina multinivell 1
 
@@ -1562,20 +1532,11 @@ int multi(int a, int b, int c) {
 }
 ```
 
-**Pas 1. Registres segurs.** Identifiquem les dades que es fan servir
-DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per
-ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat
-a `a+b`). Els assignem els registres segurs `s0` i `s1` respectivament.
-La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS
-de la crida.
+**Pas 1. Registres segurs.** Identifiquem les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). Els assignem els registres segurs `s0` i `s1` respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
 
-![Dependències de dades de la subrutina `multi`. La línia de punts separa
-el codi anterior i posterior a la crida a `mcm`. Les fletxes indiquen les
-dades `c` i `d` que travessen la frontera i que s'han de guardar en
-registres segurs.](figures/TODO.png){#fig-deps-multi}
+![Dependències de dades de la subrutina `multi`. La línia de punts separa el codi anterior i posterior a la crida a `mcm`. Les fletxes indiquen les dades `c` i `d` que travessen la frontera i que s'han de guardar en registres segurs.](figures/TODO.png){#fig-deps-multi}
 
-**Pas 2. Bloc d'activació.** No hi ha variables locals a la pila (totes
-són escalars). Cal desar `s0`, `s1` i `ra`: 3 words = 12 bytes.
+**Pas 2. Bloc d'activació.** No hi ha variables locals a la pila (totes són escalars). Cal desar `s0`, `s1` i `ra`: 3 words = 12 bytes.
 
 | Offset des de `sp` | Contingut |
 | :--- | :--- |
@@ -1583,9 +1544,7 @@ són escalars). Cal desar `s0`, `s1` i `ra`: 3 words = 12 bytes.
 | `+4` | `s1` desat |
 | `+8` | `ra` desat |
 
-![Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i
-`ra` desats als offsets `+0`, `+4` i `+8` respectivament.
-](figures/TODO.png){#fig-ba-multi}
+![Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i `ra` desats als offsets `+0`, `+4` i `+8` respectivament. ](figures/TODO.png){#fig-ba-multi}
 
 **Pas 3. Codi assemblador.**
 
@@ -1620,7 +1579,6 @@ multi:
 ```
 :::
 
-<!-- #### Exemple 2: Subrutina multinivell {#sec-exemple-2-multinivell} -->
 ::: {#tip-exemple-exemple .callout-tip}
 ## Subrutina multinivell 2
 
@@ -1637,7 +1595,7 @@ char exemple(int a, int b, int c) {
 }
 ```
 
-**Pas 1. Registres segurs.** Desglossem les dues crides:
+**Pas 1. Registres segurs.** Desglossant les dues crides:
 
 ```
 res_f = f(d, &q);
@@ -1645,16 +1603,10 @@ res_g = g(v, w);
 e = res_f + res_g;
 ```
 
-Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS)
-són: `c`, `d` i `res_f`. Les assignem a `s0`, `s1` i `s2` respectivament.
-La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0`
-i `a1`.
+Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS) són: `c`, `d` i `res_f`. Les assignem a `s0`, `s1` i `s2` respectivament. La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0` i `a1`.
 
-![Dependències de dades de la subrutina `exemple`. Les línies de punts
-separen el codi anterior i posterior a cada crida. Les fletxes indiquen
-les dades `c`, `d` i `res_f` que travessen fronteres de crides i s'han de
-guardar en registres segurs `s0`, `s1` i `s2` respectivament.
-](figures/TODO.png){#fig-deps-exemple}
+![Dependències de dades de la subrutina `exemple`. Les línies de punts separen el codi anterior i posterior a cada crida. Les fletxes indiquen les dades `c`, `d` i `res_f` que travessen fronteres de crides i s'han de
+guardar en registres segurs `s0`, `s1` i `s2` respectivament.](figures/TODO.png){#fig-deps-exemple}
 
 Anotació de registres sobre el codi:
 
@@ -1670,10 +1622,7 @@ char exemple(int a, int b, int c) { /* a → a0, b → a1, c → s0 */
 }
 ```
 
-**Pas 2. Bloc d'activació.** Variables a la pila en ordre textual: `q`
-(4 bytes), `v` (18 bytes), `w` (20 bytes). Total variables: 42 bytes.
-Alineació fins a múltiple de 4: 2 bytes. Registres desats: `s0`, `s1`,
-`s2`, `ra` = 16 bytes. **Total: 60 bytes.**
+**Pas 2. Bloc d'activació.** Variables a la pila en ordre textual: `q` (4 bytes), `v` (18 bytes), `w` (20 bytes). Total variables: 42 bytes. Alineació fins a múltiple de 4: 2 bytes. Registres desats: `s0`, `s1`, `s2`, `ra` = 16 bytes. **Total: 60 bytes.**
 
 | Offset des de `sp` | Contingut | Mida |
 | :--- | :--- | :--- |
@@ -1686,10 +1635,7 @@ Alineació fins a múltiple de 4: 2 bytes. Registres desats: `s0`, `s1`,
 | `+52` | `s2` desat | 4 bytes |
 | `+56` | `ra` desat | 4 bytes |
 
-![Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i
-`w` als offsets `+0`, `+4` i `+22`, alineació als bytes `+42`–`+43`, i
-registres desats `s0`, `s1`, `s2`, `ra` als offsets `+44`, `+48`, `+52`
-i `+56`.](figures/TODO.png){#fig-ba-exemple}
+![Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i `w` als offsets `+0`, `+4` i `+22`, alineació als bytes `+42`–`+43`, i registres desats `s0`, `s1`, `s2`, `ra` als offsets `+44`, `+48`, `+52` i `+56`.](figures/TODO.png){#fig-ba-exemple}
 
 **Pas 3. Codi assemblador.**
 
