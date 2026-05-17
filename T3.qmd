@@ -481,7 +481,7 @@ L'offset es calcula respecte a l'adreça de la instrucció de salt (`0x00400000`
 Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits 2 i 6:
 
 ```{.C filename="C"}
-a = b & 0x55;       /* màscara: seleccionem bits 0, 2, 4 i 6 */
+a = b & 0x55;       /* màscara: selecció bits 0, 2, 4 i 6 */
 if (a == 0x11)      /* bits 0 i 4 actius, 2 i 6 inactius */
     { ... }
 ```
@@ -489,7 +489,7 @@ if (a == 0x11)      /* bits 0 i 4 actius, 2 i 6 inactius */
 Suposant que `a` i `b` ocupen els registres `t0` i `t1`:
 
 ```{.s filename="RV32I"}
-andi    t0, t1, 0x0055      # seleccionem els bits 0, 2, 4 i 6
+andi    t0, t1, 0x0055      # selecció els bits 0, 2, 4 i 6
 li      t4, 0x0011
 bne     t0, t4, endif       # if (a == 0x11) ...
 ...                         # codi si es compleix la condició
@@ -710,8 +710,8 @@ Suposant que `t0` conté el resultat de l'expressió del `switch` i que `switch_
         la      t1, switch_vec  # adreça base del vector
         slli     t2, t0, 2      # offset = índex * 4 (mida d'una paraula)
         add     t1, t1, t2      # adreça efectiva de l'element
-        lw      t3, 0(t1)       # carreguem l'adreça de la clàusula
-        jalr    zero, t3, 0     # saltem al codi de la clàusula
+        lw      t3, 0(t1)       # carrega l'adreça de la clàusula
+        jalr    zero, t3, 0     # salta al codi de la clàusula
 ```
 
 El vector de salts es declara a la secció `.data`:
@@ -917,7 +917,7 @@ bucle:
         add     t3, t2, t3          # @v[i]
         lw      t0, 0(t3)           # n = v[i]
         addi    t1, t1, 1           # i++
-        bltz    t0, bucle           # n < 0: tornem a iterar
+        bltz    t0, bucle           # n < 0: torna a iterar
 ```
 
 El bucle avança per `v` fins a trobar el primer element no negatiu. La condició s'avalua després d'executar el cos, de manera que sempre es llegeix almenys un element.
@@ -928,7 +928,7 @@ El bucle avança per `v` fins a trobar el primer element no negatiu. La condici�
 
 Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament.
 
-Per exemple, en el `for` anterior, en lloc de calcular `@v[i] = @v[0] + i*4` a cada iteració, podem mantenir directament un punter `p` que avanci de 4 en 4 bytes:
+Per exemple, en el `for` anterior, en lloc de calcular `@v[i] = @v[0] + i*4` a cada iteració, pot mantenir directament un punter `p` que avanci de 4 en 4 bytes:
 
 ```{.C filename="C"}
 int sum = 0;
@@ -977,7 +977,7 @@ int *pvec;          /* global: punter a dada dinàmica (heap) */
 int f() {
     int lvec[100];  /* local: emmagatzemament dinàmic (pila) */
     ...
-    pvec = malloc(400);     /* reservem espai al heap */
+    pvec = malloc(400);     /* reserva espai al heap */
     ...
     pvec[10] = gvec[10] + lvec[10];
     ...
@@ -985,7 +985,7 @@ int f() {
 
 int g() {
     ...
-    free(pvec);     /* alliberem espai del heap */
+    free(pvec);     /* allibera espai del heap */
     ...
 }
 ```
@@ -1044,7 +1044,7 @@ on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `a
 * `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
 * `addi x5, x5, 0` → `x5 = 0x10010000` ✓
 
-La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable" les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació. Veurem això amb més detall a la secció de compilació, assemblatge i enllaçat (@sec-compilacio).
+La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable" les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació (vegeu @sec-compilacio).
 :::
 
 ## Subrutines {#sec-subrutines}
@@ -1143,8 +1143,8 @@ void main() {
 ```{.s filename="RV32I"}
 main:
         ...
-        mv      a0, t0          # passem x
-        mv      a1, t1          # passem y
+        mv      a0, t0          # passa x
+        mv      a1, t1          # passa y
         jal     ra, suma2
         mv      t2, a0          # z = resultat
         ...
@@ -1393,7 +1393,7 @@ El bloc d'activació conté `v` (10 bytes) i `w` (40 bytes), en ordre textual, a
 
 ```{.s filename="RV32I"}
 func:
-        addi    sp, sp, -52     # reservem espai: v(10) + alineació(2) + w(40)
+        addi    sp, sp, -52     # reserva espai: v(10) + alineació(2) + w(40)
         ...
         # @w[i] = (sp+12) + i*4
         slli    t4, a0, 2       # i*4
@@ -1402,8 +1402,8 @@ func:
         add     t4, t4, t0      # w[i] + k
         # @v[w[i]+k] = sp + offset
         add     t5, sp, t4
-        lb      a0, 0(t5)       # retornem v[w[i]+k]
-        addi    sp, sp, 52      # alliberem espai
+        lb      a0, 0(t5)       # retorna v[w[i]+k]
+        addi    sp, sp, 52      # allibera espai
         ret
 ```
 :::
@@ -1442,7 +1442,7 @@ Una subrutina multinivell, ha de preservar, com a mínim, el valor de `ra` abans
 ```{.s filename="RV32I"}
 sub:
         ...
-        sw      ra, 0(sp)       # preservem ra a la pila
+        sw      ra, 0(sp)       # preserva ra a la pila
         ...
         jal     ra, sub2        # crida a sub2 (multinivell)
         ...
@@ -1532,7 +1532,7 @@ int multi(int a, int b, int c) {
 }
 ```
 
-**Pas 1. Registres segurs.** Identifiquem les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). Els assignem els registres segurs `s0` i `s1` respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
+**Pas 1. Registres segurs.** Identificació de les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). Els assignació dels registres segurs `s0` i `s1` respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
 
 ![Dependències de dades de la subrutina `multi`. La línia de punts separa el codi anterior i posterior a la crida a `mcm`. Les fletxes indiquen les dades `c` i `d` que travessen la frontera i que s'han de guardar en registres segurs.](figures/TODO.png){#fig-deps-multi}
 
@@ -1555,14 +1555,14 @@ multi:
         sw      s0, 0(sp)       # desa s0
         sw      s1, 4(sp)       # desa s1
         sw      ra, 8(sp)       # desa ra
-        mv      s0, a2          # copiem c a s0
+        mv      s0, a2          # copia c a s0
 
         # d = a + b  → s1
         add     s1, a0, a1
 
         # e = mcm(c, d)
-        mv      a0, s0          # passem c
-        mv      a1, s1          # passem d
+        mv      a0, s0          # passa c
+        mv      a1, s1          # passa d
         jal     ra, mcm
         mv      t0, a0          # e = resultat de mcm
 
@@ -1603,7 +1603,7 @@ res_g = g(v, w);
 e = res_f + res_g;
 ```
 
-Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS) són: `c`, `d` i `res_f`. Les assignem a `s0`, `s1` i `s2` respectivament. La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0` i `a1`.
+Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS) són: `c`, `d` i `res_f`. S'assignen a `s0`, `s1` i `s2` respectivament. La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0` i `a1`.
 
 ![Dependències de dades de la subrutina `exemple`. Les línies de punts separen el codi anterior i posterior a cada crida. Les fletxes indiquen les dades `c`, `d` i `res_f` que travessen fronteres de crides i s'han de
 guardar en registres segurs `s0`, `s1` i `s2` respectivament.](figures/TODO.png){#fig-deps-exemple}
@@ -1647,20 +1647,20 @@ exemple:
         sw      s1, 48(sp)
         sw      s2, 52(sp)
         sw      ra, 56(sp)
-        mv      s0, a2          # copiem c a s0
+        mv      s0, a2          # copia c a s0
 
         # d = a + b → s1
         add     s1, a0, a1
 
         # crida a f(d, &q)
-        mv      a0, s1          # passem d
-        mv      a1, sp          # passem &q (sp+0)
+        mv      a0, s1          # passa d
+        mv      a1, sp          # passa &q (sp+0)
         jal     ra, f
         mv      s2, a0          # res_f → s2
 
         # crida a g(v, w)
-        addi    a0, sp, 4       # passem @v[0]
-        addi    a1, sp, 22      # passem @w[0]
+        addi    a0, sp, 4       # passa @v[0]
+        addi    a1, sp, 22      # passa @w[0]
         jal     ra, g
         add     t0, s2, a0      # e = res_f + res_g → t0
 
@@ -1833,7 +1833,7 @@ El fitxer objecte generat per l'assemblador conté els components següents:
 ::: {#tip-exemple-assemblatge .callout-tip}
 ## Fitxers objecte de dos mòduls
 
-Considerem dos mòduls A i B:
+Considerant dos mòduls A i B:
 
 ```{.s filename="Programa A"}
 .data
