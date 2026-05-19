@@ -181,7 +181,7 @@ riscv32-unknown-elf-gcc -march=rv32imf -mabi=ilp32f -S -O0 -fno-omit-frame-point
 El resultat és un fitxer `fitxer.s` amb el codi assemblador RV32I generat pel compilador, sense optimitzacions i amb el marc de pila preservat, proper a la traducció manual que es practica a EC.
 :::
 
-### L'extensió M {#sec-extensio-m}
+### L'extensió M
 
 ::: {#nte-riscv-m .callout-note}
 ## Extensió M — Característiques bàsiques
@@ -1730,7 +1730,7 @@ int mat[2][3] = {{1, 2, 3}, {4, 5, 60}};
 int  x = mat[1][2]; /* equivalent a *(*(mat + 1) + 2) => x <- 60 */
 ```
 
-L'emmagatzemament a memòria és **per files**, de dalt a baix (primer tots els elements de la fila 0, després els de la fila 1, etc) (@-TODO-T4-matrius-memoria-ocupacio).
+L'emmagatzemament a memòria és **per files**, de dalt a baix (primer tots els elements de la fila 0, després els de la fila 1, etc) (@sec-matrius-declaracio).
 :::
 
 En **C**, `sizeof(element)` és un operador unari que retorna la mida d'`element`, podent ser aquest un escalar o una dada estructurada.
@@ -1751,33 +1751,16 @@ En **C**, `sizeof(element)` és un operador unari que retorna la mida d'`element
 
 L'accés a un element d'un vector es fa mitjançant l'**índex** de l'element.
 
-En **C**, l'índex comença a **0** i, en sentències, els símbols `[` i `]`
-precedits del nom d'un vector i envoltant un natural són l'operador
-d'**indexació** (`[]`).
+En **C**, l'índex comença a **0** i, en sentències, els símbols `[` i `]` precedits del nom d'un vector i envoltant un natural són l'operador d'**indexació** (`[]`).
 
-En C és el compilador qui s'encarrega de calcular l'adreça de l'element
-`A[i]` multiplicant automàticament l'índex `i` per la mida de cada element,
-`sizeof(element)`, per obtenir el desplaçament real en bytes. Per tant,
-rarament cal preocupar-se pel desplaçament; n'hi ha prou amb proporcionar
+En C és el compilador qui s'encarrega de calcular l'adreça de l'element `A[i]` multiplicant automàticament l'índex `i` per la mida de cada element, `sizeof(element)`, per obtenir el desplaçament real en bytes. Per tant, rarament cal preocupar-se pel desplaçament; n'hi ha prou amb proporcionar
 l'índex.
 
-En canvi, en **RV32I** cal gestionar manualment l'accés a un element d'un
-vector mitjançant les instruccions de **càrrega** i **emmagatzematge**. En
-aquestes instruccions, el registre base conté l'adreça base i l'immediat
-el desplaçament, tots dos en bytes. Per tant, cal calcular el desplaçament
-com el producte de l'índex per la mida del tipus dels elements:
+En canvi, en **RV32I** cal gestionar manualment l'accés a un element d'un vector mitjançant les instruccions de **càrrega** i **emmagatzematge**. En aquestes instruccions, el registre base conté l'adreça base i l'immediat el desplaçament, tots dos en bytes. Per tant, cal calcular el desplaçament com el producte de l'índex per la mida del tipus dels elements:
 
-$$@A[i] = @A[0] + i \cdot T$$ {#eq-vector-access-assemblador}
+$$@A[i] = @A[0] + i \cdot T$$ {#eq-acces-aleatori-vector}
 
 on $T$ és la mida en bytes de cada element (`T` = `sizeof(tipus_element)`).
-
-::: {#cau-acces-aleatori-significat .callout-caution}
-L'"**accés aleatori**" a un vector no implica atzar, sinó la capacitat
-d'accedir directament a qualsevol element en temps constant
-$\mathcal{O}(1)$, independentment de la seva posició. Això és possible
-perquè tots els elements tenen la mida fixa $T$ i l'adreça de qualsevol
-element es pot calcular directament amb @eq-vector-access-assemblador.
-:::
 
 ::::: {#tip-load-store-word .callout-tip}
 ## Accés a un element d'un vector
@@ -1803,8 +1786,8 @@ En **RV32I**, suposant que `h` ocupa el registre `s2`, i que `A` és una variabl
 ::::
 :::::
 
-::: {#cau-TODO .callout-caution}
-Com que C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits), no comprova si l'índex d'un accés aleatori està fora del rang del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
+::: {#cau-c-punters-absencia-control-limits .callout-caution}
+Com que el compilador de C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits), no comprova si l'índex està fora del rang del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
 :::
 
 ::: {#wrn-index-aritmetica-punters .callout-warning collapse=true}
@@ -1877,20 +1860,24 @@ Per tant, és una forma compacta de realitzar aritmètica de punters i desrefer�
 
 ### Accés a vectors amb bucles
 
-Per recórrer els elements d'un vector amb un bucle, cal calcular a cada iteració l'adreça de l'element a accedir. Hi ha dues estratègies: l'**accés aleatori**, que calcula l'adreça a partir de l'índex, i l'**accés seqüencial**, que manté un punter que avança element a element.
+Hi ha dues maneres bàsiques per recórrer els elements d'un vector amb un bucle:
+
+* L'**accés aleatori** (@sec-matrius-acces-aleatori), que consisteix en calcular l'adreça de cada accés a cada iteració (@eq-acces-aleatori-vector, @eq-acces-aleatori-matriu).
+* L'**accés seqüencial**(@sec-opt-acces-sequencial), que manté un punter que avança una quantitat fixa (*stride*) a cada iteració.
 
 #### Extracció d'invariants {#sec-extraccio-invariants}
 
-Un **invariant de bucle** és qualsevol valor que no depèn de la variable
-d'iteració i que, per tant, es pot calcular una sola vegada abans d'entrar
-al bucle. Calcular-lo dins el bucle és un error de rendiment: el processador
-el recomputaria innecessàriament a cada iteració.
+Un **invariant de bucle** és qualsevol valor que no depèn de la variable d'iteració i que, per tant, es pot calcular una sola vegada abans d'entrar al bucle. Calcular-lo dins el bucle és un error de rendiment: el processador el recomputaria innecessàriament a cada iteració.
 
 ::: {#imp-extraccio-invariants .callout-important}
 A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevol bucle, llevat que s'indiqui explícitament el contrari. És un prerequisit implícit de totes les optimitzacions de bucle que es veuran al @sec-optimitzacions-bucle.
 :::
 
 #### Accés aleatori
+
+::: {#cau-acces-aleatori-significat .callout-caution}
+L'accés aleatori **no implica atzar**, sinó la capacitat d'accedir directament a qualsevol element d'un vector o matriu (vegeu @sec-matrius-acces-aleatori) en temps constant $\mathcal{O}(1)$, independentment de la seva posició.
+:::
 
 ::: {#tip-vector-acces-aleatori .callout-tip}
 ## Recorregut d'un vector per accés aleatori

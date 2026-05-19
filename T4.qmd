@@ -19,12 +19,12 @@ L'extensió **M** de RISC-V afegeix instruccions de multiplicació i divisió en
 | `mulhu` | `rd, rs1, rs2` | `rd` ← (`rs1` ×ᵤ `rs2`)[63:32] | *Multiply High Unsigned* | R |
 | `mulhsu` | `rd, rs1, rs2` | `rd` ← (`rs1` ×ₛᵤ `rs2`)[63:32] | *Multiply High Signed-Unsigned* | R |
 : {tbl-colwidths="[10,20,35,30,5]"}
-
-El producte de dos nombres de 32 bits pot tenir fins a 64 bits. `mul` retorna els **32 bits de menys pes**; `mulh`, `mulhu` i `mulhsu` retornen els **32 bits de més pes** (diferint en la interpretació del signe dels operands).
 :::
 
+El producte de dos nombres de 32 bits pot tenir fins a 64 bits. `mul` retorna els **32 bits de menys pes**; `mulh`, `mulhu` i `mulhsu` retornen els **32 bits de més pes** (diferint en la interpretació del signe dels operands).
+
 ::: {#imp-mul- .callout-important}
-A **EC**, en els càlculs d'adreces de matriu, s'usa `mul` per calcular índexs i adreces. Els 32 bits de més pes s'ignoren perquè qualsevol adreça vàlida en RV32I cap en 32 bits.
+A **EC**, en els càlculs d'adreces amb multiplicacions no múltiples de dos, s'usa `mul`. Els 32 bits de més pes s'ignoren perquè qualsevol adreça vàlida en RV32I cap en 32 bits.
 :::
 
 ::: {#tip-exemple-mul .callout-tip}
@@ -74,12 +74,33 @@ mat:    .space  NF*NC*4             # NF files × NC columnes × 4 bytes
 mit:    .word   -1, 2, 0, 1, -12, 4
 ```
 
+::: {#imp-eqv-dimensions .callout-important}
+## Definició de les dimensions com a constants
+
+És una bona pràctica definir les dimensions de la matriu `NF` i `NC` com a constants per facilitar la lectura del codi, el càlcul d'adreces i l'aplicació d'optimitzacions d'extracció d'invariants, accés seqüencial, etc. tant per part del programador com del compilador.
+
+```{.C filename="C"}
+#define NF 2            /* abans del primer ús */
+#define NC 3            /* habitualment al principi del fitxer */
+```
+
+```{.s filename="RV32I"}
+        .eqv    NF, 2   # abans de .data
+        .eqv    NC, 3
+```
+:::
+
 ### Accés aleatori {#sec-matrius-acces-aleatori}
+
+L'**accés aleatori** és la capacitat d'accedir directament a qualsevol element d'una estructura de dades en temps constant $\mathcal{O}(1)$, independentment de la seva posició. Això és possible perquè tots els elements tenen una mida fixa $T$ i estan disposats de forma contigua a la memòria; per tant, l'adreça de qualsevol d'aquests es pot calcular explícitament mitjançant una fórmula aritmètica.
+
+Presenten aquesta propietat les estructures de dades que s'emmagatzemen com a blocs compactes d'elements, com ara els vectors, les matrius i les estructures de dades complexes (`struct` en C). En canvi, les estructures de dades dinàmiques on els elements estan dispersos, com les llistes enllaçades, els arbres o els grafs, no permeten l'accés aleatori i requereixen un accés seqüencial.
 
 Per accedir a l'element `mat[i][j]` d'una matriu d'elements de mida $T$, cal tenir en compte que la matriu s'emmagatzema per files: per arribar a la fila `i` cal saltar `i` files senceres de `NC` elements, i dins la fila cal avançar `j` elements més:
 
-$$@\texttt{mat[i][j]} = @\texttt{mat} + (i \cdot \texttt{NC} + j) \cdot T$$
-{#eq-matriu-acces-aleatori}
+$$@\texttt{mat[i][j]} = @\texttt{mat} + (i \cdot \texttt{NC} + j) \cdot T$$ {#eq-acces-aleatori-matriu}
+
+@eq-acces-aleatori-matriu és la generalització de @eq-acces-aleatori-vector (`NC > 1` vs. `NC = 1`). 
 
 ::: {#tip-matriu-acces-ij .callout-tip}
 ## Accés a `mat[i][j]` — índexs variables
@@ -98,7 +119,7 @@ Suposant que `i`, `j`, `k` ocupen `t0`, `t1`, `t2`:
 ```{.s filename="RV32I"}
         la      t3, mat             # invariant: @mat
         li      t4, NC              # invariant: NC
-        mul     t4, t4, t0          # i*NC
+        mul     t4, t0, t4          # i*NC
         add     t4, t4, t1          # i*NC + j
         slli    t4, t4, 2           # (i*NC + j)*4
         add     t3, t3, t4          # @mat + (i*NC + j)*4
@@ -120,7 +141,7 @@ El terme `5*T` és un invariant que el compilador pot incorporar directament a l
 ```{.s filename="RV32I"}
         la      t3, mat + 5*4       # invariant: @mat + 5*4
         li      t4, NC*4            # invariant: NC*4
-        mul     t4, t4, t0          # i*NC*4
+        mul     t4, t0, t4          # i*NC*4
         add     t3, t3, t4          # @mat + i*NC*4 + 5*4
         lw      t2, 0(t3)           # k = mat[i][5]
 ```
@@ -168,26 +189,21 @@ Les tres optimitzacions que es presenten a continuació s'apliquen de manera pro
 
 ### Optimització #1 — Accés seqüencial {#sec-opt-acces-sequencial}
 
-Quan un bucle recorre els elements d'un vector o matriu i la distància en bytes entre les adreces de dos elements consecutius del recorregut és constant, es pot aplicar l'**accés seqüencial**.
+Quan un bucle recorre els elements d'un vector o matriu i la distància en bytes entre les adreces de dos elements consecutius del recorregut és constant, es pot aplicar l'**accés seqüencial**. Aquesta distància constant s'anomena **stride**:
 
-Sigui un recorregut format per la seqüència d'elements $X_0, X_1, X_2, \ldots$ tal que la diferència entre les adreces de qualsevol parell d'elements consecutius és constant:
+$$\text{stride} = @X_{i+1} - @X_i = \text{constant}$$ {#eq-stride}
 
-$$\text{stride} = @X_{i+1} - @X_i$$
+En lloc de calcular l'adreça de cada element a partir de l'adreça base i l'índex (accés aleatori, ), es manté un **punter** que s'actualitza sumant-li l'stride a cada iteració:
 
-En lloc de calcular l'adreça de cada element a partir de l'adreça base i l'índex:
-
-$$@X_i = @X_0 + i \cdot T$$
-
-es manté un **punter** que s'actualitza sumant-li l'stride a cada iteració:
-
-$$@X_{i+1} = @X_i + \text{stride}$$
+$$@X_{i+1} = @X_i + \text{stride}$$ {#eq-acces-sequencial}
 
 Això elimina el producte `i*T` del càlcul d'adreça i el substitueix per una suma constant.
 
 **Mètode:**
 
 1. Calcular l'adreça del primer element del recorregut i inicialitzar un    punter `p` amb aquesta adreça.
-2. Calcular l'stride restant les adreces de dos elements consecutius. 3. A cada iteració: accedir a l'element desreferenciant `p`, i sumar-li    l'stride per avançar al següent.
+2. Calcular l'stride restant les adreces de dos elements consecutius.
+3. A cada iteració: accedir a l'element desreferenciant `p`, i sumar-li    l'stride per avançar al següent.
 
 ::: {#tip-opt1-sequencial .callout-tip}
 ## Optimització #1 — Accés seqüencial aplicat a una fila de matriu
@@ -284,14 +300,14 @@ fifor:
         ret
 ```
 
-La infraestructura de control queda en **3 instruccions** per iteració. El salt incondicional `j for` ha desaparegut, substituït pel salt condicional al final `blt`.
+La infraestructura de control queda en **3 instruccions** per iteració. El salt incondicional `j` ha desaparegut, substituït pel salt condicional al final `blt`.
 :::
 
 ### Optimització #3 — Eliminació de la variable d'inducció {#sec-opt-eliminacio-induccio}
 
 Després d'aplicar l'accés seqüencial (#1), el punter `p` recorre tots els elements del bucle. Si la variable d'inducció `j` ja no s'usa per a res més que controlar el bucle, es pot eliminar: en lloc de comparar `j` amb `NC`, es compara `p` directament amb l'adreça de l'element posterior al darrer.
 
-::: {.callout-caution}
+::: {#cau-opt3-eliminacio-induccio .callout-caution}
 Com que es comparen **adreces** (naturals sense signe), cal usar `bgeu` / `bltu` en lloc de `bge` / `blt`.
 :::
 
