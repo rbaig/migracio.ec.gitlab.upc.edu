@@ -60,19 +60,33 @@ $$
 En C, una matriu global de `NF` files i `NC` columnes d'elements `int` es declara així:
 
 ```{.C filename="C"}
-int mat[NF][NC];
-int mit[2][3] = {{-1, 2, 0}, {1, -12, 4}};
+int mat1[NF][NC];
+int mat2[2][3] = {{-1, 2, 0}, {1, -12, 4}};
 ```
 
 Els elements s'emmagatzemen en posicions **consecutives de memòria per files**: primer tots els de la fila 0, després els de la fila 1, etc. Aquest és un conveni arbitrari de C (en Fortran, les matrius s'emmagatzemen per columnes).
+
+::: {#fig-matriu-emmagatzematge}
+:::{.light-content}
+![](figures/T4_matriu_emmagatzematge_light.svg)
+:::
+:::{.dark-content}
+![](figures/T4_matriu_emmagatzematge_dark.svg)
+:::
+Emmagatzematge de `mat[4][6]` en memòria per files
+:::
 
 En RV32I, la declaració equivalent és:
 
 ```{.s filename="RV32I"}
 .data
-mat:    .space  NF*NC*4             # NF files × NC columnes × 4 bytes
-mit:    .word   -1, 2, 0, 1, -12, 4
+mat1:   .space  NF*NC*4             # NF files × NC columnes × 4 bytes
+mat2:   .word   -1, 2, 0, 1, -12, 4
 ```
+
+Test[^test]
+
+[^test]: un `st`
 
 ::: {#imp-eqv-dimensions .callout-important}
 ## Definició de les dimensions com a constants
@@ -100,7 +114,17 @@ Per accedir a l'element `mat[i][j]` d'una matriu d'elements de mida $T$, cal ten
 
 $$@\texttt{mat[i][j]} = @\texttt{mat} + (i \cdot \texttt{NC} + j) \cdot T$$ {#eq-acces-aleatori-matriu}
 
-@eq-acces-aleatori-matriu és la generalització de @eq-acces-aleatori-vector (`NC > 1` vs. `NC = 1`). 
+L'@eq-acces-aleatori-matriu és la generalització de l'@eq-acces-aleatori-vector (`NC > 1` vs. `NC = 1`). 
+
+::: {#fig-matriu-offset-ij}
+:::{.light-content}
+![](figures/T4_matriu_offset_ij_light.svg)
+:::
+:::{.dark-content}
+![](figures/T4_matriu_offset_ij_dark.svg)
+:::
+Càlcul de l'adreça de `mat[i][j]`
+:::
 
 ::: {#tip-matriu-acces-ij .callout-tip}
 ## Accés a `mat[i][j]` — índexs variables
@@ -344,6 +368,16 @@ L'stride depèn del patró de recorregut, no de l'estructura de la matriu. Per a
 | Una columna | $\texttt{NC} \cdot T$ |
 | Diagonal principal | $(\texttt{NC} + 1) \cdot T$ |
 | Diagonal secundària | $(\texttt{NC} - 1) \cdot T$ |
+
+::: {#fig-matriu-recorreguts-strides}
+:::{.light-content}
+![](figures/T4_matriu_recorreguts_strides_light.svg)
+:::
+:::{.dark-content}
+![](figures/T4_matriu_recorreguts_strides_dark.svg)
+:::
+Recorreguts de matrius, `mat[4][5]` a dalt i `mat[4][4]` a baix, i els strides corresponents.
+:::
 
 ::: {#tip-sumacolumna-aleatori .callout-tip}
 ## `sumacolumna` — accés aleatori
