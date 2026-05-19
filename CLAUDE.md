@@ -57,7 +57,7 @@ Abans de generar qualsevol contingut, llegeix `contrib.qmd`. Conté:
 
 1. Tota la teoria (T1--19)
 1.1 Temes preparats per a revisió externa:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd`, 
-1.2 Temes WiP: `T4.qmd` 
+1.2 Temes WiP: `T5.qmd` 
 2. Laboratori
 3. Problemes
 4. Solucionari

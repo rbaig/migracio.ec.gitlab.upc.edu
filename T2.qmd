@@ -1753,12 +1753,12 @@ L'accés a un element d'un vector es fa mitjançant l'**índex** de l'element.
 
 En **C**, l'índex comença a **0** i, en sentències, els símbols `[` i `]` precedits del nom d'un vector i envoltant un natural són l'operador d'**indexació** (`[]`).
 
-En C és el compilador qui s'encarrega de calcular l'adreça de l'element `A[i]` multiplicant automàticament l'índex `i` per la mida de cada element, `sizeof(element)`, per obtenir el desplaçament real en bytes. Per tant, rarament cal preocupar-se pel desplaçament; n'hi ha prou amb proporcionar
+En C és el compilador qui s'encarrega de calcular l'adreça de l'element `vec[i]` multiplicant automàticament l'índex `i` per la mida de cada element, `sizeof(element)`, per obtenir el desplaçament real en bytes. Per tant, rarament cal preocupar-se pel desplaçament; n'hi ha prou amb proporcionar
 l'índex.
 
 En canvi, en **RV32I** cal gestionar manualment l'accés a un element d'un vector mitjançant les instruccions de **càrrega** i **emmagatzematge**. En aquestes instruccions, el registre base conté l'adreça base i l'immediat el desplaçament, tots dos en bytes. Per tant, cal calcular el desplaçament com el producte de l'índex per la mida del tipus dels elements:
 
-$$@A[i] = @A[0] + i \cdot T$$ {#eq-acces-aleatori-vector}
+$$@\texttt{vec[i]} = @ \texttt{vec}[0] + i \cdot \texttt{T}$$ {#eq-acces-aleatori-vector} 
 
 on $T$ és la mida en bytes de cada element (`T` = `sizeof(tipus_element)`).
 
@@ -1766,18 +1766,18 @@ on $T$ és la mida en bytes de cada element (`T` = `sizeof(tipus_element)`).
 ## Accés a un element d'un vector
 :::: {layout="[7,-1,3]"}
 ::: {}
-Sigui `A` un vector d'enters (mida de cada element = 4 bytes) i `h` una variable entera. L'operació d'assignar a `A[12]` el resultat de sumar `h` i `A[8]` es pot expressar en C com:
+Sigui `vec` un vector d'enters (mida de cada element = 4 bytes) i `h` una variable entera. L'operació d'assignar a `vec[12]` el resultat de sumar `h` i `vec[8]` es pot expressar en C com:
 ```{.C filename="C"}
-A[12] = h + A[8];
+vec[12] = h + vec[8];
 ```
 
-En **RV32I**, suposant que `h` ocupa el registre `s2`, i que `A` és una variable global, l'adreça de `A[8]` és la suma de l'adreça base d'`A` (\@A) i el desplaçament $8 \cdot 4 = 32$. I l'adreça de `A[12]` és la suma de \@A i el desplaçament de $12 \cdot 4 = 48$:
+En **RV32I**, suposant que `h` ocupa el registre `s2`, i que `vec` és una variable global, l'adreça de `vec[8]` és la suma de l'adreça base d'`vec` (\@vec) i el desplaçament $8 \cdot 4 = 32$. I l'adreça de `vec[12]` és la suma de \@vec i el desplaçament de $12 \cdot 4 = 48$:
 ```{.s filename="RV32I"}
 .text
-        la      t3, A            # t3 <- Adreça base del vector
-        lw      t0, 32(t3)       # t0 <- A[8]
-        add     t0, s2, t0       # t0 <- h + A[8]
-        sw      t0, 48(t3)       # A[12] <- t0
+        la      t3, vec          # t3 <- Adreça base del vector
+        lw      t0, 32(t3)       # t0 <- vec[8]
+        add     t0, s2, t0       # t0 <- h + vec[8]
+        sw      t0, 48(t3)       # vec[12] <- t0
 ```
 :::
 ::: {}
