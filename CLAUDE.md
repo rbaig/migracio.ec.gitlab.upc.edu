@@ -119,8 +119,34 @@ h1, h2, h3, h4,
 ## Planificació i progress
 
 1. Tota la teoria (T1--19)
-1.1 Temes preparats per a revisió externa:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd`, 
-1.2 Temes WiP: `T5.qmd` 
+1.1 Temes preparats per a revisió externa:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), 
+1.2 Temes WiP: `T5.qmd`
+* Estructura acordada (tota la part d'aritmètica entera ha estat passada a T4):
+```
+T5: Aritmètica en coma flotant
+
+── Representació en coma flotant
+   ├── Notació científica normalitzada
+   ├── Representació binària
+   ├── L'estàndard IEEE-754 (formats simple/doble precisió)
+   ├── Rang i precisió
+   ├── Error de precisió i underflow
+   ├── Codificacions especials (zero, Inf, NaN, denormals)
+   └── Arrodoniment
+
+── Operacions en coma flotant
+   ├── Suma i resta
+   │   ├── Algorisme (exemple base 10 + exemple IEEE-754)
+   │   └── Bits de guarda          [Aprofundiment collapse=true]
+   ├── Multiplicació i divisió
+   │   └── Algorisme (exemple base 10 + exemple IEEE-754)
+   └── No-associativitat
+
+── Coma flotant a RISC-V (RV32F)
+   ├── Registres f0–f31 i ABI (fa0–fa7)
+   ├── Instruccions (flw/fsw, fadd.s…, feq.s…, fcvt, fmv)
+   └── Exemple de traducció
+```
 2. Laboratori
 3. Problemes
 4. Solucionari
