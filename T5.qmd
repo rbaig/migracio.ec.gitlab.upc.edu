@@ -1,8 +1,200 @@
 ---
-title: "Tema 5: Aritmètica d'enters i de coma flotant"
+title: "Tema 5: Aritmètica de coma flotant"
 number-sections: true
 ---
 
-## TODO
+## Representació en coma flotant {#sec-representacio-coma-flotant}
 
-### TODO
+### Notació científica normalitzada {#sec-notacio-cientifica}
+
+La **notació científica normalitzada** és un sistema de representació de nombres reals que separa clarament la **magnitud** del nombre (els seus dígits significatius) de la seva **escala** (la posició de la coma). Un nombre $v$ s'escriu en la forma:
+
+$$v = m \times 10^n$$
+
+on $n$ (l'**exponent**) és un enter i $m$ (la **mantissa**) satisfà $1 \leq |m| < 10$, amb almenys un dígit fraccionari. Aquesta restricció s'anomena **condició de normalització** i garanteix una representació única per a cada nombre.
+
+La notació científica normalitzada presenta dos avantatges respecte de la representació decimal ordinària. D'una banda, és més **compacta**: $2{,}34 \times 10^8$ és més llegible que $234\,000\,000$. D'altra banda, fa **explícit el nombre de dígits significatius**: $2{,}34 \times 10^8$ indica clarament tres dígits significatius, mentre que $234\,000\,000$ és ambigu (poden ser tres, o pot ser que el nombre sigui exacte fins a les unitats). El terme **coma flotant** fa referència precisament a aquest mecanisme: la coma "es desplaça" cap a l'esquerra o cap a la dreta en funció del valor de l'exponent.
+
+En dispositius electrònics, els tres caràcters `×10` es substitueixen habitualment per la lletra `E`, que separa mantissa i exponent: $2{,}34\text{E}8$.
+
+::: {#tip-notacio-cientifica .callout-tip}
+## Conversió a notació científica normalitzada
+
+Expresseu els nombres següents en notació científica normalitzada:
+
+| Nombre | Notació científica normalitzada |
+| ---: | :--- |
+| $234\,000\,000$ | $2{,}34 \times 10^{8}$ |
+| $0{,}000\,468$ | $4{,}68 \times 10^{-4}$ |
+| $-0{,}0234 \times 10^{10}$ | $-2{,}34 \times 10^{8}$ |
+:::
+
+### Representació binària {#sec-representacio-binaria-cf}
+
+Els nombres en coma flotant en base 2 segueixen el mateix principi que la notació científica normalitzada, amb la base 2 en lloc de la base 10. La condició de normalització imposa que la part entera de la mantissa sigui exactament 1, ja que en base 2 l'únic dígit no nul és l'1:
+
+$$v = \pm 1{,}\underbrace{b_{-1}b_{-2}\ldots b_{-p}}_{\text{fracció }F} \times 2^e$$
+
+on $e$ (l'**exponent**) és un enter i $F$ és la part fraccionària de la mantissa.
+
+::: {#cau-bit-ocult .callout-caution}
+## El bit ocult
+
+Com que la condició de normalització garanteix que el bit a l'esquerra de la coma és sempre `1`, aquest bit **no s'emmagatzema** a la codificació: és el **bit ocult** (***hidden bit***). El maquinari el torna a afegir implícitament en qualsevol operació.
+
+Cal tenir-lo en compte en tots els càlculs: si el camp de fracció $F$ té $p-1$ bits emmagatzemats, la mantissa completa té $p$ bits significatius (els $p-1$ bits de $F$ més el bit ocult).
+
+Els únics casos en què el bit ocult **no s'aplica** són els nombres denormals i el zero (@sec-codificacions-especials).
+:::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### L'estàndard IEEE-754 {#sec-ieee754}
+
+Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de coma flotant, amb decisions diverses sobre el nombre de bits de mantissa i exponent, i fins i tot sobre la base de la potència. La incompatibilitat entre sistemes dificultava l'intercanvi de dades i la portabilitat del programari. El 1985, l'Institut d'Enginyers Elèctrics i Electrònics (***Institute of Electrical and Electronics Engineers***, **IEEE**) va publicar l'estàndard **IEEE-754**, que no sols defineix el format de representació sinó també les operacions aritmètiques, l'arrodoniment i el tractament de les excepcions. L'estàndard s'ha revisat i ampliat posteriorment (la darrera revisió és de 2008).
+
+A **EC** s'estudia el format de **simple precisió** (32 bits), que correspon al tipus `float` de C.
+
+::: {#nte-ieee754-formats .callout-note}
+## IEEE-754 — Formats de simple i doble precisió
+
+| | Simple precisió | Doble precisió |
+| :--- | :---: | :---: |
+| Tipus C | `float` | `double` |
+| Mida total | 32 bits | 64 bits |
+| Signe (S) | 1 bit | 1 bit |
+| Exponent (E) | 8 bits | 11 bits |
+| Fracció (F) | 23 bits | 52 bits |
+| Precisió (amb bit ocult) | 24 bits | 53 bits |
+| Excés de l'exponent | 127 | 1023 |
+| Rang de l'exponent $e$ | $[-126,\ +127]$ | $[-1022,\ +1023]$ |
+: {tbl-colwidths="[35,25,25]" style="width: 70%; margin: auto;"}
+:::
+
+::: {#imp-ec-simple-precisio .callout-important}
+A **EC**, s'usa exclusivament el format de **simple precisió**. Totes les operacions, exemples i problemes fan referència a aquest format llevat que s'indiqui explícitament el contrari.
+:::
+
+Els tres camps de bits del format de simple precisió s'organitzen de la manera següent:
+
+$$\underbrace{S}_{1}\;\underbrace{E_7 E_6 \ldots E_0}_{8}\;\underbrace{F_{22} F_{21} \ldots F_0}_{23}$$
+
+#### Signe (S)
+
+El bit de signe $S$ indica el signe del nombre: $S = 0$ per a valors positius i $S = 1$ per a valors negatius.
+
+#### Fracció (F)
+
+El camp de fracció $F$ emmagatzema els $p-1 = 23$ bits de la part fraccionària de la mantissa normalitzada. La mantissa completa s'obté afegint el bit ocult: $1{,}F$.
+
+#### Exponent (E) {#sec-exponent-exces}
+
+L'exponent és un enter amb signe, però no es codifica en Ca2. Es codifica en **excés a 127** (***biased exponent***): el valor emmagatzemat $E_u$ és el natural que satisfà
+
+$$e = E_u - 127 \qquad \Longleftrightarrow \qquad E_u = e + 127$$ {#eq-exponent-exces}
+
+on $e$ és el valor enter de l'exponent. Per exemple, $e = 0 \Rightarrow E_u = 127 = 0111\,1111_2$; $e = 1 \Rightarrow E_u = 128 = 1000\,0000_2$.
+
+::: {#cau-exces-comparacio .callout-caution}
+## Per què l'exponent es codifica en excés
+
+La codificació en excés (@sec-enters-en-ca2 i @imp-exces-coma-flotant) garanteix que l'ordre numèric dels valors explícits $E_u$ (interpretats com a naturals) coincideix amb l'ordre dels exponents enters $e$. Això permet **comparar nombres en coma flotant amb el mateix circuit que compara naturals**, amb dues condicions:
+
+1. Els bits de l'exponent ocupen la part alta del nombre, immediatament després del signe, i els de la fracció ocupen la part baixa. Així, a iguals exponents guanya el de fracció major; entre exponents diferents guanya el de l'exponent major.
+2. L'exponent es codifica en excés (no en Ca2), de manera que la correspondència entre representacions i valors és monòtona creixent.
+:::
+
+El valor complet representat per una codificació normalitzada és:
+
+$$v = (-1)^S \times 1{,}F \times 2^{E_u - 127}$$ {#eq-ieee754-valor}
+
+::: {#tip-ieee754-codificacio .callout-tip}
+## Conversió a IEEE-754 de simple precisió
+
+Codifiqueu el nombre $v = -1029{,}68$ en format IEEE-754 de simple precisió i calculeu l'error de representació.
+
+**a) Part entera a binari** (divisions successives):
+
+$$1029 = 1000\,0000\,0101_2 \quad (11 \text{ bits})$$
+
+**b) Part fraccionària a binari** (multiplicacions successives per 2):
+
+$$0{,}68 \rightarrow 1{,}36 \rightarrow 0{,}72 \rightarrow 1{,}44 \rightarrow 0{,}88 \rightarrow 1{,}76 \rightarrow 1{,}52 \rightarrow 1{,}04 \rightarrow 0{,}08 \rightarrow \ldots$$
+
+El resultat (en negreta els bits obtinguts) és $0{,}68 = 0{,}1010\,1110\,0001\,0100\,01\ldots_2$. Per tant:
+
+$$v = -1000\,0000\,101{,}1010\,1110\,0001\,0100\,01\ldots_2$$
+
+**c) Normalitzar** la mantissa:
+
+$$v = -1{,}0000\,0001\,0110\,1011\,1000\,0101\,0001\ldots_2 \times 2^{10}$$
+
+**d) Arrodonir** a 24 bits significatius (23 bits de fracció + bit ocult).
+
+Els bits a descartar comencen per `10001...`; com que el primer bit descartat és `1` i n'hi ha d'altres a la dreta, cal arrodonir **al valor següent** (sumar 1 ULP al valor truncat):
+
+$$\begin{array}{r}
+1{,}0000\,0001\,0110\,1011\,1000\,010\\
++\hspace{9.3em}1\\
+\hline
+1{,}0000\,0001\,0110\,1011\,1000\,011
+\end{array}$$
+
+**e) Codificar l'exponent** en excés a 127:
+
+$$E_u = 10 + 127 = 137 = 1000\,1001_2$$
+
+**f) Ajuntar S, E, F** (descartant el bit ocult de la fracció):
+
+$$V = \underbrace{1}_{S}\;\underbrace{1000\,1001}_{E}\;\underbrace{0000\,0001\,0110\,1011\,1000\,011}_{F}$$
+
+$$V = 1100\,0100\,1000\,0000\,1011\,0101\,1100\,0011_2 = \texttt{0xC480B5C3}$$
+
+**g) Error de representació:**
+
+$$\varepsilon = \bigl|1{,}0000\,0001\,0110\,1011\,1000\,011 - 1{,}0000\,0001\,0110\,1011\,1000\,0101\,0001\ldots\bigr| \times 2^{10}$$
+$$= 0{,}0000\,0000\,0000\,0000\,0000\,0001\,111\ldots \times 2^{10} \approx 1{,}111_2 \times 2^{-15} \approx 5{,}7 \times 10^{-5}$$
+:::
+
+::: {#tip-ieee754-decodificacio .callout-tip}
+## Conversió des de IEEE-754 de simple precisió a base 10
+
+Convertiu a decimal el nombre `0x45814140`.
+
+**a) Descompondre** en camps S, E, F:
+
+$$\texttt{0x45814140} = 0\;10001011\;00000010100000101000000_2$$
+
+**b) Decodificar** signe, exponent i mantissa:
+
+- $S = 0$ (positiu).
+- $E_u = 1000\,1011_2 = 139 \Rightarrow e = 139 - 127 = 12$.
+- Mantissa (amb bit ocult): $1{,}000\,0001\,0100\,0001\,0100\,0000_2$.
+
+**c) Eliminar la potència** (desplaçar la coma 12 posicions a la dreta):
+
+$$v = 1000\,0001\,0100{,}0001\,01_2$$
+
+**d) Convertir la part entera:**
+
+$$1000\,0001\,0100_2 = 2^{12} + 2^5 + 2^3 + 2^2 = 4096 + 32 + 8 = 4136$$
+
+**e) Convertir la part fraccionària:**
+
+$$0{,}0001\,01_2 = 2^{-4} + 2^{-6} = 0{,}0625 + 0{,}015625 = 0{,}078125$$
+
+Però atenent a la mantissa original: $0{,}000001\,01_2 \times 2^{12}$... refent el càlcul directament:
+
+$$v = 4136{,}15625$$
+:::
