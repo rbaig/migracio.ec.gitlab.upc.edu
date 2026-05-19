@@ -1,13 +1,178 @@
 ---
-title: "Tema 4: Matrius"
+title: "Tema 4: Aritmètica entera i matrius"
 number-sections: true
 ---
 
-## Instruccions de multiplicació (extensió M) {#sec-extensio-m}
+## Sobreeiximent en suma i resta d'enters {#sec-suma-resta-enters}
 
-A @sec-multiplicacio-potencies-2 s'ha vist que `slli` permet multiplicar per potències de 2, cosa que és suficient per escalar índexs de vectors quan la mida de l'element és 1, 2, 4 o 8 bytes. En canvi, per accedir a un element qualsevol d'una matriu cal calcular `i*NC`, on `NC` (el nombre de columnes) no té per què ser una potència de 2. Per a aquests casos, cal una instrucció de multiplicació de propòsit general.
+El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$ (@eq-rang-ca2). Es produeix **sobreeiximent** (***overflow***) en una operació quan el resultat exacte no pertany a aquest rang; en aquest cas, el resultat calculat amb $n$ bits no és correcte.
 
-L'extensió **M** de RISC-V afegeix instruccions de multiplicació i divisió entera per maquinari. Per activar-la, cal afegir `m` al paràmetre `-march` del compilador: `-march=rv32im`.
+### Condicions d'overflow
+
+Per a la **suma** $s = a + b$, es produeix overflow **si i només si els dos operands són del mateix signe i el resultat és de signe diferent**.
+
+Per a la **diferència** $d = a - b$, es produeix overflow **si i només si** la diferència és del mateix signe que el subtraend $b$ però de signe diferent que el minuend $a$**.
+
+::: {#wrn-overflow-demostracio .callout-warning collapse=true}
+## Demostració de les condicions d'overflow en Ca2
+
+Considerem la suma exacta $s = a + b$, on $a$ i $b$ estan representats per les cadenes de bits $A = A_{n-1}\ldots A_0$ i $B = B_{n-1}\ldots B_0$. La suma exacta sempre es pot representar amb $n+1$ bits com $S = S_n\,S_{n-1}\ldots S_0$.
+
+**Cas 1 — Signes oposats:** si $a < 0$ i $b \geq 0$, llavors $a \leq a+b < b$, de manera que $s$ sempre és representable amb $n$ bits.
+No hi ha overflow.
+
+**Cas 2 — Mateix signe:** la suma exacta ha de ser del mateix signe que els operands, de manera que $S_n = A_{n-1} = B_{n-1}$. La cadena truncada $S' = S_{n-1}\ldots S_0$ és la representació correcta de $s$ si i només si $S_{n-1} = S_n$, és a dir, si $S_{n-1} = A_{n-1} = B_{n-1}$. Si $S_{n-1} \neq A_{n-1}$, el resultat truncat és incorrecte: hi ha overflow.
+
+Per a la diferència $d = a - b$, es pot aplicar la mateixa regla a l'expressió $a = d + b$.
+:::
+
+### Detecció de l'overflow per maquinari
+
+En un sumador amb propagació de *carry* de $n$ bits, es produeix overflow quan el *carry* d'entrada al bit de més pes difereix del *carry* de sortida:
+
+$$v = c_{n-1} \oplus c_n$${#eq-overflow-hardware}
+
+::: {#wrn-overflow-hardware .callout-warning collapse=true}
+## Detecció d'overflow per maquinari: el sumador amb propagació de l'arrossegament
+
+Un sumador de $n$ bits es construeix amb una cadena de $n$ **sumadors complets** (*full-adders*). Cada sumador complet rep el bit $a_i$, el bit $b_i$ i el bit d'arrossegament d'entrada (*carry-in*) $c_i$, i produeix el bit de suma $s_i = a_i \oplus b_i \oplus c_i$ i el bit d'arrossegament de sortida (*carry-out*) $c_{i+1} = (a_i \oplus b_i) \land c_i \lor a_i \land b_i$.
+
+Al darrer sumador complet (bit de més pes), el *carry-in* és $c_{n-1}$ i el *carry-out* és $c_n$. L'overflow es detecta amb una sola porta lògica
+afegida al darrer sumador: $v = c_{n-1} \oplus c_n$.
+:::
+
+### Detecció de l'overflow per programari {#sec-overflow-programari}
+
+Donada la suma $s = a + b$ d'enters de 32 bits, la condició d'overflow és:
+
+$$v = \overline{(A_{31} \oplus B_{31})} \land (A_{31} \oplus S_{31})$$ {#eq-overflow-software}
+
+és a dir, overflow si els operands **tenen el mateix signe** i el resultat **té signe diferent**.
+
+::: {#tip-overflow-programari .callout-tip}
+## Càlcul de la condició d'overflow per programari
+
+Suposant que els enters `a`, `b`, `s` estan a `t0`, `t1`, `t2`, i que s'ha
+executat `add t2, t0, t1`:
+
+```{.s filename="RV32I"}
+        xor     t3, t0, t1      # A xor B  (bit 31: 0 si mateix signe)
+        not     t3, t3          # ~(A xor B), vegeu @nte-pseudoinstruccio-not
+        xor     t4, t0, t2      # A xor S  (bit 31: 1 si signes diferents)
+        and     t3, t3, t4      # condició d'overflow als 32 bits
+        srli    t3, t3, 31      # desplaça bit 31 a la posició 0
+                                # t3 = 1 si overflow, 0 si no
+```
+:::
+
+::: {#imp-overflow-riscv .callout-important}
+A **RISC-V**, totes les instruccions d'aritmètica entera **ignoren l'overflow**: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció d'overflow, si cal, és responsabilitat del programari (@sec-overflow-programari).
+:::
+
+## Multiplicació entera {#sec-multiplicacio-entera}
+
+### Algorisme
+
+L'algorisme de multiplicació entera es basa en el mateix principi que la multiplicació manual: calcular productes parcials i acumular-los. Per a enters amb signe, es treballa amb els valors absoluts i s'ajusta el signe del resultat al final.
+
+L'algorisme per calcular el producte $z = x \times y$ d'enters és:
+
+1. Calcular els valors absoluts $|x|$ i $|y|$.
+2. Multiplicar els valors absoluts (producte de naturals).
+3. Si els operands tenen signes **diferents**, canviar el signe del resultat.
+
+#### Multiplicació de naturals
+
+Per multiplicar dos naturals en base 2, s'obtenen tants **productes parcials** com bits té el multiplicador: el producte parcial $i$ és el multiplicand desplaçat $i$ posicions a l'esquerra si el bit $i$ del multiplicador és 1, o zero si és 0. La suma de tots els productes parcials és el resultat.
+
+::: {#tip-multiplicacio-naturals .callout-tip}
+## Algorisme de multiplicació de naturals en base 2
+
+Multiplicar $x = 1010_2$ ($10_{10}$) per $y = 1101_2$ ($13_{10}$):
+
+```{.text}
+      1010    multiplicand (x)
+    × 1101    multiplicador (y)
+    ------
+      1010    producte parcial: x × 1 (bit 0)
+     0000     producte parcial: x × 0 (bit 1)
+    1010      producte parcial: x × 1 (bit 2)
+   1010       producte parcial: x × 1 (bit 3)
+---------
+  10000010    resultat: 130₁₀ ✓
+```
+:::
+
+### Circuit seqüencial de multiplicació {#sec-circuit-multiplicacio}
+
+Per evitar guardar tots els productes parcials simultàniament, el circuit els va acumulant a mesura que es calculen en un registre acumulador **P** de $2n$ bits, inicialitzat a zero.
+
+El circuit disposa de tres registres:
+
+* **MD** ($2n$ bits): conté el multiplicand, inicialitzat amb $x$ a la part baixa i zeros a la part alta. Es desplaça una posició a l'esquerra
+  a cada iteració.
+* **MR** ($n$ bits): conté el multiplicador $y$. Es desplaça una posició a la dreta a cada iteració; el bit de menys pes s'usa per decidir si
+  sumar o no.
+* **P** ($2n$ bits): acumulador del producte. S'inicialitza a zero i s'hi suma MD si el bit de menys pes de MR és 1.
+
+<!-- TODO figura circuit multiplicador seqüencial -->
+![Circuit multiplicador seqüencial.](figures/TODO.png){#fig-TODO1 width="60%"}
+
+El pseudocodi de l'algorisme és:
+
+```{.text}
+// Inicialització
+MD[31:0] = x;  MD[63:32] = 0
+MR = y
+P = 0
+
+per i = 1 fins a 32:
+    si MR[0] == 1: P = P + MD
+    MD = MD << 1
+    MR = MR >> 1
+
+z = P
+```
+
+::: {#tip-seguiment-multiplicacio .callout-tip}
+## Seguiment del circuit multiplicador (4 bits)
+
+Multiplicar $x = 1010_2$ per $y = 1101_2$:
+
+| Iteració | P (acumulador) | MD (multiplicand) | MR (multiplicador) |
+| :---: | :---: | :---: | :---: |
+| inicial | `0000 0000` | `0000 1010` | `1101` |
+| 1 | `0000 1010` | `0001 0100` | `0110` |
+| 2 | `0000 1010` | `0010 1000` | `0011` |
+| 3 | `0011 0010` | `0101 0000` | `0001` |
+| 4 | `1000 0010` | `1010 0000` | `0000` |
+
+Resultat: $P = 10000010_2 = 130_{10}$ ✓
+:::
+
+Aquest circuit tarda un mínim de 33 cicles per obtenir el producte (32 iteracions més la inicialització).
+
+::: {#wrn-circuit-multiplicacio-combinacional .callout-warning collapse=true}
+## Circuit combinacional de multiplicació
+
+Una alternativa al circuit seqüencial és un **circuit combinacional** que calcula tots els productes parcials en paral·lel i els suma amb una cadena de sumadors:
+
+$$Z = X \cdot y_0 + (X \cdot y_1) \ll 1 + \ldots + (X \cdot y_{31}) \ll 31$$
+
+Això requereix 31 sumadors disposats en sèrie (de 33 a 63 bits). El retard total és aproximadament la suma dels retards dels 31 sumadors, cosa que no representa una millora substancial respecte del circuit seqüencial.
+
+No obstant, si es reestructuren les sumes en forma d'**arbre**, es pot reduir el retard a l'equivalent de 5 sumadors (aproximadament 6 vegades més ràpid que la versió en sèrie), ja que moltes sumes es fan en paral·lel.
+
+<!-- TODO figura circuit multiplicador en arbre -->
+![Circuit multiplicador combinacional en arbre.](figures/TODO.png){#fig-TODO2 width="60%"}
+
+:::
+
+### Instruccions de multiplicació (extensió M) {#sec-extensio-m}
+
+Com s'ha vist a @sec-multiplicacio-potencies-2, `slli` permet multiplicar per potències de 2 de manera eficient; és la solució adequada per escalar índexs de vectors quan la mida de l'element és 1, 2, 4 o 8 bytes (@imp-ec-sll-acces-vector). Per al cas general, però, cal una instrucció de multiplicació d'enters: per exemple, per accedir a un element qualsevol d'una matriu, cal calcular `i*NC`, on el nombre de columnes `NC` no té per què ser una potència de 2.
+
+Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv): l'extensió **M** (@sec-extensio-m-t2) afegeix instruccions de multiplicació i divisió entera per maquinari. Per activar-la, cal afegir `m` al paràmetre `-march` del compilador: `-march=rv32im`.
 
 ::: {#nte-rv32im-instruccions-multiplicacio .callout-note}
 ## RV32IM ISA — Instruccions de multiplicació entera
@@ -19,12 +184,6 @@ L'extensió **M** de RISC-V afegeix instruccions de multiplicació i divisió en
 | `mulhu` | `rd, rs1, rs2` | `rd` ← (`rs1` ×ᵤ `rs2`)[63:32] | *Multiply High Unsigned* | R |
 | `mulhsu` | `rd, rs1, rs2` | `rd` ← (`rs1` ×ₛᵤ `rs2`)[63:32] | *Multiply High Signed-Unsigned* | R |
 : {tbl-colwidths="[10,20,35,30,5]"}
-:::
-
-El producte de dos nombres de 32 bits pot tenir fins a 64 bits. `mul` retorna els **32 bits de menys pes**; `mulh`, `mulhu` i `mulhsu` retornen els **32 bits de més pes** (diferint en la interpretació del signe dels operands).
-
-::: {#imp-mul- .callout-important}
-A **EC**, en els càlculs d'adreces amb multiplicacions no múltiples de dos, s'usa `mul`. Els 32 bits de més pes s'ignoren perquè qualsevol adreça vàlida en RV32I cap en 32 bits.
 :::
 
 ::: {#tip-exemple-mul .callout-tip}
@@ -42,9 +201,40 @@ mul     t2, t0, t1      # c <- a * b (32 bits de menys pes)
 ```
 :::
 
+### Sobreeiximent en la multiplicació
+
+El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte. `mul` retorna només els **32 bits de menys pes**, que corresponen al resultat truncat; si el resultat exacte no és representable amb 32 bits, es produeix **overflow** i el valor retornat per `mul` no és correcte.
+
+Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters amb signe) o `mulhu` (naturals sense signe), que retornen els **32 bits de més pes**. A partir d'aquests es pot detectar l'overflow:
+
+* En **naturals** (`mulhu`): hi ha overflow si `mulhu` retorna un valor diferent de zero.
+* En **enters** (`mulh`): hi ha overflow si el resultat de `mulh` no és l'extensió de signe del resultat de `mul`.
+
+::: {#tip-overflow-multiplicacio .callout-tip}
+## Detecció d'overflow en la multiplicació entera
+
+```{.C filename="C"}
+int a, b, s;
+long long producte_exacte;
+s = a * b;                      /* resultat truncat a 32 bits */
+producte_exacte = (long long)a * b;
+```
+
+En RV32IM, per obtenir el producte exacte de 64 bits i detectar overflow:
+
+```{.s filename="RV32I"}
+        # a, b als registres t0, t1
+        mul     t2, t0, t1      # t2 <- bits [31:0] del producte
+        mulh    t3, t0, t1      # t3 <- bits [63:32] del producte (enters)
+        # overflow si t3 != extensió de signe de t2
+        srai    t4, t2, 31      # t4 <- extensió de signe de t2
+        bne     t3, t4, overflow
+```
+:::
+
 ## Matrius {#sec-matrius}
 
-Una **matriu** és una agrupació multidimensional d'elements del mateix tipus, identificats per un índex per cada dimensió. Les matrius de dues dimensions es representen habitualment com una taula de **NF** files i **NC** columnes:
+Amb `mul` disponible, ja és possible calcular adreces arbitràries dins d'estructures de dades multidimensionals. Una **matriu** és una agrupació multidimensional d'elements del mateix tipus, identificats per un índex per cada dimensió. Les matrius de dues dimensions es representen habitualment com una taula de **NF** files i **NC** columnes:
 
 $$
 \begin{pmatrix}
@@ -84,10 +274,6 @@ mat1:   .space  NF*NC*4             # NF files × NC columnes × 4 bytes
 mat2:   .word   -1, 2, 0, 1, -12, 4
 ```
 
-Test[^test]
-
-[^test]: un `st`
-
 ::: {#imp-eqv-dimensions .callout-important}
 ## Definició de les dimensions com a constants
 
@@ -124,6 +310,10 @@ L'@eq-acces-aleatori-matriu és la generalització de l'@eq-acces-aleatori-vecto
 ![](figures/T4_matriu_offset_ij_dark.svg)
 :::
 Càlcul de l'adreça de `mat[i][j]`
+:::
+
+::: {#imp-mul- .callout-important}
+A **EC**, en els càlculs d'adreces amb multiplicacions no múltiples de dos, s'usa `mul`. Els 32 bits de més pes s'ignoren perquè qualsevol adreça vàlida en RV32I cap en 32 bits.
 :::
 
 ::: {#tip-matriu-acces-ij .callout-tip}
@@ -217,7 +407,7 @@ Quan un bucle recorre els elements d'un vector o matriu i la distància en bytes
 
 $$\text{stride} = @X_{i+1} - @X_i = \text{constant}$$ {#eq-stride}
 
-En lloc de calcular l'adreça de cada element a partir de l'adreça base i l'índex (accés aleatori, ), es manté un **punter** que s'actualitza sumant-li l'stride a cada iteració:
+En lloc de calcular l'adreça de cada element a partir de l'adreça base i l'índex, es manté un **punter** que s'actualitza sumant-li l'stride a cada iteració:
 
 $$@X_{i+1} = @X_i + \text{stride}$$ {#eq-acces-sequencial}
 
@@ -443,3 +633,143 @@ fifor:
         ret
 ```
 :::
+
+## Divisió entera {#sec-divisio-entera}
+
+### Algorisme
+
+L'algorisme de divisió entera es basa en la divisió de naturals. Per a enters amb signe, es treballa amb els valors absoluts i s'ajusta el signe dels resultats al final.
+
+L'algorisme per calcular el quocient $q = x \div y$ i el residu $r = x \bmod y$ és:
+
+1. Calcular els valors absoluts $|x|$ i $|y|$.
+2. Dividir els valors absoluts (divisió de naturals), obtenint $q$ i $r$.
+3. Si els operands tenen signes **diferents**, canviar el signe del quocient.
+4. Si el dividend és **negatiu**, canviar el signe del residu.
+
+#### Divisió de naturals
+
+La divisió del dividend $D$ entre el divisor $d$ consisteix a trobar el quocient $q$ i el residu $r$ naturals tals que $D = d \cdot q + r$, amb
+$0 \leq r < d$.
+
+L'algorisme treballa els bits del quocient de més pes a menys pes. A cada pas $i$ (de $n-1$ a $0$), es compara el dividend parcial amb el divisor
+desplaçat $i$ posicions a l'esquerra: si el dividend parcial és major o igual, el bit $q_i = 1$ i el divisor desplaçat es resta del dividend
+parcial; si no, $q_i = 0$ i el dividend parcial no canvia.
+
+::: {#tip-divisio-naturals .callout-tip}
+## Algorisme de divisió de naturals en base 2
+
+Dividir $D = 1011_2$ ($11_{10}$) entre $d = 0010_2$ ($2_{10}$):
+
+| Pas | Divisor desplaçat | Comparació | $q_i$ | Residu parcial |
+| :---: | :---: | :--- | :---: | :---: |
+| inicial | — | — | — | `1011` |
+| 1 ($i=3$) | `0010000` | `1011 ≥ 0010000`? No | 0 | `1011` |
+| 2 ($i=2$) | `001000` | `1011 ≥ 001000`? Sí | 1 | `0011` |
+| 3 ($i=1$) | `00100` | `0011 ≥ 00100`? No | 0 | `0011` |
+| 4 ($i=0$) | `0010` | `0011 ≥ 0010`? Sí | 1 | `0001` |
+
+Quocient: $q = 0101_2 = 5_{10}$, residu: $r = 0001_2 = 1_{10}$ ✓
+:::
+
+### Circuit seqüencial de divisió {#sec-circuit-divisio}
+
+El circuit implementa l'algorisme anterior amb tres registres:
+
+* **R** ($2n$ bits): dividend/residu. S'inicialitza amb $x$ a la part baixa i zeros a la part alta.
+* **D** ($2n$ bits): divisor. S'inicialitza amb $y$ a la part alta i zeros a la part baixa. Es desplaça una posició a la dreta a cada iteració.
+* **Q** ($n$ bits): quocient. S'inicialitza a zero.
+
+Per evitar guardar el dividend original quan la comparació falla, s'utilitza l'**algorisme amb restauració**: es resta sempre el divisor del dividend
+parcial (la comparació es fa com una resta); si el resultat és negatiu (bit de signe $R_{2n-1} = 1$), el bit de quocient és 0 i es **restaura** el dividend sumant-hi de nou el divisor; si és positiu o zero, el bit és 1.
+
+<!-- TODO figura circuit divisor seqüencial -->
+
+El pseudocodi de l'algorisme és:
+
+```{.text}
+// Inicialització
+R[n-1:0] = x;  R[2n-1:n] = 0
+D[2n-1:n] = y;  D[n-1:0] = 0
+Q = 0
+
+per i = 1 fins a n:
+    D = D >> 1
+    R = R − D
+    si R[2n-1] == 0:        // resultat positiu
+        Q = (Q << 1) | 1
+    sino:                   // resultat negatiu: restaurar
+        R = R + D
+        Q = Q << 1
+
+z = Q    // quocient
+w = R[n-1:0]  // residu
+```
+
+::: {#tip-seguiment-divisio .callout-tip}
+## Seguiment del circuit divisor (4 bits)
+
+Dividir $x = 1011_2$ entre $y = 0010_2$:
+
+| Iteració | R (dividend/residu) | D (divisor) | Q (quocient) |
+| :---: | :---: | :---: | :---: |
+| inicial | `0000 1011` | `0010 0000` | `0000` |
+| 1 | `0000 1011` | `0001 0000` | `0000` |
+| 2 | `0000 0011` | `0000 1000` | `0001` |
+| 3 | `0000 0011` | `0000 0100` | `0010` |
+| 4 | `0000 0001` | `0000 0010` | `0101` |
+
+Quocient: $Q = 0101_2 = 5_{10}$, residu: $R[3:0] = 0001_2 = 1_{10}$ ✓
+:::
+
+### Instruccions de divisió entera a RV32IM {#sec-instruccions-divisio}
+
+L'extensió **M** proporciona quatre instruccions de divisió entera:
+
+::: {#nte-rv32im-instruccions-divisio .callout-note}
+## RV32IM ISA — Instruccions de divisió entera
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+| `div` | `rd, rs1, rs2` | `rd` ← `rs1` ÷ `rs2` (enters) | *Divide* | R |
+| `divu` | `rd, rs1, rs2` | `rd` ← `rs1` ÷ᵤ `rs2` (naturals) | *Divide Unsigned* | R |
+| `rem` | `rd, rs1, rs2` | `rd` ← `rs1` mod `rs2` (enters) | *Remainder* | R |
+| `remu` | `rd, rs1, rs2` | `rd` ← `rs1` modᵤ `rs2` (naturals) | *Remainder Unsigned* | R |
+: {tbl-colwidths="[10,20,35,30,5]"}
+:::
+
+`div` i `rem` operen amb enters amb signe; `divu` i `remu` operen amb
+naturals. `div` i `divu` escriuen el **quocient** a `rd`; `rem` i `remu`
+escriuen el **residu**.
+
+::: {#cau-divisio-enters-semantica .callout-caution}
+Les instruccions `div` i `rem` segueixen la **semàntica de C**: el residu té el mateix signe que el **dividend**, i $|r| < |d|$. Aquesta és la mateixa semàntica que s'obté dividint els valors absoluts i ajustant el signe (algorisme de la @sec-divisio-entera).
+
+Això **difereix** de la divisió euclidiana, on el residu és sempre no negatiu. Vegeu la diferència amb `sra` a @cau-sra-divisio.
+:::
+
+#### Casos especials
+
+* **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
+* **Overflow enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
+
+::: {#tip-divisio-exemple .callout-tip}
+## Traducció de divisió i mòdul enters
+
+```{.C filename="C"}
+int a, b, q, r;
+q = a / b;
+r = a % b;
+```
+
+```{.s filename="RV32I"}
+        div     t2, t0, t1      # q = a / b
+        rem     t3, t0, t1      # r = a % b
+```
+:::
+
+### Divisió per potències de 2
+
+Com s'ha vist a @cau-sra-divisio, la instrucció `sra` calcula el quocient de la divisió d'un enter per una potència de 2, però amb la semàntica de la **divisió euclidiana** (residu sempre no negatiu), que difereix de `div` quan el dividend és negatiu i la divisió no és exacta.
+
+En C, l'operador `/` entre enters es tradueix amb `div` (no amb `sra`), llevat que el compilador pugui garantir que el dividend és no negatiu.
