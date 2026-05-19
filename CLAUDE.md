@@ -47,6 +47,69 @@ Abans de generar qualsevol contingut, llegeix `contrib.qmd`. Conté:
 - Els criteris de format (mermaid, taules, figures, blocs de codi, aniuaments).
 - Les substitucions terminològiques obligatòries.
 
+### Figures
+
+#### Format i variants
+Les figures es generen com a fitxers SVG estàtics amb colors absoluts (sense
+variables CSS de l'entorn del visualitzador). Cada figura té dues variants:
+
+- `nom_figura_light.svg` — mode clar (cosmo) i PDF
+- `nom_figura_dark.svg` — mode fosc (darkly)
+
+Els fitxers van al directori `figures/`. La convenció de noms usa `_` en lloc
+de `-`.
+
+#### Inserció al .qmd
+```markdown
+::: {#fig-nom-figura}
+:::{.light-content}
+![](figures/nom_figura_light.svg)
+:::
+:::{.dark-content}
+![](figures/nom_figura_dark.svg)
+:::
+Caption de la figura
+:::
+```
+
+#### Paleta de colors
+
+| Element | Light (fill / stroke) | Dark (fill / stroke) |
+| :--- | :--- | :--- |
+| Cel·la neutra | `#f8f9fa` / `#adb5bd` | `#3d3d3d` / `#888` |
+| Text secundari | `#6c757d` | `#adb5bd` |
+| Text principal | `#343a40` | `#fff` |
+| Destacat blau | `#cfe2ff` / `#084298` | `#1a3a5c` / `#90bfff` |
+| Destacat verd | `#d1e7dd` / `#0a3622` | `#1a3a2a` / `#90d4aa` |
+| Destacat groc | `#fff3cd` / `#664d03` | `#3a2e00` / `#ffd966` |
+| Destacat vermell | `#f8d7da` / `#842029` | `#3a1a1e` / `#f1a8ae` |
+
+#### Convencions de dibuix SVG
+- `width="680"`, `viewBox="0 0 680 H"` on H = contingut + 20px buffer.
+- `font-family="'Source Sans Pro', sans-serif"`, `font-size="11"` per a
+  etiquetes de cel·la, `font-size="12"` per a text secundari, `font-size="13"`
+  per a títols de quadrant.
+- Cel·les destacades es dibuixen **sempre al damunt** de les grises (ordre
+  de dibuix: grises primer, destacades després) per evitar solapaments de
+  vores.
+- Cel·les grises: `stroke-width="0.5"`. Cel·les destacades: `stroke-width="1"`.
+- No s'usen línies separadores entre quadrants: només espai buit.
+
+#### CSS mode fosc
+A `custom_dark.scss`, secció `/*-- scss:rules --*/`:
+```scss
+figcaption,
+caption,
+.footnotes,
+h1, h2, h3, h4,
+.callout-title-container {
+  code {
+    color: #e8e6e3 !important;
+    background-color: #2b2d2f !important;
+  }
+}
+```
+
 ## Flux de treball
 
 - Mostrar sempre el contingut generat en blocs de codi markdown (` ```markdown `).
