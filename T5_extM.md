@@ -13,16 +13,16 @@ Transfereixen valors de coma flotant de precisió simple (32 bits) entre memòri
 * **`flw rd, offset(rs1)`**: Carrega un valor de coma flotant de precisió simple de la direcció de memòria `rs1 + offset` al registre de coma flotant `rd`.
 * **`fsw rs2, offset(rs1)`**: Emmagatzema el valor del registre de coma flotant `rs2` a la direcció de memòria `rs1 + offset`.
 
-> **Nota — Càrrega de constants de coma flotant:** RV32F no té instruccions amb immediat de coma flotant. Per carregar una constant com ara `1.0`, cal emmagatzemar-la a la secció `.data` i carregar-la amb `la` + `flw`:
->
-> ```{.s}
-> .data
-> const_one: .float 1.0
->
-> .text
->     la   t0, const_one   # Carrega l'adreça de la constant en un registre enter
->     flw  ft0, 0(t0)      # Carrega 1.0 al registre de coma flotant ft0
-> ```
+ **Nota — Càrrega de constants de coma flotant:** RV32F no té instruccions amb immediat de coma flotant. Per carregar una constant com ara `1.0`, cal emmagatzemar-la a la secció `.data` i carregar-la amb `la` + `flw`:
+
+```{.s}
+.data
+const_one: .float 1.0
+
+.text
+    la   t0, const_one   # Carrega l'adreça de la constant en un registre enter
+    flw  ft0, 0(t0)      # Carrega 1.0 al registre de coma flotant ft0
+ ```
 
 ---
 

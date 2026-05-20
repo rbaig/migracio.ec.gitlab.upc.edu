@@ -47,19 +47,6 @@ Cal tenir-lo en compte en tots els càlculs: si el camp de fracció $F$ té $p-1
 Els únics casos en què el bit ocult **no s'aplica** són els nombres denormals i el zero (@sec-codificacions-especials).
 :::
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### L'estàndard IEEE-754 {#sec-ieee754}
 
 Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de coma flotant, amb decisions diverses sobre el nombre de bits de mantissa i exponent, i fins i tot sobre la base de la potència. La incompatibilitat entre sistemes dificultava l'intercanvi de dades i la portabilitat del programari. El 1985, l'Institut d'Enginyers Elèctrics i Electrònics (***Institute of Electrical and Electronics Engineers***, **IEEE**) va publicar l'estàndard **IEEE-754**, que no sols defineix el format de representació sinó també les operacions aritmètiques, l'arrodoniment i el tractament de les excepcions. L'estàndard s'ha revisat i ampliat posteriorment (la darrera revisió és de 2008).
@@ -176,11 +163,13 @@ $$V = \texttt{0xC480B5C3}$$
 $$\varepsilon = \bigl|1{,}0000\,0001\,0110\,1011\,1000\,011 - 1{,}0000\,0001\,0110\,1011\,1000\,0101\,0001\ldots\bigr| \times 2^{10}$$
 $$= 0{,}0000\,0000\,0000\,0000\,0000\,0001\,111\ldots \times 2^{10} \approx 1{,}111_2 \times 2^{-15} $$
 
-$$= (1 + 0.5 + 0.25 + 0.125) / 2 \times 10^{5} = 1.875 / 32768 = 5{,}722 \times 10^{-5}$$
+$$= (1 + 0{,}5 + 0{,}25 + 0{,}125) / 2 \times 10^{5} = \frac{1{,}875}{32768} = 5{,}722 \times 10^{-5}$$
+
+$$= (1 + 0{,}5 + 0{,}25 + 0{,}125) \times 2^{-15} = \frac{1{,}875}{32768} = 5{,}722 \times 10^{-5}$$
 
 **Solució**: 
 
-$$\varepsilon = 10^{-5}$$
+$$\varepsilon = 5{,}722 \times 10^{-5}$$
 :::
 
 ::: {#tip-ieee754-decodificacio .callout-tip}
@@ -196,23 +185,20 @@ $$\texttt{0x45814140} = 0\;|\;1000\,1011\;|\;0000\,0010\,1000\,0010\,1000\,000_2
 
 - $S = 0$ (positiu).
 - $E_u = 1000\,1011_2 = 139 \Rightarrow e = 139 - 127 = 12$.
-<!-- - Mantissa (amb bit ocult): $1{,}000\,0001\,0100\,0001\,0100\,0000_2$. -->
 - Mantissa (amb bit ocult): $1{,}0000\,0010\,1000\,0010\,1000\,000_2$.
 
 $$v = +1{,}0000\,0010\,1000\,0010\,1000\,000_2 \times 2^{12}$$
 
 **c) Eliminar la potència** (desplaçar la coma 12 posicions a la dreta):
 
-<!-- $$v = 1000\,0001\,0100{,}0001\,01_2$$ -->
 $$v = 1\,0000\,0010\,1000{,}0010\,1000\,000_2$$
 
 **d) Convertir la part entera:**
+$$1\,0000\,0010\,1000_2 = 2^{12} + 2^5 + 2^3 + 2^2 = 4096 + 32 + 8 = 4136$$
 
-$$1000\,0001\,0100_2 = 2^{12} + 2^5 + 2^3 + 2^2 = 4096 + 32 + 8 = 4136$$
 
 **e) Convertir la part fraccionària:**
 
-<!-- $$0{,}0001\,01_2 = 2^{-4} + 2^{-6} = 0{,}0625 + 0{,}015625 = 0{,}078125$$ -->
 $$0{,}0010\,1000\,000_2 = 101_2 \times 2^{-5} = 5 / 32 = 0{,}15625$$
 
 **Solució**: 
@@ -238,7 +224,7 @@ Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redu
 
 ### Error de representació i underflow {#sec-error-representacio}
 
-El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut de representació** es defineix com $\varepsilon = |v - v_0|$ i el **error relatiu** com $\eta = \varepsilon\,/\,|v|$.
+El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut de representació** es defineix com $\varepsilon = |v - v_0|$ i l'**error relatiu** com $\eta = \varepsilon\,/\,|v|$.
 
 Per a un nombre normalitzat qualsevol de la forma $v_0 = m \times 2^e$, el valor representable següent és $v_1 = (m + 2^{-23}) \times 2^e$, de manera que:
 
@@ -323,6 +309,8 @@ $$\varepsilon_{\max} < 2^{-149}$$
 
 L'error relatiu ja no està uniformement acotat, però **creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com ***gradual underflow***.
 
+En simple precisió, la fita d'error relatiu és $2^{-23}$ a l'extrem superior de l'interval $(0,\ 2^{-126})$ i creix progressivament fins a $2^0 = 1$ a mesura que $v$ s'acosta a zero i la mantissa no-normalitzada perd dígits significatius.
+
 ### Arrodoniment {#sec-arrodoniment}
 
 Quan el resultat exacte $v$ d'una operació no és representable, cal triar entre els dos valors representables $v_0 < v < v_1$ més pròxims. Aquesta aproximació s'anomena **arrodoniment**. L'IEEE-754 defineix quatre modes:
@@ -335,6 +323,8 @@ Quan el resultat exacte $v$ d'una operació no és representable, cal triar entr
 | **A $-\infty$** | El valor representable menor |
 
 El mode per defecte és l'**arrodoniment al més pròxim** (***Round to Nearest Even***, **RNE**). Proporciona l'error mínim possible i, en el cas equidistant, tria el valor parell (el que té el bit de menor pes a 0) per evitar biaixos sistemàtics en cadenes llargues de càlculs.
+
+Els modes d'arrodoniment a $+\infty$ i a $-\infty$ s'usen conjuntament en **aritmètica d'intervals**, una tècnica que acota els errors d'arrodoniment per garantir la fiabilitat dels resultats numèrics.
 
 ::: {#tip-arrodoniment-rne .callout-tip}
 ## Arrodoniment RNE
@@ -382,7 +372,6 @@ Arrodonir:      1,11101     (G=1, R=1 → al següent)
 ```
 
 Amb tots els bits, el resultat arrodonit és idèntic: $1{,}11101$.
-:::
 :::
 
 ## Operacions en coma flotant {#sec-operacions-coma-flotant}
@@ -605,6 +594,44 @@ L'extensió **F** afegeix 32 registres de coma flotant de 32 bits, **`f0`–`f31
 : {tbl-colwidths="[15,15,55,15]" .striped}
 :::
 
+A més dels registres `f0`–`f31`, l'extensió F afegeix el registre de control i estat de coma flotant **`fcsr`** (*Floating-Point Control and Status Register*), que controla el mode d'arrodoniment i registra les excepcions produïdes per les operacions de coma flotant.
+
+::: {#nte-fcsr .callout-note}
+## RV32F — Registre de control `fcsr`
+
+| Bits | Camp | Descripció |
+| :---: | :---: | :--- |
+| `31:8` | — | Reservats (llegeixen com a 0) |
+| `7:5` | `frm` | Mode d'arrodoniment |
+| `4:0` | `fflags` | Indicadors d'excepció (*sticky*) |
+: {tbl-colwidths="[15,15,70]" .striped}
+
+**Modes d'arrodoniment (`frm`):**
+
+| Codi | Mnemònic | Criteri |
+| :---: | :---: | :--- |
+| `000` | `RNE` | Al més pròxim, empat al parell (per defecte, @sec-arrodoniment) |
+| `001` | `RTZ` | A zero (truncament) |
+| `010` | `RDN` | A $-\infty$ |
+| `011` | `RUP` | A $+\infty$ |
+| `100` | `RMM` | Al més pròxim, empat al de major magnitud |
+: {tbl-colwidths="[15,15,70]" .striped}
+
+**Indicadors d'excepció (`fflags`):**
+
+| Bit | Mnemònic | Excepció |
+| :---: | :---: | :--- |
+| `4` | `NV` | Operació invàlida ($\sqrt{-1}$, $0/0$, $\infty - \infty$…) |
+| `3` | `DZ` | Divisió per zero |
+| `2` | `OF` | *Overflow* |
+| `1` | `UF` | *Underflow* |
+| `0` | `NX` | Resultat inexacte (arrodoniment) |
+: {tbl-colwidths="[15,15,70]" .striped}
+
+Els indicadors són *sticky*: un cop activats pel maquinari, romanen actius
+fins que el programari els esborra explícitament.
+:::
+
 ::: {#imp-paral-lelisme-registres .callout-important}
 ## Paral·lelisme entre registres enters i de coma flotant
 
@@ -626,7 +653,7 @@ Les convencions de preservació s'apliquen als registres de coma flotant exactam
 * Els registres **temporals** (`ft0`–`ft11`, `fa0`–`fa7`) poden ser modificats lliurement per qualsevol subrutina. Si el caller en necessita el valor després d'una crida, els ha de desar ell mateix.
 * Els registres **segurs** (`fs0`–`fs11`) han de ser restaurats al seu valor original per la subrutina que els modifica. Si una subrutina usa `fs0`, ha de desar-lo al pròleg i restaurar-lo a l'epíleg, exactament igual que faria amb `s0`.
 
-El pròleg i l'epíleg d'una subrutina que usa registres segurs de coma flotant segueix el mateix patró que per als enters (@sec-multinivell-pila):
+El pròleg i l'epíleg d'una subrutina que usa registres segurs de coma flotant segueixen el mateix patró que per als enters (@sec-multinivell-pila):
 
 ```{.s filename="RV32F"}
 sub:
@@ -674,6 +701,15 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 : {tbl-colwidths="[8,18,35,30,9]" .striped}
 :::
 
+::: {#nte-instruccions-moviment-f .callout-note}
+## RV32F ABI — Moviments
+| Mnemònic | Operands | Operació | Nom |
+| :--- | :--- | :--- | :--- |
+| `fmv.s` | `rd, rs1` | $rd = rs1$ | *Float Move* (pseudo) |
+
+`fmv.s rd, rs1` és una pseudoinstrucció equivalent a `fsgnj.s rd, rs1, rs1`. Copia el registre `rs1` a `rd` sense modificar el signe. RARS la suporta directament.
+:::
+
 ::: {#nte-instruccions-comparacio-f .callout-note}
 ## RV32F ISA — Comparacions
 
@@ -718,6 +754,34 @@ Si algun operand és NaN, totes les comparacions retornen 0.
 : {tbl-colwidths="[12,15,30,43]" .striped}
 
 `fmv.w.x` i `fmv.x.w` copien el patró de 32 bits sense cap conversió: el valor numèric en coma flotant del resultat és en general diferent del valor enter de l'operand.
+:::
+
+::: {#tip-conversio-int-float .callout-tip}
+## Conversió entre `int` i `float`
+
+Convertiu el valor enter de `a0` a `float`, sumeu-hi `0,5` i convertiu el resultat de nou a enter:
+
+```{.C filename="C"}
+int arrodoneix(int n) {
+    return (int)(n + 0.5f);
+}
+```
+
+```{.s filename="RV32F"}
+.data
+const_half: .float  0.5
+
+.text
+arrodoneix:
+        fcvt.s.w  fa0, a0          # fa0 = (float) n
+        la        t0, const_half
+        flw       ft0, 0(t0)       # ft0 = 0.5
+        fadd.s    fa0, fa0, ft0    # fa0 = (float) n + 0.5
+        fcvt.w.s  a0, fa0          # a0 = (int)(n + 0.5)  [trunca cap a zero]
+        ret
+```
+
+Observeu que `fcvt.w.s` **trunca** cap a zero, no arrodoneix al més pròxim. Per a $n = 2$, el resultat és $2$ (no $3$), ja que $2{,}5$ truncat cap a zero és $2$.
 :::
 
 ::: {#imp-no-immediats-flotants .callout-important}

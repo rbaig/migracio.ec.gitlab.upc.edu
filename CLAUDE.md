@@ -115,37 +115,68 @@ h1, h2, h3, h4,
 - Mostrar sempre el contingut generat en blocs de codi markdown (` ```markdown `).
 - No editar fitxers directament: l'usuari fa el copy-paste manualment.
 - En cas de dubte: atura't, exposa el dubte i, si és possible, proposa una solució.
+- Inici d'un tema o pràctica
+    - Primer prompt
+      - Fitxers: `CLAUDE.md`, `_quarto.yml`, `contrib.qmd`
+      - Objectiu: "Passar el Tema X Títol de PDF a Tema Y Títol` fent la migració a RV32
+      - Prioritats, per ordre d'importància decreixent (tot i que tots són importants i compatibles):
+        - Continguts i estructura sòlids tècnicament
+        - Exposició didàctica
+        - Cobrir tots els aspectes del PDF.
+        - Actualitzar els continguts
+        - Millorar la narrativa (*flow*) respecte el PDF: estil i llenguatge més directe, ús de callouts, etc.
+      - Tasques:
+        - Digues si has entès què hem de fer
+        - Quina informació necessites per a poder-ho fer
+    - Segon prompt
+      - Fitxers: `TODO.pdf`, `T2.qmd`, `T3.qmd`, ... `/riscv/` comprimit
+      - Digues si tens tota la informació que necessites
+      - Fes una proposta de continguts i estructura (seccions, subseccions, callouts, etc.)
+      - Sigues sempre tan propositiu com vulguis. Per a canvis importants, demana'm sempre la validació.
+      - No generis cap contingut fins que no hàgim acordat els continguts i l'estructura
+    - Tercer prompt:
+      - Confirmat totalment. Tu marques el ritme: per seccions, subseccions, etc. segons les teves necessitats. Si necessites cap ordre o tens cap dubte, para i pregunta-m'ho.
+      - Taules vs Mermaid vs Figures (prioritat descendent)
+        - Taula (màxima prioritat): quan el contingut és essencialment dades tabulars
+        - Mermaid: diagrames simples (diagrames de blocs)
+        - SVG: quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats de cache, descomposició de bits)
+      - Figures SVG
+        - Fitxers: alguns `.svg` light i dark d'exemple
+        - Les generem totes un cop hi hagi tot el text a `.qmd`
+          - sempre una per una
+          - començant per la versió `ligth​`
+          - Nom fitxers: segueix el patró que el dels exemples `T7_....svg`
+          - Markdown d'integració: el mateix que a T4
+        - Ves deixant comentaris html amb la proposta de *caption* a on creguis que ha d'anar cada una 
+        - No generis cap contingut fins que no hàgim acordat els continguts i l'estructura
+          - Proposa la llista completa de SVGs resultant per validar-la
+- En finalitzar un tema, pràctica, etc.
+    - Revisió completa de la darrera versió del `.qmd`
+    - Revisió tècnica profunda
+    - Revisió lingüística profunda
+    - Generació dels markdown per millorar
+      - `contrib.qmd`
+      - `CLAUDE.md`
+    - Proposta de continguts i distribució del tema, pràctica, etc. si s'escau
 
 ## Planificació i progress
 
 1. Tota la teoria (T1--19)
-1.1 Temes preparats per a revisió externa:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), 
-1.2 Temes WiP: `T5.qmd`
-* Estructura acordada (tota la part d'aritmètica entera ha estat passada a T4):
+1.1 Temes preparats per a revisió externa:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1)
+1.2 Temes WiP: `T7.qmd`
+* Estructura proposada pel xat de T5 (només és una proposta):
 ```
-T5: Aritmètica en coma flotant
-
-── Representació en coma flotant
-   ├── Notació científica normalitzada
-   ├── Representació binària
-   ├── L'estàndard IEEE-754 (formats simple/doble precisió)
-   ├── Rang i precisió
-   ├── Error de precisió i underflow
-   ├── Codificacions especials (zero, Inf, NaN, denormals)
-   └── Arrodoniment
-
-── Operacions en coma flotant
-   ├── Suma i resta
-   │   ├── Algorisme (exemple base 10 + exemple IEEE-754)
-   │   └── Bits de guarda          [Aprofundiment collapse=true]
-   ├── Multiplicació i divisió
-   │   └── Algorisme (exemple base 10 + exemple IEEE-754)
-   └── No-associativitat
-
-── Coma flotant a RISC-V (RV32F)
-   ├── Registres f0–f31 i ABI (fa0–fa7)
-   ├── Instruccions (flw/fsw, fadd.s…, feq.s…, fcvt, fmv)
-   └── Exemple de traducció
+T7: Memòria cau
+── Motivació i principi de localitat
+── Estructura d'una memòria cau
+   ├── Mida de bloc, índex, etiqueta
+   ├── Correspondència directa
+   ├── N-way set associative
+   └── Totalment associativa
+── Polítiques de reemplaçament (LRU, aleatòria)
+── Polítiques d'escriptura (write-through, write-back)
+── Rendiment: taxa d'encerts i penalització
+── Memòria cau a RISC-V (si escau)
 ```
 2. Laboratori
 3. Problemes
