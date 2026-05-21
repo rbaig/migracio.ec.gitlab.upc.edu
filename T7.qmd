@@ -78,8 +78,7 @@ La localitat permet una solució elegant al *gap*: interposar entre el processad
 Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un més gran i més lent que l'anterior— s'obté el subsistema de memòria tal com s'implementa als processadors actuals:
 
 <!-- figura: diagrama en forma de piràmide de la jerarquia de memòria amb quatre nivells (registres, memòria cau, memòria principal, memòria secundària), indicant les tendències de velocitat, cost i capacitat a banda i banda. Basada en la Figura 6.4 del PDF. Caption: "La jerarquia de memòria: cada nivell conserva les dades del nivell inferior que tinguin més probabilitat de ser accedides." -->
-
-::: {#fig-jerarquia-piramide}
+<!-- ::: {#fig-jerarquia-piramide}
 :::{.light-content}
 ![](figures/T7_jerarquia_piramide_light.svg)
 :::
@@ -87,7 +86,22 @@ Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un
 ![](figures/T7_jerarquia_piramide_dark.svg)
 :::
 La jerarquia de memòria: cada nivell conserva les dades del nivell inferior que tinguin més probabilitat de ser accedides.
+::: -->
+::: {#fig-jerarquia-piramide}
+:::{.content-visible when-format="html"}
+:::{.light-content}
+![](figures/T7_jerarquia_piramide_light.svg)
 :::
+:::{.dark-content}
+![](figures/T7_jerarquia_piramide_dark.svg)
+:::
+:::
+:::{.content-visible when-format="pdf"}
+![](figures/T7_jerarquia_piramide_light.svg)
+:::
+La jerarquia de memòria: cada nivell conserva les dades del nivell inferior que tinguin més probabilitat de ser accedides.
+:::
+
 
 Cada nivell emmagatzema un subconjunt del contingut del nivell immediatament inferior. Quan el processador necessita una dada, la cerca primer al nivell més ràpid (la memòria cau); si no hi és, baixa al nivell següent, i així successivament. La **memòria cau** (**MC**) és el nom que rep el nivell que s'interposa entre el processador i la memòria principal; és la peça central d'aquest tema.
 
@@ -120,16 +134,27 @@ Internament, la MC s'organitza com una taula. Cada entrada d'aquesta taula s'ano
 * Una **etiqueta** (*tag*): identifica quin bloc de la memòria principal és guardat a la línia. Està formada pels bits del número de bloc (o una part d'aquests, com es veurà a la @sec-politica-emplacament).
 * Les **dades** del bloc.
 
-<!-- figura: taula d'una memòria cau amb 4 línies, mostrant les columnes V,
-Etiqueta i Bloc de dades, amb tres línies vàlides i una buida (com a la
-Figura 6.8 del PDF). Caption: "Organització interna d'una memòria cau: cada
-línia conté un bit de validesa, una etiqueta i un bloc de dades." -->
-::: {#fig-mc-organitzacio}
+<!-- figura: taula d'una memòria cau amb 4 línies, mostrant les columnes V, Etiqueta i Bloc de dades, amb tres línies vàlides i una buida (com a la Figura 6.8 del PDF). Caption: "Organització interna d'una memòria cau: cada línia conté un bit de validesa, una etiqueta i un bloc de dades." -->
+<!-- ::: {#fig-mc-organitzacio}
 :::{.light-content}
 ![](figures/T7_mc_organitzacio_light.svg)
 :::
 :::{.dark-content}
 ![](figures/T7_mc_organitzacio_dark.svg)
+:::
+Organització interna d'una memòria cau: cada línia conté un bit de validesa, una etiqueta i un bloc de dades.
+::: -->
+::: {#fig-mc-organitzacio}
+:::{.content-visible when-format="html"}
+:::{.light-content}
+![](figures/T7_mc_organitzacio_light.svg)
+:::
+:::{.dark-content}
+![](figures/T7_mc_organitzacio_dark.svg)
+:::
+:::
+:::{.content-visible when-format="pdf"}
+![](figures/T7_mc_organitzacio_light.svg)
 :::
 Organització interna d'una memòria cau: cada línia conté un bit de validesa, una etiqueta i un bloc de dades.
 :::
@@ -154,7 +179,7 @@ $$\text{word\_offset} = \text{offset} \div 4 = 2$$
 
 <!-- figura: descomposició dels 32 bits de l'adreça 0x100100F8 en num_bloc (28 bits) i offset (4 bits), i del offset en word_offset (2 bits) i byte dins el word (2 bits). Basada en la Figura 6.7 del PDF. Caption: "Descomposició dels
 bits d'una adreça de 32 bits en número de bloc i offset per a blocs de 16 bytes." -->
-::: {#fig-mc-descomposicio-bits}
+<!-- ::: {#fig-mc-descomposicio-bits}
 :::{.light-content}
 ![](figures/T7_mc_descomposicio_bits_light.svg)
 :::
@@ -162,6 +187,21 @@ bits d'una adreça de 32 bits en número de bloc i offset per a blocs de 16 byte
 ![](figures/T7_mc_descomposicio_bits_dark.svg)
 :::
 Descomposició dels bits d'una adreça de 32 bits en número de bloc i offset per a blocs de 16 bytes.
+:::
+::: -->
+::: {#fig-mc-organitzacio}
+:::{.content-visible when-format="html"}
+:::{.light-content}
+![](figures/T7_mc_organitzacio_light.svg)
+:::
+:::{.dark-content}
+![](figures/T7_mc_organitzacio_dark.svg)
+:::
+:::
+:::{.content-visible when-format="pdf"}
+![](figures/T7_mc_organitzacio_light.svg)
+:::
+Organització interna d'una memòria cau: cada línia conté un bit de validesa, una etiqueta i un bloc de dades.
 :::
 :::
 
@@ -189,12 +229,26 @@ L'operació d'una lectura il·lustra la mecànica bàsica de la MC. Suposem bloc
 2. La MC usa l'offset com a selector per extreure la dada sol·licitada del bloc guardat i la transfereix a la CPU.
 
 <!-- figura: diagrama de la MC en cas d'encert, mostrant CPU, MC i MP amb les etiquetes i el flux de la dada cap a la CPU. Basada en la Figura 6.9 del PDF. Caption: "Encert en un accés a l'adreça 0x100100F8: la dada es transfereix directament de la MC a la CPU." -->
-::: {#fig-mc-encert}
+<!-- ::: {#fig-mc-encert}
 :::{.light-content}
 ![](figures/T7_mc_encert_light.svg)
 :::
 :::{.dark-content}
 ![](figures/T7_mc_encert_dark.svg)
+:::
+Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament de la MC a la CPU.
+::: -->
+::: {#fig-mc-encert}
+:::{.content-visible when-format="html"}
+:::{.light-content}
+![](figures/T7_mc_encert_light.svg)
+:::
+:::{.dark-content}
+![](figures/T7_mc_encert_dark.svg)
+:::
+:::
+:::{.content-visible when-format="pdf"}
+![](figures/T7_mc_encert_light.svg)
 :::
 Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament de la MC a la CPU.
 :::
@@ -208,11 +262,16 @@ Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament
 
 <!-- figura: diagrama de la MC en cas de fallada, mostrant els quatre passos: detecció de fallada, petició del bloc a MP, escriptura a la MC i transferència de la dada a la CPU. Basada en les Figures 6.9–6.10 del PDF (miss). Caption: "Fallada en un accés a l'adreça 0x100100F8: el bloc es copia de la MP a la MC i la dada es transfereix a la CPU." -->
 ::: {#fig-mc-fallada}
+:::{.content-visible when-format="html"}
 :::{.light-content}
 ![](figures/T7_mc_fallada_light.svg)
 :::
 :::{.dark-content}
 ![](figures/T7_mc_fallada_dark.svg)
+:::
+:::
+:::{.content-visible when-format="pdf"}
+![](figures/T7_mc_fallada_light.svg)
 :::
 Fallada en un accés a l'adreça `0x100100F8`: el bloc es copia de la MP a la MC i la dada es transfereix a la CPU.
 :::
@@ -241,11 +300,16 @@ Com que tots els blocs que es mapegen a una mateixa línia comparteixen el matei
 
 <!-- figura: descomposició dels bits d'una adreça de 32 bits en etiqueta, índex i offset per a una memòria cau de correspondència directa amb N_L=8 línies (n_l=3) i blocs de B=16 bytes (b=4), aplicada a l'adreça 0x100100F8. Basada en les Figures 6.10–6.12 del PDF. Caption: "Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de correspondència directa." -->
 ::: {#fig-cd-descomposicio-bits}
+:::{.content-visible when-format="html"}
 :::{.light-content}
 ![](figures/T7_cd_descomposicio_bits_light.svg)
 :::
 :::{.dark-content}
 ![](figures/T7_cd_descomposicio_bits_dark.svg)
+:::
+:::
+:::{.content-visible when-format="pdf"}
+![](figures/T7_cd_descomposicio_bits_light.svg)
 :::
 Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de correspondència directa amb $N_L = 8$ línies i blocs de $B = 16$ bytes.
 :::
@@ -756,3 +820,8 @@ L'augment en el nombre de nuclis (*cores*) integrats en un mateix xip ha increme
 Cada nucli disposa de L1i, L1d i L2 privades, orientades a minimitzar la latència per a aquell nucli. La L3 compartida actua com a darrer filtre abans de la memòria principal, reduint el nombre d'accessos a la DRAM i, per tant, el tràfic sobre el bus de memòria.
 
 La incorporació de L3 respon a la mateixa lògica que va motivar L2: a mesura que el *gap* entre el processador i la memòria principal continua creixent, afegir un nivell intermedi addicional permet reduir la penalització efectiva i mantenir el $\text{CPI}_{penal}$ sota control.
+
+::: {#fig-i9-13900k-die}
+![](figures/Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg)
+Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 2022), amb els principals components etiquetats. S'hi distingeixen els nuclis de rendiment (*P-cores*) amb les seves memòries cau L2 privades, els nuclis d'eficiència (*E-cores*) agrupats en clústers, i la memòria cau L3 compartida que ocupa una fracció significativa de la superfície del xip. Font: Wikimedia Commons, CC BY-SA.
+:::
