@@ -16,7 +16,7 @@ El terme "rendiment" s'empra per a referir-se a dos conceptes diferents:
 * **Temps d'execució o de resposta** ($t_{exe}$)**:** Temps transcorregut, mesurat en segons ($[s]$), entre l'inici i el final d'una tasca. És el temps que experimenta l'usuari.
     * En un programa consisteix en la suma de diversos temps: Temps de CPU + Temps d'espera d'E/S + Temps encuat mentre s'executen altres programes (concurrència).
     * **A EC, es considera com a temps d'execució exclusivament el temps de CPU**, ja que és el que depèn més directament del disseny de la CPU.
-* **Productivitat** (***throughput***)**:** Nombre de tasques completades per unitat de temps. Usat sovint per quantificar el rendiment en centres de dades.
+* **Productivitat** (*throughput*, )**:** Nombre de tasques completades per unitat de temps. Usat sovint per quantificar el rendiment en centres de dades.
 
 ::: {#tip-rendiment-avio .callout-tip}
 Un avió A porta 100 passatgers a 1200 Km/h. Un avió B porta 500 passatgers a 1000 Km/h.
@@ -214,7 +214,22 @@ $$s_{max} = \lim_{s_{x} \to \infty} s = \frac{1}{1-P_{x}}$$ {#eq-amdahl}
 
 ## Potència
 
-L'any 1965 **Gordon Moore** (co-fundador d'Intel) va predir que la **densitat de transistors** al xip es podria **duplicar cada 2 anys** (a la pràctica, cada 18 mesos). Degut a la **miniaturització**, que permet reduir el temps de commutació dels transistors, la freqüència de rellotge ha anat creixent i en conseqüència la **dissipació de potència** ha crescut en paral·lel (figura 1.15 de [@patterson2020riscv]). L'energia consumida es converteix de la forma elèctrica a la forma de calor i cal dissipar-lo de manera forçada amb refrigeració per evitar que la temperatura creixi per sobre dels **llindars de tolerància** del circuit. Però ha arribat el punt que no són possibles dissipadors més potents en alguns computadors de cost limitat, i la corba històrica d'augment de freqüència comença a estancar-se. A això cal afegir-hi la gran demanda de dispositius mòbils que disposen d'un espai molt limitat per a dissipadors, i que a més necessiten un molt baix consum ja que s'alimenten per bateries.
+## Potència
+
+L'any 1965 **Gordon Moore** (co-fundador d'Intel) va predir que la **densitat de transistors** al xip es podria **duplicar cada 2 anys** (a la pràctica, durant moltes dècades va passar cada any i mig aproximadament). Aquesta predicció es coneix com a **Llei de Moore** (tot i que en realitat és un **principi**). Durant dècades, aquesta duplicació de transistors va alimentar dos grans motors de rendiment: l'augment de la **freqüència de rellotge** i el creixement de les **memòries cau** integrades al xip (vegeu el [Tema 7](T7.html)).
+
+La miniaturització que fa possible la Llei de Moore permet reduir el temps de commutació dels transistors i, per tant, augmentar la freqüència de rellotge. Però a mesura que la freqüència creixia, també ho feia la **dissipació de potència**, ja que l'energia consumida es converteix en calor i cal dissipar-la per evitar superar els **llindars
+de tolerància** del circuit. A això cal afegir-hi la gran demanda de **dispositius mòbils** —telèfons intel·ligents, tauletes, portàtils ultraprims— que disposen d'un espai molt limitat per a dissipadors i que necessiten un consum molt baix per preservar l'autonomia de la bateria. El resultat és que el creixement de la freqüència de rellotge es va estancar cap a principis dels anys 2000. L'explicació de fons la proporciona l'escalat de Dennard.
+
+::: {#wrn-dennard .callout-warning collapse=true}
+## L'Escalat de Dennard i la fi del creixement de freqüència
+
+Durant dècades, la reducció de la mida dels transistors no sols permetia encabir-ne més al xip (llei de Moore) sinó que, gràcies a l'**Escalat de Dennard** (Robert Dennard, IBM, 1974), també mantenia la **densitat de potència constant**: transistors més petits consumien proporcionalment menys energia, de manera que duplicar-ne la quantitat no disparava el consum total. Això permetia augmentar la freqüència de rellotge sense problemes tèrmics.
+
+Cap al 2003–2005, però, l'escalat de Dennard va deixar de funcionar. En arribar a dimensions de transistor molt petites, els **corrents paràsits** ($P_s$ a la @eq-potencia) ja no eren negligibles i creixien amb cada nova generació, tot i que la freqüència no augmentés. A partir d'aquí, augmentar la freqüència implicava disparar la potència total per sobre dels límits tèrmics tolerables. La freqüència dels processadors va tocar sostre als 3–4 GHz i s'hi ha mantingut des d'aleshores.
+
+La resposta de la indústria va ser el disseny **multicore**: en lloc d'un sol nucli molt ràpid, es van integrar múltiples nuclis de freqüència moderada en un mateix xip, mantenint la potència total sota control mentre es continuava augmentant el rendiment total (productivitat). Això explica que avui dia un portàtil d'oficina i un servidor de centre de dades tinguin freqüències de rellotge similars (3–4 GHz), però el servidor en tingui molts més nuclis.
+:::
 
 La potència ($P$) és l'energia dissipada per la circulació de corrents elèctrics en el circuit, i es pot dividir en dos tipus: la potència dinàmica ($P_{d}$), causada pels corrents de **càrrega** i **descàrrega** durant la **commutació de les portes**; i la potència estàtica ($P_{s}$), fruit dels **corrents paràsits** que circulen pels transistors independentment de si commuten o no:
 

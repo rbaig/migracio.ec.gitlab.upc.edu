@@ -4,6 +4,12 @@
 
 **ABI** *Application Binary Interface*
 
+**AMAT** *Average Memory Access Time*
+
+**ALU** *Arithmetic Logic Unit*
+
+**API** *Application Programming Interface*
+
 **BA** Bloc d'activació
 
 **AC** Arquitectura de computadors (assignatura del GEI)
@@ -14,6 +20,8 @@
 
 **CPU** *Central Processing Unit*
 
+**DRAM** *Dynamic Random Access Memory*
+
 **DVFS** *Dynamic voltage and frequency scaling*
 
 **EC** Estructura de computadors (assignatura del GEI)
@@ -22,31 +30,59 @@
 
 **FIB** Facultat d'informàtica de Barcelona
 
+**FIFO** *First In, First Out*
+
+**GDDR** *Graphics Double Data Rate*
+
 **GEI** Grau en Enginyeria Informàtica
 
 **GND** *Ground*
 
 **GPR** *General-Purpose Registers*
 
+**HBM** *High Bandwidth Memory*
+
 **IC** Introducció als computadors (assignatura del GEI)
+
+**IEEE** *Institute of Electrical and Electronics Engineers*
 
 **ISA** *Instruction Set Architecture*
 
+**L1** Memòria cau de primer nivell
+
+**L2** Memòria cau de segon nivell
+
+**L3** Memòria cau de tercer nivell
+
 **LIFO** *Last in, first out*
+
+**LRU** *Least Recently Used*
 
 **LSB** *Least Significant Byte*
 
-**MC** Memòria cau/cache
+**MC** Memòria cau
+
+**MP** Memòria principal
 
 **MV** Memòria virtual
 
+**NaN** *Not a Number*
+
 **NMOS** *n-channel metal–oxide–semiconductor*
+
+**NVMe** *Non-Volatile Memory Express*
+
+**OPT** Algorisme de reemplaçament òptim
 
 **PC** *Program counter*
 
 **PMOS** *p-channel metal–oxide–semiconductor*
 
 **PRO1** Programació I (assignatura del GEI)
+
+**RAM** *Random Access Memory*
+
+**RNE** *Round to Nearest Even*
 
 **ROM** *Read Only Memory*
 
@@ -56,6 +92,18 @@
 
 **RV32M** RISC-V *Multiply extensions*
 
+**SM** *Streaming Multiprocessor*
+
 **SO** Sistema operatiu
+
+**SRAM** *Static Random Access Memory*
+
+**SSD** *Solid-State Drive*
+
+**TAM** Temps d'accés mitjà
+
+**UI** *User Interface*
+
+**ULP** *Unit in the Last Place*
 
 **VLSI** *Very Large Scale Integration*

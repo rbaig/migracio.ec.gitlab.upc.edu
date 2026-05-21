@@ -139,22 +139,25 @@ h1, h2, h3, h4,
       - Taules vs Mermaid vs Figures (prioritat descendent)
         - Taula (màxima prioritat): quan el contingut és essencialment dades tabulars
         - Mermaid: diagrames simples (diagrames de blocs)
-        - SVG: quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats de cache, descomposició de bits)
+        - SVG: quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats de memòria cau, descomposició de bits)
       - Figures SVG
         - Fitxers: alguns `.svg` light i dark d'exemple
-        - Les generem totes un cop hi hagi tot el text a `.qmd`
-          - sempre una per una
-          - començant per la versió `ligth​`
+        - Les generem al final, un cop hi hagi tot el text a `.qmd`
+          - Sempre una per una
+          - Flux de treball:
+            - Claude proposta de la versió `ligth​` → Humà: retoc manual → Claude versió `dark`
           - Nom fitxers: segueix el patró que el dels exemples `T7_....svg`
           - Markdown d'integració: el mateix que a T4
-        - Ves deixant comentaris html amb la proposta de *caption* a on creguis que ha d'anar cada una 
+        - Deixa en format de comentaris html la descripció de la figura amb detall suficient perquè la pugui generar un altre xat (referència: `T7.qmd`)
         - No generis cap contingut fins que no hàgim acordat els continguts i l'estructura
           - Proposa la llista completa de SVGs resultant per validar-la
 - En finalitzar un tema, pràctica, etc.
-    - Revisió completa de la darrera versió del `.qmd`
-    - Revisió tècnica profunda
-    - Revisió lingüística profunda
-    - Generació dels markdown per millorar
+    - Revisa completa de la darrera versió del `.qmd`
+    - Revisa tècnica profunda
+    - Revisa lingüística profunda
+    - Genera el markdown de `sigles.md` actualitzat amb les sigles que són al `.qmd` d'aquest xat però que no són a `sigles.md`
+      - Fitxer: `sigles.md`
+    - Genera dels markdown per millorar
       - `contrib.qmd`
       - `CLAUDE.md`
     - Proposta de continguts i distribució del tema, pràctica, etc. si s'escau

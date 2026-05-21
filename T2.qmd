@@ -131,7 +131,7 @@ Un cop assentats els conceptes fonamentals amb RV32I, la transició a RV64 és r
 * El registre **x0** (també anomenat **zero**) està fixat per **maquinari** al valor 0 i, per tant, no es pot modificar.
 * **Espai d'adreces** de **32 bits**: $2^{32}$ adreces (**0x00000000**--**0xFFFFFFFF**); una adreça per **byte**; 4GB ($2^{32}$ bytes).
 * L'espai de memòria és **unificat** (instruccions i dades comparteixen el mateix espai d'adreces).
-* **Model *load/store*:** accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
+* **Model lectura/escritura** (*load/store*): accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
 * Nombre d'instruccions: **42**
 :::
 
@@ -219,7 +219,7 @@ A **EC**, s'estudia TODO
 ## Extensió F — Totes les instruccions
 L'extensió **F** afegeix **26 instruccions** de coma flotant de precisió simple, distribuïdes en aquests grups:
 
-* **Load/store:** `flw`, `fsw`.
+* **Lectura/escriptura:** `flw`, `fsw`.
 * **Aritmètica bàsica:** `fadd.s`, `fsub.s`, `fmul.s`, `fdiv.s`, `fsqrt.s`.
 * **Fusionades (*fused*):** `fmadd.s`, `fmsub.s`, `fnmadd.s`, `fnmsub.s`.
 * **Signe:** `fsgnj.s`, `fsgnjn.s`, `fsgnjx.s`.
@@ -1867,7 +1867,7 @@ Hi ha dues maneres bàsiques per recórrer els elements d'un vector amb un bucle
 
 #### Extracció d'invariants {#sec-extraccio-invariants}
 
-Un **invariant de bucle** és qualsevol valor que no depèn de la variable d'iteració i que, per tant, es pot calcular una sola vegada abans d'entrar al bucle. Calcular-lo dins el bucle és un error de rendiment: el processador el recomputaria innecessàriament a cada iteració.
+Un **invariant de bucle** és qualsevol valor que no depèn de la variable d'iteració i que, per tant, es pot calcular una sola vegada abans d'entrar al bucle. Calcular-lo dins el bucle és un error de rendiment perquè el processador el recalcularia innecessàriament a cada iteració.
 
 ::: {#imp-extraccio-invariants .callout-important}
 A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevol bucle, llevat que s'indiqui explícitament el contrari. És un prerequisit implícit de totes les optimitzacions de bucle que es veuran al @sec-optimitzacions-bucle.
@@ -1876,8 +1876,10 @@ A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevo
 #### Accés aleatori
 
 ::: {#cau-acces-aleatori-significat .callout-caution}
-L'accés aleatori **no implica atzar**, sinó la capacitat d'accedir directament a qualsevol element d'un vector o matriu (vegeu @sec-matrius-acces-aleatori) en temps constant $\mathcal{O}(1)$, independentment de la seva posició.
+L'accés aleatori **no implica atzar**[^comram], sinó la capacitat d'accedir directament a qualsevol element d'un vector o matriu (vegeu @sec-matrius-acces-aleatori) en temps constant $\mathcal{O}(1)$, independentment de la seva posició.
 :::
+
+[^comram]: És el mateix cas d'us que en la sigla RAM (*Random Access Memory*), que no significa memòria a l'atzar, sinó memòria que permet accés directe a qualsevol adreça.
 
 ::: {#tip-vector-acces-aleatori .callout-tip}
 ## Recorregut d'un vector per accés aleatori
@@ -1920,7 +1922,7 @@ while:
 fiwhile:
 ```
 
-L'adreça base `@V[0]` és un invariant i s'ha extret del bucle (`la t4, V`). La infraestructura de control del bucle ocupa **5 instruccions** per iteració (les marcades `[ctrl]`). Al @sec-optimitzacions-bucle es reduirà fins a **2** aplicant les optimitzacions tres optimitzacions, cadauna de les quals comportarà l'estalvi d'una instrucció.
+L'adreça base `@V[0]` és un invariant i s'ha extret del bucle (`la t4, V`). La infraestructura de control del bucle ocupa **5 instruccions** per iteració (les marcades `[ctrl]`). Al @sec-optimitzacions-bucle es reduirà fins a **2** aplicant les optimitzacions tres optimitzacions, cada una de les quals comportarà l'estalvi d'una instrucció.
 :::
 
 #### Accés seqüencial
