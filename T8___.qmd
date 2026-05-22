@@ -30,7 +30,7 @@ La **unitat de gestió de memòria** (***memory management unit*** o **MMU**) é
 
 Abans de la memòria virtual, quan la mida d'un programa superava la memòria física disponible, els programadors havien de gestionar manualment la càrrega i descàrrega de blocs de codi i dades entre la memòria i el disc, una tècnica coneguda com a *overlays*. La memòria virtual automatitza completament aquesta gestió, a càrrec del sistema operatiu i amb el suport del maquinari.
 
-En un sistema amb memòria virtual, el disc (o SSD) es converteix en un nivell addicional de la jerarquia de memòria, per sota de la memòria principal. De la mateixa manera que la memòria cau conté un subconjunt de les dades de la memòria principal, la memòria principal conté un subconjunt de les dades del disc. La totalitat de les dades d'un procés resideix sempre al disc; la memòria física n'emmagatzema només les parts que s'utilitzen activament.
+En un sistema amb memòria virtual, el disc (o SSD) es converteix en un nivell addicional de la jerarquia de memòria, per sota de la memòria principal. De la mateixa manera que la memòria cau conté un subconjunt de les dades de la memòria principal, la memòria principal conté un subconjunt de les dades del disc. La totalitat de les dades d'un procés resideix sempre al disc; la memòria física n'emmagatzema només les parts que s'estan utilitzant activament.
 
 | Nivell | Tecnologia | Temps d'accés típic |
 | :--- | :--- | :---: |
@@ -48,15 +48,15 @@ La memòria virtual gestiona la traducció d'adreces en blocs de mida fixa anome
 
 De manera anàloga, l'espai d'adreçament físic es divideix en blocs de la mateixa mida $T$, anomenats **marcs de pàgina** (*page frames*). Cada marc rep un **número de pàgina física** (*physical page number* o **PPN**).
 
-Un marc de pàgina és un contenidor: pot allotjar qualsevol pàgina lògica de qualsevol procés. El sistema operatiu decideix en quin marc es carrega cada pàgina en funció de l'espai disponible en cada moment, de manera completament associativa, com una memòria cau completament associativa (vegeu el [Tema 7](T7.html)).
+Un marc de pàgina és un contenidor: pot allotjar qualsevol pàgina lògica de qualsevol procés. El sistema operatiu decideix en quin marc es carrega cada pàgina en funció de l'espai disponible en cada moment, de manera completament associativa, de forma anàloga a una memòria cau completament associativa (vegeu el [Tema 7](T7.html)).
 
-Inicialment, totes les pàgines d'un procés resideixen al disc. Durant l'execució, el sistema operatiu les carrega a la memòria física a mesura que es necessiten. En un moment donat, la memòria física conté un subconjunt de les pàgines del procés; la resta romanen al disc.
+Inicialment, totes les pàgines d'un procés resideixen al disc. Durant l'execució, el sistema operatiu les va carregant a la memòria física a mesura que es necessiten. En un moment donat, la memòria física conté un subconjunt de les pàgines del procés; la resta romanen al disc.
 
 <!-- fig-mv-pagines-marcs: diagrama amb dos processos a l'esquerra (Procés 1 i Procés 2), cadascun amb les seves pàgines virtuals (VPN 0, VPN 1, ...) i a la dreta la memòria física amb els seus marcs (PPN 0, PPN 1, PPN 2, PPN 3). Fletxes mostren que VPN 0 de Procés 1 → PPN 1, VPN 0 de Procés 2 → PPN 0, VPN 1 de Procés 2 → PPN 2, i VPN 1 de Procés 1 apareix al disc (no carregat). Paleta: pàgines Procés 1 en blau, Procés 2 en verd, marcs físics en gris neutre, disc en groc. Caption: "Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física de manera completament associativa. Les pàgines que no s'estan usant romanen al disc." -->
 
 ### Traducció d'adreces: VPN, PPN i desplaçament {#sec-mv-traduccio}
 
-Com que $T$ és una potència de dos ($T = 2^t$), qualsevol adreça lògica es descompon naturalment en dos camps:
+Donat que $T$ és una potència de dos ($T = 2^t$), qualsevol adreça lògica es descompon naturalment en dos camps:
 
 - Els **$t$ bits de menor pes** indiquen la posició de la dada dins la pàgina: és el **desplaçament** (*page offset*).
 - Els **bits restants** identifiquen la pàgina: és el **VPN**.
@@ -84,7 +84,7 @@ Suposem que la pàgina VPN = `0x00001` està carregada al marc PPN = `0x2`. Vole
 
 ```
 Adreça lògica:  0000 0000 0000 0000 0001  1000 0000 0001
-                |←——————— VPN = 0x00001 ————————→||←— desplaçament = 0x801 —→|
+                |←——————— VPN = 0x00001 ————————→||←— offset = 0x801 —→|
 
 PPN = 0x2  →    10
 
@@ -104,7 +104,7 @@ La taula de pàgines s'indexa pel VPN: cada fila correspon a una pàgina virtual
 
 Cada PTE conté els camps següents:
 
-- **PPN** (*physical page number*): el número de marc de pàgina on es troba la pàgina, si és a la memòria física.
+- **PPN** (*physical page number*): el número del marc de pàgina on es troba la pàgina, si és a la memòria física.
 - **Bit P** (presència): val 1 si la pàgina és a la memòria física; val 0 si és al disc o si la pàgina no pertany a l'espai vàlid del procés.
 - **Bit D** (*dirty*): val 1 si la pàgina ha estat modificada des que es va carregar. Quan cal reemplaçar-la, només s'escriu al disc si D = 1.
 - **Bit E** (escriptura): indica si el procés té permís d'escriptura sobre aquesta pàgina. Si una instrucció intenta escriure en una pàgina amb E = 0, el sistema operatiu avorta l'execució.
@@ -136,7 +136,7 @@ Quan el sistema operatiu commuta d'un procés a un altre (**canvi de context**),
 ::: {#wrn-mv-multinivell .callout-warning collapse="true"}
 ## Taules de pàgines multinivell
 
-En un sistema de 32 bits amb pàgines de 4 KB, la taula de pàgines té $2^{20}$ entrades. Si cada entrada ocupa 4 bytes, la taula ocupa 4 MB per procés, tots a la memòria principal. En sistemes de 64 bits el problema s'aguditza: amb adreces de 48 bits significatius i pàgines de 4 KB, la taula tindria $2^{36}$ entrades, cosa inviable.
+En un sistema de 32 bits amb pàgines de 4 KB, la taula de pàgines té $2^{20}$ entrades. Si cada entrada ocupa 4 bytes, la taula ocupa 4 MB per procés, i cal mantenir-la íntegrament a la memòria principal. En sistemes de 64 bits el problema s'aguditza: amb adreces de 48 bits significatius i pàgines de 4 KB, la taula tindria $2^{36}$ entrades, cosa inviable.
 
 La solució és estructurar la taula de pàgines en **múltiples nivells**. En una taula de dos nivells, els bits del VPN es divideixen en dues parts: els bits superiors indexen una **taula de primer nivell** (o directori de pàgines), on cada entrada apunta a una **taula de segon nivell**. Cada taula de segon nivell conté les PTEs d'un subconjunt de l'espai lògic.
 
@@ -201,7 +201,7 @@ Després d'un encert, cal comprovar el bit V: si V = 0, la pàgina no és a la m
 
 Si el VPN no es troba al TLB, es produeix una **fallada de TLB** (*TLB miss*). Cal llegir la PTE corresponent de la taula de pàgines (a la memòria principal) i copiar-la a una entrada del TLB:
 
-- Si hi ha alguna entrada amb V = 0 (no inicialitzada, o amb la pàgina absent de memòria), s'hi escriu la nova entrada.
+- Si hi ha alguna entrada amb V = 0 (no inicialitzada o invàlida), s'hi escriu la nova entrada.
 - Si totes les entrades estan ocupades, cal reemplaçar-ne una seguint un algorisme de reemplaçament (LRU, aleatori, FIFO, etc.).
 
 Un cop copiada la PTE al TLB, es reintenta l'accés a memòria. Si el bit P de la PTE copiada val 0, el bit V de la nova entrada del TLB quedarà a 0 i l'accés reiterat provocarà una fallada de pàgina.
@@ -238,13 +238,13 @@ La @fig-mv-flux-traduccio resumeix totes les situacions possibles durant la trad
 <!-- fig-mv-flux-traduccio: diagrama de flux complet de la traducció d'una adreça. Punt d'entrada: "Cerca VPN al TLB". Primera decisió: "TLB hit?" → branca "sí" (TLB hit): "V=1?" → "sí": "Escriptura i D=0?" → "sí": actualitzar D al TLB i a la TP (escriptura immediata) → "PPN (finalitzar accés)"; → "no": "PPN (finalitzar accés)"; → "no" (V=0): fallada de pàgina → gestió SO → reexecutar instrucció. Branca "no" (TLB miss): "TLB ple?" → "no": copiar PTE → TLB (entrada lliure) → reintent; → "sí": reemplaçar entrada LRU → copiar PTE → reintent. La fallada de pàgina: "Marc lliure?" → "sí": carregar pàgina → actualitzar PTE → reexecutar; → "no": reemplaçar pàgina (LRU), "D=1?" → "sí": escriure pàgina al disc → carregar nova pàgina → actualitzar PTE → reexecutar; → "no": carregar nova pàgina → actualitzar PTE → reexecutar. Paleta: camí principal (encert) en verd, fallada de TLB en groc, fallada de pàgina en vermell. Caption: "Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual." -->
 
 ::: {#wrn-mv-tlb-shootdown .callout-warning collapse="true"}
-## *TLB shootdown* en sistemes multicore
+## TLB shootdown en sistemes multicore
 
 En un processador amb múltiples nuclis, cada nucli disposa del seu propi TLB. Quan el sistema operatiu modifica una PTE de la taula de pàgines d'un procés (per exemple, en reemplaçar una pàgina o revocar un permís d'escriptura), qualsevol nucli que tingui una còpia d'aquella entrada al seu TLB passa a tenir informació obsoleta.
 
 Per garantir la coherència, el sistema operatiu ha d'invalidar les entrades afectades als TLBs de tots els nuclis que puguin tenir-les. Això es fa enviant una interrupció especial (*inter-processor interrupt* o IPI) a cadascun dels nuclis implicats, forçant-los a invalidar l'entrada corresponent. Aquest procés s'anomena ***TLB shootdown***.
 
-El cost del *TLB shootdown* és significatiu: cada nucli afectat ha d'interrompre l'execució, processar la interrupció i invalidar l'entrada. En sistemes amb molts nuclis i processos que comparteixen memòria, el *TLB shootdown* pot convertir-se en un coll d'ampolla de rendiment rellevant, i és una de les raons per les quals la gestió eficient de la memòria virtual en sistemes multicore és un problema de recerca actiu.
+El cost del TLB shootdown és significatiu: cada nucli afectat ha d'interrompre l'execució, processar la interrupció i invalidar l'entrada. En sistemes amb molts nuclis i processos que comparteixen memòria, el TLB shootdown pot convertir-se en un coll d'ampolla de rendiment rellevant, i és una de les raons per les quals la gestió eficient de la memòria virtual en sistemes multicore és un problema de recerca actiu.
 :::
 
 ::: {#tip-mv-tlb-exemple .callout-tip}
@@ -275,7 +275,7 @@ Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = 3 és lliure), i q
 
 **Accés 1:** Escriptura a `0x00002A0B` → VPN = `0x00002`.
 
-Encert de TLB (V = 1). Com que és una escriptura i D = 0, s'aplica la política d'escriptura immediata descrita a la @sec-mv-tlb-bitd: D = 1 s'escriu simultàniament al TLB i a la TP. PPN = `0x02`. Adreça física: `0x02A0B`.
+Encert de TLB (V = 1). Com que és una escriptura i D = 0, s'aplica la política d'escriptura immediata (@sec-mv-tlb-bitd): D = 1 s'escriu simultàniament al TLB i a la TP. PPN = `0x02`. Adreça física: `0x02A0B`.
 
 **Accés 2:** Lectura a `0x00001F21` → VPN = `0x00001`.
 
@@ -323,7 +323,7 @@ A partir d'aquell moment, quan P2 accedeix a VPN = `0x00001` i P1 accedeix a VPN
 La compartició de pàgines té dues aplicacions principals:
 
 - **Comunicació entre processos:** dos processos poden intercanviar dades escrivint i llegint una pàgina compartida, sense necessitat de còpies.
-- **Biblioteques compartides:** si múltiples processos usen simultàniament el codi d'una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapejar-les (en mode sols lectura, E = 0) a l'espai lògic de cada procés, estalviant memòria física de manera significativa.
+- **Biblioteques compartides:** si múltiples processos usen simultàniament el codi d'una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapear-les (en mode sols lectura, E = 0) a l'espai lògic de cada procés, estalviant memòria física de manera significativa.
 
 ## Integració del TLB i la memòria cau {#sec-mv-integracio}
 
@@ -339,7 +339,7 @@ L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adre�
 
 ### Cache indexada virtualment {#sec-mv-cache-virtual}
 
-Per reduir la latència, una **cache indexada i etiquetada virtualment** (*VIVT, virtually indexed virtually tagged*) usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense accedir al TLB.
+Per reduire la latència, una **cache indexada i etiquetada virtualment** (*VIVT, virtually indexed virtually tagged*) usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense accedir al TLB.
 
 El problema és l'**aliasing**: si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física, poden tenir blocs diferents a la cache per a la mateixa dada. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, trencant la coherència.
 

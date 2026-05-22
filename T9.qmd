@@ -3,6 +3,186 @@ title: "Tema 9: Excepcions i interrupcions"
 number-sections: true
 ---
 
-## TODO
+<!-- # T9 Excepcions i interrupcions {#sec-t9} -->
 
-### TODO
+## Introducció {#sec-t9-introduccio}
+
+### Concepte i motivació {#sec-t9-introduccio-concepte}
+
+Durant l'execució normal d'un programa, el processador segueix un flux d'instruccions determinat per les instruccions de salt explícites (`beq`, `jal`, etc.). Les **excepcions** i les **interrupcions** són un mecanisme que permet alterar aquest flux de manera imprevista, sense que cap instrucció de salt ho hagi causat. La necessitat d'aquest mecanisme sorgeix de dues fonts ben diferenciades.
+
+D'una banda, durant l'execució d'una instrucció poden aparèixer condicions errònies o especials que el processador no pot resoldre per si sol: un desbordament aritmètic, un accés a una adreça de memòria no alineada o una instrucció amb un codi d'operació inexistent. En tots aquests casos, cal interrompre el programa i transferir el control a un codi del sistema operatiu (**SO**) que en faci el tractament adequat.
+
+De l'altra, els dispositius d'**entrada/sortida** (**E/S**) necessiten notificar al processador que han completat una operació o que requereixen atenció. Esperar activament que el dispositiu acabi —consultant-ne l'estat repetidament— desaprofita el processador. La solució és que el dispositiu avisi el processador quan estigui llest, i que el processador pugui interrompre temporalment el programa en execució per atendre'l.
+
+En tots dos casos, el mecanisme és el mateix: el processador interromp l'execució del programa, transfereix el control a una **rutina de servei d'excepcions** (**RSE**) del SO, i un cop feta la gestió, pot reprendre el programa interromput.
+
+::: {#cau-t9-terminologia .callout-caution}
+El terme **excepció** designa els esdeveniments causats per l'execució d'una instrucció (interns al processador). El terme **interrupció** designa els esdeveniments causats per dispositius externs. Tots dos usen el mateix mecanisme hardware, però difereixen en l'origen, el moment de detecció i, sovint, en el tractament.
+:::
+
+### Tipologia {#sec-t9-introduccio-tipologia}
+
+La taula següent classifica els principals tipus d'excepcions i interrupcions, indicant-ne l'origen, el moment en què el processador les detecta i l'acció que pren en acabar la RSE.
+
+| Tipus | Causa | Detecció | Acció en acabar la RSE |
+| :--- | :--- | :---: | :--- |
+| Desbordament aritmètic | Resultat fora de rang (`add`, `sub`) | Durant la instrucció | Continua a instrucció+4 o avorta |
+| Accés no alineat | Adreça no múltiple de la mida de dada | Durant la instrucció | Avorta |
+| Instrucció il·legal | Codi d'operació inexistent | Durant la instrucció | Avorta |
+| Fallada de pàgina | Pàgina absent de la memòria física | Durant la instrucció | Reexecuta la instrucció causant |
+| Fallada de TLB | Traducció absent del TLB | Durant la instrucció | Reexecuta la instrucció causant |
+| Crida al sistema (`ecall`) | Instrucció `ecall` explícita | Durant la instrucció | Continua a instrucció+4 |
+| Interrupció d'E/S | Senyal extern d'un dispositiu | En acabar la instrucció | Continua a instrucció+4 |
+: Tipologia d'excepcions i interrupcions {#tbl-t9-tipologia .striped}
+
+Cal destacar dues diferències clau entre excepcions i interrupcions que la taula reflecteix:
+
+- **Moment de detecció:** una excepció es detecta *durant* l'execució de la instrucció causant, que s'avorta sense escriure cap resultat ni incrementar el PC. Una interrupció, en canvi, es detecta *en acabar* la instrucció en curs, quan el PC ja s'ha incrementat.
+- **Acció en acabar la RSE:** en les excepcions que es poden resoldre (fallada de TLB, fallada de pàgina), cal *reexecutar* la instrucció causant; en les que no alteren l'estat del programa (crida al sistema, desbordament resolt per la RSE) cal *continuar* a la instrucció següent; en les irrecuperables, el programa s'*avorta*.
+
+## Suport hardware: registres de control i estat {#sec-t9-csr}
+
+### El model de privilegis de RISC-V {#sec-t9-csr-privilegis}
+
+RISC-V defineix tres **modes de privilegi**, que determinen quines instruccions pot executar el processador i a quines adreces de memòria pot accedir:
+
+| Mode | Nom | Ús habitual |
+| :---: | :--- | :--- |
+| M | *Machine* (màquina) | Firmware, arrencada, gestió d'excepcions de baix nivell |
+| S | *Supervisor* | Sistema operatiu (Linux, etc.) |
+| U | *User* (usuari) | Programes d'usuari |
+: Modes de privilegi de RISC-V {#tbl-t9-modes-privilegi .striped}
+
+El mode M és el de màxim privilegi i l'únic obligatori en qualsevol implementació RISC-V. El mode U és el de mínim privilegi. El mode S és opcional i s'usa en sistemes amb sistema operatiu complet.
+
+::: {#imp-t9-mode-ec .callout-important}
+A **EC** s'estudia el mecanisme d'excepcions en **mode M**, que és el més directe i el que implementen tots els processadors RISC-V. El mode S s'introdueix a @sec-t9-csr-modes i s'aplica al tractament de fallades de TLB a @sec-t9-tlb-modes.
+:::
+
+El mode en què opera el processador en cada moment es controla mitjançant uns registres especials anomenats **registres de control i estat** (***Control and Status Registers***, **CSR**). Aquests registres no formen part del banc de registres general (`x0`–`x31`) i només s'hi pot accedir amb instruccions específiques.
+
+::: {#nte-t9-csr-instruccions .callout-note}
+## RV32I ISA — Instruccions d'accés als CSR
+
+| Mnemònic | Operands | Operació | Nom |
+| :--- | :--- | :--- | :--- |
+| `csrr` | `rd, csr` | `rd ← csr` | *CSR read* (pseudoinstrucció) |
+| `csrw` | `csr, rs1` | `csr ← rs1` | *CSR write* (pseudoinstrucció) |
+| `csrrw` | `rd, csr, rs1` | `rd ← csr; csr ← rs1` | *CSR read/write* |
+| `csrrs` | `rd, csr, rs1` | `rd ← csr; csr ← csr OR rs1` | *CSR read and set bits* |
+| `csrrc` | `rd, csr, rs1` | `rd ← csr; csr ← csr AND NOT rs1` | *CSR read and clear bits* |
+: {tbl-colwidths="[15,20,40,25]" .striped}
+
+Les pseudoinstruccions `csrr` i `csrw` són les formes habituals per llegir i escriure un CSR sense modificar-ne l'altre operand. Les instruccions `csrrs` i `csrrc` permeten activar o desactivar bits individuals sense alterar la resta.
+
+Les instruccions d'accés als CSR són **privilegiades**: en mode U, intentar executar-les genera una excepció d'instrucció il·legal.
+:::
+
+### `mcause` — Codi de causa {#sec-t9-csr-mcause}
+
+Quan es produeix una excepció o interrupció, el hardware escriu automàticament al registre **`mcause`** un codi que n'identifica la causa. El bit de més pes (bit 31) indica si l'origen és una interrupció (bit 31 = 1) o una excepció (bit 31 = 0). Els 31 bits restants contenen el codi de causa.
+
+<!-- fig-t9-mcause: diagrama de camps del registre mcause: bit 31 (Interrupció) + bits 30:0 (Codi de causa). Format similar als diagrames de camps de registres de T8. -->
+
+La taula següent recull les causes més rellevants per a EC:
+
+| Bit 31 | Codi | Causa |
+| :---: | :---: | :--- |
+| 0 | 0 | Accés a instrucció mal alineat |
+| 0 | 1 | Error d'accés a instrucció |
+| 0 | 2 | Instrucció il·legal |
+| 0 | 3 | Punt de parada (`ebreak`) |
+| 0 | 4 | Lectura de dada mal alineada |
+| 0 | 5 | Error d'accés en lectura de dada |
+| 0 | 6 | Escriptura de dada mal alineada |
+| 0 | 7 | Error d'accés en escriptura de dada |
+| 0 | 8 | Crida al sistema des de mode U (`ecall`) |
+| 0 | 11 | Crida al sistema des de mode M (`ecall`) |
+| 0 | 12 | Fallada de pàgina en cerca d'instrucció |
+| 0 | 13 | Fallada de pàgina en lectura |
+| 0 | 15 | Fallada de pàgina en escriptura |
+| 1 | 3 | Interrupció de programari en mode M |
+| 1 | 7 | Interrupció de temporitzador en mode M |
+| 1 | 11 | Interrupció externa (E/S) en mode M |
+: Valors principals de `mcause` en RV32I {#tbl-t9-mcause .striped}
+
+### `mepc` — Adreça de retorn {#sec-t9-csr-mepc}
+
+El registre **`mepc`** (*Machine Exception Program Counter*) guarda l'adreça de la instrucció que el processador estava executant quan s'ha produït l'excepció o interrupció. La RSE usa aquest valor per saber on ha de retornar el control en acabar.
+
+El valor que el hardware hi escriu depèn del tipus d'esdeveniment:
+
+- **Excepció:** `mepc` apunta a la instrucció causant (la que s'ha interromput sense finalitzar). En casos on es vol continuar a la instrucció següent (per exemple, `ecall`), la pròpia RSE incrementa `mepc` en 4 abans de retornar.
+- **Interrupció:** `mepc` apunta a la instrucció que *hauria* executat el processador a continuació (la instrucció causant ja ha finalitzat i el PC ja s'ha incrementat).
+
+### `mstatus` — Estat global {#sec-t9-csr-mstatus}
+
+El registre **`mstatus`** conté els bits d'estat global del processador. Per al mecanisme d'excepcions, els camps rellevants són:
+
+<!-- fig-t9-mstatus: diagrama de camps del registre mstatus de 32 bits, destacant MIE (bit 3), MPIE (bit 7) i MPP (bits 12:11). -->
+
+- **`MIE`** (bit 3, *Machine Interrupt Enable*): permís global d'interrupcions. Si `MIE=1`, les interrupcions estan habilitades. Si `MIE=0`, totes les interrupcions queden inhibides. Les excepcions no es poden inhibir.
+- **`MPIE`** (bit 7, *Machine Previous Interrupt Enable*): guarda el valor de `MIE` en el moment en què s'ha produït l'excepció o interrupció. Permet restaurar-lo en retornar.
+- **`MPP`** (bits 12:11, *Machine Previous Privilege*): guarda el mode de privilegi anterior (M, S o U) per poder-lo restaurar en retornar amb `mret`.
+
+### `mtvec` — Vector d'excepcions {#sec-t9-csr-mtvec}
+
+El registre **`mtvec`** (*Machine Trap-Vector Base-Address Register*) conté l'adreça on el processador salta quan es produeix una excepció o interrupció. Té dos camps:
+
+<!-- fig-t9-mtvec: diagrama de camps de mtvec: bits 31:2 (BASE) i bits 1:0 (MODE). -->
+
+- **`BASE`** (bits 31:2): adreça base de la rutina o taula de vectors, alineada a 4 bytes.
+- **`MODE`** (bits 1:0): mode de funcionament.
+
+RISC-V defineix dos modes:
+
+| `MODE` | Nom | Comportament |
+| :---: | :--- | :--- |
+| 0 | Directe | Totes les excepcions i interrupcions salten a `BASE` |
+| 1 | Vectoritzat | Les interrupcions salten a `BASE + 4 × causa`; les excepcions sempre a `BASE` |
+: Modes de funcionament de `mtvec` {#tbl-t9-mtvec-modes .striped}
+
+En el **mode directe**, la RSE és responsable de llegir `mcause` i derivar el control a la rutina específica de cada causa. En el **mode vectoritzat**, el hardware calcula directament l'adreça de la rutina per a cada tipus d'interrupció, cosa que redueix la latència.
+
+::: {#imp-t9-mtvec-ec .callout-important}
+A **EC** s'usa sempre el **mode directe** (`MODE=0`): totes les excepcions i interrupcions salten a l'adreça `BASE`, i és la RSE qui consulta `mcause` per determinar-ne la causa.
+:::
+
+### `mip` / `mie` — Peticions i màscares d'interrupció {#sec-t9-csr-mip-mie}
+
+Els registres **`mip`** (*Machine Interrupt Pending*) i **`mie`** (*Machine Interrupt Enable*) gestionen les interrupcions bit a bit. Cada bit correspon a un tipus d'interrupció:
+
+<!-- fig-t9-mip-mie: diagrama dels registres mip i mie (32 bits), destacant els bits MEIP(11), MTIP(7) i MSIP(3) amb els seus noms. -->
+
+| Bit | Nom `mip` | Nom `mie` | Tipus d'interrupció |
+| :---: | :--- | :--- | :--- |
+| 11 | `MEIP` | `MEIE` | Externa (E/S) en mode M |
+| 7 | `MTIP` | `MTIE` | Temporitzador en mode M |
+| 3 | `MSIP` | `MSIE` | Programari en mode M |
+: Bits principals de `mip` i `mie` {#tbl-t9-mip-mie .striped}
+
+- **`mip`:** cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. És de **sols lectura** per al programari (el hardware l'actualitza).
+- **`mie`:** cada bit és una màscara independent que habilita o deshabilita les interrupcions d'un tipus concret. És de **lectura/escriptura**.
+
+Perquè una interrupció sigui atesa cal que es compleixin simultàniament tres condicions: `MIE=1` (permís global), el bit corresponent de `mie` val 1 (permís específic) i el bit corresponent de `mip` val 1 (petició pendent).
+
+::: {#cau-t9-mip-mie-combinat .callout-caution}
+`mip` i `mie` treballen conjuntament: `mip` indica *quines* peticions han arribat, i `mie` indica *quines* d'elles estan habilitades. El permís global `MIE` de `mstatus` les inhibeix totes alhora, independentment de `mie`.
+:::
+
+### Els registres equivalents en mode S {#sec-t9-csr-modes}
+
+Per al mode S, RISC-V defineix un conjunt de registres CSR paral·lel al de mode M, amb la lletra inicial `s` en lloc de `m`. La funció de cada registre és anàloga:
+
+| Registre mode M | Registre mode S | Funció |
+| :---: | :---: | :--- |
+| `mcause` | `scause` | Codi de causa de l'excepció o interrupció |
+| `mepc` | `sepc` | Adreça de retorn |
+| `mstatus` | `sstatus` | Estat global (subconjunt dels bits de `mstatus`) |
+| `mtvec` | `stvec` | Adreça de la rutina de servei |
+| `mip` | `sip` | Peticions d'interrupció pendents |
+| `mie` | `sie` | Màscares d'interrupció |
+: Registres CSR de mode M i mode S {#tbl-t9-csr-modes .striped}
+
+Quan el processador opera en mode S (per exemple, executant el nucli de Linux), les excepcions i interrupcions delegades pel mode M es gestionen amb els registres `s*`. La delegació s'especifica als registres `medeleg` (excepcions) i `mideleg` (interrupcions), que el firmware configura durant l'arrencada.

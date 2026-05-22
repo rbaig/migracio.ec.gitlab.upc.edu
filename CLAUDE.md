@@ -132,7 +132,11 @@ h1, h2, h3, h4,
       - Fitxers: `TODO.pdf`, `T2.qmd`, `T3.qmd`, ... `/riscv/` comprimit
       - Digues si tens tota la informació que necessites
       - Fes una proposta de continguts i estructura (seccions, subseccions, callouts, etc.)
-      - Sigues sempre tan propositiu com vulguis. Per a canvis importants, demana'm sempre la validació.
+        - Estructura:
+         - No és obligatori seguir l'estructura del PDF. Preval sempre el criteri pedegògic, rigorositat i acutalitat tecnològica
+          - Sí que cal incorporar tot el contingut rellevant del PDF. No en pot quedar cap d'exclòs.
+          - Sigues honest: Digues si creus que cal reestructurar el contingut i la distribució. Per exemple, per eliminar continguts obsolets o per incorporar-ne d'actuals.
+      - Sigues sempre propositiu. Per a canvis importants, demana'm sempre la validació.
       - No generis cap contingut fins que no hàgim acordat els continguts i l'estructura
     - Tercer prompt:
       - Confirmat totalment. Tu marques el ritme: per seccions, subseccions, etc. segons les teves necessitats. Si necessites cap ordre o tens cap dubte, para i pregunta-m'ho.
@@ -149,6 +153,7 @@ h1, h2, h3, h4,
           - Nom fitxers: segueix el patró que el dels exemples `T7_....svg`
           - Markdown d'integració: el mateix que a T4
         - Deixa en format de comentaris html la descripció de la figura amb detall suficient perquè la pugui generar un altre xat (referència: `T7.qmd`)
+        - Al cos del text afegeixi les referències que calgui a figures `@ref`, deixant les referències pendents de resolució fins que generem els SVG 
         - No generis cap contingut fins que no hàgim acordat els continguts i l'estructura
           - Proposa la llista completa de SVGs resultant per validar-la
 - En finalitzar un tema, pràctica, etc.
@@ -160,27 +165,22 @@ h1, h2, h3, h4,
     - Genera dels markdown per millorar
       - `contrib.qmd`
       - `CLAUDE.md`
-    - Proposta de continguts i distribució del tema, pràctica, etc. si s'escau
+    - Elaboració de missatge per al xat nou a on es tractarà el tema següent
 
 ## Planificació i progress
 
 1. Tota la teoria (T1--19)
-1.1 Temes preparats per a revisió externa:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1)
-1.2 Temes WiP: `T7.qmd`
-* Estructura proposada pel xat de T5 (només és una proposta):
-```
-T7: Memòria cau
-── Motivació i principi de localitat
-── Estructura d'una memòria cau
-   ├── Mida de bloc, índex, etiqueta
-   ├── Correspondència directa
-   ├── N-way set associative
-   └── Totalment associativa
-── Polítiques de reemplaçament (LRU, aleatòria)
-── Polítiques d'escriptura (write-through, write-back)
-── Rendiment: taxa d'encerts i penalització
-── Memòria cau a RISC-V (si escau)
-```
+1.1 Temes preparats per a revisió externa de continguts:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1), `T7.qmd`
+1.2 WiP: `T8.qmd`
+fig-mv-espais — espais d'adreçament lògic vs. físic
+fig-mv-pagines-marcs — pàgines i marcs de pàgina
+fig-mv-taula-pagines — estructura de la taula de pàgines
+fig-mv-tlb-estructura — TLB vs. taula de pàgines
+fig-mv-flux-traduccio — flux complet de traducció (diagrama de flux)
+fig-mv-comparticio — compartició de pàgines entre processos
+fig-mv-pipt — cache PIPT (diagrama de blocs)
+fig-mv-vipt — cache VIPT (diagrama de blocs paral·lel)
+1.3 SiP: migrant text
 2. Laboratori
 3. Problemes
 4. Solucionari

@@ -62,6 +62,8 @@
 
 **MC** Memòria cau
 
+**MMU** *Memory Management Unit*
+
 **MP** Memòria principal
 
 **MV** Memòria virtual
@@ -76,9 +78,15 @@
 
 **PC** *Program counter*
 
+**PIPT** *Physically Indexed Physically Tagged*
+
 **PMOS** *p-channel metal–oxide–semiconductor*
 
+**PPN** *Physical Page Number*
+
 **PRO1** Programació I (assignatura del GEI)
+
+**PTE** *Page Table Entry*
 
 **RAM** *Random Access Memory*
 
@@ -102,8 +110,16 @@
 
 **TAM** Temps d'accés mitjà
 
+**TLB** *Translation-Lookaside Buffer*
+
 **UI** *User Interface*
 
 **ULP** *Unit in the Last Place*
 
+**VIPT** *Virtually Indexed Physically Tagged*
+
+**VIVT** *Virtually Indexed Virtually Tagged*
+
 **VLSI** *Very Large Scale Integration*
+
+**VPN** *Virtual Page Number*
