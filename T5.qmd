@@ -212,7 +212,7 @@ El **rang** de la representació és l'interval $[-v_{\max},\ +v_{\max}]$, on $v
 
 $$v_{\max} = (2 - 2^{-23}) \times 2^{127} \approx 3{,}4 \times 10^{38}$$
 
-Si el resultat d'una operació té un exponent $e > 127$, no és representable i es produeix una excepció d'***overflow***.
+Si el resultat d'una operació té un exponent $e > 127$, no és representable i es produeix una excepció de sobreeiximent (*overflow*).
 
 La **precisió** d'una representació és el seu nombre de bits significatius. En simple precisió, la mantissa normalitzada té 24 bits significatius (23 bits de fracció emmagatzemats més el bit ocult), de manera que la precisió és de 24 bits.
 
@@ -285,7 +285,7 @@ Els formats normalitzats no poden representar el zero, ja que el bit ocult impos
 
 #### Infinit
 
-L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expressió $1\,/\,(1 + 100/x)$ per a valors de $x$ pròxims a zero: sense infinit, el càlcul $100/x$ produiria una excepció d'*overflow* que avortaria el programa, tot i que el resultat final de l'expressió convergeix a zero. Amb infinit, la seqüència d'operacions és $100/x = \pm\infty$, $1 + \infty = \infty$, $1/\infty = 0$, i el programa continua sense excepcions.
+L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expressió $1\,/\,(1 + 100/x)$ per a valors de $x$ pròxims a zero: sense infinit, el càlcul $100/x$ produiria una excepció de sobreeiximent que avortaria el programa, tot i que el resultat final de l'expressió convergeix a zero. Amb infinit, la seqüència d'operacions és $100/x = \pm\infty$, $1 + \infty = \infty$, $1/\infty = 0$, i el programa continua sense excepcions.
 
 L'infinit es codifica amb tots els bits d'exponent a 1 i tots els de fracció a zero. S'apliquen regles aritmètiques senzilles: $1/0 = \infty$, $1/\infty = 0$, $x + \infty = \infty$, etc.
 
@@ -382,7 +382,7 @@ L'algorisme de suma i resta en coma flotant segueix cinc passos:
 
 1. **Igualar els exponents** al major dels dos operands, desplaçant a la dreta la mantissa del de menor magnitud.
 2. **Sumar o restar les mantisses** segons els signes dels operands.
-3. **Normalitzar** el resultat (desplaçar la mantissa fins que la part entera sigui 1, ajustant l'exponent en conseqüència). Comprovar *overflow*/*underflow*.
+3. **Normalitzar** el resultat (desplaçar la mantissa fins que la part entera sigui 1, ajustant l'exponent en conseqüència). Cal comprovar sobreeiximent/*underflow*.
 4. **Arrodonir** la mantissa a $p$ bits.
 5. **Codificar** signe, exponent i fracció.
 
@@ -468,7 +468,7 @@ L'algorisme de multiplicació i divisió és més simple que el de suma i resta 
 1. **Sumar els exponents** (multiplicació) o **restar-los** (divisió).
 2. **Multiplicar o dividir les mantisses**.
 3. **Determinar el signe**: negatiu si els operands tenen signes diferents.
-4. **Normalitzar** el resultat. Comprovar *overflow*/*underflow*.
+4. **Normalitzar** el resultat. cal comprovar sobreeiximent/*underflow*.
 5. **Arrodonir** la mantissa a $p$ bits.
 6. **Codificar** signe, exponent i fracció.
 
@@ -623,7 +623,7 @@ A més dels registres `f0`–`f31`, l'extensió F afegeix el registre de control
 | :---: | :---: | :--- |
 | `4` | `NV` | Operació invàlida ($\sqrt{-1}$, $0/0$, $\infty - \infty$…) |
 | `3` | `DZ` | Divisió per zero |
-| `2` | `OF` | *Overflow* |
+| `2` | `OF` | Sobreeiximent |
 | `1` | `UF` | *Underflow* |
 | `0` | `NX` | Resultat inexacte (arrodoniment) |
 : {tbl-colwidths="[15,15,70]" .striped}

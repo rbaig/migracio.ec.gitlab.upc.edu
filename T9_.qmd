@@ -49,7 +49,7 @@ Cal destacar dues diferències clau entre excepcions i interrupcions que la taul
     - En les **excepcions** que:
         - **es poden resoldre**, (fallada de TLB, fallada de pàgina) cal **reexecutar** la instrucció causant.
         - **no alteren l'estat del programa**, (crida al sistema) cal **continuar** a la instrucció següent.
-        - Són **irrecuperables**: el programa s'*avorta*.
+        - Són **irrecuperables**, el programa s'*avorta*.
     - En les **interrupcions**, el programa sempre es reprèn a la instrucció següent.
 
 ## Suport hardware: registres de control i estat {#sec-csr}
@@ -157,7 +157,6 @@ El valor que el hardware hi escriu depèn del tipus d'esdeveniment.
 
 ::: {#nte-mepc .callout-note}
 ## RV32I ISA — `mepc`
-<!-- fig-mepc: registre mepc de 32 bits (WARL). -->
 <!-- https://docs.riscv.org/reference/isa/priv/_images/diag-4f8212aedadd4ccdd1c08f7cb4985be93d1a2102.svg -->
 :::{.light-content}
 ![](figures/T9_mepc_light.svg)
@@ -214,7 +213,7 @@ RISC-V defineix dos modes:
 : {tbl-colwidths="[5,5,40]" .striped}
 :::
 
-En el **mode directe**, la RSE és responsable de llegir `mcause` i derivar el control a la rutina específica de cada causa. En el **mode vectoritzat**, el hardware calcula directament l'adreça de la rutina per a cada tipus d'interrupció, cosa que estalvia el temps de llegir `mcause` i saltar a la rutina corresponent.
+En el **mode directe**, la RSE és responsable de llegir `mcause` i derivar el control a la rutina específica de cada causa. En el **mode vectoritzat**, el hardware calcula directament l'adreça de la rutina per a cada tipus d'interrupció, cosa que redueix la cosa que estalvia el temps de llegir mcause i saltar a la rutina corresponent.
 
 ::: {#imp-mtvec-ec .callout-important}
 A **EC** s'usa sempre el **mode directe** (`MODE=0`): totes les excepcions i interrupcions salten a l'adreça `BASE`, i és la RSE qui consulta `mcause` per determinar-ne la causa.
@@ -249,12 +248,8 @@ https://docs.riscv.org/reference/isa/priv/_images/diag-a13587a597b21dd19c8aea2b0
 | Bit | Nom `mip` | Nom `mie` | Tipus d'interrupció |
 | :---: | :--- | :--- | :--- |
 | 11 | `MEIP` | `MEIE` | Externa (E/S) en mode M |
-| 9 | `SEIP` | `SEIE` | Externa (E/S) en mode S |
 | 7 | `MTIP` | `MTIE` | Temporitzador en mode M |
-| 5 | `STIP` | `STIE` | Temporitzador en mode S |
 | 3 | `MSIP` | `MSIE` | Programari en mode M |
-| 1 | `SSIP` | `SSIE` | Programari en mode S |
-| 13 | `LCOFIP` | `LCOFIE` | Desbordament de comptador de rendiment |
 : {.striped}
 
 - **`mip`:** cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. És de **sols lectura** per al programari (el hardware l'actualitza).
@@ -311,8 +306,8 @@ Les accions 1–5 les executa el **hardware** de forma atòmica, sense intervenc
 Tot i que el flux hardware és el mateix, hi ha dues diferències importants segons el tipus d'esdeveniment:
 
 - **Moment de detecció:**
-    - En una **excepció**, la instrucció causant s'**avorta** en mig de l'execució: no escriu cap resultat, no accedeix a memòria i el PC no s'incrementa. El valor guardat a `mepc` és l'adreça d'aquesta instrucció (vegeu @sec-csr-mepc).
-    - En una **interrupció**, el processador no la comprova fins que la instrucció en curs ha **finalitzat** completament i el PC ja s'ha incrementat. El valor guardat a `mepc` és l'adreça de la instrucció que *hauria* executat a continuació (vegeu @sec-csr-mepc).
+    - En una **excepció**, la instrucció causant s'**avorta** en mig de l'execució: no escriu cap resultat, no accedeix a memòria i el PC no s'incrementa. El valor guardat a `mepc` és l'adreça d'aquesta instrucció.
+    - En una **interrupció**, el processador no la comprova fins que la instrucció en curs ha **finalitzat** completament i el PC ja s'ha incrementat. El valor guardat a `mepc` és l'adreça de la instrucció que *hauria* executat a continuació.
 
 - **Escriptura a `mtval`:** en algunes excepcions, el hardware escriu informació addicional al registre **`mtval`** (*Machine Trap Value*) per ajudar la RSE en el tractament: per exemple, l'adreça que ha causat un accés no alineat, o la instrucció il·legal que ha causat l'excepció. En les interrupcions, `mtval` s'escriu a zero.
 
@@ -328,6 +323,10 @@ Aquesta propietat s'anomena **excepcions precises** (*precise exceptions*) i és
 
 Les interrupcions, en canvi, es comproven sempre entre instruccions (mai a mig d'una), cosa que simplifica el tractament en el pipeline.
 :::
+
+- **Moment de detecció:**
+    - En una **excepció**, la instrucció causant s'**avorta** en mig de l'execució: no escriu cap resultat, no accedeix a memòria i el PC no s'incrementa. El valor guardat a `mepc` és l'adreça d'aquesta instrucció (vegeu @sec-csr-mepc).
+    - En una **interrupció**, el processador no la comprova fins que la instrucció en curs ha **finalitzat** completament i el PC ja s'ha incrementat. El valor guardat a `mepc` és l'adreça de la instrucció que *hauria* executat a continuació (vegeu @sec-csr-mepc).
 
 ## La rutina de servei d'excepcions {#sec-rse}
 
@@ -393,8 +392,8 @@ El codi següent mostra una RSE mínima que salva tots els registres, identifica
 .section .text.trap, "ax"
 .align 2
 rse:
-    # Reservar espai a la pila per a 30 registres (30 × 4 = 120 bytes; s'ometen x0 i sp)
-    addi    sp, sp, -120
+    # Reservar espai a la pila per a tots els registres (31 × 4 bytes)
+    addi    sp, sp, -124
 
     # Salvar tots els registres generals (excepte x0, que és sempre 0)
     sw      ra,   0(sp)
@@ -473,13 +472,13 @@ rse:
     lw      tp, 116(sp)
 
     # Alliberar la pila
-    addi    sp, sp, 120
+    addi    sp, sp, 124
 
     # Retornar al programa: MIE←MPIE, mode←MPP, PC←mepc
     mret
 ```
 
-El *dispatcher* (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Consulta `mcause` per cridar el *handler* específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
+El *dispatcher* (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Consulta `mcause` per cridar el *handler* específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc+4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
 ::: {#wrn-rse-pila .callout-warning collapse=true}
 ## Aprofundiment: la pila de la RSE
@@ -693,7 +692,7 @@ A més, pot succeir que un dispositiu hagi desactivat el senyal de petició aban
 
 Com s'ha vist al [Tema 8](T8.html), el **TLB** (*Translation Lookaside Buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan el processador accedeix a una adreça virtual per a la qual el TLB no conté la traducció corresponent, es produeix una **fallada de TLB** (*TLB miss*).
 
-A diferència de les fallades de memòria cau, que es resolen per hardware de forma transparent, les fallades de TLB en RISC-V es gestionen per **programari**: la instrucció que ha causat la fallada s'interromp, s'executa una RSE que actualitza la taula de pàgines i invalida l'entrada del TLB, i finalment la instrucció es **reexecuta**.
+A diferència de les fallades de memòria cau, que es resolen per hardware de forma transparent, les fallades de TLB en RISC-V es gestionen per **programari**: la instrucció que ha causat la fallada s'interromp, s'executa una RSE que copia la traducció de la taula de pàgines al TLB, i finalment la instrucció es **reexecuta**.
 
 ::: {#cau-tlb-miss-excepcio .callout-caution}
 Una fallada de TLB és una excepció com qualsevol altra: la instrucció causant s'avorta sense escriure cap resultat, `mepc` apunta a aquesta instrucció, i la RSE ha de reexecutar-la en acabar (sense incrementar `mepc`).
@@ -703,7 +702,7 @@ Una fallada de TLB és una excepció com qualsevol altra: la instrucció causant
 
 El flux d'una fallada de TLB segueix exactament el mecanisme general de @sec-flux-hardware, amb una particularitat: el codi de `mcause` no distingeix entre fallada de TLB i fallada de pàgina (tots dos usen els codis 12, 13 o 15 segons si és una cerca d'instrucció, una lectura o una escriptura). La distinció la fa la RSE per programari, consultant la taula de pàgines:
 
-- Si la traducció **existeix** a la taula de pàgines (la pàgina és present a memòria física): és una **fallada de TLB**. La RSE invalida l'entrada del TLB corresponent (via `sfence.vma`) perquè el hardware en faci el *page table walk* en la reexecució.
+- Si la traducció **existeix** a la taula de pàgines (la pàgina és present a memòria física): és una **fallada de TLB**. La RSE copia la traducció al TLB i reexecuta la instrucció.
 - Si la traducció **no existeix** o el bit de presència V val 0: és una **fallada de pàgina**. La RSE ha de copiar la pàgina del disc a memòria física, actualitzar la taula de pàgines i el TLB, i reexecutar la instrucció.
 
 En tots dos casos, `mepc` no s'incrementa: la instrucció causant es reexecuta, i aquesta vegada el TLB conté la traducció i l'execució continua normalment.
@@ -730,7 +729,7 @@ El registre `satp` té el format següent en RV32:
 
 ::: {#nte-satp .callout-note}
 ## RV32I ISA — `satp`
-<!-- fig-satp: diagrama de camps de satp (RV32 Sv32): bit 31 (MODE: 0=bare, 1=Sv32), bits 30:22 (ASID: identificador d'espai d'adreces, 9 bits), bits 21:0 (PPN: número de pàgina física de la taula de pàgines de primer nivell, 22 bits). -->
+<!-- fig-satp: diagrama de camps de satp (RV32): bit 31 (MODE: 0=bare, 1=Sv32), bits 21:0 (PPN: adreça física de la taula de pàgines de primer nivell). -->
 <!-- https://docs.riscv.org/reference/isa/priv/_images/diag-cf2342eda91ed518cf259a8b38fa84ecda4ac327.svg -->
 :::{.light-content}
 ![](figures/T9_satp_light.svg)
@@ -760,17 +759,15 @@ tlb_miss_handler:
     # stval conté l'adreça virtual que ha causat la fallada
     csrr    t0, stval               # t0 = adreça virtual
 
-    # Obtenir l'adreça física de la taula de pàgines des de satp (Sv32)
+    # Obtenir el PPN de la taula de pàgines des de satp
     csrr    t1, satp                # t1 = satp
-    andi    t1, t1, 0x3FFFFF        # t1 = PPN (bits 21:0, màscara ASID i MODE)
     slli    t1, t1, 12              # t1 = PPN << 12 = adreça física taula pàgines
 
-    # Calcular l'índex a la taula de pàgines de primer nivell (VPN[1] = bits 31:22)
-    # Nota: Sv32 té dos nivells; aquest exemple simplifica a un sol nivell
-    srli    t2, t0, 22              # t2 = VPN[1] (bits 31:22)
-    andi    t2, t2, 0x3FF           # t2 = índex (10 bits)
+    # Calcular l'índex a la taula de pàgines (VPN = bits 31:12)
+    srli    t2, t0, 12              # t2 = VPN
+    andi    t2, t2, 0x3FF           # t2 = índex dins la taula (bits 9:0)
     slli    t2, t2, 2               # t2 = offset en bytes (× 4)
-    add     t1, t1, t2              # t1 = adreça de l'entrada PTE de primer nivell
+    add     t1, t1, t2              # t1 = adreça de l'entrada PTE
 
     # Llegir l'entrada de la taula de pàgines (PTE)
     lw      t3, 0(t1)               # t3 = PTE
@@ -792,7 +789,7 @@ fallada_pagina:
 
 El bit V (*Valid*) de cada entrada de la taula de pàgines indica si la pàgina és present a la memòria física:
 
-- **V = 1:** la pàgina és present. La fallada de TLB es resol invalidant l'entrada obsoleta del TLB (via `sfence.vma`); el hardware farà el *page table walk* en la reexecució de la instrucció causant.
+- **V = 1:** la pàgina és present. La fallada de TLB es resol copiant la traducció al TLB (via `sfence.vma`) i reexecutant la instrucció causant.
 - **V = 0:** la pàgina no és present (*fallada de pàgina*). La RSE ha d'iniciar una operació de lectura del disc per copiar la pàgina a un marc lliure de memòria física, actualitzar la taula de pàgines (V←1, PPN←marc assignat) i invalidar el TLB. Quan tot això s'ha completat, la instrucció causant es reexecuta.
 
 ::: {#cau-tlb-reexecucio .callout-caution}

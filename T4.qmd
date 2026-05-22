@@ -7,54 +7,54 @@ number-sections: true
 
 El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$ (@eq-rang-ca2). Es produeix **sobreeiximent** (***overflow***) en una operació quan el resultat exacte no pertany a aquest rang; en aquest cas, el resultat calculat amb $n$ bits no és correcte.
 
-### Condicions d'overflow
+### Condicions d'sobreeiximent
 
-Per a la **suma** $s = a + b$, es produeix overflow **si i només si els dos operands són del mateix signe i el resultat és de signe diferent**.
+Per a la **suma** $s = a + b$, es produeix sobreeiximent **si i només si els dos operands són del mateix signe i el resultat és de signe diferent**.
 
-Per a la **diferència** $d = a - b$, es produeix overflow **si i només si** la diferència és del mateix signe que el subtraend $b$ però de signe diferent que el minuend $a$**.
+Per a la **diferència** $d = a - b$, es produeix sobreeiximent **si i només si** la diferència és del mateix signe que el subtraend $b$ però de signe diferent que el minuend $a$**.
 
-::: {#wrn-overflow-demostracio .callout-warning collapse=true}
-## Demostració de les condicions d'overflow en Ca2
+::: {#wrn-sobreeiximent-demostracio .callout-warning collapse=true}
+## Demostració de les condicions d'sobreeiximent en Ca2
 
 Considerem la suma exacta $s = a + b$, on $a$ i $b$ estan representats per les cadenes de bits $A = A_{n-1}\ldots A_0$ i $B = B_{n-1}\ldots B_0$. La suma exacta sempre es pot representar amb $n+1$ bits com $S = S_n\,S_{n-1}\ldots S_0$.
 
 **Cas 1 — Signes oposats:** si $a < 0$ i $b \geq 0$, llavors $a \leq a+b < b$, de manera que $s$ sempre és representable amb $n$ bits.
-No hi ha overflow.
+No hi ha sobreeiximent.
 
-**Cas 2 — Mateix signe:** la suma exacta ha de ser del mateix signe que els operands, de manera que $S_n = A_{n-1} = B_{n-1}$. La cadena truncada $S' = S_{n-1}\ldots S_0$ és la representació correcta de $s$ si i només si $S_{n-1} = S_n$, és a dir, si $S_{n-1} = A_{n-1} = B_{n-1}$. Si $S_{n-1} \neq A_{n-1}$, el resultat truncat és incorrecte: hi ha overflow.
+**Cas 2 — Mateix signe:** la suma exacta ha de ser del mateix signe que els operands, de manera que $S_n = A_{n-1} = B_{n-1}$. La cadena truncada $S' = S_{n-1}\ldots S_0$ és la representació correcta de $s$ si i només si $S_{n-1} = S_n$, és a dir, si $S_{n-1} = A_{n-1} = B_{n-1}$. Si $S_{n-1} \neq A_{n-1}$, el resultat truncat és incorrecte: hi ha sobreeiximent.
 
 Per a la diferència $d = a - b$, es pot aplicar la mateixa regla a l'expressió $a = d + b$.
 :::
 
-### Detecció de l'overflow per maquinari
+### Detecció del sobreeiximent per maquinari
 
-En un sumador amb propagació de *carry* de $n$ bits, es produeix overflow quan el *carry* d'entrada al bit de més pes difereix del *carry* de sortida:
+En un sumador amb propagació de *carry* de $n$ bits, es produeix sobreeiximent quan el *carry* d'entrada al bit de més pes difereix del *carry* de sortida:
 
 $$
 v = c_{n-1} \oplus c_n
-$$ {#eq-overflow-hardware}
+$$ {#eq-sobreeiximent-hardware}
 
-::: {#wrn-overflow-hardware .callout-warning collapse=true}
-## Detecció d'overflow per maquinari: el sumador amb propagació de l'arrossegament
+::: {#wrn-sobreeiximent-maquinari .callout-warning collapse=true}
+## Detecció d'sobreeiximent per maquinari: el sumador amb propagació de l'arrossegament
 
 Un sumador de $n$ bits es construeix amb una cadena de $n$ **sumadors complets** (*full-adders*). Cada sumador complet rep el bit $a_i$, el bit $b_i$ i el bit d'arrossegament d'entrada (*carry-in*) $c_i$, i produeix el bit de suma $s_i = a_i \oplus b_i \oplus c_i$ i el bit d'arrossegament de sortida (*carry-out*) $c_{i+1} = (a_i \oplus b_i) \land c_i \lor a_i \land b_i$.
 
-Al darrer sumador complet (bit de més pes), el *carry-in* és $c_{n-1}$ i el *carry-out* és $c_n$. L'overflow es detecta amb una sola porta lògica
+Al darrer sumador complet (bit de més pes), el *carry-in* és $c_{n-1}$ i el *carry-out* és $c_n$. El sobreeiximent es detecta amb una sola porta lògica
 afegida al darrer sumador: $v = c_{n-1} \oplus c_n$.
 :::
 
-### Detecció de l'overflow per programari {#sec-overflow-programari}
+### Detecció del sobreeiximent per programari {#sec-sobreeiximent-programari}
 
-Donada la suma $s = a + b$ d'enters de 32 bits, la condició d'overflow és:
+Donada la suma $s = a + b$ d'enters de 32 bits, la condició d'sobreeiximent és:
 
 $$
 v = \overline{(A_{31} \oplus B_{31})} \land (A_{31} \oplus S_{31})
-$$ {#eq-overflow-software}
+$$ {#eq-sobreeiximent-software}
 
-és a dir, overflow si els operands **tenen el mateix signe** i el resultat **té signe diferent**.
+és a dir, sobreeiximent si els operands **tenen el mateix signe** i el resultat **té signe diferent**.
 
-::: {#tip-overflow-programari .callout-tip}
-## Càlcul de la condició d'overflow per programari
+::: {#tip-sobreeiximent-programari .callout-tip}
+## Càlcul de la condició d'sobreeiximent per programari
 
 Suposant que els enters `a`, `b`, `s` estan a `t0`, `t1`, `t2`, i que s'ha
 executat `add t2, t0, t1`:
@@ -63,14 +63,14 @@ executat `add t2, t0, t1`:
         xor     t3, t0, t1      # A xor B  (bit 31: 0 si mateix signe)
         not     t3, t3          # ~(A xor B), vegeu @nte-pseudoinstruccio-not
         xor     t4, t0, t2      # A xor S  (bit 31: 1 si signes diferents)
-        and     t3, t3, t4      # condició d'overflow als 32 bits
+        and     t3, t3, t4      # condició d'sobreeiximent als 32 bits
         srli    t3, t3, 31      # desplaça bit 31 a la posició 0
-                                # t3 = 1 si overflow, 0 si no
+                                # t3 = 1 si sobreeiximent, 0 si no
 ```
 :::
 
-::: {#imp-overflow-riscv .callout-important}
-A **RISC-V**, totes les instruccions d'aritmètica entera **ignoren l'overflow**: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció d'overflow, si cal, és responsabilitat del programari (@sec-overflow-programari).
+::: {#imp-sobreeiximent-riscv .callout-important}
+A **RISC-V**, totes les instruccions d'aritmètica entera **ignoren el sobreeiximent**: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció d'sobreeiximent, si cal, és responsabilitat del programari (@sec-sobreeiximent-programari).
 :::
 
 ## Multiplicació entera {#sec-multiplicacio-entera}
@@ -207,15 +207,15 @@ mul     t2, t0, t1      # c <- a * b (32 bits de menys pes)
 
 ### Sobreeiximent en la multiplicació
 
-El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte. `mul` retorna només els **32 bits de menys pes**, que corresponen al resultat truncat; si el resultat exacte no és representable amb 32 bits, es produeix **overflow** i el valor retornat per `mul` no és correcte.
+El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte. `mul` retorna només els **32 bits de menys pes**, que corresponen al resultat truncat; si el resultat exacte no és representable amb 32 bits, es produeix **sobreeiximent** i el valor retornat per `mul` no és correcte.
 
-Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters amb signe) o `mulhu` (naturals sense signe), que retornen els **32 bits de més pes**. A partir d'aquests es pot detectar l'overflow:
+Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters amb signe) o `mulhu` (naturals sense signe), que retornen els **32 bits de més pes**. A partir d'aquests es pot detectar el sobreeiximent:
 
-* En **naturals** (`mulhu`): hi ha overflow si `mulhu` retorna un valor diferent de zero.
-* En **enters** (`mulh`): hi ha overflow si el resultat de `mulh` no és l'extensió de signe del resultat de `mul`.
+* En **naturals** (`mulhu`): hi ha sobreeiximent si `mulhu` retorna un valor diferent de zero.
+* En **enters** (`mulh`): hi ha sobreeiximent si el resultat de `mulh` no és l'extensió de signe del resultat de `mul`.
 
-::: {#tip-overflow-multiplicacio .callout-tip}
-## Detecció d'overflow en la multiplicació entera
+::: {#tip-sobreeiximent-multiplicacio .callout-tip}
+## Detecció d'sobreeiximent en la multiplicació entera
 
 ```{.C filename="C"}
 int a, b, s;
@@ -224,15 +224,15 @@ s = a * b;                      /* resultat truncat a 32 bits */
 producte_exacte = (long long)a * b;
 ```
 
-En RV32IM, per obtenir el producte exacte de 64 bits i detectar overflow:
+En RV32IM, per obtenir el producte exacte de 64 bits i detectar sobreeiximent, suposant que `a`, `b` i `s` ocupen `t0`, `t1` i `t2`:
 
 ```{.s filename="RV32I"}
         # a, b als registres t0, t1
         mul     t2, t0, t1      # t2 <- bits [31:0] del producte
         mulh    t3, t0, t1      # t3 <- bits [63:32] del producte (enters)
-        # overflow si t3 != extensió de signe de t2
+        # sobreeiximent si t3 != extensió de signe de t2
         srai    t4, t2, 31      # t4 <- extensió de signe de t2
-        bne     t3, t4, overflow
+        bne     t3, t4, sobreeiximent
 ```
 :::
 
@@ -770,7 +770,7 @@ Això **difereix** de la divisió euclidiana, on el residu és sempre no negatiu
 #### Casos especials
 
 * **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
-* **Overflow enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
+* **sobreeiximent enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
 
 ::: {#tip-divisio-exemple .callout-tip}
 ## Traducció de divisió i mòdul enters
