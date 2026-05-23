@@ -30,12 +30,12 @@ La taula següent classifica els principals tipus d'excepcions i interrupcions, 
 
 | Tipus | Causa | Detecció | Acció en acabar la RSE | Excep. / Inter. |
 | :--- | :--- | :---: | :--- | :---: |
-| Accés no alineat | Adreça no múltiple de la mida de dada | Durant la instrucció | Avorta^1^ | Excep. |
-| Instrucció il·legal | Codi d'operació inexistent | Durant la instrucció | Avorta^1^ | Excep. |
-| Fallada de TLB | Traducció absent del TLB | Durant la instrucció | Reexecuta la instrucció causant | Excep. |
-| Fallada de pàgina | Pàgina absent de la memòria física | Durant la instrucció | Reexecuta la instrucció causant | Excep. |
-| Crida al sistema (`ecall`) | Instrucció `ecall` explícita | Durant la instrucció | Continua a instrucció+4 | Excep. |
-| Interrupció d'E/S | Senyal extern d'un dispositiu | En acabar la instrucció en curs | Continua a instrucció+4 | Inter. |
+| Accés no alineat | Adreça no múltiple de la mida de dada | Durant la instrucció | Avorta^1^ | Excepció |
+| Instrucció il·legal | Codi d'operació inexistent | Durant la instrucció | Avorta^1^ | Excepció |
+| Fallada de TLB | Traducció absent del TLB | Durant la instrucció | Reexecuta la instrucció causant | Excepció |
+| Fallada de pàgina | Pàgina absent de la memòria física | Durant la instrucció | Reexecuta la instrucció causant | Excepció |
+| Crida al sistema (`ecall`) | Instrucció `ecall` explícita | Durant la instrucció | Continua a instrucció+4 | Excepció |
+| Interrupció d'E/S | Senyal extern d'un dispositiu | En acabar la instrucció en curs | Continua a instrucció+4 | Interrupció |
 : Tipologia d'excepcions i interrupcions {#tbl-tipologia .striped}
 
 ^1^ En el cas general, la RSE avorta el programa i emet un missatge d'error. Tècnicament, una RSE suficientment sofisticada podria recuperar-se d'algunes d'aquestes situacions, però això queda fora de l'abast d'EC.
@@ -75,8 +75,10 @@ A **EC** s'estudia el mecanisme d'excepcions en **mode M**, que és el més dire
 
 El mode en què opera el processador en cada moment es controla mitjançant uns registres especials anomenats **registres de control i estat** (***Control and Status Registers***, **CSR**). A aquests registres només s'hi pot accedir amb instruccions específiques.
 
-::: {#nte-csr-registres .callout-note}
-## RV32I ISA — Instruccions d'accés als CSR
+L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als **registres de control i estat** (***Control and Status Registers***, **CSR**). Encara que en versions antigues de l'especificació aquestes instruccions formaven part de la ISA base, a partir de la versió 2.2 es van segregar en una extensió independent per permetre implementacions minimalistes sense suport CSR. En la pràctica, qualsevol processador RISC-V que implementi el mecanisme d'excepcions i interrupcions requereix Zicsr.
+
+::: {#nte-Zicsr-instruccions .callout-note}
+## Zicsr ISA — Instruccions d'accés als CSR
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
@@ -92,13 +94,13 @@ Les pseudoinstruccions `csrr` i `csrw` són les formes habituals per llegir i es
 
 Les instruccions d'accés als CSR són **privilegiades**: en mode U, intentar executar-les genera una excepció d'instrucció il·legal.
 
-::: {#wrn-csr-immediats .callout-warning collapse=true}
+::: {#wrn-Zicsr-pseudoinstruccions .callout-warning collapse=true}
 ## Aprofundiment: variants immediates de les instruccions CSR
 
 Les instruccions `csrrwi`, `csrrsi` i `csrrci` operen igual que `csrrw`, `csrrs` i `csrrc` respectivament, però accepten un immediat de 5 bits sense signe (`uimm5`) en lloc del registre `rs1`. Són útils per activar o desactivar bits individuals d'un CSR sense necessitat de carregar un valor en un registre prèviament.
 
-::: {#nte-csr-immediats .callout-note}
-## RV32I ISA — Instruccions d'accés als CSR per immediats
+::: {#nte-Zicsr-immediats .callout-note}
+## Zicsr ISA — Pseudoinstruccions d'accés als CSR (immediats)
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
