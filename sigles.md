@@ -8,6 +8,8 @@
 
 **ALU** *Arithmetic Logic Unit*
 
+**AMO** *Atomic Memory Operation*
+
 **API** *Application Programming Interface*
 
 **BA** Bloc d'activació
@@ -19,6 +21,8 @@
 **CPI** Cicles per instrucció
 
 **CPU** *Central Processing Unit*
+
+**CSR** *Control and Status Register*
 
 **DRAM** *Dynamic Random Access Memory*
 
@@ -62,6 +66,8 @@
 
 **MC** Memòria cau
 
+**MIPS** *Microprocessor without Interlocked Pipeline Stages*
+
 **MMU** *Memory Management Unit*
 
 **MP** Memòria principal
@@ -82,8 +88,6 @@
 
 **PMOS** *p-channel metal–oxide–semiconductor*
 
-**PPN** *Physical Page Number*
-
 **PRO1** Programació I (assignatura del GEI)
 
 **PTE** *Page Table Entry*
@@ -93,6 +97,8 @@
 **RNE** *Round to Nearest Even*
 
 **ROM** *Read Only Memory*
+
+**RSE** Rutina de servei d'excepcions
 
 **RV32F/D** RISC-V *Floating-point extensions*
 
@@ -110,7 +116,7 @@
 
 **TAM** Temps d'accés mitjà
 
-**TLB** *Translation-Lookaside Buffer*
+**TLB** *Translation Lookaside Buffer*
 
 **UI** *User Interface*
 
@@ -121,5 +127,3 @@
 **VIVT** *Virtually Indexed Virtually Tagged*
 
 **VLSI** *Very Large Scale Integration*
-
-**VPN** *Virtual Page Number*

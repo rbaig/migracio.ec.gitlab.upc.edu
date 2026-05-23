@@ -3,6 +3,8 @@ title: "Tema 9: Excepcions i interrupcions"
 number-sections: true
 ---
 
+<!-- Generació dark mode: stroke="black" → stroke="#adb5bd" -->
+
 ## Introducció {#sec-introduccio}
 
 ### Necessitat {#sec-introduccio-necessitat}
@@ -649,6 +651,15 @@ El flux complet d'una interrupció, des de la petició fins al retorn, segueix l
 5. **Retorn:** la RSE executa `mret`, que restaura `MIE` i retorna al programa interromput, que reprèn l'execució a la instrucció que hauria executat a continuació (ja guardada a `mepc`).
 
 <!-- fig-cicle-interrupcio: diagrama temporal que mostra: programa en execució → petició del dispositiu → fi de la instrucció en curs → salt a RSE → servei → mret → represa del programa. Ressaltar que mepc apunta a la instrucció següent. -->
+::: {#fig-cicle-interrupcio}
+:::{.light-content style="text-align: center;"}
+![](figures/T9_cicle_interrupcio_light.svg)
+:::
+:::{.dark-content style="text-align: center;"}
+![](figures/T9_cicle_interrupcio_dark.svg)
+:::
+Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucció i+1; en acabar-la, el processador detecta la interrupció, guarda `mepc` apuntant a la instrucció i+2 i salta a la RSE; en retornar amb `mret`, el programa es reprèn a partir d'i+2.
+:::
 
 ### Permisos: `MIE` global i màscares `mie` {#sec-interrupcions-permisos}
 
@@ -741,17 +752,26 @@ El registre `satp` té el format següent en RV32:
 - **`PPN`** (bits 21:0): número de pàgina física (*Physical Page Number*) de la taula de pàgines de primer nivell.
 :::
 
-::: {#wrn-tlb-vs-mips .callout-warning collapse=true}
-## Aprofundiment: RISC-V vs. MIPS, gestió del TLB
+Quan la RSE en mode S modifica la taula de pàgines en memòria, executa la instrucció **`sfence.vma`** per invalidar les entrades del TLB afectades i garantir la coherència.
 
-En MIPS, la gestió del TLB es feia amb registres específics del coprocessador CP0 (`Context`, `EntryHi`, `EntryLo`) i una instrucció dedicada (`tlbwr`) que escrivia directament al TLB. En RISC-V no existeix una instrucció equivalent: el TLB és gestionat per hardware (*hardware page table walker*) en les implementacions que suporten mode S, i la RSE en mode S actualitza la taula de pàgines en memòria; el hardware s'encarrega de llegir-la.
+::: {#nte-sfence .callout-note}
+## RV32I ISA — `sfence.vma`
 
-La instrucció `sfence.vma` invalida les entrades del TLB afectades per un canvi a la taula de pàgines, garantint la coherència entre la taula de pàgines i el TLB.
+| Mnemònic | Operands | Operació | Nom |
+| :--- | :--- | :--- | :--- |
+| `sfence.vma` | `rs1, rs2` | Invalida les entrades del TLB per a l'adreça `rs1` i l'ASID `rs2` (`x0` = tots) | *Supervisor fence* |
+: {tbl-colwidths="[15,12,48,25]" .striped}
+:::
+
+::: {#wrn-tlb-page-table-walker .callout-warning collapse=true}
+## Aprofundiment: *hardware page table walker*
+
+Algunes implementacions RISC-V inclouen un component hardware (*hardware page table walker*) que recorre la taula de pàgines automàticament en cas de fallada de TLB, sense generar cap excepció ni invocar cap rutina de programari. En aquestes implementacions, la fallada de TLB és invisible al programari i es resol amb una latència molt menor que la del tractament per programari descrit a @sec-tlb-modes-rutina.
 :::
 
 #### La rutina TLB miss {#sec-tlb-modes-rutina}
 
-En un sistema amb mode S actiu (per exemple, Linux), les fallades de TLB es gestionen per la RSE del nucli en mode S. La rutina és conceptualment equivalent a la `TLBmiss` de MIPS, però en lloc d'escriure directament al TLB, actualitza la taula de pàgines en memòria i invalida l'entrada corresponent del TLB:
+En un sistema amb mode S actiu (per exemple, Linux), les fallades de TLB es gestionen per la RSE del nucli en mode S. La rutina actualitza la taula de pàgines en memòria i invalida l'entrada corresponent del TLB:
 
 ``` {.s filename="RV32I"}
 tlb_miss_handler:
@@ -808,10 +828,8 @@ La gestió del bit D segueix dues regles:
 
 Quan una pàgina amb D=1 ha de ser reemplaçada de la memòria física, la RSE ha de copiar-la al disc abans d'alliberar el marc. Si D=0, la còpia al disc ja és vàlida i el marc es pot alliberar directament.
 
-::: {#wrn-tlb-bit-d-coherencia .callout-warning collapse=true}
-## Aprofundiment: coherència del bit D entre TLB i taula de pàgines
+::: {#wrn-tlb-bit-ad .callout-warning collapse=true}
+## Aprofundiment: actualització dels bits A i D
 
-En MIPS, el bit D del TLB s'actualitzava per escriptura immediata: quan una instrucció d'escriptura tenia un encert al TLB amb D=0, es generava una excepció de "pàgina modificada" que posava D=1 tant al TLB com a la taula de pàgines.
-
-En RISC-V, l'especificació permet que el hardware actualitzi els bits A (*Accessed*) i D de la taula de pàgines de forma autònoma, sense generar una excepció. Les implementacions que no suporten aquesta actualització per hardware generen una excepció de fallada de pàgina en el primer accés, i la RSE en mode S s'encarrega d'actualitzar els bits A i D manualment.
+L'especificació RISC-V permet que el hardware actualitzi els bits A (*Accessed*) i D de la taula de pàgines de forma autònoma, sense generar cap excepció. Les implementacions que no suporten aquesta actualització per hardware generen una excepció de fallada de pàgina en el primer accés a una pàgina nova, i la RSE en mode S s'encarrega d'actualitzar els bits A i D manualment abans de reexecutar la instrucció causant.
 :::
