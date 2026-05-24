@@ -259,7 +259,7 @@ Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode` , especificant
 **Nota:** L'objectiu d'aquest exemple és, simplement, il·lustrar la correspondència entre la sintaxi d'algunes instruccions i els camps de bits de les seves codificacions. La sintaxi i semàntica d'aquestes i moltes altres instruccions s'aniran estudiant progressivament durant el curs.
 
 Codi font (a títol purament il·lustratiu):
-``` {.s filename="RV32I"}
+```{.s filename="RV32I"}
         add     t0, s2, zero
         sub     t1, s3, s4
         addi    t2, s5, 10
@@ -282,7 +282,7 @@ Associació als camps de bits de la codificació de les instruccions:
 
 RARS Abocament de memòria de les instruccions:
 
-``` {.code filename="Abocament de memòria"}
+```{.code filename="Abocament de memòria"}
 Binari                            Hexadecimal Basic              Codi font
 
 00000000000010010000001010110011  0x000902b3  add x5,x18,x0      add     t0, s2, zero
@@ -760,6 +760,10 @@ En **C**, tota variable s'ha de **declarar** abans d'usar-la. La declaració esp
   <tipus> <nom> [= valor_inicial];
   ```
 
+* ```{.defrault filename="C"}
+  <tipus> <nom> [= valor_inicial];
+  ```
+
 El **tipus** determina la mida en memòria (@imp-variables-mida-naturals, @imp-variables-mida-enters) i les operacions vàlides sobre la variable. El **nom** és l'identificador simbòlic que el compilador substitueix per una adreça de memòria o un registre.
 
 ### Tipus
@@ -782,7 +786,7 @@ Un *dirty hack* cometre errades al codi deliberadament (conflicte de tipus en aq
 ::: {#tip-TODO .callout-tip}
 ## C — ⚠️forçar un error per esbrinar un tipus⚠️
 
-``` {.C filename="codi_erroni__gcc_tipus.c"}
+```{.C filename="codi_erroni__gcc_tipus.c"}
 #include <stdio.h>
 
 int main(void) {
@@ -793,7 +797,7 @@ int main(void) {
 ```
 
 El codi anterior en ser compilat,
-``` {.bash filename=Terminal}
+```{.bash filename=Terminal}
 gcc codi_erroni__gcc_tipus.c -Wall, -Wextra -Wpedantic -o /dev/null
 ```
  
@@ -1023,7 +1027,7 @@ En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (
 
 En codi següent, a les línies **L14** i **L15** hi ha **errors** d'alineació.
 
-``` {.asm filename="⚠️codi_erroni__alineacio_incorrecte.s⚠️"}
+```{.asm filename="⚠️codi_erroni__alineacio_incorrecte.s⚠️"}
 .data
 AA:	.word	0x41424344
 BB:	.word	0x45464748
@@ -1045,7 +1049,7 @@ main:
 
 En executar aquest codi a RARS ("F7": execució línia a línia, "F5": execució contínua), en executar la **L14**, salta una excepció d'**error** d'alineació i s'**avorta** l'execució.
 
-``` {.code filename="RARS -> Execute -> Messages"}
+```{.code filename="RARS -> Execute -> Messages"}
 Error in /.../riscv1.asm line 14: Runtime exception at 0x00400020: Load address not aligned on halfword boundary 0x10010005
 ```
 :::
@@ -1132,12 +1136,12 @@ Les instruccions que usen el mode registre són de format **Tipus-R** (@nte-inst
 
 :::: {#nte-instruccions-Tipus-R .callout-note}
 ## RV32I ISA — Format Tipus-R
-<!-- :::{style="text-align: center;"} -->
+<!-- ::: {style="text-align: center;"} -->
 <!-- https://docs.riscv.org/reference/isa/unpriv/_images/svg-5d875942584dea273a450c7a261a1ad5d1f3259f.svg -->
-:::{.light-content style="text-align: center;"}
+::: {.light-content style="text-align: center;"}
 ![](figures/svg-5d875942584dea27_typeR.svg)
 :::
-:::{.dark-content style="text-align: center;"}
+::: {.dark-content style="text-align: center;"}
 ![](figures/T2_typeR_dark.svg)
 :::
 ::::
@@ -1187,10 +1191,10 @@ Les instruccions que usen el mode immediat són de format **Tipus-I** (@nte-inst
 :::: {#nte-instruccions-Tipus-I .callout-note}
 ## RV32I ISA — Format Tipus-I
 <!-- https://docs.riscv.org/reference/isa/unpriv/_images/svg-6e79131cf8a4d97ce98f508a368da764a7b11e95.svg -->
-:::{.light-content style="text-align: center;"}
+::: {.light-content style="text-align: center;"}
 ![](figures/svg-6e79131cf8a4d97c_typeI.svg)
 :::
-:::{.dark-content style="text-align: center;"}
+::: {.dark-content style="text-align: center;"}
 ![](figures/T2_typeI_dark.svg)
 :::
 ::::
@@ -1236,10 +1240,10 @@ Les instruccions d'**emmagatzemament** (*store*) són de format **tipus-S** (@nt
 :::: {#nte-instruccions-Tipus-S .callout-note}
 ## RV32I ISA — Format Tipus-S
 <!-- https://docs.riscv.org/reference/isa/unpriv/_images/svg-5d013bc40702f55441bc51b0f78d8e0364674976.svg -->
-:::{.light-content style="text-align: center;"}
+::: {.light-content style="text-align: center;"}
 ![](figures/svg-5d013bc40702f554_typeS.svg)
 :::
-:::{.dark-content style="text-align: center;"}
+::: {.dark-content style="text-align: center;"}
 ![](figures/T2_typeS_dark.svg)
 :::
 ::::
@@ -1396,7 +1400,7 @@ Per exemple, la declaració `int *p;` declara `p` com una variable de tipus punt
 
 En **C**, la sintaxi de declaració d'un punter és:
 
-* ``` {.default filename="C"}
+* ```{.default filename="C"}
   <tipus_apuntat> *<nom_del_punter> [= adreça_d_inicialització];
   ```
     * **Atenció:** Els claudàtors `[]` indiquen l'opcionalitat de la inicialització (@sec-punters-inicialitzacio).
@@ -1442,11 +1446,11 @@ No s'ha de confondre l'us de `&` en punters, on és un operador **unari**, amb l
 En **C**, a un **punter** se li pot **assignar un valor** (una adreça) de tres maneres diferents:
 
 * Mitjançant l'operador `&` aplicat a una variable del tipus del punter.
-    * ``` {.C filename="C"}
+    * ```{.C filename="C"}
       ptr = &var; 
       ```
 * Assignant-li un altre punter del mateix tipus.
-    * ``` {.C filename="C"}
+    * ```{.C filename="C"}
       p1 = p2;           /* p2 està inicialitzat */
      ```
 * Explícitament, mitjançant un *type cast* a partir d'una adreça numèrica (ús avançat):
@@ -1456,7 +1460,7 @@ En **C**, a un **punter** se li pot **assignar un valor** (una adreça) de tres 
 
 En **C**, un **punter** es pot **inicialitzar en la declaració** seguint la sintaxi estàndard, on `<adreça>` pot ser l'adreça d'una variable (obtinguda amb `&`), un altre punter del mateix tipus, o una adreça numèrica explícita mitjançant un *type cast*:
 
-* ``` {.C filename="C"}
+* ```{.C filename="C"}
   tipus *nom_variable = <adreça>;
   ```
 
@@ -1635,15 +1639,15 @@ En **C**, els elements dels **vectors** només poden ser del mateix tipus, el qu
 En **C**, la **declaració** de **vectors** es pot fer de tres maneres:
 
 * Especificant el nombre d'elements sense inicialització:
-    * ``` {.default filename=C}
+    * ```{.default filename=C}
       <tipus_elements> nom_vector[<quantitat_elements>];
       ```
 * Inicialitzant-ne elements sense explicitar-ne el nombre:
-    * ``` {.default filename=C}
+    * ```{.default filename=C}
       <tipus_elements> nom_vector[] = {valor_element_1, valor_element_2, ...};
       ```
 * Explicitant-ne el nombre d'elements i inicialitzant-los (combinació de les dues anteriors):
-    * ``` {.default filename=C}
+    * ```{.default filename=C}
     <tipus_elements> nom_vector[<quantitat_elements>] = {valor_element_1, valor_element_2, ...};
     ```
 

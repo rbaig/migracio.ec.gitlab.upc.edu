@@ -8,8 +8,6 @@
 * eliminar els **:**
 * afegir que s'ha elaborat amb Quarto i Claude
 * captions contrast de `code`
-* `:{` -> `: {` (afegir espai)
-* ` ``` { ` -> ` ```{` (eliminar espai)
 * Decidir si `startup.s` (Roger: Fora i obligar `li a0, 0` + syscall `93`)
 * Decidir si retorn `a1` (Roger: Sí)
 
