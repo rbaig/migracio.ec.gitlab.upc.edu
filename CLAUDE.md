@@ -6,97 +6,45 @@ Apunts de l'assignatura **Estructura de Computadors** (EC), Grau d'Enginyeria
 Informàtica (GEI), FIB-UPC. Llibre Quarto (`_quarto.yml`), sortida HTML i PDF.
 Llengua: **català** (tot el contingut generat ha de ser en català).
 
-## Objectius
-
-- Migració de la documentació existent (PDF, fins 31/12/2025) a fitxers `.qmd`.
-- Migració de l'arquitectura de referència: MIPS32 → RISC-V (RV32I + extensions M, F).
-- Ordre de migració: apunts → pràctiques → problemes → solucionari.
-
 ## Abast del projecte
 
-Els adjectius "existent" i "actual" referits a materials fan referència
-a la documentació generada fins a 31/12/2025, disponible només en PDF.
-
-### Estructura nova (fitxers .qmd) vs. PDFs originals
+### Estructura (fitxers .qmd)
 
 La nova estructura **no és un mapatge 1:1** dels PDFs originals:
-- El PDF T1 s'ha dividit: la introducció resta a T1.qmd; Rendiment, Amdahl
-  i Potència s'han separat en un tema nou, T6.qmd.
-- Els PDFs T2–T5 corresponen a T2.qmd–T5.qmd
-- Els PDFs T6–T8 corresponen a T7.qmd–T9.qmd
+
+- El PDF T1 s'ha dividit: la introducció resta a T1.qmd; Rendiment, Amdahl i Potència s'han separat en T6.qmd.
+- Els PDFs T2–T5 corresponen a T2.qmd–T5.qmd.
+- Els PDFs T6–T8 corresponen a T7.qmd–T9.qmd.
 
 ### Volum
 
-| Material    | Fitxers .qmd   | PDFs originals          |
-| :---------- | :------------- | :---------------------- |
-| Apunts      | T1–T9          | 8 PDFs, ~200 pàgines    |
-| Problemes   | PE.qmd, PS.qmd | 2 PDFs                  |
-| Laboratori  | L0–L5          | 6 PDFs + plantilles     |
+| Material | Fitxers .qmd | PDFs originals |
+| :--- | :--- | :--- |
+| Apunts | T1–T9 | 8 PDFs, ~200 pàgines |
+| Problemes | PE.qmd, PS.qmd | 2 PDFs |
+| Laboratori | L0–L5 | 6 PDFs + plantilles |
 
 ### Fitxers transversals
 
 - `riscv.qmd`: compendi de referència RISC-V (inclòs via `{{< include >}}`).
 - `sigles.md`: glossari de sigles.
-- `contrib.qmd`: convencions i normes (cal llegir-lo detalladament abans de generar contingut).
+- `contrib.qmd`: convencions i normes. **Cal llegir-lo detalladament abans de generar contingut.**
 
 ## Convencions
 
 Abans de generar qualsevol contingut, llegeix `contrib.qmd`. Conté:
+
 - El sistema de callouts i prefixos d'etiquetes.
 - Les normes d'estil (veu, puntuació, negretes, anglicismes, sigles).
-- Els criteris de format (mermaid, taules, figures, blocs de codi, aniuaments).
+- Els criteris de format (taules, figures SVG, blocs de codi, aniuaments).
 - Les substitucions terminològiques obligatòries.
+- La paleta de colors SVG i les convencions de dibuix.
+- Les decisions per tema (T2–T9).
 
-### Figures
+### CSS mode fosc
 
-#### Format i variants
-Les figures es generen com a fitxers SVG estàtics amb colors absoluts (sense
-variables CSS de l'entorn del visualitzador). Cada figura té dues variants:
-
-- `nom_figura_light.svg` — mode clar (cosmo) i PDF
-- `nom_figura_dark.svg` — mode fosc (darkly)
-
-Els fitxers van al directori `figures/`. La convenció de noms usa `_` en lloc
-de `-`.
-
-#### Inserció al .qmd
-```markdown
-::: {#fig-nom-figura}
-:::{.light-content}
-![](figures/nom_figura_light.svg)
-:::
-:::{.dark-content}
-![](figures/nom_figura_dark.svg)
-:::
-Caption de la figura
-:::
-```
-
-#### Paleta de colors
-
-| Element | Light (fill / stroke) | Dark (fill / stroke) |
-| :--- | :--- | :--- |
-| Cel·la neutra | `#f8f9fa` / `#adb5bd` | `#3d3d3d` / `#888` |
-| Text secundari | `#6c757d` | `#adb5bd` |
-| Text principal | `#343a40` | `#fff` |
-| Destacat blau | `#cfe2ff` / `#084298` | `#1a3a5c` / `#90bfff` |
-| Destacat verd | `#d1e7dd` / `#0a3622` | `#1a3a2a` / `#90d4aa` |
-| Destacat groc | `#fff3cd` / `#664d03` | `#3a2e00` / `#ffd966` |
-| Destacat vermell | `#f8d7da` / `#842029` | `#3a1a1e` / `#f1a8ae` |
-
-#### Convencions de dibuix SVG
-- `width="680"`, `viewBox="0 0 680 H"` on H = contingut + 20px buffer.
-- `font-family="'Source Sans Pro', sans-serif"`, `font-size="11"` per a
-  etiquetes de cel·la, `font-size="12"` per a text secundari, `font-size="13"`
-  per a títols de quadrant.
-- Cel·les destacades es dibuixen **sempre al damunt** de les grises (ordre
-  de dibuix: grises primer, destacades després) per evitar solapaments de
-  vores.
-- Cel·les grises: `stroke-width="0.5"`. Cel·les destacades: `stroke-width="1"`.
-- No s'usen línies separadores entre quadrants: només espai buit.
-
-#### CSS mode fosc
 A `custom_dark.scss`, secció `/*-- scss:rules --*/`:
+
 ```scss
 figcaption,
 caption,
@@ -115,72 +63,64 @@ h1, h2, h3, h4,
 - Mostrar sempre el contingut generat en blocs de codi markdown (` ```markdown `).
 - No editar fitxers directament: l'usuari fa el copy-paste manualment.
 - En cas de dubte: atura't, exposa el dubte i, si és possible, proposa una solució.
-- Inici d'un tema o pràctica
-    - Primer prompt
-      - Fitxers: `CLAUDE.md`, `_quarto.yml`, `contrib.qmd`
-      - Objectiu: "Passar el Tema X Títol de PDF a Tema Y Títol` fent la migració a RV32
-      - Prioritats, per ordre d'importància decreixent (tot i que tots són importants i compatibles):
-        - Continguts i estructura sòlids tècnicament
-        - Exposició didàctica
-        - Cobrir tots els aspectes del PDF.
-        - Actualitzar els continguts
-        - Millorar la narrativa (*flow*) respecte el PDF: estil i llenguatge més directe, ús de callouts, etc.
-      - Tasques:
-        - Digues si has entès què hem de fer
-        - Quina informació necessites per a poder-ho fer
-    - Segon prompt
-      - Fitxers: `TODO.pdf`, `T2.qmd`, `T3.qmd`, ... `/riscv/` comprimit
-      - Digues si tens tota la informació que necessites
-      - Fes una proposta de continguts i estructura (seccions, subseccions, callouts, etc.)
-        - Estructura:
-         - No és obligatori seguir l'estructura del PDF. Preval sempre el criteri pedegògic, rigorositat i acutalitat tecnològica
-          - Sí que cal incorporar tot el contingut rellevant del PDF. No en pot quedar cap d'exclòs.
-          - Sigues honest: Digues si creus que cal reestructurar el contingut i la distribució. Per exemple, per eliminar continguts obsolets o per incorporar-ne d'actuals.
-      - Sigues sempre propositiu. Per a canvis importants, demana'm sempre la validació.
-      - No generis cap contingut fins que no hàgim acordat els continguts i l'estructura
-    - Tercer prompt:
-      - Confirmat totalment. Tu marques el ritme: per seccions, subseccions, etc. segons les teves necessitats. Si necessites cap ordre o tens cap dubte, para i pregunta-m'ho.
-      - Taules vs Mermaid vs Figures (prioritat descendent)
-        - Taula (màxima prioritat): quan el contingut és essencialment dades tabulars
-        - Mermaid: diagrames simples (diagrames de blocs)
-        - SVG: quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats de memòria cau, descomposició de bits)
-      - Figures SVG
-        - Fitxers: alguns `.svg` light i dark d'exemple
-        - Les generem al final, un cop hi hagi tot el text a `.qmd`
-          - Sempre una per una
-          - Flux de treball:
-            - Claude proposta de la versió `ligth​` → Humà: retoc manual → Claude versió `dark`
-          - Nom fitxers: segueix el patró que el dels exemples `T7_....svg`
-          - Markdown d'integració: el mateix que a T4
-        - Deixa en format de comentaris html la descripció de la figura amb detall suficient perquè la pugui generar un altre xat (referència: `T7.qmd`)
-        - Al cos del text afegeixi les referències que calgui a figures `@ref`, deixant les referències pendents de resolució fins que generem els SVG 
-        - No generis cap contingut fins que no hàgim acordat els continguts i l'estructura
-          - Proposa la llista completa de SVGs resultant per validar-la
-- En finalitzar un tema, pràctica, etc.
-    - Revisa completa de la darrera versió del `.qmd`
-    - Revisa tècnica profunda
-    - Revisa lingüística profunda
-    - Genera el markdown de `sigles.md` actualitzat amb les sigles que són al `.qmd` d'aquest xat però que no són a `sigles.md`
-      - Fitxer: `sigles.md`
-    - Genera dels markdown per millorar
-      - `contrib.qmd`
-      - `CLAUDE.md`
-    - Elaboració de missatge per al xat nou a on es tractarà el tema següent
+
+### Inici d'un tema o pràctica
+
+**Primer prompt**
+
+- Fitxers: `CLAUDE.md`, `_quarto.yml`, `contrib.qmd`.
+- Objectiu: descriure el tema a generar i el context.
+- Tasques:
+    - Confirmar si s'ha entès l'objectiu.
+    - Identificar quina informació addicional cal per poder començar.
+
+**Segon prompt**
+
+- Fitxers: PDF original, fitxers `.qmd` de referència, `sigles.md`.
+- Confirmar si es té tota la informació necessària.
+- Proposar continguts i estructura (seccions, subseccions, callouts):
+    - No és obligatori seguir l'estructura del PDF: preval el criteri pedagògic, el rigor i l'actualitat tecnològica.
+    - Cal incorporar tot el contingut rellevant del PDF.
+    - Ser honest sobre reestructuracions necessàries (continguts obsolets, nous a incorporar).
+- Per a canvis importants, demanar validació explícita.
+- No generar contingut fins que no s'hagi acordat l'estructura.
+
+**Tercer prompt**
+
+- Estructura confirmada. Avançar secció a secció al ritme que calgui.
+- **Figures (prioritat descendent):**
+    - **Taula:** quan el contingut és essencialment dades tabulars.
+    - **SVG:** quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats, descomposició de bits).
+    - ~~Mermaid~~: tots els diagrames nous es fan en SVG.
+- **Figures SVG:**
+    - Les generem al final, un cop hi hagi tot el text al `.qmd`.
+    - Sempre una per una. Flux: Claude proposa la versió `light` → l'usuari retoca manualment → Claude genera la versió `dark`.
+    - Nom de fitxers: `T<N>_nom_figura_light.svg` / `T<N>_nom_figura_dark.svg`.
+    - Markdown d'integració: vegeu `contrib.qmd` (secció "Integració al .qmd").
+    - Deixar comentaris HTML descriptius per a cada figura: `<!-- fig-...: descripció detallada -->`.
+    - Proposar la llista completa de SVGs per validar-la abans de generar-ne cap.
+
+### En finalitzar un tema, pràctica, etc.
+
+1. Revisió completa de la darrera versió del `.qmd`.
+2. Revisió tècnica profunda.
+3. Revisió lingüística profunda.
+4. Generar `sigles.md` actualitzat amb les sigles noves del tema (criteri: vegeu `contrib.qmd`).
+5. Actualitzar `contrib.qmd` amb decisions de format o estil preses durant el tema.
+6. Actualitzar `CLAUDE.md` (planificació i progress).
+7. Elaborar el missatge d'inici per al xat del tema següent.
 
 ## Planificació i progress
 
-1. Tota la teoria (T1--19)
-1.1 Temes preparats per a revisió externa de continguts:  `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1), `T7.qmd`
-1.2 WiP: `T8.qmd`
-fig-mv-espais — espais d'adreçament lògic vs. físic
-fig-mv-pagines-marcs — pàgines i marcs de pàgina
-fig-mv-taula-pagines — estructura de la taula de pàgines
-fig-mv-tlb-estructura — TLB vs. taula de pàgines
-fig-mv-flux-traduccio — flux complet de traducció (diagrama de flux)
-fig-mv-comparticio — compartició de pàgines entre processos
-fig-mv-pipt — cache PIPT (diagrama de blocs)
-fig-mv-vipt — cache VIPT (diagrama de blocs paral·lel)
-1.3 SiP: migrant text
-2. Laboratori
-3. Problemes
+### Teoria (T1–T9)
+
+Temes preparats per a revisió externa de continguts: `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1), `T7.qmd`, `T8.qmd`, `T9.qmd`.
+
+### En curs
+
+2. Laboratori (`L0.qmd`–`L5.qmd`)
+
+### Pendent
+
+3. Problemes (`PE.qmd`, `PS.qmd`)
 4. Solucionari

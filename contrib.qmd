@@ -7,7 +7,7 @@ Aquest document de convencions només està disponible en la versió web:
 :::::::::
 
 :::::::::{.content-visible when-format="html"}
-<!-- Aquest `div`es tanca al final del fitxer. No esborreu aquest comentari. -->
+<!-- Aquest `div` es tanca al final del fitxer. No esborreu aquest comentari. -->
 
 ## Ús d'aquesta guia
 
@@ -26,15 +26,13 @@ Abans de contribuir cal tenir instal·lat:
     * [Spell Right](https://marketplace.visualstudio.com/items?itemName=ban.spellright)
         * L'*spell checker* local (`.vscode/settings.json`) inclou els mnemònics de l'assignatura.
 * **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
-* **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que
-  s'instal·la des de la pròpia CLI de Quarto:
+* **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que s'instal·la des de la pròpia CLI de Quarto:
 
 ```bash
 quarto install tinytex
 ```
 
-* **RARS** (simulador RISC-V):
-  [RARS](https://github.com/TheThirdOne/rars/releases).
+* **RARS** (simulador RISC-V): [RARS](https://github.com/TheThirdOne/rars/releases).
 
 ### Verificació de l'entorn
 
@@ -44,12 +42,11 @@ Comproveu que el projecte renderitza correctament abans de fer push. Des de la l
 quarto render --to html
 ```
 
-* Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. A les etiquetes (provisionals) han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
+* Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
 ### Protocol de contribució
 
-La branca `main` està **protegida**: ningú hi fa commits directament.
-Tot canvi s'integra a través d'una **Merge Request (MR)**.
+La branca `main` està **protegida**: ningú hi fa commits directament. Tot canvi s'integra a través d'una **Merge Request (MR)**.
 
 El flux per a qualsevol contribució és:
 
@@ -105,17 +102,13 @@ La branca `main` està protegida. El nivell d'accés és el següent:
 | Maintainer | ✓ (canvis trivials) | ✓ |
 | Developer | ✗ | ✓ |
 
-Els **Maintainers** poden fer push directe a `main` exclusivament per a
-canvis trivials, definits com aquells que afecten **un sol fitxer** i
-**menys de 5 línies**. Per exemple:
+Els **Maintainers** poden fer push directe a `main` exclusivament per a canvis trivials, definits com aquells que afecten **un sol fitxer** i **menys de 5 línies**. Per exemple:
 
 * Correccions tipogràfiques.
 * Canvis d'una sola línia en fitxers de configuració (`_quarto.yml`, `.gitignore`).
 * Actualitzacions de `CLAUDE.md`.
 
-Qualsevol altre canvi, independentment del rol, requereix una **Merge Request**.
-
-Els **Developers** sempre han d'usar el flux de Merge Request, sense excepcions.
+Qualsevol altre canvi, independentment del rol, requereix una **Merge Request**. Els **Developers** sempre han d'usar el flux de Merge Request, sense excepcions.
 
 ### Renderitzar el projecte
 
@@ -133,42 +126,54 @@ quarto render             # genera les dues sortides
 
 Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapidesa. Feu `quarto render` complet (HTML + PDF) com a verificació final abans d'obrir la Merge Request.
 
-## Quarto
+## Format
+
+### Quarto: notes generals
 
 * Ni les etiquetes (*labels*) ni els IDs poden incloure guions baixos (`_`).
-* Una bona font per aprendre és la [pròpia documentació de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/)
+* Una bona font per aprendre és la [pròpia documentació de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/).
 
 ### Centrats
 
-* **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tlb-}`, etc. no cal pq ja centren automàticament
-    * Imatges
-    * Mermaids (diagrames renderitzats in-line)
+* **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tbl-}`, etc. no cal perquè ja centren automàticament.
+    * Imatges dins callouts.
+    * Mermaids (diagrames renderitzats in-line).
 * **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100% de l'amplada.
-    * Taules
-    * Elements de bloc
+    * Taules.
+    * Elements de bloc.
 
 ### Callouts {#sec-callouts}
 
-* Tots han d'anar etiquetats (e.g., `::: {#nte-TODO .callout-note}`). Cal substituir el `TODO` de l'etiqueta per una cadena de caràcters única.
-* Sempre s'ha utilitzar l'etiqueta corresponent (e.g. `@nte-TODO`) quan es fa referència a un callout, des del cos del text, altres callouts, etc.
-    * Cal assegurar que no hi ha cap `-TODO` al codi abans d'actualitzar el repositori.
-* `## TODO títol`: No és obligatori, especialment per callouts curts.
-* **Localització dins del cos del text:** A continuació de la referència o explicació al text
+* Tots han d'anar etiquetats (p. ex. `::: {#nte-TODO .callout-note}`). Cal substituir el `TODO` de l'etiqueta per una cadena de caràcters única.
+* Sempre s'ha d'usar l'etiqueta corresponent (p. ex. `@nte-TODO`) quan es fa referència a un callout des del cos del text, altres callouts, etc.
+* Cal assegurar que no hi ha cap `-TODO` al codi abans d'actualitzar el repositori.
+* El títol `## títol` no és obligatori, especialment per a callouts curts.
+* **Localització dins del cos del text:** a continuació de la referència o explicació al text.
 * No hi ha d'haver repeticions de callouts: ús de referències creuades.
+<!-- TODO: Revisar criteris de numeració de callouts i aparença -->
 
 #### RISC-V (`.callout-note`)
 
-* **Ús:** Material de referència d'assemblador de RISC-V: Instruccions, pseudoinstruccions, directives, registres
-* **Continguts nous avaluables:** Sí
-* **Introducció al cos del text:** Sempre que sigui possible
-* **Referències des del cos del text:** Sempre que el text hi faci referència (desitjable, però no necessari)
+::::: {layout="[100,-1,100]"}
+:::: {}
+
+* **Ús:** Material de referència d'assemblador de RISC-V: instruccions, pseudoinstruccions, directives, registres.
+* **Continguts nous avaluables:** Sí.
+* **Introducció al cos del text:** Sempre que sigui possible.
+* **Referències des del cos del text:** Sempre que el text hi faci referència (desitjable, però no necessari).
 * **Particularitats:**
-    * Si el contingut del callout també va a la secció de compendi "RISC-V", s'ha de fer creant un fitxer a `/riscv/` i emprant [`include`](https://quarto.org/docs/authoring/includes.html) tant al Tema en qüestió com al compendi
-    * Les figures dins de `{.callout-note}` no porten etiqueta `#fig-` ni caption.
-    * Les taules dins de `{.callout-note}` no porten etiqueta `#tbl-` ni caption.
+    * Si el contingut del callout també va a la secció de compendi "RISC-V", s'ha de fer creant un fitxer a `/riscv/` i emprant [`include`](https://quarto.org/docs/authoring/includes.html) tant al tema en qüestió com al compendi.
+    * Les figures i taules dins de `{.callout-note}` no porten etiqueta `#fig-`/`#tbl-` ni caption.
+* **Títols de callout ISA:** segueixen el patró `## <extensió> ISA — <descripció>`:
+    * `## RV32I ISA — `, `## Zicsr ISA — `, `## M ISA — `, `## F ISA — `
+    * `## RV32I ABI — `, `## Pseudoinstruccions — `, `## Directives — `
+    * `## RARS — `, `## RV32I Registres — `
+
+::::
+:::: {}
 
 ::: {#nte-TODO .callout-note}
-## RV32I — Instruccions de lectura/escriptura a memòria
+## RV32I ISA — Instruccions de lectura/escriptura a memòria
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
 {{< include referencies/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}
@@ -186,32 +191,22 @@ Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapide
 :::
 ```
 
-Les opcions són:
-
-* Cap per a `RISC-V` (ja és el títol d'aquest callout)
-* `RARS —`
-* `RV32I Registres —`, `Extensió F Registres —`
-* `RV32I ISA — `, `M ISA —`, `F ISA —`
-* `RV32I ABI —`
-* `Pseudoinstruccions —`
-* `RV32I —`
-* `Directives —`
-* TODO si `C —` => el títol d'aquest callout no pot ser `RISC-V` 
-
 La referència és @nte-TODO.
+::::
+:::::
 
 #### Criteri EC (`.callout-important`)
 
 ::::: {layout="[100,-1,100]"}
 :::: {}
 
-* **Ús:** Criteris de l'assignatura
-* **Continguts nous avaluables:** Sí
-* **Introducció al cos del text:** No
+* **Ús:** Criteris de l'assignatura.
+* **Continguts nous avaluables:** Sí.
+* **Introducció al cos del text:** No.
 * **Particularitats:**
-    * Sense títol
-    * Curt
-    * Ressaltats **negretes**
+    * Sense títol.
+    * Curt.
+    * Ressaltats en **negretes**.
 
 ::::
 :::: {}
@@ -236,12 +231,12 @@ La referència és @imp-TODO.
 :::: {}
 
 * **Ús:** Contingut indispensable, observació fonamental, recordatori bàsic, etc.
-* **Continguts nous avaluables:** Sí
+* **Continguts nous avaluables:** Sí.
 * **Introducció al cos del text:** No. És tan important que s'ha de llegir com un ressaltat del cos del text.
 * **Particularitats:**
-    * Sense títol
-    * Curt
-    * Ressaltats **negretes**
+    * Sense títol.
+    * Curt.
+    * Ressaltats en **negretes**.
 
 ::::
 :::: {}
@@ -262,17 +257,16 @@ La referència és @cau-TODO.
 
 #### Exemple (`.callout-tip`)
 
-* Pot ser en format **Pregunta:** → **Solució:**  → **Resposta:**
-    * A T2 n'hi ha bastants
-
 ::::: {layout="[100,-1,100]"}
 :::: {}
 
-* **Ús:** Exemples per il·lustrar explicacions
-* **Continguts nous avaluables:** Marginalment, només detalls, observacions, etc.
-* **Introducció al cos del text:** No
-* **Referències des del cos del text:** Només té sentit fer-hi referència explícita, per exemple per il·lustrar alguna explicació.
-* **Particularitats:** 
+* **Ús:** Exemples per il·lustrar explicacions.
+* **Continguts nous avaluables:** Marginalment, només detalls i observacions.
+* **Introducció al cos del text:** No.
+* **Referències des del cos del text:** Només té sentit fer-hi referència explícita per il·lustrar alguna explicació.
+* **Particularitats:**
+    * Pot ser en format **Pregunta:** → **Solució:** → **Resposta:**.
+    * Veu en segona persona del plural (*calculeu*, *determineu*, *suposeu que...*).
 
 ::::
 :::: {}
@@ -285,11 +279,11 @@ La referència és @cau-TODO.
 ::: {#tip-TODO .callout-tip}
 ## TODO títol
 
-``` {.C filename="C"}
+``` {.c filename="C"}
 
 ```
 
-``` {.s filename="asm"}
+``` {.s filename="RV32I"}
 
 ```
 :::
@@ -304,14 +298,12 @@ La referència és @tip-TODO.
 ::::: {layout="[100,-1,100]"}
 :::: {}
 
-* **Ús:** Contingut addicional, d'enriquiment, etc.
-* **Continguts nous avaluables:** No
-* **Introducció al cos del text:** Mai
-* **Introducció/referència al cos del text:** Mai
-* **Particularitats:** 
-    * Sí hi ha més d'una línia
-        * `collapse=true`
-        * Llavors porta títol
+* **Ús:** Contingut addicional, d'enriquiment, no avaluable.
+* **Continguts nous avaluables:** No.
+* **Introducció/referència al cos del text:** Mai.
+* **Particularitats:**
+    * Si hi ha més d'una línia: `collapse=true` i porta títol.
+
 ::::
 :::: {}
 
@@ -334,27 +326,39 @@ La referència és @wrn-TODO.
 ### Prefixos reservats
 
 | Prefix d'etiqueta | Objecte | Callout | Color (light) |
-| :---    | :---           | :---                  | :---    |
-| `#nte-` | RISC-V         | {.callout-note}       | Verd    |
-| `#imp-` | Criteri EC     | {.callout-important}  | Blau    |
-| `#cau-` | Essencial      | {.callout-caution}    | Vermell |
-| `#tip-` | Exemple        | {.callout-tip}        | Groc    |
-| `#wrn-` | Aprofundiment  | {.callout-warning}    | Lila    |
-| `#fig-` | Figura         |                       |         |
-| `#eq-`  | Equació        |                       |         |
-| `#tbl-` | Taula          |                       |         |
+| :--- | :--- | :--- | :--- |
+| `#nte-` | RISC-V | {.callout-note} | Verd |
+| `#imp-` | Criteri EC | {.callout-important} | Blau |
+| `#cau-` | Essencial | {.callout-caution} | Vermell |
+| `#tip-` | Exemple | {.callout-tip} | Groc |
+| `#wrn-` | Aprofundiment | {.callout-warning} | Lila |
+| `#fig-` | Figura | | |
+| `#eq-` | Equació | | |
+| `#tbl-` | Taula | | |
+| `#sec-` | Secció | | |
 
-Disponibles:`#lst- #thm- #lem- #cor- #prp- #cnj- #def- #exm- #exr- #sol- #rem- #alg- #sec`
+Disponibles: `#lst- #thm- #lem- #cor- #prp- #cnj- #def- #exm- #exr- #sol- #rem- #alg-`
 
 ### Blocs de codi
 
+El camp `filename` indica el llenguatge o el context del bloc:
+
+| Contingut | Sintaxi |
+| :--- | :--- |
+| C | ` ```{.c filename="C"} ` |
+| Assemblador RV32I | ` ```{.s filename="RV32I"} ` |
+| Assemblador RV32IM | ` ```{.s filename="RV32IM"} ` |
+| Assemblador RV32IF | ` ```{.s filename="RV32IF"} ` |
+| Assemblador RV32IZicsr | ` ```{.s filename="RV32IZicsr"} ` |
+| Bash | ` ```bash ` |
+
 :::: {layout="[100,-1,100]"}
 ::: {}
-``` {.C filename="C"}
+``` {.c filename="C"}
 int main(){}
 ```
 ```` code
-``` {.C filename="C"}
+``` {.c filename="C"}
 
 ```
 ````
@@ -369,18 +373,15 @@ int main(){}
 
 ```
 ````
-::: 
+:::
 ::::
 
-#### Estil de codi
-##### C
+#### Estil de codi C
 
-* Indentats: múltiples de 4
-* Comentaris
-    * Una sola línia: `//`
-    * Més d'una línia: `/* */`
+* Indentats: múltiples de 4.
+* Comentaris d'una sola línia: `//`. Més d'una línia: `/* */`.
 
-#### RISC-V
+#### Estil de codi RISC-V
 
 @imp-codi-format-criteris
 
@@ -388,78 +389,17 @@ int main(){}
 
 Regla dels `:` addicionals:
 
-* Estrictament, Quarto només imposa pujar un nivell (e.g., `:::` → `::::`) quan s'aniuen `divs` del mateix tipus (e.g., dos `:::` genèrics o dos `::: {.callout-note}` de Quarto).
-* Però a EC es pot usar facilitar-ne la gestió. 
+* Estrictament, Quarto només imposa pujar un nivell (p. ex. `:::` → `::::`) quan s'aniuen `divs` del mateix tipus.
+* A EC s'usa un nivell addicional per facilitar-ne la gestió visual.
 
 | EC | Quarto |
 | --- | --- |
 | `::::` -- `::: {.callout-note}` -- `:::` -- `::::` | `:::` -- `::: {.callout-note}` -- `:::` -- `:::` |
 | `:::: {.callout-note}` -- `:::` -- `:::` -- `::::` | `::: {.callout-note}` -- `:::` -- `:::` -- `:::` |
 
-:::: {layout="[100,-1,100]"}
-::: {}
-``` code
-::::
-:::
+#### HTML: comportament en callouts encastats
 
-:::
-:::
-
-:::
-::::
-```
-:::
-::: {}
-````` code
-````
-```
-
-```
-```
-
-```
-````
-`````
-:::
-::::
-
-::: {#nte-instruccions-Tipus-S .callout-note}
-## RV32I ISA — Format Tipus-S (instruccions d'emmagatzemament)
-:::{style="text-align: center;"}
-<!-- ![](https://docs.riscv.org/reference/isa/unpriv/_images/svg-5d013bc40702f55441bc51b0f78d8e0364674976.svg){width="90%"} -->
-![](figures/svg-5d875942584dea27_typeR.png){width="90%"}
-:::
-:::
-
-### Columnes
-
-:::: {layout="[50,-1,100]"}
-::: {}
-* Els valors negatius insereixen una columna espaiadora d'amplada relativa al valor
-:::
-::: {}
-
-```` code
-:::: {layout="[50,-1,100]"}
-::: {}
-
-Columna 1
-
-:::
-
-::: {}
-
-columna 2
-
-:::
-::::
-````
-:::
-::::
-
-#### HTML Comportament en callouts encastats
-
-* Es respecta la separació (`-1` del `layout=`), però no el repartiment (`100` `100` del `layout=`) si hi ha línies de text que no hi caben. També si són al header del callout (e.g. @sec-contrib-callout-aprofundiment)
+* Es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben. Vegeu @sec-contrib-callout-aprofundiment.
 
 ### Figures
 
@@ -480,7 +420,26 @@ La referència és @fig-TODO1.
 ::::
 :::::
 
-### Figures-taula (e.g. representació de memòria)
+Figures SVG amb variants light/dark:
+
+``` code
+::: {#fig-nom-figura}
+:::{.light-content style="text-align: center;"}
+![](figures/nom_figura_light.svg)
+:::
+:::{.dark-content style="text-align: center;"}
+![](figures/nom_figura_dark.svg)
+:::
+Caption de la figura.
+:::
+```
+
+* Les figures i taules dins de `{.callout-note}` no porten etiqueta `#fig-`/`#tbl-` ni caption.
+* Tots els diagrames nous es generen com a SVG (no Mermaid).
+<!-- TODO: Migrar els diagrames Mermaid existents a SVG -->
+<!-- TODO: Definir mides recomanades per a cada context (dins callout, cos del text, columnes) -->
+
+### Figures-taula (p. ex. representació de memòria)
 
 ::::: {layout="[50,-1,100]"}
 :::: {}
@@ -492,7 +451,7 @@ La referència és @fig-TODO1.
 | ... | ... |
 | 0xFFFFFFFF | TODO |
 
-Caption. 
+Caption.
 :::
 
 ::::
@@ -505,7 +464,7 @@ Caption.
 | ... | ... |
 | 0xFFFFFFFF | TODO |
 
-Caption. 
+Caption.
 :::
 ```
 
@@ -513,48 +472,10 @@ La referència és @fig-memoria-TODO.
 :::
 ::::
 
-### Mermaids
-
-:::: {layout="[50,-1,100]"}
-::: {}
-* TODO: Revisió completa
-* De moment
-    * en PNG (`_quarto.yml` `mermaid-format: png`) perquè SVG té `height=480` hardcoded => espais en blanc (o trim? -no provat)
-    * Centrat: `::: {style="margin: auto;"} :::`
-    * `fig-width: 100%` no respecta el percentatge, però activa el *resize* per amplada del navegador
-        * `::: {style="text-align: center; width=100%;"}` també centra, però no activa *resize* => pitjor
-:::
-::: {}
-``` {mermaid}
-%%| label: fig-mermaid-TODO
-%%| fig-cap: "Exemple de mermaid. El control d'amplada (`fig-width: 1%`, qualsevol percentatge) no és respectat, però si s'omet es perd el resize d'adaptació a l'amplada del navegador."
-%%| fig-width: 100%
-
-flowchart LR
-    A["Host"] <-->|"Control"| B["Sonda"]
-    B <-->|"Control"| C["Target"]
-```
-
-```` code
-``` {mermaid}
-%%| label: fig-mermaid-TODO
-%%| fig-cap: "Exemple de *mermaid*."
-%%| fig-width: 100%
-
-flowchart LR
-    A["Host"] <-->|"Control"| B["Sonda"]
-    B <-->|"Control"| C["Target"]
-```
-````
-
-La referència és @fig-mermaid-TODO
-:::
-::::
-
 ### Taules
 
 * Caption només obligatori en el cos del text.
-* Hi ha l'opció de `.hover`
+* Hi ha l'opció de `.hover`.
 
 | A | B | C | D |
 | --- | :--- | :---: | :--- |
@@ -567,9 +488,15 @@ La referència és @fig-mermaid-TODO
 | defecte | esquerra | centre | dreta |
 : Caption de la taula opcional {#tbl-TODO tbl-colwidths="[15,15,55,15]" style="width: 40%; margin: auto;" .striped}
 ```
+
 La referència és @tbl-TODO.
 
 ### Equacions
+
+<!-- TODO: Definir criteri de numeració d'equacions (només les referenciades? Totes? Les importants?) -->
+<!-- TODO: Definir criteri d'ús de LaTeX math vs. backticks dins del text:
+     contextos: cos del text, títols de secció, títols de callout, cel·les de taula,
+     captions de figura, captions de taula, blocs de codi (comentaris), etiquetes SVG -->
 
 :::: {layout="[20,-1,100]"}
 ::: {}
@@ -589,11 +516,10 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 
 ## Llenguatge
 
-* S'aniran millorant/definint a mesura que s'identifiquin necessitats, patrons, etc. durant la migració.
+### Referència normativa
 
-### Referències lingüístiques
-
-* La norma general és l'IEC (Institut d'Estudis Catalans).
+* La norma general és l'**IEC** (Institut d'Estudis Catalans): [DIEC2](https://dlc.iec.cat/) i [Optimot](https://optimot.cat/).
+* El català normatiu és el criteri de resolució per a qualsevol dubte lèxic o ortogràfic no cobert explícitament per aquesta guia.
 
 ### Criteris generals
 
@@ -602,62 +528,92 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
     * En els sintagmes catalans (títols inclosos) només la primera lletra en majúscula.
 * **Després de dos punts:** minúscula en enumeracions i explicacions breus; majúscula en citacions textuals i paràgrafs independents.
 * **Nombres:**
-    * Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres
-    * La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`
-* **Veu impersonal:** Sempre: "Cal verificar que no hi ha errors" (no "hem de verificar que no hi ha errors"), "un PC" (no "el teu PC"). Excepte, però preferible en impersonal:
-    * **Preguntes i respostes dins de `{.callout-tip}`:** Els enunciats de problemes i les seves respostes poden usar la segona persona del plural (*calculeu*, *determineu*, *suposeu que...*), ja que es dirigeixen directament a l'estudiant en un context d'exercici.
-    * **Instruccions operatives pas a pas:** Les seqüències numerades d'instruccions tècniques (instal·lació, configuració, execució de comandes) usen l'imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*). Aquesta és la forma recomanada per a manuals d'usuari en català i facilita la comprensió de l'ordre d'accions.
+    * Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres.
+    * La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`.
+* **Veu impersonal:** Sempre: "Cal verificar que no hi ha errors" (no "hem de verificar"). Excepcions:
+    * **`{.callout-tip}`:** segona persona del plural (*calculeu*, *determineu*, *suposeu que...*).
+    * **Instruccions operatives pas a pas:** imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*).
 
 ### Puntuació
-* **Punt d'acabament de frase:** Sempre. Totes les frases del cos del text, incloses les llistes de vinyetes (*bullet lists*), han d'acabar obligatòriament en punt.
+
+* **Punt d'acabament de frase:** Sempre. Totes les frases del cos del text, incloses les llistes de vinyetes, han d'acabar obligatòriament en punt.
 * **Negretes acabades en dos punts:** Els dos punts també en negreta.
 * **Nombres decimals:** Amb coma, no amb punt. Ex: "0,5 V", "3,14", $1{,}045$.
 
-### Ressaltat conceptual estratègic (ús de negretes)
+### Ressaltat conceptual (negretes)
 
 * **Conceptes nuclears:** Paraules que defineixen l'essència de la secció (ex: **abstracció**, **ISA**).
 * **Components del sistema:** Elements de l'arquitectura (ex: **registres**, **unitat de control**).
 * **Atributs clau:** Paraules que marquen diferències operatives (ex: **màxim rendiment**, **més lenta**).
 * **Sigles i acrònims:** En la seva definició i aparicions clau.
 * **Referències a objectes:** (ex: "Tal com mostra la **Figura 1.2**").
+<!-- TODO: Definir criteri per a negretes dins de callouts vs. cos del text -->
 
-### Anglicismes
+### Anglicismes i terminologia obligatòria
 
 * **Primera aparició:** Traducció al català seguida de l'anglicisme en cursiva i entre parèntesis. Exemple: `biblioteques de funcions` (*libraries*).
 * **Aparicions posteriors:** Es pot utilitzar l'anglicisme directament, sempre sense cursiva.
 * **Triples asteriscs (`***`):** S'utilitzen exclusivament quan el terme és un anglicisme en la seva primera aparició **i alhora** és un concepte nuclear que requereix negreta. Exemple: `**maquinari** (***hardware***)`.
 * **Terminologia obligatòria:** Substituir sistemàticament *hardware* per **maquinari** i *software* per **programari**.
 
+#### Substitucions obligatòries
+
+<!--- cSpell:disable --->
+| Terme original | Substitució en català | Observacions |
+| :--- | :--- | :--- |
+| hardware / HW | maquinari | Terme preferent. |
+| software / SW | programari | Terme preferent. |
+| fallo | fallada | Esmena lèxica. |
+| anidat / anidament | aniuat / aniuament | Esmena lèxica. |
+| event | esdeveniment | Esmena lèxica. |
+| empotrat | encastat | p. ex. *embedded processors*. |
+| cache | cau | Especialment en títols. |
+| load/store | lectura/escriptura | |
+| offset | desplaçament | |
+| branch | salt | |
+| jump | salt | |
+| overflow | sobreeiximent | |
+| underflow | subdesbordament | |
+| promig | mitjana | |
+<!--- cSpell:enable --->
+
 ### Sigles
 
-* ***La primera vegada** que apareixen s'han d'escriure les paraules completes seguides de la sigla entre parèntesis en majúscules. Exemple: `***Instruction Set Architecture*** (**ISA**)`.
-* Cada sigla **s'ha de recollir** al de **compendi de sigles** `sigles.qmd`.
+* La **primera vegada** que apareixen s'han d'escriure les paraules completes seguides de la sigla entre parèntesis en majúscules. Exemple: `***Instruction Set Architecture*** (**ISA**)`.
+* Cada sigla **s'ha de recollir** al **compendi de sigles** `sigles.md`.
 * Un cop definida s'ha d'usar sempre (en majúscules i sense cursiva). Pot anar en negreta.
 
-### Referències creuades
+**Criteri d'inclusió a `sigles.md`:** s'inclou tota sigla que aparegui al **cos del text** o als callouts `{.callout-caution}`, `{.callout-note}`, `{.callout-tip}` o `{.callout-important}`.
 
-* **Referències:**
-    * Com més precises siguin, millor. De menys preferència a més: Tema, secció, subsecció, callout, figura, taula, equació.
-    * **Als temes:** Manual (al [Tema 3](T3.html))
-    * **La resta:** Automàtiques (`\@sec-exemple`).
-    * Article
-        * **Amb:** "La `\@sec-exemple` / `\@fig-exemple` / `\@tbl-exemple` mostra ..."
-        * **Sense:** Els callouts "`\@nte-exmpel` recull ..."
-* **Figures i Taules:** No han d'estar necessàriament referenciades al text (ex: "Tal com mostra la **Figura 1.2**").
+S'exclouen:
 
-### Backticks (\``)
+* Sigles dels `{.callout-warning}` (aprofundiments no avaluables).
+* Noms de camps individuals de registres i bits de control (p. ex. `MIE`, `MPIE`, `VPN`, `PPN`, `ASID`).
+* Sigles institucionals trivials (`UPC`, `GEI`, `FIB`) i referències a temes (`T7`, `T8`…).
+* Unitats de mida (`KB`, `GB`, `MB`…).
 
-* **Sense:**
-    * RISC-V, RV32I, Extensió "M".
+Les entrades s'ordenen **alfabèticament** i segueixen el format:
+
+```markdown
+**SIGLA** *definició en anglès* o bé definició en català si no n'hi ha d'establerta en anglès
+```
+
+### Backticks
+
+<!-- TODO: Definir criteri per a noms de registres CSR al cos del text -->
+
+* **Sense backtick:**
+    * RISC-V, RV32I, Extensió "M", Extensió "Zicsr".
     * Tipus d'instrucció S, B.
-    * Ctrl + R
-    * A RARS "F3" "Execute" "*Settings*"
-    * Operacions $rd = M_{w}[rs1 + SignExt(offset)]$
-* **Amb:**
-    * Registres ISA `x0--x6`, ABI `a0--a7`.
-    * operands `rd`, `rs1`, `rs2`.
-    * Instruccions `ret`, `addi`, `lw`.
-    * RARS, directives `.text`, `.data`.
+    * Ctrl + R.
+    * A RARS: "F3", "Execute", "*Settings*".
+    * Operacions matemàtiques: $rd = M_{w}[rs1 + SignExt(offset)]$.
+* **Amb backtick:**
+    * Registres ISA `x0`–`x31`, ABI `a0`–`a7`.
+    * Registres CSR `mepc`, `mcause`, `mstatus`, `mtvec`, `mip`, `mie`, `mtval`, `satp`, etc.
+    * Operands `rd`, `rs1`, `rs2`.
+    * Instruccions `ret`, `addi`, `lw`, `ecall`, `mret`, `sfence.vma`.
+    * Directives `.text`, `.data`.
     * Codi `addi    t0, s1, 100`, `int main() { return 0; }`.
     * Camps de bits `opcode`, `funct3`.
     * Variables `i` i altres elements de codi `>>`, `i++`.
@@ -665,89 +621,87 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
     * Noms de fitxers `T1.qmd`, `bibliografia.qmd`.
     * Noms de branques `contingut/t5-vectors`.
     * Noms d'etiquetes `#nte-TODO`, `@sec-callouts`.
-    * Adreces de memòria concretes `0x00400000`, `0x10100000--0x10100003`.
+    * Adreces de memòria concretes `0x00400000`, `0x10100000`–`0x10100003`.
 
+### Referències creuades
+
+* Com més precises siguin, millor. Ordre de preferència creixent: Tema → secció → subsecció → callout → figura → taula → equació.
+* **Als temes:** manual, amb enllaç explícit: `al [Tema 3](T3.html)`.
+* **La resta:** automàtiques (`@sec-exemple`, `@fig-exemple`, `@tbl-exemple`, `@nte-exemple`).
+* Article:
+    * **Amb:** "La @sec-exemple / @fig-exemple / @tbl-exemple mostra..."
+    * **Sense:** "@nte-exemple recull..."
+* **Figures i Taules:** no han d'estar necessàriament referenciades al text.
 
 ### Gestió d'errades
 
-### Substitucions obligatòries (castellanismes, anglicismes i altres termes no adequats)
-<!--- cSpell:disable --->
-| Terme original | Substitució en català | Observacions |
-| :--- | :--- | :--- |
-| hardware / HW | maquinari | Terme preferent. |
-| software / SW | programari** | Terme preferent. |
-| fallo | fallada | Esmena lèxica. |
-| anidat / anidament | aniuat / aniuament | Esmena lèxica. |
-| event | esdeveniment | Esmena lèxica. |
-| empotrat | encastat | e.g., *embedded processors*. |
-| cache | cau | Especialment en títols. |
-| load/store | lectura/escriptura |  |
-| offset | desplaçament |  |
-| branch | salt |  |
-| jump | salt |  |
-| overflow | sobreeiximent | desboradament |
-| underflow | subdesbordament |  |
-| promige | mitjana |  |
-<!--- cSpell:enable --->
+<!-- TODO: Definir protocol de gestió d'errades detectades post-commit -->
 
 ## Contingut
 
-* S'ha d'evitar emprar conceptes, termes, etc. que encara no s'han introduït al cos del text. Si es fa, cal referenciar la secció o el callout on s'explica el concepte en detall (en cas d'aniuament, s'ha de fer referència a l'ítem més concret; e.g., subsecció vs. tema).
-* No s'ha de repetir informació (Don't Repeat Yourself, DRY)
-    * S'ha de fer servir referències
-    * Per recordatoris: essencial (callout-caution)
-* **Mnemònics:** El primer cop, si no estan prop d'una taula a on se n'indiqui l'expansió, han d'anar seguits de l'expansió entre parèntesis. Ex: `addi` (***add immediate***). 
-* No es permet que un nivell de profunditat tingui un sol ítem. En aquest cas, s'ha de pujar el contingut un nivell (ex: si només hi ha un callout dins d'una subsecció, s'hauria de pujar el callout al nivell de subsecció i eliminar aquesta subsecció).
-* MIPS: No s'ha de fer cap referència (tret d'on ja s'ha fet). L'arquitectura de referència és RISC-V.
+### Criteri general
 
-### T2 i T3
-* **Modes d'adreçament:** quatre modes a EC: registre, immediat,
-  base+desplaçament, relatiu al PC. `lui` → immediat; `jalr` →
-  base+desplaçament.
-* **Terminologia de salts:** relatiu al PC (`beq`, `jal`) vs.
-  indirecte (`jalr`). Tots els salts condicionals de RV32I són
-  relatius al PC.
-* **Etiquetes de bucle:** `bucle:` i `fibucle:` als exemples
-  didàctics; en la pràctica s'admeten etiquetes descriptives
-  (`while:`, `fiwhile:`, etc.).
-* **Registres als exemples:** `t0`, `t1`, `t2`... tant en C com
-  en assemblador per eliminar el soroll del mapatge.
-* **`la label+offset`:** admès a EC (pissarra i exàmens) però no
-  suportat per RARS; al laboratori cal `la` + `addi`.
-* **Optimitzacions de bucle:** numeració contínua entre temes
-  (#0 i #1 a T3, #2 i #3 a T4).
-* **Pseudoinstruccions vs. macros:** distinció explícita establerta
-  a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són
-  locals al programa.
+* S'ha d'evitar emprar conceptes, termes, etc. que encara no s'han introduït al cos del text. Si es fa, cal referenciar la secció o el callout on s'explica el concepte en detall.
+* No s'ha de repetir informació (*Don't Repeat Yourself*, DRY): ús de referències creuades. Per a recordatoris: `{.callout-caution}`.
+* **Mnemònics:** El primer cop, si no estan prop d'una taula on se n'indiqui l'expansió, han d'anar seguits de l'expansió entre parèntesis. Ex: `addi` (***add immediate***).
+* No es permet que un nivell de profunditat tingui un sol ítem. En aquest cas, s'ha de pujar el contingut un nivell.
+* L'arquitectura de referència és RISC-V. No s'ha de fer cap referència a MIPS (tret d'on ja s'ha fet explícitament).
 
-### T4
-* Prerequisit implícit (no numerat): **Extracció d'invariants**
-* **Optimització #1**: Accés seqüencial
-* **Optimització #2**: Avaluació de la condició al final
-* **Optimització #3**: Eliminació de la variable d'inducció
+### Extensions RISC-V a EC
+
+A EC s'estudien les extensions següents:
+
+| Extensió | Descripció | Tema |
+| :--- | :--- | :--- |
+| RV32I | Base entera | Tots |
+| M | Multiplicació i divisió entera | T4 |
+| F | Coma flotant | T5 |
+| Zicsr | Registres de control i estat | T9 |
+
+El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`, `RV32IM`, `RV32IF`, `RV32IZicsr`.
+
+### Decisions per tema
+
+#### T2 i T3
+
+* **Modes d'adreçament:** quatre modes a EC: registre, immediat, base+desplaçament, relatiu al PC. `lui` → immediat; `jalr` → base+desplaçament.
+* **Terminologia de salts:** relatiu al PC (`beq`, `jal`) vs. indirecte (`jalr`). Tots els salts condicionals de RV32I són relatius al PC.
+* **Etiquetes de bucle:** `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.).
+* **Registres als exemples:** `t0`, `t1`, `t2`... tant en C com en assemblador per eliminar el soroll del mapatge.
+* **`la label+offset`:** admès a EC (pissarra i exàmens) però no suportat per RARS; al laboratori cal `la` + `addi`.
+* **Optimitzacions de bucle:** numeració contínua entre temes (#0 i #1 a T3, #2 i #3 a T4).
+* **Pseudoinstruccions vs. macros:** distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
+
+#### T4
+
+* Prerequisit implícit (no numerat): **Extracció d'invariants**.
+* **Optimització #1**: Accés seqüencial.
+* **Optimització #2**: Avaluació de la condició al final.
+* **Optimització #3**: Eliminació de la variable d'inducció.
+
+#### T9
+
+* **`ecall`:** la convenció de crides al sistema Linux/RISC-V usa `a7` per al codi de servei (no `a0`) i admet fins a sis arguments (`a0`–`a5`).
+* **RSE:** cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
+* **`mepc`:** en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del hardware.
+* **Zicsr:** les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
+* **Mode S:** el tractament de fallades de TLB per programari requereix mode S (`satp`, `stval`, `sfence.vma`). El cos del text descriu el mecanisme en mode M; l'aprofundiment cobreix mode S.
 
 ## Programació
 
-<!-- TODO * Codi sempre testejat. -->
+<!-- TODO: Definir criteri: codi sempre testejat abans de commit? -->
 
 ### C
 
-* TODO
+<!-- TODO: Completar criteris de codi C -->
 
 ### RISC-V
 
-* TODO Retorn de funcions: `ret`?
-
-## IAs
-
-Cal passar-los sempre els fitxers següents:
-* `CLAUDE.md`
-* `contrib.qmd`
-* `_quarto.yml`
+<!-- TODO: Definir criteri per a `ret` vs. `jalr x0, 0(ra)` al retorn de funcions -->
 
 ## Material gràfic
 
-#### Paleta de colors
+### Paleta de colors
 
 | Element | Light (fill / stroke) | Dark (fill / stroke) |
 | :--- | :--- | :--- |
@@ -760,39 +714,82 @@ Cal passar-los sempre els fitxers següents:
 | Destacat vermell | `#f8d7da` / `#842029` | `#3a1a1e` / `#f1a8ae` |
 : {.striped}
 
-#### Figures de l'estàndard RISC-V
+El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les figures SVG com a les taules amb color. Cada tema pot introduir associacions semàntiques pròpies (per exemple, a T7: blau=memòria cau, verd=memòria principal, groc=SSD, vermell=disc), però sempre dins la mateixa paleta.
 
-##### Generació dark mode
-stroke="black" → stroke="#adb5bd"
+### Convencions SVG
 
+* `width="680"`, `viewBox="0 0 680 H"` on H = contingut + 20 px de buffer.
+* `font-family="'Source Sans Pro', sans-serif"`: `font-size="11"` per a etiquetes de cel·la, `font-size="12"` per a text secundari, `font-size="13"` per a títols de quadrant.
+* Cel·les destacades es dibuixen **sempre al damunt** de les grises (ordre de dibuix: grises primer, destacades després) per evitar solapaments de vores.
+* Cel·les grises: `stroke-width="0.5"`. Cel·les destacades: `stroke-width="1"`.
+* No s'usen línies separadores entre quadrants: només espai buit.
+* Convenció de noms: `T<N>_nom_figura_light.svg` / `T<N>_nom_figura_dark.svg` (guió baix, no guió).
 
-<!-- Generació dark mode: stroke="black" → stroke="#adb5bd" -->
-```
-PREFIX="T9_mie"
+### Generació de la versió dark
 
+Per a figures de l'estàndard RISC-V (stroke negre, text sense color explícit):
+
+```bash
+PREFIX="T9_nom_figura"
 sed 's/stroke="#000000"/stroke="#adb5bd"/g' ${PREFIX}_light.svg | \
     sed 's/<text\b/<text fill="#fff"/g' > ${PREFIX}_dark.svg
-T9_mepc, T9_mtvec, T9_mip, T9_mie i T9_satp -->
 ```
 
-### Sigles
+Per a figures amb paleta completa (generada per Claude):
 
-S'inclou a `sigles.md` tota sigla que aparegui al **cos del text** o als callouts
-`{.callout-caution}`, `{.callout-note}`, `{.callout-tip}` o `{.callout-important}`.
-
-S'exclouen:
-
-- Sigles dels `{.callout-warning}` (aprofundiments no avaluables).
-- Noms de camps individuals de registres i bits de control
-  (p. ex. `MIE`, `MPIE`, `VPN`, `PPN`, `ASID`).
-- Sigles institucionals trivials (`UPC`, `GEI`, `FIB`) i referències a temes (`T7`, `T8`…).
-- Unitats de mida (`KB`, `GB`, `MB`…).
-
-Les entrades s'ordenen **alfabèticament** i segueixen el format:
-
-```markdown
-**SIGLA** *definició en anglès* o bé definició en català si no n'hi ha d'establerta en anglès
+```bash
+# Substitucions de la paleta light → dark (vegeu la taula de paleta)
+python3 -c "
+import sys
+content = open('${PREFIX}_light.svg').read()
+replacements = [
+    ('#f8f9fa','#3d3d3d'), ('#adb5bd','#888'),
+    ('#6c757d','#adb5bd'), ('#343a40','#fff'),
+    ('#cfe2ff','#1a3a5c'), ('#084298','#90bfff'),
+    ('#d1e7dd','#1a3a2a'), ('#0a3622','#90d4aa'),
+    ('#fff3cd','#3a2e00'), ('#664d03','#ffd966'),
+    ('#f8d7da','#3a1a1e'), ('#842029','#f1a8ae'),
+]
+for l, d in replacements:
+    content = content.replace(l, d)
+open('${PREFIX}_dark.svg', 'w').write(content)
+"
 ```
+
+### Integració al `.qmd`
+
+``` code
+::: {#fig-nom-figura}
+:::{.light-content style="text-align: center;"}
+![](figures/nom_figura_light.svg)
+:::
+:::{.dark-content style="text-align: center;"}
+![](figures/nom_figura_dark.svg)
+:::
+Caption de la figura.
+:::
+```
+
+## Visualització
+
+<!-- TODO: Definir format de pàgines PDF (marges, capçaleres, peus de pàgina) -->
+<!-- TODO: Definir contingut i aparença de la barra superior web (navbar) -->
+<!-- TODO: Revisar aparença del sidebar (collapse-level, icones) -->
+<!-- TODO: Definir comportament del mode fosc: quins elements cal revisar manualment -->
+
+## IAs
+
+Cal passar-los sempre els fitxers següents:
+
+* `CLAUDE.md`
+* `contrib.qmd`
+* `_quarto.yml`
+
+Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa. El contingut generat per IA pot contenir errors tècnics subtils, especialment en:
+
+* Valors de registres i codis de causa (verificar sempre contra l'especificació oficial).
+* Terminologia: comprovar substitucions obligatòries i anglicismes.
+* Coherència amb decisions preses en sessions anteriors (vegeu @sec-callouts i les decisions per tema).
 
 :::::::::
-<!-- Aquest `div` s'obre al l'inici del fitxer. No esborreu aquest comentari. -->
+<!-- Aquest `div` s'obre a l'inici del fitxer. No esborreu aquest comentari. -->

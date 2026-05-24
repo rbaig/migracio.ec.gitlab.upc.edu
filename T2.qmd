@@ -53,7 +53,7 @@ A **EC**, s'estudien els aspectes bàsics de l'arquitectura **RISC-V**. Aquesta 
 
 [^-ecmips]: MIPS va ser l'arquitectura de referència d'EC fins al curs 2025/26.
 
-**RISC-V** s'ha dissenyat de forma **modular** mitjançant **extensions** d'una **base** (el mínim per ser considerat RISC-V) com **RV32I** o **RV64I**, on la **paraula nativa** (***word***) és de 32 bits o de 64 bits respectivament.
+**RISC-V** s'ha dissenyat de forma **modular** mitjançant **extensions** d'una **base** (el mínim per ser considerat RISC-V) com **RV32I** o **RV64I**, on la **paraula nativa** (***word***) és de 32 bits o de 64 bits respectivament. Les extensions s'identifiquen amb lletres afegides a la nomenclatura de la base, per exemple **RV32IMF** indica que el processador implementa la base RV32I i les extensions M i F. L'ordre d'aparició de les lletres com a postfix de RV32I està estandarditzat (`IMAFDQLCBJTVPKH`).
 
 ::: {#cau-paraula-nativa .callout-caution}
 La **paraula nativa** (***word***) és la mida de dada que el processador maneja de manera més natural i eficient:
@@ -65,21 +65,31 @@ La **paraula nativa** (***word***) és la mida de dada que el processador maneja
 És una de les característiques determinants de qualsevol arquitectura.
 :::
 
-La modularitat de RISC-V s'expressa mitjançant sufixos: la lletra **G** a **RV32G** o **RV64G** és l'abreviatura de **propòsit general** (***General-purpose***) i indica que el processador inclou el conjunt estàndard d'extensions més comunes. Concretament, la nomenclatura **G** equival a la combinació **IMAFD**.
+La modularitat de RISC-V s'expressa mitjançant sufixos: l
 
 ::: {#nte-riscv-extensions .callout-note}
-## Extensions més comunes
+## G - Extensions més comunes
+
+La lletra **G** (**RV32G**) és l'abreviatura de **propòsit general** (***General-purpose***). Indica que el processador inclou el conjunt estàndard d'extensions **IMAFD + Zicsr + Zifencei**, que són les més habituals i suficients per executar sistemes operatius i aplicacions modernes.
+
 * **M (Multiply):** Multiplicació i divisió per maquinari.
 * **A (Atomic):** Instruccions de sincronització i memòria atòmica.
 * **F (Single-precision Floating-point):** Punt flotant de precisió simple.
 * **D (Double-precision Floating-point):** Punt flotant de doble precisió.
-
-La "**base**, sempre present, és **I (Integer)** (instruccions bàsiques de nombres enters.)
+* **Zicsr:** Accés als registres de control i estat (CSR).
+* **Zifencei:** Instruccions de sincronització d'instruccions.
 :::
 
 A més d'aquestes extensions, és molt habitual afegir-hi la identificada amb la lletra **C** (***Compressed***), que redueix la mida del codi per millorar la **densitat de memòria**, essent la nomenclatura completa més habitual **RV32GC**/**RV64GC**. En el compilador **GNU/GCC**, el paràmetre `-march` permet especificar la combinació d'extensions.
 
 La modularitat de RISC-V és molt potent, però genera un problema pràctic: dos processadors que compleixen la ISA RISC-V poden tenir conjunts d'extensions tan diferents que el programari compilat per a l'un no funcioni a l'altre. Per resoldre aquest problema de portabilitat, RISC-V International defineix els ***profiles*** (perfils): conjunts estandarditzats d'extensions que un processador ha de suportar obligatòriament per poder-se anunciar sota un determinat perfil.
+
+::: {#cau-extensions-vs-profiles .callout-caution}
+No s'ha de confondre la lletra G amb els perfils oficials de RISC-V:
+
+* G (propòsit general): Històricament, la lletra G es va crear com una abreviatura primerenca i pràctica per a I + M + A + F + D, juntament amb les extensions no privilegiades fonamentals Zicsr i Zifencei. Simplement indica a un compilador (com GCC o Clang) que activi un paquet específic i predefinit d'extensions d'una sola lletra.
+* Perfils oficials de RISC-V: Els perfils són els fulls de ruta estandarditzats i versionats que gestiona RISC-V International (per exemple, RVA20, RVA22, RVA23). Defineixen requisits molt més estrictes per a la portabilitat del programari d'aplicació, agrupant no només extensions estàndard d'una sola lletra, sinó també definicions de models de memòria, nivells de privilegi, gestió de memòria cau i subvariants específiques d'extensions Z.
+:::
 
 ::: {#wrn-riscv-profiles .callout-warning collapse=true}
 ## RISC-V — *Profiles*
@@ -98,15 +108,15 @@ Els perfils es diferencien de la nomenclatura d'extensions (`rv32imf`, etc.) en 
 ## Base i extensions de l'assignatura
 A **EC**, només s'estudia:
 
-* La base **RV32I** ([Tema 2](T2.qmd) i [Tema 3](T3.qmd)).
-* L'extensió "**M**", de multiplicació (i divisió) entera ([Tema 4](T4.qmd): Aritmètica d'entera i matrius).
-* L'extensió "**F**", de coma flotant ([Tema 5](T5.qmd): Aritmètica, seccions de coma flotant).
-* L'extensió "**Zicsr**", d'accés als registres de control i estat ([Tema 9](T9.qmd): Excepcions i interrupcions).
+* La base **RV32I**, ([Tema 2](T2.qmd) i [Tema 3](T3.qmd)).
+* L'extensió "**M**", [Tema 4](T4.qmd).
+* L'extensió "**F**", [Tema 5](T5.qmd).
+* L'extensió "**Zicsr**" [Tema 9](T9.qmd).
 
 :::
 
 ::: {#wrn-rv32-vs-rv64 .callout-warning collapse=true}
-## Per què RV32I i no RV64?
+## Per què RV32 i no RV64?
 
 Tots els processadors RISC-V de propòsit general disponibles actualment (SiFive, StarFive, etc.) i els sistemes Linux sobre RISC-V utilitzen la variant de 64 bits (**RV64**). Per tant, és legítim preguntar-se per què a **EC** s'estudia RV32I.
 
@@ -126,8 +136,10 @@ Un cop assentats els conceptes fonamentals amb RV32I, la transició a RV64 és r
 @nte-riscv-rv32i recull les característiques principals de la base **RV32I**. En acabar l'assignatura s'hauran tractat tots els conceptes que hi ha involucrats.
 
 ::: {#nte-riscv-rv32i .callout-note}
-## RV32I — Característiques bàsiques
+## RV32I — Característiques bàsiques i instruccions
 
+Característiques bàsiques:
+* **Obligatòria** en qualsevol processador RISC-V (en la versió corresponent: 32, 64).
 * **Paraula nativa** (***word***) de **32 bits**.
 * **32 registres** de **32 bits** (**x0 fins a x31**, segons l'ISA).
 * El registre **x0** (també anomenat **zero**) està fixat per **maquinari** al valor 0 i, per tant, no es pot modificar.
@@ -135,13 +147,8 @@ Un cop assentats els conceptes fonamentals amb RV32I, la transició a RV64 és r
 * L'espai de memòria és **unificat** (instruccions i dades comparteixen el mateix espai d'adreces).
 * **Model lectura/escriptura** (*load/store*): accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
 * Nombre d'instruccions: **42**
-:::
 
-::: {#nte-rv32i-instruccions-llista .callout-note}
-## RV32I — Totes les instruccions
-
-L'especificació base defineix les instruccions següents:
-
+Totes les instruccions:
 * **Aritmètiques i lògiques:** 
     * **Mode registre:** `add`, `sub`, `and`, `or`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu`
     * **Mode immediat:** `addi`, `andi`, `ori`, `xori`, `slli`, `srli`, `srai`, `slti`, `sltiu`.
@@ -151,7 +158,7 @@ L'especificació base defineix les instruccions següents:
 * **Salts incondicionals:** `jal`, `jalr`.
 * **Sistema:** `ecall`, `ebreak`, `fence`, `fence.tso`
 
-A **EC**, s'estudien totes excepte les de sistema, de les quals només es tracta `ecall`. En aquest tema es veuen les instruccions de càrrega/emmagatzematge i la resta al [Tema 3](T3.qmd).
+A **EC**, s'estudien totes excepte les de sistema, de les quals només es tracta `ecall` (@sec-ecall).
 :::
 
 ::: {#wrn-riscv-ec-toolchain .callout-warning collapse=true}
@@ -197,20 +204,14 @@ El resultat és un fitxer `fitxer.s` amb el codi assemblador RV32I generat pel c
 
 ::: {#nte-extensio-m-instruccions-llista .callout-note}
 ## Extensió M — totes les instruccions
-
-L'extensió **M** afegeix **8 instruccions** de multiplicació i divisió entera:
-
 * **Multiplicació:** `mul`, `mulh`, `mulhsu`, `mulhu`.
 * **Divisió:** `div`, `divu`, `rem`, `remu`.
-
-A **EC**, s'estudia TODO
 :::
 
 ### L'extensió F {#sec-extensio-f}
 
 ::: {#nte-riscv-f .callout-note}
 ## Extensió F — Característiques bàsiques
-
 * Afegeix **aritmètica en coma flotant de precisió simple** (*single-precision floating-point*, 32 bits), seguint l'estàndard **IEEE 754**.
 * Incorpora **32 registres de coma flotant** de 32 bits addicionals: `f0`–`f31`, independents dels registres enters de RV32I.
 * Inclou instruccions de **càrrega i emmagatzemament** (`flw`/`fsw`), **aritmètica** (`fadd.s`, `fsub.s`, `fmul.s`, `fdiv.s`, `fsqrt.s`), **comparació**, **conversió** entre enters i flotants, i operacions **fusionades** (*fused multiply-add*: `fmadd.s`, `fmsub.s`, etc.).
@@ -228,8 +229,6 @@ L'extensió **F** afegeix **26 instruccions** de coma flotant de precisió simpl
 * **Comparació i mínim/màxim:** `feq.s`, `flt.s`, `fle.s`, `fmin.s`, `fmax.s`.
 * **Conversió:** `fcvt.w.s`, `fcvt.wu.s`, `fcvt.s.w`, `fcvt.s.wu`.
 * **Moviment i classificació:** `fmv.x.w`, `fmv.w.x`, `fclass.s`.
-
-A **EC**, s'estudia TODO
 :::
 
 ## Format de les instruccions RV32I {#sec-format-instruccions}
@@ -467,9 +466,9 @@ f = (g + h) - (i - 100);
 Suposant que `f`, `g`, `h`, `i` són variables locals enteres emmagatzemades als registres `t0`, `t1`, `t2`, `t3`:
 
 ```{.s filename="RV32I"}
-add     t4, t1, t2      # t4 = g + h
-addi    t5, t3, -100    # t5 = i - 100
-sub     t0, t4, t5      # f = (g + h) - (i - 100)
+        add     t4, t1, t2      # t4 = g + h
+        addi    t5, t3, -100    # t5 = i - 100
+        sub     t0, t4, t5      # f = (g + h) - (i - 100)
 ```
 :::
 
@@ -594,9 +593,9 @@ A **RARS**, les macros es defineixen amb les directives `.macro` i `.end_macro`:
 
 ```{.s filename="RV32I"}
 .macro zero_elem (%base, %idx)
-    sll     t6, %idx, 2         # offset = idx * 4
-    add     t6, %base, t6       # adreça de l'element
-    sw      zero, 0(t6)         # mem[base + idx*4] = 0
+        sll     t6, %idx, 2         # offset = idx * 4
+        add     t6, %base, t6       # adreça de l'element
+        sw      zero, 0(t6)         # mem[base + idx*4] = 0
 .end_macro
 
 .data
@@ -876,7 +875,7 @@ Com que els registres són de 32 bits, per allotjar-hi un `long long` en calen d
 * Adreçament a nivell de **byte**: Cada adreça identifica **una posició** de memòria que conté **1 byte** (8 bits).
 * És **load/store**: Accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
 * És **little-endian**: El byte de menys pes ocupa l'adreça més baixa.
-* És **virtual**: Les adreces que utilitza el programa són **adreces virtuals** que el processador tradueix a **adreces físiques** mitjançant la MMU (***Memory Management Unit***, [Tema 8](T8.qmd)). <!-- TODO Decidir si incloem aquest text: En el cas de **RV32I**, l'espai d'adreces virtuals és de 32 bits, igual que el d'adreces físiques. -->
+* És **virtual**: Les adreces que utilitza el programa són **adreces virtuals** que el processador tradueix a **adreces físiques** mitjançant la MMU (***Memory Management Unit***, @sec-mv-espais).
 
 <!-- TODO Decidir si aquí o a T8 -->
 ::: {#wrn-memvirt-memfis .callout-warning collapse=true}
@@ -1008,7 +1007,7 @@ A **EC** i a **RARS**, l'**adreça inicial** de les dades de més d'un byte ha d
 No respectar l'alineació:
 
 * A **EC**, es considera un error greu.
-* A **RARS**, genera una excepció (TODO referència a secció concreta de [Tema 9](T9.qmd)) i atura l'execució.
+* A **RARS**, genera una excepció ([Tema 9](T9.qmd)) i atura l'execució.
 ::::
 
 ::: {#wrn-c-tuples .callout-warning collapse=true}
@@ -1044,7 +1043,7 @@ main:
 En executar aquest codi a RARS ("F7": execució línia a línia, "F5": execució contínua), en executar la **L14**, salta una excepció d'**error** d'alineació i s'**avorta** l'execució.
 
 ``` {.code filename="RARS -> Execute -> Messages"}
-Error in /home/roger/backup/uni/UPC/EC/RISC_V/RARS/riscv1.asm line 14: Runtime exception at 0x00400020: Load address not aligned on halfword boundary 0x10010005
+Error in /.../riscv1.asm line 14: Runtime exception at 0x00400020: Load address not aligned on halfword boundary 0x10010005
 ```
 :::
 
@@ -1357,9 +1356,9 @@ El codi següent en **RV32I** executa un `lw` a una **adreça no alineada** i, p
 x:    .word 0xDDCCAABB
 
 .text
-la      t0, x
-addi    t0, t0, 3      # t0 = adreça base + 3
-lw      t1, 0(t0)      # Provoca una excepció d'accés no alineat!
+        la      t0, x
+        addi    t0, t0, 3      # t0 = adreça base + 3
+        lw      t1, 0(t0)      # Provoca una excepció d'accés no alineat!
 ```
 :::
 

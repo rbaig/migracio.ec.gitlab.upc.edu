@@ -77,7 +77,7 @@ El mode en què opera el processador en cada moment es controla mitjançant uns 
 
 L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als **registres de control i estat** (***Control and Status Registers***, **CSR**). Encara que en versions antigues de l'especificació aquestes instruccions formaven part de la ISA base, a partir de la versió 2.2 es van segregar en una extensió independent per permetre implementacions minimalistes sense suport CSR. En la pràctica, qualsevol processador RISC-V que implementi el mecanisme d'excepcions i interrupcions requereix Zicsr.
 
-::: {#nte-Zicsr-instruccions .callout-note}
+::: {#nte-zicsr .callout-note}
 ## Zicsr ISA — Instruccions d'accés als CSR
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
@@ -94,12 +94,12 @@ Les pseudoinstruccions `csrr` i `csrw` són les formes habituals per llegir i es
 
 Les instruccions d'accés als CSR són **privilegiades**: en mode U, intentar executar-les genera una excepció d'instrucció il·legal.
 
-::: {#wrn-Zicsr-pseudoinstruccions .callout-warning collapse=true}
+::: {#wrn-zicsr-pseudoinstruccions .callout-warning collapse=true}
 ## Aprofundiment: variants immediates de les instruccions CSR
 
 Les instruccions `csrrwi`, `csrrsi` i `csrrci` operen igual que `csrrw`, `csrrs` i `csrrc` respectivament, però accepten un immediat de 5 bits sense signe (`uimm5`) en lloc del registre `rs1`. Són útils per activar o desactivar bits individuals d'un CSR sense necessitat de carregar un valor en un registre prèviament.
 
-::: {#nte-Zicsr-immediats .callout-note}
+::: {#nte-zicsr-pseudoinstruccions .callout-note}
 ## Zicsr ISA — Pseudoinstruccions d'accés als CSR (immediats)
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
@@ -395,84 +395,84 @@ El codi següent mostra una RSE mínima que salva tots els registres, identifica
 .section .text.trap, "ax"
 .align 2
 rse:
-    # Reservar espai a la pila per a 30 registres (30 × 4 = 120 bytes; s'ometen x0 i sp)
-    addi    sp, sp, -120
+        # Reservar espai a la pila per a 30 registres (30 × 4 = 120 bytes; s'ometen x0 i sp)
+        addi    sp, sp, -120
 
-    # Salvar tots els registres generals (excepte x0, que és sempre 0)
-    sw      ra,   0(sp)
-    sw      t0,   4(sp)
-    sw      t1,   8(sp)
-    sw      t2,  12(sp)
-    sw      s0,  16(sp)
-    sw      s1,  20(sp)
-    sw      a0,  24(sp)
-    sw      a1,  28(sp)
-    sw      a2,  32(sp)
-    sw      a3,  36(sp)
-    sw      a4,  40(sp)
-    sw      a5,  44(sp)
-    sw      a6,  48(sp)
-    sw      a7,  52(sp)
-    sw      s2,  56(sp)
-    sw      s3,  60(sp)
-    sw      s4,  64(sp)
-    sw      s5,  68(sp)
-    sw      s6,  72(sp)
-    sw      s7,  76(sp)
-    sw      s8,  80(sp)
-    sw      s9,  84(sp)
-    sw      s10, 88(sp)
-    sw      s11, 92(sp)
-    sw      t3,  96(sp)
-    sw      t4, 100(sp)
-    sw      t5, 104(sp)
-    sw      t6, 108(sp)
-    # Salvar també gp i tp per completesa
-    sw      gp, 112(sp)
-    sw      tp, 116(sp)
+        # Salvar tots els registres generals (excepte x0, que és sempre 0)
+        sw      ra,   0(sp)
+        sw      t0,   4(sp)
+        sw      t1,   8(sp)
+        sw      t2,  12(sp)
+        sw      s0,  16(sp)
+        sw      s1,  20(sp)
+        sw      a0,  24(sp)
+        sw      a1,  28(sp)
+        sw      a2,  32(sp)
+        sw      a3,  36(sp)
+        sw      a4,  40(sp)
+        sw      a5,  44(sp)
+        sw      a6,  48(sp)
+        sw      a7,  52(sp)
+        sw      s2,  56(sp)
+        sw      s3,  60(sp)
+        sw      s4,  64(sp)
+        sw      s5,  68(sp)
+        sw      s6,  72(sp)
+        sw      s7,  76(sp)
+        sw      s8,  80(sp)
+        sw      s9,  84(sp)
+        sw      s10, 88(sp)
+        sw      s11, 92(sp)
+        sw      t3,  96(sp)
+        sw      t4, 100(sp)
+        sw      t5, 104(sp)
+        sw      t6, 108(sp)
+        # Salvar també gp i tp per completesa
+        sw      gp, 112(sp)
+        sw      tp, 116(sp)
 
-    # Llegir mcause i mepc i passar-los com a paràmetres al dispatcher
-    csrr    a0, mcause          # a0 = mcause (causa de l'excepció/interrupció)
-    csrr    a1, mepc            # a1 = mepc (adreça de retorn)
-    mv      a2, sp              # a2 = punter als registres salvats
+        # Llegir mcause i mepc i passar-los com a paràmetres al dispatcher
+            csrr    a0, mcause          # a0 = mcause (causa de l'excepció/interrupció)
+            csrr    a1, mepc            # a1 = mepc (adreça de retorn)
+            mv      a2, sp              # a2 = punter als registres salvats
 
-    # Cridar el dispatcher, que identificarà la causa i cridarà el handler
-    call    handler_dispatcher  # retorna a a0 l'adreça de retorn ajustada
+        # Cridar el dispatcher, que identificarà la causa i cridarà el handler
+        call    handler_dispatcher  # retorna a a0 l'adreça de retorn ajustada
 
-    # Actualitzar mepc amb l'adreça de retorn que ha decidit el dispatcher
-    csrw    mepc, a0
+        # Actualitzar mepc amb l'adreça de retorn que ha decidit el dispatcher
+        csrw    mepc, a0
 
-    # Restaurar tots els registres generals
-    lw      ra,   0(sp)
-    lw      t0,   4(sp)
-    lw      t1,   8(sp)
-    lw      t2,  12(sp)
-    lw      s0,  16(sp)
-    lw      s1,  20(sp)
-    lw      a0,  24(sp)
-    lw      a1,  28(sp)
-    lw      a2,  32(sp)
-    lw      a3,  36(sp)
-    lw      a4,  40(sp)
-    lw      a5,  44(sp)
-    lw      a6,  48(sp)
-    lw      a7,  52(sp)
-    lw      s2,  56(sp)
-    lw      s3,  60(sp)
-    lw      s4,  64(sp)
-    lw      s5,  68(sp)
-    lw      s6,  72(sp)
-    lw      s7,  76(sp)
-    lw      s8,  80(sp)
-    lw      s9,  84(sp)
-    lw      s10, 88(sp)
-    lw      s11, 92(sp)
-    lw      t3,  96(sp)
-    lw      t4, 100(sp)
-    lw      t5, 104(sp)
-    lw      t6, 108(sp)
-    lw      gp, 112(sp)
-    lw      tp, 116(sp)
+        # Restaurar tots els registres generals
+        lw      ra,   0(sp)
+        lw      t0,   4(sp)
+        lw      t1,   8(sp)
+        lw      t2,  12(sp)
+        lw      s0,  16(sp)
+        lw      s1,  20(sp)
+        lw      a0,  24(sp)
+        lw      a1,  28(sp)
+        lw      a2,  32(sp)
+        lw      a3,  36(sp)
+        lw      a4,  40(sp)
+        lw      a5,  44(sp)
+        lw      a6,  48(sp)
+        lw      a7,  52(sp)
+        lw      s2,  56(sp)
+        lw      s3,  60(sp)
+        lw      s4,  64(sp)
+        lw      s5,  68(sp)
+        lw      s6,  72(sp)
+        lw      s7,  76(sp)
+        lw      s8,  80(sp)
+        lw      s9,  84(sp)
+        lw      s10, 88(sp)
+        lw      s11, 92(sp)
+        lw      t3,  96(sp)
+        lw      t4, 100(sp)
+        lw      t5, 104(sp)
+        lw      t6, 108(sp)
+        lw      gp, 112(sp)
+        lw      tp, 116(sp)
 
     # Alliberar la pila
     addi    sp, sp, 120
@@ -536,37 +536,37 @@ Els exemples següents mostren les crides al sistema més habituals:
 **Escriure a la sortida estàndard (`write`, codi 64):**
 
 ``` {.s filename="RV32I"}
-    li      a7, 64              # codi de write
-    li      a0, 1               # descriptor: stdout
-    la      a1, missatge        # adreça del buffer
-    li      a2, 13              # nombre de bytes
-    ecall                       # a0 ← nombre de bytes escrits (o error)
+        li      a7, 64              # codi de write
+        li      a0, 1               # descriptor: stdout
+        la      a1, missatge        # adreça del buffer
+        li      a2, 13              # nombre de bytes
+        ecall                       # a0 ← nombre de bytes escrits (o error)
 ```
 
 **Llegir de l'entrada estàndard (`read`, codi 63):**
 
 ``` {.s filename="RV32I"}
-    li      a7, 63              # codi de read
-    li      a0, 0               # descriptor: stdin
-    la      a1, buffer          # adreça del buffer
-    li      a2, 64              # màxim de bytes a llegir
-    ecall                       # a0 ← nombre de bytes llegits (o error)
+        li      a7, 63              # codi de read
+        li      a0, 0               # descriptor: stdin
+        la      a1, buffer          # adreça del buffer
+        li      a2, 64              # màxim de bytes a llegir
+        ecall                       # a0 ← nombre de bytes llegits (o error)
 ```
 
 **Finalitzar el programa (`exit`, codi 93):**
 
 ``` {.s filename="RV32I"}
-    li      a7, 93              # codi de exit
-    li      a0, 0               # codi de retorn (0 = èxit)
-    ecall                       # no retorna
+        li      a7, 93              # codi de exit
+        li      a0, 0               # codi de retorn (0 = èxit)
+        ecall                       # no retorna
 ```
 
 **Reservar memòria dinàmica (`brk`, codi 214):**
 
 ``` {.s filename="RV32I"}
-    li      a7, 214             # codi de brk
-    li      a0, 0               # 0 = consultar l'adreça actual del heap
-    ecall                       # a0 ← adreça actual (o nova) del final del heap
+        li      a7, 214             # codi de brk
+        li      a0, 0               # 0 = consultar l'adreça actual del heap
+        ecall                       # a0 ← adreça actual (o nova) del final del heap
 ```
 :::
 
@@ -627,8 +627,8 @@ La comunicació amb els dispositius d'E/S està dominada per la necessitat de to
 
 ``` {.s filename="RV32I"}
 bucle:
-    lw      t0, ESTAT_DISPOSITIU    # llegir l'estat del dispositiu
-    bne     t0, READY, bucle        # esperar fins que estigui llest
+        lw      t0, ESTAT_DISPOSITIU    # llegir l'estat del dispositiu
+        bne     t0, READY, bucle        # esperar fins que estigui llest
     # continuar quan el dispositiu ha acabat
 ```
 
@@ -702,7 +702,7 @@ A més, pot succeir que un dispositiu hagi desactivat el senyal de petició aban
 
 ### Recordatori: TLB miss com a excepció {#sec-tlb-recordatori}
 
-Com s'ha vist al [Tema 8](T8.html), el **TLB** (*Translation Lookaside Buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan el processador accedeix a una adreça virtual per a la qual el TLB no conté la traducció corresponent, es produeix una **fallada de TLB** (*TLB miss*).
+Com s'ha vist al @sec-mv-tlb, el **TLB** (*Translation Lookaside Buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan el processador accedeix a una adreça virtual per a la qual el TLB no conté la traducció corresponent, es produeix una **fallada de TLB** (*TLB miss*).
 
 A diferència de les fallades de memòria cau, que es resolen per hardware de forma transparent, les fallades de TLB en RISC-V es gestionen per **programari**: la instrucció que ha causat la fallada s'interromp, s'executa una RSE que actualitza la taula de pàgines i invalida l'entrada del TLB, i finalment la instrucció es **reexecuta**.
 
@@ -777,35 +777,35 @@ En un sistema amb mode S actiu (per exemple, Linux), les fallades de TLB es gest
 
 ``` {.s filename="RV32I"}
 tlb_miss_handler:
-    # stval conté l'adreça virtual que ha causat la fallada
-    csrr    t0, stval               # t0 = adreça virtual
+        # stval conté l'adreça virtual que ha causat la fallada
+        csrr    t0, stval               # t0 = adreça virtual
 
-    # Obtenir l'adreça física de la taula de pàgines des de satp (Sv32)
-    csrr    t1, satp                # t1 = satp
-    andi    t1, t1, 0x3FFFFF        # t1 = PPN (bits 21:0, màscara ASID i MODE)
-    slli    t1, t1, 12              # t1 = PPN << 12 = adreça física taula pàgines
+        # Obtenir l'adreça física de la taula de pàgines des de satp (Sv32)
+        csrr    t1, satp                # t1 = satp
+        andi    t1, t1, 0x3FFFFF        # t1 = PPN (bits 21:0, màscara ASID i MODE)
+        slli    t1, t1, 12              # t1 = PPN << 12 = adreça física taula pàgines
 
-    # Calcular l'índex a la taula de pàgines de primer nivell (VPN[1] = bits 31:22)
-    # Nota: Sv32 té dos nivells; aquest exemple simplifica a un sol nivell
-    srli    t2, t0, 22              # t2 = VPN[1] (bits 31:22)
-    andi    t2, t2, 0x3FF           # t2 = índex (10 bits)
-    slli    t2, t2, 2               # t2 = offset en bytes (× 4)
-    add     t1, t1, t2              # t1 = adreça de l'entrada PTE de primer nivell
+        # Calcular l'índex a la taula de pàgines de primer nivell (VPN[1] = bits 31:22)
+        # Nota: Sv32 té dos nivells; aquest exemple simplifica a un sol nivell
+        srli    t2, t0, 22              # t2 = VPN[1] (bits 31:22)
+        andi    t2, t2, 0x3FF           # t2 = índex (10 bits)
+        slli    t2, t2, 2               # t2 = offset en bytes (× 4)
+        add     t1, t1, t2              # t1 = adreça de l'entrada PTE de primer nivell
 
-    # Llegir l'entrada de la taula de pàgines (PTE)
-    lw      t3, 0(t1)               # t3 = PTE
+        # Llegir l'entrada de la taula de pàgines (PTE)
+            lw      t3, 0(t1)               # t3 = PTE
 
-    # Comprovar el bit de presència V (bit 0)
-    andi    t4, t3, 1               # t4 = bit V
-    beqz    t4, fallada_pagina      # si V=0, és una fallada de pàgina
+        # Comprovar el bit de presència V (bit 0)
+        andi    t4, t3, 1               # t4 = bit V
+        beqz    t4, fallada_pagina      # si V=0, és una fallada de pàgina
 
-    # V=1: la pàgina és present. Invalidar l'entrada del TLB i reexecutar
-    sfence.vma  t0, zero            # invalidar l'entrada del TLB per a t0
-    sret                            # retornar i reexecutar la instrucció causant
+        # V=1: la pàgina és present. Invalidar l'entrada del TLB i reexecutar
+        sfence.vma  t0, zero            # invalidar l'entrada del TLB per a t0
+        sret                            # retornar i reexecutar la instrucció causant
 
 fallada_pagina:
-    # Delegar a la rutina de fallada de pàgina (vegeu @sec-tlb-bit-v)
-    j       page_fault_handler
+        # Delegar a la rutina de fallada de pàgina (vegeu @sec-tlb-bit-v)
+        j       page_fault_handler
 ```
 
 #### El bit V: validesa i fallada de pàgina {#sec-tlb-bit-v}
@@ -821,7 +821,7 @@ En tots dos casos —fallada de TLB i fallada de pàgina— la instrucció causa
 
 #### El bit D: *dirty* i escriptura retardada {#sec-tlb-bit-d}
 
-El bit D (*Dirty*) d'una entrada de la taula de pàgines indica si la pàgina ha estat modificada respecte de la còpia al disc. Compleix la mateixa funció que el bit de modificada de les memòries cau d'escriptura retardada (vegeu el [Tema 7](T7.html)).
+El bit D (*Dirty*) d'una entrada de la taula de pàgines indica si la pàgina ha estat modificada respecte de la còpia al disc. Compleix la mateixa funció que el bit de modificada de les memòries cau d'escriptura retardada (@sec-escriptura-encert).
 
 La gestió del bit D segueix dues regles:
 

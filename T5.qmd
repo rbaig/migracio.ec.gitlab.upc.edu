@@ -594,7 +594,7 @@ L'extensió **F** afegeix 32 registres de coma flotant de 32 bits, **`f0`–`f31
 : {tbl-colwidths="[15,15,55,15]" .striped}
 :::
 
-A més dels registres `f0`–`f31`, l'extensió F afegeix el registre de control i estat de coma flotant **`fcsr`** (*Floating-Point Control and Status Register*), que controla el mode d'arrodoniment i registra les excepcions produïdes per les operacions de coma flotant.
+A més dels registres `f0`–`f31`, l'extensió F afegeix el registre de control i estat de coma flotant **`fcsr`** (*Floating-Point Control and Status Register*), que controla el mode d'arrodoniment i registra les excepcions produïdes per les operacions de coma flotant (cosa que fa que l'extensió Zicsr (@nte-zicsr) esdevingui obligatori).
 
 ::: {#nte-fcsr .callout-note}
 ## RV32F — Registre de control `fcsr`
@@ -655,7 +655,7 @@ Les convencions de preservació s'apliquen als registres de coma flotant exactam
 
 El pròleg i l'epíleg d'una subrutina que usa registres segurs de coma flotant segueixen el mateix patró que per als enters (@sec-multinivell-pila):
 
-```{.s filename="RV32F"}
+```{.s filename="RV32IF"}
 sub:
         addi    sp, sp, -8
         fsw     fs0, 0(sp)      # desa fs0 (callee-saved)
@@ -722,7 +722,7 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 
 El resultat s'escriu en un registre **enter** `rd` (0 o 1). Per implementar un salt condicional, cal combinar la comparació amb `beq` o `bne`:
 
-```{.s filename="RV32F"}
+```{.s filename="RV32IF"}
 flt.s   t0, fa0, fa1    # t0 = 1 si fa0 < fa1, si no 0
 bne     t0, zero, label # salta si fa0 < fa1
 ```
@@ -767,7 +767,7 @@ int arrodoneix(int n) {
 }
 ```
 
-```{.s filename="RV32F"}
+```{.s filename="RV32IF"}
 .data
 const_half: .float  0.5
 
@@ -789,7 +789,7 @@ Observeu que `fcvt.w.s` **trunca** cap a zero, no arrodoneix al més pròxim. Pe
 
 Cap instrucció de RV32F admet un operand constant directament a la instrucció. Per usar una constant de coma flotant cal declarar-la al segment `.data` i carregar-la amb `la` + `flw`:
 
-```{.s filename="RV32F"}
+```{.s filename="RV32IF"}
 .data
 const_u: .float 1.0
 
@@ -823,7 +823,7 @@ El paràmetre `x` arriba per `fa0` i el resultat es retorna per `fa0`.
 
 **Pas 3. Codi.**
 
-```{.s filename="RV32F"}
+```{.s filename="RV32IF"}
 .data
 const_1: .float  1.0
 const_2: .float  2.0

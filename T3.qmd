@@ -29,13 +29,13 @@ Les posicions vacants s'omplen amb `0`.
 ## Desplaçaments lògics
 
 ```{.s filename="RV32I"}
-li      t0, 0x88888888
-slli    t0, t0, 1       # t0 = 0x11111110
+        li      t0, 0x88888888
+        slli    t0, t0, 1       # t0 = 0x11111110
 ```
 
 ```{.s filename="RV32I"}
-li      t0, 0x99999999
-srli    t0, t0, 2       # t0 = 0x26666666
+        li      t0, 0x99999999
+        srli    t0, t0, 2       # t0 = 0x26666666
 ```
 :::
 
@@ -62,8 +62,8 @@ $$x_u' = x_u - X_{n-1}$$
 És a dir: la representació en Ca1 s'obté restant el bit de signe a la representació en Ca2. Per extreure el bit de signe de `t2` i fer-ne la resta:
 
 ```{.s filename="RV32I"}
-srli    t0, t2, 31      # desplaça el bit de signe a la posició 0
-sub     t1, t2, t0      # resta del bit de signe a la representació Ca2
+        srli    t0, t2, 31      # desplaça el bit de signe a la posició 0
+        sub     t1, t2, t0      # resta del bit de signe a la representació Ca2
 ```
 
 **Anàlisi**
@@ -95,8 +95,8 @@ Les posicions vacants s'omplen amb una còpia del bit de signe.
 ## Desplaçament aritmètic
 
 ```{.s filename="RV32I"}
-li      t0, 0x99999999
-sra     t0, t0, 2       # t0 = 0xE6666666
+        li      t0, 0x99999999
+        sra     t0, t0, 2       # t0 = 0xE6666666
 ```
 
 El bit de signe de `0x99999999` és `1`, de manera que les dues posicions que queden vacants a l'esquerra s'omplen amb `1`s.
@@ -120,8 +120,8 @@ a = (a << b) >> 2;   /* a i b són enters amb signe */
 Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
 
 ```{.s filename="RV32I"}
-sll     t4, t0, t1   # a << b
-srai     t0, t4, 2    # resultat >> 2 (amb extensió de signe)
+        sll     t4, t0, t1   # a << b
+        srai     t0, t4, 2    # resultat >> 2 (amb extensió de signe)
 ```
 :::
 
@@ -177,8 +177,8 @@ Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'imme
 La instrucció `nor` (equivalent a `NOT(rs1 OR rs2)`) es pot compondre amb:
 
 ```{.s filename="RV32I"}
-or      rd, rs1, rs2    # rd = rs1 OR rs2
-not     rd, rd          # rd = NOT rd
+        or      rd, rs1, rs2    # rd = rs1 OR rs2
+        not     rd, rd          # rd = NOT rd
 ```
 :::
 
@@ -192,7 +192,7 @@ La instrucció `and` s'usa per **seleccionar determinats bits** d'un registre po
 Selecció dels 16 bits de menor pes de `rs1`:
 
 ```{.s filename="RV32I"}
-andi    rd, rs1, 0xFFFF     # l'immediat s'estén amb zeros
+        andi    rd, rs1, 0xFFFF     # l'immediat s'estén amb zeros
 ```
 :::
 
@@ -220,8 +220,8 @@ La instrucció `xor` s'usa per **complementar** aquells bits d'un registre que v
 Complement dels bits parells de `t0`:
 
 ```{.s filename="RV32I"}
-li      t1, 0x55555555      # màscara amb uns als bits parells
-xor     t0, t0, t1
+        li      t1, 0x55555555      # màscara amb uns als bits parells
+        xor     t0, t0, t1
 ```
 :::
 
@@ -275,7 +275,7 @@ Si `t0`, `t1` i `t2` són enters amb signe:
 t2 = (t0 == 0);
 ```
 ```{.s filename="RV32I"}
-sltiu   t2, t0, 1       # si t0 < 1 com a natural, llavors t0 == 0
+        sltiu   t2, t0, 1       # si t0 < 1 com a natural, llavors t0 == 0
 ```
 * **Atenció:** És vàlid per a `t0 == 0` perquè comparar `t0` com a natural amb `1` dona `1` si i només si `t0 == 0` (ja que `0` és l'únic natural estrictament menor que `1`).
 
@@ -283,7 +283,7 @@ sltiu   t2, t0, 1       # si t0 < 1 com a natural, llavors t0 == 0
 t2 = (t0 != 0);
 ```
 ```{.s filename="RV32I"}
-sltu    t2, zero, t0    # si 0 < t0 com a natural, llavors t0 != 0
+        sltu    t2, zero, t0    # si 0 < t0 com a natural, llavors t0 != 0
 ```
 
 **Comparació entre dos registres:**
@@ -292,16 +292,16 @@ sltu    t2, zero, t0    # si 0 < t0 com a natural, llavors t0 != 0
 t2 = (t0 == t1);        /* equival a: t2 = ((t0 - t1) == 0) */
 ```
 ```{.s filename="RV32I"}
-sub     t2, t0, t1
-sltiu   t2, t2, 1
+        sub     t2, t0, t1
+        sltiu   t2, t2, 1
 ```
 
 ```{.C filename="C"}
 t2 = (t0 != t1);        /* equival a: t2 = ((t0 - t1) != 0) */
 ```
 ```{.s filename="RV32I"}
-sub     t2, t0, t1
-sltu    t2, zero, t2
+        sub     t2, t0, t1
+        sltu    t2, zero, t2
 ```
 :::
 
@@ -317,13 +317,13 @@ Si `t0` i `t1` són enters amb signe:
 t1 = !t0;               /* equival a: t1 = (t0 == 0) */
 ```
 ```{.s filename="RV32I"}
-sltiu   t1, t0, 1
+        sltiu   t1, t0, 1
 ```
 
 * Si se sap amb certesa que `t0` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
 
 ```{.s filename="RV32I"}
-xori    t1, t0, 1       # complementa el bit 0 (inverteix 0↔1)
+        xori    t1, t0, 1       # complementa el bit 0 (inverteix 0↔1)
 ```
 :::
 
@@ -335,33 +335,33 @@ xori    t1, t0, 1       # complementa el bit 0 (inverteix 0↔1)
 Si `t0`, `t1` i `t2` són enters amb signe:
 
 ```{.C filename="C"}
-t2 = (t0 < t1);
+        t2 = (t0 < t1);
 ```
 ```{.s filename="RV32I"}
-slt     t2, t0, t1
+        slt     t2, t0, t1
 ```
 
 ```{.C filename="C"}
-t2 = (t0 > t1);        /* equival a: t1 < t0 */
+        t2 = (t0 > t1);        /* equival a: t1 < t0 */
 ```
 ```{.s filename="RV32I"}
-slt     t2, t1, t0
+        slt     t2, t1, t0
 ```
 
 ```{.C filename="C"}
-t2 = (t0 <= t1);       /* equival a: !(t0 > t1) */
+        t2 = (t0 <= t1);       /* equival a: !(t0 > t1) */
 ```
 ```{.s filename="RV32I"}
-slt     t2, t1, t0
-sltiu   t2, t2, 1       # negació
+        slt     t2, t1, t0
+        sltiu   t2, t2, 1       # negació
 ```
 
 ```{.C filename="C"}
-t2 = (t0 >= t1);       /* equival a: !(t0 < t1) */
+        t2 = (t0 >= t1);       /* equival a: !(t0 < t1) */
 ```
 ```{.s filename="RV32I"}
-slt     t2, t0, t1
-sltiu   t2, t2, 1       # negació
+        slt     t2, t0, t1
+        sltiu   t2, t2, 1       # negació
 ```
 * **Atenció:** Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes les traduccions d'aquest exemple.
 :::
@@ -489,9 +489,9 @@ if (a == 0x11)      /* bits 0 i 4 actius, 2 i 6 inactius */
 Suposant que `a` i `b` ocupen els registres `t0` i `t1`:
 
 ```{.s filename="RV32I"}
-andi    t0, t1, 0x0055      # selecció els bits 0, 2, 4 i 6
-li      t4, 0x0011
-bne     t0, t4, endif       # if (a == 0x11) ...
+        andi    t0, t1, 0x0055      # selecció els bits 0, 2, 4 i 6
+        li      t4, 0x0011
+        bne     t0, t4, endif       # if (a == 0x11) ...
 ...                         # codi si es compleix la condició
 endif:
 ```
@@ -546,8 +546,8 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 ## Salt a adreça llunyana amb `jr`
 
 ```{.s filename="RV32I"}
-la      t0, etiqueta_llunyana
-jalr    zero, t0, 0             # equivalent a: jr t0
+        la      t0, etiqueta_llunyana
+        jalr    zero, t0, 0             # equivalent a: jr t0
 ```
 :::
 
@@ -561,8 +561,7 @@ A **RV32I**, tots els salts  **incondicionals** són **indirectes**. No existeix
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
-<!-- TODO substituir ([Tema 9](T9.qmd)) per la secció concreta on es presenti `ecall` -->
-Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@nte-rv32i-instruccions-llista), tret de `auipc` (@nte-la-auipc) i `ecall` ([Tema 9](T9.qmd)), l'exercici de classificar-les segons el **mode d'adreçament**
+Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@nte-riscv-rv32i), tret de `auipc` (@nte-la-auipc) i `ecall` (@sec-ecall), l'exercici de classificar-les segons el **mode d'adreçament**
 (@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de la ISA, sinó també, a nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
 
 La classificació proposada inclou quatre decisions que cal justificar:
@@ -570,7 +569,7 @@ La classificació proposada inclou quatre decisions que cal justificar:
 * **`lui`** s'ha classificat com a mode **immediat** perquè el seu únic operand font és un valor constant de 20 bits codificat directament a la instrucció; no hi ha cap registre base ni cap referència al PC.
 * **`auipc`** s'ha classificat com a mode **relatiu al PC** perquè suma un immediat de 20 bits al valor actual del PC per construir adreces relatives a la posició actual del programa.
 * **`jalr`** s'ha classificat com a mode **base + desplaçament** perquè calcula l'adreça de salt sumant un registre base (`rs1`) i un immediat de 12 bits, exactament com fan les instruccions de càrrega i emmagatzematge. L'única diferència és que el resultat s'usa com a adreça de salt en lloc d'adreça de memòria.
-* **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una trucada al sistema operatiu ([Tema 9](T9.qmd)).
+* **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una trucada al sistema operatiu (@sec-ecall).
 
 | Mode | Instruccions |
 | :--- | :--- |
@@ -963,7 +962,7 @@ Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el
 
 Les dades (instruccions i variables) d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
 
-A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants simbòliques** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` i `.ktext` ([Tema 9](T9.qmd)) per a les instruccions del programa en assemblador i `.data`: per a les variables globals i constants simbòliques, a les quals en temps de compilació s'hi escriu mitjançant les directives de segment (@nte-segments-memoria).
+A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants simbòliques** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` i `.ktext` (@ktext [Tema 9](T9.qmd)) per a les instruccions del programa en assemblador i `.data`: per a les variables globals i constants simbòliques, a les quals en temps de compilació s'hi escriu mitjançant les directives de segment (@nte-segments-memoria).
 
 A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap***. La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el heap s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fa explícitament per part del programador (mitjançant `malloc()` i `free()`).
 
@@ -1031,8 +1030,8 @@ La instrucció **`auipc`** (*add upper immediate to PC*) suma un immediat de 20 
 `la` s'expandeix en dues instruccions amb adreces **relatives al PC**:
 
 ```{.s filename="RV32I"}
-auipc   rd, hi_20(offset)     # rd ← PC + hi_20(offset) << 12
-addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
+        auipc   rd, hi_20(offset)     # rd ← PC + hi_20(offset) << 12
+        addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
 ```
 
 on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `auipc`, i `hi_20` i `lo_12` en són la part alta i baixa respectivament (amb l'ajust de signe habitual si `lo_12[11] == 1`).

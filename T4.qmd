@@ -200,8 +200,8 @@ c = a * b;              /* c = 30 */
 
 Suposant que `a`, `b` i `c` ocupen `t0`, `t1` i `t2`:
 
-```{.s filename="RV32I"}
-mul     t2, t0, t1      # c <- a * b (32 bits de menys pes)
+```{.s filename="RV32IM"}
+        mul     t2, t0, t1      # c <- a * b (32 bits de menys pes)
 ```
 :::
 
@@ -226,7 +226,7 @@ producte_exacte = (long long)a * b;
 
 En RV32IM, per obtenir el producte exacte de 64 bits i detectar sobreeiximent, suposant que `a`, `b` i `s` ocupen `t0`, `t1` i `t2`:
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         # a, b als registres t0, t1
         mul     t2, t0, t1      # t2 <- bits [31:0] del producte
         mulh    t3, t0, t1      # t3 <- bits [63:32] del producte (enters)
@@ -344,7 +344,7 @@ void func() {
 
 Suposant que `i`, `j`, `k` ocupen `t0`, `t1`, `t2`:
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         la      t3, mat             # invariant: @mat
         li      t4, NC              # invariant: NC
         mul     t4, t0, t4          # i*NC
@@ -366,7 +366,7 @@ k = mat[i][5];
 
 El terme `5*T` és un invariant que el compilador pot incorporar directament a l'adreça base:
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         la      t3, mat + 5*4       # invariant: @mat + 5*4
         li      t4, NC*4            # invariant: NC*4
         mul     t4, t0, t4          # i*NC*4
@@ -448,7 +448,7 @@ void zero_fila(int mat[][NC], int fila) {
 
 **Versió sense optimitzar** (accés aleatori):
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         # a0 = @mat, a1 = fila
         li      t0, NC*4            # invariant: NC*4
         mul     t1, a1, t0          # fila*NC*4
@@ -472,7 +472,7 @@ La infraestructura de control ocupa **5 instruccions** per iteració.
 
 L'stride és: $@\texttt{mat[fila][j+1]} - @\texttt{mat[fila][j]} = 4$
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         # a0 = @mat, a1 = fila
         li      t0, NC*4            # invariant: NC*4
         mul     t1, a1, t0          # fila*NC*4
@@ -544,7 +544,7 @@ Com que es comparen **adreces** (naturals sense signe), cal usar `bgeu` / `bltu`
 
 Partint de la versió amb #1 i #2:
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         # a0 = @mat, a1 = fila
         li      t0, NC*4
         mul     t1, a1, t0
@@ -605,7 +605,7 @@ L'adreça de `mat[i][col]` és (amb $T = 2$):
 
 $$@\texttt{mat[i][col]} = @\texttt{mat} + (i \cdot \texttt{NC} + \texttt{col}) \cdot 2$$
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         # a0 = @mat, a1 = col, a2 = nfiles
         mv      t0, zero            # suma = 0
         mv      t1, zero            # i = 0
@@ -633,7 +633,7 @@ L'stride per recórrer una columna és $\texttt{NC} \cdot T = \texttt{NC} \cdot 
 
 Com que `NC` no és necessàriament potència de 2, cal `mul` per calcular l'stride i la sentinella.
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         # a0 = @mat, a1 = col, a2 = nfiles
         mv      t0, zero            # suma = 0
         slli    t1, a1, 1           # col*2
@@ -781,7 +781,7 @@ q = a / b;
 r = a % b;
 ```
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IM"}
         div     t2, t0, t1      # q = a / b
         rem     t3, t0, t1      # r = a % b
 ```
