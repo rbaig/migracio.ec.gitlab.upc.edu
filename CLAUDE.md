@@ -116,11 +116,26 @@ h1, h2, h3, h4,
 
 Temes preparats per a revisió externa de continguts: `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1), `T7.qmd`, `T8.qmd`, `T9.qmd`.
 
+### Laboratori (L0–L5)
+
+Convencions globals del laboratori (acordades durant L0 i L1):
+
+- **Punt d'entrada:** `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
+- **Sortida del programa:** `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
+- **Directives de segment:** `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
+- **Codi dels exercicis:** integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
+- **Estructura de cada exercici:** enunciat en `{#exr-...}` + solució en `{#sol-...}`.
+- **Lectura prèvia:** primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
+- **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurable.
+- **Nom de figura SVG:** `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
+
+Fitxers completats: `L0.qmd`, `L1.qmd`.
+
 ### En curs
 
-2. Laboratori (`L0.qmd`–`L5.qmd`)
+3. Laboratori: `L2.qmd`–`L5.qmd`
 
 ### Pendent
 
-3. Problemes (`PE.qmd`, `PS.qmd`)
-4. Solucionari
+4. Problemes (`PE.qmd`, `PS.qmd`)
+5. Solucionari

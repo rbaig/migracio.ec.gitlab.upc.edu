@@ -5,9 +5,9 @@ number-sections: true
 
 [Plantilles](laboratori/L0/TODO.s)
 
-## "Hello World"
+## "Hello World!"
 
-L'@exr-hello-world {{< lipsum 1 random=true >}}.
+A continuació es presenta el primer programa que escriurem en RISC-V: el clàssic "Hello, World!", present a l'inici de molts manuals de programació. L'@exr-hello-world imprimeix el missatge "Hola, món!" a la consola i ens permetrà familiaritzar-nos amb la sintaxi bàsica de l'assemblador RISC-V i amb les directives per emmagatzemar dades i codi.
 
 ---
 
@@ -17,29 +17,39 @@ Escriu un programa en RISC-V que imprimeixi "Hola, món!" a la consola. Utilitza
 
 ---
 
-La @sol-hello-world {{< lipsum 2 random=true >}}
+La @sol-hello-world fa ús de recursos que encara no s'han vist a Teoria, totes identificades amb l'identificador `[futur]`:
+* Les etiquetes globals (@nte-globl).
+* El pas de paràmetres (@sec-pas-parametres-retorn).
+* Les crides al sistema (`ecall`, @sec-ecall) i els codis de servei (@sec-ecall-abi).
+
+Per ara no cal que les entengueu. Només que les utilitzeu tal com s'indica a la solució i **incorporeu-les a tots els programes que feu**. No patiu, durant el curs s'aniran tractant totes.
+
+::: {#cau-hello-world .callout-caution}
+De moment no enteneu les instruccions i directrius marcades amb `[futur]`, però incorporeu-les a tots els programes que feu.
+:::
 
 ---
 
 ::: {#sol-hello-world}
-```{.s filename="RISC-V Hello World"}
-.section .data
-msg:    .asciz  "Hola, món!"
+```{.s filename="hello_world.s"}
+.global _start          # [futur]
 
-        .section .text
-        .global _start
-_start:
+.data                   # Secció de variables globals
+msg:    .asciz "Hola, món!"
+
+.text                   # Secció de codi
+_start:                 # [futur]
         # Escriure el missatge a la consola
-        li  a0,1          # file descriptor (stdout)
-        la  a1, msg        # adreça del missatge
-        li  a2, 12         # longitud del missatge
-        li  a7, 64         # syscall: write
-        ecall
-        
-        # Sortir del programa
-        li a7, 93         # syscall: exit
-        ecall
+        la  a0, msg     # Adreça del missatge
+        li  a7, 4       # [futur] Codi de servei per imprimir una cadena acabada amb `\0` a la consola
+        ecall           # [futur] Crida al sistema per imprimir el missatge
+
+        li  a0, 0       # [futur] Codi d'error (0 finalització exitosa)
+        li  a7, 93      # [futur] Codi de sortida amb codi de sortida (***exit code***) a `a0`
+        ecall           # [futur] Crida al sistema per sortir del programa
 ```
+
+
 :::
 
 ---

@@ -2,3 +2,591 @@
 title: "Sessió 1: Assemblador RISC-V i tipus bàsics de dades"
 number-sections: true
 ---
+
+## Lectura prèvia
+
+Abans de fer la sessió, cal haver llegit i entès els continguts següents:
+
+| Concepte | On trobar-ho |
+| :--- | :--- |
+| Mida dels tipus de dades en C i RV32I | @imp-variables-mida-naturals, @imp-variables-mida-enters |
+| Directives de declaració i inicialització de variables globals | @nte-directives-alineacio-inicialitzacio |
+| Model de memòria i adreces | @sec-memoria-t2 |
+| Ordenació de bytes (*little-endian*) | @sec-endianness |
+| Restriccions d'alineació | @sec-memoria-alineacio |
+| Instruccions d'accés a memòria (`lw`, `lh`, `lhu`, `lb`, `lbu`, `sw`, `sh`, `sb`) | @nte-load-store |
+| Punters: declaració, `&`, `*`, aritmètica | @sec-punters-c-declaracio, @sec-punters-ampersand, @sec-punters-desreferencia |
+| Vectors: declaració, indexació, relació amb punters | @sec-vectors, @sec-vector-indexacio, @sec-punters-vectors |
+| Caràcters i cadenes de caràcters | @nte-directives-ascii-asciz-string |
+| Pseudoinstrucció `la` | @nte-pseudoinstruccio-la |
+: {.striped .hover}
+
+## Representació en memòria
+
+Els tipus de dades bàsics del llenguatge C tenen una correspondència directa amb les directives de declaració de variables globals en RV32I. Recordeu les taules de mides i directives de T2 (@imp-variables-mida-naturals, @imp-variables-mida-enters, @nte-directives-alineacio-inicialitzacio).
+
+Quan es declaren diverses variables globals consecutivament, l'assemblador insereix automàticament **bytes de farciment** (*padding*) entre elles per garantir les restriccions d'alineació (@sec-memoria-alineacio). A més, els valors s'emmagatzemen en ordre *little-endian* (@sec-endianness): el byte de menor pes s'emmagatzema a l'adreça més baixa.
+
+---
+
+::: {#exr-declaracio-variables}
+Traduïu a RV32I la declaració següent de variables globals en C:
+
+```c
+char      aa = -5;
+short     bb = -344;
+long long cc = -3;
+unsigned char dd = 0xA0;
+int       ee = 5799;
+short     ff = -1;
+```
+:::
+
+---
+
+::: {#sol-declaracio-variables}
+```{.s}
+.data
+aa: .byte  -5
+bb: .half  -344
+cc: .dword -3
+dd: .byte  0xA0
+ee: .word  5799
+ff: .half  -1
+```
+:::
+
+---
+
+::: {#exr-mapa-memoria}
+Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Indiqueu cada etiqueta a la posició que li correspon i marqueu amb `--` els bytes de *padding*.
+
+::: {layout="[50,-1,50]"}
+::: {}
+| Etiqueta | @memòria | Contingut |
+| :--- | :--- | :--- |
+| | `0x1001 0000` | |
+| | `0x1001 0001` | |
+| | `0x1001 0002` | |
+| | `0x1001 0003` | |
+| | `0x1001 0004` | |
+| | `0x1001 0005` | |
+| | `0x1001 0006` | |
+| | `0x1001 0007` | |
+| | `0x1001 0008` | |
+| | `0x1001 0009` | |
+| | `0x1001 000A` | |
+| | `0x1001 000B` | |
+| | `0x1001 000C` | |
+| | `0x1001 000D` | |
+| | `0x1001 000E` | |
+| | `0x1001 000F` | |
+:::
+::: {}
+| Etiqueta | @memòria | Contingut |
+| :--- | :--- | :--- |
+| | `0x1001 0010` | |
+| | `0x1001 0011` | |
+| | `0x1001 0012` | |
+| | `0x1001 0013` | |
+| | `0x1001 0014` | |
+| | `0x1001 0015` | |
+| | `0x1001 0016` | |
+| | `0x1001 0017` | |
+| | `0x1001 0018` | |
+| | `0x1001 0019` | |
+:::
+:::
+:::
+
+---
+
+<!-- TODO: RARS alinea `.dword` a 4 bytes en lloc de 8, a diferència de GCC real i MARS.
+     Això fa que la solució del mapa de memòria sigui diferent segons el simulador:
+     - Solució correcta (GCC/MARS): cc s'alinea a 0x10010008 (4 bytes de padding entre bb i cc).
+     - Solució RARS: cc s'alinea a 0x10010004 (0 bytes de padding entre bb i cc).
+     Cal decidir amb els col·legues quina versió presentar als alumnes i si s'ha d'afegir
+     una nota sobre aquest comportament. De moment es presenten les dues versions. -->
+
+::: {#sol-mapa-memoria}
+<!-- TODO: decidir quina versió (RARS o GCC/MARS) és la que es demana als exàmens -->
+
+**Solució correcta (comportament GCC/MARS — alineació de `.dword` a 8 bytes):**
+
+Distribució de variables:
+
+| Variable | Tipus | Mida | Alineació | Adreça |
+| :--- | :--- | ---: | ---: | :--- |
+| `aa` | `char` | 1 B | 1 B | `0x10010000` |
+| `bb` | `short` | 2 B | 2 B | `0x10010002` (1 byte de *padding*) |
+| `cc` | `long long` | 8 B | 8 B | `0x10010008` (4 bytes de *padding*) |
+| `dd` | `unsigned char` | 1 B | 1 B | `0x10010010` |
+| `ee` | `int` | 4 B | 4 B | `0x10010014` (3 bytes de *padding*) |
+| `ff` | `short` | 2 B | 2 B | `0x10010018` |
+: {.striped .hover}
+
+::: {layout="[50,-1,50]"}
+::: {}
+| Etiqueta | @memòria | Contingut |
+| :--- | :--- | :--- |
+| `aa` | `0x1001 0000` | `0xFB` |
+| | `0x1001 0001` | `--` |
+| `bb` | `0x1001 0002` | `0xA8` |
+| | `0x1001 0003` | `0xFE` |
+| | `0x1001 0004` | `--` |
+| | `0x1001 0005` | `--` |
+| | `0x1001 0006` | `--` |
+| | `0x1001 0007` | `--` |
+| `cc` | `0x1001 0008` | `0xFD` |
+| | `0x1001 0009` | `0xFF` |
+| | `0x1001 000A` | `0xFF` |
+| | `0x1001 000B` | `0xFF` |
+| | `0x1001 000C` | `0xFF` |
+| | `0x1001 000D` | `0xFF` |
+| | `0x1001 000E` | `0xFF` |
+| | `0x1001 000F` | `0xFF` |
+:::
+::: {}
+| Etiqueta | @memòria | Contingut |
+| :--- | :--- | :--- |
+| `dd` | `0x1001 0010` | `0xA0` |
+| | `0x1001 0011` | `--` |
+| | `0x1001 0012` | `--` |
+| | `0x1001 0013` | `--` |
+| `ee` | `0x1001 0014` | `0xA7` |
+| | `0x1001 0015` | `0x16` |
+| | `0x1001 0016` | `0x00` |
+| | `0x1001 0017` | `0x00` |
+| `ff` | `0x1001 0018` | `0xFF` |
+| | `0x1001 0019` | `0xFF` |
+:::
+:::
+
+Vista de memòria a MARS:
+```
+Address      +0          +4          +8          +c
+0x10010000   0xfea800fb  0x00000000  0xfffffffd  0xffffffff
+0x10010010   0x000000a0  0x000016a7  0x0000ffff  0x00000000
+```
+
+---
+
+**Solució alternativa (comportament RARS — alineació de `.dword` a 4 bytes):**
+
+Distribució de variables:
+
+| Variable | Tipus | Mida | Alineació | Adreça |
+| :--- | :--- | ---: | ---: | :--- |
+| `aa` | `char` | 1 B | 1 B | `0x10010000` |
+| `bb` | `short` | 2 B | 2 B | `0x10010002` (1 byte de *padding*) |
+| `cc` | `long long` | 8 B | 4 B | `0x10010004` (0 bytes de *padding*) |
+| `dd` | `unsigned char` | 1 B | 1 B | `0x1001000C` |
+| `ee` | `int` | 4 B | 4 B | `0x10010010` (3 bytes de *padding*) |
+| `ff` | `short` | 2 B | 2 B | `0x10010014` |
+: {.striped .hover}
+
+::: {layout="[50,-1,50]"}
+::: {}
+| Etiqueta | @memòria | Contingut |
+| :--- | :--- | :--- |
+| `aa` | `0x1001 0000` | `0xFB` |
+| | `0x1001 0001` | `--` |
+| `bb` | `0x1001 0002` | `0xA8` |
+| | `0x1001 0003` | `0xFE` |
+| `cc` | `0x1001 0004` | `0xFD` |
+| | `0x1001 0005` | `0xFF` |
+| | `0x1001 0006` | `0xFF` |
+| | `0x1001 0007` | `0xFF` |
+| | `0x1001 0008` | `0xFF` |
+| | `0x1001 0009` | `0xFF` |
+| | `0x1001 000A` | `0xFF` |
+| | `0x1001 000B` | `0xFF` |
+| `dd` | `0x1001 000C` | `0xA0` |
+| | `0x1001 000D` | `--` |
+| | `0x1001 000E` | `--` |
+| | `0x1001 000F` | `--` |
+:::
+::: {}
+| Etiqueta | @memòria | Contingut |
+| :--- | :--- | :--- |
+| `ee` | `0x1001 0010` | `0xA7` |
+| | `0x1001 0011` | `0x16` |
+| | `0x1001 0012` | `0x00` |
+| | `0x1001 0013` | `0x00` |
+| `ff` | `0x1001 0014` | `0xFF` |
+| | `0x1001 0015` | `0xFF` |
+:::
+:::
+
+Vista de memòria a RARS:
+```
+Address      +0          +4          +8          +c
+0x10010000   0xfea800fb  0xfffffffd  0xffffffff  0x000000a0
+0x10010010   0x000016a7  0x0000ffff  0x00000000  0x00000000
+```
+:::
+
+---
+
+::: {#cau-rars-vista-memoria .callout-caution}
+## RARS — Vista de memòria
+
+RARS mostra el contingut de la memòria agrupat en **words de 4 bytes**. Cada fila mostra 8 words consecutius (columnes `+0` fins a `+1c`) a partir d'una adreça alineada a 32 bytes (múltiple de `0x20`). Dins de cada word, el byte de major adreça apareix a l'esquerra i el de menor adreça a la dreta. Això és contrari a l'ordre real d'emmagatzematge (*little-endian*) i sovint és font de confusió.
+
+Per exemple, el word a l'adreça `0x10010000` conté els bytes (de menor a major adreça):
+
+| @`+0` | @`+1` | @`+2` | @`+3` |
+| :---: | :---: | :---: | :---: |
+| `0xFB` | `--` | `0xA8` | `0xFE` |
+
+i RARS el mostra com `0xFEA800FB`.
+:::
+
+---
+
+::: {#exr-rars-vista-memoria}
+Després d'assemblar el programa de l'@exr-declaracio-variables, RARS mostra la vista de memòria següent:
+
+```
+Address      +0          +4          +8          +c
+0x10010000   0xfea800fb  0xfffffffd  0xffffffff  0x000000a0
+0x10010010   0x000016a7  0x0000ffff  0x00000000  0x00000000
+```
+
+Per a cada word, identifiqueu a quina variable correspon cada byte i expliqueu per què apareix en aquest ordre.
+:::
+
+---
+
+::: {#sol-rars-vista-memoria}
+El byte de menor adreça ocupa la posició de la dreta; el de major adreça, la de l'esquerra:
+
+| Adreça | Valor RARS | @`+0` | @`+1` | @`+2` | @`+3` | Variable(s) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, *padding*, `bb` |
+| `0x10010004` | `0xfffffffd` | `0xFD` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 0–3) |
+| `0x10010008` | `0xffffffff` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 4–7) |
+| `0x1001000C` | `0x000000a0` | `0xA0` | `--` | `--` | `--` | `dd`, *padding* |
+| `0x10010010` | `0x000016a7` | `0xA7` | `0x16` | `0x00` | `0x00` | `ee` |
+| `0x10010014` | `0x0000ffff` | `0xFF` | `0xFF` | lliure | lliure | `ff` |
+: {.striped .hover}
+:::
+
+---
+
+## Punters
+
+Un **punter** és una variable que conté l'adreça de memòria d'una altra variable. En RV32I, un punter ocupa sempre 4 bytes (una paraula), ja que les adreces són de 32 bits (@nte-punters-32-bits). La pseudoinstrucció `la` carrega l'adreça d'una variable en un registre (@nte-pseudoinstruccio-la), i les instruccions `lw`/`lh`/`lhu`/`lb`/`lbu` i `sw`/`sh`/`sb` permeten accedir al valor apuntat (@nte-load-store).
+
+---
+
+::: {#exr-punters-valors}
+Donada la declaració següent, on `pdada` és un punter inicialitzat amb l'adreça de `dada`:
+
+```{.s}
+.data
+dada:  .half 3
+pdada: .word dada
+```
+
+Sabent que les variables s'emmagatzemen a partir de `0x10010000`, calculeu el valor de cada expressió C:
+
+| Expressió C | Valor (hex) |
+| :--- | :--- |
+| `&dada` | |
+| `&pdada` | |
+| `dada` | |
+| `pdada` | |
+| `*pdada` | |
+: {.striped .hover}
+:::
+
+---
+
+::: {#sol-punters-valors}
+`dada` és un `short` (2 bytes, alineació 2), s'emmagatzema a `0x10010000`. `pdada` és un punter (4 bytes, alineació 4), s'emmagatzema a `0x10010004` (2 bytes de *padding*).
+
+| Expressió C | Valor (hex) | Explicació |
+| :--- | :--- | :--- |
+| `&dada` | `0x10010000` | Adreça de `dada` |
+| `&pdada` | `0x10010004` | Adreça de `pdada` |
+| `dada` | `0x00000003` | Contingut de `dada` |
+| `pdada` | `0x10010000` | Contingut de `pdada` (adreça de `dada`) |
+| `*pdada` | `0x00000003` | Contingut de l'adreça apuntada per `pdada` |
+: {.striped .hover}
+:::
+
+---
+
+::: {#exr-punters-codi}
+Traduïu a RV32I el programa C següent. La variable temporal `temp` s'emmagatzema al registre `s0`:
+
+```c
+int A[3] = {3, 5, 7};
+int *punter = 0;
+
+void main() {
+    int temp;
+    punter = &A[2];
+    temp = *punter + 2;
+    temp = *(punter - 2) + temp;
+    A[1] = temp;
+}
+```
+:::
+
+---
+
+::: {#sol-punters-codi}
+```{.s}
+.global _start
+
+.data
+A:      .word 3, 5, 7
+punter: .word 0
+
+.text
+_start:
+        # punter = &A[2]
+        la   t0, A
+        addi t0, t0, 8      # &A[2] = &A + 2*4
+        la   t1, punter
+        sw   t0, 0(t1)      # punter = &A[2]
+
+        # temp = *punter + 2
+        lw   s0, 0(t0)      # s0 = *punter = A[2] = 7
+        addi s0, s0, 2      # s0 = 9
+
+        # temp = *(punter - 2) + temp
+        addi t0, t0, -8     # punter - 2 = &A[0]
+        lw   t2, 0(t0)      # t2 = A[0] = 3
+        add  s0, t2, s0     # s0 = 3 + 9 = 12
+
+        # A[1] = temp
+        la   t0, A
+        sw   s0, 4(t0)      # A[1] = 12
+
+        # Sortir del programa
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+:::
+
+---
+
+## Vectors
+
+Un **vector** és una seqüència d'elements del mateix tipus emmagatzemats consecutivament en memòria. L'adreça de l'element `v[i]` es calcula a partir de l'adreça base del vector i la mida de cada element (@sec-vectors, @sec-vector-indexacio):
+
+$$@\texttt{v[i]} = @\texttt{v} + i \times \texttt{mida\_element}$$
+
+En RV32I, l'accés indexat requereix calcular aquesta adreça explícitament, ja que no hi ha mode d'adreçament indexat (@sec-operands-memoria).
+
+---
+
+::: {#exr-vectors-declaracio}
+Donat el vector global següent en C:
+
+```c
+int vec[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+```
+
+1. Escriviu la declaració equivalent en RV32I.
+2. Escriviu la fórmula per calcular l'adreça de `vec[i]` en funció de l'adreça base de `vec` i de l'índex `i`.
+3. Escriviu un fragment de codi RV32I que copiï el valor de `vec[i]` al registre `s1`, suposant que `i` es troba al registre `s2`.
+:::
+
+---
+
+::: {#sol-vectors-declaracio}
+**1. Declaració en RV32I:**
+
+```{.s}
+.data
+vec: .word 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+```
+
+**2. Fórmula d'accés:**
+
+$$@\texttt{vec[i]} = @\texttt{vec} + i \times 4$$
+
+**3. Fragment de codi:**
+
+```{.s}
+        la   t0, vec        # t0 = @vec
+        slli t1, s2, 2      # t1 = i * 4
+        add  t0, t0, t1     # t0 = @vec[i]
+        lw   s1, 0(t0)      # s1 = vec[i]
+```
+:::
+
+---
+
+::: {#exr-vectors-fibonacci}
+Traduïu a RV32I el programa C següent, que calcula els 10 primers termes de la sèrie de Fibonacci i els emmagatzema al vector `fib`. La variable `i` s'emmagatzema al registre `s0`:
+
+```c
+int fib[10];
+
+void main() {
+    int i = 2;
+    fib[0] = 0;
+    fib[1] = 1;
+    while (i < 10) {
+        fib[i] = fib[i-1] + fib[i-2];
+        i++;
+    }
+}
+```
+:::
+
+---
+
+::: {#sol-vectors-fibonacci}
+```{.s}
+.global _start
+
+.data
+fib: .space 40              # 10 enters * 4 bytes
+
+.text
+_start:
+        # fib[0] = 0
+        la   t0, fib
+        sw   zero, 0(t0)    # fib[0] = 0
+
+        # fib[1] = 1
+        li   t1, 1
+        sw   t1, 4(t0)      # fib[1] = 1
+
+        # i = 2
+        li   s0, 2
+
+while:
+        # if i >= 10, sortir
+        li   t1, 10
+        bge  s0, t1, fi
+
+        # t1 = fib[i-1]
+        la   t0, fib
+        slli t2, s0, 2      # t2 = i * 4
+        add  t3, t0, t2     # t3 = @fib[i]
+        lw   t1, -4(t3)     # t1 = fib[i-1]
+
+        # t2 = fib[i-2]
+        lw   t2, -8(t3)     # t2 = fib[i-2]
+
+        # fib[i] = fib[i-1] + fib[i-2]
+        add  t1, t1, t2
+        sw   t1, 0(t3)      # fib[i] = t1
+
+        # i++
+        addi s0, s0, 1
+        j    while
+
+fi:
+        # Sortir del programa
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+:::
+
+---
+
+## Strings
+
+Un **string** és un vector de caràcters (`char`) que finalitza amb el caràcter sentinella `'\0'` (valor `0x00`). La codificació utilitzada és ASCII de 7 bits (@nte-directives-ascii-asciz-string). Per recórrer un string no cal conèixer-ne la longitud prèviament: n'hi ha prou de recórrer-lo fins a trobar el sentinella.
+
+---
+
+::: {#exr-strings-ascii}
+El vector `vec` conté els dígits decimals del nombre `19865`, ordenats de menor a major pes. El programa següent converteix cada dígit a la seva representació ASCII i l'emmagatzema al string `cadena`, ordenat de major a menor pes per poder-lo imprimir correctament.
+
+```c
+char         cadena[6];
+unsigned int vec[5] = {5, 6, 8, 9, 1};
+
+void main() {
+    int i = 0;
+    while (i < 5) {
+        cadena[i] = vec[4-i] + '0';
+        i++;
+    }
+    cadena[5] = 0;
+}
+```
+
+Traduïu el programa a RV32I. La variable `i` s'emmagatzema al registre `s0`.
+
+**Nota:** la conversió de dígit a caràcter ASCII consisteix a sumar el valor del dígit al codi ASCII de `'0'` (`0x30`). Consulteu el @cau-rars-vista-memoria per interpretar el contingut de `cadena` a la vista de memòria de RARS.
+:::
+
+---
+
+::: {#sol-strings-ascii}
+```{.s}
+.global _start
+
+.data
+cadena: .space 6
+vec:    .word  5, 6, 8, 9, 1
+
+.text
+_start:
+        # i = 0
+        li   s0, 0
+
+while:
+        # if i >= 5, sortir
+        li   t0, 5
+        bge  s0, t0, fi
+
+        # t1 = vec[4-i]
+        li   t0, 4
+        sub  t0, t0, s0     # t0 = 4 - i
+        la   t1, vec
+        slli t2, t0, 2      # t2 = (4-i) * 4
+        add  t1, t1, t2     # t1 = @vec[4-i]
+        lw   t1, 0(t1)      # t1 = vec[4-i]
+
+        # cadena[i] = vec[4-i] + '0'
+        li   t2, 0x30       # '0' en ASCII
+        add  t1, t1, t2     # t1 = vec[4-i] + '0'
+        la   t2, cadena
+        add  t2, t2, s0     # t2 = @cadena[i]
+        sb   t1, 0(t2)      # cadena[i] = t1
+
+        # i++
+        addi s0, s0, 1
+        j    while
+
+fi:
+        # cadena[5] = 0
+        la   t0, cadena
+        sb   zero, 5(t0)
+
+        # Sortir del programa
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+:::
+
+---
+
+## Lliurament
+
+Cal lliurar les respostes als exercicis següents al campus virtual abans de l'inici de la sessió de laboratori:
+
+| Exercici | Lliurable |
+| :--- | :--- |
+| @exr-declaracio-variables | Codi RV32I |
+| @exr-mapa-memoria | Taula de memòria completa |
+| @exr-punters-valors | Taula de valors |
+| @exr-punters-codi | Codi RV32I |
+| @exr-vectors-declaracio | Declaració, fórmula i fragment de codi |
+| @exr-vectors-fibonacci | Codi RV32I |
+| @exr-strings-ascii | Codi RV32I |
+: {.striped .hover}

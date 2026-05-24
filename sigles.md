@@ -12,6 +12,8 @@
 
 **API** *Application Programming Interface*
 
+**ASCII** *American Standard Code for Information Interchange*
+
 **BA** Bloc d'activació
 
 **AC** Arquitectura de computadors (assignatura del GEI)
@@ -64,6 +66,8 @@
 
 **LSB** *Least Significant Byte*
 
+**MARS** *MIPS Assembler and Runtime Simulator*
+
 **MC** Memòria cau
 
 **MIPS** *Microprocessor without Interlocked Pipeline Stages*
@@ -93,6 +97,8 @@
 **PTE** *Page Table Entry*
 
 **RAM** *Random Access Memory*
+
+**RARS** *RISC-V Assembler and Runtime Simulator*
 
 **RNE** *Round to Nearest Even*
 
