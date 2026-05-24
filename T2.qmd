@@ -698,21 +698,24 @@ main:
 Per executar correctament aquest esquelet a RARS, cal configurar l'*Exception Handler* amb el fitxer `startup.s` (@imp-exception-handler).
 :::
 
+<!-- TODO Roger: proposo eliminar `startup.s` per antipedagògic -->
 ::: {#imp-exception-handler .callout-important}
 ## RARS — *Exception Handler:* `startup.s`
 
-Tot i que, a **EC**, l'assumpció general és treballar directament sobre el processador (@imp-directe-sobre-processador) i, per tant, sense SO, al laboratori es configura RARS per emular el **mecanisme d'inici i finalització del programa**: el SO no crida `main` directament, sinó que primer executa `__start`, que inicialitza l'entorn d'execució i crida `main`. Quan `main` retorna, `__start` invoca la crida al sistema `exit` per alliberar els recursos del procés.
+Tot i que, a **EC**, l'assumpció general és treballar directament sobre el processador (@imp-directe-sobre-processador) i, per tant, sense SO, al laboratori es configura RARS per emular el **mecanisme d'inici i finalització del programa**: el SO no crida `main` directament, sinó que primer executa `__start`, que inicialitza l'entorn d'execució i crida `main`. Quan `main` retorna, `_start` invoca la crida al sistema `exit` per alliberar els recursos del procés.
 
 A **EC**, la **configuració per defecte de RARS** inclou l'ús del fitxer `startup.s` (@sec-rars).
 
 ```{.s filename="startup.s"}
 .text
-.globl __start
-__start:
-    jal     main
+.globl _start
+_start:
+        jal     main
 
-    li      a7, 10      # Service number in register a7; 10 (exit)
-    ecall
+        li      a0, 0       # Valor de retorn de main a a0 (exit code)
+        li      a7, 93      # Service number in register a7; 93 (exit with a code;
+                            #   a0 = the number to exit with)
+        ecall
 ```
 
 ::: {#wrn-so-start .callout-warning collapse=true}

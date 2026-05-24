@@ -404,7 +404,8 @@ La directiva **`.section`** declara un segment de codi o dades amb nom i atribut
 
 El codi següent mostra una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un *dispatcher*:
 
-``` {.s filename="RV32I"}
+<!-- TODO port a RARS? -->
+```{.s filename="RV32IZicsr"}
 .section .text.trap, "ax"
 .align 2
 rse:
@@ -445,9 +446,9 @@ rse:
         sw      tp, 116(sp)
 
         # Llegir mcause i mepc i passar-los com a paràmetres al dispatcher
-            csrr    a0, mcause          # a0 = mcause (causa de l'excepció/interrupció)
-            csrr    a1, mepc            # a1 = mepc (adreça de retorn)
-            mv      a2, sp              # a2 = punter als registres salvats
+        csrr    a0, mcause          # a0 = mcause (causa de l'excepció/interrupció)
+        csrr    a1, mepc            # a1 = mepc (adreça de retorn)
+        mv      a2, sp              # a2 = punter als registres salvats
 
         # Cridar el dispatcher, que identificarà la causa i cridarà el handler
         call    handler_dispatcher  # retorna a a0 l'adreça de retorn ajustada
@@ -487,11 +488,11 @@ rse:
         lw      gp, 112(sp)
         lw      tp, 116(sp)
 
-    # Alliberar la pila
-    addi    sp, sp, 120
+        # Alliberar la pila
+        addi    sp, sp, 120
 
-    # Retornar al programa: MIE←MPIE, mode←MPP, PC←mepc
-    mret
+        # Retornar al programa: MIE←MPIE, mode←MPP, PC←mepc
+        mret
 ```
 
 El *dispatcher* (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Consulta `mcause` per cridar el *handler* específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
@@ -548,7 +549,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 
 **Escriure a la sortida estàndard (`write`, codi 64):**
 
-``` {.s filename="RV32I"}
+```{.s filename="RV32IZicsr"}
         li      a7, 64              # codi de write
         li      a0, 1               # descriptor: stdout
         la      a1, missatge        # adreça del buffer
@@ -558,7 +559,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 
 **Llegir de l'entrada estàndard (`read`, codi 63):**
 
-``` {.s filename="RV32I"}
+```{.s filename="RV32IZicsr"}
         li      a7, 63              # codi de read
         li      a0, 0               # descriptor: stdin
         la      a1, buffer          # adreça del buffer
@@ -568,7 +569,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 
 **Finalitzar el programa (`exit`, codi 93):**
 
-``` {.s filename="RV32I"}
+```{.s filename="RV32IZicsr"}
         li      a7, 93              # codi de exit
         li      a0, 0               # codi de retorn (0 = èxit)
         ecall                       # no retorna
@@ -576,7 +577,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 
 **Reservar memòria dinàmica (`brk`, codi 214):**
 
-``` {.s filename="RV32I"}
+```{.s filename="RV32IZicsr"}
         li      a7, 214             # codi de brk
         li      a0, 0               # 0 = consultar l'adreça actual del heap
         ecall                       # a0 ← adreça actual (o nova) del final del heap
@@ -638,7 +639,7 @@ La comunicació amb els dispositius d'E/S està dominada per la necessitat de to
 
 - **Sincronització per enquesta** (*polling*): el processador consulta repetidament l'estat del dispositiu fins que l'operació acaba. És simple d'implementar però desaprofita completament el processador durant l'espera.
 
-``` {.s filename="RV32I"}
+```{.s filename="RV32IZicsr"}
 bucle:
         lw      t0, ESTAT_DISPOSITIU    # llegir l'estat del dispositiu
         bne     t0, READY, bucle        # esperar fins que estigui llest
@@ -770,12 +771,14 @@ El registre `satp` té el format següent en RV32:
 Quan la RSE en mode S modifica la taula de pàgines en memòria, executa la instrucció **`sfence.vma`** per invalidar les entrades del TLB afectades i garantir la coherència.
 
 ::: {#nte-sfence .callout-note}
-## RV32I ISA — `sfence.vma`
+## Zicsr ISA — `sfence.vma`
 
 | Mnemònic | Operands | Operació | Nom |
 | :--- | :--- | :--- | :--- |
 | `sfence.vma` | `rs1, rs2` | Invalida les entrades del TLB per a l'adreça `rs1` i l'ASID `rs2` (`x0` = tots) | *Supervisor fence* |
 : {tbl-colwidths="[15,12,48,25]" .striped}
+
+`sfence.vma` pertany a l'extensió **Zifencei**, no a Zicsr. Els blocs de codi de T9 usen `RV32IZicsr` com a convenció simplificada; en un sistema real caldria afegir `-march=rv32i_zicsr_zifencei`.
 :::
 
 ::: {#wrn-tlb-page-table-walker .callout-warning collapse=true}
@@ -788,7 +791,7 @@ Algunes implementacions RISC-V inclouen un component hardware (*hardware page ta
 
 En un sistema amb mode S actiu (per exemple, Linux), les fallades de TLB es gestionen per la RSE del nucli en mode S. La rutina actualitza la taula de pàgines en memòria i invalida l'entrada corresponent del TLB:
 
-``` {.s filename="RV32I"}
+```{.s filename="RV32IZicsr"}
 tlb_miss_handler:
         # stval conté l'adreça virtual que ha causat la fallada
         csrr    t0, stval               # t0 = adreça virtual
