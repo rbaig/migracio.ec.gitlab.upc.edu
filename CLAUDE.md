@@ -129,13 +129,14 @@ Convencions globals del laboratori (acordades durant L0 i L1):
 - **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurable.
 - **Nom de figura SVG:** `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
 
-Fitxers completats: `L0.qmd`, `L1.qmd`.
+Fitxers completats: `L1.qmd`, `L2.qmd`
 
 ### En curs
 
-3. Laboratori: `L2.qmd`–`L5.qmd`
+* Laboratori: `L3.qmd`
 
 ### Pendent
 
-4. Problemes (`PE.qmd`, `PS.qmd`)
-5. Solucionari
+* Laboratori `L4.qmd`, `L5.qmd`, `L0.qmd`
+ Problemes `PE.qmd`
+ Solucionari `PS.qmd`

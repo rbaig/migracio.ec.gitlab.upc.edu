@@ -585,6 +585,7 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 | underflow | subdesbordament | |
 | promig | mitjana | |
 | tamany | mida | mida per escalars (e.g. mida en bytes o en bits); longitud per registre, camp de bits, vectors, cadenes de caràcters |
+| string | cadena de caràcters | Cadena (si apareix sovint) |
 <!--- cSpell:enable --->
 
 * `mida` vs. `longitud`: s'usa `mida` per referir-se a l'espai que ocupa un tipus o variable en memòria (p. ex. *la mida d'un `int` és 4 bytes*). S'usa `longitud`*per referir-se al nombre de bits d'un registre o camp de bits (p. ex. *la longitud del camp `opcode` és 7 bits*). El terme `tamany` no és normatiu i no s'ha d'usar mai.
@@ -698,6 +699,66 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 * **`mepc`:** en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del hardware.
 * **Zicsr:** les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
 * **Mode S:** el tractament de fallades de TLB per programari requereix mode S (`satp`, `stval`, `sfence.vma`). El cos del text descriu el mecanisme en mode M; l'aprofundiment cobreix mode S.
+
+### Laboratori
+
+#### Convencions globals del laboratori (acordades durant L0, L1 i L2)
+
+- **Punt d'entrada:** `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
+- **Sortida del programa:** `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
+- **Directives de segment:** `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
+- **Codi dels exercicis:** integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
+- **Estructura de cada exercici:** enunciat en `{#exr-...}` + solució en `{#sol-...}`.
+- **Títol del callout d'exercici:** nom del fitxer lliurable principal (p. ex. `## \`s2_4_1.s\``). Si hi ha dos lliurables: `## \`s2_4_2.md\` i \`s2_4_2.s\``.
+- **Nom dels fitxers de lliurament:** `s<N>_<S>_<E>.<ext>` (sessió, secció, exercici). Exemples: `s2_3_1.s`, `s2_4_2.md`.
+- **Lliurament `.md` + `.s`:** exercicis amb anàlisi escrita prèvia (registres segurs, BA) es lliuren en dos fitxers.
+- **Lectura prèvia:** primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
+- **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurable.
+- **Nom de figura SVG:** `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
+
+#### Nom dels fitxers de lliurament
+
+El nom dels fitxers de laboratori segueix el patró `s<N>_<S>_<E>.<ext>`, on:
+
+- `<N>` és el número de sessió,
+- `<S>` és el número de secció dins la sessió,
+- `<E>` és el número d'exercici dins la secció,
+- `<ext>` és l'extensió: `.s` per a codi assemblador, `.md` per a documents escrits.
+
+Exemples: `s2_3_1.s`, `s2_4_2.md`, `s2_4_2.s`.
+
+#### Seccions no numerades
+
+Les seccions `## Lectura prèvia` i `## Lliuraments` porten l'atribut `{.unnumbered}` per evitar que consueixin un número i provoquin un decalatge entre la numeració de les seccions d'exercicis i els noms dels fitxers de lliurament:
+
+```markdown
+## Lectura prèvia {.unnumbered}
+## Lliuraments {.unnumbered}
+```
+
+#### Títol del "bloc d'exercici"
+
+El títol del "bloc d'exercici" i `{#exr-...}` és el nom del fitxer lliurable principal:
+
+```markdown
+::: {#exr-nom}
+## `s2_4_1.s`
+...
+:::
+```
+
+Si l'exercici té dos lliurables (`.md` + `.s`), ambdós apareixen al títol:
+
+```markdown
+::: {#exr-nom}
+## `s2_4_2.md` i `s2_4_2.s`
+...
+:::
+```
+
+#### Lliurament `.md` + `.s`
+
+Els exercicis que requereixen anàlisi escrita prèvia al codi (identificació de registres segurs, esquema del bloc d'activació) es lliuren en dos fitxers: un `.md` amb l'anàlisi i un `.s` amb el codi. La taula de lliuraments reflecteix ambdós.
 
 ## Programació
 

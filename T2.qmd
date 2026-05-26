@@ -838,7 +838,7 @@ void f() {
 Cada invocació de `f()` incrementa el mateix `comptador`, que persisteix entre crides.
 :::
 
-### Mida
+### Mida i rang de valors representables {#sec-mida-rang}
 
 En **C**, la **mida** en bytes d'una variable **depèn** del seu **tipus** i de l'**ABI**. Per a l'ABI d'EC (`ilp32`), les mides són les de les taules següents:
 
@@ -869,6 +869,11 @@ En **C**, la **mida** en bytes d'una variable **depèn** del seu **tipus** i de 
 <!-- TODO decidir si es mereix la categoria d'important -->
 ::: {#cau-long-long-2-regs .callout-caution}
 Com que els registres són de 32 bits, per allotjar-hi un `long long` en calen dos, un per als bits de menys pes, l'altre pels de més pes; cal gestionar-los corresponentment.
+:::
+
+::: {#wrn-c-tuples .callout-warning collapse=true}
+## C tuples
+En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (representades en C pel tipus `struct`) són agrupacions d’elements (“camps”) de tipus heterogenis, on la mida de la tupla depèn dels tipus dels camps que la formen. Cada camp de la tupla ha d’estar alineat en memòria segons el seu tipus, i per tant poden aparèixer no solament espais de memòria no usats entre els camps, sinó també entre elements consecutius d’un vector de tuples. A EC, no es tracten les tuples.
 :::
 
 ## La memòria {#sec-memoria-t2}
@@ -993,82 +998,68 @@ Si bé antigament la competència comercial entre fabricants induïa a crear bar
 
 ### Restriccions d'alineació {#sec-memoria-alineacio}
 
+Les **restriccions d'alineació** (***alignment constraints***) són regles que imposen condicions sobre l'**adreça inicial** de les dades emmagatzemades en memòria.
+
 ::: {#cau-memoria-restriccions-alineacio .callout-caution}
-Les **restriccions d'alineació** (***alignment constraints***) imposen condicions sobre l'**adreça inicial** de les dades emmagatzemades en memòria.
+A **EC**, es segueix les restriccions definides per l'**ABI** `ilp32` de RISC-V.
 :::
 
-:::: {#imp-memoria-restriccions-alineacio .callout-important}
-## RARS — alineació
-A **EC** i a **RARS**, l'**adreça inicial** de les dades de més d'un byte ha de respectar les restriccions d’alineació de la @tbl-tipus-alineacio.
+::: {#nte-restricicons-alineacio .callout-note}
+## RISC-V ABI — Restriccions d'alineació
 
-<!-- TODO @Adrià: Només (mod 4)? RARS permet lb (mod 1) i lh (mod2) -->
-::: {#tbl-tipus-alineacio style="width: 40%;"}
-| Tipus C | LSB múltiple de... |
-| :--- | :---: |
-| `short` | 2 |
-| `int` | 4 |
-| `long long` | 8 |
-: Restriccions d'alineació.
+| Tipus C | Mida | Adreça inicial múltiple de... |
+| :--- | :---: | :---: |
+| `char`, `unsigned char` | 1 B | 1 (cap restricció) |
+| `short`, `unsigned short` | 2 B | 2 |
+| `int`, `unsigned int`, `float` | 4 B | 4 |
+| `long long`, `unsigned long long`, `double` | 8 B | 8 |
+: {#tbl-tipus-alineacio style="width: 90%;"}
 :::
 
-No respectar l'alineació:
-
-* A **EC**, es considera un error greu.
-* A **RARS**, genera una excepció ([Tema 9](T9.qmd)) i atura l'execució.
-::::
-
-::: {#wrn-c-tuples .callout-warning collapse=true}
-## C tuples
-En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (representades en C pel tipus `struct`) són agrupacions d’elements (“camps”) de tipus heterogenis, on la mida de la tupla depèn dels tipus dels camps que la formen. Cada camp de la tupla ha d’estar alineat en memòria segons el seu tipus, i per tant poden aparèixer no solament espais de memòria no usats entre els camps, sinó també entre elements consecutius d’un vector de tuples. A EC, no es tracten les tuples.
-:::
+Quan es declaren variables globals consecutivament, l'assemblador insereix automàticament **bytes de farciment** (*padding*) entre elles per respectar aquestes restriccions. El valor dels bytes de farciment és **indeterminat** per l'ABI; a la pràctica, el sistema operatiu inicialitza a `0x00` tota la memòria assignada a un nou procés, però aquest comportament no està garantit pel llenguatge C ni per l'ABI.
 
 ::: {#tip-alineació-incorrecte .callout-tip}
 ## Restricció d'alineació, correcte vs. incorrecte
 
-En codi següent, a les línies **L14** i **L15** hi ha **errors** d'alineació.
+En el codi següent, a les línies **L14** i **L15** hi ha **errors** d'alineació.
 
-```{.asm filename="⚠️codi_erroni__alineacio_incorrecte.s⚠️"}
+```{.s filename="⚠️codi_erroni__alineacio_incorrecte.s⚠️"}
 .data
-AA:	.word	0x41424344
-BB:	.word	0x45464748
+AA: .word 0x41424344
+BB: .word 0x45464748
 
-.globl main
+.global _start
 .text
-main:
-	la	t0, AA		# t0 <- @AA	(0x10010000)
-	lb	t1, 1(t0)	# t1 <- 0x43	(`C`)
-	lh	t2, 2(t0)	# t2 <- 0x4142
-	lw	t3, 4(t0)	# t3 <- 0x45464748
-	
- ###   **CODI INCORRECTE**   ##############################################
-	lh	t4, 5(t0)	# ⚠️ ERROR: Excepció d'alineació ⚠️
-	lw	t4, 1(t0)	# ⚠️ ERROR: Excepció d'alineació ⚠️
-	
-	ret			# innecessari perquè l'execució s'avorta a la línia 14
+_start:
+        la  t0, AA          # t0 <- @AA  (0x10010000)
+        lb  t1, 1(t0)       # t1 <- 0x43  ('C')
+        lh  t2, 2(t0)       # t2 <- 0x4142
+        lw  t3, 4(t0)       # t3 <- 0x45464748
+
+###   CODI INCORRECTE   #################################################
+        lh  t4, 5(t0)       # ⚠️ ERROR: excepció d'alineació ⚠️
+        lw  t4, 1(t0)       # ⚠️ ERROR: excepció d'alineació ⚠️
 ```
 
-En executar aquest codi a RARS ("F7": execució línia a línia, "F5": execució contínua), en executar la **L14**, salta una excepció d'**error** d'alineació i s'**avorta** l'execució.
+En executar aquest codi a RARS (`F7`: execució línia a línia), en arribar a la **L14** salta una excepció d'alineació i s'atura l'execució:
 
-```{.code filename="RARS -> Execute -> Messages"}
-Error in /.../riscv1.asm line 14: Runtime exception at 0x00400020: Load address not aligned on halfword boundary 0x10010005
+```{.default filename="RARS → Execute → Messages"}
+Error in /.../codi.s line 14: Runtime exception at 0x00400020: Load address not aligned on halfword boundary 0x10010005
 ```
 :::
 
-::: {#wrn-no-restriccions-alineacio .callout-warning collapse=true}
-## RISC-V, restriccions d’alineació
+::: {#cau-respecte-abi-alineacio .callout-caution}
+No respectar l'alineació:
 
-<!-- TODO @Adrià: Revisar tot el callout -->
-* Les restriccions d'alineació són a nivell d'ABI. És per això que en aquests apunts estan marcades com a criteris de l'assignatura, que coincidents amb els de RARS (@imp-memoria-restriccions-alineacio).
-* A l'ABI de RISC-V és de múltiple de 16, per permetre l'extensió Q (128-bit floating point).
+* A **EC**, es considera un error greu.
+* A **RARS**, genera una excepció ([Tema 9](T9.qmd)) i atura l'execució.
 :::
 
 ### Directives d'alineació de memòria
 
 RARS té les **directives** de @nte-directives-alineacio-inicialitzacio per gestionar les restriccions d'alineació de memòria. Aquestes directives apliquen automàticament la restricció d’alineació, descartant tantes posicions de memòria com sigui necessari. Opcionalment, la directiva pot anar **precedida** d’una **etiqueta** amb el **nom de la variable**, la qual representa de forma simbòlica l’adreça inicial de la dada definida.[^etiqueta]
 
-<!-- TODO Verificar ref a secció  -->
 [^etiqueta]: L'assemblador, quan pot (@sec-compilacio), substitueix totes les etiquetes (variables, funcions, destinacions de salts, etc.) per adreces de memòria. 
-
 
 :::: {#nte-directives-alineacio-inicialitzacio .callout-note}
 ## RARS — Directives d'alineació (i inicialització) de variables globals

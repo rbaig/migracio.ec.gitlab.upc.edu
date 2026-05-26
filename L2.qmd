@@ -1,8 +1,632 @@
 ---
-title: "Sessió 2: Traducció de Programes"
+title: "Sessió 2: Traducció de programes"
 number-sections: true
 ---
 
-## TODO
+## Lectura prèvia  {.unnumbered}
 
-### TODO
+Abans de fer la sessió, cal haver llegit i entès els continguts següents:
+
+| Concepte | On trobar-ho |
+| :--- | :--- |
+| Traducció literal C→RV32I | @imp-traduccions-literals |
+| Desplaçaments lògics (`sll`, `srl`, `slli`, `srli`) | @nte-instruccions-desplacament-logic |
+| Desplaçament aritmètic (`sra`, `srai`) | @nte-instruccions-desplacament-arithmetic |
+| Operacions lògiques bit a bit (`and`, `or`, `xor`, `not`) | @nte-instruccions-logiques, @nte-pseudoinstruccio-not |
+| Instruccions de comparació (`slt`, `sltu`, `slti`, `sltiu`) | @nte-instruccions-comparacio |
+| Salts condicionals (`beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu`) | @nte-instruccions-salt-condicional |
+| Salts incondicionals (`jal`, `j`, `ret`) | @nte-instruccions-salt-incondicional-relatiu-jal, @nte-pseudoinstruccio-j, @nte-pseudoinstruccions-salt-indirecte |
+| Traducció d'`if-then-else` | @sec-if-then-else |
+| Traducció de `while` i `for` | @sec-bucles |
+| Crida i retorn de subrutines (`ra`) | @sec-crida-retorn |
+| Pas de paràmetres i retorn de resultats (`a0`–`a7`) | @sec-pas-parametres-retorn, @nte-abi-pas-parametres |
+| Variables locals i bloc d'activació (`sp`) | @sec-variables-locals, @nte-bloc-activacio |
+| Subrutines multinivell: registres temporals i segurs | @sec-multinivell-pila, @nte-abi-registres-temporals-segurs |
+: {.striped .hover}
+
+## Operacions lògiques i desplaçaments
+
+Les operacions de desplaçament i lògiques bit a bit permeten manipular bits individuals sense recórrer a operacions aritmètiques costoses. En aquest exercici les combinareu per construir una màscara de bits de mida variable en temps d'execució (@nte-instruccions-desplacament-logic, @nte-instruccions-logiques).
+
+---
+
+::: {#exr-bits-invertir}
+## `s2_1_1.s`
+
+Donats dos enters `X` (X ∈ [0,31]) i `Y` als registres `s0` i `s1` respectivament, escriviu un programa RV32I que complementi els `X` bits de menor pes de `Y` i deixi el resultat a `s1`. No podeu usar instruccions de salt ni de comparació, i el programa ha de tenir menys de 5 instruccions.
+
+**Indicació:** la sentència C equivalent és:
+
+```{.c filename="C"}
+Y = Y ^ ((1 << X) - 1);
+```
+
+on `^` és la XOR bit a bit i `1 << X` desplaça el valor `1` exactament `X` posicions a l'esquerra.
+:::
+
+---
+
+::: {#sol-bits-invertir}
+```{.s filename="s2_1_1.s"}
+.global _start
+
+.text
+_start:
+        li   t0, 1
+        sll  t0, t0, s0     # t0 = 1 << X
+        addi t0, t0, -1     # t0 = (1 << X) - 1  (màscara dels X bits de menor pes)
+        xor  s1, s1, t0     # complementa els X bits de menor pes de Y
+
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+
+La clau és construir la màscara en temps d'execució: `1 << X` produeix un `1` a la posició `X` i zeros a la resta; restar-li `1` posa a `1` tots els bits de posicions 0 a `X-1`. El XOR final complementa exactament aquells bits.
+:::
+
+---
+
+## Sentències condicionals
+
+Una sentència `if-then-else` aniuada es tradueix aplicant el patró de @sec-if-then-else de manera recursiva: cada `if` interior es tracta com una sentència del cos del `else` exterior. L'avaluació lazy de `&&` i `||` (@imp-ec-lazy-evaluation) s'implementa encadenant salts condicionals sense avaluar la segona condició quan la primera ja determina el resultat.
+
+---
+
+::: {#exr-classifica-caracter}
+## `s2_2_1.s`
+
+Traduïu a RV32I el programa C següent. Les variables globals `num` i `result` s'han de declarar a la secció `.data`. Tots els temporals van a registres `t`.
+
+```{.c filename="s2_2_1.c"}
+char   num    = '7';
+int    result = 0;
+
+void main() {
+    if (((num >= 'a') && (num <= 'z')) || ((num >= 'A') && (num <= 'Z')))
+        result = num;
+    else if ((num == ' ') || (num == '!'))
+        result = 0;
+    else
+        result = -1;
+}
+```
+
+El programa ha de respectar l'avaluació lazy de `&&` i `||` (@imp-ec-lazy-evaluation). Comproveu el resultat per als valors `'m'`, `'Z'`, `' '`, `'!'` i `'7'` (codis ASCII: `0x6D`, `0x5A`, `0x20`, `0x21`, `0x37`).
+:::
+
+---
+
+::: {#sol-classifica-caracter}
+```{.s filename="s2_2_1.s"}
+.global _start
+
+.data
+num:    .byte  '7'
+result: .word  0
+
+.text
+_start:
+        la   t1, num
+        lb   t0, 0(t1)          # t0 = num
+
+        # if (num >= 'a' && num <= 'z')
+        li   t2, 'a'
+        blt  t0, t2, comp-maj
+        li   t2, 'z'
+        bgt  t0, t2, comp-maj
+        j    es-alfa
+
+comp-maj:
+        # || (num >= 'A' && num <= 'Z')
+        li   t2, 'A'
+        blt  t0, t2, comp-esp
+        li   t2, 'Z'
+        bgt  t0, t2, comp-esp
+
+es-alfa:
+        la   t1, result
+        sw   t0, 0(t1)          # result = num
+        j    fi
+
+comp-esp:
+        # else if (num == ' ' || num == '!')
+        li   t2, ' '
+        beq  t0, t2, es-esp     # primer operand || cert → lazy
+        li   t2, '!'
+        bne  t0, t2, es-altre
+
+es-esp:
+        la   t1, result
+        sw   zero, 0(t1)        # result = 0
+        j    fi
+
+es-altre:
+        la   t1, result
+        li   t2, -1
+        sw   t2, 0(t1)          # result = -1
+
+fi:
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+
+La primera branca del `||` exterior usa dos `&&` encadenats (dos rangs); la segona branca usa un `||` simple entre dues igualtats. En el `||` intern (`' '` o `'!'`), el salt a `es-esp` quan la primera condició és certa implementa l'avaluació lazy: si `num == ' '`, no s'avalua la comparació amb `'!'`.
+:::
+
+---
+
+## Bucles
+
+El patró de traducció d'un `while` (@sec-bucles) consisteix a avaluar la condició al principi de cada iteració i saltar al final del bucle si és falsa. El recorregut d'una cadena de caràcters fins al sentinella `'\0'` és un cas particular molt freqüent: la condició del bucle és que el caràcter actual sigui diferent de zero.
+
+---
+
+::: {#exr-compta-caracter}
+## `s2_3_1.s`
+
+La cadena de caràcters `w` conté 31 dígits numèrics seguits del sentinella `'\0'`. Escriviu un programa RV32I que compti quantes vegades apareix el caràcter `'4'` a `w` i deixi el resultat al registre `s0`.
+
+```{.c filename="s2_3_1.c"}
+char w[32] = "4444185720444938167204449251044";
+
+void main() {
+    int  i   = 0;
+    char car = '4';
+    while (w[i] != '\0') {
+        if (w[i] == car)
+            i++;  /* reutilitzem i com a comptador */
+        i++;
+    }
+}
+```
+
+**Nota:** useu un punter (`t1`) en lloc d'un índex per recórrer la cadena: és el patró que reapareixerà a l'exercici de subrutines.
+:::
+
+---
+
+::: {#sol-compta-caracter}
+```{.s filename="s2_3_1.s"}
+.global _start
+
+.data
+w: .asciz "4444185720444938167204449251044"
+
+.text
+_start:
+        la   t1, w              # t1 = punter al caràcter actual
+        li   s0, 0              # s0 = comptador d'aparicions de '4'
+        li   t2, '4'            # t2 = caràcter a cercar
+
+while:
+        lb   t0, 0(t1)          # t0 = w[i]
+        beqz t0, fwhile         # si w[i] == '\0', fi del bucle
+        bne  t0, t2, seguent    # si w[i] != '4', no comptem
+        addi s0, s0, 1          # s0++
+
+seguent:
+        addi t1, t1, 1          # avança el punter
+        j    while
+
+fwhile:
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+
+El resultat ha de ser `s0 = 12`. El patró fonamental és: carregar el caràcter actual amb `lb`, comprovar el sentinella amb `beqz`, processar si escau, i avançar el punter amb `addi t1, t1, 1`. Aquest mateix esquelet apareixerà dins de `moda` a l'exercici de subrutines.
+:::
+
+---
+
+## Subrutines
+
+En una subrutina multinivell cal preservar `ra` i els registres segurs (`s0`–`s11`) que continguin valors generats abans d'una crida i usats després (@sec-multinivell-pila, @cau-regla-registres-segurs). Les variables locals estructurades (vectors) s'han d'allotjar al bloc d'activació (@nte-abi-variables-locals). Els dos exercicis d'aquesta secció s'han de fer en ordre: el segon reutilitza la traducció del primer.
+
+---
+
+::: {#exr-update}
+## `s2_4_1.s`
+
+La funció `update` rep un punter a l'histograma `h`, l'índex `i` del caràcter actual i l'índex `imax` del caràcter més freqüent fins ara. Incrementa `h[i]` i retorna `i` si ara és el més freqüent, o `imax` en cas contrari.
+
+```{.c filename="C"}
+char update(int *h, char i, char imax) {
+    h[i]++;
+    if (h[i] > h[imax])
+        return i;
+    else
+        return imax;
+}
+```
+
+Traduïu `update` a RV32I. Tingueu en compte:
+
+- És una subrutina **uninivell**: no cal desar `ra`.
+- Determineu quins registres, si n'hi ha, necessiten ser segurs abans d'escriure cap instrucció.
+- El resultat es retorna a `a0` (@nte-abi-pas-parametres).
+:::
+
+---
+
+::: {#sol-update}
+**Anàlisi de registres segurs.** `update` és uninivell: no hi ha cap crida, de manera que cap valor travessa una frontera de crida. Tots els temporals van a registres `t`; no cal cap registre `s`. El BA és buit.
+
+```{.s filename="s2_4_1.s"}
+update:
+        # update(int *h, char i, char imax)
+        # a0 = h, a1 = i, a2 = imax
+
+        # h[i]++
+        slli t0, a1, 2          # t0 = i * 4
+        add  t0, a0, t0         # t0 = &h[i]
+        lw   t1, 0(t0)
+        addi t1, t1, 1
+        sw   t1, 0(t0)          # h[i]++
+
+        # if (h[i] > h[imax]) return i; else return imax
+        slli t2, a2, 2          # t2 = imax * 4
+        add  t2, a0, t2         # t2 = &h[imax]
+        lw   t2, 0(t2)          # t2 = h[imax]
+        ble  t1, t2, ret-imax
+        mv   a0, a1             # return i
+        ret
+ret-imax:
+        mv   a0, a2             # return imax
+        ret
+```
+
+Com que `update` és uninivell, els paràmetres `a0`–`a2` es poden usar directament durant tot el cos sense risc de sobreescriptura per cap crida. No cal moure'ls a registres segurs.
+:::
+
+---
+
+::: {#exr-moda}
+## `s2_4_2.md` i `s2_4_2.s`
+
+La funció `moda` recorre la cadena `vec` de `num` caràcters, construeix un histograma local `histo[10]` i, per a cada caràcter, crida `update` (traduïda a @sol-update) per actualitzar el dígit més freqüent.
+
+```{.c filename="s2_4_2.c"}
+char w[32]    = "4444185720444938167204449251044";
+char resultat;
+
+char moda(char *vec, int num) {
+    int  k, histo[10];
+    char max;
+    for (k = 0; k < 10; k++)
+        histo[k] = 0;
+    max = '0';
+    for (k = 0; k < num; k++)
+        max = '0' + update(histo, vec[k] - '0', max - '0');
+    return max;
+}
+
+void main() {
+    resultat = moda(w, 31);
+}
+```
+
+Traduïu `moda` i `_start` a RV32I. Abans d'escriure cap instrucció:
+
+1. Identifiqueu quines dades es generen **abans** de la crida a `update` i s'usen **després** (@sec-multinivell-pila). Assigneu-les a registres segurs.
+2. Dibuixeu el bloc d'activació de `moda` amb els offsets de cada element.
+
+Comproveu que al final de l'execució la variable global `resultat` conté el caràcter `'4'`.
+
+**Nexe amb @exr-compta-caracter:** el segon `for` de `moda` segueix exactament el mateix patró de recorregut amb punter que heu fet servir a l'exercici de bucles. Identifiqueu on apareix.
+:::
+
+---
+
+::: {#sol-moda}
+**Pas 1. Registres segurs de `moda`.**
+
+Dades generades abans de la crida a `update` i usades després: `histo` (adreça base = `sp`; derivable en tot moment, no cal registre), `vec` → `s0`, `num` → `s1`, `k` → `s2`, `max` → `s3`. Cal desar també `ra`.
+
+**Pas 2. Bloc d'activació de `moda`.**
+
+| Offset des de `sp` | Contingut |
+| :--- | :--- |
+| `+0`–`+39` | `histo[0]`–`histo[9]` (40 bytes) |
+| `+40` | `s0` desat |
+| `+44` | `s1` desat |
+| `+48` | `s2` desat |
+| `+52` | `s3` desat |
+| `+56` | `ra` desat |
+: {.striped .hover}
+
+Mida del BA: 60 bytes (@imp-ec-alineacio-pila).
+
+```{.s filename="s2_4_2.s"}
+.global _start
+
+.data
+w:        .asciz "4444185720444938167204449251044"
+resultat: .byte  0
+
+.text
+
+# update: vegeu @sol-update (inseriu el codi aquí)
+
+moda:
+        # moda(char *vec, int num) — a0 = vec, a1 = num
+        # pròleg
+        addi sp, sp,  -60
+        sw   s0,  40(sp)
+        sw   s1,  44(sp)
+        sw   s2,  48(sp)
+        sw   s3,  52(sp)
+        sw   ra,  56(sp)
+        mv   s0, a0             # s0 = vec
+        mv   s1, a1             # s1 = num
+
+        # for (k=0; k<10; k++) histo[k] = 0
+        li   s2, 0              # k = 0
+        li   t0, 10
+for1:
+        bge  s2, t0, ffor1
+        slli t1, s2, 2          # t1 = k * 4
+        add  t1, sp, t1         # t1 = &histo[k]
+        sw   zero, 0(t1)
+        addi s2, s2, 1
+        j    for1
+ffor1:
+
+        # max = '0'
+        li   s3, '0'
+
+        # for (k=0; k<num; k++)   ← mateix patró que exr-compta-caracter
+        li   s2, 0              # k = 0
+for2:
+        bge  s2, s1, ffor2
+
+        # vec[k] → t0; a1 = vec[k] - '0'
+        add  t0, s0, s2         # t0 = &vec[k]
+        lb   t0, 0(t0)          # t0 = vec[k]
+        li   t1, '0'
+        sub  a1, t0, t1         # a1 = vec[k] - '0'
+
+        # a2 = max - '0'
+        sub  a2, s3, t1         # a2 = max - '0'
+
+        # a0 = &histo
+        mv   a0, sp
+
+        jal  ra, update
+
+        # max = '0' + resultat
+        li   t1, '0'
+        add  s3, t1, a0         # s3 = '0' + update(...)
+
+        addi s2, s2, 1          # k++
+        j    for2
+ffor2:
+
+        mv   a0, s3             # return max
+
+        # epíleg
+        lw   s0,  40(sp)
+        lw   s1,  44(sp)
+        lw   s2,  48(sp)
+        lw   s3,  52(sp)
+        lw   ra,  56(sp)
+        addi sp, sp, 60
+        ret
+
+_start:
+        la   a0, w
+        li   a1, 31
+        jal  ra, moda
+
+        la   t0, resultat
+        sb   a0, 0(t0)
+
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+
+El patró de @exr-compta-caracter` reapareix al segon `for`: `add t0, s0, s2` calcula l'adreça del caràcter actual (equivalent a avançar el punter), `lb t0, 0(t0)` el carrega, i `bge s2, s1, ffor2` comprova la condició de fi (aquí amb comptador explícit en lloc de sentinella, perquè `num` és conegut). El resultat esperat a `resultat` és `'4'` (`0x34`).
+:::
+
+---
+
+## Depuració de codi
+
+La depuració és el procés d'identificar i corregir errors en un programa. En assemblador, els errors més freqüents són confusions entre registres, errors d'adreçament i una gestió incorrecta del bloc d'activació. En aquest exercici practicareu els tres tipus.
+
+---
+
+::: {#exr-depuracio}
+## `s2_5_1.s`
+
+El programa següent declara el vector global `alfabet` amb les lletres majúscules de l'A a la Z i una cadena de caràcters d'entrada `w1`. La funció `codifica` recorre `w1` caràcter a caràcter i, per a cada lletra, crida la funció `g`, que calcula la lletra simètrica (A↔Z, B↔Y, etc.) i en retorna el codi ASCII. El resultat s'escriu al vector de sortida `w2`.
+
+```{.c filename="..."}
+char alfabet[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+char w1[16]      = "ARQUITECTURA";
+char w2[16];
+
+int codifica(char *pfrasein, char *pfraseout) {
+    int i = 0;
+    while (*pfrasein != 0) {
+        *pfraseout = g(alfabet, pfrasein);
+        pfrasein++;
+        pfraseout++;
+        i++;
+    }
+    *pfraseout = 0;
+    return i;
+}
+
+char g(char *alfa, char *pfrase) {
+    return alfa[25 - (*pfrase - 'A')];
+}
+
+void main() {
+    codifica(w1, w2);
+}
+```
+
+La traducció RV32I següent conté **tres errors**, tots dins de `codifica`. La funció `g` és correcta. Identifiqueu cada error, expliqueu per què és incorrecte i escriviu la línia corregida.
+
+```{.s}
+.global _start
+
+.data
+alfabet: .asciz "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+w1:      .asciz "ARQUITECTURA"
+w2:      .space 16
+
+.text
+
+g:
+        lb   t0, 0(a1)          # t0 = *pfrase
+        li   t1, 'A'
+        sub  t0, t0, t1         # t0 = *pfrase - 'A'
+        li   t1, 25
+        sub  t0, t1, t0         # t0 = 25 - (*pfrase - 'A')
+        add  t0, a0, t0         # t0 = &alfa[25 - ...]
+        lb   a0, 0(t0)          # a0 = alfa[25 - ...]
+        ret
+
+codifica:
+        addi sp, sp, -16        # (A) reserva BA
+        sw   s0,  0(sp)
+        sw   s1,  4(sp)
+        sw   s2,  8(sp)
+                                # (B) ra no es desa
+        mv   s0, a0             # s0 = pfrasein
+        mv   s1, a1             # s1 = pfraseout
+        li   s2, 0              # i = 0
+
+while:
+        lb   t0, 0(s0)
+        beqz t0, fwhile
+
+        la   a0, alfabet
+        mv   a1, s1             # (C) passa pfraseout en lloc de pfrasein
+        jal  ra, g
+
+        sb   a0, 0(s0)          # (D) escriu a pfrasein en lloc de pfraseout
+        addi s0, s0, 1
+        addi s1, s1, 1
+        addi s2, s2, 1
+        j    while
+
+fwhile:
+        sb   zero, 0(s1)
+        mv   a0, s2
+
+        lw   s0,  0(sp)
+        lw   s1,  4(sp)
+        lw   s2,  8(sp)
+                                # (E) ra no es restaura
+        addi sp, sp, 16
+        ret
+
+_start:
+        la   a0, w1
+        la   a1, w2
+        jal  ra, codifica
+
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+
+Comproveu la correcció del programa un cop esmenats els errors: al final de l'execució `w2` ha de contenir `"ZIJFRGVXGFIZ"`.
+:::
+
+---
+
+::: {#sol-depuracio}
+El programa conté tres errors, identificats per les marques (B), (C) i (D):
+
+**Error 1 — (B) i (E): `ra` no es desa ni es restaura.**
+
+`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, salta a una adreça incorrecta i el programa falla.
+
+Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
+
+```{.s filename="RV32I"}
+        # pròleg — afegir:
+        sw   ra, 12(sp)
+
+        # epíleg — afegir:
+        lw   ra, 12(sp)
+```
+
+**Error 2 — (C): es passa `pfraseout` (`s1`) en lloc de `pfrasein` (`s0`) a `g`.**
+
+La funció `g` ha de rebre el punter al caràcter d'entrada per calcular-ne la lletra simètrica. Amb `mv a1, s1` rep el punter de sortida, que apunta a una posició de `w2` (inicialment buida), i retorna un resultat incorrecte.
+
+Correcció:
+
+```{.s filename="RV32I"}
+        mv   a1, s0             # passa pfrasein
+```
+
+**Error 3 — (D): el resultat s'escriu a `pfrasein` (`s0`) en lloc de `pfraseout` (`s1`).**
+
+El caràcter codificat que retorna `g` a `a0` s'ha d'escriure al vector de sortida. Amb `sb a0, 0(s0)` s'escriu sobre el vector d'entrada `w1`, corrompent-lo i deixant `w2` sense modificar.
+
+Correcció:
+
+```{.s filename="RV32I"}
+        sb   a0, 0(s1)          # escriu a pfraseout
+```
+
+**Versió corregida de `codifica`:**
+
+```{.s filename="s2_5_1.s"}
+codifica:
+        addi sp, sp, -16
+        sw   s0,  0(sp)
+        sw   s1,  4(sp)
+        sw   s2,  8(sp)
+        sw   ra, 12(sp)         # (B) corregit
+        mv   s0, a0
+        mv   s1, a1
+        li   s2, 0
+
+while:
+        lb   t0, 0(s0)
+        beqz t0, fwhile
+
+        la   a0, alfabet
+        mv   a1, s0             # (C) corregit
+        jal  ra, g
+
+        sb   a0, 0(s1)          # (D) corregit
+        addi s0, s0, 1
+        addi s1, s1, 1
+        addi s2, s2, 1
+        j    while
+
+fwhile:
+        sb   zero, 0(s1)
+        mv   a0, s2
+
+        lw   s0,  0(sp)
+        lw   s1,  4(sp)
+        lw   s2,  8(sp)
+        lw   ra, 12(sp)         # (E) corregit
+        addi sp, sp, 16
+        ret
+```
+:::
+
+## Lliuraments {.unnumbered}
+
+| Exercici | Nom i format del fitxer |
+| :--- | :--- |
+| @exr-bits-invertir | `s2_1_1.s` |
+| @exr-classifica-caracter | `s2_2_1.s` |
+| @exr-compta-caracter | `s2_3_1.s` |
+| @exr-update | `s2_4_1.s` |
+| @exr-moda | `s2_4_2.md` i `s2_4_2.s` |
+| @exr-depuracio | `s2_5_1.s` |
+: {.striped .hover}
