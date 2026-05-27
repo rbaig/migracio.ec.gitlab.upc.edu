@@ -114,7 +114,7 @@ h1, h2, h3, h4,
 
 ### Teoria (T1–T9)
 
-Temes preparats per a revisió externa de continguts: `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1), `T7.qmd`, `T8.qmd`, `T9.qmd`.
+Temes preparats per a revisió externa: `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1), `T7.qmd`, `T8.qmd`, `T9.qmd`.
 
 ### Laboratori (L0–L5)
 
@@ -129,14 +129,10 @@ Convencions globals del laboratori (acordades durant L0 i L1):
 - **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurable.
 - **Nom de figura SVG:** `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
 
-Fitxers completats: `L1.qmd`, `L2.qmd`, `L3.qmd`
+Sessions preparades per a revisió externa: `L1.qmd` (TODO secció Pseudoinstruccions), `L2.qmd`, `L3.qmd`
 
-### En curs
+En curs: `L4.qmd`
+Pendent: `L5.qmd`, `L0.qmd`
 
-* Laboratori: `L4.qmd`
-
-### Pendent
-
-* Laboratori `L5.qmd`, `L0.qmd`
- Problemes `PE.qmd`
- Solucionari `PS.qmd`
+#### Problemes/Solucionari
+Pendent: `PE.qmd`, `PS.qmd`

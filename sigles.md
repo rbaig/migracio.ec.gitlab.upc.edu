@@ -32,6 +32,10 @@
 
 **EC** Estructura de computadors (assignatura del GEI)
 
+**EF** Examen final
+
+**EP** Examen parcial
+
 **E/S** Entrada/sortida
 
 **FIB** Facultat d'informàtica de Barcelona
