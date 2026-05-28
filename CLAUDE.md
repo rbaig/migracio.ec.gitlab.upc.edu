@@ -129,10 +129,16 @@ Convencions globals del laboratori (acordades durant L0 i L1):
 - **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
 - **Nom de figura SVG:** `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
 
-Sessions preparades per a revisió externa: `L1.qmd` (TODO secció Pseudoinstruccions), `L2.qmd`, `L3.qmd`, `L4.qmd`
+Sessions preparades per a revisió externa: `L1.qmd` (TODO secció Pseudoinstruccions), `L2.qmd`, `L3.qmd`, `L4.qmd`, `L5.qmd`
 
-En curs: `L5.qmd`
 Pendent: `L0.qmd`
 
 #### Problemes/Solucionari
-Pendent: `PE.qmd`, `PS.qmd`
+
+* `PS.qmd` només conté `include`s
+
+Preparat per a revisió externa `PE.qmd`, `PS_T3_T4.s`
+
+Ordre previst: T5, T2, T6, T7, T8, T9, T1.
+
+En procés: `PS_T5.qmd`

@@ -1,0 +1,1190 @@
+---
+title: "Problemes: Solucions seleccionades (T3–T4)"
+number-sections: true
+---
+
+Els exercicis resolts en aquest document corresponen a una selecció dels enunciats de [Problemes: Enunciats](PE.qmd). Per a cada exercici s'indica l'etiqueta de l'enunciat corresponent.
+
+---
+
+## Traducció de programes
+
+### Operacions lògiques i desplaçaments
+
+::: {#sol-p4-logica-bitabit .callout-tip}
+## Solució: operacions lògiques bit a bit
+
+**Enunciat:** @exr-p4-logica-bitabit.
+
+**a)** `0x7654 | 0x3333`
+
+```{.default filename="Càlcul"}
+  0111 0110 0101 0100   (0x7654)
+| 0011 0011 0011 0011   (0x3333)
+= 0111 0111 0111 0111
+```
+
+Resultat: **`0x7777`**.
+
+**b)** `0x7654 & 0x3333`
+
+```{.default filename="Càlcul"}
+  0111 0110 0101 0100   (0x7654)
+& 0011 0011 0011 0011   (0x3333)
+= 0011 0010 0001 0000
+```
+
+Resultat: **`0x3210`**.
+
+**c)** `0x7654 << 2`
+
+Desplaçament lògic a l'esquerra de 2 posicions: els dos bits de més pes es perden i s'afegeixen dos `0`s per la dreta.
+
+```{.default filename="Càlcul"}
+  0111 0110 0101 0100   (0x7654)  << 2
+= 1101 1001 0101 0000
+```
+
+Resultat: **`0xD950`**.
+
+**d)** `0x7654 >> 3` (desplaçament lògic)
+
+Desplaçament lògic a la dreta de 3 posicions: els tres bits de menys pes es perden i s'afegeixen tres `0`s per l'esquerra.
+
+```{.default filename="Càlcul"}
+  0111 0110 0101 0100   (0x7654)  >> 3
+= 0000 1110 1100 1010
+```
+
+Resultat: **`0x0ECA`**.
+:::
+
+::: {#sol-p4-logica-64bits .callout-tip}
+## Solució: desplaçaments sobre 64 bits
+
+**Enunciat:** @exr-p4-logica-64bits.
+
+En RV32I no hi ha registres de 64 bits. El valor es reparteix entre dos registres de 32 bits: `t2` conté els 32 bits de **més pes** (bits 63–32) i `t1` conté els 32 bits de **menys pes** (bits 31–0).
+
+**a) Desplaçament lògic a l'esquerra d'1 posició**
+
+El bit 31 de `t1` (part baixa) ha de passar a ser el bit 0 de `t2` (part alta). La resta dels bits de cada registre es desplacen normalment.
+
+```{.s filename="RV32I"}
+        srli    t3, t1, 31      # extreu el bit 31 de t1 a t3[0]
+        slli    t2, t2, 1       # desplaça t2 a l'esquerra 1 posició
+        or      t2, t2, t3      # insereix el bit de carry provinent de t1
+        slli    t1, t1, 1       # desplaça t1 a l'esquerra 1 posició
+```
+
+**b) Desplaçament lògic a la dreta d'1 posició**
+
+El bit 0 de `t2` (part alta) ha de passar a ser el bit 31 de `t1` (part baixa).
+
+```{.s filename="RV32I"}
+        slli    t3, t2, 31      # extreu el bit 0 de t2 i el posa a la posició 31 de t3
+        srli    t1, t1, 1       # desplaça t1 a la dreta 1 posició
+        or      t1, t1, t3      # insereix el bit de carry provinent de t2
+        srli    t2, t2, 1       # desplaça t2 a la dreta 1 posició
+```
+
+**c) Desplaçament aritmètic a la dreta d'1 posició**
+
+Igual que el desplaçament lògic a la dreta, però la posició vacant de `t2` s'omple amb el bit de signe original (bit 31 de `t2`).
+
+```{.s filename="RV32I"}
+        slli    t3, t2, 31      # extreu el bit 0 de t2 i el posa a la posició 31 de t3
+        srli    t1, t1, 1       # desplaça t1 a la dreta 1 posició (omplint amb 0)
+        or      t1, t1, t3      # insereix el bit de carry provinent de t2
+        srai    t2, t2, 1       # desplaça t2 a la dreta 1 posició (omplint amb signe)
+```
+
+La diferència entre els apartats b) i c) és l'última instrucció: `srli` omple amb `0`, `srai` omple amb el bit de signe.
+
+**d) Desplaçament lògic a l'esquerra de $n$ posicions ($n < 32$, $n$ a `t3`)**
+
+Els bits superiors de `t1` que "surten" per la part alta han d'entrar a `t2` per la part baixa. Per obtenir-los, cal desplaçar `t1` a la dreta `32 - n` posicions.
+
+En RV32I, les instruccions de desplaçament usen els **5 bits de menys pes** de l'operand de desplaçament (mòdul 32). Això implica que si `n = 0`, `32 - n = 32` ≡ `0 (mod 32)`, de manera que `srl t5, t1, t4` desplaçaria 0 posicions en lloc de 32, donant un resultat incorrecte.
+
+**Versió restringida ($1 \leq n \leq 31$)**
+
+Si es pot garantir que `n` mai és 0, la solució és directa:
+
+```{.s filename="RV32I"}
+        li      t4, 32
+        sub     t4, t4, t3      # t4 = 32 - n  (rang: 1..31)
+        srl     t5, t1, t4      # t5 = t1 >> (32-n): bits que passen de t1 a t2
+        sll     t2, t2, t3      # desplaça t2 n posicions
+        or      t2, t2, t5      # insereix els bits provinents de t1
+        sll     t1, t1, t3      # desplaça t1 n posicions
+```
+
+**Versió genèrica ($0 \leq n \leq 31$)**
+
+Per cobrir el cas `n = 0` sense instruccions de salt, es pot evitar el desplaçament de 32 usant dos desplaçaments consecutius d'1 i `31 - n` posicions (la suma és sempre `32 - n`, i cap dels dos mai arriba a 32):
+
+```{.s filename="RV32I"}
+        li      t4, 31
+        sub     t4, t4, t3      # t4 = 31 - n  (rang: 0..31)
+        srli    t5, t1, 1       # desplaça 1 posició (segur per a qualsevol n)
+        srl     t5, t5, t4      # desplaça 31-n posicions més: total = 32-n
+        sll     t2, t2, t3      # desplaça t2 n posicions
+        or      t2, t2, t5      # insereix els bits provinents de t1
+        sll     t1, t1, t3      # desplaça t1 n posicions
+```
+
+Quan `n = 0`: `t4 = 31`, `srli t5, t1, 1` desplaça 1 posició i `srl t5, t5, 31` desplaça 31 posicions més; total = 32 posicions, resultat correcte (`t5 = 0`). Quan `n > 0`: la suma dels dos desplaçaments és `1 + (31 - n) = 32 - n`, com cal.
+
+**e) Desplaçament lògic a la dreta de $n$ posicions ($n < 32$, $n$ a `t3`)**
+
+Simètric a l'apartat d): els bits inferiors de `t2` han d'entrar a `t1` per la part alta.
+
+**Versió restringida ($1 \leq n \leq 31$)**
+
+```{.s filename="RV32I"}
+        li      t4, 32
+        sub     t4, t4, t3      # t4 = 32 - n  (rang: 1..31)
+        sll     t5, t2, t4      # t5 = t2 << (32-n): bits que passen de t2 a t1
+        srl     t1, t1, t3      # desplaça t1 n posicions
+        or      t1, t1, t5      # insereix els bits provinents de t2
+        srl     t2, t2, t3      # desplaça t2 n posicions
+```
+
+**Versió genèrica ($0 \leq n \leq 31$)**
+
+```{.s filename="RV32I"}
+        li      t4, 31
+        sub     t4, t4, t3      # t4 = 31 - n  (rang: 0..31)
+        slli    t5, t2, 1       # desplaça 1 posició (segur per a qualsevol n)
+        sll     t5, t5, t4      # desplaça 31-n posicions més: total = 32-n
+        srl     t1, t1, t3      # desplaça t1 n posicions
+        or      t1, t1, t5      # insereix els bits provinents de t2
+        srl     t2, t2, t3      # desplaça t2 n posicions
+```
+:::
+
+### Sentències condicionals i bucles
+
+::: {#sol-p4-bucles-for .callout-tip}
+## Solució: bucle `for` simple
+
+**Enunciat:** @exr-p4-bucles-for.
+
+**a) Traducció a assemblador RISC-V**
+
+```{.c filename="C"}
+int main() {
+    int a = 23;  /* guardat a t0 */
+    int b = 12;  /* guardat a t1 */
+    int i;       /* guardat a t2 */
+    for (i = 0; i < 10; i++)
+        a += b;
+}
+```
+
+```{.s filename="RV32I"}
+        li      t0, 23          # a = 23
+        li      t1, 12          # b = 12
+        li      t2, 0           # i = 0
+bucle:
+        li      t3, 10
+        bge     t2, t3, fibucle # salta si i >= 10
+        add     t0, t0, t1      # a += b
+        addi    t2, t2, 1       # i++
+        j       bucle
+fibucle:
+```
+
+**b) Nombre total d'instruccions executades**
+
+Inicialització (3 instruccions): `li t0`, `li t1`, `li t2`.
+
+Per a cada iteració $i = 0, 1, \ldots, 9$ (10 iteracions, el salt **no** es pren): `li t3` + `bge` + `add` + `addi` + `j` = **5 instruccions**.
+
+Darrera comprovació ($i = 10$, el salt **es pren**): `li t3` + `bge` = **2 instruccions**.
+
+Total: $3 + 10 \times 5 + 2 = \mathbf{55}$ instruccions.
+
+**c) Temps d'execució si hi hagués 10 instruccions, CPI = 2, freqüència = 2 GHz**
+
+$$t = \frac{\text{CI} \times \text{CPI}}{f} = \frac{10 \times 2}{2 \times 10^9} = 10^{-8}\ \text{s} = 10\ \text{ns}$$
+
+**d) CPI si el programa triga $5 \times 10^{-9}$ s a 2 GHz**
+
+$$\text{CPI} = \frac{t \times f}{\text{CI}} = \frac{5 \times 10^{-9} \times 2 \times 10^9}{55} = \frac{10}{55} \approx 0{,}18$$
+
+Un CPI inferior a 1 indica que el model de cost no és uniforme (algunes instruccions costen menys d'1 cicle en mitjana) o que el processador és superescalar (executa més d'una instrucció per cicle).
+:::
+
+::: {#sol-p4-bucles-switch .callout-tip}
+## Solució: sentència `switch`
+
+**Enunciat:** @exr-p4-bucles-switch.
+
+```{.c filename="C"}
+switch (op) {
+    case 0:  res = a + b;  break;
+    case 1:  res = a - b;  break;
+    case 2:  res = a & b;  break;
+    case 3:  res = a | b;  break;
+    default: res = 0;
+}
+```
+
+`op` a `t0`, `a` a `t1`, `b` a `t2`, `res` a `t3`.
+
+**Implementació 1: cadena de `if-then-else`**
+
+```{.s filename="RV32I"}
+        li      t4, 0
+        beq     t0, t4, cas0
+        li      t4, 1
+        beq     t0, t4, cas1
+        li      t4, 2
+        beq     t0, t4, cas2
+        li      t4, 3
+        beq     t0, t4, cas3
+        mv      t3, zero            # default: res = 0
+        j       fiswitch
+cas0:   add     t3, t1, t2          # res = a + b
+        j       fiswitch
+cas1:   sub     t3, t1, t2          # res = a - b
+        j       fiswitch
+cas2:   and     t3, t1, t2          # res = a & b
+        j       fiswitch
+cas3:   or      t3, t1, t2          # res = a | b
+fiswitch:
+```
+
+**Implementació 2: taula de salts (*jump table*)**
+
+Les constants `0`–`3` formen un rang dens, cosa que fa la *jump table* eficient.
+
+```{.s filename="RV32I"}
+.data
+switch_vec:
+        .word   cas0
+        .word   cas1
+        .word   cas2
+        .word   cas3
+
+.text
+        li      t4, 4
+        bgeu    t0, t4, defecte     # si op >= 4, salta al default
+        la      t4, switch_vec
+        slli    t5, t0, 2           # op * 4
+        add     t4, t4, t5          # @switch_vec[op]
+        lw      t5, 0(t4)           # carrega l'adreça del cas
+        jr      t5                  # salta al cas corresponent
+cas0:   add     t3, t1, t2          # res = a + b
+        j       fiswitch
+cas1:   sub     t3, t1, t2          # res = a - b
+        j       fiswitch
+cas2:   and     t3, t1, t2          # res = a & b
+        j       fiswitch
+cas3:   or      t3, t1, t2          # res = a | b
+        j       fiswitch
+defecte:
+        mv      t3, zero            # res = 0
+fiswitch:
+```
+
+**Quan és preferible cada enfocament?**
+
+La cadena de `if-then-else` és preferible quan el nombre de casos és petit (fins a 3–4) o quan les constants no formen un rang dens (per exemple, `case 0`, `case 100`, `case 1000`). La *jump table* és preferible quan les constants formen un rang dens i el nombre de casos és gran: l'accés és $\mathcal{O}(1)$ independentment del nombre de casos, mentre que la cadena té cost $\mathcal{O}(n)$ en el pitjor cas.
+:::
+
+::: {#sol-p4-bucles-suma-vector .callout-tip}
+## Solució: anàlisi de cost de bucles de suma de vector
+
+**Enunciat:** @exr-p4-bucles-suma-vector.
+
+**Model de costos:** memòria = 4 cicles; salt pres = 2 cicles; salt no pres = 1 cicle; resta = 1 cicle.
+
+Per a cada versió s'analitzen les instruccions executades per iteració i el temps total per a $N$ iteracions. Les instruccions fora del bucle (inicialització) es compten una sola vegada.
+
+---
+
+**a)**
+
+Instruccions fora del bucle: `li t0` + `li t1` + `li t2` = 3 cicles.
+
+Per iteració ($N$ vegades, salt `j` pres):
+`li t3` (1) + `bge` no pres (1) + `la t4` (1) + `add t4` (1) + `lw t4` (4) + `add t0` (1) + `addi t2` (1) + `addi t1` (1) + `j` pres (2) = **13 cicles**.
+
+Última comprovació ($i = N$): `li t3` (1) + `bge` pres (2) = 3 cicles.
+
+**Total:** $3 + 13N + 3 = 13N + 6$ cicles.
+
+---
+
+**b)**
+
+Instruccions fora del bucle: `li t0` + `li t1` = 2 cicles.
+
+Per iteració:
+`li t3` (1) + `bge` no pres (1) + `la t3` (1) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `j` pres (2) = **13 cicles**.
+
+Última comprovació: `li t3` (1) + `bge` pres (2) = 3 cicles.
+
+**Total:** $2 + 13N + 3 = 13N + 5$ cicles.
+
+---
+
+**c)**
+
+Instruccions fora del bucle: `li t0` + `li t1` = 2 cicles.
+
+Per iteració (condició al final; última iteració: salt no pres):
+`la t3` (1) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `li t3` (1) + `blt` pres (2) = **12 cicles** per a les $N-1$ primeres iteracions.
+
+Última iteració: `blt` no pres (1) → cost = $12 - 2 + 1 = 11$ cicles.
+
+**Total:** $2 + 12(N-1) + 11 = 12N + 1$ cicles.
+
+---
+
+**d)**
+
+Instruccions fora del bucle: `li t0` + `li t1` = 2 cicles.
+
+Per iteració (condició al final, comptador decreixent; salt `bge` pres $N-1$ vegades):
+`la t3` (1) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `bge` pres (2) = **11 cicles** per a les $N-1$ primeres iteracions.
+
+Última iteració: `bge` no pres (1) → cost = $11 - 2 + 1 = 10$ cicles.
+
+**Total:** $2 + 11(N-1) + 10 = 11N + 1$ cicles.
+
+---
+
+**e)**
+
+Instruccions fora del bucle: `li t0` + `li t1` + `la t2` = 3 cicles.
+
+Per iteració (condició al final; salt `bne` pres $N-1$ vegades):
+`lw t3` (4) + `add t0` (1) + `addi t2` (1) + `addi t1` (1) + `bne` pres (2) = **9 cicles** per a les $N-1$ primeres iteracions.
+
+Última iteració: `bne` no pres (1) → cost = $9 - 2 + 1 = 8$ cicles.
+
+**Total:** $3 + 9(N-1) + 8 = 9N + 2$ cicles.
+
+---
+
+**f) Nova versió que millora l'apartat e)**
+
+L'apartat e) ja elimina la variable d'inducció i avalua la condició al final (optimitzacions #2 i #3). La millora restant és treure la càrrega del `li t1, N` fora del bucle, i usar directament la sentinella:
+
+```{.s filename="RV32I"}
+        li      t0, 0           # suma = 0
+        la      t2, v           # p = @v[0]
+        li      t1, N
+        slli    t1, t1, 2       # N*4
+        add     t1, t2, t1      # sentinella = @v[N]
+bucle:
+        lw      t3, 0(t2)       # *p
+        add     t0, t0, t3      # suma += *p
+        addi    t2, t2, 4       # p++
+        bltu    t2, t1, bucle   # salta si p < sentinella
+```
+
+Instruccions fora del bucle: 5 cicles.
+
+Per iteració: `lw` (4) + `add` (1) + `addi` (1) + `bltu` pres (2) = **8 cicles** per a les $N-1$ primeres.
+
+Última iteració: `bltu` no pres (1) → 7 cicles.
+
+**Total:** $5 + 8(N-1) + 7 = 8N + 4$ cicles.
+
+Respecte a l'apartat e) ($9N + 2$), s'estalvia 1 cicle per iteració a cost d'1 instrucció d'inicialització addicional. Per a $N$ gran, la versió f) és millor.
+:::
+
+### Subrutines: introducció
+
+::: {#sol-p4-subrutines-minim .callout-tip}
+## Solució: funció mínim de dos enters
+
+**Enunciat:** @exr-p4-subrutines-minim.
+
+**Codi en C:**
+
+```{.c filename="C"}
+int minim(int a, int b) {
+    if (a <= b)
+        return a;
+    else
+        return b;
+}
+```
+
+**Traducció a assemblador RISC-V:**
+
+La funció és **uninivell** (no fa cap crida a una altra subrutina), per tant no cal desar `ra` ni cap registre segur.
+
+Els paràmetres `a` i `b` arriben per `a0` i `a1`. El resultat es retorna per `a0`.
+
+```{.s filename="RV32I"}
+minim:
+        blt     a0, a1, retorn  # salta si a < b  (a és el mínim)
+        mv      a0, a1          # a >= b: el mínim és b → a0 = b
+retorn:
+        ret                     # retorna a0 (a o b segons el cas)
+```
+
+**Anàlisi:** si `a < b` el salt es pren i es retorna `a0` sense modificar (el mínim és `a`). Si `a >= b` el salt no es pren, `a0` s'actualitza amb `b` i es retorna (el mínim és `b`). El cas `a == b` queda correctament cobert: `blt` no salta amb igualtat, de manera que s'executa `mv a0, a1`, però com que `a == b` el resultat és el mateix.
+:::
+
+::: {#sol-p4-subrutines-examen .callout-tip}
+## Solució: funcions `main` i `examen`
+
+**Enunciat:** @exr-p4-subrutines-examen.
+
+```{.c filename="C"}
+void examen(char vi[], char vo[]) {
+    int i = 0;
+    while (vi[i] != '\0') {
+        if (vi[i] != ' ')
+            vo[i] = vi[i] - 32;
+        else
+            vo[i] = vi[i];
+        i++;
+    }
+    vo[i] = '\0';
+}
+int main() {
+    examen(vect1, vect2);
+}
+```
+
+`vect1` i `vect2` són variables globals.
+
+**a) Traducció de `main`**
+
+`main` és **multinivell** (crida `examen`), per tant ha de desar `ra`.
+
+```{.s filename="RV32I"}
+main:
+        addi    sp, sp, -4
+        sw      ra, 0(sp)
+        la      a0, vect1       # a0 = @vect1
+        la      a1, vect2       # a1 = @vect2
+        jal     ra, examen
+        lw      ra, 0(sp)
+        addi    sp, sp, 4
+        ret
+```
+
+**b) Traducció de `examen`**
+
+`examen` és **uninivell**: no fa cap crida i no usa cap registre segur. El paràmetre `i` s'assigna a `t0` (temporal).
+
+```{.s filename="RV32I"}
+examen:
+        # a0 = @vi,  a1 = @vo
+        li      t0, 0               # i = 0
+bucle:
+        add     t1, a0, t0          # @vi[i]
+        lb      t2, 0(t1)           # t2 = vi[i]
+        beqz    t2, fivi            # salta si vi[i] == '\0'
+
+        li      t3, ' '
+        beq     t2, t3, espai       # salta si vi[i] == ' '
+
+        addi    t2, t2, -32         # vo[i] = vi[i] - 32  (passa a majúscula)
+        j       escriu
+espai:                              # vo[i] = vi[i]  (copia l'espai)
+escriu:
+        add     t3, a1, t0          # @vo[i]
+        sb      t2, 0(t3)           # vo[i] = t2
+        addi    t0, t0, 1           # i++
+        j       bucle
+fivi:
+        add     t3, a1, t0          # @vo[i]
+        sb      zero, 0(t3)         # vo[i] = '\0'
+        ret
+```
+
+**Anàlisi:** la funció recorre `vi` byte a byte fins al `'\0'`. Per a cada caràcter que no és un espai, en resta 32 (que és la diferència entre els codis ASCII de les minúscules i les majúscules corresponents, `'a' - 'A' = 32`) i el desa a `vo`, convertint-lo a majúscula. Els espais es copien sense modificar. El `'\0'` final s'escriu explícitament a `vo` després del bucle.
+:::
+
+### Subrutines: context i bloc d'activació
+
+::: {#sol-p4-ba-funcioA .callout-tip}
+## Solució: funció `A` amb bloc d'activació
+
+**Enunciat:** @exr-p4-ba-funcioA.
+
+```{.c filename="C"}
+char  x;
+int   z;
+char  w[20];
+
+char A(char i, int k, char *v) {
+    char r[10];
+    char c;
+    c    = v[3];
+    r[k] = i;
+    return c;
+}
+```
+
+**a) Traducció de `x = A(x, z, w)`**
+
+Aquesta sentència forma part de codi que crida `A`. Els paràmetres s'han de preparar abans de la crida: `i` (char) per `a0`, `k` (int) per `a1`, `v` (char *) per `a2`.
+
+```{.s filename="RV32I"}
+        la      t0, x
+        lb      a0, 0(t0)       # a0 = x (char, extensió de signe)
+        la      t1, z
+        lw      a1, 0(t1)       # a1 = z (int)
+        la      a2, w           # a2 = @w (punter)
+        jal     ra, A
+        la      t0, x
+        sb      a0, 0(t0)       # x = resultat de A (char)
+```
+
+**b) Bloc d'activació de `A`**
+
+Variables locals: `r[10]` (10 chars × 1 byte = 10 bytes) + `c` (escalar, s'assigna a registre). Per tant, el BA conté únicament `r`.
+
+Mida del BA: 10 bytes, arrodonit a múltiple de 4 → **12 bytes**.
+
+`A` és **uninivell** (no fa cap crida a cap altra subrutina): no cal desar `ra`.
+
+| Offset des de `sp` | Contingut | Mida |
+| :---: | :--- | :--- |
+| `+0`–`+9` | `r[0]`–`r[9]` | 10 bytes |
+| `+10`–`+11` | alineació | 2 bytes |
+
+**c) Traducció de `A`**
+
+Els paràmetres arriben per `a0` (`i`, char), `a1` (`k`, int), `a2` (`v`, char *). El resultat es retorna per `a0`.
+
+La variable `c` s'assigna a `t0` (escalar, uninivell). El vector `r` va al BA.
+
+```{.s filename="RV32I"}
+A:
+        addi    sp, sp, -12     # reserva espai per a r[10] + alineació
+
+        # c = v[3]
+        lb      t0, 3(a2)       # t0 = v[3]  (c)
+
+        # r[k] = i
+        add     t1, sp, a1      # @r[k] = sp + k  (stride = 1 byte)
+        sb      a0, 0(t1)       # r[k] = i
+
+        # return c
+        mv      a0, t0          # a0 = c
+
+        addi    sp, sp, 12      # allibera el BA
+        ret
+```
+:::
+
+### Compilació, muntatge i càrrega
+
+::: {#sol-p4-compilacio-relocacio .callout-tip}
+## Solució: compilació separada i reubicació
+
+**Enunciat:** @exr-p4-compilacio-relocacio.
+
+```{.c filename="a.c"}
+int x = 42;
+int f(int n) { return n + x; }
+```
+
+```{.c filename="b.c"}
+extern int x;
+int f(int n);
+int main() { return f(x); }
+```
+
+**a) Fases del flux de generació**
+
+Les tres fases que intervenen en construir l'executable a partir de `a.c` i `b.c` són:
+
+* **Compilació:** el compilador tradueix cada fitxer `.c` a assemblador (`.s`). En aquesta fase s'apliquen les regles de l'ABI i es generen les instruccions de la ISA, però les adreces no es resolen: s'usen etiquetes.
+* **Assemblatge:** l'assemblador tradueix cada fitxer `.s` a codi màquina (`.o`). Construeix la taula de símbols locals, expandeix pseudoinstruccions i genera les llistes de reubicació i de referències externes per als símbols no resolts.
+* **Enllaçat:** l'enllaçador (*linker*) combina `a.o` i `b.o`, resol els símbols globals i externs (`x`, `f`), corregeix les adreces provisionals i genera l'executable.
+
+La **càrrega** en memòria la fa el sistema operatiu i no forma part del procés de construcció de l'executable en si.
+
+**b) Qui resol les referències externes a `x` i `f` de `b.o`?**
+
+L'**enllaçador**, en la fase d'enllaçat. Durant l'assemblatge de `b.c`, `x` i `f` no estan definits en aquest mòdul, de manera que l'assemblador deixa adreces provisionals i les anota a la llista de referències externes. Quan l'enllaçador combina `a.o` i `b.o`, cerca `x` i `f` a la taula de símbols globals de `a.o` (on estan declarats amb `.globl`) i substitueix les adreces provisionals per les adreces definitives.
+
+**c) Efecte de declarar `static int x = 42` a `a.c`**
+
+Amb `static`, `x` passa a tenir **vinculació interna** (*internal linkage*): deixa de ser visible fora del mòdul `a.c`. L'assemblador **no** l'inclou a la taula de símbols globals del fitxer objecte `a.o`. En conseqüència, quan l'enllaçador intenta resoldre la referència externa a `x` de `b.o`, no la troba i finalitza amb un error del tipus `unresolved reference to symbol x`.
+
+**d) Per què `la t0, x` necessita dues instruccions (`auipc` + `addi`)?**
+
+En RV32I, les adreces de 32 bits no caben en un únic immediat de 12 bits. La pseudoinstrucció `la` s'expandeix en:
+
+```{.s filename="RV32I"}
+        auipc   t0, hi_20(offset)    # t0 ← PC + (hi_20(offset) << 12)
+        addi    t0, t0, lo_12(offset) # t0 ← t0 + lo_12(offset)
+```
+
+on `offset = @x − PC` és la distància entre la instrucció `auipc` i el símbol `x`. `auipc` usa els 20 bits superiors de l'offset i `addi` afegeix els 12 bits inferiors. D'aquesta manera es pot referenciar qualsevol adreça dins d'un rang de ±2 GB respecte al PC.
+
+La raó d'usar `auipc` (relatiu al PC) en lloc de `lui` (adreça absoluta) és que en un fitxer objecte reubicable les adreces absolutes no es coneixen fins a l'enllaçat. Amb adreces relatives al PC, l'offset entre la instrucció i el símbol és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació.
+:::
+
+---
+
+## Aritmètica entera i matrius
+
+### Suma i resta
+
+::: {#sol-p5-sr-overflow-enters-8bits .callout-tip}
+## Solució: sobreeiximent en enters Ca2 de 8 bits
+
+**Enunciat:** @exr-p5-sr-overflow-enters-8bits.
+
+El rang dels enters en Ca2 de 8 bits és $[-128, 127]$. Es produeix sobreeiximent quan els dos operands tenen el mateix signe i el resultat en té de diferent.
+
+**a) $(-25) + (-34)$**
+
+Codificació: $-25 =$ `1110 0111`, $-34 =$ `1101 1110`.
+
+```{.default filename="Càlcul"}
+  1110 0111   (-25)
++ 1101 1110   (-34)
+-----------
+1 1100 0101   (descartant el carry de sortida: 0xC5)
+```
+
+El resultat truncat a 8 bits és `1100 0101` = $-59_{10}$ en Ca2. Els dos operands són negatius i el resultat també és negatiu: **no hi ha sobreeiximent**. El resultat és correcte: $-25 + (-34) = -59$.
+
+**b) $(-25) - (-34) = (-25) + 34$**
+
+Codificació: $-25 =$ `1110 0111`, $+34 =$ `0010 0010`.
+
+```{.default filename="Càlcul"}
+  1110 0111   (-25)
++ 0010 0010   (+34)
+-----------
+  0000 1001   (0x09)
+```
+
+Resultat: `0000 1001` = $+9_{10}$. Els operands tenen signes oposats: **no hi ha sobreeiximent**. Correcte: $-25 + 34 = +9$.
+
+**c) $(+127) - (-20) = (+127) + 20$**
+
+Codificació: $+127 =$ `0111 1111`, $+20 =$ `0001 0100`.
+
+```{.default filename="Càlcul"}
+  0111 1111   (+127)
++ 0001 0100   (+20)
+-----------
+  1001 0011   (0x93)
+```
+
+Resultat: `1001 0011` = $-109_{10}$ en Ca2. Tots dos operands eren positius però el resultat és negatiu: **hi ha sobreeiximent**. El resultat correcte seria $+147$, que no és representable amb 8 bits en Ca2.
+
+**d) $(-128) - (-20) = (-128) + 20$**
+
+Codificació: $-128 =$ `1000 0000`, $+20 =$ `0001 0100`.
+
+```{.default filename="Càlcul"}
+  1000 0000   (-128)
++ 0001 0100   (+20)
+-----------
+  1001 0100   (0x94)
+```
+
+Resultat: `1001 0100` = $-108_{10}$ en Ca2. Els operands tenien signes oposats: **no hi ha sobreeiximent**. Correcte: $-128 + 20 = -108$.
+:::
+
+::: {#sol-p5-sr-overflow-deteccio-enter .callout-tip}
+## Solució: detecció de sobreeiximent d'enters sense salts
+
+**Enunciat:** @exr-p5-sr-overflow-deteccio-enter.
+
+Les variables `t1` i `t2` contenen els sumands; el resultat ha d'anar a `t0` i l'indicador de sobreeiximent a `t3` (1 si hi ha sobreeiximent, 0 altrament), sense cap instrucció de salt.
+
+La condició de sobreeiximent en la suma de dos enters és: els operands **tenen el mateix signe** i el resultat **té signe diferent** (@eq-sobreeiximent-software):
+
+$$v = \overline{(A_{31} \oplus B_{31})} \land (A_{31} \oplus S_{31})$$
+
+```{.s filename="RV32I"}
+        add     t0, t1, t2      # t0 = t1 + t2  (resultat truncat a 32 bits)
+        xor     t3, t1, t2      # t1 XOR t2: bit 31 = 0 si mateix signe
+        not     t3, t3          # NOT(t1 XOR t2): bit 31 = 1 si mateix signe
+        xor     t4, t1, t0      # t1 XOR resultat: bit 31 = 1 si signes diferents
+        and     t3, t3, t4      # condició de sobreeiximent als 32 bits
+        srli    t3, t3, 31      # desplaça el bit 31 a la posició 0
+                                # t3 = 1 si sobreeiximent, 0 altrament
+```
+
+**Anàlisi pas a pas:**
+
+* `xor t3, t1, t2`: el bit 31 és `0` si `t1` i `t2` tenen el **mateix signe**, `1` si en tenen de diferent.
+* `not t3, t3`: el bit 31 passa a ser `1` si els operands tenien el **mateix signe**.
+* `xor t4, t1, t0`: el bit 31 és `1` si el **signe del resultat és diferent** del de `t1`.
+* `and t3, t3, t4`: el bit 31 és `1` si i **només si** es compleixen les dues condicions simultàniament: mateix signe als operands i signe diferent al resultat.
+* `srli t3, t3, 31`: posa el bit de condició a la posició 0.
+
+El programa no conté cap instrucció de salt: totes les operacions són aritmètiques o lògiques de cost $\mathcal{O}(1)$.
+:::
+
+### Multiplicació
+
+::: {#sol-p5-mul-passos .callout-tip}
+## Solució: seguiment del circuit multiplicador seqüencial
+
+**Enunciat:** @exr-p5-mul-passos.
+
+El circuit treballa amb naturals. Per a operands de 6 bits, els registres `P` i `MD` tenen 12 bits i `MR` té 6 bits. A cada iteració:
+
+1. Si `MR[0] == 1`: `P = P + MD`.
+2. `MD = MD << 1`.
+3. `MR = MR >> 1`.
+
+**a) $X =$ `101000` ($40_{10}$), $Y =$ `010011` ($19_{10}$). Resultat esperat: $760_{10}$.**
+
+| Iter. | P (12 bits) | MD (12 bits) | MR (6 bits) | MR[0] | Acció |
+| :---: | :---: | :---: | :---: | :---: | :--- |
+| inicial | `000000 000000` | `000000 101000` | `010011` | 1 | suma |
+| 1 | `000000 101000` | `000001 010000` | `001001` | 1 | suma |
+| 2 | `000010 111000` | `000010 100000` | `000100` | 0 | no suma |
+| 3 | `000010 111000` | `000101 000000` | `000010` | 0 | no suma |
+| 4 | `000010 111000` | `001010 000000` | `000001` | 1 | suma |
+| 5 | `001100 111000` | `010100 000000` | `000000` | 0 | no suma |
+| 6 | `001100 111000` | `101000 000000` | `000000` | 0 | no suma |
+
+Resultat: $P =$ `001100 111000`$_2 = 760_{10}$ ✓
+
+**b) $X =$ `110110` ($54_{10}$), $Y =$ `000100` ($4_{10}$). Resultat esperat: $216_{10}$.**
+
+| Iter. | P (12 bits) | MD (12 bits) | MR (6 bits) | MR[0] | Acció |
+| :---: | :---: | :---: | :---: | :---: | :--- |
+| inicial | `000000 000000` | `000000 110110` | `000100` | 0 | no suma |
+| 1 | `000000 000000` | `000001 101100` | `000010` | 0 | no suma |
+| 2 | `000000 000000` | `000011 011000` | `000001` | 1 | suma |
+| 3 | `000011 011000` | `000110 110000` | `000000` | 0 | no suma |
+| 4 | `000011 011000` | `001101 100000` | `000000` | 0 | no suma |
+| 5 | `000011 011000` | `011011 000000` | `000000` | 0 | no suma |
+| 6 | `000011 011000` | `110110 000000` | `000000` | — | — |
+
+Resultat: $P =$ `000011 011000`$_2 = 216_{10}$ ✓
+:::
+
+### Divisió
+
+::: {#sol-p5-div-passos .callout-tip}
+## Solució: seguiment del circuit divisor seqüencial amb restauració
+
+**Enunciat:** @exr-p5-div-passos.
+
+El circuit treballa amb naturals. Per a operands de 6 bits, els registres `R` i `D` tenen 12 bits i `Q` té 6 bits. L'algorisme amb restauració a cada iteració:
+
+1. `D = D >> 1`.
+2. `R = R - D`.
+3. Si `R[11] == 0` (resultat no negatiu): `Q = (Q << 1) | 1`.
+4. Altrament (resultat negatiu): `R = R + D` (restauració); `Q = Q << 1`.
+
+**a) $X =$ `101000` ($40_{10}$), $Y =$ `010011` ($19_{10}$). Resultat esperat: $q = 2$, $r = 2$.**
+
+| Iter. | R (12 bits) | D (12 bits) | Q (6 bits) | R[11] | Acció |
+| :---: | :---: | :---: | :---: | :---: | :--- |
+| inicial | `000000 101000` | `010011 000000` | `000000` | — | — |
+| 1 | `000000 101000 − 001001 100000 = 111111 001000` (neg.) | `001001 100000` | `000000` | 1 | restaura: `R+D`; `Q<<1` |
+| — | `000000 101000` restaurat | `001001 100000` | `000000` | — | — |
+| 2 | `000000 101000 − 000100 110000 = 111100 000000` (neg.) | `000100 110000` | `000000` | 1 | restaura; `Q<<1` |
+| — | `000000 101000` restaurat | `000100 110000` | `000000` | — | — |
+| 3 | `000000 101000 − 000010 011000 = 111110 110000` (neg.) | `000010 011000` | `000000` | 1 | restaura; `Q<<1` |
+| — | `000000 101000` restaurat | `000010 011000` | `000000` | — | — |
+| 4 | `000000 101000 − 000001 001100 = 111111 011100` (neg.) | `000001 001100` | `000000` | 1 | restaura; `Q<<1` |
+| — | `000000 101000` restaurat | `000001 001100` | `000000` | — | — |
+| 5 | `000000 101000 − 000000 100110 = 000000 000010` (pos.) | `000000 100110` | `000001` | 0 | `Q = (Q<<1)|1` |
+| 6 | `000000 000010 − 000000 010011 = 111111 101111` (neg.) | `000000 010011` | `000010` | 1 | restaura; `Q<<1` |
+| — | `000000 000010` restaurat | `000000 010011` | `000010` | — | — |
+
+Quocient: $Q = 000010_2 = 2_{10}$, residu: $R[5:0] = 000010_2 = 2_{10}$ ✓
+
+Verificació: $19 \times 2 + 2 = 40$ ✓
+
+**b) $X =$ `010101` ($21_{10}$), $Y =$ `100100` ($36_{10}$). Resultat esperat: $q = 0$, $r = 21$.**
+
+Com que $X < Y$, el quocient és 0 i el residu és $X$ en totes les iteracions: el divisor desplaçat sempre és més gran que el dividend parcial i cal restaurar en cada pas.
+
+| Iter. | R (12 bits) | D (12 bits) | Q (6 bits) | R[11] | Acció |
+| :---: | :---: | :---: | :---: | :---: | :--- |
+| inicial | `000000 010101` | `100100 000000` | `000000` | — | — |
+| 1–6 | sempre negatiu | desplaçat | `000000` | 1 | restaura; `Q<<1` |
+
+Quocient: $Q = 000000_2 = 0_{10}$, residu: $R[5:0] = 010101_2 = 21_{10}$ ✓
+:::
+
+### Matrius
+
+::: {#sol-p5-matrius-adreces .callout-tip}
+## Solució: càlcul d'adreces en una matriu
+
+**Enunciat:** @exr-p5-matrius-adreces.
+
+```{.c filename="C"}
+int mat[NF][NC];
+int f() {
+    int i, j;  /* i a t0, j a t1 */
+    ...
+}
+```
+
+L'adreça de `mat[i][j]` és $@\texttt{mat} + (i \cdot \texttt{NC} + j) \cdot 4$.
+
+**a) `mat[3][11]`** — fila i columna constants: tot és invariant.
+
+```{.s filename="RV32I"}
+        la      a0, mat + (3*NC + 11)*4
+```
+
+**b) `mat[i][11]`** — fila variable, columna constant.
+
+```{.s filename="RV32IM"}
+        la      a0, mat + 11*4      # @mat + 11*4 (invariant)
+        li      t2, NC*4            # NC*4 (invariant)
+        mul     t3, t0, t2          # i*NC*4
+        add     a0, a0, t3          # @mat + i*NC*4 + 11*4
+```
+
+**c) `mat[3][j]`** — fila constant, columna variable.
+
+```{.s filename="RV32I"}
+        la      a0, mat + 3*NC*4    # @mat + 3*NC*4 (invariant)
+        slli    t2, t1, 2           # j*4
+        add     a0, a0, t2          # @mat + 3*NC*4 + j*4
+```
+
+**d) `mat[i][j]`** — fila i columna variables.
+
+```{.s filename="RV32IM"}
+        la      a0, mat             # @mat (invariant)
+        li      t2, NC              # NC (invariant)
+        mul     t3, t0, t2          # i*NC
+        add     t3, t3, t1          # i*NC + j
+        slli    t3, t3, 2           # (i*NC + j)*4
+        add     a0, a0, t3          # @mat + (i*NC + j)*4
+```
+
+**e) `mat[i+5][j-1]`**
+
+Equivalent a `mat[i'][j']` amb `i' = i+5` i `j' = j-1`. Incorporant les constants als invariants:
+
+```{.s filename="RV32IM"}
+        la      a0, mat + (5*NC - 1)*4   # @mat + (5*NC - 1)*4 (invariant)
+        li      t2, NC                    # NC (invariant)
+        mul     t3, t0, t2               # i*NC
+        add     t3, t3, t1               # i*NC + j
+        slli    t3, t3, 2                # (i*NC + j)*4
+        add     a0, a0, t3               # @mat + (i*NC + j)*4 + (5*NC-1)*4
+```
+
+**f) `mat[i*10+4][6]`**
+
+La fila és `i*10+4`, la columna és la constant `6`. La fila ja conté una multiplicació per 10 que no és potència de 2, de manera que cal `mul` tant per calcular la fila com per escalar-la per `NC`.
+
+```{.s filename="RV32IM"}
+        la      a0, mat + 4*NC*4 + 6*4  # @mat + (4*NC + 6)*4 (invariant)
+        li      t2, 10*NC*4              # 10*NC*4 (invariant)
+        mul     t3, t0, t2              # i*10*NC*4
+        add     a0, a0, t3              # @mat + (i*10*NC + 4*NC + 6)*4
+```
+:::
+
+::: {#sol-p5-matrius-func-veci .callout-tip}
+## Solució: `func` i `main` amb accés seqüencial
+
+**Enunciat:** @exr-p5-matrius-func-veci.
+
+```{.c filename="C"}
+int mati[5][4];
+
+void func(int veci[4]) {
+    int j;
+    for (j = 0; j < 4; j++)
+        veci[j] = j;
+}
+
+void main() {
+    int *p = &mati[0][0];
+    int *fi = &mati[5][0];
+    while (p != fi) {
+        func(p);
+        p += 4;
+    }
+}
+```
+
+**a) Traducció de `func` amb accés seqüencial a `veci`**
+
+`func` és **uninivell**. El paràmetre `veci` arriba per `a0` (adreça base del vector). `j` s'assigna a `t0`.
+
+L'stride del recorregut per fila és 4 bytes (mida d'un `int`). Per eliminar la variable d'inducció, es controla el bucle amb el punter.
+
+```{.s filename="RV32I"}
+func:
+        # a0 = @veci
+        mv      t1, a0              # t1 = p = @veci[0]
+        addi    t2, a0, 4*4         # t2 = sentinella = @veci[4]
+        li      t0, 0               # j = 0
+        bgeu    t1, t2, fifunc      # comprovació inicial (NC=4 > 0, no s'executa mai)
+bucle:
+        sw      t0, 0(t1)           # veci[j] = j
+        addi    t1, t1, 4           # p += stride (4 bytes)
+        addi    t0, t0, 1           # j++
+        bltu    t1, t2, bucle       # salta si p < sentinella
+fifunc:
+        ret
+```
+
+**b) Traducció de `main` amb accés seqüencial a `mati`**
+
+`main` és **multinivell** (crida `func`). Cal desar `ra`. El codi C ja usa punters explícits (`p` i `fi`), de manera que la traducció és directa: `p` → `t0`, `fi` → `t1`.
+
+```{.s filename="RV32I"}
+main:
+        addi    sp, sp, -4
+        sw      ra, 0(sp)
+
+        la      t0, mati            # t0 = p = @mati[0][0]
+        addi    t1, t0, 5*4*4       # t1 = fi = @mati[5][0]
+        bgeu    t0, t1, fimain      # comprovació inicial (5 > 0, mai s'executa)
+bucle:
+        mv      a0, t0              # a0 = p
+        jal     ra, func
+        addi    t0, t0, 4*4         # p += 4  (4 ints = 16 bytes)
+        bltu    t0, t1, bucle
+fimain:
+        lw      ra, 0(sp)
+        addi    sp, sp, 4
+        ret
+```
+:::
+
+### Accés seqüencial
+
+::: {#sol-p5-seq-bucles .callout-tip}
+## Solució: recorreguts per fila i per columna
+
+**Enunciat:** @exr-p5-seq-bucles (apartats a i b).
+
+```{.c filename="C"}
+void func(int A[N][N]) {
+    int i, suma = 0;  /* i a t0, suma a t1 */
+    ...
+}
+```
+
+`A` arriba per `a0`. `N` és una constant. Es demana accés seqüencial.
+
+**a) Suma de la fila 3: `for (i = 0; i < N; i++) suma += A[3][i]`**
+
+L'stride del recorregut per fila és 4 bytes.
+
+L'adreça del primer element és `@A[3][0] = @A + 3*N*4`.
+
+```{.s filename="RV32IM"}
+        # a0 = @A, t1 = suma (inicialitzada prèviament a 0)
+        li      t2, 3*N*4
+        add     t3, a0, t2          # t3 = p = @A[3][0]
+        addi    t4, t3, N*4         # t4 = sentinella = @A[3][N]
+        bgeu    t3, t4, fifor       # comprovació inicial
+bucle:
+        lw      t5, 0(t3)           # A[3][i]
+        add     t1, t1, t5          # suma += A[3][i]
+        addi    t3, t3, 4           # p += stride (4 bytes)
+        bltu    t3, t4, bucle
+fifor:
+```
+
+**b) Suma de la columna 4: `for (i = 0; i < N; i++) suma += A[i][4]`**
+
+L'stride del recorregut per columna és `N*4` bytes.
+
+L'adreça del primer element és `@A[0][4] = @A + 4*4`.
+
+La sentinella és `@A[N][4] = @A[0][4] + N*(N*4)`. Com que `N` no és necessàriament una potència de 2, cal `mul` per calcular `N*N*4` a partir de `N` i `N*4`.
+
+```{.s filename="RV32IM"}
+        # a0 = @A, t1 = suma (inicialitzada prèviament a 0)
+        addi    t3, a0, 4*4         # t3 = p = @A[0][4]
+        li      t2, N*4             # stride = N*4
+        li      t4, N
+        mul     t4, t4, t2          # N * N*4 = N²*4
+        add     t4, t3, t4          # t4 = sentinella = @A[N][4]
+        bgeu    t3, t4, fifor       # comprovació inicial
+bucle:
+        lw      t5, 0(t3)           # A[i][4]
+        add     t1, t1, t5          # suma += A[i][4]
+        add     t3, t3, t2          # p += stride (N*4 bytes)
+        bltu    t3, t4, bucle
+fifor:
+```
+
+**Contrast entre els dos recorreguts:** el recorregut per fila (apartat a) té stride 4, el recorregut per columna (apartat b) té stride `N*4`. Per a valors grans de `N`, el recorregut per columna genera moltes fallades de memòria cau, ja que cada accés aterra en una línia de cau diferent. El recorregut per fila aprofita molt millor la localitat espacial.
+:::
+
+::: {#sol-p5-opt-condicio-final .callout-tip}
+## Solució: optimització #2 — avaluació de la condició al final
+
+**Enunciat:** @exr-p5-opt-condicio-final.
+
+**Versió inicial:**
+
+```{.s filename="RV32I"}
+        li      t0, 0
+bucle:
+        li      t1, N
+        bge     t0, t1, fi
+        la      t2, v
+        slli    t3, t0, 2
+        add     t2, t2, t3
+        lw      t3, 0(t2)
+        add     t4, t4, t3
+        addi    t0, t0, 1
+        j       bucle
+fi:
+```
+
+**a) Cost de la versió inicial**
+
+Instruccions per iteració (model de costos: `lw` = 4, salt pres = 2, salt no pres = 1, resta = 1):
+
+| Instrucció | Cost |
+| :--- | :---: |
+| `li t1, N` | 1 |
+| `bge` (no pres, $N$ vegades) | 1 |
+| `la t2, v` | 1 |
+| `slli t3` | 1 |
+| `add t2` | 1 |
+| `lw t3` | 4 |
+| `add t4` | 1 |
+| `addi t0` | 1 |
+| `j bucle` (pres) | 2 |
+| **Total per iteració** | **13** |
+
+Inicialització: `li t0, 0` = 1 cicle.
+
+Última comprovació ($i = N$): `li t1, N` (1) + `bge` pres (2) = 3 cicles.
+
+**Total:** $1 + 13N + 3 = 13N + 4$ cicles.
+
+**b) Versió optimitzada (condició al final)**
+
+Es pot fer la comprovació inicial una sola vegada (si `N > 0` sempre es compleix, es pot ometre si es pot garantir). Per ser fidel a la semàntica del `while` original:
+
+```{.s filename="RV32I"}
+        li      t0, 0
+        li      t1, N
+        la      t2, v               # extracció d'invariants fora del bucle
+        bge     t0, t1, fi          # comprovació inicial: salta si N <= 0
+bucle:
+        slli    t3, t0, 2
+        add     t5, t2, t3
+        lw      t3, 0(t5)
+        add     t4, t4, t3
+        addi    t0, t0, 1
+        blt     t0, t1, bucle       # salta si i < N
+fi:
+```
+
+S'han extret `li t1, N` i `la t2, v` com a invariants fora del bucle.
+
+Instruccions per iteració:
+
+| Instrucció | Cost |
+| :--- | :---: |
+| `slli t3` | 1 |
+| `add t5` | 1 |
+| `lw t3` | 4 |
+| `add t4` | 1 |
+| `addi t0` | 1 |
+| `blt` pres ($N-1$ vegades) / no pres (última) | 2 / 1 |
+| **Total per iteració (menys la darrera)** | **10** |
+
+Inicialització: `li t0` + `li t1` + `la t2` + `bge` no pres = 4 cicles.
+
+Última iteració: `blt` no pres (1) → cost = $10 - 2 + 1 = 9$ cicles.
+
+**Total:** $4 + 10(N-1) + 9 = 10N + 3$ cicles.
+
+**c) Reducció percentual per a $N = 100$**
+
+Versió inicial: $13 \times 100 + 4 = 1304$ cicles.
+
+Versió optimitzada: $10 \times 100 + 3 = 1003$ cicles.
+
+$$\text{Reducció} = \frac{1304 - 1003}{1304} \times 100 \approx \mathbf{23{,}1\%}$$
+:::
+
+::: {#sol-p5-opt-variable-induccio .callout-tip}
+## Solució: optimització #3 — eliminació de la variable d'inducció
+
+**Enunciat:** @exr-p5-opt-variable-induccio.
+
+```{.c filename="C"}
+int v[N], w[N];
+/* for (i = 0; i < N; i++) w[i] = v[i] * 2; */
+```
+
+**a) Versió sense optimitzar (usant `i` explícitament)**
+
+```{.s filename="RV32I"}
+        li      t0, 0               # i = 0
+        li      t1, N               # N (invariant)
+        la      t2, v               # @v (invariant)
+        la      t3, w               # @w (invariant)
+        bge     t0, t1, fifor       # comprovació inicial
+bucle:
+        slli    t4, t0, 2           # i*4
+        add     t5, t2, t4          # @v[i]
+        lw      t5, 0(t5)           # v[i]
+        slli    t5, t5, 1           # v[i] * 2
+        add     t6, t3, t4          # @w[i]
+        sw      t5, 0(t6)           # w[i] = v[i] * 2
+        addi    t0, t0, 1           # i++
+        blt     t0, t1, bucle
+fifor:
+```
+
+Instruccions per iteració: `slli` + `add` + `lw`(4) + `slli` + `add` + `sw`(4) + `addi` + `blt`(2) = **15 cicles** (llevat de la darrera: 14).
+
+**b) Versió amb eliminació de la variable d'inducció (punters directes)**
+
+Es mantenen dos punters `pv` i `pw` que avancen en paral·lel amb stride 4. La condició de parada es basa en la sentinella de `pv`.
+
+```{.s filename="RV32I"}
+        la      t0, v               # t0 = pv = @v[0]
+        la      t1, w               # t1 = pw = @w[0]
+        li      t2, N*4
+        add     t2, t0, t2          # t2 = sentinella = @v[N]
+        bgeu    t0, t2, fifor       # comprovació inicial
+bucle:
+        lw      t3, 0(t0)           # *pv = v[i]
+        slli    t3, t3, 1           # v[i] * 2
+        sw      t3, 0(t1)           # *pw = v[i] * 2
+        addi    t0, t0, 4           # pv++
+        addi    t1, t1, 4           # pw++
+        bltu    t0, t2, bucle
+fifor:
+```
+
+Instruccions per iteració: `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `bltu`(2) = **13 cicles** (llevat de la darrera: 12).
+
+**c) Combinació de les dues optimitzacions (condició al final + eliminació IV)**
+
+La versió de l'apartat b) ja aplica les optimitzacions #1 (accés seqüencial, que elimina la variable d'inducció) i #2 (condició al final). El cos del bucle conté:
+
+| Instrucció | Nombre |
+| :--- | :---: |
+| `lw` | 1 |
+| `slli` | 1 |
+| `sw` | 1 |
+| `addi` (pv++) | 1 |
+| `addi` (pw++) | 1 |
+| `bltu` (control) | 1 |
+| **Total** | **6** |
+:::
