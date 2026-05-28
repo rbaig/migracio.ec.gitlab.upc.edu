@@ -126,13 +126,13 @@ Convencions globals del laboratori (acordades durant L0 i L1):
 - **Codi dels exercicis:** integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
 - **Estructura de cada exercici:** enunciat en `{#exr-...}` + solució en `{#sol-...}`.
 - **Lectura prèvia:** primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
-- **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurable.
+- **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
 - **Nom de figura SVG:** `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
 
-Sessions preparades per a revisió externa: `L1.qmd` (TODO secció Pseudoinstruccions), `L2.qmd`, `L3.qmd`
+Sessions preparades per a revisió externa: `L1.qmd` (TODO secció Pseudoinstruccions), `L2.qmd`, `L3.qmd`, `L4.qmd`
 
-En curs: `L4.qmd`
-Pendent: `L5.qmd`, `L0.qmd`
+En curs: `L5.qmd`
+Pendent: `L0.qmd`
 
 #### Problemes/Solucionari
 Pendent: `PE.qmd`, `PS.qmd`
