@@ -135,7 +135,7 @@ Pendent: `L0.qmd`
 
 #### Problemes/Solucionari
 
-* `PS.qmd` només conté `include`s
+- `PS.qmd` només conté `include`s
 
 Preparat per a revisió externa `PE.qmd`, `PS_T3_T4.s`
 
