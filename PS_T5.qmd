@@ -1,0 +1,652 @@
+## Coma flotant
+
+### Representació IEEE 754
+
+::: {#sol-p6-ieee-interpretacio .callout-tip}
+## Solució: interpretació de patrons de bits
+
+**Enunciat:** @exr-p6-ieee-interpretacio.
+
+Treballem amb `A = 0x407302B3` i `B = 0xF9C40513`.
+
+**a) Com a naturals**
+
+Conversió directa hexadecimal → decimal:
+
+$$A = \texttt{0x407302B3} = 4 \cdot 16^7 + 0 \cdot 16^6 + \cdots = 1\,081\,279\,155$$
+
+$$B = \texttt{0xF9C40513} = 15 \cdot 16^7 + 9 \cdot 16^6 + \cdots = 4\,190\,373\,139$$
+
+**b) Com a enters en complement a 2**
+
+El bit de signe és el bit 31, que correspon al dígit hexadecimal de més pes.
+
+`A = 0x407302B3`: nibble de més pes `4` = `0100` → bit 31 = `0` → valor **positiu**; coincideix amb el natural:
+
+$$A = +1\,081\,279\,155$$
+
+`B = 0xF9C40513`: nibble de més pes `F` = `1111` → bit 31 = `1` → valor **negatiu**. Per obtenir el valor absolut, s'inverteixen tots els bits i se suma 1:
+
+$$\sim\texttt{0xF9C40513} + 1 = \texttt{0x063BFAED} = 104\,594\,189$$
+
+$$B = -104\,594\,189$$
+
+**c) Com a nombres en coma flotant IEEE 754 de simple precisió**
+
+Descomposem cada valor en camps $S$ (bit 31), $E_u$ (bits 30:23) i $F$ (bits 22:0):
+
+```{.default filename="Càlcul A = 0x407302B3"}
+0 | 1000 0000 | 111 0011 0000 0010 1011 0011
+S = 0  (positiu)
+Eu = 1000 0000b = 128  →  e = 128 - 127 = 1
+F  = 111 0011 0000 0010 1011 0011
+Mantissa = 1,111 0011 0000 0010 1011 0011 × 2¹
+```
+
+```{.default filename="Càlcul B = 0xF9C40513"}
+1 | 1111 0011 | 100 0100 0000 0101 0001 0011
+S = 1  (negatiu)
+Eu = 1111 0011b = 243  →  e = 243 - 127 = 116
+F  = 100 0100 0000 0101 0001 0011
+Mantissa = 1,100 0100 0000 0101 0001 0011 × 2¹¹⁶
+```
+
+Per a `A` ($e = 1$, desplacem la coma 1 posició a la dreta):
+
+$$A = +11{,}110011000000101011001 1_2$$
+
+$$= 2 + 1 + 2^{-1} + 2^{-2} + \ldots \approx \mathbf{3{,}797}$$
+
+Per a `B` ($e = 116$, valor molt gran en mòdul):
+
+$$B \approx -1{,}531 \times 2^{116} \approx \mathbf{-1{,}272 \times 10^{35}}$$
+
+**d) Com a instruccions RISC-V**
+
+Identifiquem l'opcode (bits 6:0) i descodifiquem el format:
+
+```{.default filename="Càlcul A = 0x407302B3"}
+opcode = 011 0011b = 0x33  →  OP (tipus R)
+funct7 = 010 0000b = 0x20
+funct3 = 000b
+rd  = 00101b = x5  (t0)
+rs1 = 00110b = x6  (t1)
+rs2 = 00111b = x7  (t2)
+funct7=0x20, funct3=0 → SUB
+```
+
+$$\boxed{A: \texttt{sub t0, t1, t2}}$$
+
+```{.default filename="Càlcul B = 0xF9C40513"}
+opcode = 001 0011b = 0x13  →  OP-IMM (tipus I)
+funct3 = 000b  →  ADDI
+rd  = 01010b = x10  (a0)
+rs1 = 01000b = x8   (s0)
+imm = 1111 1001 1100b = -100  (extensió de signe: bit 11 = 1)
+```
+
+$$\boxed{B: \texttt{addi a0, s0, -100}}$$
+
+::: {.callout-caution}
+El mateix patró de 32 bits representa quatre coses completament diferents: un natural, un enter, un nombre en coma flotant i una instrucció de màquina. El maquinari no distingeix entre elles: és el programari (compilador, sistema operatiu) qui decideix com s'interpreta cada zona de memòria.
+:::
+
+:::
+
+::: {#sol-p6-ieee-rang .callout-tip}
+## Solució: rang del format IEEE 754 de simple precisió
+
+**Enunciat:** @exr-p6-ieee-rang.
+
+**a) Major nombre positiu representable**
+
+El major exponent vàlid en format normalitzat és $e = +127$ (correspon a $E_u = 254$; $E_u = 255$ és reservat per a infinit i NaN). La major fracció possible és tota la mantissa a `1`:
+
+$$F = 1111\,1111\,1111\,1111\,1111\,111_2 = 1 - 2^{-23}$$
+
+Mantissa completa (amb bit ocult): $1{,}1111\ldots1_2 = 2 - 2^{-23}$.
+
+$$v_{\max} = (2 - 2^{-23}) \times 2^{127} = 2^{128} - 2^{104}$$
+
+```{.default filename="Càlcul"}
+S = 0
+Eu = 1111 1110b = 254
+F  = 111 1111 1111 1111 1111 1111b
+→  0x7F7FFFFF
+```
+
+$$\boxed{v_{\max} = (2 - 2^{-23}) \times 2^{127} \approx 3{,}403 \times 10^{38} = \texttt{0x7F7FFFFF}}$$
+
+**b) Menor nombre positiu no nul en format normalitzat**
+
+El menor exponent vàlid normalitzat és $e = -126$ ($E_u = 1$). La menor mantissa normalitzada és `1.000...0` (fracció a zero, bit ocult = 1):
+
+```{.default filename="Càlcul"}
+S = 0
+Eu = 0000 0001b = 1
+F  = 000 0000 0000 0000 0000 0000b
+→  0x00800000
+```
+
+$$\boxed{v_{\min,\text{norm}} = 1{,}0 \times 2^{-126} \approx 1{,}175 \times 10^{-38} = \texttt{0x00800000}}$$
+
+**c) Menor nombre positiu no nul en format desnormalitzat**
+
+En format desnormalitzat ($E_u = 0$), el valor és $0{,}F \times 2^{-126}$. El menor valor no nul s'obté amb un sol bit a `1` a la posició 0 de la fracció (1 ULP):
+
+```{.default filename="Càlcul"}
+S = 0
+Eu = 0000 0000b = 0
+F  = 000 0000 0000 0000 0000 0001b
+→  0x00000001
+```
+
+$$\boxed{v_{\min,\text{denorm}} = 2^{-23} \times 2^{-126} = 2^{-149} \approx 1{,}401 \times 10^{-45} = \texttt{0x00000001}}$$
+
+:::
+
+::: {#sol-p6-ieee-doble-precisio .callout-tip}
+## Solució: simple i doble precisió, error de representació
+
+**Enunciat:** @exr-p6-ieee-doble-precisio.
+
+Treballem amb $A = -1609{,}5$ i $B = -938{,}8125$.
+
+---
+
+**$A = -1609{,}5$**
+
+**Part entera:**
+
+$$1609 = 1024 + 512 + 64 + 8 + 1 = 2^{10} + 2^9 + 2^6 + 2^3 + 2^0 = 11001001001_2$$
+
+**Part fraccionària:**
+
+$$0{,}5 = 0{,}1_2$$
+
+$$A = -11001001001{,}1_2 = -1{,}10010010011_2 \times 2^{10}$$
+
+La representació binària és **exacta** (la part fraccionària és $0{,}5 = 2^{-1}$, representable en 1 bit).
+
+*Simple precisió (23 bits de fracció):*
+
+Els 11 bits de la mantissa caben holgadament als 23 bits disponibles: no hi ha arrodoniment.
+
+```{.default filename="Càlcul"}
+S = 1
+e = 10  →  Eu = 10 + 127 = 137 = 1000 1001b
+F = 1001 0010 0110 0000 0000 000  (omplim amb zeros fins a 23 bits)
+→  0xC4C98000
+```
+
+$$\boxed{A_{\text{simple}} = \texttt{0xC4C98000}, \quad \varepsilon_A = 0}$$
+
+*Doble precisió (52 bits de fracció):*
+
+Igualment sense arrodoniment (els 11 bits caben en 52).
+
+```{.default filename="Càlcul"}
+S = 1
+e = 10  →  Eu = 10 + 1023 = 1033 = 100 0000 1001b
+F = 1001 0010 0110 0000 ... (zeros fins a 52 bits)
+→  0xC099300000000000
+```
+
+$$\boxed{A_{\text{doble}} = \texttt{0xC099300000000000}, \quad \varepsilon_A = 0}$$
+
+---
+
+**$B = -938{,}8125$**
+
+**Part entera:**
+
+$$938 = 512 + 256 + 128 + 32 + 8 + 2 = 2^9 + 2^8 + 2^7 + 2^5 + 2^3 + 2^1 = 1110101010_2$$
+
+**Part fraccionària:**
+
+$$0{,}8125 = 0{,}5 + 0{,}25 + 0{,}0625 = 2^{-1} + 2^{-2} + 2^{-4} = 0{,}1101_2$$
+
+$$B = -1110101010{,}1101_2 = -1{,}1101010101101_2 \times 2^9$$
+
+La representació binària és **exacta** (la part fraccionària és $0{,}8125$, representable en 4 bits).
+
+*Simple precisió:*
+
+La mantissa té 13 bits significatius (sense el bit ocult), que caben en els 23 bits de fracció: sense arrodoniment.
+
+```{.default filename="Càlcul"}
+S = 1
+e = 9  →  Eu = 9 + 127 = 136 = 1000 1000b
+F = 110 1010 1011 0100 0000 0000  (zeros fins a 23 bits)
+→  0xC46AB400
+```
+
+$$\boxed{B_{\text{simple}} = \texttt{0xC46AB400}, \quad \varepsilon_B = 0}$$
+
+*Doble precisió:*
+
+Igualment sense arrodoniment.
+
+```{.default filename="Càlcul"}
+S = 1
+e = 9  →  Eu = 9 + 1023 = 1032 = 100 0000 1000b
+F = 1101 0101 0110 1000 0000 ... (zeros fins a 52 bits)
+→  0xC08D568000000000
+```
+
+$$\boxed{B_{\text{doble}} = \texttt{0xC08D568000000000}, \quad \varepsilon_B = 0}$$
+
+---
+
+::: {.callout-caution}
+En aquest exercici, tant $A$ com $B$ resulten ser exactament representables en simple i doble precisió: les seves parts fraccionàries ($0{,}5$ i $0{,}8125$) són sumes de potències negatives de 2 amb un nombre finit de termes. En general, però, la majoria de decimals (per exemple, $0{,}1$ o $0{,}3$) **no** són representables exactament en cap format binari de precisió finita i introdueixen sempre un error de representació.
+:::
+
+:::
+
+### Suma i multiplicació
+
+::: {#sol-p6-ops-assemblador-cf .callout-tip}
+## Solució: traducció de sentències amb `float`
+
+**Enunciat:** @exr-p6-ops-assemblador-cf.
+
+En RV32F **no hi ha operands immediats flotants**: cap instrucció admet una constant de coma flotant directament. Per usar un literal cal declarar-lo al segment `.data` i carregar-lo amb `la` + `flw`.
+
+**a) `f = 3.14;`**
+
+```{.s filename="RV32IF"}
+.data
+const_pi: .float  3.14
+
+.text
+        la      t0, const_pi    # t0 ← @const_pi
+        flw     fa2, 0(t0)      # fa2 ← 3.14  (f = 3.14)
+```
+
+**b) `f = g;`**
+
+Còpia entre registres de coma flotant: pseudoinstrucció `fmv.s`.
+
+```{.s filename="RV32IF"}
+        fmv.s   fa2, fa4        # fa2 ← fa4  (f = g)
+```
+
+**c) `f = g + 3.14;`**
+
+Cal carregar primer la constant i després fer la suma.
+
+```{.s filename="RV32IF"}
+.data
+const_pi: .float  3.14
+
+.text
+        la      t0, const_pi    # t0 ← @const_pi
+        flw     ft0, 0(t0)      # ft0 ← 3.14
+        fadd.s  fa2, fa4, ft0   # fa2 ← fa4 + 3.14  (f = g + 3.14)
+```
+
+::: {.callout-caution}
+La directiva `.float` accepta decimals: `.float 3.14` converteix el valor a IEEE 754 de simple precisió en temps d'assemblatge. Però les instruccions de la família RV32F mai admeten literals numèrics flotants: tots els operands han d'estar en registres del coprocessador.
+:::
+
+:::
+
+::: {#sol-p6-ops-rv32f-memoria .callout-tip}
+## Solució: càrrega, suma i comparació de `float` en memòria
+
+**Enunciat:** @exr-p6-ops-rv32f-memoria.
+
+```{.c filename="C"}
+float v[4] = {1.5, -2.0, 3.25, 0.5};
+float resultat;
+```
+
+**a) Càrrega de `v[0]` i `v[2]`**
+
+Cada element `float` ocupa 4 bytes. `v[2]` és a l'offset $2 \times 4 = 8$ bytes respecte de la base.
+
+```{.s filename="RV32IF"}
+        la      t0, v           # t0 ← @v
+        flw     fa0, 0(t0)      # fa0 ← v[0] = 1.5
+        flw     fa1, 8(t0)      # fa1 ← v[2] = 3.25
+```
+
+**b) Suma i emmagatzemament a `resultat`**
+
+```{.s filename="RV32IF"}
+        fadd.s  fa0, fa0, fa1   # fa0 ← v[0] + v[2] = 4.75
+        la      t1, resultat
+        fsw     fa0, 0(t1)      # resultat ← 4.75
+```
+
+**c) Comparació `v[0] > v[2]` amb `flt.s`**
+
+`flt.s` calcula $rd = (rs1 < rs2)\ ?\ 1 : 0$. Per obtenir $v[0] > v[2]$ cal invertir els operands: $v[0] > v[2] \Leftrightarrow v[2] < v[0]$.
+
+Cal recarregar `fa0` i `fa1` perquè l'apartat b) ha sobreescrit `fa0`:
+
+```{.s filename="RV32IF"}
+        la      t0, v
+        flw     fa0, 0(t0)      # fa0 ← v[0] = 1.5
+        flw     fa1, 8(t0)      # fa1 ← v[2] = 3.25
+        flt.s   t0, fa1, fa0    # t0 ← (v[2] < v[0]) ? 1 : 0
+                                # = (3.25 < 1.5) ? 1 : 0 = 0
+```
+
+Per a `v[0] = 1.5` i `v[2] = 3.25`, $1{,}5 \not> 3{,}25$, per tant `t0 = 0`.
+
+::: {.callout-caution}
+`flt.s rd, rs1, rs2` avalua $rs1 < rs2$, no $rs1 > rs2$. Per implementar `a > b`, cal escriure `flt.s rd, b, a` (invertir l'ordre dels operands), **no** negar el resultat amb `xori`.
+:::
+
+:::
+
+::: {#sol-p6-ops-rv32f-conversio .callout-tip}
+## Solució: conversions entre `int` i `float`
+
+**Enunciat:** @exr-p6-ops-rv32f-conversio.
+
+**a) `int i = (int) f;`**
+
+```{.s filename="RV32IF"}
+        fcvt.w.s  a0, fa0       # a0 ← (int) fa0  [trunca cap a zero]
+```
+
+**b) `float f = (float) i;`**
+
+```{.s filename="RV32IF"}
+        fcvt.s.w  fa0, a0       # fa0 ← (float) a0
+```
+
+**c) `unsigned int u = (unsigned int) f;`**
+
+```{.s filename="RV32IF"}
+        fcvt.wu.s  a0, fa0      # a0 ← (unsigned int) fa0  [trunca cap a zero]
+```
+
+**d) Càlcul manual per a `f = 3.9`**
+
+`fcvt.w.s` **trunca cap a zero** (mode RTZ), independentment del mode d'arrodoniment del `fcsr`. Per tant, el resultat és sempre la part entera del valor flotant.
+
+$3{,}9$ en IEEE 754 de simple precisió no és exactament representable. El valor emmagatzemat és:
+
+$$3{,}9 \approx 1{,}1111001100110011001101_2 \times 2^1 = 3{,}9000000953\ldots$$
+
+Aplicant `fcvt.w.s` (truncament cap a zero):
+
+$$\lfloor 3{,}9000\ldots \rfloor = 3$$
+
+**Resultat: `a0 = 3`.**
+
+No es produeix arrodoniment: `fcvt.w.s` trunca sempre, no arrodoneix al més pròxim. Si calgués arrodoniment, caldria usar una seqüència explícita amb `fadd.s` i la constant $0{,}5$ abans de la conversió.
+
+:::
+
+::: {#sol-p6-ops-suma-simple .callout-tip}
+## Solució: suma de nombres en coma flotant
+
+**Enunciat:** @exr-p6-ops-suma-simple.
+
+**Descodificació dels operands**
+
+```{.default filename="ft2 = 0x417AC000"}
+0 | 1000 0010 | 111 1010 1100 0000 0000 0000
+S=0, Eu=130 → e = 130−127 = 3
+Mantissa = 1.111 1010 1100 0000 0000 0000
+Valor = 1111,1010 11b × 2^0 = 15,671875
+```
+
+```{.default filename="ft4 = 0x3F140000"}
+0 | 0111 1110 | 001 0100 0000 0000 0000 0000
+S=0, Eu=126 → e = 126−127 = −1
+Mantissa = 1.001 0100 0000 0000 0000 0000
+Valor = 0,578125
+```
+
+**Pas 1. Alinear exponents**
+
+El menor exponent és $e = -1$ (ft4). Cal desplaçar la seva mantissa 4 posicions a la dreta per igualar $e = 3$:
+
+```{.default filename="Alineació"}
+ft2:            1.1111010110 0000000000000          × 2³
+ft4 original:   1.0010100000 0000000000000          × 2⁻¹
+ft4 alineat:  0.0001 0010100000 0000000000000       × 2³
+                     ↑
+              bit desplaçat fora: G=0, R=0, S=0
+```
+
+**Pas 2. Suma de mantisses**
+
+```{.default filename="Suma"}
+  1.1111010110 0000000000000
++ 0.0001001010 0000000000000
+= 10.0000100000 0000000000000
+  ↑
+  carry = 1 → cal renormalitzar
+```
+
+**Pas 3. Renormalitzar**
+
+El resultat té un `1` extra a l'esquerra de la coma. Es desplaça 1 posició a la dreta i s'incrementa l'exponent:
+
+```{.default filename="Renormalització"}
+10.0000100000 0000000000000 × 2³
+→  1.0000010000 0000000000000 × 2⁴   (G=0, sense arrodoniment)
+```
+
+**Pas 4. Codificar el resultat**
+
+$$e = 4 \Rightarrow E_u = 4 + 127 = 131 = 1000\,0011_2$$
+
+$$F = 000\,0001\,0000\,0000\,0000\,0000$$
+
+$$\texttt{ft6} = 0\ |\ 1000\,0011\ |\ 000\,0001\,0000\,0000\,0000\,0000 = \texttt{0x41820000}$$
+
+**a)** $\boxed{\texttt{ft6} = \texttt{0x41820000}}$
+
+**b)** G = 0, R = 0, S = 0 → no cal arrodonir. **No hi ha error de precisió.**
+
+**c)** $e = 4$, mantissa $= 1{,}0000010_2 = 1 + 2^{-6} = 1{,}015625$:
+
+$$\texttt{ft6} = 1{,}015625 \times 2^4 = \mathbf{16{,}25}$$
+
+Comprovació: $15{,}671875 + 0{,}578125 = 16{,}25$ ✓
+
+:::
+
+::: {#sol-p6-ops-variancia .callout-tip}
+## Solució: funció `variancia` amb crides a subrutina
+
+**Enunciat:** @exr-p6-ops-variancia.
+
+**a) Anàlisi de les variables locals**
+
+`variancia` és una subrutina no fulla (*non-leaf*): crida a `mitjana` dues vegades.
+
+| Variable | Tipus | Convenció | Decisió |
+| :--- | :--- | :--- | :--- |
+| `vec` (paràmetre) | `float *` | argument | arriba per `fa0`; cal preservar-lo |
+| `vquadrats[100]` | array local (400 bytes) | al BA | al BA (massa gran per a registres) |
+| `i` | `int` | temporal | registre `s` (cal sobreviure a les crides) |
+| `m` | `float` | temporal | registre `fs` (cal sobreviure a les crides) |
+| `q` | `float` | temporal | registre `fs` (cal sobreviure a les crides) |
+
+Les variables que han de sobreviure a les crides a `mitjana` han d'estar en registres **segurs** (`s` per enters, `fs` per flotants) o al bloc d'activació (BA). Triem registres per eficiència:
+
+- `vec` → `s0` (enter, preservat)
+- `i`   → `s1` (enter, preservat)
+- `m`   → `fs0` (flotant, preservat)
+- `q`   → `fs1` (flotant, preservat)
+- `vquadrats` → BA (400 bytes)
+
+**Registres a preservar a la pila:** `ra` (adreça de retorn), `s0`, `s1`, `fs0`, `fs1`.
+
+**b) Traducció a RISC-V**
+
+Disseny del BA:
+
+| Contingut | Mida | Offset des de `sp` |
+| :--- | :---: | :---: |
+| `vquadrats[0..99]` | 400 B | `0` |
+| `fs1` | 4 B | `400` |
+| `fs0` | 4 B | `404` |
+| `s1` | 4 B | `408` |
+| `s0` | 4 B | `412` |
+| `ra` | 4 B | `416` |
+| **Total** | **420 B** | |
+
+```{.s filename="RV32IF"}
+variancia:
+        # Pròleg
+        addi    sp, sp, -420
+        sw      ra,  416(sp)
+        sw      s0,  412(sp)
+        sw      s1,  408(sp)
+        fsw     fs0, 404(sp)
+        fsw     fs1, 400(sp)
+
+        mv      s0, a0          # s0 ← vec (preservem l'argument)
+
+        # Bucle: vquadrats[i] = vec[i] * vec[i]  per a i = 0..99
+        li      s1, 0           # i = 0
+bucle:
+        li      t0, 100
+        bge     s1, t0, fibucle
+        slli    t1, s1, 2       # t1 ← i * 4
+        add     t2, s0, t1      # t2 ← &vec[i]
+        flw     fa0, 0(t2)      # fa0 ← vec[i]
+        fmul.s  ft0, fa0, fa0   # ft0 ← vec[i] * vec[i]
+        addi    t3, sp, 0       # t3 ← &vquadrats[0]
+        add     t3, t3, t1      # t3 ← &vquadrats[i]
+        fsw     ft0, 0(t3)      # vquadrats[i] ← vec[i] * vec[i]
+        addi    s1, s1, 1       # i++
+        j       bucle
+fibucle:
+
+        # q = mitjana(vquadrats)
+        mv      a0, sp          # a0 ← &vquadrats[0]
+        call    mitjana
+        fmv.s   fs1, fa0        # fs1 ← q
+
+        # m = mitjana(vec)
+        mv      a0, s0          # a0 ← vec
+        call    mitjana
+        fmv.s   fs0, fa0        # fs0 ← m
+
+        # return q - m * m
+        fmul.s  ft0, fs0, fs0   # ft0 ← m * m
+        fsub.s  fa0, fs1, ft0   # fa0 ← q - m * m
+
+        # Epíleg
+        flw     fs1, 400(sp)
+        flw     fs0, 404(sp)
+        lw      s1,  408(sp)
+        lw      s0,  412(sp)
+        lw      ra,  416(sp)
+        addi    sp, sp, 420
+        ret
+```
+
+:::
+
+### No associativitat
+
+::: {#sol-p6-assoc-suma .callout-tip}
+## Solució: no associativitat de la suma en coma flotant
+
+**Enunciat:** @exr-p6-assoc-suma.
+
+`A = 0xF3FD`, `B = 0x73FD`, `C = 0x3C00` en format *half* (5 bits exponent, 10 bits fracció, excés a 15).
+
+**Descodificació**
+
+```{.default filename="A = 0xF3FD"}
+1 | 11100 | 11 1111 1101
+S=1, Eu=28 → e = 28−15 = 13
+Mantissa = 1.1111111101
+Valor = −1.1111111101b × 2¹³ = −(2¹³ + 2¹² + … + 2⁴ + 2³ + 2¹ + 2⁰)
+      = −(8192 + 4096 + 2048 + 1024 + 512 + 256 + 128 + 64 + 16 + 8 + 2 + 1) → però cal calcular-ho com 1.xxx × 2^13:
+```
+
+Calculem $A$ precisament: $1{,}1111111101_2 = 1 + \sum_{i=1}^{9} 2^{-i} + 2^{-10} \cdot 1$...
+
+Anem pas a pas. El format *half* té 10 bits de fracció. `F = 11 1111 1101`:
+
+$$A = -1{,}1111111101_2 \times 2^{13}$$
+
+$$= -(2^{13} + 2^{12} + 2^{11} + 2^{10} + 2^9 + 2^8 + 2^7 + 2^6 + 2^5 + 2^4 + 2^3) = -(8192 + 8190 - 8) $$
+
+Millor: desplaçar la coma 13 posicions: $11111111101{,}0000000000_2$
+
+$$A = -(2^{10} - 3) \times 2^3 = -(1024-3)\times 8 = -1021 \times 8 = -8168$$
+
+Verifiquem: $1{,}1111111101 \times 2^{13}$: la mantissa completa és $1 + (1-2^{-10} - 2^{-10}\cdot 0 + \ldots)$... calculem bit a bit:
+
+$F = 1111111101_2$: bits a 1 en posicions $-1$ a $-9$ (tots) i $-10 = 0$.
+
+$$\text{mantissa} = 1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16} + \frac{1}{32} + \frac{1}{64} + \frac{1}{128} + \frac{1}{256} + \frac{1}{512} + 0 = 1 + \frac{511}{512} = \frac{1023}{512}$$
+
+$$A = -\frac{1023}{512} \times 2^{13} = -1023 \times 2^{4} = -1023 \times 16 = -16368$$
+
+```{.default filename="B = 0x73FD"}
+0 | 11100 | 11 1111 1101
+S=0, Eu=28 → e=13, F idèntica a A
+Valor = +16368
+```
+
+```{.default filename="C = 0x3C00"}
+0 | 01111 | 00 0000 0000
+S=0, Eu=15 → e=0
+Mantissa = 1.0000000000
+Valor = 1.0 × 2⁰ = 1
+```
+
+**Càlcul de $(A + B) + C$**
+
+*Pas 1: $A + B$*
+
+$A = -16368$, $B = +16368$, ambdós amb el mateix exponent i la mateixa fracció però signes oposats: $A + B = 0$.
+
+En *half*: $\texttt{0x0000}$ (zero positiu).
+
+*Pas 2: $0 + C$*
+
+$0 + 1 = 1 = \texttt{0x3C00}$.
+
+$$\boxed{(A + B) + C = 1}$$
+
+**Càlcul de $A + (B + C)$**
+
+*Pas 1: $B + C$*
+
+$B = +16368$, $C = +1$. Alineació: $e_B = 13$, $e_C = 0$, diferència = 13.
+
+Cal desplaçar $C$ 13 posicions a la dreta: $1{,}0 \times 2^0 \to 0{,}0000000000001_2 \times 2^{13}$.
+
+El resultat té 10 bits de fracció. Bits desplaçats de $C$: el primer bit significatiu de $C$ cau a la posició 13 més enllà de la coma, que és ben fora dels 10 bits de la fracció del format *half*. Amb el sumador amb bit de guarda (G), d'arrodoniment (R) i *sticky* (S):
+
+- G = 0 (bit a la posició 11 de $C$ desplaçat = 0)
+- S = 1 (hi ha un bit a 1 molt més a la dreta)
+
+La mantissa de $B$ és $1{,}1111111101$. Sumant $C$ desplaçat (que és negligible a la resolució de 10 bits):
+
+$$B + C \approx 1{,}1111111101_2 \times 2^{13} \text{ (sense canvi en els 10 bits)}$$
+
+Però G=0, R=0, S=1 → el valor $B+C$ s'arrodoneix al valor més pròxim parell. El truncat és $B$ mateix ($\texttt{0x73FD}$). El truncat és parell (bit 0 de fracció = 1, però la regla al parell mira si cal sumar 1 ULP: com que G=0 no s'arrodoneix):
+
+$$B + C = \texttt{0x73FD} = +16368 \quad \text{(sense canvi)}$$
+
+*Pas 2: $A + (B + C)$*
+
+$A + 16368 = -16368 + 16368 = 0$.
+
+$$\boxed{A + (B + C) = 0}$$
+
+**Conclusió**
+
+$$(A + B) + C = 1 \neq 0 = A + (B + C)$$
+
+La suma en coma flotant **no és associativa**. En aquest cas, la pèrdua de precisió es produeix al calcular $B + C$: $C = 1$ és massa petit per ser representable quan s'afegeix a $B = 16368$ amb 10 bits de fracció, i es perd completament per arrodoniment.
+
+:::

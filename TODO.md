@@ -2,6 +2,7 @@
 
 ## Contingut
 
+* Eliminar `[Plantilles](laboratori/L0/TODO.s)` si no es fan servir
 * Lab: Decidir si Estudi previ és els fitxers 
 * **T1:** Indicar explícitament que RISC-V és l'ISA de referència a EC.
 * **T2:** Introduir el concepte de directiva al cos del text (ara només és a `#cau-directives`). Decidir si les directives es presenten com a part de RISC-V, de RARS o d'assemblador en general.
