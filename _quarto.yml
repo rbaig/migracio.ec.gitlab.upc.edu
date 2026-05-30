@@ -15,7 +15,8 @@ book:
       - icon: filetype-pdf  # https://icons.getbootstrap.com/
         href: Estructura-de-computadors.pdf
       - icon: gitlab
-        href: https://gitlab.upc.edu/ec/migracio
+        href: https://gitlab.upc.edu/ec/migracio # `_variables.yml` no es pot usar aquí perquè el `_quarto.yml` s'ha de processar abans que el `_variables.yml`
+
   chapters:
     - index.qmd
     - part: "Teoria"
@@ -26,7 +27,7 @@ book:
           file: T2.qmd
         - text: "T3 Traducció"
           file: T3.qmd
-        - text: "T4 Enters i Matrius"
+        - text: "T4 Enters i matrius"
           file: T4.qmd
         - text: "T5 Coma flotant"
           file: T5.qmd
@@ -68,8 +69,9 @@ book:
 lang: ca
 
 language:
-  crossref-nte-prefix: "RISC-V"         ## TODO "Programació" permet especificar en cada cas: RARS, RV32I, etc., però xoca una mica amb els blocs de codi?
-  callout-note-title: "RISC-V"
+  crossref-nte-prefix: "RISC-V"         ## Text afegit per Quarto en les referències creuada; e.g. @nte-mult -> "RISC-V 4.1."
+
+  callout-note-title: "RISC-V"          ## Títol del caption dins del bloc; el del PDF; e.g. "RISC-V 4.1."
   crossref-tip-prefix: "Exemple"
   callout-tip-title: "Exemple"
   crossref-cau-prefix: "Essencial"
@@ -122,11 +124,22 @@ format:
   pdf:
     header-includes: \AtBeginDocument{\subtitle{Departament d'Arquitectura de Computadors \linebreak \linebreak Grau en Enginyeria Informàtica \linebreak Facultat d'informàtica de Barcelona \linebreak Universitat politècnica de Catalunya}\date{\today}}
     documentclass: scrbook  # KOMA: `scrartcl` (~10 pàg.), `scrreport` (~50 pàg.), `scrbook` (+50 pàg.)
-    classoption: twoside    # KOMA: `oneside`, `twoside`
+    classoption: oneside    # KOMA: `oneside`, `twoside`
     papersize: a4           # KOMA: `a4` (default), `letter`
+    geometry:
+      - top=1cm
+      - bottom=1cm
+      - left=1.5cm
+      - right=1.5cm
+      - includeheadfoot
+      - footskip=1cm
     fontsize: 11pt
     number-sections: true
     keep-tex: true          # Conserva el fitxer .tex generat per Pandoc
+    colorlinks: true   # Activa el color en els enllaços (per defecte són vermells)
+    urlcolor: blue     # Color per als enllaços web (URLs externos)
+    linkcolor: blue    # Color per als enllaços interns (índex, seccions, etc.)
+    citecolor: blue    # Color per a les cites bibliogràfiques
 
 bibliography: bibliografia.bib
 csl: ieee.csl
