@@ -221,8 +221,8 @@ Inicialment, abans de cap traducció, totes les entrades del TLB es marquen amb 
 
 El bit V compleix, doncs, dos papers simultàniament:
 
-- **Durant una fallada de TLB:** V = 0 indica que l'entrada no està inicialitzada i pot ser sobreescrita.
-- **Després d'un encert de TLB:** V = 0 indica que la pàgina no és a la memòria (bit P = 0), i cal gestionar una fallada de pàgina.
+- **Durant una fallada de TLB**: V = 0 indica que l'entrada no està inicialitzada i pot ser sobreescrita.
+- **Després d'un encert de TLB**: V = 0 indica que la pàgina no és a la memòria (bit P = 0), i cal gestionar una fallada de pàgina.
 
 El fet que el camp VPN d'una entrada no inicialitzada tingui un valor indeterminat no és un problema: si per casualitat coincidís amb el VPN cercat, l'encert resultant trobaria V = 0, la qual cosa desencadenaria igualment una fallada de pàgina que inicialitzaria l'entrada correctament.
 
@@ -274,15 +274,15 @@ I la taula de pàgines (entrades rellevants):
 
 Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = 3 és lliure), i que els 3 darrers accessos han estat a VPN = 3, VPN = 0 i VPN = 2 (ordre LRU, de més antic a més recent).
 
-**Accés 1:** Escriptura a `0x00002A0B` → VPN = `0x00002`.
+**Accés 1**: Escriptura a `0x00002A0B` → VPN = `0x00002`.
 
 Encert de TLB (V = 1). Com que és una escriptura i D = 0, s'aplica la política d'escriptura immediata descrita a la @sec-mv-tlb-bitd: D = 1 s'escriu simultàniament al TLB i a la TP. PPN = `0x02`. Adreça física: `0x02A0B`.
 
-**Accés 2:** Lectura a `0x00001F21` → VPN = `0x00001`.
+**Accés 2**: Lectura a `0x00001F21` → VPN = `0x00001`.
 
 Fallada de TLB. Es llegeix la PTE de la TP: P = 0, fallada de pàgina. Hi ha un marc lliure (PPN = `0x03`); s'hi carrega la pàgina des del disc. S'actualitza la TP (P = 1, PPN = `0x03`). La PTE es copia al TLB a l'entrada no inicialitzada (V = 0, VPN = `0x0AFB3`). PPN = `0x03`. Adreça física: `0x03F21`.
 
-**Accés 3:** Lectura a `0x0000420C` → VPN = `0x00004`.
+**Accés 3**: Lectura a `0x0000420C` → VPN = `0x00004`.
 
 Fallada de TLB. Es llegeix la PTE de la TP: P = 0, fallada de pàgina. Cap marc lliure; cal reemplaçar. L'ordre LRU actual al TLB és VPN = `0x00003` (el més antic, no accedit des de l'inici), VPN = `0x00000`, VPN = `0x00001`, VPN = `0x00002` (el més recent). Es reemplaça VPN = `0x00003` (D = 1): s'escriu primer al disc. Es carrega VPN = `0x00004` al PPN = `0x00`. S'actualitza la TP i el TLB. PPN = `0x00`. Adreça física: `0x0020C`.
 :::
@@ -303,9 +303,9 @@ A més de l'aïllament entre processos, la memòria virtual permet controlar el 
 
 Aquest mecanisme té diverses aplicacions pràctiques:
 
-- **Protecció del codi:** les pàgines que contenen instruccions es marquen habitualment com de sols lectura (E = 0), de manera que un error de programació no pugui sobreescriure el codi en execució.
-- **Detecció d'errors:** marcar com de sols lectura pàgines que no haurien de ser modificades permet detectar errors de programació que d'altra manera passarien desapercebuts.
-- **Compartició segura:** permet compartir pàgines entre processos amb permisos asimètrics (un procés pot escriure-hi i un altre només llegir-hi), com es veurà a la secció següent.
+- **Protecció del codi**: les pàgines que contenen instruccions es marquen habitualment com de sols lectura (E = 0), de manera que un error de programació no pugui sobreescriure el codi en execució.
+- **Detecció d'errors**: marcar com de sols lectura pàgines que no haurien de ser modificades permet detectar errors de programació que d'altra manera passarien desapercebuts.
+- **Compartició segura**: permet compartir pàgines entre processos amb permisos asimètrics (un procés pot escriure-hi i un altre només llegir-hi), com es veurà a la secció següent.
 
 ### Compartició de pàgines {#sec-mv-comparticio}
 
@@ -323,8 +323,8 @@ A partir d'aquell moment, quan P2 accedeix a VPN = `0x00001` i P1 accedeix a VPN
 
 La compartició de pàgines té dues aplicacions principals:
 
-- **Comunicació entre processos:** dos processos poden intercanviar dades escrivint i llegint una pàgina compartida, sense necessitat de còpies.
-- **Biblioteques compartides:** si múltiples processos usen simultàniament el codi d'una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapejar-les (en mode sols lectura, E = 0) a l'espai lògic de cada procés, estalviant memòria física de manera significativa.
+- **Comunicació entre processos**: dos processos poden intercanviar dades escrivint i llegint una pàgina compartida, sense necessitat de còpies.
+- **Biblioteques compartides**: si múltiples processos usen simultàniament el codi d'una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapejar-les (en mode sols lectura, E = 0) a l'espai lògic de cada procés, estalviant memòria física de manera significativa.
 
 ## Integració del TLB i la memòria cau {#sec-mv-integracio}
 

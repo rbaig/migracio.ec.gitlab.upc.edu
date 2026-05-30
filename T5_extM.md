@@ -13,7 +13,7 @@ Transfereixen valors de coma flotant de precisió simple (32 bits) entre memòri
 * **`flw rd, offset(rs1)`**: Carrega un valor de coma flotant de precisió simple de la direcció de memòria `rs1 + offset` al registre de coma flotant `rd`.
 * **`fsw rs2, offset(rs1)`**: Emmagatzema el valor del registre de coma flotant `rs2` a la direcció de memòria `rs1 + offset`.
 
- **Nota — Càrrega de constants de coma flotant:** RV32F no té instruccions amb immediat de coma flotant. Per carregar una constant com ara `1.0`, cal emmagatzemar-la a la secció `.data` i carregar-la amb `la` + `flw`:
+ **Nota — Càrrega de constants de coma flotant**: RV32F no té instruccions amb immediat de coma flotant. Per carregar una constant com ara `1.0`, cal emmagatzemar-la a la secció `.data` i carregar-la amb `la` + `flw`:
 
 ```{.s}
 .data
@@ -48,7 +48,7 @@ Manipulen el bit de signe dels registres de coma flotant sense realitzar aritmè
 * **`fsgnjn.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i el signe invertit de `rs2` a `rd`.
 * **`fsgnjx.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i la XOR dels signes de `rs1` i `rs2` a `rd`.
 
-> **Pseudoinstrucció `fmv.s`:** La instrucció `fsgnj.s fd, fs, fs` (amb els dos registres font idèntics) copia `fs` a `fd` sense modificar el signe. RARS exposa això com la pseudoinstrucció `fmv.s fd, fs`.
+> **Pseudoinstrucció `fmv.s`**: La instrucció `fsgnj.s fd, fs, fs` (amb els dos registres font idèntics) copia `fs` a `fd` sense modificar el signe. RARS exposa això com la pseudoinstrucció `fmv.s fd, fs`.
 
 Les dues instruccions següents mouen patrons de bits entre registres enters i de coma flotant **sense cap conversió**. Reinterpreten el patró de 32 bits tal qual:
 
@@ -87,7 +87,7 @@ Les comparacions escriuen un resultat enter (0 o 1) a un registre **enter** `rd`
 * **`flt.s rd, rs1, rs2`**: `rd = 1` si $rs1 < rs2$, si no `rd = 0`.
 * **`fle.s rd, rs1, rs2`**: `rd = 1` si $rs1 \leq rs2$, si no `rd = 0`.
 
-> **Comportament amb NaN:** `feq.s` retorna 0 (no igual) si algun dels operands és NaN. `flt.s` i `fle.s` també retornen 0 si algun dels operands és NaN.
+> **Comportament amb NaN**: `feq.s` retorna 0 (no igual) si algun dels operands és NaN. `flt.s` i `fle.s` també retornen 0 si algun dels operands és NaN.
 
 Exemple — salt condicional basat en una comparació de coma flotant:
 
@@ -154,17 +154,17 @@ Cada registre té una mida de 32 bits en RV32F.
 
 ### Convenció de crida
 
-**Pas d'arguments:**
+**Pas d'arguments**:
 
 * Fins a 8 arguments de precisió simple es passen per `fa0`–`fa7`.
 * Els arguments addicionals a partir del novè es passen per la pila.
 
-**Valors de retorn:**
+**Valors de retorn**:
 
 * El valor de retorn principal va a `fa0`.
 * Un segon valor de retorn (p. ex. una estructura amb dos floats) va a `fa1`.
 
-**Preservació de registres:**
+**Preservació de registres**:
 
 * **Caller-saved** (`ft0`–`ft11`, `fa0`–`fa7`): el caller ha de desar-los abans d'una crida si en necessita els valors posteriorment.
 * **Callee-saved** (`fs0`–`fs11`): el callee ha de restaurar-los abans de retornar si els ha modificat (desar-los al pròleg, restaurar-los a l'epíleg).

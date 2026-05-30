@@ -41,10 +41,10 @@ La taula següent classifica els principals tipus d'excepcions i interrupcions, 
 
 Cal destacar dues diferències clau entre excepcions i interrupcions que la taula reflecteix:
 
-- **Moment de detecció:**
+- **Moment de detecció**:
     - Les **excepcions** es detecten **durant** l'execució de la instrucció causant, que s'avorta sense escriure cap resultat ni incrementar el PC.
     - Les **interrupcions** es detecten **en acabar** la instrucció en curs, quan el PC ja s'ha incrementat.
-- **Acció en acabar la RSE:**
+- **Acció en acabar la RSE**:
     - En les **excepcions** que:
         - **es poden resoldre**, (fallada de TLB, fallada de pàgina) cal **reexecutar** la instrucció causant.
         - **no alteren l'estat del programa**, (crida al sistema) cal **continuar** a la instrucció següent.
@@ -153,8 +153,8 @@ El registre **`mepc`** (*Machine Exception Program Counter*) guarda l'adreça de
 
 El valor que el hardware hi escriu depèn del tipus d'esdeveniment.
 
-- **Excepció:** `mepc` apunta a la instrucció causant (la que s'ha interromput sense finalitzar). En casos on es vol continuar a la instrucció següent (per exemple, `ecall`), la pròpia RSE incrementa `mepc` en 4 abans de retornar.
-- **Interrupció:** `mepc` apunta a la instrucció que *hauria* executat el processador a continuació (la instrucció causant ja ha finalitzat i el PC ja s'ha incrementat).
+- **Excepció**: `mepc` apunta a la instrucció causant (la que s'ha interromput sense finalitzar). En casos on es vol continuar a la instrucció següent (per exemple, `ecall`), la pròpia RSE incrementa `mepc` en 4 abans de retornar.
+- **Interrupció**: `mepc` apunta a la instrucció que *hauria* executat el processador a continuació (la instrucció causant ja ha finalitzat i el PC ja s'ha incrementat).
 
 ::: {#nte-mepc .callout-note}
 ## RV32I ISA — `mepc`
@@ -225,9 +225,9 @@ A **EC** s'usa sempre el **mode directe** (`MODE=0`): totes les excepcions i int
 
 El registre **`mtval`** (*Machine Trap Value*) conté informació addicional sobre la causa de l'excepció, per ajudar la RSE en el tractament. El valor que hi escriu el hardware depèn del tipus d'excepció:
 
-- **Accés no alineat o fallada de pàgina:** `mtval` conté l'adreça virtual que ha causat l'excepció.
-- **Instrucció il·legal:** `mtval` conté la instrucció que ha causat l'excepció.
-- **Interrupció o altres excepcions:** `mtval` s'escriu a zero.
+- **Accés no alineat o fallada de pàgina**: `mtval` conté l'adreça virtual que ha causat l'excepció.
+- **Instrucció il·legal**: `mtval` conté la instrucció que ha causat l'excepció.
+- **Interrupció o altres excepcions**: `mtval` s'escriu a zero.
 
 ### `mip` / `mie` — Peticions i màscares d'interrupció {#sec-csr-mip-mie}
 
@@ -258,8 +258,8 @@ https://docs.riscv.org/reference/isa/priv/_images/diag-a13587a597b21dd19c8aea2b0
 | 13 | `LCOFIP` | `LCOFIE` | Desbordament de comptador de rendiment |
 : {.striped}
 
-- **`mip`:** cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. És de **sols lectura** per al programari (el hardware l'actualitza).
-- **`mie`:** cada bit és una màscara independent que habilita o deshabilita les interrupcions d'un tipus concret. És de **lectura/escriptura**.
+- **`mip`**: cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. És de **sols lectura** per al programari (el hardware l'actualitza).
+- **`mie`**: cada bit és una màscara independent que habilita o deshabilita les interrupcions d'un tipus concret. És de **lectura/escriptura**.
 :::
 
 Perquè una interrupció sigui atesa cal que es compleixin simultàniament tres condicions: `MIE=1` (permís global), el bit corresponent de `mie` val 1 (permís específic) i el bit corresponent de `mip` val 1 (petició pendent).
@@ -293,15 +293,15 @@ Quan el processador opera en mode S (per exemple, executant el nucli de Linux), 
 
 Quan el processador detecta una excepció o una petició d'interrupció, executa automàticament, per hardware, la seqüència d'accions següent:
 
-1. **Guardar el PC a `mepc`:** el processador escriu el valor actual del PC al registre `mepc`, per poder reprendre el programa interromput en acabar la RSE.
+1. **Guardar el PC a `mepc`**: el processador escriu el valor actual del PC al registre `mepc`, per poder reprendre el programa interromput en acabar la RSE.
 
-2. **Escriure la causa a `mcause`:** s'escriu el codi de la causa (bit 31 + codi) al registre `mcause`, per tal que la RSE pugui identificar l'origen de l'excepció o interrupció.
+2. **Escriure la causa a `mcause`**: s'escriu el codi de la causa (bit 31 + codi) al registre `mcause`, per tal que la RSE pugui identificar l'origen de l'excepció o interrupció.
 
-3. **Desar i desactivar el permís d'interrupcions:** el valor de `MIE` es copia a `MPIE` (per poder-lo restaurar més tard), i `MIE` es posa a 0. A partir d'aquest moment, totes les interrupcions queden inhibides mentre s'executa la RSE.
+3. **Desar i desactivar el permís d'interrupcions**: el valor de `MIE` es copia a `MPIE` (per poder-lo restaurar més tard), i `MIE` es posa a 0. A partir d'aquest moment, totes les interrupcions queden inhibides mentre s'executa la RSE.
 
-4. **Desar el mode de privilegi:** el mode actual s'escriu a `MPP` de `mstatus`, i el processador passa a mode M.
+4. **Desar el mode de privilegi**: el mode actual s'escriu a `MPP` de `mstatus`, i el processador passa a mode M.
 
-5. **Saltar a la RSE:** el PC s'escriu amb l'adreça continguda a `mtvec` (en mode directe, `BASE`; en mode vectoritzat, `BASE + 4 × causa` per a interrupcions).
+5. **Saltar a la RSE**: el PC s'escriu amb l'adreça continguda a `mtvec` (en mode directe, `BASE`; en mode vectoritzat, `BASE + 4 × causa` per a interrupcions).
 
 ::: {#cau-flux-hardware .callout-caution}
 Les accions 1–5 les executa el **hardware** de forma atòmica, sense intervenció del programari. La RSE no comença a executar-se fins que totes s'han completat.
@@ -311,11 +311,11 @@ Les accions 1–5 les executa el **hardware** de forma atòmica, sense intervenc
 
 Tot i que el flux hardware és el mateix, hi ha dues diferències importants segons el tipus d'esdeveniment:
 
-- **Moment de detecció:**
+- **Moment de detecció**:
     - En una **excepció**, la instrucció causant s'**avorta** en mig de l'execució: no escriu cap resultat, no accedeix a memòria i el PC no s'incrementa. El valor guardat a `mepc` és l'adreça d'aquesta instrucció (vegeu @sec-csr-mepc).
     - En una **interrupció**, el processador no la comprova fins que la instrucció en curs ha **finalitzat** completament i el PC ja s'ha incrementat. El valor guardat a `mepc` és l'adreça de la instrucció que *hauria* executat a continuació (vegeu @sec-csr-mepc).
 
-- **Escriptura a `mtval`:** en algunes excepcions, el hardware escriu informació addicional al registre **`mtval`** (*Machine Trap Value*) per ajudar la RSE en el tractament: per exemple, l'adreça que ha causat un accés no alineat, o la instrucció il·legal que ha causat l'excepció. En les interrupcions, `mtval` s'escriu a zero.
+- **Escriptura a `mtval`**: en algunes excepcions, el hardware escriu informació addicional al registre **`mtval`** (*Machine Trap Value*) per ajudar la RSE en el tractament: per exemple, l'adreça que ha causat un accés no alineat, o la instrucció il·legal que ha causat l'excepció. En les interrupcions, `mtval` s'escriu a zero.
 
 ::: {#wrn-flux-pipeline .callout-warning collapse=true}
 ## Aprofundiment: excepcions en un pipeline
@@ -336,20 +336,20 @@ Les interrupcions, en canvi, es comproven sempre entre instruccions (mai a mig d
 
 Un cop el hardware ha completat les accions de @sec-flux-hardware-accions, el processador comença a executar la RSE. Aquesta rutina, que forma part del SO, té les responsabilitats següents, en ordre:
 
-1. **Salvar l'estat del programa interromput:** la RSE ha de guardar en memòria tots els registres generals (`x1`–`x31`) que pugui modificar, per poder-los restaurar en acabar. A diferència d'una subrutina normal, aquí no s'apliquen les regles de l'ABI sobre registres salvats i temporals: com que la RSE no ha estat invocada voluntàriament pel programa, cal salvar-los tots sense excepció.
+1. **Salvar l'estat del programa interromput**: la RSE ha de guardar en memòria tots els registres generals (`x1`–`x31`) que pugui modificar, per poder-los restaurar en acabar. A diferència d'una subrutina normal, aquí no s'apliquen les regles de l'ABI sobre registres salvats i temporals: com que la RSE no ha estat invocada voluntàriament pel programa, cal salvar-los tots sense excepció.
 
-2. **Identificar la causa:** la RSE llegeix el registre `mcause` per determinar el tipus d'excepció o interrupció i saltar a la rutina específica (*exception handler*) corresponent.
+2. **Identificar la causa**: la RSE llegeix el registre `mcause` per determinar el tipus d'excepció o interrupció i saltar a la rutina específica (*exception handler*) corresponent.
 
-3. **Tractar l'excepció o interrupció:** el tractament depèn de la causa:
+3. **Tractar l'excepció o interrupció**: el tractament depèn de la causa:
     - **Resoldre el problema i retornar** (fallada de TLB, fallada de pàgina): la RSE resol la situació i el programa es reprèn reexecutant la instrucció causant.
     - **Continuar a la instrucció següent** (crida al sistema, interrupció d'E/S): la RSE executa el servei sol·licitat i el programa es reprèn a la instrucció següent.
     - **Avortar el programa** (accés no alineat, instrucció il·legal): la RSE emet un missatge d'error i cedeix el control a un altre procés.
 
-4. **Ajustar `mepc` si cal:** en els casos on el programa ha de continuar a la instrucció *següent* a la causant (per exemple, `ecall`), la RSE incrementa `mepc` en 4. En la resta de casos no cal cap ajust (vegeu @sec-rse-ajust-mepc).
+4. **Ajustar `mepc` si cal**: en els casos on el programa ha de continuar a la instrucció *següent* a la causant (per exemple, `ecall`), la RSE incrementa `mepc` en 4. En la resta de casos no cal cap ajust (vegeu @sec-rse-ajust-mepc).
 
-5. **Restaurar l'estat:** la RSE restaura tots els registres salvats al pas 1.
+5. **Restaurar l'estat**: la RSE restaura tots els registres salvats al pas 1.
 
-6. **Retornar al programa:** la RSE executa la instrucció `mret` per retornar al programa interromput (vegeu @sec-rse-mret).
+6. **Retornar al programa**: la RSE executa la instrucció `mret` per retornar al programa interromput (vegeu @sec-rse-mret).
 
 ::: {#cau-rse-registres .callout-caution}
 A la RSE cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI. El programa interromput no ha cedit el control voluntàriament i no pot saber quins registres ha modificat la RSE.
@@ -359,9 +359,9 @@ A la RSE cal salvar **tots** els registres generals sense excepció, independent
 
 La instrucció **`mret`** (*machine return*) finalitza l'execució de la RSE i restaura l'estat del processador anterior a l'excepció o interrupció. Executa les accions següents, per hardware:
 
-1. **Restaurar el permís d'interrupcions:** copia `MPIE` a `MIE`, i posa `MPIE=1`.
-2. **Restaurar el mode de privilegi:** copia `MPP` al mode actiu, i posa `MPP=U`.
-3. **Saltar a l'adreça de retorn:** copia `mepc` al PC.
+1. **Restaurar el permís d'interrupcions**: copia `MPIE` a `MIE`, i posa `MPIE=1`.
+2. **Restaurar el mode de privilegi**: copia `MPP` al mode actiu, i posa `MPP=U`.
+3. **Saltar a l'adreça de retorn**: copia `mepc` al PC.
 
 ::: {#nte-mret .callout-note}
 ## RV32I ISA — `mret`
@@ -514,7 +514,7 @@ El SO és un programa resident al computador que gestiona els recursos compartit
 
 Els privilegis del mode M permeten dues coses que el mode U no pot fer:
 
-- **Accedir a adreces de memòria reservades al SO:** en mode U, un accés a aquestes adreces genera una excepció d'accés no permès.
+- **Accedir a adreces de memòria reservades al SO**: en mode U, un accés a aquestes adreces genera una excepció d'accés no permès.
 - **Executar instruccions privilegiades** (com les instruccions CSR): en mode U, intentar-ho genera una excepció d'instrucció il·legal.
 
 ### `ecall` com a porta d'entrada controlada al SO {#sec-ecall-porta}
@@ -550,7 +550,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 ::: {#tip-ecall-exemples .callout-tip}
 ## Exemples de crides al sistema Linux/RISC-V (RV32)
 
-**Escriure a la sortida estàndard (`write`, codi 64):**
+**Escriure a la sortida estàndard (`write`, codi 64)**:
 
 ```{.s filename="RV32IZicsr"}
         li      a7, 64              # codi de write
@@ -560,7 +560,7 @@ Els exemples següents mostren les crides al sistema més habituals:
         ecall                       # a0 ← nombre de bytes escrits (o error)
 ```
 
-**Llegir de l'entrada estàndard (`read`, codi 63):**
+**Llegir de l'entrada estàndard (`read`, codi 63)**:
 
 ```{.s filename="RV32IZicsr"}
         li      a7, 63              # codi de read
@@ -570,7 +570,7 @@ Els exemples següents mostren les crides al sistema més habituals:
         ecall                       # a0 ← nombre de bytes llegits (o error)
 ```
 
-**Finalitzar el programa (`exit`, codi 93):**
+**Finalitzar el programa (`exit`, codi 93)**:
 
 ```{.s filename="RV32IZicsr"}
         li      a7, 93              # codi de exit
@@ -578,7 +578,7 @@ Els exemples següents mostren les crides al sistema més habituals:
         ecall                       # no retorna
 ```
 
-**Reservar memòria dinàmica (`brk`, codi 214):**
+**Reservar memòria dinàmica (`brk`, codi 214)**:
 
 ```{.s filename="RV32IZicsr"}
         li      a7, 214             # codi de brk
@@ -659,15 +659,15 @@ La sincronització per **interrupcions** és molt més eficient que el *polling*
 
 El flux complet d'una interrupció, des de la petició fins al retorn, segueix les etapes següents:
 
-1. **Petició:** el dispositiu activa el seu senyal de petició d'interrupció. El bit corresponent de `mip` (per exemple, `MEIP` per a una interrupció externa) s'activa i es manté actiu mentre el dispositiu mantingui el senyal.
+1. **Petició**: el dispositiu activa el seu senyal de petició d'interrupció. El bit corresponent de `mip` (per exemple, `MEIP` per a una interrupció externa) s'activa i es manté actiu mentre el dispositiu mantingui el senyal.
 
-2. **Detecció:** en acabar cada instrucció, la unitat de control comprova si hi ha algun bit actiu a `mip` amb el seu permís corresponent a `mie` habilitat i amb `MIE=1`. Si es compleixen les tres condicions, es genera una interrupció.
+2. **Detecció**: en acabar cada instrucció, la unitat de control comprova si hi ha algun bit actiu a `mip` amb el seu permís corresponent a `mie` habilitat i amb `MIE=1`. Si es compleixen les tres condicions, es genera una interrupció.
 
-3. **Acceptació:** el hardware executa les accions de @sec-flux-hardware-accions: guarda el PC a `mepc`, escriu `mcause` amb bit 31=1 i el codi de causa, desactiva `MIE` i salta a `mtvec`.
+3. **Acceptació**: el hardware executa les accions de @sec-flux-hardware-accions: guarda el PC a `mepc`, escriu `mcause` amb bit 31=1 i el codi de causa, desactiva `MIE` i salta a `mtvec`.
 
-4. **Servei:** la RSE identifica el dispositiu (llegint `mcause` i `mip`), executa el tractament corresponent (per exemple, llegir les dades del dispositiu) i crida l'*exception handler* específic.
+4. **Servei**: la RSE identifica el dispositiu (llegint `mcause` i `mip`), executa el tractament corresponent (per exemple, llegir les dades del dispositiu) i crida l'*exception handler* específic.
 
-5. **Retorn:** la RSE executa `mret`, que restaura `MIE` i retorna al programa interromput, que reprèn l'execució a la instrucció que hauria executat a continuació (ja guardada a `mepc`).
+5. **Retorn**: la RSE executa `mret`, que restaura `MIE` i retorna al programa interromput, que reprèn l'execució a la instrucció que hauria executat a continuació (ja guardada a `mepc`).
 
 <!-- fig-cicle-interrupcio: diagrama temporal que mostra: programa en execució → petició del dispositiu → fi de la instrucció en curs → salt a RSE → servei → mret → represa del programa. Ressaltar que mepc apunta a la instrucció següent. -->
 ::: {#fig-cicle-interrupcio}
@@ -831,8 +831,8 @@ fallada_pagina:
 
 El bit V (*Valid*) de cada entrada de la taula de pàgines indica si la pàgina és present a la memòria física:
 
-- **V = 1:** la pàgina és present. La fallada de TLB es resol invalidant l'entrada obsoleta del TLB (via `sfence.vma`); el hardware farà el *page table walk* en la reexecució de la instrucció causant.
-- **V = 0:** la pàgina no és present (*fallada de pàgina*). La RSE ha d'iniciar una operació de lectura del disc per copiar la pàgina a un marc lliure de memòria física, actualitzar la taula de pàgines (V←1, PPN←marc assignat) i invalidar el TLB. Quan tot això s'ha completat, la instrucció causant es reexecuta.
+- **V = 1**: la pàgina és present. La fallada de TLB es resol invalidant l'entrada obsoleta del TLB (via `sfence.vma`); el hardware farà el *page table walk* en la reexecució de la instrucció causant.
+- **V = 0**: la pàgina no és present (*fallada de pàgina*). La RSE ha d'iniciar una operació de lectura del disc per copiar la pàgina a un marc lliure de memòria física, actualitzar la taula de pàgines (V←1, PPN←marc assignat) i invalidar el TLB. Quan tot això s'ha completat, la instrucció causant es reexecuta.
 
 ::: {#cau-tlb-reexecucio .callout-caution}
 En tots dos casos —fallada de TLB i fallada de pàgina— la instrucció causant es **reexecuta**: `sepc` (o `mepc`) no s'incrementa. En la segona reexecució, el TLB ja conté la traducció i l'execució continua normalment.

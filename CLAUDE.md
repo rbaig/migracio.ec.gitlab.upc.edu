@@ -88,11 +88,11 @@ h1, h2, h3, h4,
 **Tercer prompt**
 
 - Estructura confirmada. Avançar secció a secció al ritme que calgui.
-- **Figures (prioritat descendent):**
-    - **Taula:** quan el contingut és essencialment dades tabulars.
-    - **SVG:** quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats, descomposició de bits).
+- **Figures (prioritat descendent)**:
+    - **Taula**: quan el contingut és essencialment dades tabulars.
+    - **SVG**: quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats, descomposició de bits).
     - ~~Mermaid~~: tots els diagrames nous es fan en SVG.
-- **Figures SVG:**
+- **Figures SVG**:
     - Les generem al final, un cop hi hagi tot el text al `.qmd`.
     - Sempre una per una. Flux: Claude proposa la versió `light` → l'usuari retoca manualment → Claude genera la versió `dark`.
     - Nom de fitxers: `T<N>_nom_figura_light.svg` / `T<N>_nom_figura_dark.svg`.
@@ -120,14 +120,14 @@ Temes preparats per a revisió externa: `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (
 
 Convencions globals del laboratori (acordades durant L0 i L1):
 
-- **Punt d'entrada:** `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
-- **Sortida del programa:** `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
-- **Directives de segment:** `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
-- **Codi dels exercicis:** integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
-- **Estructura de cada exercici:** enunciat en `{#exr-...}` + solució en `{#sol-...}`.
-- **Lectura prèvia:** primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
-- **Lliurament:** última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
-- **Nom de figura SVG:** `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
+- **Punt d'entrada**: `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
+- **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
+- **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
+- **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
+- **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
+- **Lectura prèvia**: primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
+- **Lliurament**: última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
+- **Nom de figura SVG**: `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
 
 Sessions preparades per a revisió externa: `L1.qmd` (TODO secció Pseudoinstruccions), `L2.qmd`, `L3.qmd`, `L4.qmd`, `L5.qmd`
 
