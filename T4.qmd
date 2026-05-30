@@ -134,11 +134,11 @@ Per evitar guardar tots els productes parcials simultàniament, el circuit els v
 
 El circuit disposa de tres registres:
 
-* **MD** ($2n$ bits): conté el multiplicand, inicialitzat amb $x$ a la part baixa i zeros a la part alta. Es desplaça una posició a l'esquerra
+- **MD** ($2n$ bits): conté el multiplicand, inicialitzat amb $x$ a la part baixa i zeros a la part alta. Es desplaça una posició a l'esquerra
   a cada iteració.
-* **MR** ($n$ bits): conté el multiplicador $y$. Es desplaça una posició a la dreta a cada iteració; el bit de menys pes s'usa per decidir si
+- **MR** ($n$ bits): conté el multiplicador $y$. Es desplaça una posició a la dreta a cada iteració; el bit de menys pes s'usa per decidir si
   sumar o no.
-* **P** ($2n$ bits): acumulador del producte. S'inicialitza a zero i s'hi suma MD si el bit de menys pes de MR és 1.
+- **P** ($2n$ bits): acumulador del producte. S'inicialitza a zero i s'hi suma MD si el bit de menys pes de MR és 1.
 
 <!-- TODO figura circuit multiplicador seqüencial -->
 ![Circuit multiplicador seqüencial.](figures/TODO.png){#fig-TODO1 width="40%"}
@@ -234,8 +234,8 @@ El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte
 
 Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters amb signe) o `mulhu` (naturals sense signe), que retornen els **32 bits de més pes**. A partir d'aquests es pot detectar el sobreeiximent:
 
-* En **naturals** (`mulhu`): hi ha sobreeiximent si `mulhu` retorna un valor diferent de zero.
-* En **enters** (`mulh`): hi ha sobreeiximent si el resultat de `mulh` no és l'extensió de signe del resultat de `mul`.
+- En **naturals** (`mulhu`): hi ha sobreeiximent si `mulhu` retorna un valor diferent de zero.
+- En **enters** (`mulh`): hi ha sobreeiximent si el resultat de `mulh` no és l'extensió de signe del resultat de `mul`.
 
 ::: {#tip-sobreeiximent-multiplicacio .callout-tip}
 ## Detecció d'sobreeiximent en la multiplicació entera
@@ -718,9 +718,9 @@ Quocient: $q = 0101_2 = 5_{10}$, residu: $r = 0001_2 = 1_{10}$ ✓
 
 El circuit implementa l'algorisme anterior amb tres registres:
 
-* **R** ($2n$ bits): dividend/residu. S'inicialitza amb $x$ a la part baixa i zeros a la part alta.
-* **D** ($2n$ bits): divisor. S'inicialitza amb $y$ a la part alta i zeros a la part baixa. Es desplaça una posició a la dreta a cada iteració.
-* **Q** ($n$ bits): quocient. S'inicialitza a zero.
+- **R** ($2n$ bits): dividend/residu. S'inicialitza amb $x$ a la part baixa i zeros a la part alta.
+- **D** ($2n$ bits): divisor. S'inicialitza amb $y$ a la part alta i zeros a la part baixa. Es desplaça una posició a la dreta a cada iteració.
+- **Q** ($n$ bits): quocient. S'inicialitza a zero.
 
 Per evitar guardar el dividend original quan la comparació falla, s'utilitza l'**algorisme amb restauració**: es resta sempre el divisor del dividend
 parcial (la comparació es fa com una resta); si el resultat és negatiu (bit de signe $R_{2n-1} = 1$), el bit de quocient és 0 i es **restaura** el dividend sumant-hi de nou el divisor; si és positiu o zero, el bit és 1.
@@ -794,8 +794,8 @@ Això **difereix** de la divisió euclidiana, on el residu és sempre no negatiu
 
 #### Casos especials
 
-* **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
-* **sobreeiximent enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
+- **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
+- **sobreeiximent enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
 
 ::: {#tip-divisio-exemple .callout-tip}
 ## Traducció de divisió i mòdul enters

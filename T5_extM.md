@@ -10,8 +10,8 @@ El conjunt d'instruccions RV32F s'organitza en sis grups rellevants per a EC. El
 
 Transfereixen valors de coma flotant de precisió simple (32 bits) entre memòria i registres de coma flotant. El registre de direcció base és sempre un registre enter.
 
-* **`flw rd, offset(rs1)`**: Carrega un valor de coma flotant de precisió simple de la direcció de memòria `rs1 + offset` al registre de coma flotant `rd`.
-* **`fsw rs2, offset(rs1)`**: Emmagatzema el valor del registre de coma flotant `rs2` a la direcció de memòria `rs1 + offset`.
+**:**`flw rd, offset(rs1)`**: Carrega un valor de coma flotant de precisió simple de la direcció de memòria `rs1 + offset` al registre de coma flotant `rd`.
+**:**`fsw rs2, offset(rs1)`**: Emmagatzema el valor del registre de coma flotant `rs2` a la direcció de memòria `rs1 + offset`.
 
  **Nota — Càrrega de constants de coma flotant**: RV32F no té instruccions amb immediat de coma flotant. Per carregar una constant com ara `1.0`, cal emmagatzemar-la a la secció `.data` i carregar-la amb `la` + `flw`:
 
@@ -30,13 +30,13 @@ const_one: .float 1.0
 
 Totes les instruccions aritmètiques acaben en `.s` per indicar precisió simple. No hi ha variants amb immediat; tots els operands han d'estar en registres de coma flotant.
 
-* **`fadd.s rd, rs1, rs2`**: Suma $rd = rs1 + rs2$
-* **`fsub.s rd, rs1, rs2`**: Resta $rd = rs1 - rs2$
-* **`fmul.s rd, rs1, rs2`**: Multiplicació $rd = rs1 \times rs2$
-* **`fdiv.s rd, rs1, rs2`**: Divisió $rd = rs1 \div rs2$
-* **`fsqrt.s rd, rs1`**: Arrel quadrada $rd = \sqrt{rs1}$
-* **`fmin.s rd, rs1, rs2`**: Valor mínim $rd = \min(rs1, rs2)$
-* **`fmax.s rd, rs1, rs2`**: Valor màxim $rd = \max(rs1, rs2)$
+**:**`fadd.s rd, rs1, rs2`**: Suma $rd = rs1 + rs2$
+**:**`fsub.s rd, rs1, rs2`**: Resta $rd = rs1 - rs2$
+**:**`fmul.s rd, rs1, rs2`**: Multiplicació $rd = rs1 \times rs2$
+**:**`fdiv.s rd, rs1, rs2`**: Divisió $rd = rs1 \div rs2$
+**:**`fsqrt.s rd, rs1`**: Arrel quadrada $rd = \sqrt{rs1}$
+**:**`fmin.s rd, rs1, rs2`**: Valor mínim $rd = \min(rs1, rs2)$
+**:**`fmax.s rd, rs1, rs2`**: Valor màxim $rd = \max(rs1, rs2)$
 
 ---
 
@@ -44,16 +44,16 @@ Totes les instruccions aritmètiques acaben en `.s` per indicar precisió simple
 
 Manipulen el bit de signe dels registres de coma flotant sense realitzar aritmètica.
 
-* **`fsgnj.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i el signe de `rs2` a `rd`.
-* **`fsgnjn.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i el signe invertit de `rs2` a `rd`.
-* **`fsgnjx.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i la XOR dels signes de `rs1` i `rs2` a `rd`.
+**:**`fsgnj.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i el signe de `rs2` a `rd`.
+**:**`fsgnjn.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i el signe invertit de `rs2` a `rd`.
+**:**`fsgnjx.s rd, rs1, rs2`**: Copia la magnitud de `rs1` i la XOR dels signes de `rs1` i `rs2` a `rd`.
 
 > **Pseudoinstrucció `fmv.s`**: La instrucció `fsgnj.s fd, fs, fs` (amb els dos registres font idèntics) copia `fs` a `fd` sense modificar el signe. RARS exposa això com la pseudoinstrucció `fmv.s fd, fs`.
 
 Les dues instruccions següents mouen patrons de bits entre registres enters i de coma flotant **sense cap conversió**. Reinterpreten el patró de 32 bits tal qual:
 
-* **`fmv.w.x rd, rs1`**: Mou (copia) el registre enter `rs1` al registre de coma flotant `rd`.
-* **`fmv.x.w rd, rs1`**: Mou (copia) el registre de coma flotant `rs1` al registre enter `rd`.
+**:**`fmv.w.x rd, rs1`**: Mou (copia) el registre enter `rs1` al registre de coma flotant `rd`.
+**:**`fmv.x.w rd, rs1`**: Mou (copia) el registre de coma flotant `rs1` al registre enter `rd`.
 
 ---
 
@@ -61,10 +61,10 @@ Les dues instruccions següents mouen patrons de bits entre registres enters i d
 
 Converteixen entre valors de coma flotant de precisió simple i enters de 32 bits. A diferència de `fmv.w.x`/`fmv.x.w`, aquestes instruccions realitzen una conversió numèrica real.
 
-* **`fcvt.s.w rd, rs1`**: Converteix l'enter amb signe de 32 bits de `rs1` a coma flotant de precisió simple a `rd`.
-* **`fcvt.s.wu rd, rs1`**: Converteix l'enter sense signe de 32 bits de `rs1` a coma flotant de precisió simple a `rd`.
-* **`fcvt.w.s rd, rs1`**: Converteix el valor de coma flotant de precisió simple de `rs1` a enter amb signe de 32 bits a `rd` (trunca cap a zero).
-* **`fcvt.wu.s rd, rs1`**: Converteix el valor de coma flotant de precisió simple de `rs1` a enter sense signe de 32 bits a `rd` (trunca cap a zero).
+**:**`fcvt.s.w rd, rs1`**: Converteix l'enter amb signe de 32 bits de `rs1` a coma flotant de precisió simple a `rd`.
+**:**`fcvt.s.wu rd, rs1`**: Converteix l'enter sense signe de 32 bits de `rs1` a coma flotant de precisió simple a `rd`.
+**:**`fcvt.w.s rd, rs1`**: Converteix el valor de coma flotant de precisió simple de `rs1` a enter amb signe de 32 bits a `rd` (trunca cap a zero).
+**:**`fcvt.wu.s rd, rs1`**: Converteix el valor de coma flotant de precisió simple de `rs1` a enter sense signe de 32 bits a `rd` (trunca cap a zero).
 
 Exemple — conversió d'`int` a `float` i de tornada:
 
@@ -83,9 +83,9 @@ fcvt.w.s  a0, fa0          # a0 = (int)(n + 0.5)  [trunca]
 
 Les comparacions escriuen un resultat enter (0 o 1) a un registre **enter** `rd`. Aquest resultat es pot usar directament amb instruccions de salt enter (`beq`, `bne`).
 
-* **`feq.s rd, rs1, rs2`**: `rd = 1` si $rs1 = rs2$, si no `rd = 0`.
-* **`flt.s rd, rs1, rs2`**: `rd = 1` si $rs1 < rs2$, si no `rd = 0`.
-* **`fle.s rd, rs1, rs2`**: `rd = 1` si $rs1 \leq rs2$, si no `rd = 0`.
+**:**`feq.s rd, rs1, rs2`**: `rd = 1` si $rs1 = rs2$, si no `rd = 0`.
+**:**`flt.s rd, rs1, rs2`**: `rd = 1` si $rs1 < rs2$, si no `rd = 0`.
+**:**`fle.s rd, rs1, rs2`**: `rd = 1` si $rs1 \leq rs2$, si no `rd = 0`.
 
 > **Comportament amb NaN**: `feq.s` retorna 0 (no igual) si algun dels operands és NaN. `flt.s` i `fle.s` també retornen 0 si algun dels operands és NaN.
 
@@ -156,18 +156,18 @@ Cada registre té una mida de 32 bits en RV32F.
 
 **Pas d'arguments**:
 
-* Fins a 8 arguments de precisió simple es passen per `fa0`–`fa7`.
-* Els arguments addicionals a partir del novè es passen per la pila.
+**:Fins a 8 arguments de precisió simple es passen per `fa0`–`fa7`.
+**:Els arguments addicionals a partir del novè es passen per la pila.
 
 **Valors de retorn**:
 
-* El valor de retorn principal va a `fa0`.
-* Un segon valor de retorn (p. ex. una estructura amb dos floats) va a `fa1`.
+**:El valor de retorn principal va a `fa0`.
+**:Un segon valor de retorn (p. ex. una estructura amb dos floats) va a `fa1`.
 
 **Preservació de registres**:
 
-* **Caller-saved** (`ft0`–`ft11`, `fa0`–`fa7`): el caller ha de desar-los abans d'una crida si en necessita els valors posteriorment.
-* **Callee-saved** (`fs0`–`fs11`): el callee ha de restaurar-los abans de retornar si els ha modificat (desar-los al pròleg, restaurar-los a l'epíleg).
+**:**Caller-saved** (`ft0`–`ft11`, `fa0`–`fa7`): el caller ha de desar-los abans d'una crida si en necessita els valors posteriorment.
+**:**Callee-saved** (`fs0`–`fs11`): el callee ha de restaurar-los abans de retornar si els ha modificat (desar-los al pròleg, restaurar-los a l'epíleg).
 
 ### Exemple de subrutina
 

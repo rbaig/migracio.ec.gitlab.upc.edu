@@ -27,12 +27,12 @@ Aquesta obra és una versió actualitzada de les obres originals publicades inic
 Els continguts nous i les modificacions d'aquesta versió es distribueixen **amb** la llicència **[Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ca)**.
 
 **D'acord amb aquesta llicència, sou lliures de**:
-* **Compartir**: copiar i redistribuir el material en qualsevol suport o format.
-* **Adaptar**: remesclar, transformar i crear a partir del material.
+- **Compartir**: copiar i redistribuir el material en qualsevol suport o format.
+- **Adaptar**: remesclar, transformar i crear a partir del material.
 
 **Segons les condicions següents**:
-* **Reconeixement**: cal reconèixer l'autoria de manera apropiada.
-* **No comercial**: no podeu utilitzar el material per a finalitats comercials.
-* **Compartir igual**: si altereu o transformeu aquest material, heu de distribuir la vostra contribució amb la mateixa llicència que l'original.
+- **Reconeixement**: cal reconèixer l'autoria de manera apropiada.
+- **No comercial**: no podeu utilitzar el material per a finalitats comercials.
+- **Compartir igual**: si altereu o transformeu aquest material, heu de distribuir la vostra contribució amb la mateixa llicència que l'original.
 
 [![logotip de Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ca)

@@ -51,8 +51,8 @@ Donada la representació en Ca2 d'un enter $x_s$, guardada a `t2`,
 
 Les dues fórmules que relacionen el valor explícit $x_u$ amb l'enter representat $x_s$ (@sec-codificacio-enters) són:
 
-* **Ca2**: $x_s = x_u - X_{n-1} \cdot 2^n$
-* **Ca1**: $x_s = x_u' - X_{n-1} \cdot (2^n - 1)$
+- **Ca2**: $x_s = x_u - X_{n-1} \cdot 2^n$
+- **Ca1**: $x_s = x_u' - X_{n-1} \cdot (2^n - 1)$
 
 on $X_{n-1}$ és el bit de signe (el mateix en els dos casos).
 
@@ -69,13 +69,13 @@ $$x_u' = x_u - X_{n-1}$$
 
 **Anàlisi**
 
-* Si $x_s \geq 0$: el bit de signe és `0`, de manera que `t0 = 0` i `t1 = t2`. La representació no canvia, cosa que té sentit perquè   els positius es codifiquen igual en Ca1 i Ca2.
-* Si $x_s < 0$: el bit de signe és `1`, de manera que `t0 = 1` i `t1 = t2 - 1`. Efectivament, la representació en Ca1 d'un negatiu és sempre 1 menys que la representació en Ca2 del mateix enter (vegeu la secció de codificació d'enters del Tema 1).
+- Si $x_s \geq 0$: el bit de signe és `0`, de manera que `t0 = 0` i `t1 = t2`. La representació no canvia, cosa que té sentit perquè   els positius es codifiquen igual en Ca1 i Ca2.
+- Si $x_s < 0$: el bit de signe és `1`, de manera que `t0 = 1` i `t1 = t2 - 1`. Efectivament, la representació en Ca1 d'un negatiu és sempre 1 menys que la representació en Ca2 del mateix enter (vegeu la secció de codificació d'enters del Tema 1).
 
 **Exemple**: $x_s = -51$, representat en Ca2 amb 8 bits com `1100 1101`$_2$ (= `0xCD`) i en Ca1 com `1100 1100`$_2$ (= `0xCC`). Fent les extensions a 32 bits, `t2 = 0xFFFFFFCD` i `t1 = 0xFFFFFFCC`.
 
-* `srli t0, t2, 31` → `t0 = 1` (bit de signe)
-* `sub t1, t2, t0` → `t1 = 0xFFFFFFCD - 1 = 0xFFFFFFCC`
+- `srli t0, t2, 31` → `t0 = 1` (bit de signe)
+- `sub t1, t2, t0` → `t1 = 0xFFFFFFCD - 1 = 0xFFFFFFCC`
 :::
 
 ### Desplaçament aritmètic a la dreta
@@ -278,7 +278,7 @@ t2 = (t0 == 0);
 ```{.s filename="RV32I"}
         sltiu   t2, t0, 1       # si t0 < 1 com a natural, llavors t0 == 0
 ```
-* **Atenció**: És vàlid per a `t0 == 0` perquè comparar `t0` com a natural amb `1` dona `1` si i només si `t0 == 0` (ja que `0` és l'únic natural estrictament menor que `1`).
+- **Atenció**: És vàlid per a `t0 == 0` perquè comparar `t0` com a natural amb `1` dona `1` si i només si `t0 == 0` (ja que `0` és l'únic natural estrictament menor que `1`).
 
 ```{.C filename="C"}
 t2 = (t0 != 0);
@@ -321,7 +321,7 @@ t1 = !t0;               /* equival a: t1 = (t0 == 0) */
         sltiu   t1, t0, 1
 ```
 
-* Si se sap amb certesa que `t0` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
+- Si se sap amb certesa que `t0` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
 
 ```{.s filename="RV32I"}
         xori    t1, t0, 1       # complementa el bit 0 (inverteix 0↔1)
@@ -364,7 +364,8 @@ Si `t0`, `t1` i `t2` són enters amb signe:
         slt     t2, t0, t1
         sltiu   t2, t2, 1       # negació
 ```
-* **Atenció**: Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes les traduccions d'aquest exemple.
+
+- **Atenció**: Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes les traduccions d'aquest exemple.
 :::
 
 ### Traducció de `&&` i `||`: Avaluació *lazy*
@@ -383,8 +384,8 @@ A **EC**, la traducció de `&&` i `||` ha de respectar l'avaluació lazy.
 
 Les instruccions de salt modifiquen el flux d'execució **desviant-lo** a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen dos eixos de classificació:
 
-* **Condicional vs. incondicional**: els salts condicionals (`beq`, `bne`, etc.) salten només si es compleix una condició; els incondicionals (`jal`, `jalr`) salten sempre.
-* **Relatiu al PC vs. indirecte**: els salts relatius al PC calculen l'adreça de destinació sumant un offset al valor actual del PC; els salts indirectes la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
+- **Condicional vs. incondicional**: els salts condicionals (`beq`, `bne`, etc.) salten només si es compleix una condició; els incondicionals (`jal`, `jalr`) salten sempre.
+- **Relatiu al PC vs. indirecte**: els salts relatius al PC calculen l'adreça de destinació sumant un offset al valor actual del PC; els salts indirectes la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
 
 La combinació d'aquests dos eixos dona lloc a tres categories:
 
@@ -567,10 +568,10 @@ Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@nte-ris
 
 La classificació proposada inclou quatre decisions que cal justificar:
 
-* **`lui`** s'ha classificat com a mode **immediat** perquè el seu únic operand font és un valor constant de 20 bits codificat directament a la instrucció; no hi ha cap registre base ni cap referència al PC.
-* **`auipc`** s'ha classificat com a mode **relatiu al PC** perquè suma un immediat de 20 bits al valor actual del PC per construir adreces relatives a la posició actual del programa.
-* **`jalr`** s'ha classificat com a mode **base + desplaçament** perquè calcula l'adreça de salt sumant un registre base (`rs1`) i un immediat de 12 bits, exactament com fan les instruccions de càrrega i emmagatzematge. L'única diferència és que el resultat s'usa com a adreça de salt en lloc d'adreça de memòria.
-* **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una trucada al sistema operatiu (@sec-ecall).
+- **`lui`** s'ha classificat com a mode **immediat** perquè el seu únic operand font és un valor constant de 20 bits codificat directament a la instrucció; no hi ha cap registre base ni cap referència al PC.
+- **`auipc`** s'ha classificat com a mode **relatiu al PC** perquè suma un immediat de 20 bits al valor actual del PC per construir adreces relatives a la posició actual del programa.
+- **`jalr`** s'ha classificat com a mode **base + desplaçament** perquè calcula l'adreça de salt sumant un registre base (`rs1`) i un immediat de 12 bits, exactament com fan les instruccions de càrrega i emmagatzematge. L'única diferència és que el resultat s'usa com a adreça de salt en lloc d'adreça de memòria.
+- **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una trucada al sistema operatiu (@sec-ecall).
 
 | Mode | Instruccions |
 | :--- | :--- |
@@ -1039,10 +1040,10 @@ on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `a
 
 **Exemple**: `la t0, AA` amb `@AA = 0x10010000` i `auipc` al PC `0x00400000`:
 
-* `offset = 0x10010000 - 0x00400000 = 0x0fc10000`
-* `hi_20 = 0x0fc10`, `lo_12 = 0x000`
-* `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
-* `addi x5, x5, 0` → `x5 = 0x10010000` ✓
+- `offset = 0x10010000 - 0x00400000 = 0x0fc10000`
+- `hi_20 = 0x0fc10`, `lo_12 = 0x000`
+- `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
+- `addi x5, x5, 0` → `x5 = 0x10010000` ✓
 
 La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte "reubicable" les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació (vegeu @sec-compilacio).
 :::
@@ -1061,8 +1062,8 @@ Per tal que una subrutina i el codi que la **crida** puguin ser programats en ll
 ::: {#cau-multinivell-vs-uninivell .callout-caution}
 Una subrutina és:
 
-* **Uninivell**, si el seu codi no conté cap crida a una altra subrutina.
-* **Multinivell**, si el seu codi conté alguna crida a una altra subrutina. 
+- **Uninivell**, si el seu codi no conté cap crida a una altra subrutina.
+- **Multinivell**, si el seu codi conté alguna crida a una altra subrutina. 
 :::
 
 ### Crida i retorn (el registre `ra`) {#sec-crida-retorn}
@@ -1090,8 +1091,8 @@ sub:
 ::: {#cau-TODO .callout-caution}
 Un codi és:
 
-* ***Caller***, si fa una crida una subrutina.
-* ***Callee***, si és la subrutina cridada.
+- ***Caller***, si fa una crida una subrutina.
+- ***Callee***, si és la subrutina cridada.
 
 Per analogia, és comú emprar els termes mare/pare i fill/a, per referir-se als codis caller i al callee respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
 :::
@@ -1100,8 +1101,8 @@ Per analogia, és comú emprar els termes mare/pare i fill/a, per referir-se als
 ## RV32I ISA — Gestió dels registres de propòsit general: *caller-saved* vs *callee-saved*
 La columna "Qui el guarda (*Saver*)" de les taules de registres de la ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
 
-* **Caller-saved**: És el caller qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
-* **Callee-saved**: És el callee qui ha de preservar-lo si vol usar-lo i, per tant, ha restaurar-lo abans de retornar.
+- **Caller-saved**: És el caller qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
+- **Callee-saved**: És el callee qui ha de preservar-lo si vol usar-lo i, per tant, ha restaurar-lo abans de retornar.
 :::
 
 El registre `ra` és **caller-saved**, ja que la instrucció ha d'emprar el pare per fer la crida (`jal`, @nte-instruccions-salt-incondicional-relatiu-jal) escriu a `ra` l'adreça de retorn que el fill utilitzarà per retornar-li el control de flux. Aquesta escriptura implica la **pèrdua per sobreescriptura** de l'adreça de retorn que ell, el pare, ha d'utilitzar per tornar el control de flux a l'avi.
@@ -1118,9 +1119,9 @@ A **EC**, la quantitat màxima de paràmetres és 8 i de resultats 1.
 ::: {#nte-abi-pas-parametres .callout-note}
 ## RV32I ABI — Pas de paràmetres i retorn de resultats
 
-* Els **paràmetres** de tipus **escalar** (inclosos els punters) es passen pels registres `a0`–`a7`, en ordre d'aparició, d'esquerra a dreta.
-* El **resultat** es retorna pels registre `a0` i `a1`.
-* Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), cal estendre'l a 32 bits, dins el registre assignat, fent extensió de signe o de zeros segons hagi estat declarat `signed` o `unsigned`.
+- Els **paràmetres** de tipus **escalar** (inclosos els punters) es passen pels registres `a0`–`a7`, en ordre d'aparició, d'esquerra a dreta.
+- El **resultat** es retorna pels registre `a0` i `a1`.
+- Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), cal estendre'l a 32 bits, dins el registre assignat, fent extensió de signe o de zeros segons hagi estat declarat `signed` o `unsigned`.
 :::
 
 ::: {#tip-exemple-suma2 .callout-tip}
@@ -1157,8 +1158,8 @@ suma2:
 ::: {#imp-pas-valor-referencia .callout-important}
 A **EC**, els modes de pas de paràmetres són:
 
-* **Pas per valor**: La funció rep una **còpia** del paràmetre. Qualsevol modificació que faci la funció afecta només la còpia, no l'original.
-* **Pas per referència**: La funció rep una **referència** a la dada original, és a dir, la seva **adreça en memòria**. Les modificacions que faci la funció afecten directament la dada original.
+- **Pas per valor**: La funció rep una **còpia** del paràmetre. Qualsevol modificació que faci la funció afecta només la còpia, no l'original.
+- **Pas per referència**: La funció rep una **referència** a la dada original, és a dir, la seva **adreça en memòria**. Les modificacions que faci la funció afecten directament la dada original.
 :::
 
 ::: {#cau-mecanisme-vs-semantica .callout-caution}
@@ -1300,11 +1301,11 @@ a = f(*p);          /* (5) */
 
 **Anàlisi**:
 
-* El nom d'un vector sense índex equival a un punter al primer element.
-* `int vi[]` com a paràmetre formal és equivalent a `int *vi`.
-* `&V2[10]` és l'adreça de l'element 10 de `V2`: un `char *`.
-* `V2[10]` és el valor de l'element 10: un `char`.
-* `*p` desreferencia `p` de tipus `int *`, donant un `int`.
+- El nom d'un vector sense índex equival a un punter al primer element.
+- `int vi[]` com a paràmetre formal és equivalent a `int *vi`.
+- `&V2[10]` és l'adreça de l'element 10 de `V2`: un `char *`.
+- `V2[10]` és el valor de l'element 10: un `char`.
+- `*p` desreferencia `p` de tipus `int *`, donant un `int`.
 :::
 
 ### Variables locals: el bloc d'activació (el registre `sp`) {#sec-variables-locals}
@@ -1350,16 +1351,16 @@ TODO reducció a funcB de figura de pàg 20 EXEMPLE 20
 
 Les variables locals s'assignen a **registres** o al **BA** seguint aquestes regles:
 
-* Les variables **escalars** (enters, caràcters, punters) es guarden en **registres**. **Només** es guarden al BA si:
-    * no hi ha prou registres disponibles, o
-    * apareixen precedides de l'operador `&` ("adreça de"), per poder tenir una adreça de memòria.
-* Les variables **estructurades** (vectors, matrius, etc.) es guarden **sempre** al **BA**.
+- Les variables **escalars** (enters, caràcters, punters) es guarden en **registres**. **Només** es guarden al BA si:
+    - no hi ha prou registres disponibles, o
+    - apareixen precedides de l'operador `&` ("adreça de"), per poder tenir una adreça de memòria.
+- Les variables **estructurades** (vectors, matrius, etc.) es guarden **sempre** al **BA**.
 
 <!-- TODO revisar si ja es diu o s'ha de passar a multinivell -->
 El BA pot incloure:
 
-* **Variables locals** de tipus estructurat i les escalars que no caben en registres o que requereixen adreça.
-* **Registres segurs desats** (vegeu @sec-multinivell-pila), si la subrutina és multinivell.
+- **Variables locals** de tipus estructurat i les escalars que no caben en registres o que requereixen adreça.
+- **Registres segurs desats** (vegeu @sec-multinivell-pila), si la subrutina és multinivell.
 
 La disposició dins el BA, de les adreces més baixes a les més altes:
 
@@ -1473,8 +1474,8 @@ De @nte-registres-proposit-general:
 ::: {#cau-regla-registres-segurs .callout-caution}
 Resumint:
 
-* Una subrutina abans de retornar, ha de deixar els registres **segurs** en el mateix estat que tenien quan ha estat invocada.
-* Una multinivell ha de desar `ra` abans de fer la crida i restaurar-lo abans de retornar, ja que `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
+- Una subrutina abans de retornar, ha de deixar els registres **segurs** en el mateix estat que tenien quan ha estat invocada.
+- Una multinivell ha de desar `ra` abans de fer la crida i restaurar-lo abans de retornar, ja que `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
 :::
 
 #### Determinació dels registres segurs necessaris
@@ -1490,9 +1491,9 @@ A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`), de m
 
 La secció de codi d'una subrutina multinivell es divideix en tres parts:
 
-* **Pròleg**: és el codi que s'executa a l'inici de la subrutina per generar el bloc d'activació.
-* **Cos**: és el codi que implementa la funcionalitat de la subrutina. 
-* **Epíleg**: és el codi que s'executa al final de la subrutina, just abans de retornar el control de flux al caller, per restituir el context.
+- **Pròleg**: és el codi que s'executa a l'inici de la subrutina per generar el bloc d'activació.
+- **Cos**: és el codi que implementa la funcionalitat de la subrutina. 
+- **Epíleg**: és el codi que s'executa al final de la subrutina, just abans de retornar el control de flux al caller, per restituir el context.
 
 ```{.s filename="RV32I"}
 sub:
@@ -1703,10 +1704,10 @@ En **C**, un **mòdul** (també anomenat unitat de traducció) és una unitat fu
 
 Hi ha moltes situacions a on resulta convenient separar el codi i les dades en **mòduls**. Algunes d'aquestes situacions són:
 
-* Fer possible la reutilitzar codi (biblioteques de funcions).
-* Estructurar racionalment projectes complexos.
-* Permetre que equips independents de programadors treballin en paral·lel.
-* Fer que només s'hagin de recompilar els mòduls modificats.
+- Fer possible la reutilitzar codi (biblioteques de funcions).
+- Estructurar racionalment projectes complexos.
+- Permetre que equips independents de programadors treballin en paral·lel.
+- Fer que només s'hagin de recompilar els mòduls modificats.
 
 Els mòduls es compilen i assemblen **per separat**, generant fitxers objecte independents que més tard s'**enllaçaran** per crear l'executable.
 
@@ -1756,8 +1757,8 @@ L'assemblador expandeix les macros i pseudoinstruccions en les seqüències d'in
 
 El llenguatge assemblador usa **etiquetes** per referir-se a adreces, tant al codi com a les dades. Una etiqueta pot ser usada dins el fitxer fins i tot abans de ser definida (**referència anticipada**). Per gestionar-ho, l'assemblador fa **dues passades** sobre el fitxer:
 
-* **Primera passada**: llegeix tot el codi font i construeix una **taula de símbols** que associa cada etiqueta amb la seva posició (offset en bytes respecte a l'inici de la secció on està definida).
-* **Segona passada**: codifica les instruccions, usant la taula de símbols per resoldre les etiquetes.
+- **Primera passada**: llegeix tot el codi font i construeix una **taula de símbols** que associa cada etiqueta amb la seva posició (offset en bytes respecte a l'inici de la secció on està definida).
+- **Segona passada**: codifica les instruccions, usant la taula de símbols per resoldre les etiquetes.
 
 Cal notar que les adreces que assigna l'assemblador **no són les adreces definitives** en memòria, ja que l'assemblador no coneix el codi i les dades definits en altres mòduls. Les adreces definitives les assignarà l'enllaçador.
 
@@ -1765,14 +1766,14 @@ Cal notar que les adreces que assigna l'assemblador **no són les adreces defini
 
 Algunes instruccions necessiten l'adreça absoluta d'una etiqueta per ser codificades completament:
 
-* Els **salts relatius al PC** (`beq`, `bne`, `blt`, `jal`, etc.) codifiquen un offset relatiu al PC, que no depèn de l'adreça absoluta del codi. L'assemblador pot codificar-los completament si l'etiqueta de destinació és al mateix mòdul.
-* La pseudoinstrucció `la` (`auipc` + `addi`) i els **salts indirectes** (`jalr`) que depenen d'una adreça externa necessiten una adreça absoluta que l'assemblador no coneix en temps d'assemblatge. L'assemblador hi escriu un valor provisional i anota la instrucció a la llista de reubicació perquè l'enllaçador la corregeixi.
+- Els **salts relatius al PC** (`beq`, `bne`, `blt`, `jal`, etc.) codifiquen un offset relatiu al PC, que no depèn de l'adreça absoluta del codi. L'assemblador pot codificar-los completament si l'etiqueta de destinació és al mateix mòdul.
+- La pseudoinstrucció `la` (`auipc` + `addi`) i els **salts indirectes** (`jalr`) que depenen d'una adreça externa necessiten una adreça absoluta que l'assemblador no coneix en temps d'assemblatge. L'assemblador hi escriu un valor provisional i anota la instrucció a la llista de reubicació perquè l'enllaçador la corregeixi.
 
 L'assemblador genera per a cada fitxer objecte:
 
-* Una **llista de reubicació**: posició de cada instrucció que conté una adreça provisional que caldrà corregir, el seu tipus, i l'offset provisional.
-* Una **taula de símbols globals**: etiquetes declarades amb `.globl` i les seves adreces provisionals, visibles des d'altres mòduls.
-* Una **llista de referències externes no resoltes**: instruccions que fan referència a etiquetes definides en altres mòduls.
+- Una **llista de reubicació**: posició de cada instrucció que conté una adreça provisional que caldrà corregir, el seu tipus, i l'offset provisional.
+- Una **taula de símbols globals**: etiquetes declarades amb `.globl` i les seves adreces provisionals, visibles des d'altres mòduls.
+- Una **llista de referències externes no resoltes**: instruccions que fan referència a etiquetes definides en altres mòduls.
 
 ::: {#nte-globl .callout-note}
 ## directiva `.global` (o `.globl`) 
@@ -1831,14 +1832,14 @@ Els fitxers objecte contindran:
 
 **Mòdul A**:
 
-* Reubicació: posició `+36` (text), tipus `la`, offset `+4` (data)
-* Símbols globals: `X` a offset `+0` (data)
-* Referències externes: posició `+60` (text), tipus `jal`, etiqueta `g`
+- Reubicació: posició `+36` (text), tipus `la`, offset `+4` (data)
+- Símbols globals: `X` a offset `+0` (data)
+- Referències externes: posició `+60` (text), tipus `jal`, etiqueta `g`
 
 **Mòdul B**:
 
-* Símbols globals: `g` a offset `+16` (text)
-* Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`
+- Símbols globals: `g` a offset `+16` (text)
+- Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`
 :::
 
 ### Enllaçat {#sec-enllacat}
@@ -1949,30 +1950,30 @@ El flux de generació complet
 
 **1. Preprocessador (`cpp`) \[agnòstic a ABI i ISA\]**:
 
-* Expandeix macros i símbols (vegeu @sec-compilacio).
-* Substitueix el contingut dels fitxers de capçalera en la posició de les directives `#include`.
-* Processa les directives de compilació condicional (`#ifdef`, `#ifndef`, `#if`).
-* Suprimeix tots els comentaris.
-* Resultat: un fitxer `.i` per cada fitxer `.c`.
+- Expandeix macros i símbols (vegeu @sec-compilacio).
+- Substitueix el contingut dels fitxers de capçalera en la posició de les directives `#include`.
+- Processa les directives de compilació condicional (`#ifdef`, `#ifndef`, `#if`).
+- Suprimeix tots els comentaris.
+- Resultat: un fitxer `.i` per cada fitxer `.c`.
 
 **2. Compilador (`cc1`) \[ABI + ISA\]**:
 
-* Tradueix la lògica de C a assemblador RV32I.
-* Aplica les regles de l'ABI per decidir quins registres usar per a cada variable.
-* Genera la combinació d'instruccions més eficient per al repertori RV32I.
-* Resultat: un fitxer `.s` per cada fitxer `.i`.
+- Tradueix la lògica de C a assemblador RV32I.
+- Aplica les regles de l'ABI per decidir quins registres usar per a cada variable.
+- Genera la combinació d'instruccions més eficient per al repertori RV32I.
+- Resultat: un fitxer `.s` per cada fitxer `.i`.
 
 **3. Assemblador (`as`) \[ISA\]**:
 
-* Expandeix pseudoinstruccions.
-* Construeix la taula de símbols (dues passades).
-* Genera el codi màquina amb adreces provisionals on calgui.
-* Resultat: un fitxer `.o` per cada fitxer `.s`, amb llistes de reubicació i símbols globals.
+- Expandeix pseudoinstruccions.
+- Construeix la taula de símbols (dues passades).
+- Genera el codi màquina amb adreces provisionals on calgui.
+- Resultat: un fitxer `.o` per cada fitxer `.s`, amb llistes de reubicació i símbols globals.
 
 **4. Enllaçador (`ld`) \[ISA + ABI\]**:
 
-* Resol símbols globals i referències externes.
-* Combina les seccions de tots els mòduls.
-* Corregeix les adreces provisionals (reubicació).
-* Resultat: el binari executable, llest per ser carregat pel sistema operatiu o el simulador.
+- Resol símbols globals i referències externes.
+- Combina les seccions de tots els mòduls.
+- Corregeix les adreces provisionals (reubicació).
+- Resultat: el binari executable, llest per ser carregat pel sistema operatiu o el simulador.
 :::
