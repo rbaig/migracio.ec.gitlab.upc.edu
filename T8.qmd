@@ -163,7 +163,7 @@ Com que un accés al disc és desenes de milers de vegades més lent que un acc�
 Una fallada de pàgina es produeix quan P = 0 en la PTE del VPN sol·licitat. Si la pàgina és vàlida, el sistema operatiu la carrega des del disc, actualitza la PTE i reexecuta la instrucció causant. Si l'adreça és invàlida, el procés s'avorta.
 :::
 
-Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament (per exemple, **LRU**). Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura diferida amb assignació que es fa servir a les memòries cau (vegeu el [Tema 7](T7.html)).
+Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament (per exemple, **LRU**). Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura diferida amb assignació que es fa servir a les memòries cau ([Tema 7](#sec-tema-mc)).
 
 A la zona del disc on s'emmagatzemen les pàgines reemplaçades se l'anomena **espai d'intercanvi** (*swap space*).
 
@@ -295,7 +295,7 @@ Una de les funcions més importants de la memòria virtual és permetre que múl
 
 El mecanisme de traducció d'adreces proporciona protecció entre processos de manera natural: com que cada procés té la seva pròpia taula de pàgines, i la MMU usa exclusivament la taula del procés actiu per a totes les traduccions, un procés no pot generar cap adreça física que correspongui a una pàgina assignada a un altre procés. L'aïllament és complet sense cap comprovació addicional.
 
-Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al sistema operatiu, accessible només quan el processador opera en **mode sistema** (*kernel mode*). Els programes d'usuari s'executen en **mode usuari**, en el qual qualsevol intent d'accedir a aquesta zona o de modificar el TLB causa una excepció. El [Tema 9](T9.html) descriu amb més detall els modes d'execució i el mecanisme d'excepcions.
+Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al sistema operatiu, accessible només quan el processador opera en **mode sistema** (*kernel mode*). Els programes d'usuari s'executen en **mode usuari**, en el qual qualsevol intent d'accedir a aquesta zona o de modificar el TLB causa una excepció. El [Tema 9](#sec-tema-excepcions-interrupcions) descriu amb més detall els modes d'execució i el mecanisme d'excepcions.
 
 ### Protecció contra escriptura {#sec-mv-proteccio-escriptura}
 
