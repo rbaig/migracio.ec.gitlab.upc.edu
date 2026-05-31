@@ -1,23 +1,20 @@
-# Llicència i reconeixements
+# Llicència i reconeixements {.unnumbered}
 
-© 2026, Adrià Armejach, Roger Baig, Josep-llorenç Cruz, Agustín Fernández, Miquel Morató, Rubèn Tous
+## Llicència
 
-Aquesta obra es publica **amb** la llicència **[Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ca)**.
+![](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png){width="88px" fig-alt="Logotip de Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional"}
 
-**D'acord amb aquesta llicència, sou lliures de**:
-- **Compartir**: copiar i redistribuir el material en qualsevol suport o format.
-- **Adaptar**: remesclar, transformar i crear a partir del material.
+© 2026, Fernando Agraz, Adrià Armejach, Roger Baig, Octavio Castillo, Josep-llorenç Cruz, Agustín Fernández, Pedro José Martínez, Miquel Morató, Rubèn Tous.
 
-**Segons les condicions següents**:
-- **Reconeixement**: cal reconèixer l'autoria de manera apropiada.
-- **No comercial**: no podeu utilitzar el material per a finalitats comercials.
-- **Compartir igual**: si altereu o transformeu aquest material, heu de distribuir la vostra contribució amb la mateixa llicència que l'original.
+[Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ca).
 
-[![logotip de Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ca)
+## Reconeixements
+
+### Materials elaborats per professors d'EC
 
 En l'elaboració d'aquesta obra s'ha fet servir les publicacions següents:
 
-| Autor(s) | Títol | Data |
+| Autor(s)^1^ | Títol | Data |
 | :---: | :--- | :---: |
 | 1. | Tema 1: Introducció | 03/2020 |
 | 1. | Tema 2: Instruccions i tipus de dades bàsics | 02/2022 |
@@ -35,9 +32,9 @@ En l'elaboració d'aquesta obra s'ha fet servir les publicacions següents:
 | 4. | Quadern de laboratori, Sessió 5: Memòria cache | 2014/15 |
 | 5. | Col·lecció de Problemes | 2014/15 |
 | 5. | Solucionari de la Col·lecció de Problemes | 2014/15 |
-: Publicacions amb llicència [Creative Commons Reconeixement-NoComercial-CompartirIgual 2.5 Espanya (CC BY-NC-SA 2.5 ES)](http://creativecommons.org/licenses/by-nc-sa/2.5/es/). {tbl-colwidths="[10,80,10]"}
+: {tbl-colwidths="[10,80,10]"}
 
-Autor(s):
+^1^ Autor(s):
 
 1. Joan Manuel Parcerisa 
 2. Joan Manuel Parcerisa, Rubèn Tous
@@ -45,3 +42,26 @@ Autor(s):
 4. Emilio Castillo, José María Cela, Montse Fernández, David López, Joan Manuel Parcerisa, Angel Toribio, Rubèn Tous, Jordi Tubella, Gladys Utrera
 5. Montse Fernández, David López, Joan Manuel Parcerisa, Angel Toribio, Rubèn Tous, Jordi Tubella
 
+Publicacions amb llicència [Creative Commons Reconeixement-NoComercial-CompartirIgual 2.5 Espanya (CC BY-NC-SA 2.5 ES)](http://creativecommons.org/licenses/by-nc-sa/2.5/es/). 
+
+### Intel·ligències artificials generatives
+
+En l'elaboració d'aquesta obra s'ha fet ús d'eines d'intel·ligència artificial generativa, principalment [Claude](https://claude.ai) (Anthropic), per a les tasques següents:
+
+- Extracció i estructuració de contingut a partir dels materials originals.
+- Suggeriment de contingut, organització i estructura.
+- Revisió tècnica, lingüística i pedagògica.
+
+Tot el contingut generat o suggerit per eines d'IA ha estat revisat, contrastat i validat per professors de l'assignatura.
+
+### Programari lliure
+
+Aquesta obra s'ha elaborat amb les eines següents:
+
+- [Quarto](https://quarto.org) — sistema de publicació científica i tècnica.
+- [LaTeX](https://www.latex-project.org) — sistema de composició tipogràfica.
+- [MathML](https://www.w3.org/Math/) — llenguatge de marcatge matemàtic.
+- [Inkscape](https://inkscape.org) — editor de gràfics vectorials.
+- [Firefox](https://www.mozilla.org/ca/firefox/) — navegador web.
+- [Evince](https://wiki.gnome.org/Apps/Evince) — visualitzador de documents.
+- [GNU/Linux Debian](https://www.debian.org) — sistema operatiu.
