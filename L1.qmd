@@ -2,62 +2,305 @@
 number-sections: true
 ---
 
-# Sessió 1: Introducció {#sec-sessio-introduccio}
+# Sessió 1: Introducció al simulador RARS {#sec-sessio-introduccio}
 
 ## Lliuraments {.unnumbered}
 
-Aquesta sessió, **només aquesta**, no té lliuraments associats.
+Cal lliurar les respostes als exercicis següents al campus virtual abans de l'inici de la sessió de laboratori:
+
+| Exercici | Nom i format del fitxer |
+| :--- | :--- |
+| @exr-rars-panells | `s1_1_1.md` |
+| @exr-rars-pseudoinstruccio | `s1_1_2.md` |
+| @exr-recompte-instruccions | `s1_2_1.md` |
+| @exr-rars-memoria | `s1_2_2.md` |
+| @exr-rars-breakpoints | `s1_3_1.md` |
+| @exr-depuracio-pas-a-pas | `s1_4_1.s` i `s1_4_1.md` |
+| @exr-depuracio-breakpoints | `s1_4_2.s` i `s1_4_2.md` |
+: {.striped .hover}
 
 ## Lectura prèvia {.unnumbered}
 
-TODO
+Per fer la sessió, cal haver instal·lat i configurat RARS tal com s'indica a la [Presentació del curs](#sec-presentacio-eines-rars).
 
-## "Hello World!"
+També cal haver llegit i entès els continguts següents:
 
-A continuació es presenta el primer programa que escriurem en RISC-V: el clàssic "Hello, World!", present a l'inici de molts manuals de programació. L'@exr-hello-world imprimeix el missatge "Hola, món!" a la consola i ens permetrà familiaritzar-nos amb la sintaxi bàsica de l'assemblador RISC-V i amb les directives per emmagatzemar dades i codi.
+| Concepte | On trobar-ho |
+| :--- | :--- |
+| Format del codi assemblador | @imp-codi-format-criteris |
+| Esquelet d'un programa | @nte-programa-esquelet |
+: {.striped .hover}
 
----
+::: {.callout-caution}
+## Format del codi i esquelet: obligatoris
 
-::: {#exr-hello-world}
-## s0_1_1.s
-
-Escriu un programa en RISC-V que imprimeixi "Hola, món!" a la consola. Utilitza les directives adequades per emmagatzemar la cadena i el codi al segment de text.
+El **format del codi** (@imp-codi-format-criteris) i l'**esquelet** (@nte-programa-esquelet) s'han de respectar en **tots** els programes lliurats al laboratori i a l'examen de laboratori.
 :::
 
-**Nota**: La solució utilitza els recursos que encara no s'han vist a Teoria següents:
+## El primer programa
 
-- Les etiquetes globals (@nte-globl).
-- El pas de paràmetres (@sec-pas-parametres-retorn).
-- Les crides al sistema (`ecall`, @sec-ecall) i els codis de servei (@sec-ecall-abi).
+El programa següent és el mínim executable a RARS: imprimeix un missatge per consola i en finalitza l'execució.
 
-Per ara no cal que les entengueu. Només que les utilitzeu tal com s'indica a la solució i **incorporeu-les a tots els programes que feu**. No patiu, durant el curs s'aniran tractant totes.
+```{.s filename="hola.s"}
+.data
+msg:    .asciz  "Hola, món!\n"
 
-::: {#cau-hello-world .callout-caution}
-De moment no enteneu les instruccions i directrius marcades amb `[futur]`, però incorporeu-les a tots els programes que feu.
-:::
+.globl  _start
+.text
+_start:
+        la      a0, msg         # a0 = adreça de msg
+        li      a7, 4           # syscall 4: print_string
+        ecall
 
----
-
-::: {#sol-hello-world}
-```{.s filename="hello_world.s"}
-.global _start          # [futur]
-
-.data                   # Secció de variables globals
-msg:    .asciz "Hola, món!"
-
-.text                   # Secció de codi
-_start:                 # [futur]
-        # Escriure el missatge a la consola
-        la  a0, msg     # Adreça del missatge
-        li  a7, 4       # [futur] Codi de servei per imprimir una cadena acabada amb `\0` a la consola
-        ecall           # [futur] Crida al sistema per imprimir el missatge
-
-        li  a0, 0       # [futur] Codi d'error (0 finalització exitosa)
-        li  a7, 93      # [futur] Codi de sortida amb codi de sortida (***exit code***) a `a0`
-        ecall           # [futur] Crida al sistema per sortir del programa
+        li      a0, 0           # codi de sortida: 0
+        li      a7, 93          # syscall 93: exit
+        ecall
 ```
 
+Per executar-lo a RARS:
 
+1. Copieu el codi a l'editor de RARS i guardeu-lo com `hola.s`.
+2. Assembleu amb *Run → Assemble* (o F3). Si hi ha errors, RARS els mostra al panell de missatges amb el número de línia.
+3. Executeu amb *Run → Go* (o F5). El missatge ha d'aparèixer al panell de consola.
+
+::: {.callout-note}
+## Syscalls de RARS
+
+Una **syscall** és una petició de servei al sistema operatiu (o, en el cas de RARS, al simulador). Es fa carregant el número de servei a `a7` i els paràmetres a `a0`–`a5`, i executant `ecall`. Les syscall s'estudien en detall a @sec-ecall; per ara n'hi ha prou amb usar-les com a patró:
+
+| Número de servei (`a7`) | Servei | Paràmetre (`a0`) | Retorn (`a0`) |
+| :---: | :--- | :--- | :--- |
+| 1 | `print_int` | enter a imprimir | — |
+| 4 | `print_string` | adreça de la cadena | — |
+| 93 | `exit` | codi de sortida | — |
+: {.striped .hover}
+:::
+
+## Exploració del simulador {#sec-rars-exploracio}
+
+Treballarem sobre el programa `suma.s`, que calcula la suma dels elements d'un vector d'enters i deixa el resultat al registre `t0`.
+
+```{.s filename="suma.s"}
+.data
+V:      .word   -1, -2, -3, -4, -5, -6, -7, -8, -9, -10
+
+.globl  _start
+.text
+_start:
+        li      t0, 0           # t0 = suma = 0
+        li      t1, 0           # t1 = i = 0
+        li      t2, 10          # t2 = N = 10
+        la      t3, V           # t3 = adreça de V
+
+bucle:
+        bge     t1, t2, fi      # si i >= N, surt
+        slli    t4, t1, 2       # t4 = 4*i
+        add     t4, t3, t4      # t4 = @V[i]
+        lw      t4, 0(t4)       # t4 = V[i]
+        add     t0, t0, t4      # suma += V[i]
+        addi    t1, t1, 1       # i++
+        j       bucle
+
+fi:
+        li      a0, 0
+        li      a7, 93
+        ecall
+```
+
+Un cop assemblat el programa (F3), la pestanya *Execute* mostra els panells que s'usaran durant la simulació:
+
+- **Panell de codi desassemblat** (esquerra): mostra les instruccions en memòria, una per fila, amb l'adreça, la codificació en hexadecimal i el mnemònic. La instrucció que s'executarà a continuació apareix ressaltada.
+- **Panell de registres** (dreta): mostra el contingut dels 32 registres de propòsit general i el PC. Els registres modificats a l'últim pas apareixen ressaltats.
+- **Panell de memòria de dades** (centre-baix): mostra el contingut del segment `.data` en format de words hexadecimals.
+- **Panell de consola** (baix): mostra la sortida de les syscall i permet introduir dades.
+
+---
+
+::: {#exr-rars-panells}
+## `s1_1_1.md`
+
+Assembleu `suma.s` i responeu les preguntes següents:
+
+a) On es mostra el valor del comptador de programa (PC)?
+b) On es mostra el nombre d'instruccions executades un cop finalitzada l'execució del programa? Indiqueu el camí de menús o la ubicació exacta a la interfície.
+c) El panell de codi mostra, per a cada instrucció, tres columnes de valors. Quina informació conté cadascuna?
 :::
 
 ---
+
+::: {#exr-rars-pseudoinstruccio}
+## `s1_1_2.md`
+
+Algunes pseudoinstruccions s'expandeixen en més d'una instrucció real. Treballeu sobre `suma.s` ja assemblat.
+
+a) Localitzeu la pseudoinstrucció `la t3, V` al panell de codi desassemblat. Quines instruccions reals ha generat? Copieu-les exactament tal com apareixen al panell.
+b) Per quina raó `la` necessita dues instruccions reals en lloc d'una?
+c) La pseudoinstrucció `li t2, 10` en canvi genera una sola instrucció. Per quina raó en aquest cas n'hi ha prou amb una? Hauria passat el mateix amb `li t2, 100000`?
+
+**Indicació**: els immediats de les instruccions tipus I tenen 12 bits amb signe (rang −2048..2047).
+:::
+
+---
+
+## Execució i inspecció {#sec-rars-execucio}
+
+RARS ofereix tres modes d'execució:
+
+- **Execució contínua** (F5): executa el programa fins al final (o fins al primer punt d'aturada).
+- **Execució pas a pas** (F7): executa una instrucció i s'atura. Útil per seguir el flux instrucció per instrucció.
+- **Reinici** (F12): torna el programa a l'estat inicial sense tornar a assemblar.
+
+El programa `hola.s` de la secció anterior no té bucles: el nombre d'instruccions és fix i petit. És el programa que s'usarà per al recompte manual.
+
+---
+
+::: {#exr-recompte-instruccions}
+## `s1_2_1.md`
+
+Treballeu sobre el programa `hola.s`.
+
+a) Executeu el programa amb F5. Quin nombre d'instruccions executades reporta RARS?
+b) Feu el recompte manual: llisteu totes les instruccions que s'executen, en ordre, indicant per a cada una si és una instrucció real o l'expansió d'una pseudoinstrucció. Quantes instruccions reals s'executen en total?
+c) El valor del recompte manual coincideix amb el que reporta RARS? Si hi ha diferència, expliqueu-ne la causa.
+
+**Indicació**: la pseudoinstrucció `la` s'expandeix en dues instruccions reals. Useu el panell de codi desassemblat per veure exactament quines instruccions s'executen.
+:::
+
+---
+
+::: {#exr-rars-memoria}
+## `s1_2_2.md`
+
+Assembleu `suma.s` i observeu el panell de memòria de dades.
+
+a) En quina adreça de memòria comença el vector `V`?
+b) En quina adreça exacta es troba `V[3]`? Quin és el seu contingut en hexadecimal?
+c) `V[0]` conté el valor `-1`. Quin valor hexadecimal té al panell de memòria? Expliqueu com s'obté aquesta representació.
+d) El panell mostra els bytes d'un word en ordre de major a menor adreça (d'esquerra a dreta). Quin ordre d'emmagatzematge real usa RV32I?
+:::
+
+---
+
+## Punts d'aturada {#sec-rars-breakpoints}
+
+Un **punt d'aturada** (*breakpoint*) és una marca sobre una instrucció que fa que l'execució contínua (F5) s'aturi just abans d'executar-la. S'activa i es desactiva fent clic a la columna de l'esquerra del panell de codi desassemblat, a la fila de la instrucció triada.
+
+Els punts d'aturada permeten inspeccionar l'estat del programa en un punt clau sense haver d'executar-lo pas a pas des del principi. Quan el programa s'atura, es pot continuar amb F5 (fins al següent punt d'aturada) o amb F7 (pas a pas).
+
+---
+
+::: {#exr-rars-breakpoints}
+## `s1_3_1.md`
+
+Treballeu sobre `suma.s`.
+
+a) Afegiu un punt d'aturada a la instrucció `add t0, t0, t4` (la que acumula la suma). Executeu el programa amb F5. En quina iteració s'atura? Quin és el valor de `t0` i `t4` en aquest moment? Tingueu en compte que el punt d'aturada s'atura just **abans** d'executar la instrucció marcada.
+b) Premeu F5 repetidament fins al final. Anoteu el valor de `t4` en cada aturada. Verifiqueu que els valors corresponen als elements del vector `V` en ordre.
+c) Quin és el valor final de `t0` un cop ha acabat l'execució? Era el resultat esperat? Justifiqueu-lo.
+:::
+
+---
+
+## Depuració {#sec-rars-depuracio}
+
+Quan un programa assembla sense errors però produeix un resultat incorrecte, cal **depurar-lo**: executar-lo pas a pas o amb punts d'aturada per identificar en quina instrucció el comportament no és l'esperat.
+
+El procediment general és:
+
+1. Determineu el resultat esperat abans d'executar el programa.
+2. Identifiqueu un punt de control (per exemple, la instrucció d'acumulació d'un bucle) i afegiu-hi un punt d'aturada.
+3. En cada aturada, comproveu que els valors dels registres rellevants coincideixen amb el que s'esperava.
+4. Quan trobeu una discrepància, retrocediu un pas per identificar la instrucció causant.
+
+---
+
+::: {#exr-depuracio-pas-a-pas}
+## `s1_4_1.s` i `s1_4_1.md`
+
+El programa `s1_4_1.s` és una versió **errònia** del programa `suma.s`. Conté un únic error que fa que el resultat final de `t0` no sigui `-55`.
+
+```{.s filename="s1_4_1.s"}
+.data
+V:      .word   -1, -2, -3, -4, -5, -6, -7, -8, -9, -10
+
+.globl  _start
+.text
+_start:
+        li      t0, 0
+        li      t1, 9
+        li      t2, 10
+        la      t3, V
+
+bucle:
+        bge     t1, t2, fi
+        slli    t4, t1, 2
+        add     t4, t3, t4
+        lw      t4, 0(t4)
+        add     t0, t0, t4
+        addi    t1, t1, 1
+        j       bucle
+
+fi:
+        li      a0, 0
+        li      a7, 93
+        ecall
+```
+
+a) Sense executar el programa, analitzeu el codi i preveieu quin serà el resultat incorrecte de `t0` i per quina raó.
+b) Executeu el programa pas a pas per confirmar la vostra predicció. En quina iteració s'observa per primera vegada un comportament incorrecte?
+c) Corregiu l'error (canvieu una única línia) i verifiqueu que el resultat és `-55`. Lliureu la versió corregida com `s1_4_1.s`.
+d) Al fitxer `s1_4_1.md`, descriviu: quina és la instrucció errònia, quin valor incorrecte produïa i com ho heu detectat.
+:::
+
+---
+
+::: {#exr-depuracio-breakpoints}
+## `s1_4_2.s` i `s1_4_2.md`
+
+El programa `s1_4_2.s` calcula la **mitjana entera** dels elements del vector `V` (és a dir, la divisió entera de la suma entre el nombre d'elements). La divisió es fa per mitjà d'un segon bucle que resta repetidament el divisor del dividend mentre el dividend no sigui inferior al divisor.
+
+El programa conté un únic error. El resultat correcte del quocient (registre `t5`) hauria de ser `5` (ja que ⌊55/10⌋ = 5, i la suma dels elements de `V = {1, 2, ..., 10}` és 55).
+
+```{.s filename="s1_4_2.s"}
+.data
+V:      .word   1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+
+.globl  _start
+.text
+_start:
+        li      t0, 0           # t0 = suma = 0
+        li      t1, 0           # t1 = i = 0
+        li      t2, 10          # t2 = N = 10
+        la      t3, V
+
+bucle:
+        bge     t1, t2, fi
+        slli    t4, t1, 2
+        add     t4, t3, t4
+        lw      t4, 0(t4)
+        add     t0, t0, t4
+        addi    t1, t1, 1
+        j       bucle
+
+fi:
+        li      t5, 0           # t5 = quocient = 0
+        mv      t6, t2          # t6 = divisor = N
+
+bucle2:
+        blt     t0, t6, fi2     # si suma < divisor, acaba
+        sub     t0, t6, t0      # suma -= divisor
+        addi    t5, t5, 1
+        j       bucle2
+
+fi2:
+        li      a0, 0
+        li      a7, 93
+        ecall
+```
+
+a) Sense executar el programa, llegiu el codi del segon bucle (`bucle2`) i identifiqueu l'error. Quin hauria de fer la instrucció errònia?
+b) Afegiu un punt d'aturada a la primera instrucció de `bucle2`. Executeu fins al punt d'aturada amb F5 i comproveu que `t0` és `55` i `t6` és `10`.
+c) Continueu amb F7 pas a pas. Observeu el valor de `t0` després de la instrucció `sub`. Confirma el vostre diagnòstic del punt a)?
+d) Corregiu l'error i verifiqueu que `t5` val `5`. Lliureu la versió corregida com `s1_4_2.s`.
+e) Al fitxer `s1_4_2.md`, descriviu: on heu col·locat el punt d'aturada i per quina raó, quina és la instrucció errònia i com la heu corregit.
+:::
