@@ -2,632 +2,684 @@
 number-sections: true
 ---
 
-# Sessió 2: Traducció de programes {#sec-sessio-traduccio}
+# Sessió 2: Assemblador RISC-V i tipus bàsics de dades {#sec-sessio-assemblador}
 
 ## Lliuraments {.unnumbered}
 
+Cal lliurar les respostes als exercicis següents al campus virtual abans de l'inici de la sessió de laboratori:
+
 | Exercici | Nom i format del fitxer |
 | :--- | :--- |
-| @exr-bits-invertir | `s2_1_1.s` |
-| @exr-classifica-caracter | `s2_2_1.s` |
-| @exr-compta-caracter | `s2_3_1.s` |
-| @exr-update | `s2_4_1.s` |
-| @exr-moda | `s2_4_2.md` i `s2_4_2.s` |
-| @exr-depuracio | `s2_5_1.s` |
+| @exr-declaracio-variables | `s1_1_1.s` |
+| @exr-mapa-memoria  | `s1_1_2.md` |
+| @exr-rars-vista-memoria | `s1_1_3.md` |
+| @exr-punters-valors | `s1_2_1.md` |
+| @exr-punters-codi | `s1_2_2.s` |
+| @exr-vectors-declaracio | `s1_3_1.md` i `s1_3_1.s` |
+| @exr-vectors-fibonacci | `s1_3_2.s` |
+| @exr-strings-ascii | `s1_4_1.s` |
 : {.striped .hover}
 
-## Lectura prèvia  {.unnumbered}
+## Lectura prèvia {.unnumbered}
 
 Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 | Concepte | On trobar-ho |
 | :--- | :--- |
-| Traducció literal C→RV32I | @imp-traduccions-literals |
-| Desplaçaments lògics (`sll`, `srl`, `slli`, `srli`) | @nte-instruccions-desplacament-logic |
-| Desplaçament aritmètic (`sra`, `srai`) | @nte-instruccions-desplacament-arithmetic |
-| Operacions lògiques bit a bit (`and`, `or`, `xor`, `not`) | @nte-instruccions-logiques, @nte-pseudoinstruccio-not |
-| Instruccions de comparació (`slt`, `sltu`, `slti`, `sltiu`) | @nte-instruccions-comparacio |
-| Salts condicionals (`beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu`) | @nte-instruccions-salt-condicional |
-| Salts incondicionals (`jal`, `j`, `ret`) | @nte-instruccions-salt-incondicional-relatiu-jal, @nte-pseudoinstruccio-j, @nte-pseudoinstruccions-salt-indirecte |
-| Traducció d'`if-then-else` | @sec-if-then-else |
-| Traducció de `while` i `for` | @sec-bucles |
-| Crida i retorn de subrutines (`ra`) | @sec-crida-retorn |
-| Pas de paràmetres i retorn de resultats (`a0`–`a7`) | @sec-pas-parametres-retorn, @nte-abi-pas-parametres |
-| Variables locals i bloc d'activació (`sp`) | @sec-variables-locals, @nte-bloc-activacio |
-| Subrutines multinivell: registres temporals i segurs | @sec-multinivell-pila, @nte-abi-registres-temporals-segurs |
+| Mida dels tipus de dades en C i RV32I | @imp-variables-mida-naturals, @imp-variables-mida-enters |
+| Directives de declaració i inicialització de variables globals | @nte-directives-alineacio-inicialitzacio |
+| Model de memòria i adreces | @sec-memoria-t2 |
+| Ordenació de bytes (*little-endian*) | @sec-endianness |
+| Restriccions d'alineació | @nte-restricicons-alineacio |
+| Instruccions d'accés a memòria (`lw`, `lh`, `lhu`, `lb`, `lbu`, `sw`, `sh`, `sb`) | @nte-load-store |
+| Punters: declaració, `&`, `*`, aritmètica | @sec-punters-c-declaracio, @sec-punters-ampersand, @sec-punters-desreferencia |
+| Vectors: declaració, indexació, relació amb punters | @sec-vectors, @sec-vector-indexacio, @sec-punters-vectors |
+| Caràcters i cadenes de caràcters | @nte-directives-ascii-asciz-string |
+| Pseudoinstrucció `la` | @nte-pseudoinstruccio-la |
 : {.striped .hover}
 
-## Operacions lògiques i desplaçaments
+## Representació en memòria
 
-Les operacions de desplaçament i lògiques bit a bit permeten manipular bits individuals sense recórrer a operacions aritmètiques costoses. En aquest exercici les combinareu per construir una màscara de bits de mida variable en temps d'execució (@nte-instruccions-desplacament-logic, @nte-instruccions-logiques).
+Els tipus de dades bàsics del llenguatge C tenen una correspondència directa amb les directives de declaració de variables globals en RV32I. Recordeu les taules de mides i directives de T2 (@imp-variables-mida-naturals, @imp-variables-mida-enters, @nte-directives-alineacio-inicialitzacio).
+
+Quan es declaren diverses variables globals consecutivament, l'assemblador insereix automàticament **bytes de farciment** (*padding*) entre elles per garantir les restriccions d'alineació (@sec-memoria-alineacio). A més, els valors s'emmagatzemen en ordre *little-endian* (@sec-endianness): el byte de menor pes s'emmagatzema a l'adreça més baixa.
 
 ---
 
-::: {#exr-bits-invertir}
-## `s2_1_1.s`
+::: {#exr-declaracio-variables}
+## `s1_1_1.s`
 
-Donats dos enters `X` (X ∈ [0,31]) i `Y` als registres `s0` i `s1` respectivament, escriviu un programa RV32I que complementi els `X` bits de menor pes de `Y` i deixi el resultat a `s1`. No podeu usar instruccions de salt ni de comparació, i el programa ha de tenir menys de 5 instruccions.
+Traduïu a RV32I la declaració següent de variables globals en C:
 
-**Indicació**: la sentència C equivalent és:
-
-```{.c filename="C"}
-Y = Y ^ ((1 << X) - 1);
+```{.c filename="s1_1_1.c"}
+char      aa = -5;
+short     bb = -344;
+long long cc = -3;
+unsigned char dd = 0xA0;
+int       ee = 5799;
+short     ff = -1;
 ```
-
-on `^` és la XOR bit a bit i `1 << X` desplaça el valor `1` exactament `X` posicions a l'esquerra.
 :::
 
 ---
 
-::: {#sol-bits-invertir}
-```{.s filename="s2_1_1.s"}
+::: {#sol-declaracio-variables}
+```{.s filename="s1_1_1.s"}
+.data
+aa: .byte  -5
+bb: .half  -344
+cc: .dword -3
+dd: .byte  0xA0
+ee: .word  5799
+ff: .half  -1
+```
+:::
+
+---
+
+::: {#exr-mapa-memoria}
+## `s1_1_2.md`
+
+Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, ompliu la taula de distribució de variables:
+
+| Variable | Tipus | Mida | Alineació | Adreça | *Padding* |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `aa` |  |  |  |  |
+| `bb` |  |  |  |  |
+| `cc` |  |  |  |  |
+| `dd` |  |  |  |  |
+| `ee` |  |  |  |  |
+| `ff` |  |  |  |  |
+: {.striped .hover}
+
+Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Indiqueu cada etiqueta a la posició que li correspon i marqueu amb `--` els bytes de *padding*. Deixeu en blanc els bytes lliures (no inicialitzats).
+
+::: {layout="[50,-1,50]"}
+::: {}
+| Etiqueta | Adreça | Contingut |
+| :--- | :--- | :--- |
+|  | `0x1001 0000` |  |
+|  | `0x1001 0001` |  |
+|  | `0x1001 0002` |  |
+|  | `0x1001 0003` |  |
+|  | `0x1001 0004` |  |
+|  | `0x1001 0005` |  |
+|  | `0x1001 0006` |  |
+|  | `0x1001 0007` |  |
+|  | `0x1001 0008` |  |
+|  | `0x1001 0009` |  |
+|  | `0x1001 000A` |  |
+|  | `0x1001 000B` |  |
+|  | `0x1001 000C` |  |
+|  | `0x1001 000D` |  |
+|  | `0x1001 000E` |  |
+|  | `0x1001 000F` |  |
+:::
+::: {}
+| Etiqueta | Adreça | Contingut |
+| :--- | :--- | :--- |
+|  | `0x1001 0010` |  |
+|  | `0x1001 0011` |  |
+|  | `0x1001 0012` |  |
+|  | `0x1001 0013` |  |
+|  | `0x1001 0014` |  |
+|  | `0x1001 0015` |  |
+|  | `0x1001 0016` |  |
+|  | `0x1001 0017` |  |
+|  | `0x1001 0018` |  |
+|  | `0x1001 0019` |  |
+|  | `0x1001 001A` |  |
+|  | `0x1001 001B` |  |
+|  | `0x1001 001C` |  |
+|  | `0x1001 001D` |  |
+|  | `0x1001 001E` |  |
+|  | `0x1001 001F` |  |
+:::
+:::
+
+```{.markdown filename="s1_1_2.md"}
+| Variable | Tipus | Mida | Alineació | Adreça | *Padding* |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `aa` |  |  |  |  |
+| `bb` |  |  |  |  |
+| `cc` |  |  |  |  |
+| `dd` |  |  |  |  |
+| `ee` |  |  |  |  |
+| `ff` |  |  |  |  |
+
+| Etiqueta | Adreça | Contingut |
+| :--- | :--- | :--- |
+|  | `0x1001 0000` |  |
+|  | `0x1001 0001` |  |
+...
+|  | `0x1001 001F` |  |
+```
+:::
+
+---
+
+::: {#sol-mapa-memoria}
+
+<!-- TODO Alineació de `long long` a RARS
+
+⚠️ Problema: RARS alinea `.dword` a 4 bytes en lloc de 8, a diferència de GCC real i MARS.
+Això fa que la solució del mapa de memòria sigui diferent segons el simulador:
+- Solució correcta (GCC/MARS): cc s'alinea a 0x10010008 (4 bytes de padding entre bb i cc).
+- Solució RARS: cc s'alinea a 0x10010004 (0 bytes de padding entre bb i cc).
+Cal decidir quina versió presentar als alumnes i si s'ha d'afegir
+una nota sobre aquest comportament. De moment es presenten les dues versions. 
+
+                                                                  xxxx xxxxxxxxxx
+MARS 0xfea800fb 0x00000000 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x00000000
+RARS 0xfea800fb 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x00000000 0x00000000
+
+-->
+
+**Solució correcta (comportament GCC/MARS — alineació de `.dword` a 8 bytes)**:
+
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `aa` | `char` | 1 | 1 | `0x10010000` |  |
+| `bb` | `short` | 2 | 2 | `0x10010002` | 1 |
+| `cc` | `long long` | 8 | 8 | `0x10010008` | 4 |
+| `dd` | `unsigned char` | 1 | 1 | `0x10010010` |  |
+| `ee` | `int` | 4 | 4 | `0x10010014` | 3 |
+| `ff` | `short` | 2 | 2 | `0x10010018` |  |
+: {.striped .hover}
+
+::: {layout="[50,-1,50]"}
+::: {}
+| Etiqueta | Adreça | Contingut |
+| :--- | :--- | :--- |
+| `aa` | `0x1001 0000` | `0xFB` |
+| | `0x1001 0001` | `--` |
+| `bb` | `0x1001 0002` | `0xA8` |
+| | `0x1001 0003` | `0xFE` |
+| | `0x1001 0004` | `--` |
+| | `0x1001 0005` | `--` |
+| | `0x1001 0006` | `--` |
+| | `0x1001 0007` | `--` |
+| `cc` | `0x1001 0008` | `0xFD` |
+| | `0x1001 0009` | `0xFF` |
+| | `0x1001 000A` | `0xFF` |
+| | `0x1001 000B` | `0xFF` |
+| | `0x1001 000C` | `0xFF` |
+| | `0x1001 000D` | `0xFF` |
+| | `0x1001 000E` | `0xFF` |
+| | `0x1001 000F` | `0xFF` |
+:::
+::: {}
+| Etiqueta | Adreça | Contingut |
+| :--- | :--- | :--- |
+| `dd` | `0x1001 0010` | `0xA0` |
+| | `0x1001 0011` | `--` |
+| | `0x1001 0012` | `--` |
+| | `0x1001 0013` | `--` |
+| `ee` | `0x1001 0014` | `0xA7` |
+| | `0x1001 0015` | `0x16` |
+| | `0x1001 0016` | `0x00` |
+| | `0x1001 0017` | `0x00` |
+| `ff` | `0x1001 0018` | `0xFF` |
+| | `0x1001 0019` | `0xFF` |
+| | `0x1001 001A` |  |
+| | `0x1001 001B` |  |
+| | `0x1001 001C` |  |
+| | `0x1001 001D` |  |
+| | `0x1001 001E` |  |
+| | `0x1001 001F` |  |
+:::
+:::
+
+---
+
+**Solució alternativa (comportament RARS — alineació de `.dword` a 4 bytes)**:
+
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `aa` | `char` | 1 | 1 | `0x10010000` |  |
+| `bb` | `short` | 2 | 2 | `0x10010002` | 1 |
+| `cc` | `long long` | 8 | **4** ⚠️ ERROR d'alineació ⚠️ | `0x10010004` | **0** |
+| `dd` | `unsigned char` | 1 | 1 | `0x1001000C` |  |
+| `ee` | `int` | 4 | 4 | `0x10010010` | 3 |
+| `ff` | `short` | 2 | 2 | `0x10010014` |  |
+: {.striped .hover}
+
+::: {layout="[50,-1,50]"}
+::: {}
+| Etiqueta | Adreça | Contingut |
+| :--- | :--- | :--- |
+| `aa` | `0x1001 0000` | `0xFB` |
+| | `0x1001 0001` | `--` |
+| `bb` | `0x1001 0002` | `0xA8` |
+| | `0x1001 0003` | `0xFE` |
+| `cc` | `0x1001 0004` | `0xFD` |
+| | `0x1001 0005` | `0xFF` |
+| | `0x1001 0006` | `0xFF` |
+| | `0x1001 0007` | `0xFF` |
+| | `0x1001 0008` | `0xFF` |
+| | `0x1001 0009` | `0xFF` |
+| | `0x1001 000A` | `0xFF` |
+| | `0x1001 000B` | `0xFF` |
+| `dd` | `0x1001 000C` | `0xA0` |
+| | `0x1001 000D` | `--` |
+| | `0x1001 000E` | `--` |
+| | `0x1001 000F` | `--` |
+:::
+::: {}
+| Etiqueta | Adreça | Contingut |
+| :--- | :--- | :--- |
+| `ee` | `0x1001 0010` | `0xA7` |
+| | `0x1001 0011` | `0x16` |
+| | `0x1001 0012` | `0x00` |
+| | `0x1001 0013` | `0x00` |
+| `ff` | `0x1001 0014` | `0xFF` |
+| | `0x1001 0015` | `0xFF` |
+| | `0x1001 0016` |  |
+| | `0x1001 0017` |  |
+| | `0x1001 0018` |  |
+| | `0x1001 0019` |  |
+| | `0x1001 001A` |  |
+| | `0x1001 001B` |  |
+| | `0x1001 001C` |  |
+| | `0x1001 001D` |  |
+| | `0x1001 001E` |  |
+| | `0x1001 001F` |  |
+:::
+:::
+
+:::
+
+---
+
+::: {#cau-rars-vista-memoria .callout-caution}
+## RARS — Vista de memòria
+
+RARS mostra el contingut de la memòria agrupat en **words de 4 bytes**. Cada fila mostra 8 words consecutius (columnes `+0` fins a `+1c`) a partir d'una adreça alineada a 32 bytes (múltiple de `0x20`). Dins de cada word, el byte de major adreça apareix a l'esquerra i el de menor adreça a la dreta. Això és contrari a l'ordre real d'emmagatzematge (*little-endian*) i sovint és font de confusió.
+
+Per exemple, el word a l'adreça `0x10010000` conté els bytes (de menor a major adreça):
+
+| @`+0` | @`+1` | @`+2` | @`+3` |
+| :---: | :---: | :---: | :---: |
+| `0xFB` | `--` | `0xA8` | `0xFE` |
+
+i RARS el mostra com `0xFEA800FB`.
+:::
+
+---
+
+::: {#exr-rars-vista-memoria}
+## `s1_1_3.md`
+
+Després d'assemblar el programa de l'@exr-declaracio-variables, RARS mostra la vista de memòria següent:
+
+```{.default}
+Address      Value (+0)  Value (+4)  Value (+8)  Value (+c)  Value (+10) Value (+14) Value (+18) Value (+1c)
+0x10010000   0xfea800fb  0xfffffffd  0xffffffff  0x000000a0  0x000016a7  0x0000ffff  0x00000000  0x00000000
+```
+
+Per a cada word, identifiqueu a quina variable correspon cada byte i expliqueu per què apareix en aquest ordre.
+
+```{.markdown filename="s1_1_3.md"}
+| Adreça | Valor RARS | `+0` | @`+1` | @`+2` | @`+3` | Variable(s) |
+| :--- | :---: | :---: | :---: | :---: | :--- | :--- |
+| `0x10010000` |  |  |  |  |  |
+| `0x10010004` |  |  |  |  |  |
+| `0x10010008` |  |  |  |  |  |
+| `0x1001000C` |  |  |  |  |  |
+| `0x10010010` |  |  |  |  |  |
+| `0x10010014` |  |  |  |  |  |
+| `0x10010018` |  |  |  |  |  |
+| `0x1001001C` |  |  |  |  |  |
+```
+:::
+
+---
+
+::: {#sol-rars-vista-memoria}
+El byte de menor adreça ocupa la posició de la dreta; el de major adreça, la de l'esquerra:
+
+| Adreça | Valor RARS | `+0` | @`+1` | @`+2` | @`+3` | Variable(s) |
+| :--- | :---: | :---: | :---: | :---: | :--- | :--- |
+| `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, *padding*, `bb` |
+| `0x10010004` | `0xfffffffd` | `0xFD` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 0–3) |
+| `0x10010008` | `0xffffffff` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 4–7) |
+| `0x1001000C` | `0x000000a0` | `--` | `--` | `--` | `dd`, *padding* |
+| `0x10010010` | `0x000016a7` | `0x16` | `0x00` | `0x00` | `ee` |
+| `0x10010014` | `0x0000ffff` | `0xff` |  |  | `ff` |
+| `0x10010018` |  |  |  |  |  |
+| `0x1001001C` |  |  |  |  |  |
+: {tbl-colwidths="[3,3,1,1,1,1,4]" .striped .hover}
+:::
+
+---
+
+## Pseudoinstrucció `la` i `li`
+
+TODO
+
+
+## Punters
+
+Un **punter** és una variable que conté l'adreça de memòria d'una altra variable. En RV32I, un punter ocupa sempre 4 bytes (una paraula), ja que les adreces són de 32 bits (@nte-punters-32-bits). La pseudoinstrucció `la` carrega l'adreça d'una variable en un registre (@nte-pseudoinstruccio-la), i les instruccions `lw`, `lh`, `lhu`, `lb`, `lbu`, `sw`, `sh` i `sb` permeten accedir al valor apuntat (@nte-load-store).
+
+---
+
+::: {#exr-punters-valors}
+## `s1_2_1.md`
+
+Donada la declaració següent, on `pdada` és un punter inicialitzat amb l'adreça de `dada`:
+
+```{.s filename="s1_2_1.s"}
+.data
+dada:  .half 3
+pdada: .word dada
+```
+
+Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els blancs de les vinyetes i calculeu el valor de cada expressió C:
+
+- `dada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__`.
+- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de *padding*).
+
+| Expressió C | Valor (hex) |
+| :--- | :--- |
+| `&dada` | |
+| `&pdada` | |
+| `dada` | |
+| `pdada` | |
+| `*pdada` | |
+: {.striped .hover}
+:::
+
+```{.markdown filename="s1_1_3.md"}
+
+- `dada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__`.
+- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de *padding*).
+
+| Expressió C | Valor (hex) |
+| :--- | :--- |
+| `&dada` | |
+| `&pdada` | |
+| `dada` | |
+| `pdada` | |
+| `*pdada` | |
+```
+
+---
+
+::: {#sol-punters-valors}
+
+- `dada` és un `short` (2 bytes, alineació 2), s'emmagatzema a `0x10010000`.
+- `pdada` és un punter (4 bytes, alineació 4), s'emmagatzema a `0x10010004` (2 bytes de *padding*).
+
+| Expressió C | Valor (hex) | Explicació |
+| :--- | :--- | :--- |
+| `&dada` | `0x10010000` | Adreça de `dada` |
+| `&pdada` | `0x10010004` | Adreça de `pdada` |
+| `dada` | `0x00000003` | Contingut de `dada` |
+| `pdada` | `0x10010000` | Contingut de `pdada` (adreça de `dada`) |
+| `*pdada` | `0x00000003` | Contingut de l'adreça apuntada per `pdada` |
+: {.striped .hover}
+:::
+
+---
+
+::: {#exr-punters-codi}
+## `s1_2_2.s`
+
+Traduïu a RV32I el programa C següent. La variable temporal `temp` s'emmagatzema al registre `s0`:
+
+```{.c filename="s1_1_3.c"}
+int A[3] = {3, 5, 7};
+int *punter = 0;
+
+void main() {
+    int temp;
+    punter = &A[2];
+    temp = *punter + 2;
+    temp = *(punter - 2) + temp;
+    A[1] = temp;
+}
+```
+:::
+
+---
+
+::: {#sol-punters-codi}
+```{.s filename="s1_2_2.s"}
 .global _start
+
+.data
+A:      .word 3, 5, 7
+punter: .word 0
 
 .text
 _start:
-        li   t0, 1
-        sll  t0, t0, s0     # t0 = 1 << X
-        addi t0, t0, -1     # t0 = (1 << X) - 1  (màscara dels X bits de menor pes)
-        xor  s1, s1, t0     # complementa els X bits de menor pes de Y
+        # punter = &A[2]
+        la   t0, A
+        addi t0, t0, 8      # &A[2] = &A + 2*4
+        la   t1, punter
+        sw   t0, 0(t1)      # punter = &A[2]
 
+        # temp = *punter + 2
+        lw   s0, 0(t0)      # s0 = *punter = A[2] = 7
+        addi s0, s0, 2      # s0 = 9
+
+        # temp = *(punter - 2) + temp
+        addi t0, t0, -8     # punter - 2 = &A[0]
+        lw   t2, 0(t0)      # t2 = A[0] = 3
+        add  s0, t2, s0     # s0 = 3 + 9 = 12
+
+        # A[1] = temp
+        la   t0, A
+        sw   s0, 4(t0)      # A[1] = 12
+
+        # Sortir del programa
         li   a7, 93
         li   a0, 0
         ecall
 ```
-
-La clau és construir la màscara en temps d'execució: `1 << X` produeix un `1` a la posició `X` i zeros a la resta; restar-li `1` posa a `1` tots els bits de posicions 0 a `X-1`. El XOR final complementa exactament aquells bits.
 :::
 
 ---
 
-## Sentències condicionals
+## Vectors
 
-Una sentència `if-then-else` aniuada es tradueix aplicant el patró de @sec-if-then-else de manera recursiva: cada `if` interior es tracta com una sentència del cos del `else` exterior. L'avaluació lazy de `&&` i `||` (@imp-ec-lazy-evaluation) s'implementa encadenant salts condicionals sense avaluar la segona condició quan la primera ja determina el resultat.
+Un **vector** és una seqüència d'elements del mateix tipus emmagatzemats consecutivament en memòria. L'adreça de l'element `v[i]` es calcula a partir de l'adreça base del vector i la mida de cada element (@sec-vectors, @sec-vector-indexacio):
+
+$$@\texttt{v[i]} = @\texttt{v} + i \times \texttt{mida\_element}$$
+
+En RV32I, l'accés indexat requereix calcular aquesta adreça explícitament, ja que no hi ha mode d'adreçament indexat (@sec-operands-memoria).
 
 ---
 
-::: {#exr-classifica-caracter}
-## `s2_2_1.s`
+::: {#exr-vectors-declaracio}
+## `s1_3_1.md` i `s1_3_1.s`
 
-Traduïu a RV32I el programa C següent. Les variables globals `num` i `result` s'han de declarar a la secció `.data`. Tots els temporals van a registres `t`.
+Donat el vector global següent en C:
 
-```{.c filename="s2_2_1.c"}
-char   num    = '7';
-int    result = 0;
-
-void main() {
-    if (((num >= 'a') && (num <= 'z')) || ((num >= 'A') && (num <= 'Z')))
-        result = num;
-    else if ((num == ' ') || (num == '!'))
-        result = 0;
-    else
-        result = -1;
-}
+```{.c filename="s1_2_1.c"}
+int vec[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 ```
 
-El programa ha de respectar l'avaluació lazy de `&&` i `||` (@imp-ec-lazy-evaluation). Comproveu el resultat per als valors `'m'`, `'Z'`, `' '`, `'!'` i `'7'` (codis ASCII: `0x6D`, `0x5A`, `0x20`, `0x21`, `0x37`).
+1. Escriviu la fórmula per calcular l'adreça de `vec[i]` en funció de l'adreça base de `vec` i de l'índex `i`.
+2. Escriviu un fragment de codi RV32I, amb la declaració corresponent, que copiï el valor de `vec[i]` al registre `s1`, suposant que `i` es troba al registre `s2`.
 :::
 
 ---
 
-::: {#sol-classifica-caracter}
-```{.s filename="s2_2_1.s"}
+::: {#sol-vectors-declaracio}
+**1. Fórmula d'accés**:
+
+$$@\texttt{vec[i]} = @\texttt{vec} + i \times 4$$
+
+
+**1. Declaració en RV32I i 3. Fragment de codi**:
+
+```{.s filename="s1_3_1.s"}
+.data
+vec: .word 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+
+.text
+        la   t0, vec        # t0 = @vec
+        slli t1, s2, 2      # t1 = i * 4
+        add  t0, t0, t1     # t0 = @vec[i]
+        lw   s1, 0(t0)      # s1 = vec[i]
+```
+:::
+
+---
+
+::: {#exr-vectors-fibonacci}
+## `s1_3_2.s`
+
+Traduïu a RV32I el programa C següent, que calcula els 10 primers termes de la sèrie de Fibonacci i els emmagatzema al vector `fib`. La variable `i` s'emmagatzema al registre `s0`:
+
+```{.c filename="s1_3_2.c"}
+int fib[10];
+
+void main() {
+    int i = 2;
+    fib[0] = 0;
+    fib[1] = 1;
+    while (i < 10) {
+        fib[i] = fib[i-1] + fib[i-2];
+        i++;
+    }
+}
+```
+:::
+
+---
+
+::: {#sol-vectors-fibonacci}
+```{.s filename="s1_3_2.s"}
 .global _start
 
 .data
-num:    .byte  '7'
-result: .word  0
+fib: .space 40              # 10 enters * 4 bytes
 
 .text
 _start:
-        la   t1, num
-        lb   t0, 0(t1)          # t0 = num
+        # fib[0] = 0
+        la   t0, fib
+        sw   zero, 0(t0)    # fib[0] = 0
 
-        # if (num >= 'a' && num <= 'z')
-        li   t2, 'a'
-        blt  t0, t2, comp-maj
-        li   t2, 'z'
-        bgt  t0, t2, comp-maj
-        j    es-alfa
+        # fib[1] = 1
+        li   t1, 1
+        sw   t1, 4(t0)      # fib[1] = 1
 
-comp-maj:
-        # || (num >= 'A' && num <= 'Z')
-        li   t2, 'A'
-        blt  t0, t2, comp-esp
-        li   t2, 'Z'
-        bgt  t0, t2, comp-esp
+        # i = 2
+        li   s0, 2
 
-es-alfa:
-        la   t1, result
-        sw   t0, 0(t1)          # result = num
-        j    fi
+while:
+        # if i >= 10, sortir
+        li   t1, 10
+        bge  s0, t1, fi
 
-comp-esp:
-        # else if (num == ' ' || num == '!')
-        li   t2, ' '
-        beq  t0, t2, es-esp     # primer operand || cert → lazy
-        li   t2, '!'
-        bne  t0, t2, es-altre
+        # t1 = fib[i-1]
+        la   t0, fib
+        slli t2, s0, 2      # t2 = i * 4
+        add  t3, t0, t2     # t3 = @fib[i]
+        lw   t1, -4(t3)     # t1 = fib[i-1]
 
-es-esp:
-        la   t1, result
-        sw   zero, 0(t1)        # result = 0
-        j    fi
+        # t2 = fib[i-2]
+        lw   t2, -8(t3)     # t2 = fib[i-2]
 
-es-altre:
-        la   t1, result
-        li   t2, -1
-        sw   t2, 0(t1)          # result = -1
+        # fib[i] = fib[i-1] + fib[i-2]
+        add  t1, t1, t2
+        sw   t1, 0(t3)      # fib[i] = t1
+
+        # i++
+        addi s0, s0, 1
+        j    while
 
 fi:
+        # Sortir del programa
         li   a7, 93
         li   a0, 0
         ecall
 ```
-
-La primera branca del `||` exterior usa dos `&&` encadenats (dos rangs); la segona branca usa un `||` simple entre dues igualtats. En el `||` intern (`' '` o `'!'`), el salt a `es-esp` quan la primera condició és certa implementa l'avaluació lazy: si `num == ' '`, no s'avalua la comparació amb `'!'`.
 :::
 
 ---
 
-## Bucles
+## Cadenes de caràcters
 
-El patró de traducció d'un `while` (@sec-bucles) consisteix a avaluar la condició al principi de cada iteració i saltar al final del bucle si és falsa. El recorregut d'una cadena de caràcters fins al sentinella `'\0'` és un cas particular molt freqüent: la condició del bucle és que el caràcter actual sigui diferent de zero.
+Una **cadena de caràcters** (*string*) és un vector de caràcters (`char`) que finalitza amb el caràcter sentinella `'\0'` (valor `0x00`). La codificació utilitzada és ASCII de 7 bits (@nte-directives-ascii-asciz-string). Per recórrer una cadena de caràcters no cal conèixer-ne la longitud prèviament: n'hi ha prou de recórrer-lo fins a trobar el sentinella.
 
 ---
 
-::: {#exr-compta-caracter}
-## `s2_3_1.s`
+::: {#exr-strings-ascii}
+## `s1_4_1.s`
 
-La cadena de caràcters `w` conté 31 dígits numèrics seguits del sentinella `'\0'`. Escriviu un programa RV32I que compti quantes vegades apareix el caràcter `'4'` a `w` i deixi el resultat al registre `s0`.
+El vector `vec` conté els dígits decimals del nombre `19865`, ordenats de menor a major pes. El programa següent converteix cada dígit a la seva representació ASCII i l'emmagatzema a la cadena `cadena`, ordenat de major a menor pes per poder-lo imprimir correctament.
 
-```{.c filename="s2_3_1.c"}
-char w[32] = "4444185720444938167204449251044";
+```{.c filename="s1_4_1.c"}
+char         cadena[6];
+unsigned int vec[5] = {5, 6, 8, 9, 1};
 
 void main() {
-    int  i   = 0;
-    char car = '4';
-    while (w[i] != '\0') {
-        if (w[i] == car)
-            i++;  /* reutilitzem i com a comptador */
-        i++;
-    }
-}
-```
-
-**Nota**: useu un punter (`t1`) en lloc d'un índex per recórrer la cadena: és el patró que reapareixerà a l'exercici de subrutines.
-:::
-
----
-
-::: {#sol-compta-caracter}
-```{.s filename="s2_3_1.s"}
-.global _start
-
-.data
-w: .asciz "4444185720444938167204449251044"
-
-.text
-_start:
-        la   t1, w              # t1 = punter al caràcter actual
-        li   s0, 0              # s0 = comptador d'aparicions de '4'
-        li   t2, '4'            # t2 = caràcter a cercar
-
-while:
-        lb   t0, 0(t1)          # t0 = w[i]
-        beqz t0, fwhile         # si w[i] == '\0', fi del bucle
-        bne  t0, t2, seguent    # si w[i] != '4', no comptem
-        addi s0, s0, 1          # s0++
-
-seguent:
-        addi t1, t1, 1          # avança el punter
-        j    while
-
-fwhile:
-        li   a7, 93
-        li   a0, 0
-        ecall
-```
-
-El resultat ha de ser `s0 = 12`. El patró fonamental és: carregar el caràcter actual amb `lb`, comprovar el sentinella amb `beqz`, processar si escau, i avançar el punter amb `addi t1, t1, 1`. Aquest mateix esquelet apareixerà dins de `moda` a l'exercici de subrutines.
-:::
-
----
-
-## Subrutines
-
-En una subrutina multinivell cal preservar `ra` i els registres segurs (`s0`–`s11`) que continguin valors generats abans d'una crida i usats després (@sec-multinivell-pila, @cau-regla-registres-segurs). Les variables locals estructurades (vectors) s'han d'allotjar al bloc d'activació (@nte-abi-variables-locals). Els dos exercicis d'aquesta secció s'han de fer en ordre: el segon reutilitza la traducció del primer.
-
----
-
-::: {#exr-update}
-## `s2_4_1.s`
-
-La funció `update` rep un punter a l'histograma `h`, l'índex `i` del caràcter actual i l'índex `imax` del caràcter més freqüent fins ara. Incrementa `h[i]` i retorna `i` si ara és el més freqüent, o `imax` en cas contrari.
-
-```{.c filename="C"}
-char update(int *h, char i, char imax) {
-    h[i]++;
-    if (h[i] > h[imax])
-        return i;
-    else
-        return imax;
-}
-```
-
-Traduïu `update` a RV32I. Tingueu en compte:
-
-- És una subrutina **uninivell**: no cal desar `ra`.
-- Determineu quins registres, si n'hi ha, necessiten ser segurs abans d'escriure cap instrucció.
-- El resultat es retorna a `a0` (@nte-abi-pas-parametres).
-:::
-
----
-
-::: {#sol-update}
-**Anàlisi de registres segurs.** `update` és uninivell: no hi ha cap crida, de manera que cap valor travessa una frontera de crida. Tots els temporals van a registres `t`; no cal cap registre `s`. El BA és buit.
-
-```{.s filename="s2_4_1.s"}
-update:
-        # update(int *h, char i, char imax)
-        # a0 = h, a1 = i, a2 = imax
-
-        # h[i]++
-        slli t0, a1, 2          # t0 = i * 4
-        add  t0, a0, t0         # t0 = &h[i]
-        lw   t1, 0(t0)
-        addi t1, t1, 1
-        sw   t1, 0(t0)          # h[i]++
-
-        # if (h[i] > h[imax]) return i; else return imax
-        slli t2, a2, 2          # t2 = imax * 4
-        add  t2, a0, t2         # t2 = &h[imax]
-        lw   t2, 0(t2)          # t2 = h[imax]
-        ble  t1, t2, ret-imax
-        mv   a0, a1             # return i
-        ret
-ret-imax:
-        mv   a0, a2             # return imax
-        ret
-```
-
-Com que `update` és uninivell, els paràmetres `a0`–`a2` es poden usar directament durant tot el cos sense risc de sobreescriptura per cap crida. No cal moure'ls a registres segurs.
-:::
-
----
-
-::: {#exr-moda}
-## `s2_4_2.md` i `s2_4_2.s`
-
-La funció `moda` recorre la cadena `vec` de `num` caràcters, construeix un histograma local `histo[10]` i, per a cada caràcter, crida `update` (traduïda a @sol-update) per actualitzar el dígit més freqüent.
-
-```{.c filename="s2_4_2.c"}
-char w[32]    = "4444185720444938167204449251044";
-char resultat;
-
-char moda(char *vec, int num) {
-    int  k, histo[10];
-    char max;
-    for (k = 0; k < 10; k++)
-        histo[k] = 0;
-    max = '0';
-    for (k = 0; k < num; k++)
-        max = '0' + update(histo, vec[k] - '0', max - '0');
-    return max;
-}
-
-void main() {
-    resultat = moda(w, 31);
-}
-```
-
-Traduïu `moda` i `_start` a RV32I. Abans d'escriure cap instrucció:
-
-1. Identifiqueu quines dades es generen **abans** de la crida a `update` i s'usen **després** (@sec-multinivell-pila). Assigneu-les a registres segurs.
-2. Dibuixeu el bloc d'activació de `moda` amb els offsets de cada element.
-
-Comproveu que al final de l'execució la variable global `resultat` conté el caràcter `'4'`.
-
-**Nexe amb @exr-compta-caracter**: el segon `for` de `moda` segueix exactament el mateix patró de recorregut amb punter que heu fet servir a l'exercici de bucles. Identifiqueu on apareix.
-:::
-
----
-
-::: {#sol-moda}
-**Pas 1. Registres segurs de `moda`.**
-
-Dades generades abans de la crida a `update` i usades després: `histo` (adreça base = `sp`; derivable en tot moment, no cal registre), `vec` → `s0`, `num` → `s1`, `k` → `s2`, `max` → `s3`. Cal desar també `ra`.
-
-**Pas 2. Bloc d'activació de `moda`.**
-
-| Offset des de `sp` | Contingut |
-| :--- | :--- |
-| `+0`–`+39` | `histo[0]`–`histo[9]` (40 bytes) |
-| `+40` | `s0` desat |
-| `+44` | `s1` desat |
-| `+48` | `s2` desat |
-| `+52` | `s3` desat |
-| `+56` | `ra` desat |
-: {.striped .hover}
-
-Mida del BA: 60 bytes (@imp-ec-alineacio-pila).
-
-```{.s filename="s2_4_2.s"}
-.global _start
-
-.data
-w:        .asciz "4444185720444938167204449251044"
-resultat: .byte  0
-
-.text
-
-# update: vegeu @sol-update (inseriu el codi aquí)
-
-moda:
-        # moda(char *vec, int num) — a0 = vec, a1 = num
-        # pròleg
-        addi sp, sp,  -60
-        sw   s0,  40(sp)
-        sw   s1,  44(sp)
-        sw   s2,  48(sp)
-        sw   s3,  52(sp)
-        sw   ra,  56(sp)
-        mv   s0, a0             # s0 = vec
-        mv   s1, a1             # s1 = num
-
-        # for (k=0; k<10; k++) histo[k] = 0
-        li   s2, 0              # k = 0
-        li   t0, 10
-for1:
-        bge  s2, t0, ffor1
-        slli t1, s2, 2          # t1 = k * 4
-        add  t1, sp, t1         # t1 = &histo[k]
-        sw   zero, 0(t1)
-        addi s2, s2, 1
-        j    for1
-ffor1:
-
-        # max = '0'
-        li   s3, '0'
-
-        # for (k=0; k<num; k++)   ← mateix patró que exr-compta-caracter
-        li   s2, 0              # k = 0
-for2:
-        bge  s2, s1, ffor2
-
-        # vec[k] → t0; a1 = vec[k] - '0'
-        add  t0, s0, s2         # t0 = &vec[k]
-        lb   t0, 0(t0)          # t0 = vec[k]
-        li   t1, '0'
-        sub  a1, t0, t1         # a1 = vec[k] - '0'
-
-        # a2 = max - '0'
-        sub  a2, s3, t1         # a2 = max - '0'
-
-        # a0 = &histo
-        mv   a0, sp
-
-        jal  ra, update
-
-        # max = '0' + resultat
-        li   t1, '0'
-        add  s3, t1, a0         # s3 = '0' + update(...)
-
-        addi s2, s2, 1          # k++
-        j    for2
-ffor2:
-
-        mv   a0, s3             # return max
-
-        # epíleg
-        lw   s0,  40(sp)
-        lw   s1,  44(sp)
-        lw   s2,  48(sp)
-        lw   s3,  52(sp)
-        lw   ra,  56(sp)
-        addi sp, sp, 60
-        ret
-
-_start:
-        la   a0, w
-        li   a1, 31
-        jal  ra, moda
-
-        la   t0, resultat
-        sb   a0, 0(t0)
-
-        li   a7, 93
-        li   a0, 0
-        ecall
-```
-
-El patró de @exr-compta-caracter` reapareix al segon `for`: `add t0, s0, s2` calcula l'adreça del caràcter actual (equivalent a avançar el punter), `lb t0, 0(t0)` el carrega, i `bge s2, s1, ffor2` comprova la condició de fi (aquí amb comptador explícit en lloc de sentinella, perquè `num` és conegut). El resultat esperat a `resultat` és `'4'` (`0x34`).
-:::
-
----
-
-## Depuració de codi
-
-La depuració és el procés d'identificar i corregir errors en un programa. En assemblador, els errors més freqüents són confusions entre registres, errors d'adreçament i una gestió incorrecta del bloc d'activació. En aquest exercici practicareu els tres tipus.
-
----
-
-::: {#exr-depuracio}
-## `s2_5_1.s`
-
-El programa següent declara el vector global `alfabet` amb les lletres majúscules de l'A a la Z i una cadena de caràcters d'entrada `w1`. La funció `codifica` recorre `w1` caràcter a caràcter i, per a cada lletra, crida la funció `g`, que calcula la lletra simètrica (A↔Z, B↔Y, etc.) i en retorna el codi ASCII. El resultat s'escriu al vector de sortida `w2`.
-
-```{.c filename="..."}
-char alfabet[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-char w1[16]      = "ARQUITECTURA";
-char w2[16];
-
-int codifica(char *pfrasein, char *pfraseout) {
     int i = 0;
-    while (*pfrasein != 0) {
-        *pfraseout = g(alfabet, pfrasein);
-        pfrasein++;
-        pfraseout++;
+    while (i < 5) {
+        cadena[i] = vec[4-i] + '0';
         i++;
     }
-    *pfraseout = 0;
-    return i;
-}
-
-char g(char *alfa, char *pfrase) {
-    return alfa[25 - (*pfrase - 'A')];
-}
-
-void main() {
-    codifica(w1, w2);
+    cadena[5] = 0;
 }
 ```
 
-La traducció RV32I següent conté **tres errors**, tots dins de `codifica`. La funció `g` és correcta. Identifiqueu cada error, expliqueu per què és incorrecte i escriviu la línia corregida.
+Traduïu el programa a RV32I. La variable `i` s'emmagatzema al registre `s0`.
 
-```{.s}
-.global _start
-
-.data
-alfabet: .asciz "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-w1:      .asciz "ARQUITECTURA"
-w2:      .space 16
-
-.text
-
-g:
-        lb   t0, 0(a1)          # t0 = *pfrase
-        li   t1, 'A'
-        sub  t0, t0, t1         # t0 = *pfrase - 'A'
-        li   t1, 25
-        sub  t0, t1, t0         # t0 = 25 - (*pfrase - 'A')
-        add  t0, a0, t0         # t0 = &alfa[25 - ...]
-        lb   a0, 0(t0)          # a0 = alfa[25 - ...]
-        ret
-
-codifica:
-        addi sp, sp, -16        # (A) reserva BA
-        sw   s0,  0(sp)
-        sw   s1,  4(sp)
-        sw   s2,  8(sp)
-                                # (B) ra no es desa
-        mv   s0, a0             # s0 = pfrasein
-        mv   s1, a1             # s1 = pfraseout
-        li   s2, 0              # i = 0
-
-while:
-        lb   t0, 0(s0)
-        beqz t0, fwhile
-
-        la   a0, alfabet
-        mv   a1, s1             # (C) passa pfraseout en lloc de pfrasein
-        jal  ra, g
-
-        sb   a0, 0(s0)          # (D) escriu a pfrasein en lloc de pfraseout
-        addi s0, s0, 1
-        addi s1, s1, 1
-        addi s2, s2, 1
-        j    while
-
-fwhile:
-        sb   zero, 0(s1)
-        mv   a0, s2
-
-        lw   s0,  0(sp)
-        lw   s1,  4(sp)
-        lw   s2,  8(sp)
-                                # (E) ra no es restaura
-        addi sp, sp, 16
-        ret
-
-_start:
-        la   a0, w1
-        la   a1, w2
-        jal  ra, codifica
-
-        li   a7, 93
-        li   a0, 0
-        ecall
-```
-
-Comproveu la correcció del programa un cop esmenats els errors: al final de l'execució `w2` ha de contenir `"ZIJFRGVXGFIZ"`.
+**Nota**: la conversió de dígit a caràcter ASCII consisteix a sumar el valor del dígit al codi ASCII de `'0'` (`0x30`). Consulteu el @cau-rars-vista-memoria per interpretar el contingut de `cadena` a la vista de memòria de RARS.
 :::
 
 ---
 
-::: {#sol-depuracio}
-El programa conté tres errors, identificats per les marques (B), (C) i (D):
+::: {#sol-strings-ascii}
+```{.s filename="s1_4_1.s"}
+.global _start
 
-**Error 1 — (B) i (E): `ra` no es desa ni es restaura.**
+.data
+cadena: .space 6
+vec:    .word  5, 6, 8, 9, 1
 
-`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, salta a una adreça incorrecta i el programa falla.
-
-Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
-
-```{.s filename="RV32I"}
-        # pròleg — afegir:
-        sw   ra, 12(sp)
-
-        # epíleg — afegir:
-        lw   ra, 12(sp)
-```
-
-**Error 2 — (C): es passa `pfraseout` (`s1`) en lloc de `pfrasein` (`s0`) a `g`.**
-
-La funció `g` ha de rebre el punter al caràcter d'entrada per calcular-ne la lletra simètrica. Amb `mv a1, s1` rep el punter de sortida, que apunta a una posició de `w2` (inicialment buida), i retorna un resultat incorrecte.
-
-Correcció:
-
-```{.s filename="RV32I"}
-        mv   a1, s0             # passa pfrasein
-```
-
-**Error 3 — (D): el resultat s'escriu a `pfrasein` (`s0`) en lloc de `pfraseout` (`s1`).**
-
-El caràcter codificat que retorna `g` a `a0` s'ha d'escriure al vector de sortida. Amb `sb a0, 0(s0)` s'escriu sobre el vector d'entrada `w1`, corrompent-lo i deixant `w2` sense modificar.
-
-Correcció:
-
-```{.s filename="RV32I"}
-        sb   a0, 0(s1)          # escriu a pfraseout
-```
-
-**Versió corregida de `codifica`**:
-
-```{.s filename="s2_5_1.s"}
-codifica:
-        addi sp, sp, -16
-        sw   s0,  0(sp)
-        sw   s1,  4(sp)
-        sw   s2,  8(sp)
-        sw   ra, 12(sp)         # (B) corregit
-        mv   s0, a0
-        mv   s1, a1
-        li   s2, 0
+.text
+_start:
+        # i = 0
+        li   s0, 0
 
 while:
-        lb   t0, 0(s0)
-        beqz t0, fwhile
+        # if i >= 5, sortir
+        li   t0, 5
+        bge  s0, t0, fi
 
-        la   a0, alfabet
-        mv   a1, s0             # (C) corregit
-        jal  ra, g
+        # t1 = vec[4-i]
+        li   t0, 4
+        sub  t0, t0, s0     # t0 = 4 - i
+        la   t1, vec
+        slli t2, t0, 2      # t2 = (4-i) * 4
+        add  t1, t1, t2     # t1 = @vec[4-i]
+        lw   t1, 0(t1)      # t1 = vec[4-i]
 
-        sb   a0, 0(s1)          # (D) corregit
+        # cadena[i] = vec[4-i] + '0'
+        li   t2, 0x30       # '0' en ASCII
+        add  t1, t1, t2     # t1 = vec[4-i] + '0'
+        la   t2, cadena
+        add  t2, t2, s0     # t2 = @cadena[i]
+        sb   t1, 0(t2)      # cadena[i] = t1
+
+        # i++
         addi s0, s0, 1
-        addi s1, s1, 1
-        addi s2, s2, 1
         j    while
 
-fwhile:
-        sb   zero, 0(s1)
-        mv   a0, s2
+fi:
+        # cadena[5] = 0
+        la   t0, cadena
+        sb   zero, 5(t0)
 
-        lw   s0,  0(sp)
-        lw   s1,  4(sp)
-        lw   s2,  8(sp)
-        lw   ra, 12(sp)         # (E) corregit
-        addi sp, sp, 16
-        ret
+        # Sortir del programa
+        li   a7, 93
+        li   a0, 0
+        ecall
 ```
 :::

@@ -2,25 +2,16 @@
 number-sections: true
 ---
 
-# Sessió 5: Memòria cau {#sec-sessio-mc}
+# Sessió 5: Coma flotant i compilació separada {#sec-sessio-coma-flotant}
 
 ## Lliuraments {.unnumbered}
 
 | Exercici | Nom i format del fitxer |
 | :--- | :--- |
-| @exr-descomposicio-adreces | `s5_1_1.md` |
-| @exr-recorregut-taula | `s5_2_1.md` |
-| @exr-mida-cache | `s5_2_2.md` |
-| @exr-recorregut-invers | `s5_2_3.md` |
-| @exr-model-temps | `s5_2_4.md` |
-| @exr-escriptures-taula | `s5_3_1.md` |
-| @exr-politiques-escriptura | `s5_3_2.md` |
-| @exr-vector-gran | `s5_3_3.md` |
-| @exr-suma-vectors-cd | `s5_4_1.md` |
-| @exr-padding | `s5_4_2.s` |
-| @exr-completament-associativa | `s5_4_3.md` |
-| @exr-grau-minim | `s5_4_4.md` |
-| @exr-tiling | `s5_5_1.s` |
+| @exr-compilacio-separada | `s4_1_1.s` i `s4_1_2.s` |
+| @exr-descompon | `s4_2_1.md` i `s4_2_1.s` |
+| @exr-compon | `s4_3_1.s` |
+| @exr-precisio | `s4_4_1.md` |
 : {.striped .hover}
 
 ## Lectura prèvia {.unnumbered}
@@ -29,915 +20,493 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 | Concepte | On trobar-ho |
 | :--- | :--- |
-| Localitat temporal i espacial | @sec-localitat |
-| Organització de la memòria cau: blocs, línies, etiquetes i bit de validesa | @sec-mc-organitzacio |
-| Terminologia: encert, fallada, taxa d'encerts | @sec-mc-terminologia |
-| Gestió d'una lectura | @sec-mc-lectura |
-| Correspondència directa: descomposició d'adreces | @sec-correspondencia-directa |
-| Memòria cau associativa per conjunts | @sec-associativa-conjunts |
-| Memòria cau completament associativa | @sec-completament-associativa |
-| Política de reemplaçament (LRU) | @sec-politica-reemplacement |
-| Política d'escriptura: gestió en cas d'encert i de fallada | @sec-politica-escriptura, @tbl-politiques-escriptura |
-| Exemples de polítiques d'escriptura | @tip-escriptura-immediata-assignacio, @tip-escriptura-immediata-sense-assignacio, @tip-escriptura-retardada |
-| Model de temps simplificat | @sec-model-temps, @cau-model-temps |
-| Impacte de les fallades en el temps d'execució | @sec-texe-mc, @eq-texe |
-| Recorregut d'un vector per accés seqüencial | @tip-optimitzacio-acces-sequencial |
-| Stride i eficiència de la memòria cau | @sec-opt-acces-sequencial |
+| Format IEEE-754 de simple precisió: signe, exponent en excés, fracció | @sec-ieee754, @nte-ieee754-formats |
+| El bit ocult | @cau-bit-ocult |
+| Codificació i decodificació de nombres en coma flotant | @tip-ieee754-codificacio, @tip-ieee754-decodificacio |
+| Modes d'arrodoniment | @sec-arrodoniment |
+| Desplaçaments lògics i aritmètics (`sll`, `srl`, `sra`, `slli`, `srli`, `srai`) | @nte-instruccions-desplacament-logic, @nte-instruccions-desplacament-arithmetic |
+| Operacions lògiques bit a bit (`and`, `or`, `slt`) | @nte-instruccions-logiques, @nte-instruccions-comparacio |
+| Subrutines: pas de paràmetres i retorn de resultats | @sec-pas-parametres-retorn, @nte-abi-pas-parametres |
+| Subrutines multinivell: registres segurs i bloc d'activació | @sec-multinivell-pila, @nte-abi-registres-temporals-segurs |
+| Compilació separada i directiva `.global` | @sec-compilacio, @nte-globl |
 : {.striped .hover}
 
-## Descomposició d'adreces {#sec-l5-descomposicio}
+## Compilació separada a RARS
 
-En una memòria cau de **correspondència directa** (@sec-correspondencia-directa), cada adreça generada pel processador es divideix en tres camps: **etiqueta**, **índex** i **desplaçament** (*offset*). El nombre de bits de cada camp depèn de la geometria de la memòria cau:
+En un projecte real, el codi es divideix en **mòduls** independents que es compilen i assemblen per separat (@sec-compilacio). Cadascun viu en el seu propi fitxer font, declara com a globals les etiquetes que han de ser visibles des d'altres mòduls, i referencia les etiquetes externes sense necessitat de conèixer-ne els detalls interns.
 
-- **Desplaçament**: selecciona un byte dins del bloc. Si el bloc té $N_P = 2^{n_p}$ paraules de 4 bytes, ocupa $4 \cdot N_P = 2^{n_p+2}$ bytes i el camp de desplaçament té $n_p + 2$ bits.
-- **Índex** ($n_l$ bits): identifica la línia de la memòria cau. Si la cau té $N_L = 2^{n_l}$ línies, l'índex té $n_l$ bits.
-- **Etiqueta**: la resta de bits de més pes.
+RARS reprodueix aquest flux de manera directa: amb l'opció **Settings → Assemble all files currently open** activada, l'assemblador processa tots els fitxers oberts alhora i resol automàticament les referències entre ells, fent el rol combinat d'assemblador i enllaçador.
 
-En aquesta sessió es fa servir una geometria de referència de **32 blocs de 4 paraules** cadascun (tots els exercicis tret que s'indiqui el contrari). Les variables globals dels programes s'emmagatzemen a partir de l'adreça `0x10010000`.
+::: {#cau-global-compilacio-separada .callout-caution}
+## Compilació separada — directiva `.global`
 
----
-
-::: {#exr-descomposicio-adreces}
-## `s5_1_1.md`
-
-Considereu una memòria cau de correspondència directa amb **32 blocs de 4 paraules** cadascun.
-
-1. Determineu el nombre de bits dels camps **desplaçament**, **índex** i **etiqueta** per a adreces de 32 bits. Justifiqueu cada valor.
-
-2. El processador genera una referència de lectura a l'adreça `0x1001014C`. Calculeu:
-   a. El número del bloc de memòria principal al qual pertany aquesta referència.
-   b. L'índex de la línia de memòria cau corresponent.
-   c. L'etiqueta corresponent.
-
-3. En el moment de la referència, la línia de memòria cau seleccionada conté el bloc de memòria principal número `0x10`. Indiqueu si la referència és un **encert** o una **fallada** i justifiqueu-ho.
+Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.global` al fitxer on es defineix, inclòs `_start`. Sense aquesta declaració, l'etiqueta és invisible per als altres mòduls i RARS finalitza amb un error de símbol no resolt.
 :::
-
----
-
-::: {#sol-descomposicio-adreces}
-**Apartat 1. Descomposició de bits.**
-
-El bloc té 4 paraules de 4 bytes = 16 bytes = $2^4$ bytes → **desplaçament: 4 bits**.
-
-La memòria cau té 32 línies = $2^5$ línies → **índex: 5 bits**.
-
-**Etiqueta: $32 - 4 - 5 = 23$ bits.**
-
-| Camp | Bits | Posicions |
-| :--- | :---: | :--- |
-| Etiqueta | 23 | 31–9 |
-| Índex | 5 | 8–4 |
-| Desplaçament | 4 | 3–0 |
-: {.striped .hover}
-
-**Apartat 2. Anàlisi de l'adreça `0x1001014C`.**
-
-En binari: `0001 0000 0000 0001 0000 0001 0100 1100`
-
-Descomposició per camps:
-
-| Camp | Bits extraïts | Valor hex |
-| :--- | :--- | :--- |
-| Etiqueta (bits 31–9) | `0000 1000 0000 0000 1000 000` | `0x080040` |
-| Índex (bits 8–4) | `1 0100` | `0x14` (20 en decimal) |
-| Desplaçament (bits 3–0) | `1100` | `0xC` |
-: {.striped .hover}
-
-a. **Número del bloc de MP**: l'adreça `0x1001014C` dividida per la mida del bloc (16 bytes) és $\lfloor \texttt{0x1001014C} / 16 \rfloor = \texttt{0x1001014}$.
-b. **Índex de la línia de MC**: $\texttt{0x1001014} \bmod 32 = 20 = \texttt{0x14}$.
-c. **Etiqueta**: `0x080040`.
-
-**Apartat 3. Encert o fallada.**
-
-La línia d'índex `0x14` conté el bloc `0x10`. La referència pertany al bloc `0x1001014`. Com que $\texttt{0x1001014} \neq \texttt{0x10}$, les etiquetes no coincideixen: la referència és una **fallada**.
-:::
-
-## Recorregut seqüencial d'un vector {#sec-l5-recorregut-vector}
-
-En aquesta secció s'analitza el comportament de la memòria cau durant el recorregut seqüencial d'un vector. El programa calcula la suma de tots els elements d'un vector de 100 enters:
-
-```{.c filename="suma_vector.c"}
-int vector[100];
-
-void main() {
-    int i, suma = 0;
-    for (i = 0; i < 100; i++)
-        suma += vector[i];
-}
-```
-
-La traducció a RV32I segueix el patró d'accés seqüencial (@tip-optimitzacio-acces-sequencial), mantenint un punter `t2` que avança 4 bytes a cada iteració:
-
-```{.s filename="suma_vector.s"}
-.global _start
-
-.eqv N, 100
-
-.data
-vector: .space N*4              # int vector[100]
-
-.text
-
-_start:
-        mv   t1, zero           # suma = 0
-        la   t2, vector         # t2 = @vector[0]
-        li   t3, N
-        slli t3, t3, 2
-        add  t3, t2, t3         # t3 = @vector[N] (sentinella)
-for:
-        bgeu t2, t3, fifor      # salta si t2 >= sentinella
-        lw   t4, 0(t2)          # t4 = vector[i]
-        add  t1, t1, t4         # suma += vector[i]
-        addi t2, t2, 4          # t2++ (stride = 4 bytes)
-        j    for
-fifor:
-        li   a7, 93
-        li   a0, 0
-        ecall
-```
-
-Carregueu aquest programa a RARS i activeu el mòdul **Tools → Data Cache Simulator**. Configureu la memòria cau amb **32 blocs de 4 paraules** i política de correspondència directa. Premeu **Connect to Program** abans d'executar.
-
----
-
-::: {#exr-recorregut-taula}
-## `s5_2_1.md`
-
-Considereu la memòria cau de correspondència directa amb **32 blocs de 4 paraules** i les variables globals emmagatzemades a partir de `0x10010000`.
-
-1. Ompliu la taula següent per a les **10 primeres iteracions** del bucle. Per a cada iteració, indiqueu l'adreça de `vector[i]`, el número de bloc de memòria cau accedit i si la referència és un encert (E) o una fallada (F).
-
-| Iteració | Adreça de `vector[i]` | Bloc de MC | E / F |
-| :---: | :--- | :---: | :---: |
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
-| 7 | | | |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
-: {.striped .hover}
-
-2. Calculeu la taxa d'encerts que s'obté en l'execució completa del programa. Raoneu la resposta a partir del patró de fallades observat.
-
-Verifiqueu les respostes amb el **Data Cache Simulator** de RARS.
-:::
-
----
-
-::: {#sol-recorregut-taula}
-**Apartat 1.**
-
-`vector[0]` comença a `0x10010000`. Cada element ocupa 4 bytes; el bloc té 16 bytes (4 paraules), de manera que cada bloc de MC conté 4 elements consecutius del vector. L'índex de bloc de MC és $\lfloor \text{adreça} / 16 \rfloor \bmod 32$.
-
-| Iteració | Adreça de `vector[i]` | Bloc de MC | E / F |
-| :---: | :--- | :---: | :---: |
-| 1 | `0x10010000` | 0 | F |
-| 2 | `0x10010004` | 0 | E |
-| 3 | `0x10010008` | 0 | E |
-| 4 | `0x1001000C` | 0 | E |
-| 5 | `0x10010010` | 1 | F |
-| 6 | `0x10010014` | 1 | E |
-| 7 | `0x10010018` | 1 | E |
-| 8 | `0x1001001C` | 1 | E |
-| 9 | `0x10010020` | 2 | F |
-| 10 | `0x10010024` | 2 | E |
-: {.striped .hover}
-
-**Apartat 2.**
-
-El vector té 100 elements. Cada bloc de MC conté 4 elements: la primera referència a cada grup de 4 és una fallada (*cold-start*) i les tres restants són encerts. Hi ha $\lceil 100 / 4 \rceil = 25$ blocs de MP accedits, cadascun amb 1 fallada i 3 encerts.
-
-$$\text{taxa d'encerts} = \frac{75}{100} = 0{,}75$$
-:::
-
----
-
-::: {#exr-mida-cache}
-## `s5_2_2.md`
-
-Considereu el mateix programa i la mateixa geometria de referència (correspondència directa, 32 blocs de 4 paraules).
-
-1. Si dupliquem la mida de la memòria cau **doblant el nombre de blocs** (64 blocs de 4 paraules), la taxa d'encerts variarà? Raoneu la resposta.
-
-2. Si dupliquem la mida de la memòria cau **doblant el nombre de paraules per bloc** (32 blocs de 8 paraules), la taxa d'encerts variarà? Raoneu la resposta.
-
-Verifiqueu les respostes canviant la geometria al **Data Cache Simulator** i executant el programa de nou. Reinicialitzeu la memòria cau amb **Reset** abans de cada execució.
-:::
-
----
-
-::: {#sol-mida-cache}
-**Apartat 1. Doblar el nombre de blocs (64 blocs de 4 paraules).**
-
-La mida del bloc no canvia (4 paraules = 16 bytes), de manera que cada referència al vector continua portant exactament 4 elements. El patró de fallades és idèntic: 1 fallada cada 4 accesos. La taxa d'encerts **no varia**: $0{,}75$.
-
-**Apartat 2. Doblar el nombre de paraules per bloc (32 blocs de 8 paraules).**
-
-Ara cada bloc conté 8 paraules = 32 bytes = 8 elements del vector. La primera referència a cada grup de 8 és una fallada i les 7 restants són encerts. Hi ha $\lceil 100 / 8 \rceil = 13$ blocs accedits (12 complets + 1 de parcial amb 4 elements). Fallades: 13. Encerts: $100 - 13 = 87$.
-
-$$\text{taxa d'encerts} = \frac{87}{100} = 0{,}87$$
-
-La taxa **millora** perquè blocs més grans aprofiten millor la localitat espacial del recorregut seqüencial.
-:::
-
----
-
-::: {#exr-recorregut-invers}
-## `s5_2_3.md`
-
-Si el programa recorregués el vector des del darrer element fins al primer (en ordre decreixent d'índexs), la taxa d'encerts seria la mateixa o diferent respecte al recorregut en ordre creixent? Raoneu la resposta.
-
-Modifiqueu el programa `suma_vector.s` per invertir l'ordre del recorregut i verifiqueu la resposta amb el **Data Cache Simulator**.
-:::
-
----
-
-::: {#sol-recorregut-invers}
-La taxa d'encerts és **la mateixa**: $0{,}75$.
-
-El patró de fallades no depèn de la direcció del recorregut, sinó de la relació entre la mida del bloc i l'stride d'accés. En ambdós casos, cada bloc de MC conté 4 elements consecutius del vector: la primera referència a cada bloc és una fallada (*cold-start*) i les tres restants són encerts, independentment de si el recorregut és creixent o decreixent.
-:::
-
----
-
-::: {#exr-model-temps}
-## `s5_2_4.md`
-
-Considereu un sistema amb memòria cau d'instruccions i de dades separades. La cau d'instruccions és ideal (taxa d'encerts = 1). La cau de dades és de correspondència directa amb 32 blocs de 4 paraules i el model de temps simplificat següent:
-
-- Temps de cicle: $t_c = 10\ \text{ns}$.
-- Temps d'accés en cas d'encert: $t_h = 1\ \text{cicle}$.
-- Temps per copiar un bloc de MP a MC: $t_{bloc} = 10\ \text{cicles}$.
-
-Useu el programa `suma_vector.s` de @sec-l5-recorregut-vector. Per obtenir el nombre d'instruccions executades i el nombre de fallades, useu les eines **Tools → Instruction Statistics** i **Tools → Data Cache Simulator** de RARS.
-
-1. Calculeu $t_p$ (penalització per fallada) per a una lectura en política d'escriptura immediata amb assignació (@sec-model-temps).
-
-2. Determineu el nombre d'instruccions executades ($n_{ins}$) i el nombre de fallades de la cau de dades ($n_{fallades}$).
-
-3. Calculeu el temps d'execució suposant $\text{CPI}_{ideal} = 2$ (@eq-texe).
-
-4. Calculeu el temps d'execució si el sistema **no tingués cau de dades**, sabent que el temps d'accés a la memòria principal és $t_{MP} = 6\ \text{cicles}$ (@sec-texe-mc). Calculeu també el guany de rendiment respecte al cas sense cau.
-:::
-
----
-
-::: {#sol-model-temps}
-**Apartat 1. Càlcul de $t_p$.**
-
-Per a una lectura amb fallada en política d'escriptura immediata amb assignació (@cau-model-temps):
-
-$$t_p = t_{bloc} + t_h = 10 + 1 = 11\ \text{cicles}$$
-
-**Apartat 2. Nombre d'instruccions i fallades.**
-
-El bucle `for` executa 5 instruccions per iteració (`bgeu`, `lw`, `add`, `addi`, `j`) més la condició final de sortida (`bgeu` quan `t2 >= t3`). Les instruccions fora del bucle son: `mv`, `la`, i tres per al sentinella (`li`, `slli`, `add`), més `li`, `li`, `ecall` per a la sortida — 8 instruccions en total. El nombre d'instruccions executades és, doncs:
-
-$$n_{ins} = 5 \times 100 + 1 + 8 = 509\ \text{instruccions}$$
-
-Podeu verificar aquest valor amb **Tools → Instruction Statistics** de RARS. El nombre de fallades de la cau de dades s'obté amb el **Data Cache Simulator**: 25 fallades (una per cada bloc de 4 elements, com es calcula a @sol-recorregut-taula).
-
-$$n_{fallades} = 25$$
-
-**Apartat 3. Temps d'execució amb cau.**
-
-Aplicant @eq-texe:
-
-$$t_{exe} = t_c \cdot (n_{ins} \cdot \text{CPI}_{ideal} + n_{fallades} \cdot t_p)$$
-
-$$t_{exe} = 10\ \text{ns} \cdot (n_{ins} \cdot 2 + 25 \cdot 11)$$
-
-**Apartat 4. Temps d'execució sense cau i guany.**
-
-Sense cau, tots els `lw` (100 accessos) sofreixen una penalització $t_p' = t_{MP} - t_h = 6 - 1 = 5\ \text{cicles}$ (@sec-texe-mc):
-
-$$t_{exe,\text{sense cau}} = t_c \cdot (n_{ins} \cdot \text{CPI}_{ideal} + 100 \cdot 5)$$
-
-$$\text{Guany} = \frac{t_{exe,\text{sense cau}}}{t_{exe,\text{amb cau}}}$$
-
-Els valors numèrics finals s'obtenen substituint $n_{ins}$ pel valor mesurat a RARS.
-:::
-
-## Escriptures i polítiques d'escriptura {#sec-l5-escriptures}
-
-En aquesta secció s'analitza com afecten les escriptures al comportament de la memòria cau. El programa ordena els elements d'un vector de 5 enters pel mètode de selecció:
-
-```{.c filename="ordenacio.c"}
-int vec[5] = {20, -18, 45, 12, -1};
-
-void main() {
-    int i, j, aux, max;
-    for (i = 0; i < 4; i++) {
-        max = i;
-        for (j = i + 1; j < 5; j++)
-            if (vec[j] > vec[max]) max = j;
-        aux = vec[i];
-        vec[i] = vec[max];
-        vec[max] = aux;
-    }
-}
-```
-
-La traducció a RV32I que es fa servir en aquesta secció és la següent:
-
-```{.s filename="ordenacio.s"}
-.global _start
-
-.eqv N, 5
-
-.data
-vec:    .word 20, -18, 45, 12, -1    # int vec[5]
-
-.text
-
-_start:
-        la   t0, vec                 # t0 = @vec[0]
-        li   t6, N                   # t6 = N
-        li   s0, 0                   # i = 0
-buc_i:
-        addi t5, t6, -1
-        bge  s0, t5, fibuc_i         # surt si i >= N-1
-
-        mv   s1, s0                  # max = i
-        addi s2, s0, 1               # j = i+1
-buc_j:
-        bge  s2, t6, fibuc_j         # surt si j >= N
-
-        slli t1, s2, 2
-        add  t1, t0, t1              # t1 = @vec[j]
-        lw   t2, 0(t1)               # t2 = vec[j]
-
-        slli t3, s1, 2
-        add  t3, t0, t3              # t3 = @vec[max]
-        lw   t4, 0(t3)               # t4 = vec[max]
-
-        ble  t2, t4, no_canvi        # si vec[j] <= vec[max], no actualitza
-        mv   s1, s2                  # max = j
-no_canvi:
-        addi s2, s2, 1               # j++
-        j    buc_j
-fibuc_j:
-        slli t1, s0, 2
-        add  t1, t0, t1              # t1 = @vec[i]
-        lw   t2, 0(t1)               # t2 = aux = vec[i]
-
-        slli t3, s1, 2
-        add  t3, t0, t3              # t3 = @vec[max]
-        lw   t4, 0(t3)               # t4 = vec[max]
-
-        sw   t4, 0(t1)               # vec[i] = vec[max]
-        sw   t2, 0(t3)               # vec[max] = aux
-
-        addi s0, s0, 1               # i++
-        j    buc_i
-fibuc_i:
-        li   a7, 93
-        li   a0, 0
-        ecall
-```
-
-Carregueu aquest programa a RARS i activeu el mòdul **Tools → Data Cache Simulator** amb **32 blocs de 4 paraules** i política **escriptura immediata amb assignació**.
-
----
-
-::: {#exr-escriptures-taula}
-## `s5_3_1.md`
-
-Considereu la memòria cau de correspondència directa amb **32 blocs de 4 paraules** i política d'**escriptura immediata amb assignació** (@tip-escriptura-immediata-assignacio). Les variables globals comencen a `0x10010000`.
-
-1. Per a cada iteració del bucle exterior (`i = 0, 1, 2, 3`), ompliu la taula amb els accessos a elements de `vec`: índex de l'element accedit, tipus d'accés (L = lectura, E = escriptura) i resultat (En = encert, F = fallada).
-
-2. Compteu el nombre total d'accessos i d'encerts per a cada iteració del bucle exterior.
-
-3. Calculeu la taxa d'encerts global de l'execució completa del programa.
-
-Verifiqueu la taxa d'encerts amb el **Data Cache Simulator** de RARS.
-:::
-
----
-
-::: {#sol-escriptures-taula}
-Els 5 elements de `vec` ocupen $5 \times 4 = 20$ bytes. Com que 20 > 16 (la mida d'un bloc), `vec` ocupa **2 blocs consecutius**: el bloc 0 conté `vec[0]`–`vec[3]` i el bloc 1 conté `vec[4]`.
-
-Com que `vec` comença a `0x10010000`:
-
-| Element | Adreça | Bloc de MC |
-| :--- | :--- | :---: |
-| `vec[0]` | `0x10010000` | 0 |
-| `vec[1]` | `0x10010004` | 0 |
-| `vec[2]` | `0x10010008` | 0 |
-| `vec[3]` | `0x1001000C` | 0 |
-| `vec[4]` | `0x10010010` | 1 |
-: {.striped .hover}
-
-**Iteració `i = 0`** (`max` iniciat a 0; bucle `j` de 1 a 4; intercanvi `vec[0]` ↔ `vec[max]`):
-
-| Accés | Element | L/E | En/F |
-| :--- | :---: | :---: | :---: |
-| Lectura `vec[1]` (j=1) | 1 | L | F |
-| Lectura `vec[max=0]` (j=1) | 0 | L | En |
-| Lectura `vec[2]` (j=2) | 2 | L | En |
-| Lectura `vec[max]` (j=2) | depenent | L | En |
-| Lectura `vec[3]` (j=3) | 3 | L | En |
-| Lectura `vec[max]` (j=3) | depenent | L | En |
-| Lectura `vec[4]` (j=4) | 4 | L | F |
-| Lectura `vec[max]` (j=4) | depenent | L | En |
-| Lectura `vec[i=0]` (intercanvi) | 0 | L | En |
-| Lectura `vec[max]` (intercanvi) | depenent | L | En |
-| Escriptura `vec[i=0]` | 0 | E | En |
-| Escriptura `vec[max]` | depenent | E | En |
-: {.striped .hover}
-
-El patró concret de `max` depèn dels valors del vector. Amb `vec = {20, -18, 45, 12, -1}`, el màxim de la iteració `i = 0` és `vec[2] = 45`, de manera que `max = 2` en acabar el bucle `j`.
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Executeu `ordenacio.s` a RARS amb el **Data Cache Simulator** configurat amb 32 blocs de 4 paraules i política d'escriptura immediata amb assignació. En acabar l'execució, el simulador mostra el nombre total de referències, encerts i fallades. Comproveu que el vector resultant és `{-18, -1, 12, 20, 45}`.
-
-Per seguir l'evolució accés a accés, poseu un *breakpoint* a la primera instrucció del bucle interior i avanceu pas a pas observant els canvis al panell **Cache**.
-:::
-
-**Taxa d'encerts global.**
-
-El vector de 5 elements ocupa parts de 2 blocs. En la primera referència a cada bloc es produeix una fallada de *cold-start*; la resta d'accessos al mateix bloc (mentre no sigui expulsat) son encerts. Amb 32 blocs disponibles i un vector de només 2 blocs, no hi ha conflictes. El nombre de fallades és exactament 2 (una per bloc), independentment del nombre total d'accessos.
-
-Si el nombre total de referències a `vec` al llarg de tota l'execució és $n_{ref}$:
-
-$$\text{taxa d'encerts} = \frac{n_{ref} - 2}{n_{ref}}$$
-
-El valor exacte de $n_{ref}$ s'obté del **Data Cache Simulator**.
+Un cop oberts tots els fitxers i activada l'opció **Assemble all files currently open**, assembleu el projecte. Al panell **Labels** (o **Symbol Table**) de RARS hi apareixeran totes les etiquetes globals dels mòduls. Comproveu que les etiquetes esperades hi són i que les seves adreces s'han resolt correctament.
 :::
 
 ---
 
-::: {#exr-politiques-escriptura}
-## `s5_3_2.md`
+::: {#exr-compilacio-separada}
+## `s4_1_1.s` i `s4_1_2.s`
 
-Considereu el mateix programa i la mateixa geometria de memòria cau (32 blocs de 4 paraules).
+Traduïu a RV32I el programa C següent, repartint el codi en **dos fitxers** tal com s'indica:
 
-1. Com canviaria la taxa d'encerts si la política d'escriptura fos **immediata sense assignació** (@tip-escriptura-immediata-sense-assignacio)? Raoneu la resposta indicant quins accessos canvien de resultat.
+- `s4_1_1.s`: conté únicament la subrutina `abs`.
+- `s4_1_2.s`: conté `_start`, que crida `abs` i emmagatzema el resultat a `resultat`.
 
-2. Com canviaria la taxa d'encerts si la política d'escriptura fos **retardada amb assignació** (@tip-escriptura-retardada)? Raoneu la resposta.
-:::
+```{.c filename="abs.c"}
+int resultat;
 
----
-
-::: {#sol-politiques-escriptura}
-**Apartat 1. Escriptura immediata sense assignació.**
-
-En política d'escriptura immediata sense assignació, una escriptura amb fallada **no porta el bloc a MC**: l'escriptura es fa directament a MP i el bloc no s'emmagatzema a la cau. En el programa d'ordenació, totes les escriptures (`sw`) es produeixen sobre elements que ja han estat llegits prèviament en la mateixa iteració del bucle exterior, de manera que el bloc ja és present a MC en el moment de l'escriptura (és un encert). Per tant, **la taxa d'encerts no varia** respecte a la política immediata amb assignació: el cas de fallada en escriptura no es produeix en aquest programa.
-
-**Apartat 2. Escriptura retardada amb assignació.**
-
-En política d'escriptura retardada amb assignació, les escriptures es fan únicament a MC (sense actualitzar MP immediatament) i el bloc es marca com a modificat (bit D). Quan el bloc és expulsat, s'escriu a MP. En el programa d'ordenació, el vector és tan petit (2 blocs) que cap bloc és expulsat durant l'execució. Les escriptures sobre blocs presents a MC (encerts) no generen cap penalització addicional. La taxa d'encerts és, per tant, **la mateixa** que en les polítiques anteriors.
-:::
-
----
-
-::: {#exr-vector-gran}
-## `s5_3_3.md`
-
-Considereu ara un vector de **64 elements** (en lloc de 5), mantenint la mateixa geometria de memòria cau (correspondència directa, 32 blocs de 4 paraules) i la política d'escriptura immediata amb assignació.
-
-1. Quantes fallades es produirien en l'execució del programa d'ordenació adaptat a 64 elements? Justifiqueu la resposta indicant si es produeixen fallades de *cold-start*, de capacitat o de conflicte (@sec-tipologia-fallades, @cau-tres-c).
-
-2. Sense que augmenti el nombre de fallades, fins a quin nombre mínim de blocs es podria reduir la memòria cau? Raoneu la resposta.
-
-Modifiqueu `ordenacio.s` per adaptar-lo a un vector de 64 elements (canvieu la declaració i els límits dels dos bucles) i verifiqueu les respostes amb el **Data Cache Simulator**.
-:::
-
----
-
-::: {#sol-vector-gran}
-**Apartat 1. Nombre de fallades amb 64 elements.**
-
-El vector de 64 enters ocupa $64 \times 4 = 256$ bytes = 16 blocs de 16 bytes (tots de MC). Amb 32 blocs disponibles, tots els blocs del vector caben simultàniament a la cau: **no hi ha fallades de conflicte ni de capacitat**.
-
-Les úniques fallades són de ***cold-start***: la primera referència a cada un dels 16 blocs. En el recorregut del bucle interior, cada bloc és accedit per primera vegada en ordre creixent d'índex, i a partir d'aquell moment roman a la cau durant tota l'execució (no és expulsat perquè no hi ha conflictes). El nombre total de fallades és, doncs:
-
-$$n_{fallades} = 16$$
-
-**Apartat 2. Nombre mínim de blocs.**
-
-Perquè no augmenti el nombre de fallades, cal que tots els blocs actius en un moment donat càpiguen simultàniament a la cau. En el bucle interior de l'iteració `i`, s'accedeix a `vec[i]` (bloc de `i`) i a `vec[j]` per a tot `j` de `i+1` fins a 63: en el pitjor cas, s'accedeix a tots 16 blocs alhora. Cal, per tant, un mínim de **16 blocs**.
-:::
-
-## Accés a múltiples estructures {#sec-l5-multiple-estructures}
-
-En aquesta secció s'analitza com la presència de múltiples estructures de dades pot provocar **conflictes** a la memòria cau (@sec-tipologia-fallades): dues estructures que es mapegen a les mateixes línies s'expulsen mútuament, degradant la taxa d'encerts fins i tot quan la cau tindria capacitat suficient per contenir-les totes.
-
-El programa calcula la suma element a element de dos vectors i desa el resultat en un tercer:
-
-```{.c filename="suma_vectors.c"}
-int A[128], B[128], C[128];
+int abs(int x) {
+    if (x < 0)
+        return -x;
+    else
+        return x;
+}
 
 void main() {
-    int i;
-    for (i = 0; i < 128; i++)
-        C[i] = A[i] + B[i];
+    resultat = abs(-7);
 }
 ```
 
-La traducció a RV32I fa servir tres punters que avancen en paral·lel:
+Tingueu en compte:
 
-```{.s filename="suma_vectors.s"}
-.global _start
+- `abs` és **uninivell**: determineu si cal algun registre segur.
+- `_start` és **multinivell**: determineu quins valors, si n'hi ha, travessen la crida i cal preservar.
+- Obriu els dos fitxers a RARS, activeu **Settings → Assemble all files currently open** i assembleu. Comproveu que `abs` apareix al panell **Labels**.
+:::
 
-.eqv N, 128
+---
 
-.data
-A:      .space N*4              # int A[128]
-B:      .space N*4              # int B[128]
-C:      .space N*4              # int C[128]
+::: {#sol-compilacio-separada}
+**Anàlisi de registres segurs.**
+
+`abs` és uninivell: no fa cap crida. No hi ha cap crida que destrueixi cap registre; tots els temporals van a registres `t`. BA buit.
+
+`_start` és multinivell (crida `abs`). L'únic valor que cal preservar és `ra`; no hi ha cap altre valor generat abans de la crida que s'usi després.
+
+| Offset des de `sp` | Contingut |
+| :--- | :--- |
+| `+0` | `ra` desat |
+: {.striped .hover}
+
+Mida del BA: 16 bytes (@imp-ec-alineacio-pila).
+
+```{.s filename="s4_1_1.s"}
+.global abs
 
 .text
 
-_start:
-        la   t0, A              # t0 = @A[0]
-        la   t1, B              # t1 = @B[0]
-        la   t2, C              # t2 = @C[0]
-        li   t3, N
-        slli t3, t3, 2
-        add  t3, t0, t3         # t3 = @A[N] (sentinella)
-for:
-        bgeu t0, t3, fifor
-        lw   t4, 0(t0)          # t4 = A[i]
-        lw   t5, 0(t1)          # t5 = B[i]
-        add  t4, t4, t5         # t4 = A[i] + B[i]
-        sw   t4, 0(t2)          # C[i] = A[i] + B[i]
-        addi t0, t0, 4          # A[i+1]
-        addi t1, t1, 4          # B[i+1]
-        addi t2, t2, 4          # C[i+1]
-        j    for
-fifor:
-        li   a7, 93
-        li   a0, 0
-        ecall
+# abs(int x)
+# a0 = x; retorna |x| a a0
+abs:
+        bge  a0, zero, positiu  # si x >= 0, retorna x directament
+        neg  a0, a0             # a0 = -x
+positiu:
+        ret
 ```
 
-Carregueu aquest programa a RARS i activeu el **Data Cache Simulator**.
-
----
-
-::: {#exr-suma-vectors-cd}
-## `s5_4_1.md`
-
-Considereu una memòria cau de correspondència directa amb **16 blocs de 4 paraules** i política d'**escriptura immediata amb assignació**. Les variables globals comencen a `0x10010000`.
-
-1. Calculeu la mida en blocs de cada vector. Determineu a quines línies de MC es mapegen els blocs de `A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
-
-2. Calculeu la taxa d'encerts esperada. Justifiqueu el resultat a partir de l'anàlisi de conflictes.
-
-Verifiqueu la resposta amb el **Data Cache Simulator** configurat amb 16 blocs de 4 paraules.
-:::
-
----
-
-::: {#sol-suma-vectors-cd}
-**Apartat 1. Mapeig i conflictes.**
-
-Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapeig en correspondència directa assigna el bloc $n$ de MP a la línia $n \bmod 16$.
-
-`A` comença a `0x10010000` → bloc MP 0 a la línia 0, bloc MP 1 a la línia 1, …, bloc MP 15 a la línia 15, bloc MP 16 a la línia 0, …
-
-`B` comença a `0x10010000 + 512 = 0x10010200` → bloc MP 32 a la línia 0, bloc MP 33 a la línia 1, … Els blocs de `B` es mapegen exactament a les **mateixes línies** que els de `A`.
-
-`C` comença a `0x10010000 + 1024 = 0x10010400` → bloc MP 64 a la línia 0, bloc MP 65 a la línia 1, … Els blocs de `C` es mapegen també a les **mateixes línies** que `A` i `B`.
-
-Els tres vectors es mapegen a les mateixes 16 línies: **conflicte total**. A cada iteració del bucle, l'accés a `A[i]`, `B[i]` i `C[i]` accedeix a la mateixa línia de MC, expulsant el bloc anterior en cada accés.
-
-**Apartat 2. Taxa d'encerts.**
-
-A cada iteració es fan 3 accessos (lectura `A[i]`, lectura `B[i]`, escriptura `C[i]`), cadascun a la mateixa línia de MC. Seqüència per a la iteració $i$:
-
-1. `lw A[i]`: fallada (el bloc de `A[i]` no és a MC o ha estat expulsat).
-2. `lw B[i]`: fallada (expulsa el bloc de `A[i]` que s'acaba de portar).
-3. `sw C[i]`: fallada en escriptura amb assignació (expulsa el bloc de `B[i]`).
-
-Els 3 accessos de cada iteració son fallades. Amb 128 iteracions i 3 accessos cadascuna:
-
-$$\text{taxa d'encerts} = \frac{0}{384} = 0{,}00$$
-
-::: {.callout-tip title="Comprovació pràctica"}
-Configureu el **Data Cache Simulator** amb 16 blocs de 4 paraules, correspondència directa i escriptura immediata amb assignació. Executeu `suma_vectors.s` i observeu que la taxa d'encerts és 0 (o propera a 0 pels accessos del codi de control del bucle, que no es comptabilitzen com a dades).
-:::
-:::
-
----
-
-::: {#exr-padding}
-## `s5_4_2.s`
-
-La taxa d'encerts nul·la de l'exercici anterior es deu al fet que els tres vectors es mapegen exactament a les mateixes línies. Una manera d'eliminar els conflictes sense canviar l'algorisme és afegir **padding** entre vectors: un espai buit que desplaça l'adreça base del vector següent i trenca l'alineació que causa el conflicte.
-
-Modifiqueu la declaració de dades de `suma_vectors.s` afegint padding entre els vectors de manera que la taxa d'encerts sigui **0,75**. El fitxer resultant ha de ser `s5_4_2.s`.
-
-Justifiqueu al mateix fitxer (com a comentaris) el valor de padding escollit i per qué produeix la taxa d'encerts desitjada.
-
-Verifiqueu el resultat amb el **Data Cache Simulator**.
-:::
-
----
-
-::: {#sol-padding}
-Amb 16 blocs i blocs de 4 paraules (16 bytes), la cau cobreix $16 \times 16 = 256$ bytes. Els conflictes es produeixen perquè `A`, `B` i `C` estan separats exactament 512 bytes = 32 blocs = múltiple de 16, de manera que es mapegen a les mateixes línies.
-
-Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapegen a línies **diferents**: en cada iteració del bucle, els blocs de `A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada (*cold-start*): 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
-
-$$\text{taxa d'encerts} = \frac{384 - 96}{384} = \frac{288}{384} = 0{,}75$$
-
-Per separar els vectors de manera que no es solapin al mapa de la cau, n'hi ha prou amb afegir un padding que desplaci `B` i `C` un nombre de bytes que no sigui múltiple de 256 (la mida total de la cau). Un padding de **16 bytes** (1 bloc) és suficient:
-
-```{.s filename="s5_4_2.s"}
+```{.s filename="s4_1_2.s"}
 .global _start
 
-.eqv N, 128
-.eqv PAD, 16                    # 1 bloc de padding entre vectors
-
 .data
-A:      .space N*4              # int A[128]: 512 bytes, línies 0–15
-        .space PAD              # padding: desplaça B 1 bloc
-B:      .space N*4              # int B[128]: 512 bytes, línies 1–0 (rotació)
-        .space PAD              # padding: desplaça C 1 bloc addicional
-C:      .space N*4              # int C[128]: 512 bytes, línies 2–1 (rotació)
+resultat: .word 0
 
 .text
 
 _start:
-        la   t0, A
-        la   t1, B
-        la   t2, C
-        li   t3, N
-        slli t3, t3, 2
-        add  t3, t0, t3
-for:
-        bgeu t0, t3, fifor
-        lw   t4, 0(t0)
-        lw   t5, 0(t1)
-        add  t4, t4, t5
-        sw   t4, 0(t2)
-        addi t0, t0, 4
-        addi t1, t1, 4
-        addi t2, t2, 4
-        j    for
-fifor:
+        addi sp, sp, -16
+        sw   ra, 0(sp)
+
+        li   a0, -7
+        jal  ra, abs            # a0 = abs(-7) = 7
+
+        la   t0, resultat
+        sw   a0, 0(t0)          # resultat = 7
+
+        lw   ra, 0(sp)
+        addi sp, sp, 16
+
         li   a7, 93
         li   a0, 0
         ecall
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Executeu `s5_4_2.s` amb el **Data Cache Simulator** (16 blocs, 4 paraules/bloc, correspondència directa, escriptura immediata amb assignació). La taxa d'encerts ha de ser 0,75. Comproveu també que el resultat al vector `C` coincideix amb el de `suma_vectors.s` original (els valors de `C` han de ser iguals en ambdós casos, ja que el padding no afecta la lògica del programa).
+Obriu `s4_1_1.s` i `s4_1_2.s` a RARS, activeu **Settings → Assemble all files currently open** i assembleu. Al panell **Labels** han d'aparèixer les etiquetes `abs`, `_start` i `resultat` amb les seves adreces.
+
+Executeu el programa i comproveu que la variable global `resultat` conté el valor `7`.
+
+Proveu també amb el valor `0`: el resultat ha de ser `0` (el camí `bge` és cert per a zero).
 :::
 :::
 
----
+## Subrutina `descompon`
 
-::: {#exr-completament-associativa}
-## `s5_4_3.md`
+En aquesta sessió es desenvolupa un programa que converteix un nombre real codificat en **coma fixa** al format de **coma flotant IEEE-754 de simple precisió** (@sec-ieee754). El programa s'estructura en dues subrutines (`descompon` i `compon`) i un `_start` repartits en dos fitxers, aplicant la compilació separada de la secció anterior.
 
-Considereu ara una memòria cau **completament associativa** (@sec-completament-associativa) amb **16 blocs de 4 paraules** i política LRU (@sec-politica-reemplacement).
+El **format de coma fixa** que s'usa en aquesta sessió té 32 bits: el bit 31 conté el signe (0 per als positius) i els bits 30–0 representen la magnitud en base 2, amb 19 bits de part entera (bits 30–12) i 12 bits de part fraccionària (bits 11–0):
 
-Calculeu la taxa d'encerts en l'execució del programa `suma_vectors.s`. Raoneu la resposta indicant si es produeixen fallades de conflicte, de capacitat o únicament de *cold-start*.
+$$\text{valor}(A) = (-1)^{A_{31}} \times \sum_{i=0}^{30} A_i \cdot 2^{i-12}$$
 
-Verifiqueu la resposta amb el **Data Cache Simulator** configurat en mode completament associatiu.
-:::
+El **format de coma flotant IEEE-754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent en excés a 127 (bits 30–23) i 23 bits de fracció amb bit ocult (@cau-bit-ocult) (bits 22–0).
 
----
+El programa de conversió s'organitza en dos passos:
 
-::: {#sol-completament-associativa}
-En una cau completament associativa, qualsevol bloc de MP pot anar a qualsevol línia: no hi ha conflictes per mapeig fix. La cau té 16 línies i els tres vectors junts ocupen $3 \times 32 = 96$ blocs: **no caben tots simultàniament** (96 > 16). Hi haurà, doncs, fallades de **capacitat**.
-
-A cada iteració del bucle s'accedeix a un bloc de `A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment son els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada de *cold-start* i les tres referències restants al mateix bloc (els altres 3 elements) son encerts.
-
-El comportament és idèntic al d'accés seqüencial sense conflictes: 32 fallades per vector × 3 vectors = 96 fallades, 384 − 96 = 288 encerts.
-
-$$\text{taxa d'encerts} = \frac{288}{384} = 0{,}75$$
-
-::: {.callout-tip title="Comprovació pràctica"}
-Configureu el **Data Cache Simulator** en mode completament associatiu (camp **Placement policy: Full**) amb 16 blocs de 4 paraules i política de reemplaçament LRU. Executeu `suma_vectors.s` i verifiqueu que la taxa d'encerts és 0,75.
-:::
-:::
-
----
-
-::: {#exr-grau-minim}
-## `s5_4_4.md`
-
-Considereu una memòria cau **associativa per conjunts** (@sec-associativa-conjunts) amb blocs de 4 paraules i **16 conjunts**.
-
-Quin ha de ser el **grau mínim d'associativitat** (nombre de vies per conjunt) perquè la taxa d'encerts del programa `suma_vectors.s` sigui superior a 0? Raoneu la resposta sense usar el simulador.
-
-Verifiqueu la resposta amb el **Data Cache Simulator** ajustant el camp **Set size** al valor que s'aproximi més al grau calculat (el simulador només accepta potències de 2).
-:::
-
----
-
-::: {#sol-grau-minim}
-Amb 16 conjunts i blocs de 4 paraules (16 bytes), el mapeig és: bloc de MP $n$ → conjunt $n \bmod 16$. Els tres vectors ocupen 32 blocs cadascun i es mapegen als mateixos 16 conjunts amb el mateix patró que en correspondència directa: els blocs $i$, $i + 32$ i $i + 64$ (un de cada vector) van tots al conjunt $i \bmod 16$.
-
-Amb grau 1 (correspondència directa), els 3 blocs que competeixen per cada conjunt s'expulsen contínuament: taxa d'encerts = 0.
-
-Amb grau **2**, cada conjunt té 2 vies. A cada iteració hi ha 3 blocs actius que competeixen pel mateix conjunt (un de `A`, un de `B`, un de `C`): 3 > 2, de manera que amb LRU un dels tres blocs és expulsat a cada accés. Encara hi haurà conflictes i la taxa d'encerts continuarà sent 0.
-
-Amb grau **3**, cada conjunt té 3 vies: els 3 blocs actius ($A[i]$, $B[i]$, $C[i]$) caben simultàniament al mateix conjunt sense expulsar-se. La primera referència a cada bloc és una fallada de *cold-start* i les tres referències restants al bloc son encerts. La taxa d'encerts és 0,75 > 0.
-
-El **grau mínim** és, per tant, **3**.
-
-::: {.callout-tip title="Comprovació pràctica"}
-El simulador RARS només accepta potències de 2. Configureu **Set size = 4** (el valor potència de 2 més proper a 3) amb 16 conjunts i 4 paraules/bloc. Executeu `suma_vectors.s` i verifiqueu que la taxa d'encerts és 0,75. Comproveu també amb **Set size = 2** que la taxa és 0.
-:::
-:::
-
-## Optimització: *loop tiling* {#sec-l5-tiling}
-
-El programa de suma de vectors de la secció anterior té un patró d'accés favorable: recorre les tres estructures de manera estrictament seqüencial i en paral·lel, de manera que la localitat espacial és màxima. No tots els programes tenen aquest comportament. En alguns casos, el patró d'accés provoca que elements carregats a la cau siguin expulsats abans de ser reutilitzats, malbaratant la localitat temporal.
-
-El programa següent calcula el producte d'una matriu per un vector:
-
-```{.c filename="matvec.c"}
-int V1[16], M[16][16], V2[16];
+```{.c filename="main.c"}
+int signe;
+int exponent;
+int mantissa;
+int cfixa    = 0x87D18A00;
+float cflotant;
 
 void main() {
-    int i, j, tmp;
-    for (i = 0; i < 16; i++) {
-        tmp = 0;
-        for (j = 0; j < 16; j++)
-            tmp += M[i][j] * V2[j];
-        V1[i] = tmp;
-    }
+    descompon(cfixa, &signe, &exponent, &mantissa);
+    cflotant = compon(signe, exponent, mantissa);
 }
 ```
 
-`M` s'emmagatzema per files (*row-major order*, @sec-matrius-declaracio): els elements `M[i][0]`, `M[i][1]`, …, `M[i][15]` son contigus en memòria. El bucle interior recorre la fila `i` de `M` i tot el vector `V2` de manera seqüencial. A cada iteració del bucle exterior, `V2` es llegeix sencer (16 elements). Si la cau és prou gran per contenir `V2` i almenys una fila de `M` simultàniament, els accessos a `V2` a partir de la segona iteració exterior son encerts. Si la cau és massa petita, `V2` és expulsat a cada iteració i s'ha de tornar a carregar des de la memòria principal.
+La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE-754: el signe, la mantissa normalitzada sense bit ocult (23 bits) i l'exponent en excés a 127 (8 bits):
 
-L'optimització ***loop tiling*** (també anomenada ***loop blocking*** o ***tiling***) reorganitza el recorregut per aprofitar la localitat temporal de `V2`: en lloc de multiplicar tota una fila de `M` per tot `V2`, es processen **blocs de 4 columnes** alhora. Primer s'itera per totes les files amb les columnes 0–3, després amb les columnes 4–7, i així fins a completar les 16 columnes. D'aquesta manera, els 4 elements de `V2` implicats en cada bloc caben en un únic bloc de cau i es reutilitzen en totes les files abans de ser expulsats:
-
-```{.c filename="matvec_tiling.c"}
-int V1[16];
-int M[16][16], V2[16];
-
-void main() {
-    int i, j, k;
-    for (k = 0; k < 4; k++)
-        for (i = 0; i < 16; i++) {
-            int tmp = 0;
-            for (j = 0; j < 4; j++)
-                tmp += M[i][k * 4 + j] * V2[k * 4 + j];
-            V1[i] += tmp;
+```{.c filename="descompon.c"}
+void descompon(int cf, int *s, int *e, int *m) {
+    int exp;
+    *s = (cf < 0);
+    cf = cf << 1;
+    if (cf == 0)
+        exp = 0;
+    else {
+        exp = 18;
+        while (cf >= 0) {
+            cf = cf << 1;
+            exp--;
         }
+        cf = (cf >> 8) & 0x7FFFFF;
+        exp = exp + 127;
+    }
+    *e = exp;
+    *m = cf;
 }
 ```
 
-El bucle `k` itera els 4 blocs de columnes (0–3, 4–7, 8–11, 12–15). Per a cada bloc, el bucle `i` recorre totes les files de `M` acumulant parcialment el resultat a `V1[i]`. El bucle `j` recorre els 4 elements del bloc de columnes. Amb blocs de 4 elements (= 1 bloc de cau de 4 paraules), els accesos a `V2[k*4 + j]` son encerts a partir del primer element del bloc, perquè els 4 elements es carreguen junts en la primera fallada.
-
-Carregueu `matvec.s` (versió original) a RARS i determineu amb el **Data Cache Simulator** la taxa d'encerts per a diverses geometries de cau completant la taula de l'exercici.
+L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 13 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menor pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en excés.
 
 ---
 
-::: {#exr-tiling}
-## `s5_5_1.s`
+::: {#exr-descompon}
+## `s4_2_1.md` i `s4_2_1.s`
 
-Traduïu a RV32IM el programa `matvec_tiling.c`. El fitxer `s5_5_1.s` ha de contenir el programa complet amb `_start`.
+Traduïu a RV32I la subrutina `descompon`. El fitxer `s4_2_1.s` ha de contenir **únicament** la subrutina, sense `_start`.
+
+Abans d'escriure cap instrucció, responeu al fitxer `s4_2_1.md`:
+
+1. Determineu si `descompon` és uninivell o multinivell i justifiqueu-ho.
+2. Assigneu cada variable local (`cf`, `exp`) i cada paràmetre (`cf`, `*s`, `*e`, `*m`) a un registre i justifiqueu l'elecció.
+3. Dibuixeu el bloc d'activació amb els offsets de cada element.
+:::
+
+---
+
+::: {#sol-descompon}
+**Pas 1. Uninivell o multinivell.**
+
+`descompon` és **uninivell**: no fa cap crida. No cal preservar `ra`.
+
+**Pas 2. Assignació de registres.**
+
+Els paràmetres arriben per convenció ABI: `a0 = cf`, `a1 = @s`, `a2 = @e`, `a3 = @m`. Cap valor travessa una frontera de crida, de manera que tots els temporals van a registres `t`. BA buit.
+
+| Variable | Registre |
+| :--- | :--- |
+| `cf` (es modifica al llarg de la subrutina) | `t0` |
+| `exp` | `t1` |
+| `@s`, `@e`, `@m` (adreces dels paràmetres) | `a1`, `a2`, `a3` |
+: {.striped .hover}
+
+**Pas 3. Bloc d'activació.**
+
+`descompon` és uninivell sense variables locals: BA buit.
+
+```{.s filename="s4_2_1.s"}
+.global descompon
+
+.text
+
+# descompon(int cf, int *s, int *e, int *m)
+# a0 = cf, a1 = @s, a2 = @e, a3 = @m
+descompon:
+        # *s = (cf < 0)
+        slt  t2, a0, zero       # t2 = 1 si cf < 0, 0 si no
+        sw   t2, 0(a1)          # *s = t2
+
+        # cf = cf << 1  (elimina el bit de signe)
+        slli t0, a0, 1          # t0 = cf << 1
+
+        # if (cf == 0) exp = 0
+        li   t1, 0              # exp = 0 (cas zero)
+        beqz t0, desa           # si cf == 0, salta a desar
+
+        # else: exp = 18
+        li   t1, 18
+
+        # while (cf >= 0): normalitza
+while:
+        blt  t0, zero, fwhile   # si bit 31 és 1 (cf < 0), fi del bucle
+        slli t0, t0, 1          # cf = cf << 1
+        addi t1, t1, -1         # exp--
+        j    while
+fwhile:
+
+        # cf = (cf >> 8) & 0x7FFFFF
+        # Usem srli (desplaçament lògic) i no srai (aritmètic): en aquest punt
+        # t0 té el bit 31 a 1 (resultat de la normalització), de manera que
+        # srai propagaria aquest bit i deixaria els 8 bits superiors a 1 abans
+        # de la màscara. srli garanteix que els bits desplaçats entrants siguin
+        # 0, fent que la màscara 0x7FFFFF elimini correctament el bit ocult.
+        srli t0, t0, 8
+        li   t2, 0x7FFFFF
+        and  t0, t0, t2         # elimina el bit ocult i bits superiors
+
+        # exp = exp + 127
+        addi t1, t1, 127
+
+desa:
+        sw   t1, 0(a2)          # *e = exp
+        sw   t0, 0(a3)          # *m = cf
+
+        ret
+```
+
+::: {.callout-tip title="Comprovació pràctica"}
+Per provar `descompon` de manera aïllada, creeu temporalment un `_start` mínim al fitxer `s4_3_1.s` (que desenvolupareu a la secció següent) que declari les variables globals i faci la crida:
+
+```{.s filename="s4_3_1.s"}
+.global _start
+
+.data
+signe:    .word 0
+exponent: .word 0
+mantissa: .word 0
+cfixa:    .word 0x87D18A00
+
+.text
+_start:
+        addi sp, sp, -16
+        sw   ra, 0(sp)
+
+        la   a0, cfixa
+        lw   a0, 0(a0)
+        la   a1, signe
+        la   a2, exponent
+        la   a3, mantissa
+        jal  ra, descompon
+
+        lw   ra, 0(sp)
+        addi sp, sp, 16
+
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+
+Obriu `s4_2_1.s` i `s4_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
+
+- `signe` = `0x00000001`
+- `exponent` = `0x0000008D` (141 en decimal)
+- `mantissa` = `0x007A3140`
+:::
+:::
+
+## Subrutina `compon` i programa complet
+
+La subrutina `compon` fa el pas invers: rep els tres camps separats i els combina en un únic valor de 32 bits en format IEEE-754 de simple precisió. El signe s'ha de desplaçar al bit 31, l'exponent als bits 30–23, i la mantissa ja ocupa els bits 22–0:
+
+```{.c filename="compon.c"}
+float compon(int signe, int exponent, int mantissa) {
+    return (signe << 31) | (exponent << 23) | mantissa;
+}
+```
+
+Els tres camps no se solapen (cada un ocupa exclusivament els seus bits), de manera que la combinació amb `or` és directa sense necessitat de màscares.
+
+---
+
+::: {#exr-compon}
+## `s4_3_1.s`
+
+Substituïu el `_start` temporal de la secció anterior pel programa complet. El fitxer `s4_3_1.s` ha de contenir `compon` i `_start`, que crida `descompon` (definida a `s4_2_1.s`) i `compon` en seqüència i emmagatzema el resultat a `cflotant`.
 
 Abans d'escriure cap instrucció:
 
-1. Identifiqueu totes les variables del programa (`i`, `j`, `k`, `tmp`, els punters o adreces base que calgui) i assigneu-les a registres. Justifiqueu si useu registres `t` o `s`.
-
-2. Determineu l'stride d'accés a `M[i][k*4 + j]` en funció de com varien `i`, `j` i `k`. Indiqueu quin dels tres índexs varia més ràpidament al bucle interior i com avança el punter corresponent.
-
-A continuació, escriviu el codi RV32IM complet.
-
-Verifiqueu que el resultat al vector `V1` coincideix amb el del programa original no optimitzat.
+1. Determineu si `compon` és uninivell o multinivell i justifiqueu-ho.
+2. Determineu si `_start` és uninivell o multinivell. Identifiqueu quins valors es generen abans d'una crida i s'usen després, i assigneu-los a registres segurs.
+3. Dibuixeu el bloc d'activació de `_start`.
 :::
 
 ---
 
-::: {#sol-tiling}
-**Pas 1. Assignació de registres.**
+::: {#sol-compon}
+**Pas 1. `compon`: uninivell o multinivell.**
 
-`_start` és **multinivell** si s'implementa amb subrutines, però en aquest cas el programa és pla (sense crides): tots els registres son `t` tret dels que han de sobreviure als tres nivells de bucle aniuat. Els valors que creuen el bucle interior (`i`, `k`, les adreces base) han de ser en registres que el bucle interior no destrueixi. Com que no hi ha crides, es poden usar registres `t` sempre que el compilador (o el programador) garanteixi que el bucle interior no els sobreescriu. Per claredat i robustesa s'usen `s` per als índexs dels bucles exteriors:
+`compon` és **uninivell**: no fa cap crida. Tots els temporals van a registres `t`; BA buit.
 
-| Variable | Registre | Justificació |
-| :--- | :--- | :--- |
-| `k` | `s0` | índex del bucle més exterior; ha de sobreviure als bucles `i` i `j` |
-| `i` | `s1` | índex del bucle mitjà; ha de sobreviure al bucle `j` |
-| sentinella `k` | `s6` | límit del bucle `k`; invariant durant tota l'execució |
-| sentinella `i` | `s2` | límit del bucle `i`; invariant durant tota l'execució |
-| `@V1[0]` | `s3` | adreça base de `V1`; invariant durant tota l'execució |
-| `@M[0][0]` | `s4` | adreça base de `M`; invariant durant tota l'execució |
-| `@V2[0]` | `s5` | adreça base de `V2`; invariant durant tota l'execució |
-| `j` | `t0` | índex del bucle interior |
-| `tmp` | `t1` | acumulador parcial; reinicialitzat a cada iteració de `i` |
-| punter `@M[i][k*4+j]` | `t2` | avança 4 bytes a cada iteració de `j`; recalculat a cada `i` |
-| `@V2[k*4]` | `t3` | adreça base del bloc de `V2` per al `k` actual; recalculada a cada `k` |
-| còpia de `t3` per al bucle `j` | `t4` | avança 4 bytes a cada iteració de `j` |
-| sentinella `j` | `t5` | límit del bucle `j`; reinicialitzat a cada `i` |
-| temporals del bucle `j` | `t6`, `t7` | càrregues i producte; no cal preservar-los entre iteracions |
+**Pas 2. `_start`: registres segurs.**
+
+`_start` és **multinivell**: crida `descompon` i després `compon`. Els valors generats abans de la primera crida que s'usen després són les adreces de `signe`, `exponent` i `mantissa`, necessàries per carregar els resultats de `descompon` abans de cridar `compon`. Cal preservar també `ra`.
+
+| Dada | Registre |
+| :--- | :--- |
+| `ra` | `ra` (desat al BA) |
+| `@signe` | `s0` |
+| `@exponent` | `s1` |
+| `@mantissa` | `s2` |
 : {.striped .hover}
 
-**Pas 2. Stride d'accés.**
+**Pas 3. Bloc d'activació de `_start`.**
 
-Al bucle interior (`j` de 0 a 3), `j` varia més ràpidament. L'element accedit és `M[i][k*4 + j]`: per a `i` i `k` fixos, en incrementar `j` en 1 l'adreça avança `4 bytes` (stride = 4, elements contigus a la mateixa fila). Es pot usar un punter `t2` que s'inicialitza a `@M[i][k*4]` i s'incrementa 4 bytes a cada iteració del bucle `j`. Anàlogament, `V2[k*4 + j]` avança 4 bytes per iteració de `j`.
+| Offset des de `sp` | Contingut |
+| :--- | :--- |
+| `+0` | `s0` desat |
+| `+4` | `s1` desat |
+| `+8` | `s2` desat |
+| `+12` | `ra` desat |
+: {.striped .hover}
 
-```{.s filename="s5_5_1.s"}
+Mida del BA: 16 bytes (@imp-ec-alineacio-pila).
+
+```{.s filename="s4_3_1.s"}
 .global _start
-
-.eqv NI, 16
-.eqv NJ, 16
-.eqv BLK, 4                    # mida del bloc de tiling
+.global compon
 
 .data
-        .align 2
-V1:     .word 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   # int V1[16] inicialitzat a 0
-        .align 2
-M:      .space NI*NJ*4                            # int M[16][16]
-        .align 2
-V2:     .space NJ*4                               # int V2[16]
+signe:    .word 0
+exponent: .word 0
+mantissa: .word 0
+cfixa:    .word 0x87D18A00
+cflotant: .word 0
 
 .text
 
+# compon(int signe, int exponent, int mantissa)
+# a0 = signe, a1 = exponent, a2 = mantissa
+# retorna el valor IEEE-754 SP a a0
+compon:
+        slli t0, a0, 31         # t0 = signe << 31
+        slli t1, a1, 23         # t1 = exponent << 23
+        or   t0, t0, t1         # t0 = (signe << 31) | (exponent << 23)
+        or   a0, t0, a2         # a0 = t0 | mantissa
+        ret
+
 _start:
-        la   s3, V1             # s3 = @V1[0]
-        la   s4, M              # s4 = @M[0][0]
-        la   s5, V2             # s5 = @V2[0]
-        li   s6, 4              # s6 = sentinella k = NJ/BLK (invariant)
-        li   s2, NI             # s2 = sentinella i (invariant)
+        # pròleg
+        addi sp, sp, -16
+        sw   s0,  0(sp)
+        sw   s1,  4(sp)
+        sw   s2,  8(sp)
+        sw   ra, 12(sp)
 
-        li   s0, 0              # k = 0
-buc_k:
-        bge  s0, s6, fibuc_k
+        la   s0, signe
+        la   s1, exponent
+        la   s2, mantissa
 
-        # @V2[k*4] = @V2 + k*BLK*4 = @V2 + k*16
-        slli t3, s0, 4          # t3 = k * 16
-        add  t3, s5, t3         # t3 = @V2[k*4]
+        # descompon(cfixa, &signe, &exponent, &mantissa)
+        la   a0, cfixa
+        lw   a0, 0(a0)
+        mv   a1, s0
+        mv   a2, s1
+        mv   a3, s2
+        jal  ra, descompon
 
-        li   s1, 0              # i = 0
-buc_i:
-        bge  s1, s2, fibuc_i
+        # compon(signe, exponent, mantissa)
+        lw   a0, 0(s0)          # a0 = signe
+        lw   a1, 0(s1)          # a1 = exponent
+        lw   a2, 0(s2)          # a2 = mantissa
+        jal  ra, compon         # a0 = cflotant
 
-        li   t1, 0              # tmp = 0
+        la   t0, cflotant
+        sw   a0, 0(t0)          # cflotant = a0
 
-        # @M[i][k*4] = @M + i*NJ*4 + k*16
-        li   t0, NJ
-        mul  t2, s1, t0         # t2 = i * NJ
-        slli t2, t2, 2          # t2 = i * NJ * 4 (bytes)
-        add  t2, s4, t2         # t2 = @M[i][0]
-        slli t0, s0, 4          # t0 = k * 16 (offset de columna en bytes)
-        add  t2, t2, t0         # t2 = @M[i][k*4]
+        # epíleg
+        lw   s0,  0(sp)
+        lw   s1,  4(sp)
+        lw   s2,  8(sp)
+        lw   ra, 12(sp)
+        addi sp, sp, 16
 
-        mv   t4, t3             # t4 = @V2[k*4] (còpia local per al bucle j)
-
-        li   t0, 0              # j = 0
-        li   t5, BLK            # t5 = sentinella j
-buc_j:
-        bge  t0, t5, fibuc_j
-
-        lw   t6, 0(t2)          # t6 = M[i][k*4 + j]
-        lw   t7, 0(t4)          # t7 = V2[k*4 + j]
-        mul  t6, t6, t7         # t6 = M[i][k*4+j] * V2[k*4+j]
-        add  t1, t1, t6         # tmp += producte
-
-        addi t2, t2, 4          # punter M avança al següent element de la fila
-        addi t4, t4, 4          # punter V2 avança al següent element del bloc
-        addi t0, t0, 1          # j++
-        j    buc_j
-fibuc_j:
-        # V1[i] += tmp
-        slli t2, s1, 2          # t2 = i * 4
-        add  t2, s3, t2         # t2 = @V1[i]
-        lw   t6, 0(t2)          # t6 = V1[i]
-        add  t6, t6, t1         # t6 = V1[i] + tmp
-        sw   t6, 0(t2)          # V1[i] += tmp
-
-        addi s1, s1, 1          # i++
-        j    buc_i
-fibuc_i:
-        addi s0, s0, 1          # k++
-        j    buc_k
-fibuc_k:
         li   a7, 93
         li   a0, 0
         ecall
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-**Verificació de correctesa.** Inicialitzeu `M` i `V2` amb valors coneguts (per exemple, `M[i][j] = 1` per a tots `i`, `j` i `V2[j] = j`). Executeu primer el programa original i anoteu els valors de `V1`. Executeu després `s5_5_1.s` i comproveu que `V1` conté els mateixos valors.
+Obriu `s4_2_1.s` i `s4_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
 
-**Verificació de rendiment.** Executeu `s5_5_1.s` amb el **Data Cache Simulator** per a les geometries de la taula. Compareu les taxes d'encerts amb les del programa original no optimitzat:
+- `cflotant` = `0xC6FA3140`
 
-| Capacitat | CD | Assoc. grau 2 | Assoc. grau 4 | Assoc. grau 8 | Comp. assoc. |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| 8 blocs | | | | | |
-| 16 blocs | | | | | |
-| 32 blocs | | | | | |
-| 64 blocs | | | | | |
-| 128 blocs | | | | | |
-: Taxa d'encerts del programa amb *tiling* per a diferents geometries de cau {.striped .hover}
+Per verificar els casos límit, substituïu el valor inicial de `cfixa` i comproveu que `cflotant` pren el valor esperat:
 
-En general, el *tiling* millora la taxa d'encerts per a caus petites, on el vector `V2` no cau sencer: el *tiling* garanteix que els 4 elements del bloc actiu de `V2` sempre romanen a la cau durant tot el bucle interior.
+| `cfixa` | Valor decimal | `cflotant` esperat |
+| :--- | :--- | :--- |
+| `0x00000000` | $0{,}0$ | `0x00000000` |
+| `0x80000000` | $-0{,}0$ | `0x80000000` |
+| `0x0000C800` | $12{,}75$ | `0x414C0000` |
+: {.striped .hover}
 :::
+:::
+
+## Errors de precisió
+
+El programa de conversió desenvolupat en aquesta sessió és correcte per a la majoria de valors, però en alguns casos introdueix una **pèrdua de precisió** inevitable. En aquest exercici analitzareu les causes i les condicions en què es produeix.
+
+---
+
+::: {#exr-precisio}
+## `s4_4_1.md`
+
+Responeu les preguntes següents sobre el programa de conversió de coma fixa a coma flotant:
+
+1. Quina condició ha de complir el valor inicial de `cfixa` perquè es produeixi pèrdua de precisió en la conversió? Raoneu la resposta en termes del nombre de bits significatius de cada format.
+
+2. Indiqueu un valor concret de `cfixa` per al qual es produeixi pèrdua de precisió. Indiqueu també el valor de `cflotant` resultant i expliqueu quins bits s'han perdut.
+
+3. En quina instrucció concreta del codi C de `descompon` es produeix la pèrdua de precisió?
+
+4. Quin dels quatre modes d'arrodoniment (@sec-arrodoniment) aplica aquest programa de conversió? Justifiqueu-ho.
+
+5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE-754 de simple precisió però fora del rang del format de coma fixa. Indiqueu també quin és el menor nombre potència de 2 que compleix aquesta condició.
+:::
+
+---
+
+::: {#sol-precisio}
+**Pregunta 1.**
+
+El format de coma fixa té 31 bits de magnitud; el format IEEE-754 SP té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menor pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes com per caure en aquest rang un cop normalitzada.
+
+**Pregunta 2.**
+
+Un exemple clar és `cfixa = 0x7FFFFFFF` (magnitud màxima: tots els bits 30–0 a `1`, valor $\approx 2^{19}$). Després de `cf << 1`, `t0 = 0xFFFFFFFE`; el bit 31 ja és `1`, de manera que el bucle de normalització no itera i `exp = 18`. El desplaçament `srli t0, t0, 8` produeix `t0 = 0x00FFFFFE`; la màscara `0x7FFFFF` deixa `mantissa = 0x007FFFFE`. L'exponent codificat és $18 + 127 = 145 = \texttt{0x91}$. El valor `cflotant` resultant és `0x48FFFFFE`: els 8 bits de menor pes de la mantissa normalitzada (tots amb valor `1`) s'han descartat i el nombre representat és lleugerament inferior al valor original.
+
+**Pregunta 3.**
+
+La pèrdua de precisió es produeix a la instrucció:
+
+```{.c filename="descompon.c"}
+cf = (cf >> 8) & 0x7FFFFF;
+```
+
+El desplaçament a la dreta de 8 posicions descarta els 8 bits de menor pes de la mantissa normalitzada. Si algun d'aquests bits era significatiu, la informació es perd de manera irreversible.
+
+**Pregunta 4.**
+
+El programa aplica el mode d'**arrodoniment cap a zero** (*round toward zero*, truncament): el desplaçament `>> 8`  descarta els bits de menor pes sense cap ajust (truncament).
+
+**Pregunta 5.**
+
+El rang del format de coma fixa d'aquesta sessió és aproximadament $[-(2^{19}-2^{-12}),\ +(2^{19}-2^{-12})]$, és a dir, el valor positiu màxim és lleugerament inferior a $2^{19} = 524288$. Qualsevol nombre positiu $\geq 2^{19}$ és dins del rang IEEE-754 SP però fora del rang de coma fixa. El menor nombre potència de 2 que compleix aquesta condició és:
+
+$$2^{19} = 524288$$
 :::
