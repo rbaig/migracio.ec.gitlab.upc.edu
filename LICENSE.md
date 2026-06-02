@@ -56,7 +56,7 @@ Tot el contingut generat o suggerit per eines d'IA ha estat revisat, contrastat 
 
 ### Programari lliure
 
-Aquesta obra s'ha elaborat amb les eines següents:
+Aquesta obra s'ha elaborat exclusivament amb eines de programari lliure, essent les més rellevants:
 
 - [Quarto](https://quarto.org) — sistema de publicació científica i tècnica.
 - [LaTeX](https://www.latex-project.org) — sistema de composició tipogràfica.
