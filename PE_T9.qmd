@@ -1,0 +1,122 @@
+---
+number-sections: true
+---
+
+# {{< var tema9 >}}
+
+## Excepcions i interrupcions
+
+::: {#exr-p9-exc-conceptes}
+Respon les preguntes següents sobre el mecanisme d'excepcions i interrupcions en RISC-V:
+
+a) Quina diferència hi ha entre una excepció i una interrupció? Dona un exemple de cadascuna.
+b) Quan es produeix una excepció, el processador desa l'adreça de retorn al registre `mepc`. A quina instrucció apunta `mepc` en cas d'excepció? I en cas d'interrupció?
+c) Quins passos realitza el maquinari automàticament quan es produeix una excepció en mode màquina?
+d) Quina és la responsabilitat de la rutina de servei d'excepcions (RSE) pel que fa als registres generals? Per què és diferent de la convenció ABI habitual?
+:::
+
+::: {#exr-p9-exc-causes}
+El registre `mcause` de RISC-V conté el codi de causa d'una excepció o interrupció. El bit de més pes indica si és una interrupció (1) o una excepció (0); els bits restants identifiquen el tipus.
+
+a) Indica el valor de `mcause` per a cadascuna de les situacions següents:
+    - Instrucció en adreça no alineada.
+    - Accés a memòria en adreça no alineada (load).
+    - Crida al sistema (`ecall`) des de mode usuari.
+    - Interrupció de temporitzador en mode màquina.
+b) El registre `mtval` conté informació addicional sobre la causa. Quin valor conté en cas d'una excepció per adreça no alineada en un accés a memòria?
+:::
+
+::: {#exr-p9-exc-rse}
+Escriu en assemblador RISC-V una rutina de servei d'excepcions (RSE) mínima que:
+
+a) Salvi tots els registres generals a la pila.
+b) Llegeixi `mcause` i salti a un gestor específic si la causa és una crida al sistema (`ecall`) des de mode usuari (codi de causa 8); altrament, salti a un gestor d'error genèric.
+c) Restauri tots els registres i retorni amb `mret`.
+
+Assumeix que el processador opera en mode màquina (M-mode) i que el registre `sp` apunta a una pila vàlida en entrar a la RSE.
+:::
+
+## Crides al sistema
+
+::: {#exr-p9-syscall-basic}
+En RISC-V, les crides al sistema es fan amb la instrucció `ecall`. El número de crida al sistema es passa al registre `a7` i els arguments a `a0`–`a5`.
+
+Escriu fragments de codi assemblador RISC-V per a les operacions següents, usant els números de crida al sistema de RARS:
+
+a) Imprimir l'enter emmagatzemat al registre `t0` per la sortida estàndard.
+b) Llegir un enter de l'entrada estàndard i deixar el resultat a `t1`.
+c) Imprimir el string amb adreça base a `t2`.
+d) Finalitzar el programa amb codi de sortida 0.
+:::
+
+::: {#exr-p9-syscall-programa}
+Escriu un programa complet en assemblador RISC-V que:
+
+a) Llegeixi dos enters de l'entrada estàndard.
+b) Imprimeixi el màxim dels dos seguit d'un salt de línia.
+c) Finalitzi correctament.
+
+El programa ha de seguir les convencions del curs: punt d'entrada `_start`, sortida amb `li a7, 93` + `ecall`.
+:::
+
+::: {#exr-p9-syscall-vector}
+Escriu un programa complet en assemblador RISC-V que:
+
+a) Declari un vector de 10 enters inicialitzats a zero.
+b) Llegeixi 10 enters de l'entrada estàndard i els emmagatzemi al vector.
+c) Calculi la suma dels elements del vector.
+d) Imprimeixi la suma per la sortida estàndard.
+e) Finalitzi correctament.
+:::
+
+## Entrada/Sortida
+
+::: {#exr-p9-io-conceptes}
+Respon les preguntes següents sobre els mecanismes d'entrada/sortida:
+
+a) Quina diferència hi ha entre E/S per consulta d'estat (*polling*) i E/S per interrupcions? Quins són els avantatges i inconvenients de cadascun?
+b) En un sistema amb E/S per interrupcions, quins passos cal seguir per configurar el controlador d'interrupcions i habilitar les interrupcions en RISC-V (registres `mstatus` i `mie`)?
+c) Quin és el rol del bit `MIE` del registre `mstatus` i del bit `MTIE` del registre `mie` en el control de les interrupcions de temporitzador?
+:::
+
+::: {#exr-p9-io-polling}
+Un sistema RISC-V disposa d'un port sèrie amb els registres mapeats a memòria següents:
+
+| Adreça | Registre | Descripció |
+| :---: | :--- | :--- |
+| `0xF0000000` | `UART_RX` | Dada rebuda (byte de menys pes) |
+| `0xF0000004` | `UART_TX` | Dada a transmetre (byte de menys pes) |
+| `0xF0000008` | `UART_STATUS` | Bit 0: dada disponible per llegir; bit 1: transmissor lliure |
+
+Escriu fragments de codi assemblador RISC-V que implementin:
+
+a) Una funció `uart_getchar` que esperi fins que hi hagi una dada disponible i la retorni a `a0`.
+b) Una funció `uart_putchar` que esperi fins que el transmissor estigui lliure i transmeti el byte de `a0`.
+c) Un programa principal que llegeixi caràcters del port sèrie i els retransmeti en majúscules fins que rebi un caràcter de nova línia (`'\n'`).
+:::
+
+::: {#exr-p9-exc-mepc-mtvec}
+Respon les preguntes següents sobre els registres `mepc` i `mtvec`:
+
+a) Una instrucció `add t0, t1, t2` a l'adreça `0x80001000` causa una excepció (per exemple, accés a memòria il·legal en un dels operands). A quina adreça apunta `mepc`?
+b) Una interrupció de temporitzador arriba mentre s'executa la instrucció `lw t0, 0(a0)` a l'adreça `0x80002004`. A quina adreça apunta `mepc`? Quan es reprèn l'execució amb `mret`, quina instrucció s'executa?
+c) El registre `mtvec` pot tenir el bit 0 en 0 (mode *direct*) o en 1 (mode *vectored*). Explica la diferència. En mode *vectored*, a quina adreça salta el processador per a una interrupció de temporitzador de màquina (codi 7)?
+d) La RSE ha d'incrementar `mepc` en 4 per a les crides al sistema (`ecall`). Per què? Escriu les instruccions necessàries.
+:::
+
+::: {#exr-p9-exc-tlb-miss}
+En un sistema RISC-V en mode màquina (M-mode), una fallada de TLB (*TLB miss*) genera una excepció.
+
+a) Quin codi de causa (`mcause`) s'assigna a una fallada de TLB per lectura? I per escriptura? Quin valor pren `mtval`?
+b) Descriu els passos que ha de realitzar la RSE per gestionar una fallada de TLB: com troba l'entrada correcta a la taula de pàgines, com l'insereix al TLB i com retorna per reexecutar la instrucció fallida.
+c) Perquè la RSE pugui accedir a la taula de pàgines sense causar una nova fallada de TLB, les pàgines que contenen la taula de pàgines han d'estar sempre presents al TLB o mapeades de manera especial. Explica per què aquest problema és menys greu en mode supervisor (S-mode) que en mode màquina (M-mode).
+:::
+
+::: {#exr-p9-exc-interrupcions-io}
+Un sistema RISC-V gestiona un teclat per interrupcions. El controlador del teclat té un registre d'estat a l'adreça `0xF0001000` (bit 0 = tecla disponible) i un registre de dades a `0xF0001004`.
+
+a) Escriu el codi assemblador per habilitar les interrupcions externes en mode màquina (bits `MIE` de `mstatus` i `MEIE` de `mie`).
+b) Escriu una RSE mínima que, en rebre una interrupció externa, comprovi si prové del teclat (bit `MEIP` de `mip`), llegeixi el caràcter del registre de dades i el desi a una variable global `car`, i retorni correctament.
+c) Per distingir entre una interrupció de teclat i una altra interrupció externa, es pot usar el codi de causa o cal llegir directament el registre d'estat del dispositiu? Justifica.
+:::
+

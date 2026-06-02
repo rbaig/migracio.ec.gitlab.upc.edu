@@ -1,0 +1,663 @@
+---
+number-sections: true
+---
+
+# {{< var tema2 >}}
+
+## Operands en registre
+
+::: {#exr-p3-registre-ctorv}
+Tradueix els fragments següents de C a assemblador RISC-V. Suposa que les variables `f`, `g`, `h`, `i` i `j` són enters de 32 bits assignats als registres `t0`, `t1`, `t2`, `t3` i `t4` respectivament.
+
+a) `f = g + h + i + j`
+b) `g = f + (h + 5) - i`
+:::
+
+::: {#exr-p3-registre-rtovc}
+Tradueix els fragments següents d'assemblador RISC-V a C. Suposa que les variables `f`, `g`, `h`, `i` i `j` són enters de 32 bits assignats als registres `t0`, `t1`, `t2`, `t3` i `t4` respectivament.
+
+a)
+```s
+add  t0, t1, t2
+add  t1, t3, t4
+add  t1, t1, t1
+add  t0, t0, t1
+```
+
+b)
+```s
+add  t1, t1, t2
+add  t3, t3, t4
+add  t0, t1, t3
+addi t0, t0, 2
+add  t0, t0, t0
+```
+:::
+
+## Operands en memòria
+
+::: {#exr-p3-memoria-declaracio}
+Donada la declaració de dades següent, emmagatzemada a partir de l'adreça `0x10010000`:
+
+```s
+.data
+.byte 1, 2, 3, 4
+.word -1, 1, -2, 2, -3, 3
+.word 0x12345678
+```
+
+Indica quin és el valor en hexadecimal dels bytes emmagatzemats a les adreces `0x1001000C` i `0x1001001C`. Posa NA si no es pot determinar a partir de la declaració.
+:::
+
+::: {#exr-p3-memoria-lw-sw}
+Les variables enteres `A`, `B` i `C` estan ubicades a les adreces `0x10010000`, `0x10010004` i `0x10010008` de memòria. Donats els continguts inicials de registres i memòria següents (en hexadecimal):
+
+`t0 = 0x10010000`, `t2 = 0x10010008`
+
+| Adreça | Contingut (byte a byte, hex) |
+| :--- | :--- |
+| `0x10010000` | `00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F` |
+| `0x10010010` | `00 00 00 00 EC FD 0E 0F 00 00 00 00 00 00 00 00` |
+
+Determina, per a cada instrucció, quin registre o adreça de memòria es modifica i quin és el seu contingut:
+
+```s
+lw  t1,  0(t0)
+lw  t3,  0(t2)
+sw  t3, -8(t2)
+lw  t4,  4(t0)
+sw  t1, -4(t2)
+sw  t4,  0(t2)
+```
+:::
+
+::: {#exr-p3-memoria-byte-noexcepcio}
+Donada la declaració següent:
+
+```s
+.data
+A: .byte 0, 0, 0, 0, 0
+```
+
+Escriu un fragment de no més de 8 línies de codi assemblador que guardi el valor de `t1` a l'adreça `A+1`, sense produir cap excepció. Es poden escriure valors temporals a la posició `A` de memòria si cal.
+:::
+
+::: {#exr-p3-memoria-contingut}
+Indica quin és el contingut de memòria a partir de l'adreça `0x10010000`, a nivell de byte, per a la declaració de variables globals següent:
+
+```s
+.data
+        .byte  0x10
+A:      .half  -5
+B:      .word  -1, 67
+C:      .byte  -4, '5', 6
+D:      .half  66, 67
+E:      .dword 0x5799
+F:      .byte  'C'
+G:      .half  0x66
+H:      .dword 579
+```
+:::
+
+::: {#exr-p3-memoria-endianness}
+RISC-V és una arquitectura *little-endian*.
+
+a) Explica què significa *little-endian* i en quin ordre s'emmagatzemen els bytes d'un enter de 32 bits a memòria.
+b) La variable global `int x = 0x12345678` s'emmagatzema a partir de l'adreça `0x10010000`. Indica el contingut byte a byte de les adreces `0x10010000` a `0x10010003`.
+c) Després d'executar el codi següent, quin valor té `t1`? Raona la resposta tenint en compte l'ordre dels bytes.
+
+```s
+.data
+x: .word 0x12345678
+.text
+la   t0, x
+lb   t1, 0(t0)
+```
+
+d) Quin hauria de ser el resultat si l'arquitectura fos *big-endian*?
+:::
+
+## Constants i immediats
+
+::: {#exr-p3-immediats-declaracio}
+Donades les declaracions de variables següents, emmagatzemades a partir de l'adreça `0x10010000`:
+
+```s
+.data
+A: .word 5, 2
+B: .word 3
+C: .word 4, 0x0FFFF, 0x4180
+D: .word 0x10010008, 0
+```
+
+amb els continguts inicials de memòria:
+
+| Adreça | Contingut (byte a byte, hex) |
+| :--- | :--- |
+| `0x10010000` | `00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F` |
+| `0x10010010` | `00 00 00 00 EC FD 0E 0F 00 00 00 00 00 00 00 00` |
+
+Tots els apartats parteixen del mateix estat inicial.
+
+a) Quin és el valor final de la variable `B` després d'executar el codi següent?
+
+```s
+.text
+la   t1, C
+lw   t2, 12(t1)
+lb   t1, 8(t2)
+la   t3, B
+lb   t4, 0(t3)
+add  t1, t1, t4
+sb   t1, 0(t3)
+```
+
+b) Explica textualment i de forma concisa què fa el fragment següent:
+
+```s
+.text
+la  t1, A+1
+lw  t1, 0(t1)
+```
+:::
+
+::: {#exr-p3-immediats-contingut}
+Indica quin és el contingut de memòria a partir de l'adreça `0x10010000`, a nivell de paraula, per a la declaració de variables globals següent:
+
+```s
+.data
+        .byte  0, 1, 2
+A:      .byte  5, -1
+B:      .half  0x66
+C:      .word  4, 0x0FDF
+D:      .half  3
+E:      .byte  25
+F:      .byte  0x08
+G:      .dword 0x10010008
+```
+:::
+
+::: {#exr-p3-immediats-luiaddi}
+En RISC-V, la pseudoinstrucció `li rd, imm` s'expandeix en instruccions reals quan l'immediat no cap en 12 bits amb extensió de signe.
+
+a) Quina seqüència d'instruccions genera el compilador per carregar el valor `0xDEADBEEF` al registre `t0`? Calcula els valors exactes dels operands de cada instrucció.
+b) Per què cal ajustar el camp immediat d'`addi` quan el bit 11 del valor original és 1? Il·lustra-ho amb el valor `0xDEADBEEF`.
+c) Quin és el rang de valors que es pot carregar amb una sola instrucció `addi`? I amb la seqüència `lui` + `addi`?
+:::
+
+## Representació de naturals i enters
+
+::: {#exr-p3-enters-conversio8}
+Converteix els enters decimals següents als formats de representació binària per a 8 bits. Escriu el resultat en hexadecimal:
+
+| Decimal | Ca1 | Ca2 | Signe i magnitud | Excés a $2^7-1$ |
+| :---: | :---: | :---: | :---: | :---: |
+| −78 | | | | |
+| 125 | | | | |
+| 0 | | | | |
+| −1 | | | | |
+:::
+
+::: {#exr-p3-enters-taules}
+a) Completa la taula de rang i representació del zero per als formats d'enters en $n$ bits:
+
+| Format | Rang | Representació del zero |
+| :--- | :--- | :--- |
+| Signe i magnitud | | |
+| Complement a 1 | | |
+| Complement a 2 | $[-2^{n-1},\ 2^{n-1}-1]$ | $0\ldots00$ |
+| Excés a $2^{n-1}-1$ | | |
+
+b) Completa la taula de codificació en 4 bits per als enters de l'interval $[-8, 8]$. Per als valors no codificables amb 4 bits, posa NC.
+
+| Decimal | Ca2 | Ca1 | Excés | Signe i magnitud |
+| :---: | :---: | :---: | :---: | :---: |
+| 8 | | | | |
+| 7 | | | | |
+| 4 | | | | |
+| 1 | | | | |
+| 0 | | | | |
+| −1 | | | | |
+| −4 | | | | |
+| −7 | | | | |
+| −8 | | | | |
+:::
+
+::: {#exr-p3-enters-codificacio}
+Codifica en complement a 2 els enters següents, emprant el mínim format possible (8 o 16 bits), i expressa el resultat en hexadecimal:
+
+a) +123
+b) +255
+c) −127
+d) +170
+e) +128
+f) −230
+g) −18
+h) −128
+i) −1
+:::
+
+::: {#exr-p3-enters-ca2-16bits}
+Converteix els nombres enters següents, representats en complement a 2 de 16 bits, a la representació decimal amb signe:
+
+a) `0x0123`
+b) `0xFE23`
+:::
+
+::: {#exr-p3-enters-implicit}
+Donats els números en base 2 següents, calcula el seu valor implícit en decimal, primer interpretant-los com a naturals i després com a enters en Ca2:
+
+a) `0000 1111`
+b) `1000 0000`
+c) `1111 1111`
+d) `1111 1111 1111 0000`
+:::
+
+::: {#exr-p3-enters-minim13}
+Quin és el menor enter (el més negatiu) representable en complement a 2 amb 13 bits?
+
+a) Expressat en hexadecimal (en complement a 2).
+b) Expressat en decimal.
+:::
+
+::: {#exr-p3-enters-maxim13}
+Quin és el major enter positiu representable en complement a 2 amb 13 bits?
+
+a) Expressat en hexadecimal (en complement a 2).
+b) Expressat en decimal.
+:::
+
+## Representació de caràcters
+
+::: {#exr-p3-ascii-suma}
+Donades les declaracions següents:
+
+```s
+.data
+u1: .byte '9'
+u2: .byte '3'
+d3: .byte 0, 0
+```
+
+Cada dada `u1` i `u2` conté un caràcter ASCII que representa un dígit decimal. Escriu un programa en assemblador que sumi els naturals representats per `u1` i `u2` i deixi el resultat a `d3`, que té un dígit de més per poder representar qualsevol suma sense desbordament. Fes servir l'algorisme típic de la suma dígit a dígit.
+:::
+
+::: {#exr-p3-ascii-contingut}
+Escriu en hexadecimal el contingut de memòria ocupat per les declaracions següents, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`:
+
+```s
+.data
+a: .half  54
+b: .byte  'C'
+c: .half  0xAAAA
+d: .word  0x4F3C
+e: .byte  -18
+f: .dword 0xFFFFEEEE
+```
+
+Fes servir el format següent:
+
+| Adreça | Contingut (byte a byte, hex) |
+| :--- | :--- |
+| `0x10010000` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
+| `0x10010010` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
+:::
+
+::: {#exr-p3-ascii-align}
+Escriu en hexadecimal el contingut de memòria ocupat per les declaracions següents, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`. Recorda que la directiva `.align 0` desactiva l'alineació automàtica:
+
+```s
+.data
+        .align 0
+        .byte  24
+        .align 1
+B:      .byte  'A', 'C'
+C:      .half  512, 0xAAAA
+D:      .word  0x43, 0xF3C, 'a'
+E:      .byte  -18, 'A'
+```
+
+Fes servir el format següent:
+
+| Adreça | Contingut (byte a byte, hex) |
+| :--- | :--- |
+| `0x10010000` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
+| `0x10010010` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
+:::
+
+::: {#exr-p3-ascii-char-int}
+Donada la declaració en C:
+
+```c
+char A = 'C';
+int  B = -1;
+```
+
+a) Tradueix la declaració a llenguatge assemblador RISC-V.
+b) Especifica el valor hexadecimal de `t0` després d'executar el codi següent:
+
+```s
+.text
+la   t0, A
+la   t1, B
+lb   t0, 0(t0)
+lw   t1, 0(t1)
+add  t0, t0, t1
+```
+:::
+
+## Format de les instruccions
+
+::: {#exr-p3-format-ctom}
+Converteix les instruccions d'assemblador RISC-V següents a llenguatge màquina (format binari i hexadecimal):
+
+| Assemblador RISC-V | Binari | Hexadecimal |
+| :--- | :--- | :--- |
+| `add  t4, t3, t5` | | |
+| `addi t6, t5, 25` | | |
+| `lw   t3, 0(t2)` | | |
+| `sw   t0, 0(t1)` | | |
+:::
+
+::: {#exr-p3-format-mtoc}
+Desassembla els valors hexadecimals següents a les instruccions RISC-V corresponents:
+
+a) `0x00B50633`
+b) `0xFFC50413`
+c) `0x0062A023`
+d) `0x0062A2B3`
+:::
+
+::: {#exr-p3-format-modificacions}
+S'estudien dues possibles modificacions a l'arquitectura RISC-V:
+
+1. Passar de 32 registres a 8 registres.
+2. Passar de 12 bits per a l'operand immediat a 6 bits.
+
+Per a cadascuna d'elles contesta:
+
+a) Quin impacte tindria en la mida total d'una instrucció de tipus R?
+b) I en la mida total d'una instrucció de tipus I?
+:::
+
+## Punters
+
+::: {#exr-p3-punters-basics}
+Suposem les declaracions en C:
+
+```c
+int *m1, *m2;   /* m1 i m2 són punters a int (en memòria) */
+int main() {
+    int *r1, *r2;   /* r1 i r2 són punters a int (en registre) */
+    ...
+}
+```
+
+Suposant que `r1` i `r2` ocupen els registres `t1` i `t2`, tradueix a assemblador RISC-V les sentències en C següents, pertanyents a `main`:
+
+a) `r1 = r2;`
+b) `*r1 = *r2;`
+c) `m1 = m2;`
+d) `*m1 = *m2;`
+:::
+
+::: {#exr-p3-punters-global}
+Donada la declaració de dades global en C:
+
+```c
+int *pdada;
+```
+
+Tradueix a una única sentència en C el conjunt d'instruccions de cada apartat:
+
+a)
+```s
+la   t0, pdada
+lw   t0, 0(t0)
+lw   t1, 0(t0)
+addi t1, t1, 4
+sw   t1, 0(t0)
+```
+
+b)
+```s
+la   t0, pdada
+lw   t1, 0(t0)
+addi t1, t1, 4
+sw   t1, 0(t0)
+```
+
+c)
+```s
+la   t0, pdada
+lw   t0, 0(t0)
+lw   t1, 0(t0)
+addi t0, t0, 4
+sw   t1, 0(t0)
+```
+:::
+
+::: {#exr-p3-punters-vector}
+Donades les declaracions en C:
+
+```c
+int vec[6] = {2, 4, 0, 6, 8, 0};
+int *punter;
+```
+
+Tradueix a una única sentència en C el conjunt d'instruccions de cada apartat:
+
+a)
+```s
+la   t0, punter
+la   t1, vec+8
+sw   t1, 0(t0)
+```
+
+b)
+```s
+la   t0, punter
+lw   t1, 0(t0)
+addi t1, t1, 4
+sw   t1, 0(t0)
+```
+
+c)
+```s
+la   t1, vec
+lw   t3, 0(t1)
+lw   t4, 4(t1)
+add  t3, t3, t4
+sw   t3, 4(t1)
+```
+
+d)
+```s
+la   t1, vec
+la   t0, punter
+lw   t2, 0(t0)
+lw   t3, 0(t2)
+addi t3, t3, 1
+sw   t3, 8(t1)
+```
+
+e)
+```s
+la   t0, punter
+lw   t2, 0(t0)
+lw   t3, 0(t2)
+addi t3, t3, 1
+sw   t3, 8(t2)
+```
+:::
+
+::: {#exr-p3-punters-tipus}
+Donades les declaracions de variables globals en C:
+
+```c
+char      *punterc;
+short     *punterh;
+int       *punteri;
+long long *punterd;
+```
+
+Tradueix a assemblador RISC-V les sentències següents:
+
+a) `punterc++;`
+b) `punteri++;`
+c) `punterh++;`
+d) `punterd++;`
+e) `*punteri = *punteri + 5;`
+f) `*punterh = *punterh + 10;`
+:::
+
+::: {#exr-p3-punters-locals}
+Donades les declaracions en C:
+
+```c
+char          a;
+int           b;
+long long int c;
+int main() {
+    char          *p;   /* guardat a t0 */
+    int           *q;   /* guardat a t1 */
+    long long int *h;   /* guardat a t2 */
+    ...
+}
+```
+
+Tradueix a assemblador RISC-V les sentències en C següents, pertanyents a `main`:
+
+a) `q = q + 1;`
+b) `a = *p;`
+c) `h = &c;`
+d) `b = *(q + b);`
+e) `*h = *(h + b);`
+f) `p[*q + 10] = a;`
+g) `h = &h[*p];`
+:::
+
+::: {#exr-p3-punters-dada}
+Donades les declaracions en C:
+
+```c
+int  dada;
+int *pdada;
+```
+
+Tradueix a assemblador RISC-V les sentències en C següents:
+
+a) `pdada = &dada;`
+b) `*pdada = *pdada + 1;`
+c) `pdada = pdada + 1;`
+d) `dada = dada - 1;`
+:::
+
+## Vectors
+
+::: {#exr-p3-vectors-indexos}
+Donades les declaracions en C:
+
+```c
+char  indx[100];    /* enters d'1 byte */
+short meitat[100];  /* enters de 2 bytes */
+int   val[100], vec[100];  /* enters de 4 bytes */
+int main() {
+    char c;
+    int  i, j;
+    ...
+}
+```
+
+Tradueix les sentències en C següents, suposant que `i`, `j` i `c` ocupen els registres `t0`, `t1` i `t2`:
+
+a) `i = val[5] + vec[10];`
+b) `i = vec[10 + val[5]];`
+c) `c = indx[i + val[j]];`
+d) `c = indx[meitat[i]];`
+e) `i = meitat[vec[i] + val[j]];`
+f) `i = val[meitat[i]] + vec[j];`
+g) `i = vec[indx[i]] - val[j];`
+h) `i = meitat[indx[val[j]]];`
+:::
+
+::: {#exr-p3-vectors-bucle}
+Donades les declaracions en C:
+
+```c
+int v[10];
+int main() {
+    int i, suma = 0;  /* i a t0, suma a t1 */
+    ...
+}
+```
+
+a) Escriu en assemblador RISC-V el bucle que inicialitza tots els elements de `v` a zero.
+b) Escriu el bucle que calcula la suma de tots els elements de `v` i deixa el resultat a `suma`.
+c) Escriu el bucle que copia els elements de `v` al revés en un nou vector `w` de la mateixa mida declarat a continuació de `v`.
+:::
+
+::: {#exr-p3-vectors-cerca}
+Donada la declaració en C:
+
+```c
+int vec[100];
+int main() {
+    int i, val;  /* i a t0, val a t1 */
+    ...
+}
+```
+
+Escriu en assemblador RISC-V un fragment de codi que cerqui el valor de `val` dins `vec` i deixi a `t2` l'índex de la primera ocurrència, o −1 si no s'hi troba.
+:::
+
+::: {#exr-p3-vectors-punter-aritm}
+Donades les declaracions en C:
+
+```c
+short v[8] = {10, 20, 30, 40, 50, 60, 70, 80};
+int main() {
+    short *p = v;   /* p a t0 */
+    int i;          /* i a t1 */
+    ...
+}
+```
+
+a) Escriu en assemblador RISC-V la sentència `p = v + 3;` i explica de quants bytes s'incrementa el punter.
+b) Escriu el bucle que, usant el punter `p`, dobla el valor de cada element del vector.
+:::
+
+## Strings
+
+::: {#exr-p3-strings-minus}
+Tradueix a assemblador RISC-V el programa en C següent, que escriu a l'string `minus` els caràcters ASCII en minúscules corresponents a cada element del vector `vec`:
+
+```c
+#define N 8
+char         minus[N+1];
+unsigned int vec[N] = {70, 85, 78, 67, 73, 79, 78, 65};
+
+int main() {
+    int i = 0;
+    while (i < N) {
+        minus[i] = (char)vec[i] + 'a' - 'A';
+        i++;
+    }
+    minus[N] = 0;
+}
+```
+:::
+
+::: {#exr-p3-strings-longitud}
+Escriu en assemblador RISC-V una funció `longitud` que, donat un string acabat en `'\0'` amb adreça base a `a0`, retorni la seva longitud (sense comptar el `'\0'`) a `a0`.
+:::
+
+::: {#exr-p3-strings-copia}
+Donades les declaracions en C:
+
+```c
+char src[50], dst[50];
+```
+
+Escriu en assemblador RISC-V un fragment de codi que copiï el contingut de `src` a `dst`, incloent el caràcter `'\0'` de final.
+:::
