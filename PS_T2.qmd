@@ -1,0 +1,523 @@
+---
+number-sections: true
+---
+
+## {{< var tema2 >}}
+
+### Operands en registre
+
+::: {#sol-p3-registre-rtovc .callout-tip}
+## Solució: desassemblatge de fragments a C
+
+**Enunciat**: @exr-p3-registre-rtovc.
+
+**a)**
+
+```{.s filename="RV32I"}
+add  t0, t1, t2
+add  t1, t3, t4
+add  t1, t1, t1
+add  t0, t0, t1
+```
+
+Instrucció per instrucció:
+
+1. `add t0, t1, t2` → `t0 = t1 + t2` → `f = g + h`
+2. `add t1, t3, t4` → `t1 = t3 + t4` → `g = i + j`
+3. `add t1, t1, t1` → `t1 = t1 + t1 = 2·t1` → `g = 2 * (i + j)`
+4. `add t0, t0, t1` → `t0 = t0 + t1` → `f = (g + h) + 2 * (i + j)`
+
+**Resposta**: `f = (g + h) + 2 * (i + j)`
+
+**b)**
+
+```{.s filename="RV32I"}
+add  t1, t1, t2
+add  t3, t3, t4
+add  t0, t1, t3
+addi t0, t0, 2
+add  t0, t0, t0
+```
+
+Instrucció per instrucció:
+
+1. `add t1, t1, t2` → `g = g + h`
+2. `add t3, t3, t4` → `i = i + j`
+3. `add t0, t1, t3` → `f = (g + h) + (i + j)`
+4. `addi t0, t0, 2` → `f = (g + h) + (i + j) + 2`
+5. `add t0, t0, t0` → `f = 2 * ((g + h) + (i + j) + 2)`
+
+**Resposta**: `f = 2 * (g + h + i + j + 2)`
+:::
+
+### Operands en memòria
+
+::: {#sol-p3-memoria-lw-sw .callout-tip}
+## Solució: seguiment d'instruccions `lw` i `sw`
+
+**Enunciat**: @exr-p3-memoria-lw-sw.
+
+Estat inicial: `t0 = 0x10010000`, `t2 = 0x10010008`.
+
+Contingut de memòria inicial (little-endian):
+
+| Adreça | `+0` | `+1` | `+2` | `+3` |
+| :--- | :---: | :---: | :---: | :---: |
+| `0x10010000` | `00` | `01` | `02` | `03` |
+| `0x10010004` | `04` | `05` | `06` | `07` |
+| `0x10010008` | `08` | `09` | `0A` | `0B` |
+| `0x1001000C` | `0C` | `0D` | `0E` | `0F` |
+| `0x10010010` | `00` | `00` | `00` | `00` |
+| `0x10010014` | `EC` | `FD` | `0E` | `0F` |
+
+Seguiment:
+
+**`lw t1, 0(t0)`** — adreça efectiva: `0x10010000 + 0 = 0x10010000`
+
+Llegeix 4 bytes a partir de `0x10010000` (little-endian): bytes `00 01 02 03` → `t1 = 0x03020100`.
+
+**`lw t3, 0(t2)`** — adreça efectiva: `0x10010008 + 0 = 0x10010008`
+
+Llegeix 4 bytes a partir de `0x10010008`: bytes `08 09 0A 0B` → `t3 = 0x0B0A0908`.
+
+**`sw t3, -8(t2)`** — adreça efectiva: `0x10010008 - 8 = 0x10010000`
+
+Escriu `t3 = 0x0B0A0908` a partir de `0x10010000` (little-endian): bytes `08 09 0A 0B`.
+
+Memòria modificada: `M[0x10010000..0x10010003] = 08 09 0A 0B`.
+
+**`lw t4, 4(t0)`** — adreça efectiva: `0x10010000 + 4 = 0x10010004`
+
+Llegeix 4 bytes a partir de `0x10010004`: bytes `04 05 06 07` → `t4 = 0x07060504`.
+
+**`sw t1, -4(t2)`** — adreça efectiva: `0x10010008 - 4 = 0x10010004`
+
+Escriu `t1 = 0x03020100` a partir de `0x10010004`: bytes `00 01 02 03`.
+
+Memòria modificada: `M[0x10010004..0x10010007] = 00 01 02 03`.
+
+**`sw t4, 0(t2)`** — adreça efectiva: `0x10010008 + 0 = 0x10010008`
+
+Escriu `t4 = 0x07060504` a partir de `0x10010008`: bytes `04 05 06 07`.
+
+Memòria modificada: `M[0x10010008..0x1001000B] = 04 05 06 07`.
+
+**Resum de resultats**:
+
+| Operació | Destí | Valor resultant |
+| :--- | :--- | :--- |
+| `lw t1, 0(t0)` | `t1` | `0x03020100` |
+| `lw t3, 0(t2)` | `t3` | `0x0B0A0908` |
+| `sw t3, -8(t2)` | `M[0x10010000]` | `08 09 0A 0B` |
+| `lw t4, 4(t0)` | `t4` | `0x07060504` |
+| `sw t1, -4(t2)` | `M[0x10010004]` | `00 01 02 03` |
+| `sw t4, 0(t2)` | `M[0x10010008]` | `04 05 06 07` |
+:::
+
+### Constants i immediats
+
+::: {#sol-p3-immediats-luiaddi .callout-tip}
+## Solució: expansió de `lui` + `addi` i rang d'immediats
+
+**Enunciat**: @exr-p3-immediats-luiaddi.
+
+**a)** Seqüència per carregar `0xDEADBEEF` a `t0`.
+
+El valor `0xDEADBEEF` no cap en 12 bits, de manera que calen dues instruccions. Es divideix en:
+
+- **20 bits superiors** (`hi20`): `0xDEADB`
+- **12 bits inferiors** (`lo12`): `0xEEF` = `0b1110_1110_1111`
+
+El bit 11 de `lo12` val 1 (`0xEEF = 1110_1110_1111₂`), de manera que l'`addi` aplicarà extensió de signe i restarà `0x111` (2049 en positiu). Cal incrementar `hi20` en 1 per compensar:
+
+- `hi20` ajustat: `0xDEADB + 1 = 0xDEADC`
+- `lo12` amb signe: `0xEEF` com a enter de 12 bits amb signe = `0xEEF - 0x1000 = -273`
+
+```{.s filename="RV32I"}
+lui   t0, 0xDEADC      # t0 = 0xDEADC000
+addi  t0, t0, -273     # t0 = 0xDEADC000 + 0xFFFFFEEF = 0xDEADBEEF
+```
+
+Comprovació: `0xDEADC000 + 0xFFFFFEEF = 0x1DEADBEEF` → els 32 bits baixos: `0xDEADBEEF`. ✓
+
+**b)** Per què cal ajustar `hi20` quan el bit 11 de `lo12` val 1.
+
+`addi` fa **extensió de signe** de l'immediat de 12 bits. Si el bit 11 és 1, el valor s'interpreta com a negatiu: en lloc de sumar `lo12`, resta `0x1000 - lo12`. Sense l'ajust, el resultat seria `hi20 << 12 + lo12 - 0x1000`, és a dir, `0x1000` (4096) menys del que es vol.
+
+Per `0xDEADBEEF`: `lo12 = 0xEEF`, bit 11 = 1. Sense ajust: `lui t0, 0xDEADB` → `t0 = 0xDEADB000`; `addi t0, t0, 0xEEF` → l'assemblador interpreta `0xEEF` com `-273` (extensió de signe) → `0xDEADB000 - 273 = 0xDEADAEEF` ≠ `0xDEADBEEF`. Amb l'ajust `hi20 = 0xDEADC`: `0xDEADC000 - 273 = 0xDEADBEEF`. ✓
+
+**c)** Rangs de valors.
+
+- **Amb una sola instrucció `addi`**: l'immediat és de 12 bits amb extensió de signe → rang $[-2048,\ 2047]$.
+- **Amb `lui` + `addi`**: `lui` carrega 20 bits als bits [31:12]; `addi` afegeix fins a 12 bits amb signe. El rang cobert és $[-2^{31},\ 2^{31}-1]$, és a dir, tots els enters representables en 32 bits.
+:::
+
+### Representació de naturals i enters
+
+::: {#sol-p3-enters-taules .callout-tip}
+## Solució: rang i taula de codificació de formats d'enters
+
+**Enunciat**: @exr-p3-enters-taules.
+
+**a)** Rang i representació del zero per a $n$ bits:
+
+| Format | Rang | Representació del zero |
+| :--- | :--- | :--- |
+| Signe i magnitud | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | $0\ldots00$ i $1\ldots00$ (doble zero) |
+| Complement a 1 | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | $0\ldots00$ i $1\ldots11$ (doble zero) |
+| Complement a 2 | $[-2^{n-1},\ 2^{n-1}-1]$ | $0\ldots00$ |
+| Excés a $2^{n-1}-1$ | $[-(2^{n-1}-1),\ 2^{n-1}]$ | $0\ldots01\ldots1$ ($n-1$ uns) |
+
+**b)** Taula de codificació en 4 bits ($n = 4$). L'excés és $2^{n-1}-1 = 7$, de manera que el codi d'excés és `decimal + 7`.
+
+| Decimal | Ca2 | Ca1 | Excés a 7 | Signe i magnitud |
+| :---: | :---: | :---: | :---: | :---: |
+| 8 | NC | NC | NC | NC |
+| 7 | `0111` | `0111` | `1110` | `0111` |
+| 4 | `0100` | `0100` | `1011` | `0100` |
+| 1 | `0001` | `0001` | `1000` | `0001` |
+| 0 | `0000` | `0000` i `1111` | `0111` | `0000` i `1000` |
+| −1 | `1111` | `1110` | `0110` | `1001` |
+| −4 | `1100` | `1011` | `0011` | `1100` |
+| −7 | `1001` | `1000` | `0000` | `1111` |
+| −8 | `1000` | NC | NC | NC |
+
+Observacions:
+- El 8 no és representable en cap format de 4 bits (el màxim positiu en Ca2 és 7).
+- El −8 no és representable en Ca1 ni en excés a 7 ni en signe i magnitud (el mínim en Ca1 és −7).
+- En Ca1 i signe i magnitud, el 0 té dues representacions.
+:::
+
+### Representació de caràcters
+
+::: {#sol-p3-ascii-contingut .callout-tip}
+## Solució: contingut de memòria amb tipus mixtos
+
+**Enunciat**: @exr-p3-ascii-contingut.
+
+Declaracions, a partir de `0x10010000`:
+
+```{.s filename="RV32I"}
+a: .half  54
+b: .byte  'C'
+c: .half  0xAAAA
+d: .word  0x4F3C
+e: .byte  -18
+f: .dword 0xFFFFEEEE
+```
+
+Càlcul adreça per adreça (l'assemblador afegeix *padding* per respectar l'alineació):
+
+| Variable | Tipus | Mida | Adreça | Alineació | Padding previ |
+| :--- | :--- | :---: | :--- | :--- | :---: |
+| `a` | `.half` | 2 B | `0x10010000` | múltiple de 2 ✓ | — |
+| `b` | `.byte` | 1 B | `0x10010002` | cap restricció ✓ | — |
+| `c` | `.half` | 2 B | `0x10010004` | múltiple de 2; `0x10010003` no ho és → pad 1 B | 1 |
+| `d` | `.word` | 4 B | `0x10010008` | múltiple de 4; `0x10010006` no ho és → pad 2 B | 2 |
+| `e` | `.byte` | 1 B | `0x1001000C` | cap restricció ✓ | — |
+| `f` | `.dword` | 8 B | `0x10010010` | múltiple de 8; `0x1001000D` no ho és → pad 3 B | 3 |
+
+Valors byte a byte (little-endian):
+
+- `a = 54 = 0x0036` → bytes: `36 00`
+- `b = 'C' = 0x43` → byte: `43`
+- padding: `??` (indeterminat)
+- `c = 0xAAAA` → bytes: `AA AA`
+- padding: `?? ??`
+- `d = 0x4F3C` → bytes: `3C 4F 00 00`
+- `e = -18 = 0xEE` → byte: `EE`
+- padding: `?? ?? ??`
+- `f = 0xFFFFEEEE` → bytes: `EE EE FF FF 00 00 00 00`
+
+| Adreça | Contingut (byte a byte, hex) |
+| :--- | :--- |
+| `0x10010000` | `36 00 43 ?? AA AA ?? ?? 3C 4F 00 00 EE ?? ?? ??` |
+| `0x10010010` | `EE EE FF FF 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ??` |
+
+Els bytes marcats `??` corresponen a padding i el seu valor és indeterminat.
+:::
+
+### Format de les instruccions
+
+::: {#sol-p3-format-ctom .callout-tip}
+## Solució: assemblador → codi màquina
+
+**Enunciat**: @exr-p3-format-ctom.
+
+Per resoldre cada instrucció cal identificar el format, localitzar els camps i concatenar els bits. Els números de registre ABI es converteixen als corresponents ISA:
+
+| ABI | ISA | ABI | ISA |
+| :---: | :---: | :---: | :---: |
+| `t4` | `x29` = `11101` | `t3` | `x28` = `11100` |
+| `t5` | `x30` = `11110` | `t2` | `x7` = `00111` |
+| `t6` | `x31` = `11111` | `t0` | `x5` = `00101` |
+| `t1` | `x6` = `00110` | | |
+
+---
+
+**`add t4, t3, t5`** — Tipus R, `opcode = 0x33 = 0110011`, `funct3 = 000`, `funct7 = 0000000`
+
+| funct7 | rs2 | rs1 | funct3 | rd | opcode |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| `0000000` | `11110` | `11100` | `000` | `11101` | `0110011` |
+
+Binari: `0000000 11110 11100 000 11101 0110011`
+
+Hexadecimal: `0x01EE0EB3`
+
+---
+
+**`addi t6, t5, 25`** — Tipus I, `opcode = 0x13 = 0010011`, `funct3 = 000`
+
+`25 = 0x019 = 000000011001` (12 bits)
+
+| imm[11:0] | rs1 | funct3 | rd | opcode |
+| :---: | :---: | :---: | :---: | :---: |
+| `000000011001` | `11110` | `000` | `11111` | `0010011` |
+
+Binari: `000000011001 11110 000 11111 0010011`
+
+Hexadecimal: `0x019F0F93`
+
+---
+
+**`lw t3, 0(t2)`** — Tipus I, `opcode = 0x03 = 0000011`, `funct3 = 010`
+
+`0 = 000000000000` (12 bits)
+
+| imm[11:0] | rs1 | funct3 | rd | opcode |
+| :---: | :---: | :---: | :---: | :---: |
+| `000000000000` | `00111` | `010` | `11100` | `0000011` |
+
+Binari: `000000000000 00111 010 11100 0000011`
+
+Hexadecimal: `0x00072E03`
+
+---
+
+**`sw t0, 0(t1)`** — Tipus S, `opcode = 0x23 = 0100011`, `funct3 = 010`
+
+`offset = 0 = 000000000000`; bits [11:5] = `0000000`, bits [4:0] = `00000`
+
+| imm[11:5] | rs2 | rs1 | funct3 | imm[4:0] | opcode |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| `0000000` | `00101` | `00110` | `010` | `00000` | `0100011` |
+
+Binari: `0000000 00101 00110 010 00000 0100011`
+
+Hexadecimal: `0x00532023`
+
+---
+
+**Resum**:
+
+| Assemblador RISC-V | Binari | Hexadecimal |
+| :--- | :--- | :--- |
+| `add  t4, t3, t5` | `0000000 11110 11100 000 11101 0110011` | `0x01EE0EB3` |
+| `addi t6, t5, 25` | `000000011001 11110 000 11111 0010011` | `0x019F0F93` |
+| `lw   t3, 0(t2)` | `000000000000 00111 010 11100 0000011` | `0x00072E03` |
+| `sw   t0, 0(t1)` | `0000000 00101 00110 010 00000 0100011` | `0x00532023` |
+:::
+
+### Punters
+
+::: {#sol-p3-punters-vector .callout-tip}
+## Solució: traducció de sentències amb vector i punter
+
+**Enunciat**: @exr-p3-punters-vector.
+
+Declaracions:
+
+```{.c filename="C"}
+int vec[6] = {2, 4, 0, 6, 8, 0};
+int *punter;
+```
+
+`vec` és global → adreça base accessible via `la`. `punter` és global → cal fer `la` + `lw`/`sw`.
+
+---
+
+**a)** `punter = &vec[2];`
+
+`&vec[2] = @vec + 2*4 = @vec + 8`. Amb `la t1, vec+8` (admès a EC) o equivalent:
+
+```{.s filename="RV32I"}
+        la      t0, punter
+        la      t1, vec+8       # &vec[2]
+        sw      t1, 0(t0)       # punter = &vec[2]
+```
+
+---
+
+**b)** `punter = punter + 1;`
+
+El punter apunta a `int` (mida 4 bytes), de manera que `punter + 1` incrementa en 4:
+
+```{.s filename="RV32I"}
+        la      t0, punter
+        lw      t1, 0(t0)       # t1 = punter (adreça actual)
+        addi    t1, t1, 4       # t1 = punter + 1 (desplaça 4 bytes)
+        sw      t1, 0(t0)       # punter = punter + 1
+```
+
+---
+
+**c)** `vec[1] = vec[0] + vec[1];`
+
+```{.s filename="RV32I"}
+        la      t1, vec
+        lw      t3, 0(t1)       # t3 = vec[0]
+        lw      t4, 4(t1)       # t4 = vec[1]
+        add     t3, t3, t4      # t3 = vec[0] + vec[1]
+        sw      t3, 4(t1)       # vec[1] = vec[0] + vec[1]
+```
+
+---
+
+**d)** `vec[2] = *punter + 1;`
+
+Cal carregar el valor de `punter` (una adreça), desreferenciar-lo per obtenir el valor apuntat, sumar-hi 1 i emmagatzemar el resultat a `vec[2]`:
+
+```{.s filename="RV32I"}
+        la      t1, vec
+        la      t0, punter
+        lw      t2, 0(t0)       # t2 = punter (adreça apuntada)
+        lw      t3, 0(t2)       # t3 = *punter
+        addi    t3, t3, 1       # t3 = *punter + 1
+        sw      t3, 8(t1)       # vec[2] = *punter + 1
+```
+
+---
+
+**e)** `*(punter + 1) = vec[2] + 1;` (escriu a l'adreça `punter + 4`)
+
+```{.s filename="RV32I"}
+        la      t0, punter
+        lw      t2, 0(t0)       # t2 = punter
+        lw      t3, 0(t2)       # t3 = *punter (no s'usa però cal entendre el context)
+        addi    t3, t3, 1       # t3 = *punter + 1
+        sw      t3, 8(t2)       # *(punter + 1) = *punter + 1  (adreça: punter + 4)
+```
+
+Alternativa clara i equivalent:
+
+```{.s filename="RV32I"}
+        la      t0, punter
+        lw      t2, 0(t0)       # t2 = punter
+        lw      t3, 0(t2)       # t3 = *punter
+        addi    t3, t3, 1
+        addi    t2, t2, 4       # t2 = punter + 1 (en bytes)
+        sw      t3, 0(t2)       # *(punter + 1) = *punter + 1
+```
+:::
+
+### Vectors
+
+::: {#sol-p3-vectors-bucle .callout-tip}
+## Solució: bucles sobre un vector
+
+**Enunciat**: @exr-p3-vectors-bucle.
+
+Declaracions: `int v[10]` global; `i` a `t0`, `suma` a `t1`.
+
+---
+
+**a)** Inicialitza tots els elements de `v` a zero:
+
+```{.s filename="RV32I"}
+        la      t2, v           # invariant: @v[0]
+        li      t0, 0           # i = 0
+bucle_a:
+        li      t3, 10
+        bge     t0, t3, fibucle_a
+        slli    t4, t0, 2       # t4 = i * 4
+        add     t4, t4, t2      # t4 = @v[i]
+        sw      zero, 0(t4)     # v[i] = 0
+        addi    t0, t0, 1       # i++
+        j       bucle_a
+fibucle_a:
+```
+
+---
+
+**b)** Calcula la suma de tots els elements:
+
+```{.s filename="RV32I"}
+        la      t2, v           # invariant: @v[0]
+        li      t0, 0           # i = 0
+        li      t1, 0           # suma = 0
+bucle_b:
+        li      t3, 10
+        bge     t0, t3, fibucle_b
+        slli    t4, t0, 2       # t4 = i * 4
+        add     t4, t4, t2      # t4 = @v[i]
+        lw      t5, 0(t4)       # t5 = v[i]
+        add     t1, t1, t5      # suma += v[i]
+        addi    t0, t0, 1       # i++
+        j       bucle_b
+fibucle_b:
+```
+
+---
+
+**c)** Copia els elements de `v` al revés a `w` (declarat a continuació de `v`):
+
+```{.s filename="RV32I"}
+        la      t2, v           # invariant: @v[0]
+        la      t3, w           # invariant: @w[0]
+        li      t0, 0           # i = 0
+bucle_c:
+        li      t4, 10
+        bge     t0, t4, fibucle_c
+        slli    t5, t0, 2       # t5 = i * 4
+        add     t5, t5, t2      # t5 = @v[i]
+        lw      t6, 0(t5)       # t6 = v[i]
+        li      t4, 9
+        sub     t5, t4, t0      # t5 = 9 - i  (índex invers)
+        slli    t5, t5, 2       # t5 = (9 - i) * 4
+        add     t5, t5, t3      # t5 = @w[9 - i]
+        sw      t6, 0(t5)       # w[9 - i] = v[i]
+        addi    t0, t0, 1       # i++
+        j       bucle_c
+fibucle_c:
+```
+
+A la declaració cal afegir `w` a continuació de `v`:
+
+```{.s filename="RV32I"}
+.data
+v:      .space 40       # int v[10]
+w:      .space 40       # int w[10]
+```
+:::
+
+### Strings
+
+::: {#sol-p3-strings-longitud .callout-tip}
+## Solució: funció `longitud`
+
+**Enunciat**: @exr-p3-strings-longitud.
+
+La funció ha de recórrer la cadena byte a byte fins a trobar el `'\0'` i retornar el nombre de caràcters llegits sense comptar-lo.
+
+```{.s filename="RV32I"}
+# longitud: retorna la longitud d'una cadena acabada en '\0'
+# a0: adreça base de la cadena
+# Retorn: a0 = longitud (sense comptar el '\0')
+
+longitud:
+        mv      t0, a0          # t0 = punter al caràcter actual (= a0)
+        li      t1, 0           # comptador = 0
+bucle:
+        lb      t2, 0(t0)       # t2 = caràcter actual
+        beq     t2, zero, fi    # si '\0', acabar
+        addi    t0, t0, 1       # avança el punter
+        addi    t1, t1, 1       # comptador++
+        j       bucle
+fi:
+        mv      a0, t1          # retorn: a0 = longitud
+        ret
+```
+
+La funció no modifica cap registre guardat (`s0`–`s11`), de manera que no cal bloc d'activació.
+:::
