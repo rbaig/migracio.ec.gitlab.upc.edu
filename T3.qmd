@@ -150,10 +150,10 @@ Per exemple, la divisió entera (-15 / 4) dóna quocient -3 i residu -3, mentre 
 
 Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`.
 
-Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió per zero**.
+Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**.
 
-::: {#cau-cas-extensio-zero .callout-caution}
-És un dels pocs casos on l'immediat s'estén amb **extensió per zero**. La regla genera és l'extensió de signe.
+::: {#cau-immediats-logics-extensio-signe .callout-caution}
+Els immediats de `andi`, `ori` i `xori` no permeten construir màscares arbitràries de 32 bits. Si el bit 11 val `1`, els bits 31..12 queden a `1` per extensió de signe. Per a màscares més grans, cal carregar la màscara en un registre amb `li` i usar `and`/`or`/`xor`.
 :::
 
 ::: {#nte-instruccions-logiques .callout-note}
@@ -193,7 +193,8 @@ La instrucció `and` s'usa per **seleccionar determinats bits** d'un registre po
 Selecció dels 16 bits de menor pes de `rs1`:
 
 ```{.s filename="RV32I"}
-        andi    rd, rs1, 0xFFFF     # l'immediat s'estén amb zeros
+        li      t0, 0x0000FFFF  # màscara de 16 bits
+        and     rd, rs1, t0
 ```
 :::
 
@@ -207,7 +208,8 @@ La instrucció `or` s'usa per **posar a $1$** aquells bits d'un registre que val
 Posada dels 16 bits de menor pes de `t0` a `1`:
 
 ```{.s filename="RV32I"}
-ori     t0, t0, 0xFFFF      # l'immediat s'estén amb zeros
+        li      t1, 0x0000FFFF  # màscara de 16 bits
+        or      t0, t0, t1
 ```
 :::
 
@@ -233,7 +235,7 @@ En **C**, les expressions enters admeten els **operadors de comparació** `==`, 
 En **C** existeixen també **operadors booleans** (`&&`, `||`, `!`). Cada operand s'interpreta com a **fals** si val `0`, o com a **cert** si val **diferent de `0`**. El resultat és també un enter **normalitzat**: `1` si cert, `0` si fals.
 
 ::: {#cau-boolea-c .callout-caution}
-En C, ues expressions no nul·les s'interpreten com a certes **sense ser iguals**. Tant les comparacions com els operadors booleans sempre donen com a resultat un enter normalitzat, `0` o `1`. Per exemple, si `y = 2` i `z = 0`, la sentència `x = (y >= z) + 5;` assigna a `x` el valor `6`.
+En C, unes expressions no nul·les s'interpreten com a certes **sense ser iguals**. Tant les comparacions com els operadors booleans sempre donen com a resultat un enter normalitzat, `0` o `1`. Per exemple, si `y = 2` i `z = 0`, la sentència `x = (y >= z) + 5;` assigna a `x` el valor `6`.
 :::
 
 ### Instruccions de comparació: `slt` i `sltu`
@@ -398,7 +400,11 @@ No existeix cap salt condicional indirecte a RV32I.
 
 ### Salts condicionals {#sec-salts-condicionals}
 
-Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació (massa llarga per cabre dins la instrucció), sinó la **distància a saltar** com un immediat de **12 bits** en Ca2 expressat en **múltiples de 4 bytes**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta. El rang efectiu és de **±4 KiB** respecte a la instrucció de salt.
+Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
+
+En les taules d'instruccions, `offset13` no vol dir que la instrucció contingui 13 bits independents de desplaçament. En el format B es codifiquen 12 bits del desplaçament i el bit 0 és implícit perquè les destinacions de salt estan alineades, com a mínim, a 2 bytes. En executar la instrucció, aquest bit implícit val `0` i el desplaçament de 13 bits resultant s'estén de signe; per això l'operació s'escriu com `PC + SignExt(offset13)`. El rang efectiu és de **±4 KiB** respecte a la instrucció de salt.
+
+A **RV32I** base (sense l'extensió C, cas d'**EC**), totes les instruccions tenen 32 bits i estan alineades a 4 bytes. Tot i això, el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
 
 ::: {#cau-salts-condicionals-relatius-pc .callout-caution}
 A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existeix cap salt condicional indirecte.
@@ -424,7 +430,7 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 | `bleu rs1, rs2, label` | `bgeu rs2, rs1, label` |
 :::
 
-::: {#nte-pseudoinstruccions-comparacio-zero .callout-note}
+::: {#nte-pseudoinstruccions-salt-zero .callout-note}
 ## RV32I ABI — Pseudoinstruccions de salt condicional amb zero
 
 | Pseudoinstrucció | Expansió | Condició |
@@ -437,13 +443,6 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 | `blez rs, label` | `bge zero, rs, label` | salta si `rs ≤ 0` |
 :::
 
-::: {#wrn-offset-multiples-2 .callout-warning collapse=true}
-## Format B — Per què múltiples de 2 bytes?
-
-L'especificació oficial de RISC-V defineix l'offset del tipus B com un immediat de 12 bits en **múltiples de 2 bytes**, no de 4. La raó és la compatibilitat amb l'extensió **C** (*Compressed*), que defineix instruccions de 16 bits alineades a 2 bytes.
-
-A **RV32I** base (sense l'extensió C, cas d'**EC**), totes les instruccions tenen 32 bits i estan alineades a 4 bytes. Per tant, el bit de menor pes de l'offset és sempre `0` i els salts sempre es fan en múltiples de 4 bytes. El rang efectiu continua sent **±4 KiB**.
-:::
 
 ::: {#tip-exemple-beq-offset .callout-tip}
 ## Càlcul de l'offset d'un salt condicional
@@ -491,7 +490,7 @@ if (a == 0x11)      /* bits 0 i 4 actius, 2 i 6 inactius */
 Suposant que `a` i `b` ocupen els registres `t0` i `t1`:
 
 ```{.s filename="RV32I"}
-        andi    t0, t1, 0x0055      # selecció els bits 0, 2, 4 i 6
+        andi    t0, t1, 0x0055      # selecciona els bits 0, 2, 4 i 6
         li      t4, 0x0011
         bne     t0, t4, endif       # if (a == 0x11) ...
 ...                         # codi si es compleix la condició
@@ -503,7 +502,9 @@ Les instruccions de salt condicional són la base per implementar les sentèncie
 
 ### Salts incondicionals relatius al PC {#sec-salts-incondicionals-relatius}
 
-La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un offset de **21 bits** relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. El rang efectiu és de **±1 MiB**. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
+La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
+
+Com en el format B, `offset21` no vol dir que el format J emmagatzemi 21 bits independents de desplaçament. La instrucció codifica 20 bits del desplaçament i el bit 0 és implícit; en executar-la, aquest bit val `0` i el desplaçament de 21 bits resultant s'estén de signe. El rang efectiu és de **±1 MiB** respecte a la instrucció de salt.
 
 ::: {#nte-instruccions-salt-incondicional-relatiu-jal .callout-note}
 ## RV32I ISA — Instrucció de salt incondicional relatiu al PC
@@ -554,11 +555,11 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 :::
 
 ::: {#imp-ec-rol-salts .callout-important}
-A **EC**, els salts tenen rols ben diferenciats: els salts **relatius al PC** s'usen per implementar estructures de control de flux local (`if-then-else`, bucles), mentre que els salts **indirectes** (`jalr`, `jr`, `ret`) s'usen per a crides i retorns de subrutines.
+A **EC**, els salts tenen rols ben diferenciats: els salts **relatius al PC** (`jal`, `j`) s'usen per implementar estructures de control de flux local (`if-then-else`, bucles), mentre que els salts **indirectes** (`jalr`, `jr`, `ret`) s'usen quan la destinació està en un registre, com en retorns de subrutina, vectors de salts o salts a adreces carregades explícitament.
 :::
 
-::: {#cau-salts-condicionals-relatius-pc .callout-caution}
-A **RV32I**, tots els salts  **incondicionals** són **indirectes**. No existeix cap salt incondicional relatiu al PC.
+::: {#cau-salts-incondicionals .callout-caution}
+A **RV32I**, els salts **incondicionals** poden ser **relatius al PC** (`jal`, `j`) o **indirectes** (`jalr`, `jr`, `ret`). El que no existeix és cap salt **condicional indirecte**.
 :::
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
@@ -1072,7 +1073,7 @@ Des del punt de vista del control del flux d'execució, quan es crida una subrut
 
 La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu-jal) salta a l'adreça indicada per `label` (primera instrucció de la subrutina cridada) i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar, s'usa la pseudoinstrucció `ret` (@nte-pseudoinstruccions-salt-indirecte), que salta a l'adreça continguda a `ra`.
 
-::: {#tip-exemple-suma2 .callout-tip}
+::: {#tip-exemple-crides-sub-dos-punts .callout-tip}
 ## Crida d'una subrutina des de dos punts diferents d'un programa
 ```{.s filename="RV32I"}
 # Codi que fa les crides
@@ -1102,10 +1103,10 @@ Per analogia, és comú emprar els termes mare/pare i fill/a, per referir-se als
 La columna "Qui el guarda (*Saver*)" de les taules de registres de la ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
 
 - **Caller-saved**: És el caller qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
-- **Callee-saved**: És el callee qui ha de preservar-lo si vol usar-lo i, per tant, ha restaurar-lo abans de retornar.
+- **Callee-saved**: És el callee qui ha de preservar-lo si vol usar-lo i, per tant, ha de restaurar-lo abans de retornar.
 :::
 
-El registre `ra` és **caller-saved**, ja que la instrucció ha d'emprar el pare per fer la crida (`jal`, @nte-instruccions-salt-incondicional-relatiu-jal) escriu a `ra` l'adreça de retorn que el fill utilitzarà per retornar-li el control de flux. Aquesta escriptura implica la **pèrdua per sobreescriptura** de l'adreça de retorn que ell, el pare, ha d'utilitzar per tornar el control de flux a l'avi.
+El registre `ra` és **caller-saved**, ja que la instrucció que el pare empra per fer la crida (`jal`, @nte-instruccions-salt-incondicional-relatiu-jal) escriu a `ra` l'adreça de retorn que el fill utilitzarà per retornar-li el control de flux. Aquesta escriptura implica la **pèrdua per sobreescriptura** de l'adreça de retorn que ell, el pare, ha d'utilitzar per tornar el control de flux a l'avi.
 
 ### Pas de paràmetres i retorn de resultats (els registres `a0`–`a7`) {#sec-pas-parametres-retorn}
 
@@ -1124,7 +1125,7 @@ A **EC**, la quantitat màxima de paràmetres és 8 i de resultats 1.
 - Si un paràmetre o resultat té menys de 32 bits (`char` o `short`), cal estendre'l a 32 bits, dins el registre assignat, fent extensió de signe o de zeros segons hagi estat declarat `signed` o `unsigned`.
 :::
 
-::: {#tip-exemple-suma2 .callout-tip}
+::: {#tip-exemple-funcio-suma2 .callout-tip}
 ## Traducció d'una funció amb paràmetres i resultat
 
 ```{.C filename="C"}
@@ -1174,7 +1175,7 @@ Cal distingir el **mecanisme físic** de pas del paràmetre (com es transmet la 
 En **C**, el mecanisme és sempre per registre o pila, però la **semàntica** depèn del tipus: un **escalar** és pas per **valor**, un **punter** és pas per **referència**.
 :::
 
-En **C** només existeix el **pas per valor**. Per tant la funció cridada rep una còpies del paràmetres i, per tant, les modificacions que hi faci no afectaran els valors de les dades originals.
+En **C** només existeix el **pas per valor**. Per tant la funció cridada rep una còpia dels paràmetres i, per tant, les modificacions que hi faci no afectaran els valors de les dades originals.
 
 Per aconseguir un efecte equivalent al **pas per referència**, el que es passa com a paràmetre és un **punter** a la dada original (per tant, aquesta ha d'estar en memòria). D'aquesta manera, les modificacions que faci la funció afectaran directament la dada original.
 
@@ -1193,7 +1194,7 @@ scanf("%d", &x);    /* pas per referència: scanf rep l'adreça de x    */
 Després de `scanf`, `x` pot tenir un valor diferent de `42`. Després de `printf`, `x` segueix valent `42` — `printf` no pot modificar-lo perquè només n'ha rebut una còpia.
 :::
 
-::: {#tip-exemple-suma2 .callout-tip}
+::: {#tip-exemple-pas-referencia-punters .callout-tip}
 ## Pas de paràmetres per referència amb punters
 
 ```{.C filename="C"}
@@ -1314,7 +1315,7 @@ a = f(*p);          /* (5) */
 ## RV32I ABI — El bloc d'activació — Registre de pila `sp`
 
 <!-- TODO Verificar que ho diu l'ABI -->
-L'ABI imposa que les subrutines reservin tot l'espai que necessitaran a l'inici de la seva l'execució i que l'alliberin just abans de retornar el control de flux al caller. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
+L'ABI imposa que les subrutines reservin tot l'espai que necessitaran a l'inici de la seva execució i que l'alliberin just abans de retornar el control de flux al caller. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
 La reserva i l'alliberament d'espai de memòria per al BA es fa mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
 
@@ -1437,7 +1438,7 @@ A **RARS**, el fitxer `startup.s` emula el mecanisme d'inici i finalització del
 Per tant, si `main` és multinivell, cal preservar `ra` i restaurar-lo abans de retornar, exactament igual que qualsevol altra subrutina multinivell.
 :::
 
-Una subrutina multinivell, ha de preservar, com a mínim, el valor de `ra` abans de la crida al callee i restaurar-lo després:
+Una subrutina multinivell ha de preservar, com a mínim, el valor de `ra` abans de la crida al callee i restaurar-lo després:
 ```{.s filename="RV32I"}
 sub:
         ...
@@ -1457,25 +1458,26 @@ L'**ABI** de RV32I resol aquest problema mitjançant una solució elegant i efic
 
 Aquesta solució es basa en la classificació dels registres en **temporals** i **segurs** i en el repartiment de responsabilitats entre caller i callee per preservar-los: Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat del caller, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és del callee.
 
-Que el pare hagi de prendre mesures per preservar el seu context sembla raonable, ja que és qui té la necessitat de recuperar-lo després de la crida. El que pot semblar contraintuïtiu és que el fill hagui d'ajudar al pare a preservar el context d'aquest últim preservant-ne els valors dels registres segurs, tot i no tenir-ne cap dependència. No obstant això, aquesta solució és molt eficient perquè permet a **les subrutines** modificar lliurement els registres temporals sense haver de preocupar-se per preservar-los, havent-se de preocupar **només de preservar els registres segurs**, assegurant, així, per economia, que només faran servir aquells registres que realment necessiten.
+Que el pare hagi de prendre mesures per preservar el seu context sembla raonable, ja que és qui té la necessitat de recuperar-lo després de la crida. El que pot semblar contraintuïtiu és que el fill hagi d'ajudar al pare a preservar el context d'aquest últim preservant-ne els valors dels registres segurs, tot i no tenir-ne cap dependència. No obstant això, aquesta solució és molt eficient perquè permet a **les subrutines** modificar lliurement els registres temporals sense haver de preocupar-se per preservar-los, havent-se de preocupar **només de preservar els registres segurs**, assegurant, així, per economia, que només faran servir aquells registres que realment necessiten.
 
 Dit de manera informal, el sistema no es basa en la idea que el pare s'hagi de protegir contra les modificacions del fill, sinó que es basa en el seu compromís de preservar els registres segurs del seu pare, és a dir, els de l'avi.
 
 ::: {#nte-abi-registres-temporals-segurs .callout-note}
-## RV32I ABI — Registres temporals i segurs
+## RV32I ABI — Registres *caller-saved* i *callee-saved*
 De @nte-registres-proposit-general:
 
 | Categoria | Registres ABI | Qui els preserva |
 | :--- | :--- | :--- |
-| **Temporals** | `t0`–`t6`, `a0`–`a7` | **Caller** (la subrutina que fa la crida) |
-| **Segurs** | `s0`–`s11`, `ra`, `sp` | **Callee** (la subrutina cridada) |
+| **Temporals i arguments** | `t0`–`t6`, `a0`–`a7` | **Caller** (la subrutina que fa la crida) |
+| **Adreça de retorn** | `ra` | **Caller** (la subrutina que fa la crida) |
+| **Segurs** | `s0`–`s11`, `sp` | **Callee** (la subrutina cridada) |
 :::
 
 ::: {#cau-regla-registres-segurs .callout-caution}
 Resumint:
 
-- Una subrutina abans de retornar, ha de deixar els registres **segurs** en el mateix estat que tenien quan ha estat invocada.
-- Una multinivell ha de desar `ra` abans de fer la crida i restaurar-lo abans de retornar, ja que `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
+- Una subrutina, abans de retornar, ha de deixar els registres **segurs** (`s0`–`s11`) en el mateix estat que tenien quan ha estat invocada.
+- `ra` és **caller-saved**, però una subrutina multinivell l'ha de desar abans de fer una crida i restaurar-lo abans de retornar, ja que `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
 :::
 
 #### Determinació dels registres segurs necessaris
@@ -1531,7 +1533,7 @@ int multi(int a, int b, int c) {
 }
 ```
 
-**Pas 1. Registres segurs.** Identificació de les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). Els assignació dels registres segurs `s0` i `s1` respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
+**Pas 1. Registres segurs.** Identificació de les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). S'assignen els registres segurs `s0` i `s1`, respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
 
 ![Dependències de dades de la subrutina `multi`. La línia de punts separa el codi anterior i posterior a la crida a `mcm`. Les fletxes indiquen les dades `c` i `d` que travessen la frontera i que s'han de guardar en registres segurs.](figures/TODO.png){#fig-deps-multi}
 
@@ -1702,16 +1704,16 @@ A la @sec-traduccio-c-asm hi ha una introducció a aquest procés. En aquesta se
 
 En **C**, un **mòdul** (també anomenat unitat de traducció) és una unitat funcional de programació composta, generalment, per **un o més fitxers de codi font** (`.c`) i **un fitxer de capçalera** (`.h`), el qual conté les declaracions de les funcions i les dades del mòdul volen fer accessibles a altres mòduls (tècnicament, la interfície). La directiva de pre-processament `#include` fa la inclusió textual dels fitxers de capçalera dins de la unitat de traducció, facilitant la propagació de declaracions de tipus, prototips de funcions i macros necessàries per a la resolució de símbols.
 
-Hi ha moltes situacions a on resulta convenient separar el codi i les dades en **mòduls**. Algunes d'aquestes situacions són:
+Hi ha moltes situacions on resulta convenient separar el codi i les dades en **mòduls**. Algunes d'aquestes situacions són:
 
-- Fer possible la reutilitzar codi (biblioteques de funcions).
+- Fer possible reutilitzar codi (biblioteques de funcions).
 - Estructurar racionalment projectes complexos.
 - Permetre que equips independents de programadors treballin en paral·lel.
 - Fer que només s'hagin de recompilar els mòduls modificats.
 
 Els mòduls es compilen i assemblen **per separat**, generant fitxers objecte independents que més tard s'**enllaçaran** per crear l'executable.
 
-::: {#cau-abus-llenguate-compilació .callout-caution}
+::: {#cau-abus-llenguatge-compilació .callout-caution}
 De vegades, per abús de llenguatge, es diu "compilar" a tot el procés de traducció de codi font a executable, incloent-hi l'assemblatge i l'enllaçat. Cal, però, tenir present que, en realitat, cada un d'aquests passos és una fase diferent del procés de traducció, amb funcions i sortides diferents.
 :::
 
@@ -1743,7 +1745,7 @@ Flux de compilació separada: cada mòdul es compila i assembla independentment 
 
 El **compilador** pren com a entrada el codi font en C i el tradueix a llenguatge assemblador (fitxer `.s`). Durant aquest procés aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable, i genera les instruccions de la **ISA** de destí.
 
-El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen totes les que fan referència al mòdul mateix, i les que no es poden resoldre (perquè referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combine tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'enllaçarà.
+El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen totes les que fan referència al mòdul mateix, i les que no es poden resoldre (perquè referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combini tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'enllaçarà.
 
 ### Assemblatge {#sec-assemblatge}
 
