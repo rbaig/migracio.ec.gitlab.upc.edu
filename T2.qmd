@@ -4,7 +4,6 @@ number-sections: true
 
 # {{< var tema2 >}} {#sec-tema-assemblador}
 
-
 ## Introducció a l'ISA de RISC-V
 
 A l'assignatura IC, s'estudia en detall el disseny d'un computador simple (**SISP**), analitzant la relació entre el  **llenguatge màquina** i el disseny a nivell de  **circuits lògics digitals**. A **EC**, s'aprofundeix en el **llenguatge d'assemblador** i s'estudia la relació entre aquest i un **llenguatge d'alt nivell**.
@@ -89,7 +88,7 @@ La modularitat de RISC-V és molt potent, però genera un problema pràctic: dos
 ::: {#cau-extensions-vs-profiles .callout-caution}
 No s'ha de confondre la lletra G amb els perfils oficials de RISC-V:
 
-- G (propòsit general): Històricament, la lletra G es va crear com una abreviatura primerenca i pràctica per a I + M + A + F + D, juntament amb les extensions no privilegiades fonamentals Zicsr i Zifencei. Simplement indica a un compilador (com GCC o Clang) que activi un paquet específic i predefinit d'extensions d'una sola lletra.
+- G (propòsit general): Històricament, la lletra G es va crear com una abreviatura primerenca i pràctica per a I + M + A + F + D, juntament amb les extensions Zicsr i Zifencei. Simplement indica a un compilador (com GCC o Clang) que activi un paquet específic i predefinit d'extensions d'una sola lletra.
 - Perfils oficials de RISC-V: Els perfils són els fulls de ruta estandarditzats i versionats que gestiona RISC-V International (per exemple, RVA20, RVA22, RVA23). Defineixen requisits molt més estrictes per a la portabilitat del programari d'aplicació, agrupant no només extensions estàndard d'una sola lletra, sinó també definicions de models de memòria, nivells de privilegi, gestió de memòria cau i subvariants específiques d'extensions Z.
 :::
 
@@ -108,13 +107,14 @@ Els perfils es diferencien de la nomenclatura d'extensions (`rv32imf`, etc.) en 
 
 ::: {#imp-ec-nomes-rv32i-m-f .callout-important}
 ## Base i extensions de l'assignatura
-A **EC**, només s'estudia:
+A **EC**, s'estudia la base i les extensions següents:
 
-- La base **RV32I**, ([Tema 2](#sec-tema-assemblador) i [Tema 3](#sec-tema-traduccio)).
-- L'extensió "**M**", [Tema 4](#sec-tema-enters-matrius).
-- L'extensió "**F**", [Tema 5](#sec-tema-coma-flotant).
-- L'extensió "**Zicsr**" [Tema 9](#sec-tema-excepcions-interrupcions).
-
+- La base **RV32I**, [{{< var tema2 >}}](#sec-tema-assemblador) i [{{< var tema3 >}}](#sec-tema-traduccio).
+- L'extensió "**M**", [{{< var tema4 >}}](#sec-tema-enters-matrius).
+- L'extensió "**F**", [{{< var tema5 >}}](#sec-tema-coma-flotant).
+- L'extensió "**Zicsr**" [{{< var tema9 >}}](#sec-tema-excepcions-interrupcions).
+<!-- TODO eliminar si no Zifencei -->
+- L'extensió "**Zifencei**" [{{< var tema9 >}}](#sec-tema-excepcions-interrupcions).
 :::
 
 ::: {#wrn-rv32-vs-rv64 .callout-warning collapse=true}
@@ -299,7 +299,7 @@ Binari                            Hexadecimal Basic              Codi font
 
 ::: {#nte-rars-file-dump-memory .callout-note}
 ## RARS — Abocament de memòria
-A **RARS**, per obtenir el contingut de memòria (*memory dump*) de `.text` o `.data` (@nte-segments-memoria): *File → Dump Memory*
+A **RARS**, per obtenir el contingut de memòria (*memory dump*) de `.text` o `.data` (@nte-segments-memoria): *File → Dump Memory* (*Text/Data Segment Window*, per exemple).
 :::
 
 ::: {#imp-nmemonics-llegir-los-sencers .callout-important}
@@ -425,7 +425,7 @@ Un cop definida, es pot usar en qualsevol context on s'usaria el literal equival
 
 #### Instruccions
 
-Les instruccions són les operacions que el processador executa directament. A diferència de les pseudoinstruccions i les macros, cada instrucció té una codificació binària única i es correspon amb una operació real del maquinari, tal com s'ha vist a la @sec-format-instruccions. @nte-instruccions-aritmetica-entera-rv32i mostra les **instruccions d'aritmètica** entera bàsica de **RV32I**. Es presenten en aquest punt perquè són **només tres** i força **intuïtives**. D'aquesta manera es disposarà, d'ara endavant, d'un joc d'instruccions mínim per il·lustrar conceptes i altres instruccions a mesura que es vagin introduint.
+Les instruccions són les operacions que el processador executa directament. Cada **instrucció** té una codificació binària única i es **correspon amb una operació real del maquinari**, tal com s'ha vist a la @sec-format-instruccions. @nte-instruccions-aritmetica-entera-rv32i mostra les **instruccions d'aritmètica** entera bàsica de **RV32I**. Es presenten en aquest punt perquè són **només tres** i força **intuïtives**. D'aquesta manera es disposarà, d'ara endavant, d'un joc d'instruccions mínim per il·lustrar conceptes i altres instruccions a mesura que es vagin introduint.
 
 ::: {#nte-instruccions-aritmetica-entera-rv32i .callout-note}
 ## RV32I ISA — Instruccions d'aritmètica entera
@@ -488,7 +488,7 @@ Suposant que `f`, `g`, `h`, `i` són variables locals enteres emmagatzemades als
 
 #### Pseudoinstruccions {#sec-pseudoinstruccions}
 
-El programa assemblador, seguint les recomanacions de l'especificació de RISC-V, pot definir **pseudoinstruccions** (***pseudoinstructions***) que amplien el repertori (d'instruccions) amb una sintaxi més llegible. En el moment de ser assemblada, cada pseudoinstrucció s'**expandeix** en una o més instruccions de **llenguatge màquina**.
+El programa assemblador, seguint les recomanacions de l'especificació de RISC-V, pot definir **pseudoinstruccions** (***pseudoinstructions***) que amplien el repertori (d'instruccions) amb una sintaxi més llegible. En el moment de ser assemblada, cada pseudoinstrucció s'**expandeix en una o més instruccions de llenguatge màquina**.
 
 ::: {#nte-pseudoinstruccio-mv .callout-note}
 ## Pseudoinstrucció — Còpia entre registres: `mv`
@@ -575,6 +575,24 @@ Però **RARS no la suporta**. Per tant, al **laboratori** cal substituir-la per 
         la      t0, y
         addi    t1, t0, 4       # t1 <- @y + 4
 ```
+:::
+
+::: {#nte-pseudoinstruccions-llistes .callout-note}
+## RISC-V — Pseudoinstruccions: llistes i expansions
+
+Les pseudoinstruccions no formen part de l'ISA. Estan documentades al RISC-V Assembly Programmer's Manual [@riscv_asm_manual], *Chapter 29. A listing of standard RISC-V pseudoinstructions* i *Chapter 30. Pseudoinstructions for accessing control and status registers* ([{{< var tema9 >}}](#sec-tema-excepcions-interrupcions)). La pròpia especificació de la ISA no privilegiada remet explícitament a aquest manual per a la sintaxi del llenguatge assemblador. El manual cobreix les pseudoinstruccions, les convencions de crida i les directives d'assemblador.
+:::
+
+::: {#wrn-pseudoinstruccions-no-ratificades .callout-warning collapse=true}
+##  RISC-V — Pseudoinstruccions: 
+
+L'Assembly Programmer's Manual es manté sota riscv-non-isa (especificacions no-ISA), cosa que significa que no és una especificació ISA ratificada en el mateix sentit que la ISA no privilegiada. És un document de referència normatiu, però no figura a la Ratified Specifications Library. Defineix un conjunt estàndard de pseudoinstruccions, però el seu estatus és més aviat estandarditzat per convenció i consens de les toolchains que no pas ratificat pel *Technical Steering Committee*.
+:::
+
+::: {#wrn-pseudoinstruccions-no-ratificades .callout-warning collapse=true}
+## https://godbolt.org/ - Compilador en línia
+
+Es pot utilitzar el compilador en línia https://godbolt.org/ per veure com es tradueix el codi C a llenguatge d'assemblador, comprovar l'expansió de pseudoinstruccions i macros, etc. Permet seleccionar diferents compiladors i opcions, i veure el codi generat interactivament.
 :::
 
 #### Macros {#sec-macros}

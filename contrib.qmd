@@ -587,7 +587,7 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 
 ### Puntuació
 
-- **Punt d'acabament de frase**: Sempre. Totes les frases del cos del text, incloses les llistes de vinyetes, han d'acabar obligatòriament en punt.
+- **Punt d'acabament de frase**: Sempre. Totes les frases del cos del text, incloses les llistes de vinyetes, han d'acabar obligatòriament en punt. Excepció: les llistes de passos en notació tècnica amb fletxa (`→`) no porten punt final, ja que no constitueixen prosa sinó notació de seguiment pas a pas.
 - **Negretes acabades en dos punts**: Els dos punts mai en negreta.
 - **Nombres decimals**: Amb coma, no amb punt. Ex: "0,5 V", "3,14", $1{,}045$.
 
@@ -628,7 +628,10 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 | promig | mitjana | |
 | tamany | mida | mida per escalars (e.g. mida en bytes o en bits); longitud per registre, camp de bits, vectors, cadenes de caràcters |
 | string | cadena de caràcters | Cadena (si apareix sovint) |
-| Lliurable | Lliurament |  |
+| lliurable | Lliurament |  |
+| mapeig | mapatge |  |
+| mapejar | mapar |  |
+
 <!--- cSpell:enable --->
 
 - `mida` vs. `longitud`: s'usa `mida` per referir-se a l'espai que ocupa un tipus o variable en memòria (p. ex. *la mida d'un `int` és 4 bytes*). S'usa `longitud`*per referir-se al nombre de bits d'un registre o camp de bits (p. ex. *la longitud del camp `opcode` és 7 bits*). El terme <!--- cSpell:disable --->`tamany`<!--- cSpell:enable ---> no és normatiu i no s'ha d'usar mai.
@@ -734,6 +737,17 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Optimització #1**: Accés seqüencial.
 - **Optimització #2**: Avaluació de la condició al final.
 - **Optimització #3**: Eliminació de la variable d'inducció.
+
+#### T5
+
+- **`quartet`** (no `nibble`): terme preferit per als grups de 4 bits.
+- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació.
+- **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des del LSB.
+- **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`).
+- **Solucionari (PS)**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
+- **`fcvt.w.s` trunca cap a zero** (mode RTZ) independentment del `fcsr`. Per arrodonir al més pròxim cal afegir 0,5 abans de la conversió.
+- **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
+- **No associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$.
 
 #### T9
 

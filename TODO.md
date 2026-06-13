@@ -2,6 +2,7 @@
 
 ## Contingut
 
+- "" -> «»
 - Eliminar `[Plantilles](laboratori/L0/TODO.s)` si no es fan servir
 - Lab: Decidir si Estudi previ és els fitxers 
 - **T1**: Indicar explícitament que RISC-V és l'ISA de referència a EC.
@@ -12,6 +13,10 @@
 - Decidir si `startup.s` (Roger: Fora i obligar `li a0, 0` + syscall `93`)
 - Decidir si 2 registres de retorn `a1` (Roger: Sí)
 - Pseudoinstruccions: Totes a taula estàndard:
+- PDF ancoratge de les seccions`{.unnumbered}`: <!-- Esmena del problema clàssic de hyperref amb seccions no numerades ({.unnumbered}). Per a \section*{}, Pandoc genera \addcontentsline però sense \phantomsection previ, de manera que el marcador del PDF (outline) s'ancora a la pàgina anterior en lloc de la de la secció. L'índex (TOC) queda bé perquè el seu hipervincle apunta a l'àncora \hypertarget, però el marcador de l'outline s'ancora en el punt on es crida \addcontentsline. -->
+```{=latex}
+\phantomsection
+```
 
 ```
 ::: {#nte-pseudoinstruccions-neg .callout-note}

@@ -527,7 +527,7 @@ Perquè no augmenti el nombre de fallades, cal que tots els blocs actius en un m
 
 ## Accés a múltiples estructures {#sec-l5-multiple-estructures}
 
-En aquesta secció s'analitza com la presència de múltiples estructures de dades pot provocar **conflictes** a la memòria cau (@sec-tipologia-fallades): dues estructures que es mapegen a les mateixes línies s'expulsen mútuament, degradant la taxa d'encerts fins i tot quan la cau tindria capacitat suficient per contenir-les totes.
+En aquesta secció s'analitza com la presència de múltiples estructures de dades pot provocar **conflictes** a la memòria cau (@sec-tipologia-fallades): dues estructures que es mapen a les mateixes línies s'expulsen mútuament, degradant la taxa d'encerts fins i tot quan la cau tindria capacitat suficient per contenir-les totes.
 
 El programa calcula la suma element a element de dos vectors i desa el resultat en un tercer:
 
@@ -587,7 +587,7 @@ Carregueu aquest programa a RARS i activeu el **Data Cache Simulator**.
 
 Considereu una memòria cau de correspondència directa amb **16 blocs de 4 paraules** i política d'**escriptura immediata amb assignació**. Les variables globals comencen a `0x10010000`.
 
-1. Calculeu la mida en blocs de cada vector. Determineu a quines línies de MC es mapegen els blocs de `A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
+1. Calculeu la mida en blocs de cada vector. Determineu a quines línies de MC es mapen els blocs de `A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
 
 2. Calculeu la taxa d'encerts esperada. Justifiqueu el resultat a partir de l'anàlisi de conflictes.
 
@@ -599,15 +599,15 @@ Verifiqueu la resposta amb el **Data Cache Simulator** configurat amb 16 blocs d
 ::: {#sol-suma-vectors-cd}
 **Apartat 1. Mapeig i conflictes.**
 
-Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapeig en correspondència directa assigna el bloc $n$ de MP a la línia $n \bmod 16$.
+Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapatge en correspondència directa assigna el bloc $n$ de MP a la línia $n \bmod 16$.
 
 `A` comença a `0x10010000` → bloc MP 0 a la línia 0, bloc MP 1 a la línia 1, …, bloc MP 15 a la línia 15, bloc MP 16 a la línia 0, …
 
-`B` comença a `0x10010000 + 512 = 0x10010200` → bloc MP 32 a la línia 0, bloc MP 33 a la línia 1, … Els blocs de `B` es mapegen exactament a les **mateixes línies** que els de `A`.
+`B` comença a `0x10010000 + 512 = 0x10010200` → bloc MP 32 a la línia 0, bloc MP 33 a la línia 1, … Els blocs de `B` es mapen exactament a les **mateixes línies** que els de `A`.
 
-`C` comença a `0x10010000 + 1024 = 0x10010400` → bloc MP 64 a la línia 0, bloc MP 65 a la línia 1, … Els blocs de `C` es mapegen també a les **mateixes línies** que `A` i `B`.
+`C` comença a `0x10010000 + 1024 = 0x10010400` → bloc MP 64 a la línia 0, bloc MP 65 a la línia 1, … Els blocs de `C` es mapen també a les **mateixes línies** que `A` i `B`.
 
-Els tres vectors es mapegen a les mateixes 16 línies: **conflicte total**. A cada iteració del bucle, l'accés a `A[i]`, `B[i]` i `C[i]` accedeix a la mateixa línia de MC, expulsant el bloc anterior en cada accés.
+Els tres vectors es mapen a les mateixes 16 línies: **conflicte total**. A cada iteració del bucle, l'accés a `A[i]`, `B[i]` i `C[i]` accedeix a la mateixa línia de MC, expulsant el bloc anterior en cada accés.
 
 **Apartat 2. Taxa d'encerts.**
 
@@ -631,7 +631,7 @@ Configureu el **Data Cache Simulator** amb 16 blocs de 4 paraules, correspondèn
 ::: {#exr-padding}
 ## `s5_4_2.s`
 
-La taxa d'encerts nul·la de l'exercici anterior es deu al fet que els tres vectors es mapegen exactament a les mateixes línies. Una manera d'eliminar els conflictes sense canviar l'algorisme és afegir **padding** entre vectors: un espai buit que desplaça l'adreça base del vector següent i trenca l'alineació que causa el conflicte.
+La taxa d'encerts nul·la de l'exercici anterior es deu al fet que els tres vectors es mapen exactament a les mateixes línies. Una manera d'eliminar els conflictes sense canviar l'algorisme és afegir **padding** entre vectors: un espai buit que desplaça l'adreça base del vector següent i trenca l'alineació que causa el conflicte.
 
 Modifiqueu la declaració de dades de `suma_vectors.s` afegint padding entre els vectors de manera que la taxa d'encerts sigui **0,75**. El fitxer resultant ha de ser `s5_4_2.s`.
 
@@ -643,9 +643,9 @@ Verifiqueu el resultat amb el **Data Cache Simulator**.
 ---
 
 ::: {#sol-padding}
-Amb 16 blocs i blocs de 4 paraules (16 bytes), la cau cobreix $16 \times 16 = 256$ bytes. Els conflictes es produeixen perquè `A`, `B` i `C` estan separats exactament 512 bytes = 32 blocs = múltiple de 16, de manera que es mapegen a les mateixes línies.
+Amb 16 blocs i blocs de 4 paraules (16 bytes), la cau cobreix $16 \times 16 = 256$ bytes. Els conflictes es produeixen perquè `A`, `B` i `C` estan separats exactament 512 bytes = 32 blocs = múltiple de 16, de manera que es mapen a les mateixes línies.
 
-Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapegen a línies **diferents**: en cada iteració del bucle, els blocs de `A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada (*cold-start*): 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
+Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapen a línies **diferents**: en cada iteració del bucle, els blocs de `A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada (*cold-start*): 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
 
 $$\text{taxa d'encerts} = \frac{384 - 96}{384} = \frac{288}{384} = 0{,}75$$
 
@@ -709,7 +709,7 @@ Verifiqueu la resposta amb el **Data Cache Simulator** configurat en mode comple
 ---
 
 ::: {#sol-completament-associativa}
-En una cau completament associativa, qualsevol bloc de MP pot anar a qualsevol línia: no hi ha conflictes per mapeig fix. La cau té 16 línies i els tres vectors junts ocupen $3 \times 32 = 96$ blocs: **no caben tots simultàniament** (96 > 16). Hi haurà, doncs, fallades de **capacitat**.
+En una cau completament associativa, qualsevol bloc de MP pot anar a qualsevol línia: no hi ha conflictes per mapat fix. La cau té 16 línies i els tres vectors junts ocupen $3 \times 32 = 96$ blocs: **no caben tots simultàniament** (96 > 16). Hi haurà, doncs, fallades de **capacitat**.
 
 A cada iteració del bucle s'accedeix a un bloc de `A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment son els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada de *cold-start* i les tres referències restants al mateix bloc (els altres 3 elements) son encerts.
 
@@ -737,7 +737,7 @@ Verifiqueu la resposta amb el **Data Cache Simulator** ajustant el camp **Set si
 ---
 
 ::: {#sol-grau-minim}
-Amb 16 conjunts i blocs de 4 paraules (16 bytes), el mapeig és: bloc de MP $n$ → conjunt $n \bmod 16$. Els tres vectors ocupen 32 blocs cadascun i es mapegen als mateixos 16 conjunts amb el mateix patró que en correspondència directa: els blocs $i$, $i + 32$ i $i + 64$ (un de cada vector) van tots al conjunt $i \bmod 16$.
+Amb 16 conjunts i blocs de 4 paraules (16 bytes), el mapatge és: bloc de MP $n$ → conjunt $n \bmod 16$. Els tres vectors ocupen 32 blocs cadascun i es mapen als mateixos 16 conjunts amb el mateix patró que en correspondència directa: els blocs $i$, $i + 32$ i $i + 64$ (un de cada vector) van tots al conjunt $i \bmod 16$.
 
 Amb grau 1 (correspondència directa), els 3 blocs que competeixen per cada conjunt s'expulsen contínuament: taxa d'encerts = 0.
 

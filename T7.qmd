@@ -267,7 +267,7 @@ $$A = \underbrace{\cdots}_{\text{etiqueta}} \;
      \underbrace{\cdots}_{\text{índex}\;(n_l\text{ bits})} \;
      \underbrace{\cdots}_{\text{offset}\;(b\text{ bits})}$$
 
-Com que tots els blocs que es mapegen a una mateixa línia comparteixen el mateix índex, l'etiqueta pot prescindir d'aquests bits: n'hi ha prou amb els bits restants del número de bloc per identificar unívocament el bloc guardat.
+Com que tots els blocs que es mapen a una mateixa línia comparteixen el mateix índex, l'etiqueta pot prescindir d'aquests bits: n'hi ha prou amb els bits restants del número de bloc per identificar unívocament el bloc guardat.
 
 <!-- figura: descomposició dels bits d'una adreça de 32 bits en etiqueta, índex i offset per a una memòria cau de correspondència directa amb N_L=8 línies (n_l=3) i blocs de B=16 bytes (b=4), aplicada a l'adreça 0x100100F8. Basada en les Figures 6.10–6.12 del PDF. Caption: "Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de correspondència directa." -->
 ::: {#fig-cd-descomposicio-bits}
@@ -305,7 +305,7 @@ El diagrama de blocs de la @fig-cd-diagrama mostra el maquinari necessari per a 
 
 <!-- fig-cd-diagrama: diagrama de blocs d'una lectura en una memòria cau de correspondència directa, amb: adreça dividida en etiqueta/índex/offset, decodificador connectat als bits d'índex, taula de línies (V, Etiqueta, Dades), comparador entre etiqueta de l'adreça i etiqueta guardada, porta AND amb V, senyal Hit, i multiplexor seleccionat per l'offset que produeix la Dada cap a la CPU. Basada en la Figura 6.13 del PDF. Caption: "Diagrama de blocs d'una lectura en una memòria cau de correspondència directa." -->
 
-La correspondència directa és la política més senzilla i ràpida: amb un sol accés a la taula i una sola comparació es sap si hi ha encert o fallada. El seu inconvenient és la **rigidesa**: si dos blocs que s'accedeixen alternament es mapegen a la mateixa línia, s'expulsaran mútuament a cada accés causant fallades contínues, fins i tot si la resta de línies estan buides. Això s'anomena **conflicte** i s'estudia en detall a la @sec-tipologia-fallades.
+La correspondència directa és la política més senzilla i ràpida: amb un sol accés a la taula i una sola comparació es sap si hi ha encert o fallada. El seu inconvenient és la **rigidesa**: si dos blocs que s'accedeixen alternament es mapen a la mateixa línia, s'expulsaran mútuament a cada accés causant fallades contínues, fins i tot si la resta de línies estan buides. Això s'anomena **conflicte** i s'estudia en detall a la @sec-tipologia-fallades.
 
 ### Memòria cau associativa per conjunts {#sec-associativa-conjunts}
 
@@ -651,7 +651,7 @@ Les fallades de memòria cau es classifiquen en tres categories, conegudes com l
 
 **Cold-start** (o **obligatòries**): es produeixen el primer cop que s'accedeix a un bloc. Per definició, cap memòria cau pot tenir un bloc que no s'ha accedit mai, de manera que aquestes fallades són **inevitables** independentment de la política d'emplaçament, del grau d'associativitat o de la capacitat de la memòria cau. El nombre total de cold-start misses d'un programa és igual al nombre de blocs diferents que accedeix.
 
-**Conflicte** (o **col·lisió**): es produeixen quan dos o més blocs que s'accedeixen alternament es mapegen al mateix conjunt i s'expulsen mútuament, tot i que hi ha línies lliures en altres conjunts. Són **exclusives de les memòries cau amb indexació** (correspondència directa i associativa per conjunts): en una memòria cau completament associativa, per definició, no hi pot haver conflictes. Augmentar el grau d'associativitat redueix les fallades de conflicte.
+**Conflicte** (o **col·lisió**): es produeixen quan dos o més blocs que s'accedeixen alternament es mapen al mateix conjunt i s'expulsen mútuament, tot i que hi ha línies lliures en altres conjunts. Són **exclusives de les memòries cau amb indexació** (correspondència directa i associativa per conjunts): en una memòria cau completament associativa, per definició, no hi pot haver conflictes. Augmentar el grau d'associativitat redueix les fallades de conflicte.
 
 **Capacitat**: es produeixen perquè la memòria cau no és prou gran per contenir tots els blocs que el programa necessita simultàniament (el ***working set***). Quan el working set supera la capacitat de la memòria cau, alguns blocs s'expulsen i, quan es tornen a necessitar, fallen de nou. Aquestes fallades **no es poden eliminar augmentant l'associativitat**: l'única solució és augmentar la capacitat de la memòria cau.
 
@@ -684,7 +684,7 @@ int f(int A[8], int B[8]) {
 
 Suposem una memòria cau de correspondència directa amb 4 línies ($n_l = 2$), inicialment buida. Els vectors `A` i `B` es troben en posicions contigües de memòria: `A` comença al bloc 0 i `B` al bloc 4.
 
-Com que els blocs de `A` i de `B` difereixen en el bit 2 del num\_bloc (és a dir, en el bit d'índex, ja que $n_l = 2$), **tots els blocs de `A[i]` i `B[i]` es mapegen a la mateixa línia 0** de la memòria cau, independentment del valor de `i`.
+Com que els blocs de `A` i de `B` difereixen en el bit 2 del num\_bloc (és a dir, en el bit d'índex, ja que $n_l = 2$), **tots els blocs de `A[i]` i `B[i]` es mapen a la mateixa línia 0** de la memòria cau, independentment del valor de `i`.
 
 - **Iteració $i = 0$**:
     - `lw A[0]` (bloc 0, línia 0) → **Cold-start miss**. Es copia el bloc 0.

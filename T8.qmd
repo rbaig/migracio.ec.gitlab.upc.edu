@@ -23,7 +23,7 @@ La memòria virtual es fonamenta en la distinció entre dos espais d'adreçament
 - L'**espai d'adreçament físic** és el conjunt d'adreces de la memòria física real. La seva mida depèn de la quantitat de RAM instal·lada al sistema, i és totalment independent de l'espai d'adreçament lògic.
 - La **unitat de gestió de memòria** (***memory management unit*** o **MMU**) és el component maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.
 
-<!-- fig-mv-espais: diagrama que mostra dos espais d'adreçament lògic independents (Procés 1 i Procés 2, cadascun de 0x00000000 a 0xFFFFFFFF) a l'esquerra, i l'espai d'adreçament físic (memòria física, més petit) a la dreta, amb fletxes que indiquen que pàgines de cada procés es mapegen a marcs de pàgina físics diferents. El disc apareix a baix a la dreta com a nivell inferior. Paleta estàndard: cel·les de Procés 1 en blau, Procés 2 en verd, marcs físics en gris neutre. Caption: "Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució." -->
+<!-- fig-mv-espais: diagrama que mostra dos espais d'adreçament lògic independents (Procés 1 i Procés 2, cadascun de 0x00000000 a 0xFFFFFFFF) a l'esquerra, i l'espai d'adreçament físic (memòria física, més petit) a la dreta, amb fletxes que indiquen que pàgines de cada procés es mapen a marcs de pàgina físics diferents. El disc apareix a baix a la dreta com a nivell inferior. Paleta estàndard: cel·les de Procés 1 en blau, Procés 2 en verd, marcs físics en gris neutre. Caption: "Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució." -->
 
 ### El disc com a nivell addicional de la jerarquia {#sec-mv-disc}
 
@@ -317,12 +317,12 @@ El procés P1 vol compartir la seva pàgina VPN = `0x00000` (carregada al marc P
 A partir d'aquell moment, quan P2 accedeix a VPN = `0x00001` i P1 accedeix a VPN = `0x00000`, tots dos accedeixen a la mateixa pàgina física. Qualsevol modificació feta per un dels dos processos és visible immediatament per l'altre.
 :::
 
-<!-- fig-mv-comparticio: diagrama amb dues taules de pàgines (P1 a l'esquerra, P2 a la dreta) i la memòria física al centre. La fila VPN=0x00000 de P1 (P=1, E=1, PPN=0x02) i la fila VPN=0x00001 de P2 (P=1, E=1, PPN=0x02) tenen fletxes que convergeixen al mateix marc PPN=0x02 de la memòria física, destacat en verd. La resta de marcs en gris neutre. Caption: "Compartició d'una pàgina física entre dos processos: P1 i P2 mapegen VPNs diferents al mateix PPN. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE." -->
+<!-- fig-mv-comparticio: diagrama amb dues taules de pàgines (P1 a l'esquerra, P2 a la dreta) i la memòria física al centre. La fila VPN=0x00000 de P1 (P=1, E=1, PPN=0x02) i la fila VPN=0x00001 de P2 (P=1, E=1, PPN=0x02) tenen fletxes que convergeixen al mateix marc PPN=0x02 de la memòria física, destacat en verd. La resta de marcs en gris neutre. Caption: "Compartició d'una pàgina física entre dos processos: P1 i P2 mapen VPNs diferents al mateix PPN. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE." -->
 
 La compartició de pàgines té dues aplicacions principals:
 
 - **Comunicació entre processos**: dos processos poden intercanviar dades escrivint i llegint una pàgina compartida, sense necessitat de còpies.
-- **Biblioteques compartides**: si múltiples processos usen simultàniament el codi d'una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapejar-les (en mode sols lectura, E = 0) a l'espai lògic de cada procés, estalviant memòria física de manera significativa.
+- **Biblioteques compartides**: si múltiples processos usen simultàniament el codi d'una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapar-les (en mode sols lectura, E = 0) a l'espai lògic de cada procés, estalviant memòria física de manera significativa.
 
 ## Integració del TLB i la memòria cau {#sec-mv-integracio}
 

@@ -2,12 +2,12 @@
 number-sections: true
 ---
 
-# {{< var tema2 >}}
+## {{< var tema2 >}}
 
-## Operands en registre
+### Operands en registre
 
 ::: {#sol-p3-registre-rtovc .callout-tip}
-## Solució: desassemblatge de fragments a C
+## Solució: desassemblar fragments a C
 
 **Enunciat**: @exr-p3-registre-rtovc.
 
@@ -50,7 +50,7 @@ Instrucció per instrucció:
 **Resposta**: `f = 2 * (g + h + i + j + 2)`
 :::
 
-## Operands en memòria
+### Operands en memòria
 
 ::: {#sol-p3-memoria-lw-sw .callout-tip}
 ## Solució: seguiment d'instruccions `lw` i `sw`
@@ -114,7 +114,7 @@ Memòria modificada: `M[0x10010008..0x1001000B] = 04 05 06 07`.
 | `sw t4, 0(t2)` | `M[0x10010008]` | `04 05 06 07` |
 :::
 
-## Constants i immediats
+### Constants i immediats
 
 ::: {#sol-p3-immediats-luiaddi .callout-tip}
 ## Solució: expansió de `lui` + `addi` i rang d'immediats
@@ -126,25 +126,25 @@ Memòria modificada: `M[0x10010008..0x1001000B] = 04 05 06 07`.
 El valor `0xDEADBEEF` no cap en 12 bits, de manera que calen dues instruccions. Es divideix en:
 
 - **20 bits superiors** (`hi20`): `0xDEADB`
-- **12 bits inferiors** (`lo12`): `0xEEF` = `0b1110_1110_1111`
+- **12 bits inferiors** (`lo12`): `0xEEF` = `1110_1110_1111₂`
 
-El bit 11 de `lo12` val 1 (`0xEEF = 1110_1110_1111₂`), de manera que l'`addi` aplicarà extensió de signe i restarà `0x111` (2049 en positiu). Cal incrementar `hi20` en 1 per compensar:
+El bit 11 de `lo12` val 1, de manera que `addi` aplicarà extensió de signe i restarà `0x111` (273 en positiu). Cal incrementar `hi20` en 1 per compensar:
 
 - `hi20` ajustat: `0xDEADB + 1 = 0xDEADC`
-- `lo12` amb signe: `0xEEF` com a enter de 12 bits amb signe = `0xEEF - 0x1000 = -273`
+- `lo12` com a enter de 12 bits amb signe: `0xEEF - 0x1000 = -273`
 
 ```{.s filename="RV32I"}
 lui   t0, 0xDEADC      # t0 = 0xDEADC000
-addi  t0, t0, -273     # t0 = 0xDEADC000 + 0xFFFFFEEF = 0xDEADBEEF
+addi  t0, t0, -273     # t0 = 0xDEADC000 - 273 = 0xDEADBEEF
 ```
 
-Comprovació: `0xDEADC000 + 0xFFFFFEEF = 0x1DEADBEEF` → els 32 bits baixos: `0xDEADBEEF`. ✓
+Comprovació: `0xDEADC000 - 0x111 = 0xDEADBEEF` ✓
 
 **b)** Per què cal ajustar `hi20` quan el bit 11 de `lo12` val 1.
 
-`addi` fa **extensió de signe** de l'immediat de 12 bits. Si el bit 11 és 1, el valor s'interpreta com a negatiu: en lloc de sumar `lo12`, resta `0x1000 - lo12`. Sense l'ajust, el resultat seria `hi20 << 12 + lo12 - 0x1000`, és a dir, `0x1000` (4096) menys del que es vol.
+`addi` fa **extensió de signe** de l'immediat de 12 bits. Si el bit 11 és 1, el valor s'interpreta com a negatiu: en lloc de sumar `lo12`, resta `0x1000 - lo12`. Sense l'ajust, el resultat seria `0x1000` (4096) menys del valor desitjat.
 
-Per `0xDEADBEEF`: `lo12 = 0xEEF`, bit 11 = 1. Sense ajust: `lui t0, 0xDEADB` → `t0 = 0xDEADB000`; `addi t0, t0, 0xEEF` → l'assemblador interpreta `0xEEF` com `-273` (extensió de signe) → `0xDEADB000 - 273 = 0xDEADAEEF` ≠ `0xDEADBEEF`. Amb l'ajust `hi20 = 0xDEADC`: `0xDEADC000 - 273 = 0xDEADBEEF`. ✓
+Per `0xDEADBEEF`: sense ajust, `lui t0, 0xDEADB` → `t0 = 0xDEADB000`; `addi t0, t0, 0xEEF` → extensió de signe fa −273 → `0xDEADB000 - 273 = 0xDEADAEEF` ≠ `0xDEADBEEF`. Amb l'ajust `hi20 = 0xDEADC`: `0xDEADC000 - 273 = 0xDEADBEEF` ✓
 
 **c)** Rangs de valors.
 
@@ -152,7 +152,7 @@ Per `0xDEADBEEF`: `lo12 = 0xEEF`, bit 11 = 1. Sense ajust: `lui t0, 0xDEADB` →
 - **Amb `lui` + `addi`**: `lui` carrega 20 bits als bits [31:12]; `addi` afegeix fins a 12 bits amb signe. El rang cobert és $[-2^{31},\ 2^{31}-1]$, és a dir, tots els enters representables en 32 bits.
 :::
 
-## Representació de naturals i enters
+### Representació de naturals i enters
 
 ::: {#sol-p3-enters-taules .callout-tip}
 ## Solució: rang i taula de codificació de formats d'enters
@@ -163,10 +163,10 @@ Per `0xDEADBEEF`: `lo12 = 0xEEF`, bit 11 = 1. Sense ajust: `lui t0, 0xDEADB` →
 
 | Format | Rang | Representació del zero |
 | :--- | :--- | :--- |
-| Signe i magnitud | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | $0\ldots00$ i $1\ldots00$ (doble zero) |
-| Complement a 1 | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | $0\ldots00$ i $1\ldots11$ (doble zero) |
-| Complement a 2 | $[-2^{n-1},\ 2^{n-1}-1]$ | $0\ldots00$ |
-| Excés a $2^{n-1}-1$ | $[-(2^{n-1}-1),\ 2^{n-1}]$ | $0\ldots01\ldots1$ ($n-1$ uns) |
+| Signe i magnitud | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | `0...00` i `1...00` (doble zero) |
+| Complement a 1 | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | `0...00` i `1...11` (doble zero) |
+| Complement a 2 | $[-2^{n-1},\ 2^{n-1}-1]$ | `0...00` |
+| Excés a $2^{n-1}-1$ | $[-(2^{n-1}-1),\ 2^{n-1}]$ | `0111...1` ($n-1$ uns) |
 
 **b)** Taula de codificació en 4 bits ($n = 4$). L'excés és $2^{n-1}-1 = 7$, de manera que el codi d'excés és `decimal + 7`.
 
@@ -184,11 +184,11 @@ Per `0xDEADBEEF`: `lo12 = 0xEEF`, bit 11 = 1. Sense ajust: `lui t0, 0xDEADB` →
 
 Observacions:
 - El 8 no és representable en cap format de 4 bits (el màxim positiu en Ca2 és 7).
-- El −8 no és representable en Ca1 ni en excés a 7 ni en signe i magnitud (el mínim en Ca1 és −7).
+- El −8 no és representable en Ca1, en excés a 7 ni en signe i magnitud (el mínim en aquests formats és −7).
 - En Ca1 i signe i magnitud, el 0 té dues representacions.
 :::
 
-## Representació de caràcters
+### Representació de caràcters
 
 ::: {#sol-p3-ascii-contingut .callout-tip}
 ## Solució: contingut de memòria amb tipus mixtos
@@ -208,36 +208,36 @@ f: .dword 0xFFFFEEEE
 
 Càlcul adreça per adreça (l'assemblador afegeix *padding* per respectar l'alineació):
 
-| Variable | Tipus | Mida | Adreça | Alineació | Padding previ |
-| :--- | :--- | :---: | :--- | :--- | :---: |
-| `a` | `.half` | 2 B | `0x10010000` | múltiple de 2 ✓ | — |
-| `b` | `.byte` | 1 B | `0x10010002` | cap restricció ✓ | — |
-| `c` | `.half` | 2 B | `0x10010004` | múltiple de 2; `0x10010003` no ho és → pad 1 B | 1 |
-| `d` | `.word` | 4 B | `0x10010008` | múltiple de 4; `0x10010006` no ho és → pad 2 B | 2 |
-| `e` | `.byte` | 1 B | `0x1001000C` | cap restricció ✓ | — |
-| `f` | `.dword` | 8 B | `0x10010010` | múltiple de 8; `0x1001000D` no ho és → pad 3 B | 3 |
+| Variable | Tipus | Mida | Adreça | Padding previ |
+| :--- | :--- | :---: | :--- | :---: |
+| `a` | `.half` | 2 B | `0x10010000` | — |
+| `b` | `.byte` | 1 B | `0x10010002` | — |
+| `c` | `.half` | 2 B | `0x10010004` | 1 B |
+| `d` | `.word` | 4 B | `0x10010008` | 2 B |
+| `e` | `.byte` | 1 B | `0x1001000C` | — |
+| `f` | `.dword` | 8 B | `0x10010010` | 3 B |
 
 Valors byte a byte (little-endian):
 
-- `a = 54 = 0x0036` → bytes: `36 00`
-- `b = 'C' = 0x43` → byte: `43`
+- `a = 54 = 0x0036` → `36 00`
+- `b = 'C' = 0x43` → `43`
 - padding: `??` (indeterminat)
-- `c = 0xAAAA` → bytes: `AA AA`
+- `c = 0xAAAA` → `AA AA`
 - padding: `?? ??`
-- `d = 0x4F3C` → bytes: `3C 4F 00 00`
-- `e = -18 = 0xEE` → byte: `EE`
+- `d = 0x00004F3C` → `3C 4F 00 00`
+- `e = -18 = 0xEE` (Ca2 de 8 bits) → `EE`
 - padding: `?? ?? ??`
-- `f = 0xFFFFEEEE` → bytes: `EE EE FF FF 00 00 00 00`
+- `f = 0x00000000FFFFEEEE` (dword de 64 bits) → `EE EE FF FF 00 00 00 00`
 
 | Adreça | Contingut (byte a byte, hex) |
 | :--- | :--- |
 | `0x10010000` | `36 00 43 ?? AA AA ?? ?? 3C 4F 00 00 EE ?? ?? ??` |
-| `0x10010010` | `EE EE FF FF 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ??` |
+| `0x10010010` | `EE EE FF FF 00 00 00 00` |
 
 Els bytes marcats `??` corresponen a padding i el seu valor és indeterminat.
 :::
 
-## Format de les instruccions
+### Format de les instruccions
 
 ::: {#sol-p3-format-ctom .callout-tip}
 ## Solució: assemblador → codi màquina
@@ -283,7 +283,7 @@ Hexadecimal: `0x019F0F93`
 
 **`lw t3, 0(t2)`** — Tipus I, `opcode = 0x03 = 0000011`, `funct3 = 010`
 
-`0 = 000000000000` (12 bits)
+`offset = 0 = 000000000000` (12 bits)
 
 | imm[11:0] | rs1 | funct3 | rd | opcode |
 | :---: | :---: | :---: | :---: | :---: |
@@ -291,13 +291,13 @@ Hexadecimal: `0x019F0F93`
 
 Binari: `000000000000 00111 010 11100 0000011`
 
-Hexadecimal: `0x00072E03`
+Hexadecimal: `0x0003AE03`
 
 ---
 
 **`sw t0, 0(t1)`** — Tipus S, `opcode = 0x23 = 0100011`, `funct3 = 010`
 
-`offset = 0 = 000000000000`; bits [11:5] = `0000000`, bits [4:0] = `00000`
+`offset = 0`; imm[11:5] = `0000000`, imm[4:0] = `00000`
 
 | imm[11:5] | rs2 | rs1 | funct3 | imm[4:0] | opcode |
 | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -315,11 +315,11 @@ Hexadecimal: `0x00532023`
 | :--- | :--- | :--- |
 | `add  t4, t3, t5` | `0000000 11110 11100 000 11101 0110011` | `0x01EE0EB3` |
 | `addi t6, t5, 25` | `000000011001 11110 000 11111 0010011` | `0x019F0F93` |
-| `lw   t3, 0(t2)` | `000000000000 00111 010 11100 0000011` | `0x00072E03` |
-| `sw   t0, 0(t1)` | `0000000 00101 00110 010 00000 0100011` | `0x00532023` |
+| `lw   t3, 0(t2)`  | `000000000000 00111 010 11100 0000011` | `0x0003AE03` |
+| `sw   t0, 0(t1)`  | `0000000 00101 00110 010 00000 0100011` | `0x00532023` |
 :::
 
-## Punters
+### Punters
 
 ::: {#sol-p3-punters-vector .callout-tip}
 ## Solució: traducció de sentències amb vector i punter
@@ -339,7 +339,7 @@ int *punter;
 
 **a)** `punter = &vec[2];`
 
-`&vec[2] = @vec + 2*4 = @vec + 8`. Amb `la t1, vec+8` (admès a EC) o equivalent:
+`&vec[2] = @vec + 2*4 = @vec + 8`:
 
 ```{.s filename="RV32I"}
         la      t0, punter
@@ -389,29 +389,20 @@ Cal carregar el valor de `punter` (una adreça), desreferenciar-lo per obtenir e
 
 ---
 
-**e)** `*(punter + 1) = vec[2] + 1;` (escriu a l'adreça `punter + 4`)
+**e)** `*(punter + 2) = *punter + 1;`
 
-```{.s filename="RV32I"}
-        la      t0, punter
-        lw      t2, 0(t0)       # t2 = punter
-        lw      t3, 0(t2)       # t3 = *punter (no s'usa però cal entendre el context)
-        addi    t3, t3, 1       # t3 = *punter + 1
-        sw      t3, 8(t2)       # *(punter + 1) = *punter + 1  (adreça: punter + 4)
-```
-
-Alternativa clara i equivalent:
+`punter + 2` desplaça 8 bytes (2 enters × 4 bytes), de manera que l'adreça de destí és `punter + 8`:
 
 ```{.s filename="RV32I"}
         la      t0, punter
         lw      t2, 0(t0)       # t2 = punter
         lw      t3, 0(t2)       # t3 = *punter
-        addi    t3, t3, 1
-        addi    t2, t2, 4       # t2 = punter + 1 (en bytes)
-        sw      t3, 0(t2)       # *(punter + 1) = *punter + 1
+        addi    t3, t3, 1       # t3 = *punter + 1
+        sw      t3, 8(t2)       # *(punter + 2) = *punter + 1
 ```
 :::
 
-## Vectors
+### Vectors
 
 ::: {#sol-p3-vectors-bucle .callout-tip}
 ## Solució: bucles sobre un vector
@@ -426,9 +417,9 @@ Declaracions: `int v[10]` global; `i` a `t0`, `suma` a `t1`.
 
 ```{.s filename="RV32I"}
         la      t2, v           # invariant: @v[0]
+        li      t3, 10          # invariant: N
         li      t0, 0           # i = 0
 bucle_a:
-        li      t3, 10
         bge     t0, t3, fibucle_a
         slli    t4, t0, 2       # t4 = i * 4
         add     t4, t4, t2      # t4 = @v[i]
@@ -444,10 +435,10 @@ fibucle_a:
 
 ```{.s filename="RV32I"}
         la      t2, v           # invariant: @v[0]
+        li      t3, 10          # invariant: N
         li      t0, 0           # i = 0
         li      t1, 0           # suma = 0
 bucle_b:
-        li      t3, 10
         bge     t0, t3, fibucle_b
         slli    t4, t0, 2       # t4 = i * 4
         add     t4, t4, t2      # t4 = @v[i]
@@ -460,23 +451,23 @@ fibucle_b:
 
 ---
 
-**c)** Copia els elements de `v` al revés a `w` (declarat a continuació de `v`):
+**c)** Copia els elements de `v` al revés a `w`:
 
 ```{.s filename="RV32I"}
         la      t2, v           # invariant: @v[0]
         la      t3, w           # invariant: @w[0]
+        li      t4, 10          # invariant: N
+        li      t5, 9           # invariant: N - 1
         li      t0, 0           # i = 0
 bucle_c:
-        li      t4, 10
         bge     t0, t4, fibucle_c
-        slli    t5, t0, 2       # t5 = i * 4
-        add     t5, t5, t2      # t5 = @v[i]
-        lw      t6, 0(t5)       # t6 = v[i]
-        li      t4, 9
-        sub     t5, t4, t0      # t5 = 9 - i  (índex invers)
-        slli    t5, t5, 2       # t5 = (9 - i) * 4
-        add     t5, t5, t3      # t5 = @w[9 - i]
-        sw      t6, 0(t5)       # w[9 - i] = v[i]
+        slli    t6, t0, 2       # t6 = i * 4
+        add     t6, t6, t2      # t6 = @v[i]
+        lw      a0, 0(t6)       # a0 = v[i]  (t0-t6 exhaurits; a0/a1 com a temporals addicionals)
+        sub     a1, t5, t0      # a1 = 9 - i
+        slli    a1, a1, 2       # a1 = (9 - i) * 4
+        add     a1, a1, t3      # a1 = @w[9 - i]
+        sw      a0, 0(a1)       # w[9 - i] = v[i]
         addi    t0, t0, 1       # i++
         j       bucle_c
 fibucle_c:
@@ -491,7 +482,7 @@ w:      .space 40       # int w[10]
 ```
 :::
 
-## Strings
+### Strings
 
 ::: {#sol-p3-strings-longitud .callout-tip}
 ## Solució: funció `longitud`
@@ -506,7 +497,7 @@ La funció ha de recórrer la cadena byte a byte fins a trobar el `'\0'` i retor
 # Retorn: a0 = longitud (sense comptar el '\0')
 
 longitud:
-        mv      t0, a0          # t0 = punter al caràcter actual (= a0)
+        mv      t0, a0          # t0 = punter al caràcter actual
         li      t1, 0           # comptador = 0
 bucle:
         lb      t2, 0(t0)       # t2 = caràcter actual

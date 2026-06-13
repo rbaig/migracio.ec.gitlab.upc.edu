@@ -2,9 +2,9 @@
 number-sections: true
 ---
 
-# {{< var tema6 >}} {#sec-solucions-rendiment}
+## {{< var tema6 >}} {#sec-solucions-rendiment}
 
-## Rendiment
+### Rendiment
 
 ::: {#sol-p2-rendiment-compiladors .callout-tip}
 ## Solució: comparació de processadors
@@ -21,14 +21,14 @@ $$\frac{t_{P1}}{t_{P3}} = \frac{1{,}5}{0{,}25} = 6 \times \qquad \frac{t_{P2}}{t
 
 P3 és 6 vegades més ràpid que P1 i 3,2 vegades més ràpid que P2.
 
-**b)** P1 i P2 executen el **mateix programa amb el mateix ISA** i, per tant, el mateix nombre d'instruccions ($N$). La relació $t_{P1}/t_{P2} = CPI_1 \cdot f_2 / (CPI_2 \cdot f_1)$ no depèn de $N$: sí que podem comparar P1 i P2 sense conèixer $N$.
+**b)** P1 i P2 executen el **mateix programa amb el mateix ISA** i, per tant, el mateix nombre d'instruccions ($N$). El *speedup* $t_{P1}/t_{P2} = CPI_1 \cdot f_2 / (CPI_2 \cdot f_1)$ no depèn de $N$: podem comparar P1 i P2 directament.
 
 En canvi, P1 i P3 usen **ISA diferent** (RISC-V vs. x86-64): el mateix programa font compila a un nombre d'instruccions diferent. Sense conèixer $N$, no podem comparar P1 i P3.
 
 **c)** El CPI és una propietat del **parell processador–programa**. Per comparar dos processadors en general caldria el CPI mitjà sobre **tots** els programes. Si el CPI donat fos la mitjana sobre tots els programes:
 
 - P1 i P2 usen el mateix ISA i el mateix compilador: el nombre d'instruccions és el mateix per a qualsevol programa, i la comparació és vàlida.
-- P1 i P3 usen ISA diferent: el nombre d'instruccions varia per a cada programa, i la comparació general segueix sense ser vàlida.
+- P1 i P3 usen ISA diferent: el nombre d'instruccions varia per a cada programa, i la comparació general continua sense ser vàlida.
 :::
 
 ::: {#sol-p2-rendiment-dos-processadors .callout-tip}
@@ -52,7 +52,7 @@ $$N_{P2} = t_{P1} \cdot \frac{f_{P2}}{CPI_{P2}} = 312{,}5 \cdot 10^{-6} \cdot \f
 
 **Enunciat**: @exr-p2-rendiment-coma-flotant.
 
-Prenem $N_{orig}$ com a referència: el nombre d'instruccions **sense** FPU. El 20% correspon a instruccions de subrutines CF; el 80% restant, a instruccions d'altres tipus. Totes amb CPI = 3 i $t_c = 1$ ns:
+Prenem $N_{orig}$ com a referència: el nombre d'instruccions **sense** FPU. El 20% correspon a instruccions de subrutines CF; el 80% restant, a instruccions d'altres tipus. Totes les instruccions amb CPI = 3 i $t_c = 1$ ns:
 
 $$t_{orig} = N_{orig} \cdot 3 \cdot 1 \text{ ns} = 3\,N_{orig} \text{ ns}$$
 
@@ -68,7 +68,7 @@ $$t_{nou} = 0{,}82\,N_{orig} \cdot 4 \cdot 1{,}05 \text{ ns} = 3{,}444\,N_{orig}
 
 $$S = \frac{t_{orig}}{t_{nou}} = \frac{3}{3{,}444} \approx \mathbf{0{,}87}$$
 
-El processador amb FPU és un 13% **més lent**: no val la pena. Tot i que el nombre d'instruccions es redueix (×0,82), l'augment del CPI (de 3 a 4) i l'allargament del cicle (×1,05) no queden compensats.
+El processador amb FPU és un 13% **més lent**: no val la pena. Tot i que el nombre d'instruccions es redueix (×0,82), la reducció no compensa l'augment del CPI (de 3 a 4) ni l'allargament del cicle (×1,05).
 
 **b)** Amb CF = 40%:
 
@@ -126,7 +126,7 @@ $$t_{P1} = \frac{10^6 \cdot 2{,}8}{1{,}5 \cdot 10^9} \approx 1{,}867 \text{ ms} 
 
 P2 és més ràpid. El *speedup*:
 
-$$S = \frac{t_{P1}}{t_{P2}} = \frac{2{,}8 / 1{,}5}{2{,}0 / 2{,}0} = \frac{2{,}8 \cdot 2{,}0}{1{,}5 \cdot 2{,}0} = \frac{28}{15} \approx \mathbf{1{,}87} \times$$
+$$S = \frac{t_{P1}}{t_{P2}} = \frac{N \cdot CPI_{P1} / f_{P1}}{N \cdot CPI_{P2} / f_{P2}} = \frac{CPI_{P1} \cdot f_{P2}}{CPI_{P2} \cdot f_{P1}} = \frac{2{,}8 \cdot 2{,}0}{2{,}0 \cdot 1{,}5} = \frac{28}{15} \approx \mathbf{1{,}87} \times$$
 
 Observació: P2 té un CPI uniforme de 2 per a totes les classes. Això reflecteix que una implementació simple (sense pipeline optimitzat per tipus) pot ser competitiva si la freqüència és prou alta.
 :::
@@ -138,7 +138,7 @@ Observació: P2 té un CPI uniforme de 2 per a totes les classes. Això reflecte
 
 Sigui $N$ el nombre d'instruccions amb el multiplicador HW. El 0,5% de $N$ són multiplicacions (1 instrucció, CPI = 40); el 99,5% restant té CPI = 3.
 
-**Sense multiplicador:** cada multiplicació s'expandeix a una subrutina de 200 instruccions. Les $0{,}005N$ multiplicacions passen a $0{,}005N \cdot 200 = N$ instruccions, totes amb CPI = 3:
+**Sense multiplicador:** cada multiplicació s'expandeix a una subrutina de 200 instruccions. Les $0{,}005N$ multiplicacions passen a $0{,}005N \cdot 200 = N$ instruccions de subrutina, totes amb CPI = 3:
 
 $$N_{orig} = 0{,}995N + 0{,}005N \cdot 200 = 1{,}995N$$
 
@@ -199,7 +199,7 @@ $$S_{max} = \frac{210}{210 - 30} = \frac{210}{180} \approx 1{,}17 \times < 1{,}2
 Tampoc és possible en el cas b.
 :::
 
-## Potència i consum
+### Potència i consum
 
 ::: {#sol-p2-potencia-basica .callout-tip}
 ## Solució: càrrega capacitiva
@@ -274,7 +274,7 @@ Observació: a partir de la generació 8 (Core 2), la freqüència deixa de cré
 
 : {.striped}
 
-La fuita de corrent passa de ser negligible (2%) a representar gairebé el 40% de la potència total en passar de 250 nm a 90 nm. Aquesta és una de les raons principals per les quals la miniaturització porta associada una creixent importància del consum estàtic.
+La fuita de corrent passa de ser negligible (2%) a representar el 37,5% de la potència total en passar de 250 nm a 90 nm. Aquesta és una de les raons principals per les quals la miniaturització porta associada una creixent importància del consum estàtic.
 
 **b)** De $P_{est} = V \cdot I_{leak}$:
 
@@ -288,10 +288,10 @@ Malgrat que el voltatge s'ha reduït de 3,3 V a 1,1 V (factor 3), el corrent de 
 
 $$\Delta P_{tot,250} = \frac{49}{50} = \mathbf{98\%} \qquad \Delta P_{tot,90} = \frac{75}{120} = \mathbf{62{,}5\%}$$
 
-En la tecnologia de 90 nm, ni eliminant tota la potència dinàmica s'aconseguiria reduir la potència total en un 62,5%.
+En la tecnologia de 90 nm, la reducció màxima possible de $P_{tot}$ actuant exclusivament sobre la potència dinàmica és del 62,5%; la potència estàtica restant (37,5%) no es pot eliminar per aquesta via.
 :::
 
-## Llei d'Amdahl
+### Llei d'Amdahl
 
 ::: {#sol-p2-amdahl-basic .callout-tip}
 ## Solució: Amdahl bàsic
@@ -318,7 +318,7 @@ Independentment de com s'accelerin les instruccions CF, el *speedup* global no p
 
 $$3 = \frac{1}{0{,}40 + 0{,}60/k} \implies 0{,}40 + \frac{0{,}60}{k} = \frac{1}{3} \implies \frac{0{,}60}{k} = \frac{1}{3} - 0{,}40 = -\frac{1}{15}$$
 
-El resultat és negatiu, el que és impossible. La raó és que el *speedup* màxim teòric és 2,5, estrictament inferior a 3: **no existeix cap valor de $k$ que permeti assolir un *speedup* global de 3** amb aquesta distribució del temps.
+El resultat és negatiu, cosa que és impossible. La raó és que el *speedup* màxim teòric és 2,5, estrictament inferior a 3: **no existeix cap valor de $k$ que permeti assolir un *speedup* global de 3** amb aquesta distribució del temps.
 :::
 
 ::: {#sol-p2-amdahl-multicomponent .callout-tip}
@@ -334,7 +334,7 @@ on $f_i$ és la fracció del temps original que ocupa el component $i$ i $k_i$ l
 
 **a)** Aplicant les tres millores:
 
-$$S = \frac{1}{\dfrac{0{,}50}{2} + \dfrac{0{,}30}{4} + \dfrac{0{,}20}{1{,}5}} = \frac{1}{0{,}250 + 0{,}075 + 0{,}133} = \frac{1}{0{,}458} = \frac{24}{11} \approx \mathbf{2{,}18} \times$$
+$$S = \frac{1}{\dfrac{0{,}50}{2} + \dfrac{0{,}30}{4} + \dfrac{0{,}20}{1{,}5}} = \frac{1}{0{,}250 + 0{,}075 + 0{,}1\overline{3}} = \frac{1}{11/24} = \frac{24}{11} \approx \mathbf{2{,}18} \times$$
 
 **b i c)** *Speedup* aplicant cada millora individualment:
 

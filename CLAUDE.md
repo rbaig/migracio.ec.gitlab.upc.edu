@@ -140,13 +140,12 @@ Pendent de revisió (`PE.qmd`)
 ### Solucionari
 
 Instruccions CLAUDE: "Sonnet 4.6, Effort: Medium"
-* Si cal fer esemenes a `PE.qmd` (per exemple, esmenes, reordenar els enunciats, etc.) baixa el fitxer PE.qmd​ del repositori, actualitza'l i passa'm la versió actualitzada perquè el descarregui i l'afegeixi al repositori.
-
+* Si cal fer esmenes a `PE.qmd` (per exemple, esmenes, reordenar els enunciats, etc.) baixa el fitxer PE.qmd​ del repositori, actualitza'l i passa'm la versió actualitzada perquè el descarregui i l'afegeixi al repositori.
 
 - `PS.qmd` només conté `include`s
 
-Preparat per a revisió externa `PE.qmd`, `PS_T3_T4.s`
+Preparat per a revisió externa: `PS_T3_T4.qmd`, `PS_T5.qmd`
 
-Ordre previst: T7, T8, T9, T1.
+Ordre previst: T2, T6, T7, T8, T9, T1.
 
-En procés: `PS_T2.qmd`, `PS_T5.qmd`, `PS_T6.qmd`
+Pendent: `PS_T2.qmd`
