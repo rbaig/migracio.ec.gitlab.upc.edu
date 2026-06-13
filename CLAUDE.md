@@ -144,8 +144,8 @@ Instruccions CLAUDE: "Sonnet 4.6, Effort: Medium"
 
 - `PS.qmd` només conté `include`s
 
-Preparat per a revisió externa: `PS_T3_T4.qmd`, `PS_T5.qmd`
+Preparat per a revisió externa: `PS_T2.qmd`--`PS_T6.qmd`
 
-Ordre previst: T2, T6, T7, T8, T9, T1.
+Ordre previst: T7, T8, T9, T1.
 
-Pendent: `PS_T2.qmd`
+WiP: `PS_T7.qmd`
