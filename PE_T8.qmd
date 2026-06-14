@@ -31,60 +31,13 @@ b) La taula següent mostra una llista d'adreces virtuals generades pel processa
 | `000101` | | | |
 :::
 
-::: {#exr-p8-mv-matriu-lru}
-Un sistema experimental gestiona la memòria virtual amb paginació i algorisme LRU. Té 64 KB de memòria virtual, 8 KB de memòria física i pàgines d'1 KB. La taula de pàgines ocupa sempre l'últim marc de pàgina.
+::: {#exr-p8-mv-multinivell}
+Un sistema té adreces virtuals de 32 bits, pàgines de 4 KB i taules de pàgines de dos nivells. Cada entrada de la taula ocupa 4 bytes.
 
-Una aplicació s'ubica a l'espai lògic de la manera següent:
-
-- Codi: adreces `0x0000`–`0x03FF`.
-- Dades: adreces `0x0400`–`0x47FF`.
-
-Dins les dades hi ha una matriu declarada en C com:
-
-```c
-int MAT[32][256];
-```
-
-emmagatzemada a partir de l'adreça base `0x0400`. Els enters es codifiquen en 16 bits. La resta de variables i la pila s'emmagatzemen a partir de `0x4400`. El compilador reserva registres per a `i` i `j`.
-
-Considera el fragment de codi següent:
-
-```c
-for (i = 0; i < 32; i++)
-    for (j = 0; j < 256; j++)
-        MAT[i][j] = i + j;
-```
-
-Abans d'executar aquest codi, la taula de pàgines indica que només hi ha carregada a memòria física la pàgina corresponent al codi de l'aplicació.
-
-a) Quins elements de `MAT` es porten a memòria física en la primera fallada de pàgina?
-b) Indica, justificant-ho, el nombre total de fallades de pàgina que es produiran.
-c) En alguns llenguatges com FORTRAN, les matrius s'emmagatzemen per columnes. Considerant aquest emmagatzematge, quins elements de `MAT` es portarien a memòria física en la primera fallada de pàgina?
-d) Considerant l'emmagatzematge per columnes, indica el nombre total de fallades de pàgina que es produirien.
-:::
-
-::: {#exr-p8-mv-cache-tlb}
-Considerem un processador RISC-V amb una memòria cau de dades de 4 vies, 64 conjunts i 32 bytes per bloc (algorisme LRU), i un TLB de dades completament associatiu de 32 entrades, amb pàgines de 8 KB i algorisme LRU.
-
-S'executen dues versions d'una mateixa aplicació:
-
-```c
-int A[128][1024]; /* emmagatzemada a partir de l'adreça 0 */
-
-/* Versió A */
-sumA = 0;
-for (i = 0; i < 128; i++)
-    for (j = 0; j < 1024; j++)
-        sumA = sumA + A[i][j];
-
-/* Versió B */
-sumA = 0;
-for (j = 0; j < 1024; j++)
-    for (i = 0; i < 128; i++)
-        sumA = sumA + A[i][j];
-```
-
-Suposant que `i`, `j` i `sumA` estan en registres, indica quantes fallades hi ha a la memòria cau i al TLB per a cada versió.
+a) Quants bits s'usen per al desplaçament dins la pàgina, per a l'índex de primer nivell i per a l'índex de segon nivell (suposa una divisió simètrica dels bits d'índex)?
+b) Quina és la mida d'una taula de pàgines de primer nivell? I d'una de segon nivell?
+c) Quin és el nombre màxim de taules de segon nivell que pot tenir un procés? Quina és la mida total de la jerarquia de taules en el pitjor cas?
+d) Compara la mida total de la jerarquia de dos nivells (pitjor cas) amb la d'una taula de pàgines de nivell únic. Quin avantatge té la jerarquia en el cas típic en què un procés usa poca memòria?
 :::
 
 ::: {#exr-p8-mv-taula-referencies}
@@ -130,7 +83,82 @@ Omple la taula següent per a la seqüència de referències donada (E = escript
 | L `4000` | | | | | | | |
 :::
 
+::: {#exr-p8-mv-matriu-lru}
+Un sistema experimental gestiona la memòria virtual amb paginació i algorisme LRU. Té 64 KB de memòria virtual, 8 KB de memòria física i pàgines d'1 KB. La taula de pàgines ocupa sempre l'últim marc de pàgina.
+
+Una aplicació s'ubica a l'espai lògic de la manera següent:
+
+- Codi: adreces `0x0000`–`0x03FF`.
+- Dades: adreces `0x0400`–`0x47FF`.
+
+Dins les dades hi ha una matriu declarada en C com:
+
+```c
+int MAT[32][256];
+```
+
+emmagatzemada a partir de l'adreça base `0x0400`. Els enters es codifiquen en 16 bits. La resta de variables i la pila s'emmagatzemen a partir de `0x4400`. El compilador reserva registres per a `i` i `j`.
+
+Considera el fragment de codi següent:
+
+```c
+for (i = 0; i < 32; i++)
+    for (j = 0; j < 256; j++)
+        MAT[i][j] = i + j;
+```
+
+Abans d'executar aquest codi, la taula de pàgines indica que només hi ha carregada a memòria física la pàgina corresponent al codi de l'aplicació.
+
+a) Quins elements de `MAT` es porten a memòria física en la primera fallada de pàgina?
+b) Indica, justificant-ho, el nombre total de fallades de pàgina que es produiran.
+c) En alguns llenguatges com FORTRAN, les matrius s'emmagatzemen per columnes. Considerant aquest emmagatzematge, quins elements de `MAT` es portarien a memòria física en la primera fallada de pàgina?
+d) Considerant l'emmagatzematge per columnes, indica el nombre total de fallades de pàgina que es produirien.
+:::
+
 ## TLB
+
+::: {#exr-p8-tlb-estat}
+Considerem un sistema amb memòria virtual de pàgines de 4 KB, un TLB de 4 entrades completament associatiu i reemplaçament LRU.
+
+El contingut inicial del TLB és:
+
+| V | VPN | PPN |
+| :---: | :---: | :---: |
+| 1 | 11 | 12 |
+| 1 | 7 | 4 |
+| 1 | 3 | 6 |
+| 0 | 9 | 0 |
+
+El contingut inicial de la taula de pàgines és:
+
+| VPN | P | PPN |
+| :---: | :---: | :---: |
+| 0 | 1 | 5 |
+| 1 | 0 | — |
+| 2 | 0 | — |
+| 3 | 1 | 6 |
+| 4 | 1 | 9 |
+| 5 | 1 | 11 |
+| 6 | 0 | — |
+| 7 | 1 | 4 |
+| 8 | 0 | — |
+| 9 | 0 | — |
+| 10 | 1 | 3 |
+| 11 | 1 | 12 |
+
+Per a noves pàgines assignades a memòria física s'assignaran números de PPN correlatius a partir del major disponible (13, 14, etc.). Inicialment, l'ordre d'ús de les entrades vàlides del TLB, de la més recentment usada a la més antiga, és VPN 11, VPN 7, VPN 3.
+
+a) Per a cadascuna de les dues llistes d'adreces virtuals següents, indica l'estat final del TLB i de la taula de pàgines, i per a cada referència si es produeix una fallada al TLB i si es produeix una fallada de pàgina:
+    - Llista 1: 4095, 31272, 15789, 15000, 7193, 4096, 8912.
+    - Llista 2: 9452, 30964, 19136, 46502, 38110, 17653, 47480.
+b) Raona, sense refer la traça completa, com canviaria el nombre total de fallades de TLB de cada llista si la mida de pàgina fos de 16 KB en comptes de 4 KB.
+c) Calcula la mida de la taula de pàgines per als dos sistemes següents:
+
+| Mida adreces virtuals | Mida pàgina | Mida entrada TP |
+| :---: | :---: | :---: |
+| 32 bits | 4 KB | 4 bytes |
+| 64 bits | 16 KB | 8 bytes |
+:::
 
 ::: {#exr-p8-tlb-basic}
 Considerem el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
@@ -164,49 +192,6 @@ b) Indica el nombre total de fallades de TLB en tot el bucle.
 c) Respon les mateixes preguntes suposant pàgines de 4 KB.
 :::
 
-::: {#exr-p8-tlb-estat}
-Considerem un sistema amb memòria virtual de pàgines de 4 KB, un TLB de 4 entrades completament associatiu i reemplaçament LRU.
-
-El contingut inicial del TLB és:
-
-| V | VPN | PPN |
-| :---: | :---: | :---: |
-| 1 | 11 | 12 |
-| 1 | 7 | 4 |
-| 1 | 3 | 6 |
-| 0 | 9 | 0 |
-
-El contingut inicial de la taula de pàgines és:
-
-| VPN | P | PPN |
-| :---: | :---: | :---: |
-| 0 | 1 | 5 |
-| 1 | 0 | — |
-| 2 | 0 | — |
-| 3 | 1 | 6 |
-| 4 | 1 | 9 |
-| 5 | 1 | 11 |
-| 6 | 0 | — |
-| 7 | 1 | 4 |
-| 8 | 0 | — |
-| 9 | 0 | — |
-| 10 | 1 | 3 |
-| 11 | 1 | 12 |
-
-Per a noves pàgines assignades a memòria física s'assignaran números de PPN correlatius a partir del major disponible (13, 14, etc.).
-
-a) Per a cadascuna de les dues llistes d'adreces virtuals següents, indica l'estat final del TLB i de la taula de pàgines, i per a cada referència si es produeix una fallada al TLB i si es produeix una fallada de pàgina:
-    - Llista 1: 4095, 31272, 15789, 15000, 7193, 4096, 8912.
-    - Llista 2: 9452, 30964, 19136, 46502, 38110, 17653, 47480.
-b) Repeteix l'apartat anterior considerant pàgines de 16 KB.
-c) Calcula la mida de la taula de pàgines per als dos sistemes següents:
-
-| Mida adreces virtuals | Mida pàgina | Mida entrada TP |
-| :---: | :---: | :---: |
-| 32 bits | 4 KB | 4 bytes |
-| 64 bits | 16 KB | 8 bytes |
-:::
-
 ::: {#exr-p8-tlb-optimitzacio}
 Considerem el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
 
@@ -238,24 +223,17 @@ c) Es vol redissenyar el TLB per minimitzar el nombre de fallades en aquest prog
 d) Repeteix els apartats anteriors considerant pàgines de 4 KB.
 :::
 
-::: {#exr-p8-mv-multinivell}
-Un sistema té adreces virtuals de 32 bits, pàgines de 4 KB i taules de pàgines de dos nivells. Cada entrada de la taula ocupa 4 bytes.
-
-a) Quants bits s'usen per al desplaçament dins la pàgina, per a l'índex de primer nivell i per a l'índex de segon nivell (suposa una divisió simètrica dels bits d'índex)?
-b) Quina és la mida d'una taula de pàgines de primer nivell? I d'una de segon nivell?
-c) Quin és el nombre màxim de taules de segon nivell que pot tenir un procés? Quina és la mida total de la jerarquia de taules en el pitjor cas?
-d) Compara la mida total de la jerarquia de dos nivells (pitjor cas) amb la d'una taula de pàgines de nivell únic. Quin avantatge té la jerarquia en el cas típic en què un procés usa poca memòria?
-:::
+## Protecció
 
 ::: {#exr-p8-mv-proteccio}
-Un sistema de memòria virtual disposa, a cada entrada de la taula de pàgines, d'un bit de presència (P), un bit de modificació (D) i un bit de protecció d'escriptura (W: 1 = només lectura).
+Un sistema de memòria virtual amb pàgines de 4 KB disposa, a cada entrada de la taula de pàgines, d'un bit de presència (P), un bit de modificació (D) i un bit de permís d'escriptura (E: 1 = lectura i escriptura; 0 = només lectura).
 
-| VPN | P | D | W | PPN |
+| VPN | P | D | E | PPN |
 | :---: | :---: | :---: | :---: | :---: |
-| 0 | 1 | 0 | 1 | 3 |
-| 1 | 1 | 1 | 0 | 7 |
-| 2 | 0 | 0 | 0 | — |
-| 3 | 1 | 0 | 1 | 5 |
+| 0 | 1 | 0 | 0 | 3 |
+| 1 | 1 | 1 | 1 | 7 |
+| 2 | 0 | 0 | 1 | — |
+| 3 | 1 | 0 | 0 | 5 |
 
 Per a cada accés de la llista següent, indica si té èxit, provoca una fallada de pàgina o provoca una excepció de protecció:
 
@@ -266,6 +244,8 @@ d) Escriptura a l'adreça virtual `0x3100`.
 e) Escriptura a l'adreça virtual `0x0010`.
 :::
 
+## Integració del TLB i la memòria cau
+
 ::: {#exr-p8-mv-tlb-cau}
 Un sistema té pàgines de 4 KB, una memòria cau de dades de correspondència directa amb 64 blocs de 32 bytes, i un TLB completament associatiu de 16 entrades.
 
@@ -273,4 +253,28 @@ a) Indica quants bits de l'adreça virtual s'usen per al desplaçament dins la p
 b) Explica el flux complet de traducció i accés a dades per a una lectura amb encert al TLB i encert a la cau.
 c) Per al mateix accés, quin és el flux si hi ha fallada al TLB però la pàgina és present a memòria física?
 d) En una cau indexada físicament (PIPT), la traducció ha de completar-se abans d'accedir a la cau. En canvi, en VIPT, les dues operacions poden solapar-se. Sota quina condició una cau VIPT és equivalent a una PIPT i no presenta problemes d'aliàsing?
+:::
+
+::: {#exr-p8-mv-cache-tlb}
+Considerem un processador RISC-V amb una memòria cau de dades de 4 vies, 64 conjunts i 32 bytes per bloc (algorisme LRU), i un TLB de dades completament associatiu de 32 entrades, amb pàgines de 8 KB i algorisme LRU.
+
+S'executen dues versions d'una mateixa aplicació:
+
+```c
+int A[128][1024]; /* emmagatzemada a partir de l'adreça 0 */
+
+/* Versió A */
+sumA = 0;
+for (i = 0; i < 128; i++)
+    for (j = 0; j < 1024; j++)
+        sumA = sumA + A[i][j];
+
+/* Versió B */
+sumA = 0;
+for (j = 0; j < 1024; j++)
+    for (i = 0; i < 128; i++)
+        sumA = sumA + A[i][j];
+```
+
+Suposant que `i`, `j` i `sumA` estan en registres, indica quantes fallades hi ha a la memòria cau i al TLB per a cada versió.
 :::
