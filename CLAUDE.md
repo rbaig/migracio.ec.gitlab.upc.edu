@@ -45,18 +45,103 @@ Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que esti
 - `contrib.qmd`: convencions i normes.
 - `TODO.md`: tasques pendents i decisions obertes.
 
-## Fase actual: Revisió
+## Fase actual: Revisió interna
 
-El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (PS_T2–PS_T8) està generat. La fase actual és de **revisió** (tècnica i lingüística).
+ontingut a revisar de teoria (T1–T9), laboratori (L1–L6) i solucionari (PS_T2–PS_T8) està generat. La fase actual és de **revisió** (tècnica i lingüística).
 
-### Flux de treball en fase de revisió
+## Revisió interna: Planificació i estat
+
+- Estat actual: **Revisió interna** (la faig només jo)
+    - La següent serà: **Revisió externa** (amb altres professors de l'assignatura)
+- Per web
+    - Text d'obertura:
+
+```
+Objectiu d'aquest xat: Revisió `T1.qmd`
+
+Intensitat: Profunda.
+
+Model effortness actual: Sonnet 4.6 Low
+- Sempre que necessitis canviar de model o effortness: digues-m'ho
+
+Repositori (només lectura): https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
+	- Branch `problemes-enunciats-separats`
+
+Regles generals:
+- Fitxers d'operació
+    - `CLAUDE.md` vs. `contrib.qmd`
+        - `contrib.qmd` és el fitxer de referència. Cal que sempre estigui actualitzat.
+        - `CLAUDE.md` només per a l'operació de claude.ai. Qualsevol altre especte va a `contrib.qmd`.
+    - `README.md`
+        - Fitxer de presentació del repositori.
+        - Continguts habituals en aquest tipus de projectes (documentació, Quart book).
+    - `TODO.md`
+        - Només contingut transitori.
+        - Al final ha de quedar buit.
+- Pots fer canvis d'ordre, crear/reanomenar/eliminar seccions, figures, taules, llistes, etc.
+- Interromp l'execució només si tens un dubte que hagi de resoldre jo. Mostra'm les opcions disponibles.
+- Sortida: Quarto book (HTML + PDF).
+- Prioritats màximes:
+    - Coherència pedagògica
+    - Rigor tècnic en tot el contingut
+- Revisió tècnica profunda.
+- Revisió lingüística: català normatiu.
+- Solucionaris: Nivell de detall de les solucions: pas a pas, excepte passos trivials.
+- Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats. Si ho estan, és per escurçar el temps de renderització en rederitzacions de prova.
+- Els PDFs originals estan al directori `/PDF_originals` (MIPS) per conéixer-ne els continguts. Consulta'ls en cas de dubte.
+- Claude Code: Fes només canvis locals. Actualitzaré jo manualment el repositori.
+- Comença sempre
+    1. Explorant el repositori. Si hi ha fitxers als quals no tens accés, demana-me'ls.
+    2. Llegint a fons els fitxers `_quarto.yml`, `index.qmd`, `contrib.qmd` i la resta que creguis convenient per fer el que et demani en cada cas.
+    3. Presentant-me la llista exhaustiva de tasques que proposes fer
+    4. Dient si cal que faci canvis en el model o l'effortness
+
+Algunes tasques a fer:
+- Dir quin model vols que configuri
+- Identificar quins fitxers cal actualitzar i les tasques a fer-hi
+- Proposta d'acció
+- `README.md`
+    - Els fitxers (x número de tema 1--9):
+        - `Tx.qmd`: Teoria del Tema x
+        - `PE_Tx.qmd`: Problemes, enunciats del Tema x
+        - `PS_Tx.qmd`: Problemes, solucions d'una selecció dels problemes del Tema x
+        - `Ly.qmd`: Laboratori, sessió y
+        - `PS_criteris.qmd` conté els criteris de selecció de problemes a solucionar
+    - Altra informació rellevant de l'estructura de l'arbre de directoris
+    - Altra informació habitual en projectes similars a Quarto tipus book
+```
+
+### Teoria (T1–T9)
+
+- Pendents de revisió interna: `T2.qmd`–`T9.qmd`.
+- WiP: `T1.qmd`
+- Preparats per a revisió externa: 
+
+### Enunciats (PE_Tx.qmd)
+
+- Pendents de revisió interna: `PE_T1.qmd`–`PE_T5.qmd`.
+- WiP: 
+- Preparats per a revisió externa: `PE_T6.qmd`–`PE_T9.qmd`.
+
+### Solucionaris (PS_Tx.qmd)
+
+- Pendents de revisió interna: `PS_T1.qmd`–`PS_T5.qmd`.
+- WiP: 
+- Preparats per a revisió externa: `PE_T6.qmd`–`PE_T9.qmd`.
+
+### Laboratori (L1–L6)
+
+- Preparats per a revisió interna: `L1.qmd`–`L6.qmd`.
+- WiP: 
+- Preparats per a revisió externa: 
+### Flux de treball
 
 1. Llegir el fitxer a revisar i identificar tots els problemes (tècnics, lingüístics, de format).
 2. Presentar la llista exhaustiva de problemes trobats abans de fer cap canvi.
 3. Esperar confirmació per procedir.
 4. En cas de dubte: atura't, exposa el dubte i, si és possible, proposa solucions.
 
-### Model i effortness per a tasques de revisió
+### Model i effortness
 
 | Tasca | Model | Effortness |
 | :--- | :--- | :--- |
@@ -64,33 +149,8 @@ El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (PS_T2–PS
 | Solucionari (`PS_Tx.qmd`) | Opus 4.8 | High |
 | Tasques operatives (reorganització, neteja de fitxers) | Sonnet 4.6 | Low |
 
-Si la tasca canvia, indica-ho explícitament.
-
-## Planificació i estat
-
-### Teoria (T1–T9)
-
-Preparats per a revisió de conjunt: `T1.qmd`–`T9.qmd`.
-
-### Enunciats (PE_Tx.qmd)
-
-Preparats per a revisió externa: `PE_T6.qmd`–`PE_T9.qmd`.
-
-Pendents de revisió interna: `PE_T1.qmd`–`PE_T5.qmd`.
-
-Si cal fer esmenes a `PE_Tx.qmd` (reordenar, corregir), baixa el fitxer del repositori, actualitza'l i passa'l a l'usuari perquè el descarregui i l'actualitzi al repositori.
-
-### Solucionaris (PS_Tx.qmd)
-
-Preparats per a revisió externa: `PS_T2.qmd`–`PS_T8.qmd`.
-
-Pendents de creació: `PS_T9.qmd`, `PS_T1.qmd` (ordre previst: T9, T1).
-
-### Laboratori (L1–L6)
-
-Preparats per a revisió externa: `L1.qmd`–`L6.qmd`.
-
-Pendent de creació: `L0.qmd`.
+- Si la tasca canvia, indica-ho explícitament.
+- Si vols que et canviï de configuració, digues-m'ho
 
 ## Convencions CSS (mode fosc)
 
