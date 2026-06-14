@@ -121,7 +121,13 @@ Regles operatives:
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
 ```
-Objectiu d'aquest xat: [fitxer o tasca a revisar]
+Tipus de tasques:
+- A: Exploració + llista exhaustiva de tasques (només lectura i anàlisi)
+- B: Tasques tècniques (formats d'instrucció, codificació, rigor ISA)
+- C: Tasques lingüístiques + format Quarto
+- D: Figures SVG
+
+Objectiu d'aquest xat: [fitxer a revisar i tasca (A, B, C, D)]
 Intensitat: [p. ex. profunda]
 Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
 
