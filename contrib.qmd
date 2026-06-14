@@ -130,37 +130,6 @@ quarto render             # genera les dues sortides
 Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapidesa. Feu `quarto render` complet (HTML + PDF) com a verificació final abans d'obrir la Merge Request.
 
 
-## Referències creuades
-
-Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
-
-- **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta` (funciona a HTML i PDF).
-- **Enllaços a seccions dins del mateix fitxer**: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
-- ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: la sintaxi `@` per a seccions **només funciona a PDF**.
-
-Exemple — fitxer `PS.qmd` amb una secció etiquetada:
-
-```{.text filename="PS.qmd"}
-# Problemes: Solucions seleccionades {#sec-problemes-solucions}
-```
-
-Referència des d'un altre fitxer:
-
-```{.text filename="un_altre_fitxer.qmd"}
-- [Solucions de problemes](#sec-problemes-solucions)   ✓ HTML i PDF
-```
-
-## Format
-
-
-
-
-
-## Format
-
-
-
-
 ## Format
 
 ### Quarto: notes generals
@@ -182,7 +151,6 @@ Referència des d'un altre fitxer:
 
 - Tots han d'anar etiquetats (p. ex. `::: {#nte-TODO .callout-note}`). Cal substituir el `TODO` de l'etiqueta per una cadena de caràcters única.
 - Sempre s'ha d'usar l'etiqueta corresponent (p. ex. `@nte-TODO`) quan es fa referència a un callout des del cos del text, altres callouts, etc.
-- Cal assegurar que no hi ha cap `-TODO` al codi abans d'actualitzar el repositori.
 - El títol `## títol` no és obligatori, especialment per a callouts curts.
 - **Localització dins del cos del text**: a continuació de la referència o explicació al text.
 - No hi ha d'haver repeticions de callouts: ús de referències creuades.
@@ -302,7 +270,7 @@ La referència és @cau-TODO.
 - **Referències des del cos del text**: Només té sentit fer-hi referència explícita per il·lustrar alguna explicació.
 - **Particularitats**:
     - Pot ser en format **Pregunta**: → **Solució**: → **Resposta**:.
-    - Veu en segona persona del plural (*calculeu*, *determineu*, *suposeu que...*).
+    - Veu en segona persona del plural.
 
 ::::
 :::: {}
@@ -364,8 +332,8 @@ La referència és @wrn-TODO.
 | Prefix d'etiqueta | Tipus | Callout | Color (light) | `## títol` | Caption |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `#nte-` | RISC-V | {.callout-note} | Verd | Sí | No |
-| `#imp-` | Criteri EC | {.callout-important} | Blau | Sí | No |
-| `#cau-` | Essencial | {.callout-caution} | Vermell | Sí | No |
+| `#imp-` | Criteri EC | {.callout-important} | Blau | No | No |
+| `#cau-` | Essencial | {.callout-caution} | Vermell | No | No |
 | `#tip-` | Exemple | {.callout-tip} | Groc | Sí | No |
 | `#wrn-` | Aprofundiment | {.callout-warning} | Lila | Sí | No |
 | `#fig-` | Figura | | | No | Sí |
@@ -378,6 +346,36 @@ La referència és @wrn-TODO.
 | `#thm-` | Algorisme | | | No | No |
 
 Disponibles: `#alg- #thm- #lem- #cor- #prp- #cnj-`
+
+### Referències creuades
+
+Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
+
+- **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta` (funciona a HTML i PDF).
+- **Enllaços a seccions dins del mateix fitxer**: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
+- ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: la sintaxi `@` per a seccions **només funciona a PDF**.
+
+Exemple — fitxer `PS.qmd` amb una secció etiquetada:
+
+```{.text filename="PS.qmd"}
+# Problemes: Solucions seleccionades {#sec-problemes-solucions}
+```
+
+Referència des d'un altre fitxer:
+
+```{.text filename="un_altre_fitxer.qmd"}
+- [Solucions de problemes](#sec-problemes-solucions)   ✓ HTML i PDF
+```
+
+A més, com a criteri d'estil de redacció:
+
+- Com més precises siguin, millor. Ordre de preferència creixent:
+    - Tema → secció → subsecció → callout → figura → taula → equació.
+    - `sec-tema-exemple`, `@sec-exemple`, `@fig-exemple`, `@tbl-exemple`, `@nte-exemple`.
+- Article determinat:
+    - **Amb**: "La" `@sec-exemple`, `@fig-exemple`, `@tbl-exemple` mostra...
+    - **Sense**: "`@nte-exemple` recull..."
+- **Figures i Taules**: no han d'estar necessàriament referenciades al text.
 
 ### Blocs de codi
 
@@ -465,21 +463,8 @@ La referència és @fig-TODO1.
 ::::
 :::::
 
-Figures SVG amb variants light/dark:
+Per a les figures SVG amb variants *light*/*dark*, vegeu la secció «Material gràfic» → «Integració al `.qmd`».
 
-``` code
-::: {#fig-nom-figura}
-::: {.light-content style="text-align: center;"}
-![](figures/nom_figura_light.svg)
-:::
-::: {.dark-content style="text-align: center;"}
-![](figures/nom_figura_dark.svg)
-:::
-Caption de la figura.
-:::
-```
-
-- Les figures i taules dins de `{.callout-note}` no porten etiqueta `#fig-`/`#tbl-` ni caption.
 - Tots els diagrames nous es generen com a SVG (no Mermaid).
 <!-- TODO: Migrar els diagrames Mermaid existents a SVG -->
 <!-- TODO: Definir mides recomanades per a cada context (dins callout, cos del text, columnes) -->
@@ -516,6 +501,94 @@ Caption.
 La referència és @fig-memoria-TODO.
 :::
 ::::
+
+### Material gràfic
+
+#### Paleta de colors
+
+| Element | Light (fill / stroke) | Dark (fill / stroke) |
+| :--- | :--- | :--- |
+| Cel·la neutra | `#f8f9fa` / `#adb5bd` | `#3d3d3d` / `#888` |
+| Text secundari | `#6c757d` | `#adb5bd` |
+| Text principal | `#343a40` | `#fff` |
+| Destacat blau | `#cfe2ff` / `#084298` | `#1a3a5c` / `#90bfff` |
+| Destacat verd | `#d1e7dd` / `#0a3622` | `#1a3a2a` / `#90d4aa` |
+| Destacat groc | `#fff3cd` / `#664d03` | `#3a2e00` / `#ffd966` |
+| Destacat vermell | `#f8d7da` / `#842029` | `#3a1a1e` / `#f1a8ae` |
+: {.striped}
+
+El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les figures SVG com a les taules amb color. Cada tema pot introduir associacions semàntiques pròpies (per exemple, a T7: blau=memòria cau, verd=memòria principal, groc=SSD, vermell=disc), però sempre dins la mateixa paleta.
+
+#### Convencions SVG
+
+- `width="680"`, `viewBox="0 0 680 H"` on H = contingut + 20 px de buffer.
+- `font-family="'Source Sans Pro', sans-serif"`: `font-size="11"` per a etiquetes de cel·la, `font-size="12"` per a text secundari, `font-size="13"` per a títols de quadrant.
+- Cel·les destacades es dibuixen **sempre al damunt** de les grises (ordre de dibuix: grises primer, destacades després) per evitar solapaments de vores.
+- Cel·les grises: `stroke-width="0.5"`. Cel·les destacades: `stroke-width="1"`.
+- No s'usen línies separadores entre quadrants: només espai buit.
+- Convenció de noms: `T<N>_nom_figura_light.svg` / `T<N>_nom_figura_dark.svg` (guió baix, no guió).
+
+#### Generació de la versió dark
+
+Per a figures de l'estàndard RISC-V (stroke negre, text sense color explícit):
+
+```bash
+PREFIX="T9_nom_figura"
+sed 's/stroke="#000000"/stroke="#adb5bd"/g' ${PREFIX}_light.svg | \
+    sed 's/<text\b/<text fill="#fff"/g' > ${PREFIX}_dark.svg
+```
+
+Per a figures amb paleta completa (generada per Claude):
+
+```bash
+# Substitucions de la paleta light → dark (vegeu la taula de paleta)
+python3 -c "
+import sys
+content = open('${PREFIX}_light.svg').read()
+replacements = [
+    ('#f8f9fa','#3d3d3d'), ('#adb5bd','#888'),
+    ('#6c757d','#adb5bd'), ('#343a40','#fff'),
+    ('#cfe2ff','#1a3a5c'), ('#084298','#90bfff'),
+    ('#d1e7dd','#1a3a2a'), ('#0a3622','#90d4aa'),
+    ('#fff3cd','#3a2e00'), ('#664d03','#ffd966'),
+    ('#f8d7da','#3a1a1e'), ('#842029','#f1a8ae'),
+]
+for l, d in replacements:
+    content = content.replace(l, d)
+open('${PREFIX}_dark.svg', 'w').write(content)
+"
+```
+
+#### Integració al `.qmd`
+
+``` code
+::: {#fig-nom-figura}
+::: {.light-content style="text-align: center;"}
+![](figures/nom_figura_light.svg)
+:::
+::: {.dark-content style="text-align: center;"}
+![](figures/nom_figura_dark.svg)
+:::
+Caption de la figura.
+:::
+```
+
+#### Convencions CSS (mode fosc)
+
+A `custom_dark.scss`, dins la secció `/*-- scss:rules --*/`, el codi inline (`code`) dins de llegendes, capçaleres i títols de callout porta colors propis perquè es llegeixi bé sobre fons fosc:
+
+```scss
+figcaption,
+caption,
+.footnotes,
+h1, h2, h3, h4,
+.callout-title-container {
+  code {
+    color: #e8e6e3 !important;
+    background-color: #2b2d2f !important;
+  }
+}
+```
 
 ### Taules
 
@@ -561,6 +634,10 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 - Ús: `[@patterson2020riscv]`
 - Definició: al fitxer `bibliografia.qmd` amb format BibTeX.
 
+### Gestió d'errades
+
+<!-- TODO: Definir protocol de gestió d'errades detectades post-commit -->
+
 ## Llenguatge
 
 ### Referència normativa
@@ -602,7 +679,7 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 - **Primera aparició**: Traducció al català seguida de l'anglicisme en cursiva i entre parèntesis. Exemple: `biblioteques de funcions` (*libraries*).
 - **Aparicions posteriors**: Es pot utilitzar l'anglicisme directament, sempre sense cursiva.
 - **Triples asteriscs (`***`)**: S'utilitzen exclusivament quan el terme és un anglicisme en la seva primera aparició **i alhora** és un concepte nuclear que requereix negreta. Exemple: `**maquinari** (***hardware***)`.
-- **Terminologia obligatòria**: Substituir sistemàticament *hardware* per **maquinari** i *software* per **programari**.
+- **Terminologia obligatòria**: cal aplicar sistemàticament les substitucions recollides a la taula de substitucions obligatòries (vegeu més avall).
 
 #### Substitucions obligatòries
 
@@ -623,7 +700,7 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 | overflow | sobreeiximent | |
 | underflow | subdesbordament | |
 | promig | mitjana | |
-| tamany | mida | mida per escalars (e.g. mida en bytes o en bits); longitud per registre, camp de bits, vectors, cadenes de caràcters |
+| tamany | mida | No normatiu. Per a la distinció `mida` vs. `longitud`, vegeu la nota posterior. |
 | string | cadena de caràcters | Cadena (si apareix sovint) |
 | lliurable | Lliurament |  |
 | mapeig | mapatge |  |
@@ -631,7 +708,7 @@ $$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
 
 <!--- cSpell:enable --->
 
-- `mida` vs. `longitud`: s'usa `mida` per referir-se a l'espai que ocupa un tipus o variable en memòria (p. ex. *la mida d'un `int` és 4 bytes*). S'usa `longitud`*per referir-se al nombre de bits d'un registre o camp de bits (p. ex. *la longitud del camp `opcode` és 7 bits*). El terme <!--- cSpell:disable --->`tamany`<!--- cSpell:enable ---> no és normatiu i no s'ha d'usar mai.
+- **`mida` vs. `longitud`**: `mida` designa l'espai que ocupa un tipus o una variable en memòria (p. ex. *la mida d'un `int` és de 4 bytes*); `longitud` designa el nombre d'unitats d'un element seqüenciable —bits d'un registre o camp, elements d'un vector, caràcters d'una cadena— (p. ex. *la longitud del camp `opcode` és de 7 bits*). El terme `tamany` no és normatiu i no s'ha d'usar mai.
 
 ### Sigles
 
@@ -679,20 +756,6 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
     - Noms d'etiquetes `#nte-TODO`, `@sec-callouts`.
     - Adreces de memòria concretes `0x00400000`, `0x10100000`–`0x10100003`.
 
-### Referències creuades
-
-- Com més precises siguin, millor. Ordre de preferència creixent:
-    - Tema → secció → subsecció → callout → figura → taula → equació.
-    - `sec-tema-exemple`, `@sec-exemple`, `@fig-exemple`, `@tbl-exemple`, `@nte-exemple`.
-- Article determinat:
-    - **Amb**: "La" `@sec-exemple`, `@fig-exemple`, `@tbl-exemple` mostra...
-    - **Sense**: "`@nte-exemple` recull..."
-- **Figures i Taules**: no han d'estar necessàriament referenciades al text.
-
-### Gestió d'errades
-
-<!-- TODO: Definir protocol de gestió d'errades detectades post-commit -->
-
 ## Contingut
 
 ### Criteri general
@@ -725,7 +788,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Etiquetes de bucle**: `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.).
 - **Registres als exemples**: `t0`, `t1`, `t2`... tant en C com en assemblador per eliminar el soroll del mapatge.
 - **`la label+offset`**: admès a EC (pissarra i exàmens) però no suportat per RARS; al laboratori cal `la` + `addi`.
-- **Optimitzacions de bucle**: numeració contínua entre temes (#0 i #1 a T3, #2 i #3 a T4).
+- **Optimitzacions de bucle**: les tres optimitzacions numerades (#1–#3) i el prerequisit no numerat (extracció d'invariants) es defineixen totes a T4 (§4.5); la numeració és única per al bloc i no es reparteix entre temes.
 - **Pseudoinstruccions vs. macros**: distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
 
 #### T4
@@ -770,9 +833,6 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
 - **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
-- **Títol del callout d'exercici**: nom del fitxer de lliurament principal (p. ex. `## \`s2_4_1.s\``). Si hi ha dos lliuraments: `## \`s2_4_2.md\` i \`s2_4_2.s\``.
-- **Nom dels fitxers de lliurament**: `s<N>_<S>_<E>.<ext>` (sessió, secció, exercici). Exemples: `s2_3_1.s`, `s2_4_2.md`.
-- **Lliurament `.md` + `.s`**: exercicis amb anàlisi escrita prèvia (registres segurs, BA) es lliuren en dos fitxers.
 - **Lectura prèvia**: primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
 - **Lliurament**: última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
 - **Nom de figura SVG**: `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
@@ -831,78 +891,6 @@ Si l'exercici té dos lliuraments (`.md` + `.s`), ambdós apareixen al títol:
 #### Lliurament `.md` + `.s`
 
 Els exercicis que requereixen anàlisi escrita prèvia al codi (identificació de registres segurs, esquema del bloc d'activació) es lliuren en dos fitxers: un `.md` amb l'anàlisi i un `.s` amb el codi. La taula de lliuraments reflecteix ambdós.
-
-
-## Material gràfic
-
-### Paleta de colors
-
-| Element | Light (fill / stroke) | Dark (fill / stroke) |
-| :--- | :--- | :--- |
-| Cel·la neutra | `#f8f9fa` / `#adb5bd` | `#3d3d3d` / `#888` |
-| Text secundari | `#6c757d` | `#adb5bd` |
-| Text principal | `#343a40` | `#fff` |
-| Destacat blau | `#cfe2ff` / `#084298` | `#1a3a5c` / `#90bfff` |
-| Destacat verd | `#d1e7dd` / `#0a3622` | `#1a3a2a` / `#90d4aa` |
-| Destacat groc | `#fff3cd` / `#664d03` | `#3a2e00` / `#ffd966` |
-| Destacat vermell | `#f8d7da` / `#842029` | `#3a1a1e` / `#f1a8ae` |
-: {.striped}
-
-El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les figures SVG com a les taules amb color. Cada tema pot introduir associacions semàntiques pròpies (per exemple, a T7: blau=memòria cau, verd=memòria principal, groc=SSD, vermell=disc), però sempre dins la mateixa paleta.
-
-### Convencions SVG
-
-- `width="680"`, `viewBox="0 0 680 H"` on H = contingut + 20 px de buffer.
-- `font-family="'Source Sans Pro', sans-serif"`: `font-size="11"` per a etiquetes de cel·la, `font-size="12"` per a text secundari, `font-size="13"` per a títols de quadrant.
-- Cel·les destacades es dibuixen **sempre al damunt** de les grises (ordre de dibuix: grises primer, destacades després) per evitar solapaments de vores.
-- Cel·les grises: `stroke-width="0.5"`. Cel·les destacades: `stroke-width="1"`.
-- No s'usen línies separadores entre quadrants: només espai buit.
-- Convenció de noms: `T<N>_nom_figura_light.svg` / `T<N>_nom_figura_dark.svg` (guió baix, no guió).
-
-### Generació de la versió dark
-
-Per a figures de l'estàndard RISC-V (stroke negre, text sense color explícit):
-
-```bash
-PREFIX="T9_nom_figura"
-sed 's/stroke="#000000"/stroke="#adb5bd"/g' ${PREFIX}_light.svg | \
-    sed 's/<text\b/<text fill="#fff"/g' > ${PREFIX}_dark.svg
-```
-
-Per a figures amb paleta completa (generada per Claude):
-
-```bash
-# Substitucions de la paleta light → dark (vegeu la taula de paleta)
-python3 -c "
-import sys
-content = open('${PREFIX}_light.svg').read()
-replacements = [
-    ('#f8f9fa','#3d3d3d'), ('#adb5bd','#888'),
-    ('#6c757d','#adb5bd'), ('#343a40','#fff'),
-    ('#cfe2ff','#1a3a5c'), ('#084298','#90bfff'),
-    ('#d1e7dd','#1a3a2a'), ('#0a3622','#90d4aa'),
-    ('#fff3cd','#3a2e00'), ('#664d03','#ffd966'),
-    ('#f8d7da','#3a1a1e'), ('#842029','#f1a8ae'),
-]
-for l, d in replacements:
-    content = content.replace(l, d)
-open('${PREFIX}_dark.svg', 'w').write(content)
-"
-```
-
-### Integració al `.qmd`
-
-``` code
-::: {#fig-nom-figura}
-::: {.light-content style="text-align: center;"}
-![](figures/nom_figura_light.svg)
-:::
-::: {.dark-content style="text-align: center;"}
-![](figures/nom_figura_dark.svg)
-:::
-Caption de la figura.
-:::
-```
 
 
 ## IAs

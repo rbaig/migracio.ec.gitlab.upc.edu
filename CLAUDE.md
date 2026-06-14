@@ -3,7 +3,7 @@
 ## Projecte
 
 Apunts de l'assignatura **Estructura de Computadors** (EC), Grau d'Enginyeria
-Informàtica (GEI), FIB-UPC. Llibre Quarto (`_quarto.yml`), sortida HTML i PDF.
+Informàtica (GEI), FIB-UPC. Llibre Quarto (`_quarto.yml`), amb sortida HTML i PDF.
 Llengua: **català** (tot el contingut generat ha de ser en català).
 
 ## Fitxers de referència obligatòria
@@ -11,21 +11,37 @@ Llengua: **català** (tot el contingut generat ha de ser en català).
 Abans de qualsevol acció, llegeix:
 
 1. `_quarto.yml` — configuració del projecte.
-2. `contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori, decisions per tema.
-3. `TODO.md` — llista de tasques pendents i decisions obertes.
+2. `index.qmd` — fitxers que componen el llibre.
+3. `contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
+4. `TODO.md` — tasques pendents i decisions obertes.
+
+Repartiment de responsabilitats entre fitxers:
+
+- `contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
+- `CLAUDE.md` (aquest fitxer) recull **només** l'operació a claude.ai. Qualsevol altre aspecte va a `contrib.qmd`.
+- `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
+- `TODO.md` només conté contingut transitori; al final ha de quedar buit.
+
+Altres fitxers transversals: `riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `sigles.md` (glossari de sigles).
 
 ## Abast del projecte
 
 ### Estructura de fitxers `.qmd`
 
-La nova estructura **no és un mapatge 1:1** dels Temes originals (MIPS). MIPS: 8 temes; RISC-V: 9 temes:
+La nova estructura **no és un mapatge 1:1** dels temes originals (MIPS). MIPS: 8 temes; RISC-V: 9 temes:
 
-- T1 dividit:
-    - "Introducció" → T1
-    - "Rendiment, Amdahl i potència" → T6.
+- T1 dividit: «Introducció» → T1; «Rendiment, Amdahl i potència» → T6.
 - T2–T5 → T2–T5.
 - T6–T8 → T7–T9.
 - Laboratoris (només +1): L0 → L1, L1 → L2, etc.
+
+Convenció de noms (x = número de tema, 1–9; y = sessió de laboratori):
+
+- `Tx.qmd`: teoria del tema x.
+- `PE_Tx.qmd`: enunciats dels problemes del tema x.
+- `PS_Tx.qmd`: solucions d'una selecció de problemes del tema x.
+- `PS_criteris.qmd`: criteris de selecció dels problemes a solucionar.
+- `Ly.qmd`: laboratori, sessió y.
 
 ### Volum
 
@@ -36,110 +52,58 @@ La nova estructura **no és un mapatge 1:1** dels Temes originals (MIPS). MIPS: 
 | Solucions | `PS_Tx.qmd` (x = 2–9), `PS_criteris.qmd` | |
 | Laboratori | `L1.qmd`–`L6.qmd` | 6 PDFs + plantilles |
 
-Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats (s'usa per escurçar el temps de renderització en proves).
+Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats (es comenten per escurçar el temps de renderització en proves).
 
-### Fitxers transversals
+Els PDFs originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas de dubte sobre els continguts.
 
-- `riscv.qmd`: compendi de referència RISC-V (inclòs via `{{< include >}}`).
-- `sigles.md`: glossari de sigles.
-- `contrib.qmd`: convencions i normes.
-- `TODO.md`: tasques pendents i decisions obertes.
+## Revisió interna
 
-## Fase actual: Revisió interna
+Fase actual del projecte. El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (PS_T2–PS_T8) ja està generat; ara es fa la **revisió** (tècnica i lingüística), només per l'usuari. La fase següent serà la **revisió externa**, amb altres professors de l'assignatura.
 
-ontingut a revisar de teoria (T1–T9), laboratori (L1–L6) i solucionari (PS_T2–PS_T8) està generat. La fase actual és de **revisió** (tècnica i lingüística).
+### Prioritats de la revisió
 
-## Revisió interna: Planificació i estat
+- Prioritats màximes: **coherència pedagògica** i **rigor tècnic** en tot el contingut.
+- Revisió tècnica profunda i revisió lingüística en **català normatiu**.
+- Solucionaris: detall **pas a pas**, excepte els passos trivials.
 
-- Estat actual: **Revisió interna** (la faig només jo)
-    - La següent serà: **Revisió externa** (amb altres professors de l'assignatura)
-- Per web
-    - Text d'obertura:
+### Estat dels materials
 
-```
-Objectiu d'aquest xat: Revisió `T1.qmd`
+El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
-Intensitat: Profunda.
-
-Model effortness actual: Sonnet 4.6 Low
-- Sempre que necessitis canviar de model o effortness: digues-m'ho
-
-Repositori (només lectura): https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
-	- Branch `problemes-enunciats-separats`
-
-Regles generals:
-- Fitxers d'operació
-    - `CLAUDE.md` vs. `contrib.qmd`
-        - `contrib.qmd` és el fitxer de referència. Cal que sempre estigui actualitzat.
-        - `CLAUDE.md` només per a l'operació de claude.ai. Qualsevol altre especte va a `contrib.qmd`.
-    - `README.md`
-        - Fitxer de presentació del repositori.
-        - Continguts habituals en aquest tipus de projectes (documentació, Quart book).
-    - `TODO.md`
-        - Només contingut transitori.
-        - Al final ha de quedar buit.
-- Pots fer canvis d'ordre, crear/reanomenar/eliminar seccions, figures, taules, llistes, etc.
-- Interromp l'execució només si tens un dubte que hagi de resoldre jo. Mostra'm les opcions disponibles.
-- Sortida: Quarto book (HTML + PDF).
-- Prioritats màximes:
-    - Coherència pedagògica
-    - Rigor tècnic en tot el contingut
-- Revisió tècnica profunda.
-- Revisió lingüística: català normatiu.
-- Solucionaris: Nivell de detall de les solucions: pas a pas, excepte passos trivials.
-- Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats. Si ho estan, és per escurçar el temps de renderització en rederitzacions de prova.
-- Els PDFs originals estan al directori `/PDF_originals` (MIPS) per conéixer-ne els continguts. Consulta'ls en cas de dubte.
-- Claude Code: Fes només canvis locals. Actualitzaré jo manualment el repositori.
-- Comença sempre
-    1. Explorant el repositori. Si hi ha fitxers als quals no tens accés, demana-me'ls.
-    2. Llegint a fons els fitxers `_quarto.yml`, `index.qmd`, `contrib.qmd` i la resta que creguis convenient per fer el que et demani en cada cas.
-    3. Presentant-me la llista exhaustiva de tasques que proposes fer
-    4. Dient si cal que faci canvis en el model o l'effortness
-
-Algunes tasques a fer:
-- Dir quin model vols que configuri
-- Identificar quins fitxers cal actualitzar i les tasques a fer-hi
-- Proposta d'acció
-- `README.md`
-    - Els fitxers (x número de tema 1--9):
-        - `Tx.qmd`: Teoria del Tema x
-        - `PE_Tx.qmd`: Problemes, enunciats del Tema x
-        - `PS_Tx.qmd`: Problemes, solucions d'una selecció dels problemes del Tema x
-        - `Ly.qmd`: Laboratori, sessió y
-        - `PS_criteris.qmd` conté els criteris de selecció de problemes a solucionar
-    - Altra informació rellevant de l'estructura de l'arbre de directoris
-    - Altra informació habitual en projectes similars a Quarto tipus book
-```
-
-### Teoria (T1–T9)
+#### Teoria (T1–T9)
 
 - Pendents de revisió interna: `T2.qmd`–`T9.qmd`.
-- WiP: `T1.qmd`
-- Preparats per a revisió externa: 
+- Preparats per a revisió externa: —
 
-### Enunciats (PE_Tx.qmd)
+#### Enunciats (`PE_Tx.qmd`)
 
 - Pendents de revisió interna: `PE_T1.qmd`–`PE_T5.qmd`.
-- WiP: 
 - Preparats per a revisió externa: `PE_T6.qmd`–`PE_T9.qmd`.
 
-### Solucionaris (PS_Tx.qmd)
+#### Solucionaris (`PS_Tx.qmd`)
 
 - Pendents de revisió interna: `PS_T1.qmd`–`PS_T5.qmd`.
-- WiP: 
-- Preparats per a revisió externa: `PE_T6.qmd`–`PE_T9.qmd`.
+- Preparats per a revisió externa: `PS_T6.qmd`–`PS_T9.qmd`.
 
-### Laboratori (L1–L6)
+#### Laboratori (`L1`–`L6`)
 
 - Preparats per a revisió interna: `L1.qmd`–`L6.qmd`.
-- WiP: 
-- Preparats per a revisió externa: 
+
 ### Flux de treball
 
-1. Llegir el fitxer a revisar i identificar tots els problemes (tècnics, lingüístics, de format).
-2. Presentar la llista exhaustiva de problemes trobats abans de fer cap canvi.
-3. Esperar confirmació per procedir.
-4. En cas de dubte: atura't, exposa el dubte i, si és possible, proposa solucions.
+En començar un xat:
+
+1. Explora el repositori. Si hi ha fitxers als quals no tens accés, demana'ls.
+2. Llegeix a fons `_quarto.yml`, `index.qmd`, `contrib.qmd` i la resta de fitxers necessaris per a la tasca.
+3. Presenta'm la llista exhaustiva de tasques o problemes que proposes **abans de fer cap canvi**, i digues si cal que canviï el model o l'effortness.
+4. Espera confirmació per procedir.
+5. En cas de dubte, atura't, exposa el dubte i, si pots, proposa solucions.
+
+Regles operatives:
+
+- Pots fer canvis d'ordre i crear, reanomenar o eliminar seccions, figures, taules, llistes, etc.
+- Interromp l'execució només si tens un dubte que hagi de resoldre l'usuari; mostra-li les opcions disponibles.
+- Claude Code: fes només canvis locals. L'usuari actualitza el repositori manualment.
 
 ### Model i effortness
 
@@ -150,21 +114,20 @@ Algunes tasques a fer:
 | Tasques operatives (reorganització, neteja de fitxers) | Sonnet 4.6 | Low |
 
 - Si la tasca canvia, indica-ho explícitament.
-- Si vols que et canviï de configuració, digues-m'ho
+- Si vols que et canviï la configuració, digues-m'ho.
 
-## Convencions CSS (mode fosc)
+### Text d'obertura (web)
 
-A `custom_dark.scss`, secció `/*-- scss:rules --*/`:
+Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
-```scss
-figcaption,
-caption,
-.footnotes,
-h1, h2, h3, h4,
-.callout-title-container {
-  code {
-    color: #e8e6e3 !important;
-    background-color: #2b2d2f !important;
-  }
-}
+```
+Objectiu d'aquest xat: [fitxer o tasca a revisar]
+Intensitat: [p. ex. profunda]
+Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
+
+Repositori (només lectura): https://github.com/rbaig/migracio.ec.gitlab.upc.edu
+- Branca: `problemes-enunciats-separats`
+    - https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
+
+Llegeix `CLAUDE.md` i `contrib.qmd` abans de començar i segueix-ne el flux de treball.
 ```
