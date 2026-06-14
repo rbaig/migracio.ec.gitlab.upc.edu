@@ -13,6 +13,8 @@ Aquest document de convencions només està disponible en la versió web:
 ## Ús d'aquesta guia
 
 - S'ha d'actualitzar sempre que es prengui una decisió de format, estil, etc.
+- **Fase actual**: revisió (tècnica i lingüística) de tot el material. Vegeu `CLAUDE.md` per al flux de treball i el model d'IA recomanat per a cada tasca.
+- Per a tasques pendents i decisions obertes, vegeu `TODO.md`.
 
 ## Flux de treball amb Git
 
@@ -130,37 +132,31 @@ Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapide
 
 ## Referències creuades
 
+Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
 
+- **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta` (funciona a HTML i PDF).
+- **Enllaços a seccions dins del mateix fitxer**: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
+- ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: la sintaxi `@` per a seccions **només funciona a PDF**.
 
-
-
-
-
-
-
-
-
-
+Exemple — fitxer `PS.qmd` amb una secció etiquetada:
 
 ```{.text filename="PS.qmd"}
-
 # Problemes: Solucions seleccionades {#sec-problemes-solucions}
-
-blablabla
 ```
+
+Referència des d'un altre fitxer:
 
 ```{.text filename="un_altre_fitxer.qmd"}
-
-
-- [Enunciats de problemes](#sec-problemes-enunciats): Col·lecció d'exercicis. --- funciona a HTML i a PDF ---
-- ⛔️⛔️⛔️ [Enunciats de problemes](@sec-problemes-enunciats): Col·lecció d'exercicis. --- NOMÉS FUNCIONA A PDF --- ⛔️⛔️⛔️
-
+- [Solucions de problemes](#sec-problemes-solucions)   ✓ HTML i PDF
 ```
 
+## Format
 
 
 
 
+
+## Format
 
 
 
@@ -365,7 +361,7 @@ La referència és @wrn-TODO.
 
 ### Prefixos reservats
 
-| Prefix d'etiqueta | `xyz-title` <br> `xyz-title` | Callout | Color (light) | `## títol` | Caption |
+| Prefix d'etiqueta | Tipus | Callout | Color (light) | `## títol` | Caption |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `#nte-` | RISC-V | {.callout-note} | Verd | Sí | No |
 | `#imp-` | Criteri EC | {.callout-important} | Blau | Sí | No |
@@ -835,17 +831,6 @@ Si l'exercici té dos lliuraments (`.md` + `.s`), ambdós apareixen al títol:
 
 Els exercicis que requereixen anàlisi escrita prèvia al codi (identificació de registres segurs, esquema del bloc d'activació) es lliuren en dos fitxers: un `.md` amb l'anàlisi i un `.s` amb el codi. La taula de lliuraments reflecteix ambdós.
 
-## Programació
-
-<!-- TODO: Definir criteri: codi sempre testejat abans de commit? -->
-
-### C
-
-<!-- TODO: Completar criteris de codi C -->
-
-### RISC-V
-
-<!-- TODO: Definir criteri per a `ret` vs. `jalr x0, 0(ra)` al retorn de funcions -->
 
 ## Material gràfic
 
@@ -918,12 +903,6 @@ Caption de la figura.
 :::
 ```
 
-## Visualització
-
-<!-- TODO: Definir format de pàgines PDF (marges, capçaleres, peus de pàgina) -->
-<!-- TODO: Definir contingut i aparença de la barra superior web (navbar) -->
-<!-- TODO: Revisar aparença del sidebar (collapse-level, icones) -->
-<!-- TODO: Definir comportament del mode fosc: quins elements cal revisar manualment -->
 
 ## IAs
 
@@ -932,6 +911,9 @@ Cal passar-los sempre els fitxers següents:
 - `CLAUDE.md`
 - `contrib.qmd`
 - `_quarto.yml`
+- `TODO.md` (per a tasques que depenguin de decisions obertes)
+
+`CLAUDE.md` especifica el model i l'effortness recomanats per a cada tipus de tasca.
 
 Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa. El contingut generat per IA pot contenir errors tècnics subtils, especialment en:
 

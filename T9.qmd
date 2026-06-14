@@ -533,15 +533,36 @@ Per tal que un programa d'usuari pugui sol·licitar un servei al SO, cal un meca
 
 Això garanteix que hi ha un únic punt d'entrada al SO (l'adreça de la RSE a `mtvec`) i que el programa d'usuari no pot triar on salta ni amb quins privilegis ho fa. En acabar el tractament, la RSE executa `mret`, que restaura el mode U i retorna el control al programa.
 
-### Convenció de crides al sistema a RARS {#sec-ecall-abi-rars}
+### Crides al sistema {#sec-ecall-abi-rars}
 
-Les crides al sistema segueixen una convenció estricta per passar el codi de servei i els paràmetres. A RARS:
+Els SOs estableixen una convenció de crides al sistema per passar el codi de servei, els paràmetres de les crides i els registres que cal emprar. Per exemple, RARS estableix **`a7`** per codi de la crida al sistema i **`a0`** per argument principal i valor de retorn. També estableix dos codis de servei per a sortir del programa, `exit` (codi de servei 10) i `exit2` (codi de servei 93). La diferència és que `exit2` permet especificar el codi de sortida (normalment 0 per a sortida correcta) per al caller (normalment el SO).
+
+::: {#nte-ecall-convencio-rars .callout-note}
+## RARS – Registres de crida al sistema
 
 - **`a7`**: codi de la crida al sistema.
 - **`a0`**: argument principal i valor de retorn.
+:::
 
-::: {#cau-ecall-convencio-rars .callout-caution}
-La convenció de crides al sistema **no és la mateixa** que la convenció de crida a subrutines de l'ABI. En particular, el codi de servei va a **`a7`**, no a `a0`.
+::: {#nte-ecall-taula-rars .callout-note}
+##  RARS – Codis de servei més rellevants
+
+| Codi | Nom | Arguments | Retorn |
+| :---: | :--- | :--- | :--- |
+| 1 | `print_int` | `a0` = enter | — |
+| 2 | `print_float` | `fa0` = flotant | — |
+| 4 | `print_string` | `a0` = adreça string | — |
+| 5 | `read_int` | — | `a0` = enter |
+| 6 | `read_float` | — | `fa0` = flotant |
+| 8 | `read_string` | `a0` = buffer, `a1` = longitud màxima | — |
+| 10 | `exit` | — | — |
+| 11 | `print_char` | `a0` = caràcter (ASCII) | — |
+| 12 | `read_char` | — | `a0` = caràcter (ASCII) |
+| 34 | `print_hex` | `a0` = enter | — |
+| 35 | `print_bin` | `a0` = enter | — |
+| 36 | `print_unsigned` | `a0` = enter sense signe | — |
+| 93 | `exit2` | `a0` = el nombre amb el que sortir | — |
+: RARS: Codis de crides al sistema de més rellevants. {#tbl-syscalls-rars .striped}
 :::
 
 Els exemples següents mostren les crides al sistema més habituals a RARS:
@@ -580,27 +601,10 @@ Els exemples següents mostren les crides al sistema més habituals a RARS:
 ```
 :::
 
-::: {#wrn-ecall-taula-rars .callout-warning collapse=true}
-## Aprofundiment: taula de crides al sistema de RARS més rellevants
+### Convenció ABI {#sec-ecall-abi-linux}
 
-| Codi | Nom | Arguments | Retorn |
-| :---: | :--- | :--- | :--- |
-| 1 | `print_int` | `a0` = enter | — |
-| 2 | `print_float` | `fa0` = flotant | — |
-| 4 | `print_string` | `a0` = adreça string | — |
-| 5 | `read_int` | — | `a0` = enter |
-| 6 | `read_float` | — | `fa0` = flotant |
-| 8 | `read_string` | `a0` = buffer, `a1` = longitud màxima | — |
-| 10 | `exit` | — | — |
-| 11 | `print_char` | `a0` = caràcter (ASCII) | — |
-| 12 | `read_char` | — | `a0` = caràcter (ASCII) |
-| 34 | `print_hex` | `a0` = enter | — |
-| 35 | `print_bin` | `a0` = enter | — |
-| 36 | `print_unsigned` | `a0` = enter sense signe | — |
-: {#tbl-syscalls-rars .striped}
-:::
-
-### Convenció ABI Linux/RISC-V {#sec-ecall-abi-linux}
+::: {#wrn-ecall-abi-linux .callout-warning collapse=true}
+## RV32I Linux — ABI: Codis de crides al sistema de més rellevants
 
 Les crides al sistema segueixen una convenció estricta per passar el codi de servei i els paràmetres. A Linux/RISC-V:
 

@@ -6,42 +6,93 @@ Apunts de l'assignatura **Estructura de Computadors** (EC), Grau d'Enginyeria
 Informàtica (GEI), FIB-UPC. Llibre Quarto (`_quarto.yml`), sortida HTML i PDF.
 Llengua: **català** (tot el contingut generat ha de ser en català).
 
+## Fitxers de referència obligatòria
+
+Abans de qualsevol acció, llegeix:
+
+1. `_quarto.yml` — configuració del projecte.
+2. `contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori, decisions per tema.
+3. `TODO.md` — llista de tasques pendents i decisions obertes.
+
 ## Abast del projecte
 
-### Estructura (fitxers .qmd)
+### Estructura de fitxers `.qmd`
 
-La nova estructura **no és un mapatge 1:1** dels PDFs originals:
+La nova estructura **no és un mapatge 1:1** dels Temes originals (MIPS). MIPS: 8 temes; RISC-V: 9 temes:
 
-- El PDF T1 s'ha dividit: la introducció resta a T1.qmd; Rendiment, Amdahl i Potència s'han separat en T6.qmd.
-- Els PDFs T2–T5 corresponen a T2.qmd–T5.qmd.
-- Els PDFs T6–T8 corresponen a T7.qmd–T9.qmd.
+- T1 dividit:
+    - "Introducció" → T1
+    - "Rendiment, Amdahl i potència" → T6.
+- T2–T5 → T2–T5.
+- T6–T8 → T7–T9.
+- Laboratoris (només +1): L0 → L1, L1 → L2, etc.
 
 ### Volum
 
-| Material | Fitxers .qmd | PDFs originals |
+| Material | Fitxers `.qmd` | PDFs originals |
 | :--- | :--- | :--- |
-| Apunts | T1–T9 | 8 PDFs, ~200 pàgines |
-| Problemes | PE.qmd, PS.qmd | 2 PDFs |
-| Laboratori | L0–L5 | 6 PDFs + plantilles |
+| Teoria | `T1.qmd`–`T9.qmd` | 8 PDFs, ~200 pàgines |
+| Enunciats | `PE_Tx.qmd` (x = 1–9) | |
+| Solucions | `PS_Tx.qmd` (x = 2–9), `PS_criteris.qmd` | |
+| Laboratori | `L1.qmd`–`L6.qmd` | 6 PDFs + plantilles |
+
+Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats (s'usa per escurçar el temps de renderització en proves).
 
 ### Fitxers transversals
 
 - `riscv.qmd`: compendi de referència RISC-V (inclòs via `{{< include >}}`).
 - `sigles.md`: glossari de sigles.
-- `contrib.qmd`: convencions i normes. **Cal llegir-lo detalladament abans de generar contingut.**
+- `contrib.qmd`: convencions i normes.
+- `TODO.md`: tasques pendents i decisions obertes.
 
-## Convencions
+## Fase actual: Revisió
 
-Abans de generar qualsevol contingut, llegeix `contrib.qmd`. Conté:
+El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (PS_T2–PS_T8) està generat. La fase actual és de **revisió** (tècnica i lingüística).
 
-- El sistema de callouts i prefixos d'etiquetes.
-- Les normes d'estil (veu, puntuació, negretes, anglicismes, sigles).
-- Els criteris de format (taules, figures SVG, blocs de codi, aniuaments).
-- Les substitucions terminològiques obligatòries.
-- La paleta de colors SVG i les convencions de dibuix.
-- Les decisions per tema (T2–T9).
+### Flux de treball en fase de revisió
 
-### CSS mode fosc
+1. Llegir el fitxer a revisar i identificar tots els problemes (tècnics, lingüístics, de format).
+2. Presentar la llista exhaustiva de problemes trobats abans de fer cap canvi.
+3. Esperar confirmació per procedir.
+4. En cas de dubte: atura't, exposa el dubte i, si és possible, proposa solucions.
+
+### Model i effortness per a tasques de revisió
+
+| Tasca | Model | Effortness |
+| :--- | :--- | :--- |
+| Revisió tècnica o lingüística de teoria | Sonnet 4.6 | Normal |
+| Solucionari (`PS_Tx.qmd`) | Opus 4.8 | High |
+| Tasques operatives (reorganització, neteja de fitxers) | Sonnet 4.6 | Low |
+
+Si la tasca canvia, indica-ho explícitament.
+
+## Planificació i estat
+
+### Teoria (T1–T9)
+
+Preparats per a revisió de conjunt: `T1.qmd`–`T9.qmd`.
+
+### Enunciats (PE_Tx.qmd)
+
+Preparats per a revisió externa: `PE_T6.qmd`–`PE_T9.qmd`.
+
+Pendents de revisió interna: `PE_T1.qmd`–`PE_T5.qmd`.
+
+Si cal fer esmenes a `PE_Tx.qmd` (reordenar, corregir), baixa el fitxer del repositori, actualitza'l i passa'l a l'usuari perquè el descarregui i l'actualitzi al repositori.
+
+### Solucionaris (PS_Tx.qmd)
+
+Preparats per a revisió externa: `PS_T2.qmd`–`PS_T8.qmd`.
+
+Pendents de creació: `PS_T9.qmd`, `PS_T1.qmd` (ordre previst: T9, T1).
+
+### Laboratori (L1–L6)
+
+Preparats per a revisió externa: `L1.qmd`–`L6.qmd`.
+
+Pendent de creació: `L0.qmd`.
+
+## Convencions CSS (mode fosc)
 
 A `custom_dark.scss`, secció `/*-- scss:rules --*/`:
 
@@ -57,95 +108,3 @@ h1, h2, h3, h4,
   }
 }
 ```
-
-## Flux de treball
-
-- Mostrar sempre el contingut generat en blocs de codi markdown (` ```markdown `).
-- No editar fitxers directament: l'usuari fa el copy-paste manualment.
-- En cas de dubte: atura't, exposa el dubte i, si és possible, proposa una solució.
-
-### Inici d'un tema o pràctica
-
-**Primer prompt**
-
-- Fitxers: `CLAUDE.md`, `_quarto.yml`, `contrib.qmd`.
-- Objectiu: descriure el tema a generar i el context.
-- Tasques:
-    - Confirmar si s'ha entès l'objectiu.
-    - Identificar quina informació addicional cal per poder començar.
-
-**Segon prompt**
-
-- Fitxers: PDF original, fitxers `.qmd` de referència, `sigles.md`.
-- Confirmar si es té tota la informació necessària.
-- Proposar continguts i estructura (seccions, subseccions, callouts):
-    - No és obligatori seguir l'estructura del PDF: preval el criteri pedagògic, el rigor i l'actualitat tecnològica.
-    - Cal incorporar tot el contingut rellevant del PDF.
-    - Ser honest sobre reestructuracions necessàries (continguts obsolets, nous a incorporar).
-- Per a canvis importants, demanar validació explícita.
-- No generar contingut fins que no s'hagi acordat l'estructura.
-
-**Tercer prompt**
-
-- Estructura confirmada. Avançar secció a secció al ritme que calgui.
-- **Figures (prioritat descendent)**:
-    - **Taula**: quan el contingut és essencialment dades tabulars.
-    - **SVG**: quan la figura aporta valor visual que una taula no pot donar (diagrames de blocs, jerarquies, evolució d'estats, descomposició de bits).
-    - ~~Mermaid~~: tots els diagrames nous es fan en SVG.
-- **Figures SVG**:
-    - Les generem al final, un cop hi hagi tot el text al `.qmd`.
-    - Sempre una per una. Flux: Claude proposa la versió `light` → l'usuari retoca manualment → Claude genera la versió `dark`.
-    - Nom de fitxers: `T<N>_nom_figura_light.svg` / `T<N>_nom_figura_dark.svg`.
-    - Markdown d'integració: vegeu `contrib.qmd` (secció "Integració al .qmd").
-    - Deixar comentaris HTML descriptius per a cada figura: `<!-- fig-...: descripció detallada -->`.
-    - Proposar la llista completa de SVGs per validar-la abans de generar-ne cap.
-
-### En finalitzar un tema, pràctica, etc.
-
-1. Revisió completa de la darrera versió del `.qmd`.
-2. Revisió tècnica profunda.
-3. Revisió lingüística profunda.
-4. Generar `sigles.md` actualitzat amb les sigles noves del tema (criteri: vegeu `contrib.qmd`).
-5. Actualitzar `contrib.qmd` amb decisions de format o estil preses durant el tema.
-6. Actualitzar `CLAUDE.md` (planificació i progress).
-7. Elaborar el missatge d'inici per al xat del tema següent.
-
-## Planificació i progress
-
-### Teoria (T1–T9)
-
-Temes preparats per a revisió externa: `T1.qmd`, `T2.qmd`, `T3.qmd`, `T4.qmd` (ampliat: aritmètica entera + matrius), `T5.qmd`, `T6.qmd` (segregat de T1), `T7.qmd`, `T8.qmd`, `T9.qmd`.
-
-### Laboratori (L0–L5)
-
-Convencions globals del laboratori (acordades durant L0 i L1):
-
-- **Punt d'entrada**: `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
-- **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
-- **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
-- **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
-- **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
-- **Lectura prèvia**: primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
-- **Lliurament**: última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
-- **Nom de figura SVG**: `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
-
-Sessions preparades per a revisió externa: `L1.qmd` (TODO secció Pseudoinstruccions), `L2.qmd`, `L3.qmd`, `L4.qmd`, `L5.qmd`
-
-Pendent: `L0.qmd`
-
-### Problemes
-
-Pendent de revisió (`PE.qmd`)
-
-### Solucionari
-
-Instruccions CLAUDE: "Sonnet 4.6, Effort: Medium"
-* Si cal fer esmenes a `PE.qmd` (per exemple, esmenes, reordenar els enunciats, etc.) baixa el fitxer PE.qmd​ del repositori, actualitza'l i passa'm la versió actualitzada perquè el descarregui i l'afegeixi al repositori.
-
-- `PS.qmd` només conté `include`s
-
-Preparat per a revisió externa: `PS_T2.qmd`--`PS_T8.qmd`
-
-Ordre previst: T7, T8, T9, T1.
-
-WiP: `PS_T9.qmd`

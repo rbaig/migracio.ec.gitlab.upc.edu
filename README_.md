@@ -14,7 +14,7 @@ Elaborat amb [Quarto](https://quarto.org/) i [Claude](https://claude.ai/) (Anthr
 | :--- | :--- |
 | `Tx.qmd` | Teoria del Tema x (x = 1–9) |
 | `PE_Tx.qmd` | Problemes: enunciats del Tema x |
-| `PS_Tx.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 2–8; T9 i T1 pendents) |
+| `PS_Tx.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x |
 | `PS_criteris.qmd` | Criteris de selecció dels problemes resolts |
 
 La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDFs T6–T8 corresponen als temes T7–T9.
@@ -23,7 +23,7 @@ La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:
 
 | Fitxer | Contingut |
 | :--- | :--- |
-| `Ly.qmd` | Laboratori, sessió y (y = 1–6) |
+| `Ly.qmd` | Laboratori, sessió y (y = 1–5) |
 
 ### Fitxers transversals
 
