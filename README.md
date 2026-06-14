@@ -13,13 +13,13 @@ Elaborat amb [Quarto](https://quarto.org/) i [Claude](https://claude.ai/) (Anthr
 | Fitxer | Contingut |
 | :--- | :--- |
 | `Tx.qmd` | Teoria del Tema x (x = 1–9) |
-| `PE_Tx.qmd` | Problemes: enunciats del Tema x |
-| `PS_Tx.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 2–8; T9 i T1 pendents) |
+| `PE_Tx.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
+| `PS_Tx.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 1–9) |
 | `PS_criteris.qmd` | Criteris de selecció dels problemes resolts |
 
 La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDFs T6–T8 corresponen als temes T7–T9.
 
-### Laboratori (L1–L5)
+### Laboratori (L1–L6)
 
 | Fitxer | Contingut |
 | :--- | :--- |
@@ -30,38 +30,57 @@ La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:
 | Fitxer | Contingut |
 | :--- | :--- |
 | `_quarto.yml` | Configuració del projecte Quarto |
+| `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
 | `index.qmd` | Pàgina de presentació (avaluació, eines, bibliografia) |
 | `riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
-| `sigles.md` | Glossari de sigles |
+| `sigles.qmd` | Glossari de sigles |
 | `bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
+| `ieee.csl` | Estil de citació IEEE (CSL) |
 | `contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
 | `CLAUDE.md` | Instruccions operatives per a Claude |
-| `TODO.md` | Llista de tasques pendents |
-| `_variables.yml` | Variables globals del projecte |
-| `custom_dark.scss` | Estils CSS per al mode fosc (HTML) |
+| `TODO.md` | Llista de tasques pendents (contingut transitori) |
+| `custom_light.scss` | Estils CSS addicionals per al mode clar (HTML) |
+| `custom_dark.scss` | Estils CSS addicionals per al mode fosc (HTML) |
+| `custom.scss` | Estils CSS comuns a tots dos modes (HTML) |
+| `styles.css` | Estils CSS addicionals (HTML) |
+| `preamble.tex` | Preàmbul LaTeX addicional (PDF) |
 
 ### Arbre de directoris
 
 ```
-EC.qmd/
-├── figures/              # Figures SVG (variants light i dark)
-├── laboratori/           # Fitxers de suport del laboratori (RARS, startup.s, etc.)
-├── referencies/          # Fragments de referència RISC-V (inclosos via `include`)
+EC/
+├── figures/                   # Figures SVG (variants light i dark)
+│   └── T<N>_nom_figura_light.svg
+│   └── T<N>_nom_figura_dark.svg
+├── laboratori/                # Fitxers de suport del laboratori
+│   ├── L0/–L5/               # Plantilles i fitxers per sessió
+│   ├── rars1_6.jar            # Simulador RARS (versió de referència)
+│   └── startup.s              # Fitxer d'inicialització RARS
+├── referencies/               # Fragments de referència RISC-V (inclosos via `include`)
+│   ├── RV32I_instruccions_*.qmd
+│   ├── RV32I_registres_*.qmd
+│   ├── RV32I_format_instruccions.qmd
+│   └── RARS_*.qmd
 ├── _quarto.yml
+├── _variables.yml
 ├── index.qmd
-├── Tx.qmd                # x = 1–9 (teoria)
-├── PE_Tx.qmd             # x = 1–9 (enunciats)
-├── PS_Tx.qmd             # x = 2–9 (solucions seleccionades)
+├── Tx.qmd                     # x = 1–9 (teoria)
+├── PE_Tx.qmd                  # x = 1–9 (enunciats de problemes)
+├── PS_Tx.qmd                  # x = 1–9 (solucions seleccionades)
 ├── PS_criteris.qmd
-├── Ly.qmd                # y = 1–6 (laboratoris)
+├── Ly.qmd                     # y = 1–6 (laboratoris)
 ├── riscv.qmd
-├── sigles.md
+├── sigles.qmd
 ├── bibliografia.bib
+├── ieee.csl
 ├── contrib.qmd
 ├── CLAUDE.md
 ├── TODO.md
-├── _variables.yml
-└── custom_dark.scss
+├── preamble.tex
+├── custom_light.scss
+├── custom_dark.scss
+├── custom.scss
+└── styles.css
 ```
 
 ## Renderitzar el projecte
@@ -69,7 +88,7 @@ EC.qmd/
 Directori de treball:
 
 ```bash
-cd ~/git/EC.qmd
+cd ~/git/EC
 ```
 
 | Comanda | Efecte |
@@ -98,7 +117,7 @@ sudo dpkg -i quarto-1.9.36-linux-amd64.deb
 quarto --version
 ```
 
-Sense Chrome instal·lat (p. ex. servidor):
+Sense Chrome instal·lat (p. ex. en un servidor):
 
 ```bash
 quarto install chrome-headless-shell

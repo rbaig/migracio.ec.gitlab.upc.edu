@@ -46,16 +46,15 @@
 
 ## Quarto / Infraestructura
 
-- **Error SVG en PDF (T3, T4)**:
-  ```
-  Package svg Error: File `svg-5d875942584dea27_svg-tex.pdf' is missing.
-  ```
-- **Subtítol**: el subtítol HTML (`<br>`) vs. PDF (`\linebreak`) no es pot unificar a `_quarto.yml`; cal mantenir la solució actual per `format: pdf: header-includes`.
-- **Diagrames Mermaid**: migrar els existents a SVG.
-- **Mides SVG recomanades**: definir per a cada context (dins callout, cos del text, columnes).
-- **Visualització PDF**: definir format de pàgines (marges, capçaleres, peus de pàgina).
-- **Navbar**: definir contingut i aparença de la barra superior web.
-- **Sidebar**: revisar aparença (collapse-level, icones).
-- **Mode fosc**: definir quins elements cal revisar manualment.
-- **Numeració de callouts**: revisar criteris i aparença.
 - **Migrar diagrames Mermaid existents a SVG**.
+
+## Referències creuades trencades
+
+Només hi ha:
+- @imp-exception-handler
+- @fig-gap-processador-memoria
+- @fig-cd-diagrama
+- @fig-assoc-conjunts-diagrama
+- @fig-ca-diagrama
+- @fig-texe-diagrama
+- @fig-mv-flux-traduccio
