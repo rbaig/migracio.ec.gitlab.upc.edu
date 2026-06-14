@@ -533,7 +533,74 @@ Per tal que un programa d'usuari pugui sol·licitar un servei al SO, cal un meca
 
 Això garanteix que hi ha un únic punt d'entrada al SO (l'adreça de la RSE a `mtvec`) i que el programa d'usuari no pot triar on salta ni amb quins privilegis ho fa. En acabar el tractament, la RSE executa `mret`, que restaura el mode U i retorna el control al programa.
 
-### Convenció ABI Linux/RISC-V {#sec-ecall-abi}
+### Convenció de crides al sistema a RARS {#sec-ecall-abi-rars}
+
+Les crides al sistema segueixen una convenció estricta per passar el codi de servei i els paràmetres. A RARS:
+
+- **`a7`**: codi de la crida al sistema.
+- **`a0`**: argument principal i valor de retorn.
+
+::: {#cau-ecall-convencio-rars .callout-caution}
+La convenció de crides al sistema **no és la mateixa** que la convenció de crida a subrutines de l'ABI. En particular, el codi de servei va a **`a7`**, no a `a0`.
+:::
+
+Els exemples següents mostren les crides al sistema més habituals a RARS:
+
+::: {#tip-ecall-exemples-rars .callout-tip}
+## Exemples de crides al sistema a RARS
+
+**Imprimir un enter (codi 1)**:
+
+```{.s filename="RV32IZicsr"}
+        li      a7, 1               # codi de print_int
+        li      a0, 42              # enter a imprimir
+        ecall
+```
+
+**Llegir un enter de l'entrada estàndard (codi 5)**:
+
+```{.s filename="RV32IZicsr"}
+        li      a7, 5               # codi de read_int
+        ecall                       # a0 ← enter llegit
+```
+
+**Imprimir un string (codi 4)**:
+
+```{.s filename="RV32IZicsr"}
+        li      a7, 4               # codi de print_string
+        la      a0, missatge        # adreça del string (acabat en '\0')
+        ecall
+```
+
+**Finalitzar el programa (codi 10)**:
+
+```{.s filename="RV32IZicsr"}
+        li      a7, 10              # codi de exit
+        ecall                       # no retorna
+```
+:::
+
+::: {#wrn-ecall-taula-rars .callout-warning collapse=true}
+## Aprofundiment: taula de crides al sistema de RARS més rellevants
+
+| Codi | Nom | Arguments | Retorn |
+| :---: | :--- | :--- | :--- |
+| 1 | `print_int` | `a0` = enter | — |
+| 2 | `print_float` | `fa0` = flotant | — |
+| 4 | `print_string` | `a0` = adreça string | — |
+| 5 | `read_int` | — | `a0` = enter |
+| 6 | `read_float` | — | `fa0` = flotant |
+| 8 | `read_string` | `a0` = buffer, `a1` = longitud màxima | — |
+| 10 | `exit` | — | — |
+| 11 | `print_char` | `a0` = caràcter (ASCII) | — |
+| 12 | `read_char` | — | `a0` = caràcter (ASCII) |
+| 34 | `print_hex` | `a0` = enter | — |
+| 35 | `print_bin` | `a0` = enter | — |
+| 36 | `print_unsigned` | `a0` = enter sense signe | — |
+: {#tbl-syscalls-rars .striped}
+:::
+
+### Convenció ABI Linux/RISC-V {#sec-ecall-abi-linux}
 
 Les crides al sistema segueixen una convenció estricta per passar el codi de servei i els paràmetres. A Linux/RISC-V:
 
@@ -541,13 +608,13 @@ Les crides al sistema segueixen una convenció estricta per passar el codi de se
 - **`a0`–`a5`**: arguments (fins a sis).
 - **`a0`**: valor de retorn (i `a1` per a resultats de 64 bits en RV32).
 
-::: {#cau-ecall-convencio .callout-caution}
+::: {#cau-ecall-convencio-linux .callout-caution}
 La convenció de crides al sistema **no és la mateixa** que la convenció de crida a subrutines de l'ABI. En particular, el codi de servei va a **`a7`**, no a `a0`, i hi pot haver fins a sis arguments en lloc de quatre.
 :::
 
 Els exemples següents mostren les crides al sistema més habituals:
 
-::: {#tip-ecall-exemples .callout-tip}
+::: {#tip-ecall-exemples-linux .callout-tip}
 ## Exemples de crides al sistema Linux/RISC-V (RV32)
 
 **Escriure a la sortida estàndard (`write`, codi 64)**:
@@ -587,7 +654,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 ```
 :::
 
-::: {#wrn-ecall-taula .callout-warning collapse=true}
+::: {#wrn-ecall-taula-linux .callout-warning collapse=true}
 ## Aprofundiment: taula de crides al sistema Linux/RISC-V (RV32) més rellevants
 
 | Codi | Nom | Arguments | Retorn |
