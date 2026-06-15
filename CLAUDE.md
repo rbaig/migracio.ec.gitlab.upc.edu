@@ -148,6 +148,4 @@ Comencem la tasca A:
 4. Fes un anàlisi profund del contingut
 5. Genera la llista d'accions a realitzar; guarda-la a fitxer T3_tasques.md​ a outputs. 
 6. Comença a realitzar les accions que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
-
-
 ```
