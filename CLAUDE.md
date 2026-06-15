@@ -127,21 +127,27 @@ Objectiu d'aquest xat: T3.qmd
 Intensitat: Profunda
 Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
 
-Tipus de tasques:
-- A: Exploració + llista exhaustiva de tasques (només lectura i anàlisi)
-- B: Tasques tècniques (formats d'instrucció, codificació, rigor ISA)
-- C: Tasques lingüístiques + format Quarto
-- D: Figures SVG
+Seqüència de tasques a realitzar durant la sessió:
+- Tasca A: Exploració + llista exhaustiva de tasques (només lectura i anàlisi)
+- Tasca B: Tasques tècniques (formats d'instrucció, codificació, rigor ISA)
+- Tasca C: Tasques lingüístiques + format Quarto
+- Tasca D: Figures SVG
 
 Llegeix `CLAUDE.md` i `contrib.qmd` abans de començar i segueix-ne el flux de treball.
 Llegeix `T3.qmd`, `T2.qmd` i `T4.qmd`
 
+Repositori (només lectura) per SVGs, `include`, taules d'instruccions, etc.: https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
+
 Tens permisos per fer modificacions tots els arxius que et passi. Si fas modificacions a qualsevol arxiu, ofereix-me la versió final per descarregar.
 
-Guarda la llista de tasques pendents en un fitxer T3_tasques.md​ a outputs. Inclou-hi la llista de figures pendents
+Comencem la tasca A:
 
-Després comença a aplicar les tasques que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
+1. Llegeix `CLAUDE.md` i `contrib.qmd`
+2. Llegeix `T3.qmd`, `T2.qmd` i `T4.qmd`
+3. Demana'm o busca al repositori els fitxers que necessitis
+4. Fes un anàlisi profund del contingut
+5. Genera la llista d'accions a realitzar; guarda-la a fitxer T3_tasques.md​ a outputs. 
+6. Comença a realitzar les accions que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
 
-Repositori (només lectura) per SVGs, `include`, taules d'instruccions, etc.: https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
 
 ```
