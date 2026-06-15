@@ -72,8 +72,8 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Teoria (T1–T9)
 
-- Pendents de revisió interna: `T2.qmd`–`T9.qmd`.
-- Preparats per a revisió externa: —
+- Pendents de revisió interna: `T3.qmd`–`T9.qmd`.
+- Preparats per a revisió externa: `T1.qmd`–`T2.qmd`.
 
 #### Enunciats (`PE_Tx.qmd`)
 
@@ -121,19 +121,27 @@ Regles operatives:
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
 ```
+Nom del xat: `T3.qmd Revisió interna`
+
+Objectiu d'aquest xat: T3.qmd
+Intensitat: Profunda
+Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
+
 Tipus de tasques:
 - A: Exploració + llista exhaustiva de tasques (només lectura i anàlisi)
 - B: Tasques tècniques (formats d'instrucció, codificació, rigor ISA)
 - C: Tasques lingüístiques + format Quarto
 - D: Figures SVG
 
-Objectiu d'aquest xat: [fitxer a revisar i tasca (A, B, C, D)]
-Intensitat: [p. ex. profunda]
-Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
-
-Repositori (només lectura): https://github.com/rbaig/migracio.ec.gitlab.upc.edu
-- Branca: `problemes-enunciats-separats`
-    - https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
-
 Llegeix `CLAUDE.md` i `contrib.qmd` abans de començar i segueix-ne el flux de treball.
+Llegeix `T3.qmd`, `T2.qmd` i `T4.qmd`
+
+Tens permisos per fer modificacions tots els arxius que et passi. Si fas modificacions a qualsevol arxiu, ofereix-me la versió final per descarregar.
+
+Guarda la llista de tasques pendents en un fitxer T3_tasques.md​ a outputs. Inclou-hi la llista de figures pendents
+
+Després comença a aplicar les tasques que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
+
+Repositori (només lectura) per SVGs, `include`, taules d'instruccions, etc.: https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
+
 ```

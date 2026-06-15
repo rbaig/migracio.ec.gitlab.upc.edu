@@ -103,7 +103,7 @@ Les posicions vacants s'omplen amb una còpia del bit de signe.
 El bit de signe de `0x99999999` és `1`, de manera que les dues posicions que queden vacants a l'esquerra s'omplen amb `1`s.
 :::
 
-::: {#cau-instruccions-no-lwu .callout-caution}
+::: {#cau-instruccions-no-sla .callout-caution}
 No existeix la instrucció ~~`sla`~~ ni la ~~`slai`~~ .
 :::
 
@@ -248,21 +248,7 @@ La instrucció `slt` compara dos enters amb signe i **posa a** `1` (LSB a `1` i 
 : {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
-::: {#nte-pseudoinstruccions-comparacio-zero .callout-note}
-## RV32I ABI — Pseudoinstruccions de comparació amb zero
-
-Per a comparacions freqüents amb zero, l'especificació RISC-V defineix
-pseudoinstruccions que abreugen la seqüència `slt`/`sltu` + `beq`/`bne`:
-
-| Pseudoinstrucció | Expansió | Condició |
-| :--- | :--- | :--- |
-| `beqz rs, label` | `beq rs, zero, label` | salta si `rs == 0` |
-| `bnez rs, label` | `bne rs, zero, label` | salta si `rs != 0` |
-| `bltz rs, label` | `blt rs, zero, label` | salta si `rs < 0` |
-| `bgez rs, label` | `bge rs, zero, label` | salta si `rs ≥ 0` |
-| `bgtz rs, label` | `blt zero, rs, label` | salta si `rs > 0` |
-| `blez rs, label` | `bge zero, rs, label` | salta si `rs ≤ 0` |
-:::
+Per a les comparacions freqüents amb zero, RISC-V també defineix pseudoinstruccions de salt condicional específiques (`beqz`, `bnez`, `bltz`, `bgez`, `bgtz`, `blez`), que es presenten amb la resta de pseudoinstruccions de salt a @nte-pseudoinstruccions-salt-condicional-zero.
 
 ### Traducció de `==` i `!=`
 
@@ -424,7 +410,7 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 | `bleu rs1, rs2, label` | `bgeu rs2, rs1, label` |
 :::
 
-::: {#nte-pseudoinstruccions-comparacio-zero .callout-note}
+::: {#nte-pseudoinstruccions-salt-condicional-zero .callout-note}
 ## RV32I ABI — Pseudoinstruccions de salt condicional amb zero
 
 | Pseudoinstrucció | Expansió | Condició |
@@ -557,8 +543,8 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 A **EC**, els salts tenen rols ben diferenciats: els salts **relatius al PC** s'usen per implementar estructures de control de flux local (`if-then-else`, bucles), mentre que els salts **indirectes** (`jalr`, `jr`, `ret`) s'usen per a crides i retorns de subrutines.
 :::
 
-::: {#cau-salts-condicionals-relatius-pc .callout-caution}
-A **RV32I**, tots els salts  **incondicionals** són **indirectes**. No existeix cap salt incondicional relatiu al PC.
+::: {#cau-salts-incondicionals-indirectes .callout-caution}
+A **RV32I**, tots els salts **incondicionals** són **indirectes**. No existeix cap salt incondicional relatiu al PC.
 :::
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
@@ -925,7 +911,7 @@ El bucle avança per `v` fins a trobar el primer element no negatiu. La condici�
 :::
 
 ::: {#tip-optimitzacio-eliminacio-variable-induccio .callout-tip}
-## Recorregut d'un vector: Eliminació de variables d'inducció (Optimització #2)
+## Recorregut d'un vector: Eliminació de la variable d'inducció (Optimització #3)
 
 Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament.
 
@@ -1074,7 +1060,7 @@ Des del punt de vista del control del flux d'execució, quan es crida una subrut
 
 La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu-jal) salta a l'adreça indicada per `label` (primera instrucció de la subrutina cridada) i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar, s'usa la pseudoinstrucció `ret` (@nte-pseudoinstruccions-salt-indirecte), que salta a l'adreça continguda a `ra`.
 
-::: {#tip-exemple-suma2 .callout-tip}
+::: {#tip-crida-dos-punts .callout-tip}
 ## Crida d'una subrutina des de dos punts diferents d'un programa
 ```{.s filename="RV32I"}
 # Codi que fa les crides
@@ -1195,7 +1181,7 @@ scanf("%d", &x);    /* pas per referència: scanf rep l'adreça de x    */
 Després de `scanf`, `x` pot tenir un valor diferent de `42`. Després de `printf`, `x` segueix valent `42` — `printf` no pot modificar-lo perquè només n'ha rebut una còpia.
 :::
 
-::: {#tip-exemple-suma2 .callout-tip}
+::: {#tip-pas-referencia-punters .callout-tip}
 ## Pas de paràmetres per referència amb punters
 
 ```{.C filename="C"}

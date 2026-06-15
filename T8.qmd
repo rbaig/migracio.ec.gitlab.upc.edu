@@ -142,6 +142,13 @@ La solució és estructurar la taula de pàgines en **múltiples nivells**. En u
 L'avantatge clau és que les taules de segon nivell només s'assignen per a les regions de l'espai lògic que el procés utilitza realment. Com que la majoria dels processos fan servir només una fracció petita dels $2^{32}$ o $2^{48}$ bytes d'espai lògic possible, la memòria ocupada per la taula de pàgines es redueix dràsticament. Linux usa taules de pàgines de quatre nivells en arquitectures de 64 bits (x86-64, AArch64, RISC-V de 64 bits).
 :::
 
+::: {#wrn-mv-sv32 .callout-warning collapse="true"}
+## L'esquema Sv32 de RISC-V
+**Sv32** és l'esquema estàndard de paginació de 32 bits definit per l'arquitectura privilegiada de RISC-V. Tradueix adreces lògiques de 32 bits a adreces físiques de **34 bits** mitjançant una taula de pàgines de **dos nivells** amb pàgines de 4 KB. Per tant, tot i que cada procés disposa d'un espai lògic de 4 GB ($2^{32}$ bytes), el sistema pot adreçar fins a **16 GB** ($2^{34}$ bytes) de memòria física.
+
+Per a sistemes de 64 bits, RISC-V defineix els esquemes **Sv39**, **Sv48** i **Sv57**, amb taules de pàgines de tres, quatre i cinc nivells respectivament, que permeten espais d'adreçament molt més grans.
+:::
+
 ## Fallada de pàgina {#sec-mv-fallada-pagina}
 
 Quan la CPU accedeix a una adreça lògica i el bit P de la PTE corresponent val 0, es produeix una **fallada de pàgina** (*page fault*). Això pot succeir per dos motius: la pàgina pertany a l'espai vàlid del procés però no és a la memòria física (és al disc), o bé l'adreça és invàlida (no pertany a cap regió reservada del procés). En el segon cas, el sistema operatiu avorta l'execució del programa (a Unix i derivats, amb un error de tipus *segmentation fault*).
