@@ -13,6 +13,41 @@ Figures de referència:
 La pila creix cap amunt visualment (sp decreix = nou contingut apareix a y menor).
 El heap creix cap avall visualment (adreces altes = y major).
 
+### Sistema de coordenades SVG
+
+L'origen `(0,0)` és a la **cantonada superior esquerra**. L'eix Y creix cap **avall**. Això és el comportament estàndard SVG: no hi ha cap inversió.
+
+La relació entre offset de memòria i coordenada y és **directa**:
+
+```
+y_element = marge_sup + offset_element × escala
+```
+
+Per exemple, amb `escala = 10 px/byte` i `marge_sup = 10`:
+- Element a offset `+0`  → `y = 10`
+- Element a offset `+10` → `y = 110`
+- Element a offset `+12` → `y = 130`
+
+La confusió habitual prové del vocabulari de domini: es diu que la pila "creix cap amunt", però en coordenades SVG això significa que `sp` **decreix** quan es reserva espai (el cim de pila, offset `+0`, té sempre la `y` més petita). La taula de correspondències:
+
+| Concepte de domini | Coordenada SVG |
+|:---|:---|
+| Adreça baixa / cim de pila / `sp` | `y` petit (a dalt) |
+| Adreça alta / fons del BA | `y` gran (a baix) |
+| Offset creixent (+0, +4, +8…) | `y` creixent |
+| Pila "creix cap amunt" | `y_sp` decreix en reservar espai |
+
+**Regla per a l'edició manual:** augmentar `y` desplaça l'element cap avall (adreça més alta); reduir `y` desplaça cap amunt (adreça més baixa). Offset creixent = `y` creixent. No hi ha inversió.
+
+### Prioritat de coordenades
+
+Les coordenades `y` han de ser, en ordre de preferència:
+
+1. **Múltiples de 10** (prioritat màxima)
+2. **Múltiples de 5** (prioritat secundària)
+
+Evitar decimals i valors arbitraris.
+
 ---
 
 ## 2. Canvas i marges
@@ -39,17 +74,28 @@ On `w_rect = 230 px` i `h_total_segments` és la suma de les alçades de totes l
 
 ## 3. Escala i alçades
 
-**Factor d'escala: 20 px/byte** (enters, sense decimals).
+**Factor d'escala de referència: 20 px/byte.**
 
 ```
 1 byte  =  20 px
 4 bytes =  80 px   (registre, p. ex. `ra`, `s0`...)
 ```
 
-Qualsevol alçada ha de ser múltiple de 20 px. Si cal escalar per llegibilitat, usar:
-- ×1 = 20 px/byte (defecte)
-- ×½ = 10 px/byte
-- ×¼ =  5 px/byte
+Quan el contingut és gran (vectors llargs, moltes zones), cal reduir l'escala per mantenir la figura en una mida razonable. Factors admesos, en ordre decreixent:
+
+- ×1  = 20 px/byte (defecte; per a BAs petits o figures de referència)
+- ×½  = 10 px/byte (recomanat per a la majoria de BAs amb vectors)
+- ×¼  =  5 px/byte (per a BAs molt grans)
+
+**Tria de l'escala:** usar la més gran que mantingui la figura llegible i les coordenades en múltiples de 10 (o 5 com a mínim). L'escala s'aplica uniformement a totes les zones d'una mateixa figura.
+
+Exemple: `T3_ba_func` (`v` char×10 + `w` int×10 = 52 bytes) usa ×½ = 10 px/byte:
+```
+v   (10 bytes) →  100 px   (sub-rect sup 10 px + dash 80 px + sub-rect inf 10 px)
+ali ( 2 bytes) →   20 px
+w   (40 bytes) →  400 px   (sub-rect sup 40 px + dash 320 px + sub-rect inf 40 px)
+H = 10 + 100 + 20 + 400 + 10 = 540 px   ✓
+```
 
 ---
 
@@ -150,14 +196,16 @@ El patró de ratlles **totes curtes** reforça visualment que la mida de la zona
 
 ## 7. Línies de separació entre zones
 
-Una línia grisa fina a cada frontera entre zones (no entre sub-rects de la mateixa zona):
+Una línia grisa fina a cada frontera entre zones (no entre sub-rects de la mateixa zona). La línia va **només a la columna d'etiquetes**, de `x=76` a `x=86` (10 px):
 
 ```xml
-<line x1="76" y1="{y_frontera}" x2="316" y2="{y_frontera}"
+<line x1="76" y1="{y_frontera}" x2="86" y2="{y_frontera}"
       stroke="#adb5bd" stroke-width="0.5"/>
 ```
 
-S'inclou la línia a y = marge_sup (inici) i a y = H - marge_inf (final).
+S'inclou la línia a `y = marge_sup` (inici) i a `y = H - marge_inf` (final).
+
+> **Nota:** La documentació anterior indicava `x2="316"` (amplada total). Els SVGs de referència usen `x2="86"` (10 px). La mida correcta és **10 px**.
 
 ---
 
