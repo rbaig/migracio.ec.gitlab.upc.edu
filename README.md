@@ -56,7 +56,7 @@ EC/
 │   ├── L0/–L5/               # Plantilles i fitxers per sessió
 │   ├── rars1_6.jar            # Simulador RARS (versió de referència)
 │   └── startup.s              # Fitxer d'inicialització RARS
-├── referencies/               # Fragments de referència RISC-V (inclosos via `include`)
+├── riscv/               # Fragments de referència RISC-V (inclosos via `include`)
 │   ├── RV32I_instruccions_*.qmd
 │   ├── RV32I_registres_*.qmd
 │   ├── RV32I_format_instruccions.qmd

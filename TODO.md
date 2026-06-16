@@ -1,6 +1,12 @@
 # TODO
 
+## Infraestructura/operació
+
+- Substituir el JavaScript al browser de canvi de numeració de problemes per script de Python o lua durant la generació?
+
 ## Contingut
+
+### Canvis de criteri proposats
 
 - no `startup.s`
 - retorn 2 paràmetres

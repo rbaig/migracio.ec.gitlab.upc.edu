@@ -72,8 +72,8 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Teoria (T1–T9)
 
-- Pendents de revisió interna: `T3.qmd`–`T9.qmd`.
-- Preparats per a revisió externa: `T1.qmd`–`T2.qmd`.
+- Pendents de revisió interna: `T5.qmd`–`T9.qmd`.
+- Preparats per a revisió externa: `T1.qmd`–`T4.qmd`.
 
 #### Enunciats (`PE_Tx.qmd`)
 
@@ -82,12 +82,33 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Solucionaris (`PS_Tx.qmd`)
 
-- Pendents de revisió interna: `PS_T1.qmd`–`PS_T5.qmd`.
-- Preparats per a revisió externa: `PS_T6.qmd`–`PS_T9.qmd`.
+- Preparats per a revisió externa: `PS_T1.qmd`–`PS_T9.qmd`.
 
 #### Laboratori (`L1`–`L6`)
 
 - Preparats per a revisió interna: `L1.qmd`–`L6.qmd`.
+
+### Etiquetes `{#sec-}` a les capçaleres
+
+Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un identificador `{#sec-nom}` per ser referenciables amb `@sec-nom`.
+
+**Estat:**
+- `T4.qmd` — **complet** (referència per a la resta). Pot servir com a model.
+- `T1.qmd`–`T3.qmd`, `T5.qmd`–`T9.qmd` — **pendent** (tasca sistemàtica futura).
+
+**Criteris de generació de l'slug** (aplicats a `T4.qmd`):
+
+1. Parteix del text de la capçalera en minúscules.
+2. Transliteració de caràcters catalans: `à→a`, `á→a`, `è→e`, `é→e`, `í→i`, `ï→i`, `ò→o`, `ó→o`, `ú→u`, `ü→u`, `ç→c`, `l·l→ll`, `·→` (eliminat).
+3. Elimina: `` ` `` (backticks), `*`, `#`, `(`, `)`, `,`, `'`, `/`.
+4. Substitueix ` — ` i `—` per ` ` o `-`.
+5. Tota seqüència de caràcters no alfanumèrics → un sol guió `-`.
+6. Elimina guions inicials i finals.
+7. Si el slug resultant ja existeix al fitxer, afegeix `-1`, `-2`… per unicitat. **Millor solució:** fer el títol de la capçalera prou descriptiu perquè el slug sigui únic sense sufix numèric (p. ex. `### Algorisme {#sec-algorisme-multiplicacio}` en lloc de `{#sec-algorisme}`).
+
+**Excepcions:**
+- Les capçaleres dins callouts (`## Títol del callout`) **no** reben `{#sec-}` (són títols visuals, no seccions del document).
+- Les capçaleres `#` de nivell superior (títol del tema) ja solen tenir el tag de tema (`{#sec-tema-x}`); revisar que sigui consistent.
 
 ### Flux de treball
 
@@ -121,20 +142,19 @@ Regles operatives:
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
 ```
-Nom del xat: `Revisió interna T3.qmd`
+Nom del xat: `Revisió interna T5.qmd`
 
-Objectiu d'aquest xat: T3.qmd
+Objectiu d'aquest xat: T5.qmd
 Intensitat: Profunda
 Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
 
 Seqüència de tasques a realitzar durant la sessió:
-- Tasca A: Exploració + llista exhaustiva de tasques (només lectura i anàlisi)
-- Tasca B: Tasques tècniques (formats d'instrucció, codificació, rigor ISA)
-- Tasca C: Tasques lingüístiques + format Quarto
-- Tasca D: Figures SVG
-
-Llegeix `CLAUDE.md` i `contrib.qmd` abans de començar i segueix-ne el flux de treball.
-Llegeix `T3.qmd`, `T2.qmd` i `T4.qmd`
+- Tasca A: Exploració dels fitxers subministrats
+- Tasca B: Revisió tècnica (formats d'instrucció, codificació, rigor ISA)
+- Tasca C: Revisió pedagògica: ordre de presentació dels conceptes (no emprar conceptes que encara no s'han presentat, nivell de detall), ús dels recursos discursius (quarto callouts, llistes de vinyetes, paràgrafs), etc.
+- Tasca D: Revisió lingüística
+- Tasca E: Revisió format Quarto
+- Tasca F: Figures SVG
 
 Repositori (només lectura) per SVGs, `include`, taules d'instruccions, etc.: https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
 
@@ -142,8 +162,8 @@ Tens permisos per fer modificacions tots els arxius que et passi. Si fas modific
 
 Comencem la tasca A:
 
-1. Llegeix `CLAUDE.md` i `contrib.qmd`
-2. Llegeix `T3.qmd`, `T2.qmd` i `T4.qmd`
+1. Llegeix `CLAUDE.md`, `contrib.qmd` 
+2. Llegeix `T4.qmd`, `T5.qmd` i `instruccions_figures_memoria.md`
 3. Demana'm o busca al repositori els fitxers que necessitis
 4. Fes un anàlisi profund del contingut
 5. Genera la llista d'accions a realitzar; guarda-la a fitxer T3_tasques.md​ a outputs. 

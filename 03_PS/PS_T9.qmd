@@ -1,0 +1,332 @@
+---
+number-sections: true
+---
+
+## {{< var tema9 >}} {#sec-solucions-excepcions}
+
+### Excepcions i interrupcions
+
+::: {#sol-p9-exc-conceptes .callout-tip}
+## Solució: conceptes bàsics d'excepcions i interrupcions
+
+**Enunciat**: @exr-p9-exc-conceptes.
+
+**a)** Una **excepció** és un esdeveniment causat per l'execució d'una instrucció (origen intern): per exemple, un accés a memòria amb adreça no alineada o una instrucció il·legal. Una **interrupció** és un esdeveniment causat per un dispositiu extern (origen extern): per exemple, un teclat que notifica que s'ha premut una tecla.
+
+**b)** En cas d'**excepció**, `mepc` apunta a la **instrucció causant** (la que s'ha interromput sense completar-se). En cas d'**interrupció**, `mepc` apunta a la **instrucció següent** a la instrucció que s'estava executant (la instrucció en curs ha finalitzat completament i el PC ja s'ha incrementat).
+
+**c)** Quan el processador detecta una excepció o interrupció, executa automàticament, per maquinari:
+
+1. Guarda el PC a `mepc`.
+2. Escriu el codi de causa a `mcause` (bit 31 = 0 per a excepcions, bit 31 = 1 per a interrupcions).
+3. Copia `MIE` a `MPIE` i posa `MIE = 0` (deshabilita les interrupcions).
+4. Guarda el mode de privilegi actual a `MPP` i passa a mode M.
+5. Salta a l'adreça de la RSE continguda a `mtvec`.
+
+**d)** La RSE ha de salvar **tots** els registres generals (`x1`–`x31`) sense excepció. A diferència d'una subrutina normal, el programa interromput no ha cedit el control voluntàriament i no pot saber quins registres modificarà la RSE. Les convencions ABI (registres salvats vs. temporals) no s'apliquen.
+:::
+
+::: {#sol-p9-exc-rse .callout-tip}
+## Solució: RSE mínima en assemblador
+
+**Enunciat**: @exr-p9-exc-rse.
+
+```{.s filename="RV32IZicsr"}
+rse:
+        # a) Reservar espai i salvar tots els registres (x1-x31, excepte sp=x2)
+        addi    sp, sp, -124
+
+        sw      ra,   0(sp)
+        sw      t0,   4(sp)
+        sw      t1,   8(sp)
+        sw      t2,  12(sp)
+        sw      s0,  16(sp)
+        sw      s1,  20(sp)
+        sw      a0,  24(sp)
+        sw      a1,  28(sp)
+        sw      a2,  32(sp)
+        sw      a3,  36(sp)
+        sw      a4,  40(sp)
+        sw      a5,  44(sp)
+        sw      a6,  48(sp)
+        sw      a7,  52(sp)
+        sw      s2,  56(sp)
+        sw      s3,  60(sp)
+        sw      s4,  64(sp)
+        sw      s5,  68(sp)
+        sw      s6,  72(sp)
+        sw      s7,  76(sp)
+        sw      s8,  80(sp)
+        sw      s9,  84(sp)
+        sw      s10, 88(sp)
+        sw      s11, 92(sp)
+        sw      t3,  96(sp)
+        sw      t4, 100(sp)
+        sw      t5, 104(sp)
+        sw      t6, 108(sp)
+        sw      gp, 112(sp)
+        sw      tp, 116(sp)
+        sw      x0, 120(sp)         # x0 sempre 0; es guarda per simetria
+
+        # b) Llegir mcause i comprovar si és ecall des de mode U (codi 8)
+        csrr    t0, mcause
+        li      t1, 8
+        beq     t0, t1, handler_ecall
+
+        # Causa desconeguda: salt al gestor d'error genèric
+        j       handler_error
+
+handler_ecall:
+        # Tractament de la crida al sistema...
+        # Incrementar mepc en 4 per continuar a la instrucció següent
+        csrr    t0, mepc
+        addi    t0, t0, 4
+        csrw    mepc, t0
+        j       rse_ret
+
+handler_error:
+        # Tractament d'error genèric...
+        j       rse_ret
+
+rse_ret:
+        # c) Restaurar tots els registres
+        lw      ra,   0(sp)
+        lw      t0,   4(sp)
+        lw      t1,   8(sp)
+        lw      t2,  12(sp)
+        lw      s0,  16(sp)
+        lw      s1,  20(sp)
+        lw      a0,  24(sp)
+        lw      a1,  28(sp)
+        lw      a2,  32(sp)
+        lw      a3,  36(sp)
+        lw      a4,  40(sp)
+        lw      a5,  44(sp)
+        lw      a6,  48(sp)
+        lw      a7,  52(sp)
+        lw      s2,  56(sp)
+        lw      s3,  60(sp)
+        lw      s4,  64(sp)
+        lw      s5,  68(sp)
+        lw      s6,  72(sp)
+        lw      s7,  76(sp)
+        lw      s8,  80(sp)
+        lw      s9,  84(sp)
+        lw      s10, 88(sp)
+        lw      s11, 92(sp)
+        lw      t3,  96(sp)
+        lw      t4, 100(sp)
+        lw      t5, 104(sp)
+        lw      t6, 108(sp)
+        lw      gp, 112(sp)
+        lw      tp, 116(sp)
+
+        addi    sp, sp, 124
+
+        # Retornar: MIE←MPIE, mode←MPP, PC←mepc
+        mret
+```
+
+Observacions:
+
+- `x0` s'ha de guardar per coherència estructural (sempre val 0, però el `lw` de restauració no el modifica gràcies a la propietat de `x0`).
+- L'etiqueta `rse` ha de ser l'adreça que es configura a `mtvec` (camp `BASE`) durant la inicialització.
+- El salt `j` és una pseudoinstrucció equivalent a `jal x0, offset`.
+:::
+
+### Crides al sistema
+
+::: {#sol-p9-syscall-basic .callout-tip}
+## Solució: crides al sistema bàsiques a RARS
+
+**Enunciat**: @exr-p9-syscall-basic.
+
+**a)** Imprimir l'enter de `t0`:
+
+```{.s filename="RV32IZicsr"}
+        mv      a0, t0              # argument: enter a imprimir
+        li      a7, 1               # codi: print_int
+        ecall
+```
+
+**b)** Llegir un enter i deixar el resultat a `t1`:
+
+```{.s filename="RV32IZicsr"}
+        li      a7, 5               # codi: read_int
+        ecall                       # a0 ← enter llegit
+        mv      t1, a0              # moure el resultat a t1
+```
+
+**c)** Imprimir el string amb adreça base a `t2`:
+
+```{.s filename="RV32IZicsr"}
+        mv      a0, t2              # argument: adreça del string
+        li      a7, 4               # codi: print_string
+        ecall
+```
+
+**d)** Finalitzar el programa:
+
+```{.s filename="RV32IZicsr"}
+        li      a7, 10              # codi: exit
+        ecall                       # no retorna
+```
+:::
+
+### Entrada/Sortida
+
+::: {#sol-p9-io-conceptes .callout-tip}
+## Solució: conceptes d'entrada/sortida
+
+**Enunciat**: @exr-p9-io-conceptes.
+
+**a)** En la **sincronització per enquesta** (*polling*), el processador consulta repetidament el registre d'estat del dispositiu fins que l'operació acaba. És simple però desaprofita el processador durant l'espera. En la **sincronització per interrupcions**, el dispositiu notifica el processador quan ha acabat, i el processador pot fer feina útil entremig. És més eficient però requereix configurar els permisos d'interrupció i escriure una RSE.
+
+**b)** Per habilitar les interrupcions en RISC-V cal:
+
+1. Habilitar el permís específic del tipus d'interrupció al registre `mie` (per exemple, `MEIE` = bit 11 per a interrupcions externes).
+2. Habilitar el permís global `MIE` (bit 3 de `mstatus`).
+
+```{.s filename="RV32IZicsr"}
+        # Habilitar interrupcions externes (MEIE = bit 11 de mie)
+        li      t0, (1 << 11)
+        csrrs   x0, mie, t0
+
+        # Habilitar permís global (MIE = bit 3 de mstatus)
+        li      t0, (1 << 3)
+        csrrs   x0, mstatus, t0
+```
+
+**c)** El bit `MIE` (bit 3 de `mstatus`) és el **permís global**: si val 0, cap interrupció no s'atén, independentment de la resta de bits. El bit `MTIE` (bit 7 de `mie`) és la **màscara específica** de les interrupcions de temporitzador en mode M: si val 0, les interrupcions de temporitzador queden inhibides fins i tot quan `MIE = 1`. Cal que tots dos valguin 1 (i el bit corresponent de `mip` estigui actiu) perquè una interrupció de temporitzador sigui atesa.
+:::
+
+### Registres `mepc` i `mtvec`
+
+::: {#sol-p9-exc-mepc-mtvec .callout-tip}
+## Solució: `mepc`, `mtvec` i ajust de retorn
+
+**Enunciat**: @exr-p9-exc-mepc-mtvec.
+
+**a)** La instrucció `lw t0, 0(t1)` a `0x80001000` genera una excepció en executar-se (adreça no alineada). La instrucció s'avorta sense completar-se i el PC no s'incrementa. El maquinari guarda l'adreça de la instrucció causant:
+
+$$\texttt{mepc} = \texttt{0x80001000}$$
+
+**b)** La interrupció de temporitzador es detecta en **acabar** la instrucció `lw t0, 0(a0)` (el PC ja s'ha incrementat). El maquinari guarda l'adreça de la instrucció *següent*:
+
+$$\texttt{mepc} = \texttt{0x80002008}$$
+
+En retornar amb `mret`, el processador salta a `mepc`, és a dir, a `0x80002008`: la instrucció que seguia el `lw`.
+
+**c)** En **mode directe** (`MODE = 0`), totes les excepcions i interrupcions salten a `BASE`. La RSE llegeix `mcause` per identificar la causa i derivar el control al gestor específic.
+
+En **mode vectoritzat** (`MODE = 1`), les *interrupcions* salten a `BASE + 4 × causa`; les *excepcions* sempre salten a `BASE`.
+
+Per a una interrupció de temporitzador en mode M (codi de causa 7):
+
+$$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
+
+**d)** Sense l'increment, `mret` retornaria a la mateixa instrucció `ecall`, que causaria una nova excepció indefinidament. La RSE ha d'incrementar `mepc` perquè la `ecall` ja ha estat atesa i el programa ha de continuar a la instrucció *següent*:
+
+```{.s filename="RV32IZicsr"}
+        csrr    t0, mepc            # llegir l'adreça de retorn
+        addi    t0, t0, 4           # apuntar a la instrucció següent
+        csrw    mepc, t0            # actualitzar mepc
+```
+:::
+
+### Fallada de TLB
+
+::: {#sol-p9-exc-tlb-miss .callout-tip}
+## Solució: fallada de TLB com a excepció
+
+**Enunciat**: @exr-p9-exc-tlb-miss, apartats a–b.
+
+**a)** RISC-V no distingeix, a `mcause`, entre fallada de TLB i fallada de pàgina: tots dos usen el mateix codi de causa.
+
+- Fallada de TLB per **lectura**: `mcause = 13` (fallada de pàgina en lectura).
+- Fallada de TLB per **escriptura**: `mcause = 15` (fallada de pàgina en escriptura/AMO).
+
+En tots dos casos, `mtval` conté l'**adreça virtual** que ha causat la fallada.
+
+La distinció entre fallada de TLB i fallada de pàgina la fa la RSE per programari, consultant el bit V de l'entrada de la taula de pàgines: si V = 1 és una fallada de TLB (la pàgina és present a memòria); si V = 0 és una fallada de pàgina (la pàgina no és present).
+
+**b)** El flux que ha de seguir la RSE:
+
+1. Llegir `mtval` per obtenir l'adreça virtual que ha causat la fallada.
+2. Extreure el VPN de l'adreça virtual (els bits superiors al desplaçament de pàgina).
+3. Localitzar l'entrada corresponent a la taula de pàgines (a partir de l'adreça física base de la taula de pàgines i el VPN com a índex).
+4. Comprovar el bit V de l'entrada:
+   - V = 1: la pàgina és present; és una fallada de TLB. Cal executar `sfence.vma` per invalidar l'entrada obsoleta i forçar que el maquinari refaci el *page table walk* en la reexecució.
+   - V = 0: la pàgina no és present; és una fallada de pàgina. Cal copiar la pàgina de disc a un marc lliure, actualitzar la taula de pàgines (V ← 1, PPN ← marc assignat) i executar `sfence.vma`.
+5. No incrementar `mepc`: la instrucció causant s'ha de **reexecutar**, i ara el TLB contindrà la traducció correcta.
+:::
+
+### Interrupcions d'entrada/sortida
+
+::: {#sol-p9-exc-interrupcions-io .callout-tip}
+## Solució: RSE per a interrupcions de teclat
+
+**Enunciat**: @exr-p9-exc-interrupcions-io.
+
+**a)** Cal activar `MEIE` (bit 11 de `mie`) i `MIE` (bit 3 de `mstatus`):
+
+```{.s filename="RV32IZicsr"}
+        # Habilitar interrupcions externes en mode M (MEIE = bit 11 de mie)
+        li      t0, (1 << 11)
+        csrrs   x0, mie, t0
+
+        # Habilitar permís global d'interrupcions (MIE = bit 3 de mstatus)
+        li      t0, (1 << 3)
+        csrrs   x0, mstatus, t0
+```
+
+**b)** RSE mínima per a la interrupció de teclat:
+
+```{.s filename="RV32IZicsr"}
+.data
+car:    .word   0
+
+.text
+rse_teclat:
+        # Salvar registres usats
+        addi    sp, sp, -16
+        sw      t0,  0(sp)
+        sw      t1,  4(sp)
+        sw      t2,  8(sp)
+        sw      ra, 12(sp)
+
+        # Comprovar que és una interrupció externa (bit 31 de mcause = 1, codi = 11)
+        csrr    t0, mcause
+        li      t1, 0x8000000B      # bit31=1, codi=11 (interrupció externa mode M)
+        bne     t0, t1, rse_ret_teclat
+
+        # Comprovar bit MEIP de mip (bit 11): petició externa pendent
+        csrr    t0, mip
+        li      t1, (1 << 11)
+        and     t0, t0, t1
+        beqz    t0, rse_ret_teclat
+
+        # Confirmar que la interrupció prové del teclat (registre d'estat, bit 0)
+        li      t0, 0xF0001000      # adreça registre d'estat del teclat
+        lw      t1, 0(t0)
+        andi    t1, t1, 1           # bit 0: tecla disponible
+        beqz    t1, rse_ret_teclat
+
+        # Llegir el caràcter del registre de dades i desar-lo a 'car'
+        li      t0, 0xF0001004      # adreça registre de dades del teclat
+        lw      t1, 0(t0)           # llegir el caràcter
+        la      t2, car
+        sw      t1, 0(t2)           # desar a la variable global
+
+rse_ret_teclat:
+        # Restaurar registres i retornar
+        lw      t0,  0(sp)
+        lw      t1,  4(sp)
+        lw      t2,  8(sp)
+        lw      ra, 12(sp)
+        addi    sp, sp, 16
+        mret
+```
+
+**c)** El codi de causa (`mcause`, codi 11) i el bit `MEIP` de `mip` indiquen que hi ha una **interrupció externa** pendent, però no quin dispositiu específic l'ha causada. Per identificar que la interrupció prové del teclat cal llegir directament el **registre d'estat del dispositiu** (`0xF0001000`, bit 0): és l'únic lloc on el controlador del teclat indica que té una dada disponible. En sistemes amb múltiples dispositius d'E/S, la RSE ha d'interrogar cadascun per determinar quin ha generat la petició.
+:::

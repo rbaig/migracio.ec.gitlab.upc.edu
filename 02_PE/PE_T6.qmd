@@ -1,0 +1,196 @@
+---
+number-sections: true
+---
+
+# {{< var tema6 >}} {#sec-tema-rendiment-potencia-enunciats}
+
+## Rendiment
+
+::: {#exr-p2-rendiment-compiladors}
+Traduïm un programa en alt nivell a llenguatge assemblador i en fem dues versions: una en RISC-V, que s'executarà en els processadors P1 i P2; l'altra, en x86-64, que s'executarà en P3. Cada processador té les característiques següents:
+
+| Processador | Freqüència | CPI mitjà | ISA | Nombre d'instruccions |
+| :--- | :--- | :--- | :--- | :--- |
+| P1 | 2 GHz | 1,5 | RISC-V | 2·10^6^ |
+| P2 | 2,5 GHz | 1 | RISC-V | 2·10^6^ |
+| P3 | 3 GHz | 0,75 | x86-64 | 10^6^ |
+
+Contesta les preguntes següents raonant les respostes:
+
+a) Quin dels tres processadors executa més ràpidament el programa? Quantes vegades és més ràpid que els altres dos?
+b) Sense conèixer el nombre d'instruccions, podem calcular si P1 executa el programa més ràpid que P2? I més ràpid que P3?
+c) Amb aquestes dades, podem comparar el rendiment de P1 i P2 en general (no només per a aquest programa)? I el de P1 i P3? I si el CPI fos el CPI mitjà per a tots els programes?
+:::
+
+::: {#exr-p2-rendiment-dos-processadors}
+Tenim dos processadors P1 i P2 que executen una seqüència de 10^6^ instruccions. Cada processador té les característiques següents:
+
+| Processador | Freqüència | CPI |
+| :--- | :--- | :--- |
+| P1 | 4 GHz | 1,25 |
+| P2 | 3 GHz | 0,75 |
+
+Contesta les preguntes següents raonant les respostes:
+
+a) Quin dels dos processadors té el millor rendiment? Quantes vegades és més ràpid?
+b) Quantes instruccions pot executar P2 en el temps que triga P1 a fer les 10^6^ instruccions?
+:::
+
+::: {#exr-p2-rendiment-coma-flotant}
+Tenim un processador sense instruccions de coma flotant. Les operacions en coma flotant s'implementen mitjançant subrutines. A partir d'estadístiques se sap el següent:
+
+- El CPI mitjà és 3.
+- El 20% de les instruccions executades per qualsevol programa formen part de les subrutines de coma flotant.
+
+Es vol avaluar la conveniència d'afegir instruccions de coma flotant al processador. En afegir-les s'observa:
+
+- El temps de cicle passa de 1 ns a 1,05 ns.
+- El CPI mitjà passa de 3 a 4.
+- El nombre mitjà d'instruccions executades per les subrutines de coma flotant és ara 10 vegades menor.
+
+Contesta les preguntes següents raonant les respostes:
+
+a) Val la pena afegir instruccions de coma flotant al repertori?
+b) Valdria la pena si les subrutines de coma flotant consumissin el 40% de totes les instruccions (en comptes del 20% de l'apartat anterior)?
+:::
+
+::: {#exr-p2-rendiment-distribucio}
+En un processador d'1 GHz s'executa un programa P distribuït de la forma següent:
+
+| Aritmètiques | Store | Load | Branch | Total |
+| :---: | :---: | :---: | :---: | :---: |
+| 500 | 50 | 100 | 50 | 700 |
+
+a) Si les instruccions aritmètiques triguen 1 cicle, load i store 5 cicles, i les branch 2 cicles, quin és el temps d'execució de P?
+b) Quin és el CPI?
+c) Si optimitzem el codi de manera que ara només s'executin 50 instruccions load, quin és el guany obtingut? I el CPI?
+:::
+
+::: {#exr-p2-rendiment-classes}
+Tenim dues implementacions diferents del mateix ISA, on hi ha 4 classes d'instruccions A, B, C i D. La taula següent mostra la freqüència de rellotge i el CPI de cada classe per a les dues implementacions:
+
+| | Freqüència | CPI A | CPI B | CPI C | CPI D |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| P1 | 1,5 GHz | 1 | 2 | 3 | 4 |
+| P2 | 2 GHz | 2 | 2 | 2 | 2 |
+
+a) Quin és el CPI mitjà de cada implementació, suposant un programa amb instruccions distribuïdes de la forma: 10% classe A, 20% classe B, 50% classe C i 20% classe D?
+b) Quina de les dues implementacions és més ràpida, suposant un programa d'10^6^ instruccions?
+:::
+
+::: {#exr-p2-rendiment-speedup-mul}
+Un processador no disposa d'instrucció de multiplicació. Cada multiplicació es resol amb una crida a una subrutina de 200 instruccions. Es vol avaluar la conveniència d'afegir un multiplicador hardware.
+
+Amb el nou disseny, un 0,5% de les instruccions executades són multiplicacions (CPI = 40 cadascuna); la resta d'instruccions tenen un CPI mitjà de 3.
+
+a) Si no hi ha cap altre canvi en el disseny, quin *speedup* s'obté?
+b) El nou multiplicador obliga a reduir la freqüència de rellotge des dels 2 GHz originals. Quina és la mínima freqüència acceptable perquè el nou processador no sigui més lent que l'original?
+:::
+
+::: {#exr-p2-rendiment-temps}
+Considera dos processadors que executen un programa de la forma que mostra la taula:
+
+| | Coma flotant | Enters | Load/Store | Branch | Total |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| a | 35 s | 85 s | 50 s | 30 s | 200 s |
+| b | 50 s | 80 s | 50 s | 30 s | 210 s |
+
+Per a cadascuna de les execucions, contesta les preguntes següents:
+
+a) Quina és la millora de rendiment si reduïm el temps de les operacions de coma flotant en un 20%?
+b) Quin és el percentatge de reducció del temps d'execució d'operacions d'enters necessari per aconseguir una millora del 20% en el rendiment global?
+c) Es pot reduir el temps d'execució total en un 20% millorant únicament les operacions branch?
+:::
+
+## Potència i consum
+
+::: {#exr-p2-potencia-basica}
+La taula següent mostra la freqüència de rellotge, el voltatge i la potència dinàmica de dos processadors:
+
+| Processador | Freqüència | Voltatge | Potència dinàmica |
+| :--- | :--- | :--- | :--- |
+| A | 10 MHz | 5 V | 2 W |
+| B | 3 GHz | 1 V | 100 W |
+
+a) Calcula la càrrega capacitiva dels processadors A i B.
+b) Quina seria la potència del processador A si, sense canviar el voltatge ni la capacitància, es volgués aconseguir la mateixa freqüència de rellotge que el processador B?
+:::
+
+::: {#exr-p2-potencia-evolucio}
+La taula següent mostra l'evolució de la freqüència de rellotge, el voltatge i la potència dinàmica en vuit generacions de processadors Intel al llarg de 28 anys:
+
+| Generació | Processador | Any | Freqüència | Voltatge | Potència |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| 1 | 80286 | 1982 | 12,5 MHz | 5 V | 3,3 W |
+| 2 | 80386 | 1985 | 16 MHz | 5 V | 4,1 W |
+| 3 | 80486 | 1989 | 25 MHz | 5 V | 4,9 W |
+| 4 | Pentium | 1993 | 66 MHz | 5 V | 10,1 W |
+| 5 | Pentium Pro | 1997 | 200 MHz | 3,3 V | 29,1 W |
+| 6 | Pentium 4 Willamette | 2001 | 2 GHz | 1,75 V | 75,3 W |
+| 7 | Pentium 4 Prescott | 2004 | 3,6 GHz | 1,25 V | 103 W |
+| 8 | Core 2 Kentsfield | 2007 | 2,667 GHz | 1,1 V | 95 W |
+
+a) Calcula els ràtios de potència i freqüència entre generacions consecutives.
+b) Quin és el canvi (ràtio) més gran en la freqüència entre generacions? I en la potència?
+c) Quina és la mitjana geomètrica dels ràtios de freqüència i potència entre generacions consecutives?
+d) Quantes vegades més gran és la freqüència de la darrera generació respecte de la primera? I la potència?
+e) Calcula la càrrega capacitiva de cada generació.
+:::
+
+::: {#exr-p2-potencia-estatica}
+Tot i que la potència dinàmica és la principal font de dissipació en circuits CMOS, la fuita de corrent produeix també una dissipació de potència estàtica de la forma $P_{\text{estàtica}} = V \times I_{\text{leak}}$. La taula següent mostra la dissipació de potència estàtica i dinàmica per a dues generacions de processadors:
+
+| Tecnologia | Potència dinàmica | Potència estàtica | Potència total | Voltatge |
+| :--- | :---: | :---: | :---: | :---: |
+| 250 nm | 49 W | 1 W | 50 W | 3,3 V |
+| 90 nm | 75 W | 45 W | 120 W | 1,1 V |
+
+a) Troba quin percentatge de potència total dissipada correspon a la potència estàtica i dinàmica en cada generació.
+b) Troba el corrent de fuita $I_{\text{leak}}$ per a cada tecnologia.
+c) En quin percentatge es podria reduir la potència total de cada processador reduint només la potència dinàmica?
+:::
+
+## Llei d'Amdahl
+
+::: {#exr-p2-amdahl-basic}
+Un programa passa el 60% del temps executant instruccions de coma flotant i el 40% restant en altres instruccions.
+
+a) Si s'afegeix una unitat de coma flotant que fa les operacions CF 5 vegades més ràpides, quin és el *speedup* global?
+b) Quin seria el *speedup* màxim teòric si les operacions CF fossin infinitament ràpides?
+c) Si volem assolir un *speedup* global de 3, quantes vegades més ràpides han de ser les operacions CF?
+:::
+
+::: {#exr-p2-amdahl-multicomponent}
+Un sistema té tres components amb els temps d'execució relatius i les millores possibles indicats a la taula:
+
+| Component | Fracció del temps | Millora disponible |
+| :--- | :---: | :---: |
+| Unitat entera | 50% | 2× |
+| Unitat CF | 30% | 4× |
+| Accés a memòria | 20% | 1,5× |
+
+a) Calcula el *speedup* global si s'apliquen totes tres millores simultàniament.
+b) Quina millora individual té més impacte? Raona la resposta amb la Llei d'Amdahl.
+c) Si el pressupost només permet aplicar una millora, quina tries? Per què?
+:::
+
+::: {#exr-p2-amdahl-limit}
+Un fabricant vol anunciar que el seu nou processador és "10 vegades més ràpid" que el model anterior.
+
+a) Si la única millora és que les instruccions de coma flotant s'executen 20 vegades més ràpidament, quin ha de ser el percentatge mínim del temps d'execució que ocupen les instruccions CF perquè s'assoleixi el *speedup* de 10?
+b) En un programa típic, les instruccions CF representen el 35% del temps. Quin *speedup* real s'obtindria?
+c) Quin és el *speedup* màxim assolible per a qualsevol programa amb un 35% de CF, independentment de la millora aplicada a les instruccions CF?
+:::
+
+::: {#exr-p2-amdahl-cpi}
+Considera dos processadors A i B que executen versions diferents d'un mateix programa. Per a cada tipus d'instruccions, la taula següent mostra el nombre d'instruccions executades i els cicles per instrucció:
+
+| | Coma flotant | Enters | Load/Store | Branch |
+| :--- | :--- | :--- | :--- | :--- |
+| Proc. A | 90 inst · 2 CPI | 240 inst · 1,5 CPI | 150 inst · 6 CPI | 120 inst · 3 CPI |
+| Proc. B | 45 inst · 3 CPI | 225 inst · 1 CPI | 135 inst · 5 CPI | 45 inst · 2 CPI |
+
+a) Calcula el CPI mitjà de l'execució del programa en cadascun dels processadors.
+b) Suposant que els processadors A i B treballen a les freqüències $F_A$ i $F_B$ respectivament, indica la relació $F_A/F_B$ per tal que tots dos processadors triguin el mateix temps a executar el programa.
+c) Si s'aconseguís reduir a zero el temps d'execució de les instruccions Load/Store del processador A, quin seria el guany de rendiment (*speedup*) aconseguit?
+:::

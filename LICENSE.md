@@ -2,7 +2,8 @@
 
 ## Llicència
 
-![](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png){width="88px" fig-alt="Logotip de Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional"}
+<!-- ![](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png){width="88px" fig-alt="Logotip de Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional"} -->
+![](extern/by-nc-sa.eu.png){width="88px" fig-alt="Logotip de Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional"}
 
 © 2026, Fernando Agraz, Adrià Armejach, Roger Baig, Octavio Castillo, Josep-llorenç Cruz, Agustín Fernández, Pedro José Martínez, Miquel Morató, Rubèn Tous.
 
