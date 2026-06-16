@@ -121,7 +121,7 @@ Regles operatives:
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
 ```
-Nom del xat: `T3.qmd Revisió interna`
+Nom del xat: `Revisió interna T3.qmd`
 
 Objectiu d'aquest xat: T3.qmd
 Intensitat: Profunda

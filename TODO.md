@@ -2,6 +2,9 @@
 
 ## Contingut
 
+- no `startup.s`
+- retorn 2 paràmetres
+
 ### General
 
 - Substituir cometes `"..."` per guillemets `«...»` a tot el projecte.
