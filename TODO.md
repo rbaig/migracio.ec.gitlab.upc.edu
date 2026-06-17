@@ -10,6 +10,7 @@
 
 - no `startup.s`
 - retorn 2 paràmetres
+- BA (mod 4) o (mod 16)?
 
 ### General
 
@@ -59,7 +60,7 @@
 
 ## Referències creuades trencades
 
-Només hi ha:
+Només hi ha (es resolen ara amb la revisió interna de T7):
 - @imp-exception-handler
 - @fig-gap-processador-memoria
 - @fig-cd-diagrama

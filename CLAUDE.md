@@ -142,9 +142,9 @@ Regles operatives:
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
 ```
-Nom del xat: `EC T6 Revisió interna`
+Nom del xat: `EC T7 Revisió interna`
 
-Objectiu d'aquest xat: T6.qmd
+Objectiu d'aquest xat: T7.qmd
 Intensitat: Profunda
 Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
 
@@ -156,7 +156,7 @@ Seqüència de tasques a realitzar durant la sessió:
 - Tasca E: Revisió format Quarto
 - Tasca F: Generació figures SVG
 - Tasca G: Integració figures SVG
-- Actualització de `T6.qmd`, `T6_tasques`, `CLAUDE.md`
+- Actualització de `T7.qmd`, `T7_tasques`, `CLAUDE.md`
 
 ### Figures SVG: dos orígens possibles
 
@@ -168,7 +168,7 @@ Les figures SVG del projecte poden tenir dos orígens, amb característiques tè
 - Colors de la paleta del projecte (vegeu `svg_specs.md §10`).
 - Variant dark generada automàticament per `scripts/svg_generate_dark.py`.
 
-**Figures extretes de PDFs originals** (T6 i possiblement d'altres):
+**Figures extretes de PDFs originals** (T7 i possiblement d'altres):
 - Generades amb `pymupdf` (`text_as_path=True`) a partir dels PDFs originals.
 - Text traçat (corbes de Bézier), no editable com a text. Per editar cal partir del PDF original.
 - Negre implícit convertit en `fill="#000000"` explícit a l'element `<svg>` arrel, perquè sigui substituïble per l'script dark.
@@ -183,10 +183,10 @@ Comencem la tasca A:
 
 0. Explora els fitxers que t'he passat
 1. Llegeix `CLAUDE.md`, `contrib.qmd` i `svg_specs.md`
-2. Llegeix `T6.qmd`
+2. Llegeix `T7.qmd`
 3. Demana'm o busca al repositori els fitxers que necessitis
 4. Fes un anàlisi profund del contingut
-5. Genera la llista d'accions a realitzar; guarda-la a fitxer T6_tasques.md​ i ofereix-me-la per descarregar. 
+5. Genera la llista d'accions a realitzar; guarda-la a fitxer T7_tasques.md​ i ofereix-me-la per descarregar. 
 6. Comença a realitzar les accions que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
 7. Abans de començar amb les figues, atura't perquè mirarem d'extreure-les del PDF perquè els textos que contenen són seleccionables, cosa que em fa pensar que com a mínim una part la podem extreure del PDF.
 ```
