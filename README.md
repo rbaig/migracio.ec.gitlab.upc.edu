@@ -10,20 +10,34 @@ Elaborat amb [Quarto](https://quarto.org/) i [Claude](https://claude.ai/) (Anthr
 
 ### Teoria (T1–T9)
 
+Directori `01_T/`:
+
 | Fitxer | Contingut |
 | :--- | :--- |
-| `Tx.qmd` | Teoria del Tema x (x = 1–9) |
-| `PE_Tx.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
-| `PS_Tx.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 1–9) |
+| `T1.qmd`–`T9.qmd` | Teoria del Tema x (x = 1–9) |
+
+Directori `02_PE/`:
+
+| Fitxer | Contingut |
+| :--- | :--- |
+| `PE_T1.qmd`–`PE_T9.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
+
+Directori `03_PS/`:
+
+| Fitxer | Contingut |
+| :--- | :--- |
+| `PS_T1.qmd`–`PS_T9.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 1–9) |
 | `PS_criteris.qmd` | Criteris de selecció dels problemes resolts |
 
 La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDFs T6–T8 corresponen als temes T7–T9.
 
 ### Laboratori (L1–L6)
 
+Directori `04_L/`:
+
 | Fitxer | Contingut |
 | :--- | :--- |
-| `Ly.qmd` | Laboratori, sessió y (y = 1–6) |
+| `L1.qmd`–`L6.qmd` | Laboratori, sessió y (y = 1–6) |
 
 ### Fitxers transversals
 
@@ -49,26 +63,31 @@ La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:
 
 ```
 EC/
+├── 01_T/                      # Teoria
+│   └── Tx.qmd                 # x = 1–9
+├── 02_PE/                     # Enunciats de problemes
+│   └── PE_Tx.qmd              # x = 1–9
+├── 03_PS/                     # Solucions seleccionades
+│   ├── PS_Tx.qmd              # x = 1–9
+│   └── PS_criteris.qmd
+├── 04_L/                      # Laboratori
+│   └── Ly.qmd                 # y = 1–6
 ├── figures/                   # Figures SVG (variants light i dark)
-│   └── T<N>_nom_figura_light.svg
-│   └── T<N>_nom_figura_dark.svg
+│   └── T<N>_nom_figura_{light,dark}.svg
 ├── laboratori/                # Fitxers de suport del laboratori
-│   ├── L0/–L5/               # Plantilles i fitxers per sessió
+│   ├── L0/–L5/                # Plantilles i fitxers per sessió
 │   ├── rars1_6.jar            # Simulador RARS (versió de referència)
 │   └── startup.s              # Fitxer d'inicialització RARS
-├── riscv/               # Fragments de referència RISC-V (inclosos via `include`)
+├── riscv/                     # Fragments de referència RISC-V (inclosos via `include`)
 │   ├── RV32I_instruccions_*.qmd
 │   ├── RV32I_registres_*.qmd
 │   ├── RV32I_format_instruccions.qmd
 │   └── RARS_*.qmd
+├── extern/                    # Figures i recursos externs (no SVG propi)
+├── scripts/                   # Scripts auxiliars (p. ex. generació de SVGs)
 ├── _quarto.yml
 ├── _variables.yml
 ├── index.qmd
-├── Tx.qmd                     # x = 1–9 (teoria)
-├── PE_Tx.qmd                  # x = 1–9 (enunciats de problemes)
-├── PS_Tx.qmd                  # x = 1–9 (solucions seleccionades)
-├── PS_criteris.qmd
-├── Ly.qmd                     # y = 1–6 (laboratoris)
 ├── riscv.qmd
 ├── sigles.qmd
 ├── bibliografia.bib
