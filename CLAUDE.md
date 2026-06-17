@@ -158,7 +158,24 @@ Seqüència de tasques a realitzar durant la sessió:
 - Tasca G: Integració figures SVG
 - Actualització de `T6.qmd`, `T6_tasques`, `CLAUDE.md`
 
-Repositori (només lectura) per SVGs, `include`, taules d'instruccions, etc.: https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
+### Figures SVG: dos orígens possibles
+
+Les figures SVG del projecte poden tenir dos orígens, amb característiques tècniques diferents:
+
+**Figures de nova creació** (la majoria, T1–T5, T7–T9):
+- Construïdes des de zero amb elements SVG (`<rect>`, `<line>`, `<text>`, etc.).
+- Text editable, font `'Source Sans Pro', sans-serif`.
+- Colors de la paleta del projecte (vegeu `svg_specs.md §10`).
+- Variant dark generada automàticament per `scripts/svg_generate_dark.py`.
+
+**Figures extretes de PDFs originals** (T6 i possiblement d'altres):
+- Generades amb `pymupdf` (`text_as_path=True`) a partir dels PDFs originals.
+- Text traçat (corbes de Bézier), no editable com a text. Per editar cal partir del PDF original.
+- Negre implícit convertit en `fill="#000000"` explícit a l'element `<svg>` arrel, perquè sigui substituïble per l'script dark.
+- Variant dark generada automàticament per `scripts/svg_generate_dark.py` gràcies a les entrades `#000000`, `#ffffff` i `#b3b3b3` de la taula `REPLACEMENTS` (vegeu `svg_specs.md §14`).
+- **No cal afegir-les a `dark_exclusions.txt`**.
+
+En tots dos casos, la font de veritat per a les variants dark és `svg_specs.md §12` (taula `REPLACEMENTS`).
 
 Tens permisos per fer modificacions tots els arxius que et passi. Si fas modificacions a qualsevol arxiu, ofereix-me la versió final per descarregar.
 

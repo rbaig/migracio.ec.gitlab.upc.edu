@@ -45,61 +45,63 @@ Directori `04_L/`:
 | :--- | :--- |
 | `_quarto.yml` | Configuració del projecte Quarto |
 | `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
+| `bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
+| `CLAUDE.md` | Instruccions operatives per a Claude |
+| `contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
+| `custom_dark.scss` | Estils CSS addicionals per al mode fosc (HTML) |
+| `custom_light.scss` | Estils CSS addicionals per al mode clar (HTML) |
+| `custom.scss` | Estils CSS comuns a tots dos modes (HTML) |
+| `ieee.csl` | Estil de citació IEEE (CSL) |
 | `index.qmd` | Pàgina de presentació (avaluació, eines, bibliografia) |
+| `preamble.tex` | Preàmbul LaTeX addicional (PDF) |
 | `riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
 | `sigles.qmd` | Glossari de sigles |
-| `bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
-| `ieee.csl` | Estil de citació IEEE (CSL) |
-| `contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
-| `CLAUDE.md` | Instruccions operatives per a Claude |
-| `TODO.md` | Llista de tasques pendents (contingut transitori) |
-| `custom_light.scss` | Estils CSS addicionals per al mode clar (HTML) |
-| `custom_dark.scss` | Estils CSS addicionals per al mode fosc (HTML) |
-| `custom.scss` | Estils CSS comuns a tots dos modes (HTML) |
 | `styles.css` | Estils CSS addicionals (HTML) |
-| `preamble.tex` | Preàmbul LaTeX addicional (PDF) |
+| `svg_specs.md` | Especificacions d'estil per a les figures SVG |
+| `TODO.md` | Llista de tasques pendents (contingut transitori) |
 
 ### Arbre de directoris
 
 ```
 EC/
-├── 01_T/                      # Teoria
-│   └── Tx.qmd                 # x = 1–9
-├── 02_PE/                     # Enunciats de problemes
-│   └── PE_Tx.qmd              # x = 1–9
-├── 03_PS/                     # Solucions seleccionades
-│   ├── PS_Tx.qmd              # x = 1–9
+├── 01_T/                       # Teoria
+│   └── Tx.qmd                  # x = 1–9
+├── 02_PE/                      # Enunciats de problemes
+│   └── PE_Tx.qmd               # x = 1–9
+├── 03_PS/                      # Solucions seleccionades
+│   ├── PS_Tx.qmd               # x = 1–9
 │   └── PS_criteris.qmd
-├── 04_L/                      # Laboratori
-│   └── Ly.qmd                 # y = 1–6
-├── figures/                   # Figures SVG (variants light i dark)
+├── 04_L/                       # Laboratori
+│   └── Ly.qmd                  # y = 1–6
+├── figures/                    # Figures SVG (variants light i dark)
 │   └── T<N>_nom_figura_{light,dark}.svg
-├── laboratori/                # Fitxers de suport del laboratori
-│   ├── L0/–L5/                # Plantilles i fitxers per sessió
-│   ├── rars1_6.jar            # Simulador RARS (versió de referència)
-│   └── startup.s              # Fitxer d'inicialització RARS
-├── riscv/                     # Fragments de referència RISC-V (inclosos via `include`)
+├── laboratori/                 # Fitxers de suport del laboratori
+│   ├── L0/–L5/                 # Plantilles i fitxers per sessió
+│   ├── rars1_6.jar             # Simulador RARS (versió de referència)
+│   └── startup.s               # Fitxer d'inicialització RARS
+├── riscv/                      # Fragments de referència RISC-V (inclosos via `include`)
 │   ├── RV32I_instruccions_*.qmd
 │   ├── RV32I_registres_*.qmd
 │   ├── RV32I_format_instruccions.qmd
 │   └── RARS_*.qmd
-├── extern/                    # Figures i recursos externs (no SVG propi)
-├── scripts/                   # Scripts auxiliars (p. ex. generació de SVGs)
+├── extern/                     # Figures i recursos externs (no SVG propi)
+├── scripts/                    # Scripts auxiliars (p. ex. generació de SVGs)
 ├── _quarto.yml
 ├── _variables.yml
+├── bibliografia.bib
+├── CLAUDE.md
+├── contrib.qmd
+├── custom_dark.scss
+├── custom_light.scss
+├── custom.scss
+├── ieee.csl
 ├── index.qmd
+├── preamble.tex
 ├── riscv.qmd
 ├── sigles.qmd
-├── bibliografia.bib
-├── ieee.csl
-├── contrib.qmd
-├── CLAUDE.md
-├── TODO.md
-├── preamble.tex
-├── custom_light.scss
-├── custom_dark.scss
-├── custom.scss
-└── styles.css
+├── styles.css
+├── svg_specs.md
+└── TODO.md
 ```
 
 ## Renderitzar el projecte

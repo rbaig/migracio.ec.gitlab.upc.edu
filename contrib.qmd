@@ -518,34 +518,9 @@ El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les
 
 #### Generació de la versió dark
 
-Per a figures de l'estàndard RISC-V (stroke negre, text sense color explícit):
+> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `scripts/svg_generate_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `svg_specs.md §12`.
 
-```bash
-PREFIX="T9_nom_figura"
-sed 's/stroke="#000000"/stroke="#adb5bd"/g' ${PREFIX}_light.svg | \
-    sed 's/<text\b/<text fill="#fff"/g' > ${PREFIX}_dark.svg
-```
-
-Per a figures amb paleta completa (generada per Claude):
-
-```bash
-# Substitucions de la paleta light → dark (vegeu la taula de paleta)
-python3 -c "
-import sys
-content = open('${PREFIX}_light.svg').read()
-replacements = [
-    ('#f8f9fa','#3d3d3d'), ('#adb5bd','#888'),
-    ('#6c757d','#adb5bd'), ('#343a40','#fff'),
-    ('#cfe2ff','#1a3a5c'), ('#084298','#90bfff'),
-    ('#d1e7dd','#1a3a2a'), ('#0a3622','#90d4aa'),
-    ('#fff3cd','#3a2e00'), ('#664d03','#ffd966'),
-    ('#f8d7da','#3a1a1e'), ('#842029','#f1a8ae'),
-]
-for l, d in replacements:
-    content = content.replace(l, d)
-open('${PREFIX}_dark.svg', 'w').write(content)
-"
-```
+Per a figures creades manualment o extretes de PDFs, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `svg_specs.md §12` (pipeline i taula de colors) i `svg_specs.md §14` (figures extretes de PDFs) per als detalls tècnics.
 
 #### Integració al `.qmd`
 

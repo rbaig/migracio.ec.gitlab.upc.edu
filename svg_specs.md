@@ -371,6 +371,10 @@ REPLACEMENTS = [
     ('#664d03', '#ffd966'),
     ('#f8d7da', '#3a1a1e'),  # .text / executable (rosa)
     ('#842029', '#f1a8ae'),
+    # Figures extretes de PDF (text traçat, vegeu §14)
+    ('#000000', '#adb5bd'),  # línies i text negre implícit → gris clar
+    ('#ffffff', '#2d2d2d'),  # fons blanc de zones internes → gris molt fosc
+    ('#b3b3b3', '#666666'),  # gris mig (p. ex. barres de tc/tc') → gris fosc llegible
 ]
 ```
 
@@ -397,3 +401,46 @@ Les variants dark de totes les figures es generen automàticament (vegeu §12). 
 | `T3_deps_exemple` | Dependències de dades | `a`, `b`, `c`, `d` (blau); `res_f`, `res_g` com a òvals (vermell `#cc0000`); dues fronteres |
 
 > **Nota sobre les figures de dependències:** el color `#cc0000` s'usa per a cercles/òvals de resultats intermedis i per als usos posteriors a la crida. Aquest color **no forma part de la taula de substitució dark** (§12) i, per tant, les figures `T3_deps_*` s'han d'afegir a `scripts/dark_exclusions.txt` fins que es defineixi la seva variant dark manualment.
+
+---
+
+## 14. Figures extretes de PDFs existents
+
+Algunes figures del projecte provenen de PDFs originals (material docent anterior) i es generen amb el script Python `scripts/extract_pdf_figure.py` (o equivalent), que fa servir `pymupdf` i `text_as_path=True`.
+
+### Característiques tècniques
+
+- **Text traçat**: el text es converteix a corbes de Bézier. No és editable com a text, però és totalment portable (sense dependència de fonts instal·lades al sistema). Per editar el text cal partir del PDF original i regenerar.
+- **Negre implícit fet explícit**: el SVG generat afegeix `fill="#000000" stroke="none"` a l'element `<svg>` arrel. Això fa que el negre per defecte (heretat implícitament per tots els paths i formes sense color explícit) sigui substituïble per `svg_generate_dark.py` com qualsevol altre color de la paleta.
+- **Fons verd eliminat**: el color `#d9ffd9` (realçat del visor de PDFs) s'elimina durant l'extracció.
+
+### Generació de la variant dark
+
+Les figures extretes de PDF **es generen automàticament** per `svg_generate_dark.py` com la resta de figures, gràcies a les tres entrades específiques de la taula `REPLACEMENTS` (§12):
+
+| Light | Dark | Ús |
+|:---|:---|:---|
+| `#000000` | `#adb5bd` | Línies, contorns i text de figures de línia negra |
+| `#ffffff` | `#2d2d2d` | Zones blanques internes (p. ex. àrea buida de barres) |
+| `#b3b3b3` | `#666666` | Gris mig de figures (p. ex. barres de `T6_tc_tc_prima`) |
+
+**No cal afegir-les a `dark_exclusions.txt`**: el pipeline automàtic les gestiona correctament.
+
+### Figures del projecte generades per aquest mètode
+
+| Figura | PDF d'origen | Contingut |
+|:---|:---|:---|
+| `T6_amdahl` | `T6_amdahl.pdf` | Barres $t_0/t_1$, fraccions $P_x$, $s_x$ (Llei d'Amdahl) |
+| `T6_tc_tc_prima` | `T6_tc_tc_prima.pdf` | Barres A/B, $t_c$ vs $t_c'$ (reducció de temps de cicle) |
+| `T6_not_cmos` | `T6_not__cmos___1_0___0_1.pdf` | Porta NOT: representació funcional i CMOS |
+| `T6_not_1_0` | `T6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=Vcc(1-e^{-t/RC})$ |
+| `T6_not_0_1` | `T6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=Vcc\,e^{-t/RC}$ |
+
+### Distinció respecte a figures de nova creació
+
+| Propietat | Figura extreta de PDF | Figura de nova creació |
+|:---|:---|:---|
+| Text | Traçat (corbes) | Editable, font `'Source Sans Pro', sans-serif` |
+| Colors | Negre implícit → explícit (`#000000`) | Paleta del projecte (§10) |
+| Edició | Inkscape (corbes) o regeneració des de PDF | Inkscape (text editable) |
+| Dark | Automàtica via `REPLACEMENTS` | Automàtica via `REPLACEMENTS` |
