@@ -27,32 +27,35 @@ Estos criteris estan consolidats i **no cal revisar-los de nou**:
 
 ## Punts oberts que requereixen decisió o acció
 
-### 1. Figures (9 × `figures/TODO.png`) — el bloc més gran
+### 1. Figures — **COMPLETAT** (xat de revisió 2/2)
 
-Totes les figures pendents corresponen a la secció de subrutines. Les *specs* estan als captions de les imatges i en alguns casos als comentaris adjacents. Calen SVG nous seguint el workflow de `contrib`: es crea la versió *light* (que Roger retoca a Inkscape si cal) i es genera la *dark* per transformació de paleta.
+Totes les figures pendents han estat generades com a SVG light seguint les specs de `scripts/svg_specs.md`. Les variants dark es generen automàticament via `scripts/svg_generate_dark.py` (pre-render de Quarto).
 
-| Etiqueta | Descripció del que ha de mostrar |
-| :--- | :--- |
-| `#fig-mapa-memoria` | Mapa de memòria de RARS: regions `.text`, `.data`, heap i pila, amb adreces d'inici de cada segment |
-| `#fig-func-uninivell-pila` | Evolució de `sp` durant crida i retorn de `funcB`: decrement en reservar BA, increment en alliberar-lo |
-| `#fig-ba-general` | Estructura general del BA: variables locals al cim, registres desats a continuació, `sp` al byte 0 |
-| `#fig-ba-func` | BA de `func`: vector `v` (bytes 0–9), alineació (10–11), vector `w` (12–51), `sp` al byte 0 |
-| `#fig-pila-crides-aniuades` | Evolució de la pila durant crides aniuades de `funcA` i `funcB`: `sp` decreix i recupera el valor anterior |
-| `#fig-deps-multi` | Deps de dades de `multi`: línia de punts separa codi anterior/posterior a la crida a `mcm`; fletxes per `c` i `d` |
-| `#fig-ba-multi` | BA de `multi`: 12 bytes, `s0`/`s1`/`ra` als offsets +0/+4/+8 |
-| `#fig-deps-exemple` | Deps de dades de `exemple`: `c`, `d`, `e` travessen la frontera, es guarden a `s0`, `s1`, `s2` |
-| `#fig-ba-exemple` | BA de `exemple`: `q`(+0), `v`(+4), `w`(+22), alineació(+42–+43), `s0`/`s1`/`s2`/`ra`(+44/+48/+52/+56) |
+| Etiqueta | Estat | Notes |
+| :--- | :--- | :--- |
+| `#fig-mapa-memoria` | ✅ Ja existia | `T3_mapa_memoria_light/dark.svg` |
+| `#fig-ba-general` | ✅ Ja existia | `T3_ba_general_light/dark.svg` |
+| `#fig-ba-func` | ✅ Ja existia | `T3_ba_func_light/dark.svg` |
+| `#fig-func-uninivell-pila` | ✅ Generat | 3 estats: avant/durant/après crida a `funcB` |
+| `#fig-pila-crides-aniuades` | ✅ Generat | 5 estats: crides aniuades `funcA`/`funcB` |
+| `#fig-ba-multi` | ✅ Generat | `s0`, `s1`, `ra`; escala ×1 |
+| `#fig-ba-exemple` | ✅ Generat | `q`, `v`, `w`, alineació, `s0`–`s2`, `ra`; escala ×½. Retocs manuals pendents (Roger) |
+| `#fig-deps-multi` | ✅ Generat | Retocs manuals pendents (Roger) |
+| `#fig-deps-exemple` | ✅ Generat | Retocs manuals pendents (Roger) |
+| `#fig-compilacio-separada` | ✅ Migrat de Mermaid a SVG | `T3_compilacio_separada_light/dark.svg` |
+| `#fig-flux-gcc-complet` | ✅ Migrat de Mermaid a SVG | `T3_flux_gcc_complet_light/dark.svg` |
 
-Nota: `#fig-func-uninivell-pila` té un TODO addicional al cos: «TODO reducció a funcB de figura de pàg 20 EXEMPLE 20» (l.1333). Cal saber si l'estímul visual de referència (pàg. 20 dels apunts originals) és accessible.
+**Infraestructura SVG generada:**
+- `scripts/svg_generate_dark.py` — script pre-render que genera les dark automàticament
+- `scripts/svg_specs.md` — font de veritat de paleta i convencions SVG
+- `scripts/dark_exclusions.txt` — cal afegir-hi `T3_deps_multi_dark.svg` i `T3_deps_exemple_dark.svg` fins que es defineixin les seves variants dark manualment
+- `_quarto.yml` — afegit `pre-render: scripts/svg_generate_dark.py`
+- `T3.qmd` — blocs Mermaid substituïts pels blocs light/dark estàndard
 
-Les dues figures `{#fig-compilacio-separada}` i `{#fig-flux-gcc-complet}` **no necessiten SVG**: ja contenen diagrames Mermaid renderitzables.
+### 2. Callouts sense etiqueta definitiva — **COMPLETAT** (xat de revisió 1/2)
 
-### 2. Callouts sense etiqueta definitiva
-
-Dos callouts actius (no comentats) amb etiqueta placeholder que trenquen la convenció del projecte:
-
-- **`{#cau-TODO}` (L1079)**: defineix els termes *caller* / *callee* i l'analogia pare/fill. Proposta: `{#cau-caller-callee}`.
-- **`{#nte-TODO}` (L1404)**: informa que el fons de pila a RARS és `0x7fffeffc`. Proposta: `{#nte-rars-fons-pila}`.
+- **`{#cau-TODO}` (L1079)** → renombrat a `{#cau-caller-callee}` ✅
+- **`{#nte-TODO}` (L1404)** → renombrat a `{#nte-rars-fons-pila}` ✅
 
 ### 3. Decisions de contingut obertes (calen respostes dels professors)
 
@@ -86,17 +89,13 @@ La frase en qüestió és: «L'ABI imposa que les subrutines reservin tot l'espa
 
 `nte-abi-alineacio-pila` diu que l'ABI exigeix múltiples de 16 bytes en la crida (`sp` múltiple de 16 en el moment de qualsevol `call`/`jal`). `imp-ec-alineacio-pila` diu: «A EC, per simplicitat, s'admet múltiples de 4 bytes.» Roger és a favor d'eliminar la relaxació i exigir 16 com a l'ABI real. Cal consens dels professors.
 
-### 4. Numeració duplicada de les Optimitzacions
+### 4. Numeració duplicada de les Optimitzacions — **COMPLETAT** (xat de revisió 1/2)
 
-A T3, **l'Optimització #2** (*Avaluació de la condició al final*, L791) és correcta. **L'Optimització #3** (*Eliminació de la variable d'inducció*, L914) estava etiquetada erròniament com a #2 → **corregit**.
+L'Optimització #3 estava etiquetada erròniament com a #2 → corregit ✅
 
-L'Optimització #1 (*Accés seqüencial*) es defineix a T4 i no apareix anticipada a T3.
+### 5. Callout `{#tip-traduccio-godbolt}` — **PENDENT** de decisió
 
-### 5. Callout `{#tip-traduccio-godbolt}` (pendent d'afegir, L1678)
-
-> «TODO callout d'aprofundiment per presentar https://godbolt.org/»
-
-Decisió simple: (a) afegir un `wrn-` d'aprofundiment amb la descripció de Compiler Explorer / Godbolt, o (b) descartar.
+> Afegir un `wrn-` d'aprofundiment amb la descripció de Compiler Explorer / Godbolt, o descartar. Decisió pendent dels professors.
 
 ---
 

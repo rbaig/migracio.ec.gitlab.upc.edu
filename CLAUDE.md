@@ -142,9 +142,9 @@ Regles operatives:
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
 ```
-Nom del xat: `Revisió interna T5.qmd`
+Nom del xat: `EC T6 Revisió interna`
 
-Objectiu d'aquest xat: T5.qmd
+Objectiu d'aquest xat: T6.qmd
 Intensitat: Profunda
 Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
 
@@ -154,7 +154,9 @@ Seqüència de tasques a realitzar durant la sessió:
 - Tasca C: Revisió pedagògica: ordre de presentació dels conceptes (no emprar conceptes que encara no s'han presentat, nivell de detall), ús dels recursos discursius (quarto callouts, llistes de vinyetes, paràgrafs), etc.
 - Tasca D: Revisió lingüística
 - Tasca E: Revisió format Quarto
-- Tasca F: Figures SVG
+- Tasca F: Generació figures SVG
+- Tasca G: Integració figures SVG
+- Actualització de `T6.qmd`, `T6_tasques`, `CLAUDE.md`
 
 Repositori (només lectura) per SVGs, `include`, taules d'instruccions, etc.: https://github.com/rbaig/migracio.ec.gitlab.upc.edu/tree/problemes-enunciats-separats
 
@@ -162,10 +164,12 @@ Tens permisos per fer modificacions tots els arxius que et passi. Si fas modific
 
 Comencem la tasca A:
 
-1. Llegeix `CLAUDE.md`, `contrib.qmd` 
-2. Llegeix `T4.qmd`, `T5.qmd` i `instruccions_figures_memoria.md`
+0. Explora els fitxers que t'he passat
+1. Llegeix `CLAUDE.md`, `contrib.qmd` i `svg_specs.md`
+2. Llegeix `T6.qmd`
 3. Demana'm o busca al repositori els fitxers que necessitis
 4. Fes un anàlisi profund del contingut
-5. Genera la llista d'accions a realitzar; guarda-la a fitxer T3_tasques.md​ a outputs. 
+5. Genera la llista d'accions a realitzar; guarda-la a fitxer T6_tasques.md​ i ofereix-me-la per descarregar. 
 6. Comença a realitzar les accions que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
+7. Abans de començar amb les figues, atura't perquè mirarem d'extreure-les del PDF perquè els textos que contenen són seleccionables, cosa que em fa pensar que com a mínim una part la podem extreure del PDF.
 ```

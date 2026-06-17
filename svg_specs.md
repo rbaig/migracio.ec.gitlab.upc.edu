@@ -275,6 +275,7 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | `.data` / fitxers font `.c` `.h` / variables locals (BA) | `#cfe2ff` | `#084298` |
 | Heap / fitxers objecte `.o` / registres segurs (BA) | `#d1e7dd` | `#0a3622` |
 | Pila / biblioteques `lib.a` / `ra` desat (BA) | `#fff3cd` | `#664d03` |
+| Dependències de dades — resultat intermedi | — | `#cc0000` |
 
 ---
 
@@ -392,3 +393,7 @@ Les variants dark de totes les figures es generen automàticament (vegeu §12). 
 | `T3_pila_crides_aniuades` | Pila dinàmica | 5 estats: crides aniuades `funcA`/`funcB` |
 | `T3_compilacio_separada` | Graf de flux | Graf LR: `p1.c`/`p9.c` → `gcc` → `.o` → `ld` → executable |
 | `T3_flux_gcc_complet` | Graf de flux | Graf TD: flux complet GCC amb subgraphs |
+| `T3_deps_multi` | Dependències de dades | `c`, `d` (blau `#084298`) travessen la frontera; `c`, `d`, `e` al return (vermell `#cc0000`) |
+| `T3_deps_exemple` | Dependències de dades | `a`, `b`, `c`, `d` (blau); `res_f`, `res_g` com a òvals (vermell `#cc0000`); dues fronteres |
+
+> **Nota sobre les figures de dependències:** el color `#cc0000` s'usa per a cercles/òvals de resultats intermedis i per als usos posteriors a la crida. Aquest color **no forma part de la taula de substitució dark** (§12) i, per tant, les figures `T3_deps_*` s'han d'afegir a `scripts/dark_exclusions.txt` fins que es defineixi la seva variant dark manualment.
