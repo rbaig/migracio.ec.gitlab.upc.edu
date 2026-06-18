@@ -11,6 +11,22 @@
 - no `startup.s`
 - retorn 2 paràmetres
 - BA (mod 4) o (mod 16)?
+- TLB validity bit E, unificació criteris adopció RV
+
+### Problemes
+
+afegir solucionari:
+
+| Tema | Solució | Cobertura |
+| :--- | :--- | :--- |
+| T2 |  | *Little-endian*, ordre de bytes |
+| T2 | Sí | Bucles sobre vectors (init, suma, còpia inversa) |  <!-- Exercici 2.32 -->
+| T2 |  | Cerca en vector, retorn −1 |
+| T2 |  | Aritmètica de punters sobre `short` |
+| T2 | Sí | Funció `longitud` amb `'\0'` | <!-- Exercici 2.36 -->
+| T2 |  | Còpia de string |
+| T3 |  | `switch` amb salts encadenats i *jump table* |
+
 
 ### General
 
@@ -18,6 +34,7 @@
 - Eliminar els `****` sobrants.
 - Passar totes les equacions a MathML
     - definir els criteris d'inline
+- PDF: les figures dins de callouts no queden centrades
 
 ### `index.qmd`
 

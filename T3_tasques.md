@@ -14,12 +14,8 @@
 
 **Alineació de la pila a EC** (L1322): consens sobre si eliminar `{#imp-ec-alineacio-pila}` (relaxació a múltiples de 4) i exigir múltiples de 16 com a l'ABI real. (Posició de Roger: a favor d'eliminar la relaxació.)
 
-**Callout Godbolt** (L1678): decidir si s'afegeix un `wrn-` d'aprofundiment sobre Compiler Explorer / Godbolt, o es descarta.
-
 ## Figures amb retocs manuals pendents (Roger)
 
 - `figures/T3_ba_exemple_light.svg`
 - `figures/T3_deps_multi_light.svg`
 - `figures/T3_deps_exemple_light.svg`
-
-Un cop retocades, afegir `T3_deps_multi_dark.svg` i `T3_deps_exemple_dark.svg` a `scripts/dark_exclusions.txt` i generar les dark manualment.
