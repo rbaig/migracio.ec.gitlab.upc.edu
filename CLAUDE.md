@@ -178,7 +178,12 @@ Seqüència de tasques a realitzar durant la sessió:
 - Tasca E: Revisió format Quarto
 - Tasca F: Generació figures SVG
 - Tasca G: Integració figures SVG
-- Actualització de `T9.qmd`, `T9_tasques`, `CLAUDE.md`
+- Tens permís per modificar tots els fitxers que et passi (e.g. T7.qmd, T8.qmd)  per assegurar la coherència entre Temes
+- Tant bon punt detectis un Tx.qmd que no tens però que has de modificar, para i demana-me'l o descarrega'l del repositori si t'és millor
+- Abans de fer cap canvi, mostra-me'l
+- Ves-me oferint els fitxers addicionals per descarregar sempre que hi facis algun canvi
+- No treguis cap fitxer per output a no ser que t'ho demani explícitament
+- Al final de la sessió passa'm l'actualització de tots els fitxers que hagis modificat (e.g. `T9.qmd`, `T9_tasques`, `CLAUDE.md`)
 
 Comencem la tasca A:
 

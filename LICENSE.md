@@ -55,7 +55,7 @@ En l'elaboració d'aquesta obra s'ha fet ús d'eines d'intel·ligència artifici
 
 Tot el contingut generat o suggerit per eines d'IA ha estat revisat, contrastat i validat per professors de l'assignatura.
 
-### Programari lliure
+### Programari
 
 Aquesta obra s'ha elaborat exclusivament amb eines de programari lliure, essent les més rellevants:
 

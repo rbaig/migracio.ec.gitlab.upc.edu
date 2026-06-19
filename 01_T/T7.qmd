@@ -10,10 +10,10 @@ number-sections: true
 
 Tot computador necessita emmagatzemar les instruccions i les dades dels programes que executa. Aquesta funció la cobreixen diverses tecnologies, cadascuna amb característiques pròpies de velocitat, capacitat i cost:
 
-- La **memòria secundària** (discs durs magnètics o memòries **SSD**, d'estat   sòlid) és la memòria **persistent**: conserva les dades quan el computador   s'apaga. Té un cost per bit molt baix i una capacitat molt gran, però un temps d'accés extremadament lent: típicament més de 5 ms en un disc dur i al voltant de 0,02 ms en un SSD. Per a un període de rellotge de CPU típic de 0,25 ns, un accés a SSD tardaria desenes de milers de cicles; un accés a disc dur, centenars de milers.
-- La **memòria principal** o **RAM** (***random access memory***) és de tipus **volàtil**: perd el contingut quan s'apaga el computador. Quan s'executa un programa, les seves instruccions i dades es carreguen des de la memòria secundària a la memòria principal, on resideixen durant l'execució. La RAM té un temps d'accés molt més curt que la memòria secundària (al voltant de 20 ns), però el seu cost per bit és considerablement més alt.
+- La **memòria secundària** (discs durs magnètics o memòries **SSD**, d'estat sòlid) és la memòria **persistent**: conserva les dades quan el computador s'apaga. Té un cost per bit molt baix i una capacitat molt gran, però un temps d'accés extremadament lent: típicament més de 5 ms en un disc dur i entre 0,05 i 0,1 ms en un SSD. Per a un període de rellotge de CPU típic de 0,25 ns, un accés a SSD tardaria desenes de milers de cicles; un accés a disc dur, desenes de milions.
+- La **memòria principal** o **RAM** (***random access memory***) és de tipus **volàtil**: perd el contingut quan s'apaga el computador. Quan s'executa un programa, les seves instruccions i dades es carreguen des de la memòria secundària a la memòria principal, on resideixen durant l'execució. La RAM té un temps d'accés molt més curt que la memòria secundària (entre 50 i 100 ns), però el seu cost per bit és considerablement més alt.
 
-La RAM es pot implementar com a memòria estàtica (**SRAM**) o dinàmica (**DRAM**). Cada bit de SRAM requereix almenys 6 transistors, mentre que un bit de DRAM n'ocupa un de sol més un condensador. Això fa que la DRAM tingui molta més capacitat per unitat de superfície i un cost per bit molt menor, i per aquest motiu s'usa habitualment per a la memòria principal. La SRAM, en canvi, és molt més ràpida i s'usa en contextos on la velocitat és prioritària, com ara les memòries cau.
+La RAM es pot implementar com a memòria estàtica (**SRAM**) o dinàmica (**DRAM**). Cada bit de SRAM requereix almenys sis transistors, mentre que un bit de DRAM n'ocupa un de sol més un condensador. Això fa que la DRAM tingui molta més capacitat per unitat de superfície i un cost per bit molt menor, i per aquest motiu s'usa habitualment per a la memòria principal. La SRAM, en canvi, és molt més ràpida i s'usa en contextos on la velocitat és prioritària, com ara les memòries cau.
 
 | Tecnologia | Capacitat típica | Temps d'accés | Cost per GB |
 | :--- | :---: | :---: | :---: |
@@ -26,30 +26,30 @@ La RAM es pot implementar com a memòria estàtica (**SRAM**) o dinàmica (**DRA
 
 ### El problema de la diferència (*gap*) entre processador i memòria {#sec-gap-memoria}
 
-Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidament que la velocitat de la memòria principal. La @fig-gap-processador-memoria il·lustra aquesta divergència entre 1980 i 2010: mentre el rendiment dels processadors creixia a un ritme d'entre el 35% i el 55% anual, la latència de la DRAM millorava menys d'un 7% anual. El resultat és que el temps d'accés a la memòria principal pot arribar a ser de 100 a 200 cicles de CPU, és a dir, més de cent vegades superior al temps que tarda la resta d'operacions d'una instrucció (descodificació, lectura de registres, ALU, etc.). Aquesta diferència s'anomena ***gap*** entre processador i memòria.
+Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidament que la velocitat de la memòria principal. La @fig-gap-processador-memoria il·lustra aquesta divergència entre 1980 i 2010: mentre el rendiment dels processadors creixia a un ritme d'entre el 35% i el 55% anual, la latència de la DRAM millorava menys d'un 7% anual. El resultat és que el temps d'accés a la memòria principal pot arribar a ser de 200 a 400 cicles de CPU, és a dir, centenars de vegades superior al temps que tarda la resta d'operacions d'una instrucció (descodificació, lectura de registres, ALU, etc.). Aquesta diferència s'anomena ***gap*** entre processador i memòria.
 
-Per veure l'impacte d'aquest *gap* en el rendiment, apliquem la llei d'Amdahl (@sec-amdahl). Si $t_{acc}$ és el temps d'accés a la memòria principal i $t_{proc}$ el temps de la resta d'operacions d'una instrucció, el **CPI** és proporcional a $t_{proc} + t_{acc}$. Suposant $t_{acc} = 100 \cdot t_{proc}$, la fracció del temps d'execució que correspon al processament de la instrucció (sense l'accés a memòria) és:
+Per veure l'impacte d'aquest *gap* en el rendiment, apliquem la llei d'Amdahl (@sec-amdahl). Si $t_{acc}$ és el temps d'accés a la memòria principal i $t_{proc}$ el temps de la resta d'operacions d'una instrucció, el **CPI** és proporcional a $t_{proc} + t_{acc}$. Suposant $t_{acc} = 200 \cdot t_{proc}$, la fracció del temps d'execució que correspon al processament de la instrucció (sense l'accés a memòria) és:
 
-$$\alpha = \frac{t_{proc}}{t_{proc} + t_{acc}} \approx 0{,}01$$
+$$P_x = \frac{t_{proc}}{t_{proc} + t_{acc}} \approx 0{,}005$$
 
 Per la llei d'Amdahl, el màxim guany que es pot obtenir millorant únicament el processador (sense tocar la memòria) és:
 
-$$s_{max} = \frac{1}{1 - \alpha} \approx 1{,}01$$
+$$s_{max} = \frac{1}{1 - P_x} \approx 1{,}005$$
 
-És a dir, un 1%. Millorar el processador sense atacar el problema de la memòria és pràcticament inútil.
+És a dir, menys d'un 1%. Millorar el processador sense atacar el problema de la memòria és pràcticament inútil.
 
-#### El punt d'inflexió: la fi de l'escalat de Dennard
+#### El punt d'inflexió: la fi de l'escalat de Dennard {#sec-fi-escalat-dennard}
 
 Cap al 2003–2005, la indústria va topar amb un límit físic fonamental: el **límit tèrmic**. Fins aleshores, reduir la mida dels transistors permetia augmentar la freqüència de rellotge mantenint la mateixa densitat de potència (un principi conegut com a Escalat de Dennard, @wrn-dennard). Quan aquest escalat va deixar de funcionar, augmentar la freqüència va implicar disparar el consum i la calor generada fins a nivells inassumibles. La freqüència dels processadors va tocar sostre als 3–4 GHz i s'hi ha mantingut des d'aleshores.
 
 La indústria va respondre amb dues estratègies complementàries:
 
-- Els **processadors multicore**: en lloc d'un sol nucli molt ràpid, es van integrar dos, quatre, vuit o més nuclis en un mateix xip. Això va permetre continuar aprofitant els transistors addicionals que oferia cada nova generació tecnològica per augmentar el **rendiment en paral·lel**, però sense millorar el rendiment d'un sol fil d'execució (*single-thread*), que és el que determina el *gap* amb la memòria. Des de 2010, el creixement del rendiment *single-thread* ha caigut a un modest 5–10% anual, molt per sota del ritme anterior.
+- Els **processadors multinucli** (*multicore*): en lloc d'un sol nucli molt ràpid, es van integrar dos, quatre, vuit o més nuclis en un mateix xip. Això va permetre continuar aprofitant els transistors addicionals que oferia cada nova generació tecnològica per augmentar el **rendiment en paral·lel**, però sense millorar el rendiment d'un sol fil d'execució (*single-thread*), que és el que determina el *gap* amb la memòria. Des de 2010, el creixement del rendiment *single-thread* ha caigut a un modest 5–10% anual, molt per sota del ritme anterior.
 - La **reducció del consum energètic**. La generalització dels dispositius mòbils —telèfons intel·ligents, tauletes, portàtils ultraprims— va convertir l'eficiència energètica en una prioritat de primer ordre: no es tracta només d'impacte ambiental, sinó de l'autonomia de la bateria i de la possibilitat de dissenyar dispositius sense ventilador. Avui dia, l'arquitectura de qualsevol processador modern es dissenya tant per al rendiment com per al consum per instrucció.
 
-#### El *gap* avui
+#### El *gap* avui {#sec-gap-avui}
 
-Malgrat tot, el *gap* entre processador i memòria no ha desaparegut: la latència de la DRAM segueix sent de l'ordre de centenars de cicles, i la DRAM tampoc ha resolt el problema de fons (continua optimitzant capacitat per davant de velocitat). El creixement dels processadors multicore augmenta, a més, la **pressió sobre la memòria**: diversos nuclis competeixen simultàniament pels mateixos recursos de memòria, de manera que l'ample de banda disponible per nucli es redueix. En aquest context, **les memòries cau continuen sent tan imprescindibles com sempre**, i les jerarquies s'han fet cada cop més profundes i complexes per absorbir aquesta pressió creixent (vegeu la @sec-multinivell).
+Malgrat tot, el *gap* entre processador i memòria no ha desaparegut: la latència de la DRAM segueix sent de l'ordre de centenars de cicles, i la DRAM tampoc ha resolt el problema de fons (continua optimitzant capacitat per davant de velocitat). El creixement dels processadors multinucli augmenta, a més, la **pressió sobre la memòria**: diversos nuclis competeixen simultàniament pels mateixos recursos de memòria, de manera que l'ample de banda disponible per nucli es redueix. En aquest context, **les memòries cau continuen sent tan imprescindibles com sempre**, i les jerarquies s'han fet cada cop més profundes i complexes per absorbir aquesta pressió creixent (vegeu la @sec-multinivell).
 
 ::: {#wrn-gpu-memoria .callout-warning collapse="true"}
 ## Les GPUs i la memòria en l'era de la IA
@@ -58,7 +58,7 @@ Si teniu una targeta gràfica per a jocs —o heu llegit sobre els acceleradors 
 
 Una GPU moderna per a jocs (per exemple, una NVIDIA RTX 4090) integra milers de nuclis de càlcul dissenyats per executar moltíssimes operacions en paral·lel. Per alimentar tots aquests nuclis, necessita una amplada de banda de memòria enorme: mentre que un processador convencional accedeix a la DRAM amb una amplada de banda de l'ordre de desenes de GB/s, una GPU d'alt rendiment en necessita centenars. Per aconseguir-ho s'usa memòria **GDDR6** o, en els acceleradors d'IA professionals, **HBM** (*High Bandwidth Memory*), una tecnologia que apila múltiples capes de DRAM directament sobre el xip i les interconnecta amb milers de fils paral·lels.
 
-La latència, però, segueix sent el problema de sempre: la GDDR6 i l'HBM redueixen molt la latència respecte a la DRAM convencional gràcies a la proximitat física, però no l'eliminen. Per això les GPUs modernes també incorporen **jerarquies de memòria cau** pròpies: cada grup de nuclis (*streaming multiprocessor* a NVIDIA, *compute unit* a AMD) té la seva pròpia L1, i tots comparteixen una L2 de desenes de MB.
+La latència, però, segueix sent el problema de sempre: la GDDR6 i l'HBM augmenten enormement l'**ample de banda** gràcies a la proximitat física i als busos amples, però la latència d'accés roman comparable a la de la DRAM convencional. Per això les GPUs modernes també incorporen **jerarquies de memòria cau** pròpies: cada grup de nuclis (*streaming multiprocessor* a NVIDIA, *compute unit* a AMD) té la seva pròpia L1, i tots comparteixen una L2 de desenes de MB.
 
 Els acceleradors d'IA porten aquesta lògica a l'extrem. En entrenar una xarxa neuronal, s'han de moure quantitats ingents de dades (pesos del model, activacions, gradients) entre la memòria i els nuclis de càlcul milers de vegades per segon. El coll d'ampolla no sol ser la velocitat de càlcul sinó precisament l'**ample de banda de memòria**: és el que determina quants paràmetres del model es poden processar per segon. Això ha portat a dissenyar xips com el H100 de NVIDIA amb fins a 80 GB d'HBM3 i una amplada de banda de 3,35 TB/s, un valor que hauria semblat de ciència-ficció fa una dècada.
 
@@ -69,7 +69,7 @@ En definitiva: el *gap* entre càlcul i memòria no és un problema exclusiu del
 
 La solució al *gap* no consisteix a construir una memòria principal igualment ràpida que el processador —el cost seria prohibitiu— sinó a explotar una propietat que presenten la majoria dels programes: la **localitat**. L'estudi del comportament dels programes mitjançant simulació ha permès identificar-ne dues formes:
 
-- **Localitat temporal**: si s'accedeix a una adreça de memòria, és probable   que s'hi torni a accedir en un futur pròxim. La causa principal és l'existència de **bucles**: les mateixes instruccions i dades s'accedeixen repetidament a cada iteració.
+- **Localitat temporal**: si s'accedeix a una adreça de memòria, és probable que s'hi torni a accedir en un futur pròxim. La causa principal és l'existència de **bucles**: les mateixes instruccions i dades s'accedeixen repetidament a cada iteració.
 - **Localitat espacial**: si s'accedeix a una adreça de memòria, és probable que s'accedeixi a adreces properes en un futur pròxim. En el cas de les instruccions, la causa és el **seqüenciament implícit**: llevat dels salts, el processador sempre incrementa el PC i busca la instrucció següent en memòria. En el cas de les dades, la localitat espacial és característica dels **recorreguts de vectors i matrius** emmagatzemats en posicions contigües.
 
 ### La jerarquia de memòria {#sec-jerarquia}
@@ -81,14 +81,14 @@ Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un
 ::: {#fig-jerarquia-piramide}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](../figures/T7_jerarquia_piramide_light.svg)
+![](/figures/T7_jerarquia_piramide_light.svg)
 :::
 ::: {.dark-content}
-![](../figures/T7_jerarquia_piramide_dark.svg)
+![](/figures/T7_jerarquia_piramide_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](../figures/T7_jerarquia_piramide_light.svg)
+![](/figures/T7_jerarquia_piramide_light.svg)
 :::
 La jerarquia de memòria: cada nivell conserva les dades del nivell inferior que tinguin més probabilitat de ser accedides.
 :::
@@ -105,7 +105,7 @@ A banda del rendiment, la memòria cau té també un impacte positiu en el **con
 La **memòria cau** és una memòria auxiliar petita i ràpida que s'interposa entre el processador i la memòria principal. Emmagatzema un subconjunt del contingut de la memòria principal, amb l'objectiu de retenir les dades amb més probabilitat de ser accedides aviat:
 
 - Explota la **localitat temporal**: cada cop que la CPU accedeix a una dada de la memòria principal, en guarda simultàniament una còpia a la MC. Si la mateixa dada es torna a referenciar i encara és a la MC, l'accés es resol sense necessitat d'anar a la memòria principal.
-- Explota la **localitat espacial**: cada cop que la CPU accedeix a una dada, la MC no en copia únicament la dada individual sinó tot el **bloc** al qual pertany (un fragment contigu de memòria de mida fixa). Si posteriorment  s'accedeix a una dada propera, és probable que ja sigui al bloc copiat i l'accés es torni a resoldre ràpidament.
+- Explota la **localitat espacial**: cada cop que la CPU accedeix a una dada, la MC no en copia únicament la dada individual sinó tot el **bloc** al qual pertany (un fragment contigu de memòria de mida fixa). Si posteriorment s'accedeix a una dada propera, és probable que ja sigui al bloc copiat i l'accés es torni a resoldre ràpidament.
 
 ::: {#tip-mc-analogia .callout-tip}
 ## Analogia de la memòria cau amb l'escriptori
@@ -128,14 +128,14 @@ Internament, la MC s'organitza com una taula. Cada entrada d'aquesta taula s'ano
 ::: {#fig-mc-organitzacio}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](../figures/T7_mc_organitzacio_light.svg)
+![](/figures/T7_mc_organitzacio_light.svg)
 :::
 ::: {.dark-content}
-![](../figures/T7_mc_organitzacio_dark.svg)
+![](/figures/T7_mc_organitzacio_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](../figures/T7_mc_organitzacio_light.svg)
+![](/figures/T7_mc_organitzacio_light.svg)
 :::
 Organització interna d'una memòria cau: cada línia conté un bit de validesa, una etiqueta i un bloc de dades.
 :::
@@ -158,21 +158,20 @@ Si l'accés és a un word de 4 bytes (`lw`), el **word offset** (posició del wo
 
 $$\text{word\_offset} = \text{offset} \div 4 = 2$$
 
-<!-- figura: descomposició dels 32 bits de l'adreça 0x100100F8 en num_bloc (28 bits) i offset (4 bits), i del offset en word_offset (2 bits) i byte dins el word (2 bits). Basada en la Figura 6.7 del PDF. Caption: "Descomposició dels
-bits d'una adreça de 32 bits en número de bloc i offset per a blocs de 16 bytes." -->
-::: {#fig-mc-organitzacio}
+<!-- TODO fig-mc-exemple-descomposicio-32bits: descomposició dels 32 bits de l'adreça 0x100100F8 en num_bloc (28 bits) i offset (4 bits), i del offset en word_offset (2 bits) i byte dins el word (2 bits). Basada en la Figura 6.7 del PDF. Caption: "Descomposició dels bits d'una adreça de 32 bits en número de bloc i offset per a blocs de 16 bytes." -->
+::: {#fig-mc-exemple-descomposicio-32bits}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](../figures/T7_mc_organitzacio_light.svg)
+![](/figures/T7_mc_exemple_descomposicio_32bits_light.svg)
 :::
 ::: {.dark-content}
-![](../figures/T7_mc_organitzacio_dark.svg)
+![](/figures/T7_mc_exemple_descomposicio_32bits_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](../figures/T7_mc_organitzacio_light.svg)
+![](/figures/T7_mc_exemple_descomposicio_32bits_light.svg)
 :::
-Organització interna d'una memòria cau: cada línia conté un bit de validesa, una etiqueta i un bloc de dades.
+Descomposició dels bits de l'adreça `0x100100F8` en número de bloc (28 bits) i desplaçament (4 bits), i del desplaçament en word offset (2 bits) i byte dins el word (2 bits).
 :::
 :::
 
@@ -181,7 +180,7 @@ Organització interna d'una memòria cau: cada línia conté un bit de validesa,
 En accedir a una dada, la MC comprova si el bloc que la conté és present:
 
 - **Encert** (*hit*): la dada és a la MC i l'accés es resol en un temps curt $t_h$, característic de la MC.
-- **Fallada** (*miss*): la dada no és a la MC. Cal accedir a la memòria   principal per obtenir el bloc, cosa que afegeix un **temps de penalització** $t_p$ al temps d'accés total:
+- **Fallada** (*miss*): la dada no és a la MC. Cal accedir a la memòria principal per obtenir el bloc, cosa que afegeix un **temps de penalització** $t_p$ al temps d'accés total:
 
 $$t_{acc} = \begin{cases} t_h & \text{(encert)} \\ t_h + t_p & \text{(fallada)}
 \end{cases}$$
@@ -192,34 +191,24 @@ $$h = \frac{\text{núm. encerts}}{\text{núm. referències}} \qquad m = \frac{\t
 
 ### Gestió d'una lectura {#sec-mc-lectura}
 
-L'operació d'una lectura il·lustra la mecànica bàsica de la MC. Suposem blocs de 16 bytes i que la CPU llegeix una dada a l'adreça $A = $ `0x100100F8` (num\_bloc = `0x100100F`, offset = 8).
+L'operació d'una lectura il·lustra la mecànica bàsica de la MC. Suposem blocs de 16 bytes i que la CPU llegeix una dada a l'adreça $A = $ `0x100100F8` (num\_bloc = `0x100100F`, desplaçament = 8).
 
 **Cas d'encert**: El bloc és present a la MC.
 
 1. La MC consulta les etiquetes de les línies vàlides i troba que el num\_bloc de $A$ coincideix amb l'etiqueta d'una línia. S'ha produït un encert.
-2. La MC usa l'offset com a selector per extreure la dada sol·licitada del bloc guardat i la transfereix a la CPU.
+2. La MC usa el desplaçament com a selector per extreure la dada sol·licitada del bloc guardat i la transfereix a la CPU.
 
-<!-- figura: diagrama de la MC en cas d'encert, mostrant CPU, MC i MP amb les etiquetes i el flux de la dada cap a la CPU. Basada en la Figura 6.9 del PDF. Caption: "Encert en un accés a l'adreça 0x100100F8: la dada es transfereix directament de la MC a la CPU." -->
-<!-- ::: {#fig-mc-encert}
-::: {.light-content}
-![](../figures/T7_mc_encert_light.svg)
-:::
-::: {.dark-content}
-![](../figures/T7_mc_encert_dark.svg)
-:::
-Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament de la MC a la CPU.
-::: -->
 ::: {#fig-mc-encert}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](../figures/T7_mc_encert_light.svg)
+![](/figures/T7_mc_encert_light.svg)
 :::
 ::: {.dark-content}
-![](../figures/T7_mc_encert_dark.svg)
+![](/figures/T7_mc_encert_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](../figures/T7_mc_encert_light.svg)
+![](/figures/T7_mc_encert_light.svg)
 :::
 Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament de la MC a la CPU.
 :::
@@ -227,22 +216,22 @@ Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament
 **Cas de fallada**: El bloc no és present a la MC.
 
 1. La MC comprova les etiquetes i no troba el num\_bloc de $A$. S'ha produït una fallada: la CPU es bloqueja fins que la MC resolgui l'accés.
-2. La MC sol·licita a la memòria principal el bloc sencer que conté $A$, enviant-li l'adreça inicial del bloc (`0x100100F0`, que s'obté posant a zero els $b$ bits d'offset de $A$).
+2. La MC sol·licita a la memòria principal el bloc sencer que conté $A$, enviant-li l'adreça inicial del bloc (`0x100100F0`, que s'obté posant a zero els $b$ bits de desplaçament de $A$).
 3. La MC decideix en quina línia emmagatzema el bloc rebut, hi escriu les dades, n'actualitza l'etiqueta i posa el bit de validesa a 1.
-4. La MC finalitza l'accés com si fos un encert: usa l'offset per extreure la dada i la transfereix a la CPU.
+4. La MC finalitza l'accés com si fos un encert: usa el desplaçament per extreure la dada i la transfereix a la CPU.
 
 <!-- figura: diagrama de la MC en cas de fallada, mostrant els quatre passos: detecció de fallada, petició del bloc a MP, escriptura a la MC i transferència de la dada a la CPU. Basada en les Figures 6.9–6.10 del PDF (miss). Caption: "Fallada en un accés a l'adreça 0x100100F8: el bloc es copia de la MP a la MC i la dada es transfereix a la CPU." -->
 ::: {#fig-mc-fallada}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](../figures/T7_mc_fallada_light.svg)
+![](/figures/T7_mc_fallada_light.svg)
 :::
 ::: {.dark-content}
-![](../figures/T7_mc_fallada_dark.svg)
+![](/figures/T7_mc_fallada_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](../figures/T7_mc_fallada_light.svg)
+![](/figures/T7_mc_fallada_light.svg)
 :::
 Fallada en un accés a l'adreça `0x100100F8`: el bloc es copia de la MP a la MC i la dada es transfereix a la CPU.
 :::
@@ -273,14 +262,14 @@ Com que tots els blocs que es mapen a una mateixa línia comparteixen el mateix 
 ::: {#fig-cd-descomposicio-bits}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](../figures/T7_cd_descomposicio_bits_light.svg)
+![](/figures/T7_cd_descomposicio_bits_light.svg)
 :::
 ::: {.dark-content}
-![](../figures/T7_cd_descomposicio_bits_dark.svg)
+![](/figures/T7_cd_descomposicio_bits_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](../figures/T7_cd_descomposicio_bits_light.svg)
+![](/figures/T7_cd_descomposicio_bits_light.svg)
 :::
 Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de correspondència directa amb $N_L = 8$ línies i blocs de $B = 16$ bytes.
 :::
@@ -301,7 +290,7 @@ $$A = \underbrace{0001\,0000\,0000\,0001\,0000\,0000\,1}_{\text{etiqueta}}\,
 \underbrace{1000}_{\text{offset}=8}$$
 :::
 
-El diagrama de blocs de la @fig-cd-diagrama mostra el maquinari necessari per a una lectura. Els bits d'índex de l'adreça seleccionen una línia mitjançant un **decodificador**. Es llegeixen simultàniament l'etiqueta guardada, el bit de validesa i el bloc de dades. Els bits d'etiqueta de l'adreça es comparen amb l'etiqueta guardada: si coincideixen i $V=1$, es produeix un encert i el **multiplexor** selecciona la dada indicada per l'offset.
+El diagrama de blocs de la @fig-cd-diagrama mostra el maquinari necessari per a una lectura. Els bits d'índex de l'adreça seleccionen una línia mitjançant un **decodificador**. Es llegeixen simultàniament l'etiqueta guardada, el bit de validesa i el bloc de dades. Els bits d'etiqueta de l'adreça es comparen amb l'etiqueta guardada: si coincideixen i $V=1$, es produeix un encert i el **multiplexor** selecciona la dada indicada pel desplaçament.
 
 <!-- fig-cd-diagrama: diagrama de blocs d'una lectura en una memòria cau de correspondència directa, amb: adreça dividida en etiqueta/índex/offset, decodificador connectat als bits d'índex, taula de línies (V, Etiqueta, Dades), comparador entre etiqueta de l'adreça i etiqueta guardada, porta AND amb V, senyal Hit, i multiplexor seleccionat per l'offset que produeix la Dada cap a la CPU. Basada en la Figura 6.13 del PDF. Caption: "Diagrama de blocs d'una lectura en una memòria cau de correspondència directa." -->
 
@@ -311,7 +300,7 @@ La correspondència directa és la política més senzilla i ràpida: amb un sol
 
 La **memòria cau associativa per conjunts** (*set-associative*) redueix els conflictes dotant cada posició de la memòria cau de $N$ **vies** (*ways*) en lloc d'una sola. El conjunt de $N$ vies associades a una mateixa posició s'anomena **conjunt** (*set*), i $N$ és el **grau d'associativitat**.
 
-L'assignació de blocs als conjunts segueix el mateix criteri que la correspondència directa: si la memòria cau té $N_C = 2^{n_c}$ conjunts, el bloc $n$ va al conjunt d'índex $n \bmod N_C$. Però dins del conjunt, el bloc pot ocupar **qualsevol de les $N$ vies** que estigui lliure. Si no n'hi ha cap de lliure, s'aplica un algorisme de reemplaçament (vegeu la @sec-politica-reemplacement). La descomposició de bits és anàloga a la de correspondència directa, però amb $n_c$ bits d'índex en lloc de $n_l$:
+L'assignació de blocs als conjunts segueix el mateix criteri que la correspondència directa: si la memòria cau té $N_C = 2^{n_c}$ conjunts, el bloc $n$ va al conjunt d'índex $n \bmod N_C$. Però dins del conjunt, el bloc pot ocupar **qualsevol de les $N$ vies** que estigui lliure. Si no n'hi ha cap de lliure, s'aplica un algorisme de reemplaçament (vegeu la @sec-politica-reemplacament). La descomposició de bits és anàloga a la de correspondència directa, però amb $n_c$ bits d'índex en lloc de $n_l$:
 
 $$A = \underbrace{\cdots}_{\text{etiqueta}} \;
      \underbrace{\cdots}_{\text{índex}\;(n_c\text{ bits})} \;
@@ -335,7 +324,7 @@ $$A = \underbrace{0000}_{\text{etiqueta}}\,
 
 <!-- fig-assoc-conjunts-taula: taula d'una memòria cau associativa per conjunts de 4 conjunts i 3 vies, amb les columnes via 0 / via 1 / via 2, cadascuna amb V, Etiqueta i Dades, i el bloc 1 de MP marcat com a candidat al conjunt 1. Basada en la Figura 6.22 del PDF. Caption: "Memòria cau associativa per conjunts de 4 conjunts i 3 vies: el bloc 1 de la memòria principal pot ocupar qualsevol de les 3 vies del conjunt 1." -->
 
-El diagrama de blocs de la @fig-assoc-conjunts-diagrama mostra que els bits d'índex seleccionen el conjunt mitjançant un **decodificador** (com a la correspondència directa), però dins del conjunt hi ha **$N$ comparadors en paral·lel**, un per via. Si alguna via té la mateixa etiqueta i $V=1$, una porta OR genera el senyal d'encert i un **multiplexor $N$:1** selecciona les dades de la via guanyadora, que el segon multiplexor (controlat per l'offset)
+El diagrama de blocs de la @fig-assoc-conjunts-diagrama mostra que els bits d'índex seleccionen el conjunt mitjançant un **decodificador** (com a la correspondència directa), però dins del conjunt hi ha **$N$ comparadors en paral·lel**, un per via. Si alguna via té la mateixa etiqueta i $V=1$, una porta OR genera el senyal d'encert i un **multiplexor $N$:1** selecciona les dades de la via guanyadora, que el segon multiplexor (controlat pel desplaçament)
 usa per extreure la dada sol·licitada.
 
 <!-- fig-assoc-conjunts-diagrama: diagrama de blocs d'una lectura en una memòria cau associativa per conjunts, amb: adreça dividida en etiqueta/índex/offset, decodificador per als bits d'índex, N vies en paral·lel cadascuna amb (V, Etiqueta, Dades), N comparadors simultanis entre l'etiqueta de l'adreça i les etiquetes guardades, porta OR que genera Hit, multiplexor N:1 que selecciona la via amb encert, i multiplexor final controlat per l'offset que produeix la Dada. Basada en la Figura 6.24 del PDF. Caption: "Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de N vies." -->
@@ -382,7 +371,7 @@ $$\underbrace{\hspace{4.5em}}_{\text{etiqueta}}
 Els casos extrems encaixen naturalment: si $N_C = N_L$ (correspondència directa), $n_c = n_l$ i l'etiqueta és mínima; si $N_C = 1$ (completament associativa), $n_c = 0$ i no hi ha bits d'índex.
 :::
 
-## Política de reemplaçament {#sec-politica-reemplacement}
+## Política de reemplaçament {#sec-politica-reemplacament}
 
 Quan la MC ha d'emmagatzemar un nou bloc i totes les vies del conjunt corresponent estan ocupades, cal alliberar-ne una. L'algorisme que decideix quina via s'elimina s'anomena **política de reemplaçament**. En una memòria cau de correspondència directa no hi ha elecció possible —cada bloc té una única línia assignada—, de manera que la política de reemplaçament només és rellevant per a les memòries cau associatives.
 
@@ -397,18 +386,17 @@ La implementació de LRU és senzilla per a 2 vies (un sol bit per conjunt n'és
 **FIFO** (***First In, First Out***): Reemplaça el bloc que fa més temps que va ingressar al conjunt. No s'ha de confondre amb LRU: FIFO considera quan va entrar el bloc, independentment de si s'ha accedit des d'aleshores. És menys eficient que LRU perquè un bloc que s'ha accedit recentment pot ser expulsat si va entrar fa molt de temps.
 
 **OPT** (***Optimal***): Reemplaça el bloc que serà accedit més tard en el futur. S'ha demostrat teòricament que OPT obté la taxa de fallades mínima possible. Malauradament, no és implementable en maquinari real perquè
-requereix conèixer els accessos futurs. La seva utilitat pràctica és establir una **cota inferior** de la taxa de fallades: en entorns de simulació, permet avaluar quant de marge de millora queda per a nous algorismes. Val la pena observar que LRU és, de fet, un intent intuïtiu d'aproximar OPT: "el bloc que fa més temps que no s'usa" és una predicció raonable de "el bloc que s'usarà més tard".
+requereix conèixer els accessos futurs. La seva utilitat pràctica és establir una **cota inferior** de la taxa de fallades: en entorns de simulació, permet avaluar quant de marge de millora queda per a nous algorismes. Val la pena observar que LRU és, de fet, un intent intuïtiu d'aproximar OPT: «el bloc que fa més temps que no s'usa» és una predicció raonable de «el bloc que s'usarà més tard».
 
 ::: {#tip-lru-exemple .callout-tip}
 **Pregunta**: Suposem adreces de 8 bits, blocs de $B = 4$ bytes ($b = 2$) i una memòria cau associativa per conjunts de 4 conjunts ($n_c = 2$) amb 2 vies, inicialment buida. Donada la seqüència d'accessos de lectura a les adreces 4, 38, 6, 52 (totes al conjunt 1), determineu l'estat de la memòria cau i indiqueu el tipus de cada accés (encert o fallada) usant LRU.
 
 **Solució**:
 
-- `@4` → bloc 1, conjunt 1 → **Fallada** (via 0 lliure, LRU = via 0).
-- `@38` → bloc 9, conjunt 1 → **Fallada** (via 1 lliure, LRU = via 1).
+- `@4` → bloc 1, conjunt 1 → **Fallada** (via 0 lliure → s'ocupa; ara LRU = via 0).
+- `@38` → bloc 9, conjunt 1 → **Fallada** (via 1 lliure → s'ocupa; ara LRU = via 1).
 - `@6` → bloc 1, conjunt 1 → **Encert** (via 0). LRU passa a ser la via 1.
-- `@52` → bloc 13, conjunt 1 → **Fallada** (cap via lliure, reemplaça LRU
-  = via 1).
+- `@52` → bloc 13, conjunt 1 → **Fallada** (cap via lliure; reemplaça LRU = via 1).
 
 <!-- TODO fig-lru-exemple: evolució de l'estat de la memòria cau (conjunt 1, 2 vies) al llarg dels 4 accessos, mostrant via 0 i via 1 amb V, etiqueta i dades, i marcant el LRU en cada pas. Basada en la Figura 6.23 del PDF. Caption: "Evolució de la memòria cau associativa per conjunts de 2 vies amb algorisme LRU per a la seqüència d'accessos 4, 38, 6, 52." -->
 :::
@@ -465,7 +453,7 @@ L'escriptura retardada sense assignació és poc habitual: si no es copia el blo
 Els exemples següents usen una memòria cau de correspondència directa molt senzilla per il·lustrar el comportament de cada política. El context és comú als tres:
 
 - Processador amb adreces de 8 bits (rang 0–255).
-- Blocs de $B = 4$ bytes ($b = 2$): 2 bits d'offset, 6 bits de número de bloc.
+- Blocs de $B = 4$ bytes ($b = 2$): 2 bits de desplaçament, 6 bits de número de bloc.
 - Memòria cau de 2 línies ($n_l = 1$): 1 bit d'índex, 5 bits d'etiqueta.
 
 Es parteix sempre de l'estat de la memòria cau després d'executar la seqüència inicial de 5 lectures:
@@ -578,11 +566,11 @@ $$\text{TAM} = t_h + m \cdot t_p$$ {#eq-tam}
 
 on $m$ és la taxa de fallades i $t_p$ el temps de penalització mitjà.
 
-#### memòria cau unificada
+#### Memòria cau unificada {#sec-tam-mc-unificada}
 
-Si hi ha una sola memòria cau per a instruccions i dades, l'expressió @eq-tam és directament aplicable. Quan la política  d'escriptura implica penalitzacions diferents per a fallades de lectura i d'escriptura, cal ponderar:
+Si hi ha una sola memòria cau per a instruccions i dades, l'expressió @eq-tam és directament aplicable. Quan la política d'escriptura implica penalitzacions diferents per a fallades de lectura i d'escriptura, cal ponderar:
 
-- **Escriptura immediata sense assignació**: si $p_e$ és la fracció de   fallades que corresponen a escriptures:
+- **Escriptura immediata sense assignació**: si $p_e$ és la fracció de fallades que corresponen a escriptures:
 
 $$t_p = (1 - p_e) \cdot (t_{block} + t_h) + p_e \cdot 0 = (1 - p_e)(t_{block} + t_h)$$
 
@@ -596,14 +584,14 @@ La fórmula correcta del temps de penalització mitjà per a l'escriptura retard
 
 $$t_p = (1 + p_m) \cdot t_{block} + t_h$$
 
-Noteu que $t_h$ **no** es multiplica per $(1 + p_m)$: el terme $t_h$ apareix una sola vegada independentment de si el bloc és modificat o no.
+Cal notar que $t_h$ **no** es multiplica per $(1 + p_m)$: el terme $t_h$ apareix una sola vegada independentment de si el bloc és modificat o no.
 :::
 
-#### Memòries cau separades d'instruccions i dades
+#### TAM amb memòries cau separades d'instruccions i dades {#sec-tam-mc-separades}
 
 En moltes arquitectures, la CPU disposa de dues memòries cau independents: una memòria cau d'instruccions ($\text{MC}_i$, de sols lectura) i una memòria cau de dades ($\text{MC}_d$, usada pels `lw` i `sw`). Siguin:
 
-- $n_{ins}$: nombre d'accessos a $\text{MC}_i$ (igual al nombre   d'instruccions executades).
+- $n_{ins}$: nombre d'accessos a $\text{MC}_i$ (igual al nombre d'instruccions executades).
 - $n_{dat}$: nombre d'accessos a $\text{MC}_d$ (igual al nombre de `lw`
   i `sw`).
 - $n_{refs} = n_{ins} + n_{dat}$: nombre total de referències a memòria.
@@ -649,7 +637,7 @@ De l'expressió @eq-texe s'extreuen dues conclusions pràctiques:
 
 Les fallades de memòria cau es classifiquen en tres categories, conegudes com les **tres C**. Aquesta classificació permet identificar la causa de cada fallada i raonar sobre quines mesures de disseny poden reduir-la.
 
-**Cold-start** (o **obligatòries**): es produeixen el primer cop que s'accedeix a un bloc. Per definició, cap memòria cau pot tenir un bloc que no s'ha accedit mai, de manera que aquestes fallades són **inevitables** independentment de la política d'emplaçament, del grau d'associativitat o de la capacitat de la memòria cau. El nombre total de cold-start misses d'un programa és igual al nombre de blocs diferents que accedeix.
+**Cold-start** (o **obligatòries**): es produeixen el primer cop que s'accedeix a un bloc. Per definició, cap memòria cau pot tenir un bloc que no s'ha accedit mai, de manera que aquestes fallades són **inevitables** independentment de la política d'emplaçament, del grau d'associativitat o de la capacitat de la memòria cau. El nombre total de fallades obligatòries d'un programa és igual al nombre de blocs diferents que accedeix.
 
 **Conflicte** (o **col·lisió**): es produeixen quan dos o més blocs que s'accedeixen alternament es mapen al mateix conjunt i s'expulsen mútuament, tot i que hi ha línies lliures en altres conjunts. Són **exclusives de les memòries cau amb indexació** (correspondència directa i associativa per conjunts): en una memòria cau completament associativa, per definició, no hi pot haver conflictes. Augmentar el grau d'associativitat redueix les fallades de conflicte.
 
@@ -684,17 +672,26 @@ int f(int A[8], int B[8]) {
 
 Suposem una memòria cau de correspondència directa amb 4 línies ($n_l = 2$), inicialment buida. Els vectors `A` i `B` es troben en posicions contigües de memòria: `A` comença al bloc 0 i `B` al bloc 4.
 
-Com que els blocs de `A` i de `B` difereixen en el bit 2 del num\_bloc (és a dir, en el bit d'índex, ja que $n_l = 2$), **tots els blocs de `A[i]` i `B[i]` es mapen a la mateixa línia 0** de la memòria cau, independentment del valor de `i`.
+Com que cada bloc conté 2 enters (8 bytes / 4 bytes per `int`), els elements `A[i]` i `A[i+1]` van al mateix bloc, i el mateix passa amb `B`. La taula següent mostra el mapatge complet:
 
-- **Iteració $i = 0$**:
-    - `lw A[0]` (bloc 0, línia 0) → **Cold-start miss**. Es copia el bloc 0.
-    - `lw B[0]` (bloc 4, línia 0) → **Cold-start miss**. Reemplaça el bloc 0.
+| `i` | Bloc de `A[i]` | Bloc de `B[i]` | Índex (línia) |
+| :---: | :---: | :---: | :---: |
+| 0, 1 | 0 | 4 | 0 |
+| 2, 3 | 1 | 5 | 1 |
+| 4, 5 | 2 | 6 | 2 |
+| 6, 7 | 3 | 7 | 3 |
+: {tbl-colwidths="[25,25,25,25]" style="width: 60%; margin: auto;" .striped}
 
-- **Iteració $i = 1$**:
-    - `lw A[1]` (bloc 0, línia 0) → **Conflict miss**. El bloc ja havia estat accedit però va ser expulsat per `B[0]`.
-    - `lw B[1]` (bloc 4, línia 0) → **Conflict miss**.
+Per a cada parella d'iteracions, els blocs de `A[i]` i `B[i]` difereixen exactament en $N_L = 4$: sumar $N_L$ no altera els $n_l = 2$ bits de menys pes del número de bloc (l'índex), de manera que tots dos blocs es mapen a la **mateixa línia** però amb **etiquetes diferents**. El resultat és que `A[i]` i `B[i]` s'expulsen mútuament a cada accés.
 
-El patró es repeteix a cada iteració: `A[i]` i `B[i]` s'expulsen mútuament. Les fallades de la primera iteració són cold-start; totes les de les iteracions posteriors són de conflicte.
+La traça dels primers quatre valors de `i` mostra els dos tipus de fallada:
+
+- **$i = 0$**: `lw A[0]` (bloc 0, línia 0) → **fallada obligatòria**; carrega bloc 0. `lw B[0]` (bloc 4, línia 0) → **fallada obligatòria**; reemplaça bloc 0.
+- **$i = 1$**: `lw A[1]` (bloc 0, línia 0) → **fallada de conflicte**; el bloc 0 havia estat carregat a $i=0$ però expulsat per `B[0]`. `lw B[1]` (bloc 4, línia 0) → **fallada de conflicte**.
+- **$i = 2$**: `lw A[2]` (bloc 1, línia 1) → **fallada obligatòria**; primer accés al bloc 1. `lw B[2]` (bloc 5, línia 1) → **fallada obligatòria**.
+- **$i = 3$**: `lw A[3]` (bloc 1, línia 1) → **fallada de conflicte**. `lw B[3]` (bloc 5, línia 1) → **fallada de conflicte**.
+
+El patró es repeteix per a les parelles $i = 4,5$ i $i = 6,7$. En total: **8 fallades obligatòries** (iteracions parelles, primer accés al bloc) i **8 fallades de conflicte** (iteracions senars, reaccés a un bloc expulsat). **Els 16 accessos fallen**.
 
 <!-- fig-conflicte-exemple: taula de la memòria cau (4 línies) mostrant l'estat en cada accés de les dues primeres iteracions, amb les fallades de cold-start i de conflicte marcades. Basada en la Figura 6.28 del PDF. Caption: "Fallades de conflicte en el recorregut paral·lel de dos vectors amb una memòria cau de correspondència directa de 4 línies." -->
 
@@ -715,7 +712,7 @@ int g(int V[16]) {
 
 El vector `V` ocupa 8 blocs de 2 words cadascun. La memòria cau, amb 4 línies, només pot contenir la meitat del vector simultàniament.
 
-- **Primer bucle**: els blocs de `V[0]`–`V[7]` entren a la memòria cau amb   cold-start misses. Quan s'accedeix a `V[8]`–`V[15]`, la memòria cau és plena i els blocs de la primera meitat s'expulsen (LRU).
+- **Primer bucle**: els blocs de `V[0]`–`V[7]` entren a la memòria cau amb fallades obligatòries. Quan s'accedeix a `V[8]`–`V[15]`, la memòria cau és plena i els blocs de la primera meitat s'expulsen (LRU).
 - **Segon bucle**: quan es torna a accedir a `V[0]`–`V[7]`, els blocs ja no hi són. Fallen de nou: són **fallades de capacitat**.
 
 Augmentar l'associativitat no resoldria res: les fallades es produeixen perquè el working set (8 blocs) supera la capacitat de la memòria cau (4 línies), no per cap conflicte d'índex. L'única solució seria una memòria cau de 8 o més línies.
@@ -801,4 +798,4 @@ La incorporació de L3 respon a la mateixa lògica que va motivar L2: a mesura q
 Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 2022), amb els principals components etiquetats. S'hi distingeixen els nuclis de rendiment (*P-cores*) amb les seves memòries cau L2 privades, els nuclis d'eficiència (*E-cores*) agrupats en clústers, i la memòria cau L3 compartida que ocupa una fracció significativa de la superfície del xip. Font: Wikimedia Commons, CC BY-SA.[^Core_i9-13900K_Labelled_Die_Shot]
 :::
 
-[^Core_i9-13900K_Labelled_Die_Shot]: <!-- https://upload.wikimedia.org/wikipedia/commons/a/a4/Intel_Core_i9-13900K_Labelled_Die_Shot.jpg -->
+[^Core_i9-13900K_Labelled_Die_Shot]: Imatge original: [Intel Core i9-13900K Labelled Die Shot](https://commons.wikimedia.org/wiki/File:Intel_Core_i9-13900K_Labelled_Die_Shot.jpg), Wikimedia Commons. Llicència: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).

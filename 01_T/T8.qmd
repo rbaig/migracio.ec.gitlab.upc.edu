@@ -29,15 +29,15 @@ La memòria virtual es fonamenta en la distinció entre dos espais d'adreçament
 
 Abans de la memòria virtual, quan la mida d'un programa superava la memòria física disponible, els programadors havien de gestionar manualment la càrrega i descàrrega de blocs de codi i dades entre la memòria i el disc, una tècnica coneguda com a *overlays*. La memòria virtual automatitza completament aquesta gestió, a càrrec del sistema operatiu i amb el suport del maquinari.
 
-En un sistema amb memòria virtual, el disc (o SSD) es converteix en un nivell addicional de la jerarquia de memòria, per sota de la memòria principal. De la mateixa manera que la memòria cau conté un subconjunt de les dades de la memòria principal, la memòria principal conté un subconjunt de les dades del disc. La totalitat de les dades d'un procés resideix sempre al disc; la memòria física n'emmagatzema només les parts que s'utilitzen activament.
+En un sistema amb memòria virtual, el disc (o SSD) es converteix en un nivell addicional de la jerarquia de memòria, per sota de la memòria principal. De la mateixa manera que la memòria cau conté un subconjunt de les dades de la memòria principal (@sec-jerarquia), la memòria principal conté un subconjunt de les dades del disc. La totalitat de les dades d'un procés resideix sempre al disc; la memòria física n'emmagatzema només les parts que s'utilitzen activament.
 
 | Nivell | Tecnologia | Temps d'accés típic |
 | :--- | :--- | :---: |
 | Registres | SRAM | ~0,25 ns |
-| Memòria cau | SRAM | 0,5 – 40 ns |
+| Memòria cau | SRAM | 0,5 – 5 ns |
 | Memòria principal | DRAM | 50 – 100 ns |
-| Emmagatzematge secundari | SSD | 0,02 – 0,1 ms |
-: La jerarquia de memòria en un sistema amb memòria virtual. {#tbl-mv-jerarquia tbl-colwidths="[30,30,40]" .striped}
+| Memòria secundària | SSD | 0,05 – 0,1 ms |
+: La jerarquia de memòria en un sistema amb memòria virtual (vegeu @tbl-tecnologies-memoria per a dades de capacitat i cost). {#tbl-mv-jerarquia tbl-colwidths="[30,30,40]" .striped}
 
 ## Paginació {#sec-mv-paginacio}
 
@@ -104,7 +104,7 @@ La taula de pàgines s'indexa pel VPN: cada fila correspon a una pàgina virtual
 Cada PTE conté els camps següents:
 
 - **PPN** (*physical page number*): el número de marc de pàgina on es troba la pàgina, si és a la memòria física.
-- **Bit P** (presència): val 1 si la pàgina és a la memòria física; val 0 si és al disc o si la pàgina no pertany a l'espai vàlid del procés.
+- **Bit V** (*valid*, presència): val 1 si la pàgina és a la memòria física; val 0 si és al disc o si la pàgina no pertany a l'espai vàlid del procés.
 - **Bit D** (*dirty*): val 1 si la pàgina ha estat modificada des que es va carregar. Quan cal reemplaçar-la, només s'escriu al disc si D = 1.
 - **Bit E** (escriptura): indica si el procés té permís d'escriptura sobre aquesta pàgina. Si una instrucció intenta escriure en una pàgina amb E = 0, el sistema operatiu avorta l'execució.
 
@@ -114,15 +114,21 @@ Cada PTE conté els camps següents:
 | Camp | Mida | Significat |
 | :--- | :---: | :--- |
 | PPN | $p$ bits | Marc de pàgina física on es troba la pàgina |
-| P | 1 bit | 1 = pàgina a memòria; 0 = al disc o invàlida |
+| V | 1 bit | 1 = pàgina a memòria; 0 = al disc o invàlida |
 | D | 1 bit | 1 = pàgina modificada (*dirty*) |
 | E | 1 bit | 1 = permís d'escriptura |
 : {.striped tbl-colwidths="[15,15,70]"}
 
-Quan P = 0, el camp PPN no té validesa: la pàgina no és a la memòria física.
+Quan V = 0, el camp PPN no té validesa: la pàgina no és a la memòria física.
 :::
 
-<!-- fig-mv-taula-pagines: diagrama de la taula de pàgines. Columnes: VPN (índex, a l'esquerra, de 0 a 2^20-1 amb punts suspensius al mig), P, D, E, PPN. Dues o tres files destacades en blau (P=1, amb PPN vàlid) i la resta en gris (P=0, PPN buit). Un registre de taula de pàgines (fletxa des de fora) apunta a la base de la taula. Caption: "La taula de pàgines s'indexa pel VPN. Cada entrada (PTE) conté el PPN i els bits de control P, D i E." -->
+::: {#wrn-mv-notacio-v .callout-warning collapse="true"}
+## Notació: `V` a EC vs. `P` a Patterson & Hennessy
+
+Aquests apunts segueixen la notació de la ISA de RISC-V (esquema Sv32) i de Harris & Harris: el bit de presència de la PTE s'anomena **`V`** (*Valid*). Patterson & Hennessy usa **`P`** per a aquest camp i reserva **`V`** per al TLB. Alguns exàmens anteriors d'EC segueixen la convenció de Patterson & Hennessy; en consultar-los, cal tenir en compte aquesta diferència de notació.
+:::
+
+<!-- fig-mv-taula-pagines: diagrama de la taula de pàgines. Columnes: VPN (índex, a l'esquerra, de 0 a 2^20-1 amb punts suspensius al mig), V, D, E, PPN. Dues o tres files destacades en blau (V=1, amb PPN vàlid) i la resta en gris (V=0, PPN buit). Un registre de taula de pàgines (fletxa des de fora) apunta a la base de la taula. Caption: "La taula de pàgines s'indexa pel VPN. Cada entrada (PTE) conté el PPN i els bits de control V, D i E." -->
 
 ### El registre de taula de pàgines i el canvi de context {#sec-mv-registre-tp}
 
@@ -131,6 +137,10 @@ En un sistema amb múltiples processos, cada procés té la seva pròpia taula d
 Quan el sistema operatiu commuta d'un procés a un altre (**canvi de context**), actualitza el registre de taula de pàgines perquè apunti a la taula del nou procés actiu. Aquesta operació és suficient per canviar completament l'espai d'adreçament visible: a partir d'aquell moment, totes les traduccions es fan amb la taula del nou procés, i l'espai lògic de l'anterior queda inaccessible. El valor del registre de taula de pàgines forma part del **context** del procés, és a dir, de l'estat que el sistema operatiu desa i restaura en cada canvi de context.
 
 ### Taules de pàgines multinivell {#sec-mv-multinivell}
+
+La taula de pàgines plana descrita fins ara ocupa una quantitat de memòria proporcional al nombre de pàgines virtuals possibles, independentment de quantes en faci servir realment el procés. En sistemes de 32 bits amb pàgines de 4 KB, això representa 4 MB per procés en tot moment; en sistemes de 64 bits, el cost es fa inassumible. Les **taules de pàgines multinivell** resolen el problema assignant memòria només per a les regions de l'espai lògic que el procés utilitza realment.
+
+<!-- fig-mv-taula-multinivell: diagrama d'una taula de pàgines de dos nivells (Sv32). A l'esquerra, una taula de primer nivell (directori de pàgines) amb 1024 entrades; algunes apunten a taules de segon nivell (a la dreta), la resta estan marcades com a no assignades. Cada taula de segon nivell té 1024 PTEs. Paleta: entrades assignades en blau, no assignades en gris. Caption: "Taula de pàgines de dos nivells: les taules de segon nivell només s'assignen per a les regions de l'espai lògic en ús, reduint l'ús de memòria." -->
 
 ::: {#wrn-mv-multinivell .callout-warning collapse="true"}
 ## Taules de pàgines multinivell
@@ -151,13 +161,13 @@ Per a sistemes de 64 bits, RISC-V defineix els esquemes **Sv39**, **Sv48** i **S
 
 ## Fallada de pàgina {#sec-mv-fallada-pagina}
 
-Quan la CPU accedeix a una adreça lògica i el bit P de la PTE corresponent val 0, es produeix una **fallada de pàgina** (*page fault*). Això pot succeir per dos motius: la pàgina pertany a l'espai vàlid del procés però no és a la memòria física (és al disc), o bé l'adreça és invàlida (no pertany a cap regió reservada del procés). En el segon cas, el sistema operatiu avorta l'execució del programa (a Unix i derivats, amb un error de tipus *segmentation fault*).
+Quan la CPU accedeix a una adreça lògica i el bit V de la PTE corresponent val 0, es produeix una **fallada de pàgina** (*page fault*). Això pot succeir per dos motius: la pàgina pertany a l'espai vàlid del procés però no és a la memòria física (és al disc), o bé l'adreça és invàlida (no pertany a cap regió reservada del procés). En el segon cas, el sistema operatiu avorta l'execució del programa (a Unix i derivats, amb un error de tipus *segmentation fault*).
 
 En el primer cas, el sistema operatiu gestiona la fallada carregant la pàgina des del disc:
 
 1. Es localitza la pàgina al disc.
 2. Si hi ha un marc de pàgina lliure, s'hi carrega la pàgina. Si no n'hi ha cap de lliure, cal **reemplaçar** un marc ocupat.
-3. S'actualitza la PTE: es posa P = 1 i s'escriu el PPN del marc assignat.
+3. S'actualitza la PTE: es posa V = 1 i s'escriu el PPN del marc assignat.
 4. Es reexecuta la instrucció que ha causat la fallada.
 
 Com que un accés al disc és desenes de milers de vegades més lent que un accés a la memòria principal, la fallada de pàgina és, amb diferència, l'incident més costós de tot el sistema de memòria.
@@ -165,10 +175,10 @@ Com que un accés al disc és desenes de milers de vegades més lent que un acc�
 ::: {#cau-mv-fallada-pagina .callout-caution}
 ## Mecanisme de la fallada de pàgina
 
-Una fallada de pàgina es produeix quan P = 0 en la PTE del VPN sol·licitat. Si la pàgina és vàlida, el sistema operatiu la carrega des del disc, actualitza la PTE i reexecuta la instrucció causant. Si l'adreça és invàlida, el procés s'avorta.
+Una fallada de pàgina es produeix quan V = 0 en la PTE del VPN sol·licitat. Si la pàgina és vàlida, el sistema operatiu la carrega des del disc, actualitza la PTE i reexecuta la instrucció causant. Si l'adreça és invàlida, el procés s'avorta.
 :::
 
-Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament (per exemple, **LRU**). Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura diferida amb assignació que es fa servir a les memòries cau ([Tema 7](#sec-tema-mc)).
+Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament (per exemple, **LRU**). Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions).
 
 A la zona del disc on s'emmagatzemen les pàgines reemplaçades se l'anomena **espai d'intercanvi** (*swap space*).
 
@@ -180,7 +190,7 @@ La taula de pàgines és a la memòria principal. Això implica que cada accés 
 
 Cada entrada del TLB conté una còpia d'una PTE (camps V, D, E i PPN) i el VPN al qual correspon. A diferència de la taula de pàgines, que s'indexa directament pel VPN, el TLB funciona de manera **completament associativa**: per traduir una adreça, es compara el VPN amb tots els VPNs emmagatzemats simultàniament.
 
-Al TLB, el camp que correspon al bit P de la PTE s'anomena **bit V** (validesa). La distinció és necessària perquè el bit V té un significat addicional al TLB respecte al bit P de la taula de pàgines, com s'explica a la @sec-mv-tlb-bitv.
+Al TLB, el camp `V` té un significat **lleugerament diferent** del camp `V` de la PTE, com s'explica a la @sec-mv-tlb-bitv.
 
 ::: {#cau-mv-tlb-estructura .callout-caution}
 ## Estructura d'una entrada del TLB
@@ -195,7 +205,7 @@ Al TLB, el camp que correspon al bit P de la PTE s'anomena **bit V** (validesa).
 : {.striped}
 :::
 
-<!-- fig-mv-tlb-estructura: diagrama de dues estructures en paral·lel. A l'esquerra, la taula de pàgines (columnes VPN implícit com a índex, P, D, E, PPN) amb moltes files, la majoria en gris (P=0) i unes poques destacades en blau (P=1). A la dreta, el TLB (columnes VPN, V, D, E, PPN) amb poques files (4-6), totes destacades en blau o verd, representant les entrades actives. Fletxes des d'algunes files del TLB cap a les files corresponents de la taula de pàgines, indicant que el TLB és una còpia parcial. Caption: "El TLB emmagatzema una còpia de les PTEs utilitzades més recentment. Cada entrada inclou el VPN com a clau de cerca." -->
+<!-- fig-mv-tlb-estructura: diagrama de dues estructures en paral·lel. A l'esquerra, la taula de pàgines (columnes VPN implícit com a índex, V, D, E, PPN) amb moltes files, la majoria en gris (V=0) i unes poques destacades en blau (V=1). A la dreta, el TLB (columnes VPN, V, D, E, PPN) amb poques files (4-6), totes destacades en blau o verd, representant les entrades actives. Fletxes des d'algunes files del TLB cap a les files corresponents de la taula de pàgines, indicant que el TLB és una còpia parcial. Caption: "El TLB emmagatzema una còpia de les PTEs utilitzades més recentment. Cada entrada inclou el VPN com a clau de cerca." -->
 
 ### Encert de TLB {#sec-mv-tlb-encert}
 
@@ -210,7 +220,7 @@ Si el VPN no es troba al TLB, es produeix una **fallada de TLB** (*TLB miss*). C
 - Si hi ha alguna entrada amb V = 0 (no inicialitzada, o amb la pàgina absent de memòria), s'hi escriu la nova entrada.
 - Si totes les entrades estan ocupades, cal reemplaçar-ne una seguint un algorisme de reemplaçament (LRU, aleatori, FIFO, etc.).
 
-Un cop copiada la PTE al TLB, es reintenta l'accés a memòria. Si el bit P de la PTE copiada val 0, el bit V de la nova entrada del TLB quedarà a 0 i l'accés reiterat provocarà una fallada de pàgina.
+Un cop copiada la PTE al TLB, es reintenta l'accés a memòria. Si el bit V de la PTE copiada val 0, el bit V de la nova entrada del TLB quedarà a 0 i l'accés reiterat provocarà una fallada de pàgina.
 
 ::: {#cau-mv-tlb-fallada .callout-caution}
 ## Encert i fallada de TLB
@@ -220,14 +230,26 @@ Un cop copiada la PTE al TLB, es reintenta l'accés a memòria. Si el bit P de l
 **Fallada de TLB** (TLB miss): el VPN no es troba al TLB. Es llegeix la PTE de la taula de pàgines, es copia al TLB i es reintenta l'accés.
 :::
 
-### El bit V: validesa i inicialització {#sec-mv-tlb-bitv}
+::: {#wrn-mv-tlb-hw-walker .callout-warning collapse="true"}
+## Qui resol la fallada de TLB: maquinari (RISC-V) vs. programari (MIPS)
 
-Inicialment, abans de cap traducció, totes les entrades del TLB es marquen amb V = 0, indicant que no han estat inicialitzades. Durant la resolució d'una fallada de TLB, el bit V s'usa per identificar entrades lliures. Després d'un encert, el bit V indica si la pàgina és present a la memòria física (és a dir, reflecteix el bit P de la PTE).
+El mecanisme descrit més amunt —llegir la PTE, copiar-la al TLB, reintentar— es pot implementar de dues maneres ben diferents:
 
-El bit V compleix, doncs, dos papers simultàniament:
+**Maquinari (*hardware page-table walker*):** el processador inclou un circuit dedicat que recorre la taula de pàgines automàticament quan es produeix una fallada de TLB. El procés en execució no s'interromp: la fallada és transparent al programari. Quan la PTE localitzada indica que la pàgina no és a la memòria (V = 0), *llavors* sí que es genera una excepció de fallada de pàgina que el SO ha de gestionar. Aquest és el model de **RISC-V**, x86 i ARM.
 
-- **Durant una fallada de TLB**: V = 0 indica que l'entrada no està inicialitzada i pot ser sobreescrita.
-- **Després d'un encert de TLB**: V = 0 indica que la pàgina no és a la memòria (bit P = 0), i cal gestionar una fallada de pàgina.
+**Programari (*software-managed TLB*):** el processador genera una excepció en detectar la fallada de TLB. El SO executa una rutina que llegeix la taula de pàgines i actualitza el TLB per programari, i finalment reexecuta la instrucció causant. Aquest era el model de **MIPS** i d'alguns RISC antics. El Tema 9 il·lustra el mecanisme de gestió de fallades de pàgina amb codi RISC-V, que comparteix la mateixa estructura de RSE.
+
+La distinció és transparent per a l'alumne en el context d'EC: el resultat observable (la traducció es completa i l'accés es reintenta) és idèntic en tots dos casos.
+:::
+
+### El bit V del TLB: doble paper {#sec-mv-tlb-bitv}
+
+El bit `V` de la PTE i el bit `V` del TLB s'anomenen igual perquè tots dos indiquen «validesa», però en **contexts d'ús** lleugerament diferents:
+
+- **`V` a la PTE** (taula de pàgines): indica si la pàgina és present a la memòria física. V = 1 significa «pàgina carregada»; V = 0 significa «pàgina al disc o adreça invàlida».
+- **`V` al TLB** (entrada de la memòria cau de traduccions): compleix dos papers simultàniament, segons el context:
+    - **Durant una fallada de TLB** (quan es busca un VPN i no es troba): V = 0 indica que l'entrada no ha estat inicialitzada i pot ser sobreescrita amb la nova PTE.
+    - **Després d'un encert de TLB** (quan el VPN es troba): V = 0 indica que la pàgina corresponent no és a la memòria física —reflecteix el V = 0 de la PTE— i cal gestionar una fallada de pàgina.
 
 El fet que el camp VPN d'una entrada no inicialitzada tingui un valor indeterminat no és un problema: si per casualitat coincidís amb el VPN cercat, l'encert resultant trobaria V = 0, la qual cosa desencadenaria igualment una fallada de pàgina que inicialitzaria l'entrada correctament.
 
@@ -268,13 +290,13 @@ Considerem un sistema amb adreces de 32 bits, pàgines de 4 KB ($t = 12$) i un T
 
 I la taula de pàgines (entrades rellevants):
 
-| VPN | P | D | PPN |
-| :---: | :---: | :---: | :---: |
-| `0x00000` | 1 | 0 | `0x01` |
-| `0x00001` | 0 | 0 | — |
-| `0x00002` | 1 | 0 | `0x02` |
-| `0x00003` | 1 | 1 | `0x00` |
-| `0x00004` | 0 | 0 | — |
+| VPN | V | D | E | PPN |
+| :---: | :---: | :---: | :---: | :---: |
+| `0x00000` | 1 | 0 | 1 | `0x01` |
+| `0x00001` | 0 | 0 | 1 | — |
+| `0x00002` | 1 | 0 | 1 | `0x02` |
+| `0x00003` | 1 | 1 | 1 | `0x00` |
+| `0x00004` | 0 | 0 | 1 | — |
 : Taula de pàgines (entrades rellevants) {.striped}
 
 Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = 3 és lliure), i que els 3 darrers accessos han estat a VPN = 3, VPN = 0 i VPN = 2 (ordre LRU, de més antic a més recent).
@@ -285,11 +307,11 @@ Encert de TLB (V = 1). Com que és una escriptura i D = 0, s'aplica la política
 
 **Accés 2**: Lectura a `0x00001F21` → VPN = `0x00001`.
 
-Fallada de TLB. Es llegeix la PTE de la TP: P = 0, fallada de pàgina. Hi ha un marc lliure (PPN = `0x03`); s'hi carrega la pàgina des del disc. S'actualitza la TP (P = 1, PPN = `0x03`). La PTE es copia al TLB a l'entrada no inicialitzada (V = 0, VPN = `0x0AFB3`). PPN = `0x03`. Adreça física: `0x03F21`.
+Fallada de TLB. Es llegeix la PTE de la TP: V = 0, fallada de pàgina. Hi ha un marc lliure (PPN = `0x03`); s'hi carrega la pàgina des del disc. S'actualitza la TP (V = 1, PPN = `0x03`). La PTE es copia al TLB a l'entrada no inicialitzada (V = 0, VPN = `0x0AFB3`). PPN = `0x03`. Adreça física: `0x03F21`.
 
 **Accés 3**: Lectura a `0x0000420C` → VPN = `0x00004`.
 
-Fallada de TLB. Es llegeix la PTE de la TP: P = 0, fallada de pàgina. Cap marc lliure; cal reemplaçar. L'ordre LRU actual al TLB és VPN = `0x00003` (el més antic, no accedit des de l'inici), VPN = `0x00000`, VPN = `0x00001`, VPN = `0x00002` (el més recent). Es reemplaça VPN = `0x00003` (D = 1): s'escriu primer al disc. Es carrega VPN = `0x00004` al PPN = `0x00`. S'actualitza la TP i el TLB. PPN = `0x00`. Adreça física: `0x0020C`.
+Fallada de TLB. Es llegeix la PTE de la TP: V = 0, fallada de pàgina. Cap marc lliure; cal reemplaçar. L'ordre LRU actual al TLB és VPN = `0x00003` (el més antic, no accedit des de l'inici), VPN = `0x00000`, VPN = `0x00002`, VPN = `0x00001` (el més recent, accedit a l'Accés 2). Es reemplaça VPN = `0x00003` (D = 1): s'escriu primer al disc. Es carrega VPN = `0x00004` al PPN = `0x00`. S'actualitza la TP i el TLB. PPN = `0x00`. Adreça física: `0x0020C`.
 :::
 
 ## Protecció i compartició {#sec-mv-proteccio}
@@ -300,7 +322,7 @@ Una de les funcions més importants de la memòria virtual és permetre que múl
 
 El mecanisme de traducció d'adreces proporciona protecció entre processos de manera natural: com que cada procés té la seva pròpia taula de pàgines, i la MMU usa exclusivament la taula del procés actiu per a totes les traduccions, un procés no pot generar cap adreça física que correspongui a una pàgina assignada a un altre procés. L'aïllament és complet sense cap comprovació addicional.
 
-Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al sistema operatiu, accessible només quan el processador opera en **mode sistema** (*kernel mode*). Els programes d'usuari s'executen en **mode usuari**, en el qual qualsevol intent d'accedir a aquesta zona o de modificar el TLB causa una excepció. El [Tema 9](#sec-tema-excepcions-interrupcions) descriu amb més detall els modes d'execució i el mecanisme d'excepcions.
+Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al sistema operatiu, accessible només quan el processador opera en **mode sistema** (*kernel mode*). Els programes d'usuari s'executen en **mode usuari**, en el qual qualsevol intent d'accedir a aquesta zona o de modificar el TLB causa una excepció. El [Tema 9](#sec-tema-excepcions-interrupcions) descriu amb més detall els modes d'execució (@sec-csr-privilegis) i el mecanisme d'excepcions.
 
 ### Protecció contra escriptura {#sec-mv-proteccio-escriptura}
 
@@ -324,7 +346,7 @@ El procés P1 vol compartir la seva pàgina VPN = `0x00000` (carregada al marc P
 A partir d'aquell moment, quan P2 accedeix a VPN = `0x00001` i P1 accedeix a VPN = `0x00000`, tots dos accedeixen a la mateixa pàgina física. Qualsevol modificació feta per un dels dos processos és visible immediatament per l'altre.
 :::
 
-<!-- fig-mv-comparticio: diagrama amb dues taules de pàgines (P1 a l'esquerra, P2 a la dreta) i la memòria física al centre. La fila VPN=0x00000 de P1 (P=1, E=1, PPN=0x02) i la fila VPN=0x00001 de P2 (P=1, E=1, PPN=0x02) tenen fletxes que convergeixen al mateix marc PPN=0x02 de la memòria física, destacat en verd. La resta de marcs en gris neutre. Caption: "Compartició d'una pàgina física entre dos processos: P1 i P2 mapen VPNs diferents al mateix PPN. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE." -->
+<!-- fig-mv-comparticio: diagrama amb dues taules de pàgines (P1 a l'esquerra, P2 a la dreta) i la memòria física al centre. La fila VPN=0x00000 de P1 (V=1, E=1, PPN=0x02) i la fila VPN=0x00001 de P2 (V=1, E=1, PPN=0x02) tenen fletxes que convergeixen al mateix marc PPN=0x02 de la memòria física, destacat en verd. La resta de marcs en gris neutre. Caption: "Compartició d'una pàgina física entre dos processos: P1 i P2 mapen VPNs diferents al mateix PPN. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE." -->
 
 La compartició de pàgines té dues aplicacions principals:
 
@@ -335,45 +357,45 @@ La compartició de pàgines té dues aplicacions principals:
 
 En un sistema amb memòria virtual, cada accés a memòria implica dos passos: traduir l'adreça lògica a física (via TLB) i accedir a la dada (via memòria cau). La manera com s'organitzen aquests dos passos determina el temps d'accés efectiu i la complexitat del disseny.
 
-### Cache indexada físicament {#sec-mv-cache-fisica}
+### Memòria cau indexada físicament {#sec-mv-cache-fisica}
 
-L'esquema més senzill és la **cache indexada i etiquetada físicament** (*PIPT, physically indexed physically tagged*): primer es tradueix l'adreça lògica amb el TLB i, un cop obtinguda l'adreça física, s'accedeix a la cache amb aquesta adreça.
+L'esquema més senzill és la **memòria cau indexada i etiquetada físicament** (*PIPT, physically indexed physically tagged*): primer es tradueix l'adreça lògica amb el TLB i, un cop obtinguda l'adreça física, s'accedeix a la memòria cau amb aquesta adreça.
 
-<!-- fig-mv-pipt: diagrama de blocs seqüencial. CPU → [adreça lògica] → TLB → (TLB hit) → [adreça física] → Cache → (cache hit) → Dada. Els blocs TLB i Cache estan en sèrie, amb una fletxa horitzontal que passa per tots dos. La memòria principal apareix per sota de la Cache com a alternativa en cas de fallada. Paleta: TLB en blau, Cache en verd, memòria principal en gris. Caption: "Cache indexada físicament (PIPT): la traducció i l'accés a la cache es fan en sèrie." -->
+<!-- fig-mv-pipt: diagrama de blocs seqüencial. CPU → [adreça lògica] → TLB → (TLB hit) → [adreça física] → MC → (encert) → Dada. Els blocs TLB i MC estan en sèrie, amb una fletxa horitzontal que passa per tots dos. La memòria principal apareix per sota de la MC com a alternativa en cas de fallada. Paleta: TLB en blau, MC en verd, memòria principal en gris. Caption: "Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en sèrie." -->
 
-L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adreça física identifica unívocament una dada. L'inconvenient és el **temps d'accés**: la cache no pot començar a operar fins que el TLB hagi acabat la traducció, de manera que els dos accessos es fan en sèrie.
+L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adreça física identifica unívocament una dada. L'inconvenient és el **temps d'accés**: la memòria cau no pot començar a operar fins que el TLB hagi acabat la traducció, de manera que els dos accessos es fan en sèrie.
 
-### Cache indexada virtualment {#sec-mv-cache-virtual}
+### Memòria cau indexada virtualment {#sec-mv-cache-virtual}
 
-Per reduir la latència, una **cache indexada i etiquetada virtualment** (*VIVT, virtually indexed virtually tagged*) usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense accedir al TLB.
+Per reduir la latència, una **memòria cau indexada i etiquetada virtualment** (*VIVT, virtually indexed virtually tagged*) usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense accedir al TLB.
 
-El problema és l'**aliasing**: si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física, poden tenir blocs diferents a la cache per a la mateixa dada. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, trencant la coherència.
+El problema és l'***aliasing***: si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física, poden tenir blocs diferents a la memòria cau per a la mateixa dada. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, trencant la coherència.
 
 ### VIPT: la solució estàndard {#sec-mv-vipt}
 
-La solució adoptada per la pràctica totalitat dels processadors actuals és la **cache indexada virtualment i etiquetada físicament** (*VIPT, virtually indexed physically tagged*). La idea clau és que l'índex per accedir a la cache i la traducció del TLB es poden fer en **paral·lel**:
+La solució adoptada per la pràctica totalitat dels processadors actuals és la **memòria cau indexada virtualment i etiquetada físicament** (*VIPT, virtually indexed physically tagged*). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel**:
 
-- L'**índex** de la cache s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menor pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).
-- Mentre la cache llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.
-- Un cop acabats els dos accessos en paral·lel, es compara el PPN obtingut del TLB amb les etiquetes físiques llegides de la cache per determinar si hi ha encert.
+- L'**índex** de la memòria cau s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menor pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).
+- Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.
+- Un cop acabats els dos accessos en paral·lel, es compara el PPN obtingut del TLB amb les etiquetes físiques llegides de la memòria cau per determinar si hi ha encert.
 
-<!-- fig-mv-vipt: diagrama de blocs amb dos camins paral·lels sortint de la CPU. Camí superior: [adreça lògica] → bits d'índex (desplaçament) → Cache (lectura d'etiquetes i dades). Camí inferior: [adreça lògica] → VPN → TLB → PPN. Els dos camins convergeixen en un comparador (=) que confronta el PPN amb les etiquetes llegides de la cache. Si coincideixen: cache hit → Dada. Si no: cache miss → memòria principal. Paleta: camí TLB en blau, camí cache en verd, comparador en groc. Caption: "Cache VIPT: l'índex de la cache i la traducció del TLB s'executen en paral·lel. L'etiqueta física elimina el problema d'aliasing." -->
+<!-- fig-mv-vipt: diagrama de blocs amb dos camins paral·lels sortint de la CPU. Camí superior: [adreça lògica] → bits d'índex (desplaçament) → MC (lectura d'etiquetes i dades). Camí inferior: [adreça lògica] → VPN → TLB → PPN. Els dos camins convergeixen en un comparador (=) que confronta el PPN amb les etiquetes llegides de la MC. Si coincideixen: encert → Dada. Si no: fallada → memòria principal. Paleta: camí TLB en blau, camí MC en verd, comparador en groc. Caption: "Memòria cau VIPT: l'índex de la memòria cau i la traducció del TLB s'executen en paral·lel. L'etiqueta física elimina el problema d'aliasing." -->
 
-La condició perquè VIPT funcioni sense aliasing és que l'índex de la cache usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L'índex d'una cache de mida $C$, associativitat $a$ i mida de bloc $b$ ocupa $\log_2(C / (a \cdot b))$ bits. Perquè tots aquests bits pertanyin al desplaçament (els $t = \log_2 T$ bits de menor pes), cal que:
+La condició perquè VIPT funcioni sense *aliasing* és que l'índex de la memòria cau usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L'índex d'una memòria cau de mida $C$, associativitat $a$ i mida de bloc $b$ ocupa $\log_2(C / (a \cdot b))$ bits. Perquè tots aquests bits pertanyin al desplaçament (els $t = \log_2 T$ bits de menor pes), cal que:
 
 $$C \leq a \cdot T$$
 
-on $T$ és la mida de pàgina. Per exemple, amb pàgines de 4 KB i associativitat 4, la cache L1 pot tenir fins a 16 KB sense aliasing. Els processadors actuals respecten sistemàticament aquesta restricció en el disseny de la cache L1.
+on $T$ és la mida de pàgina. Per exemple, amb pàgines de 4 KB i associativitat 4, la memòria cau L1 pot tenir fins a 16 KB sense *aliasing*. Els processadors actuals respecten sistemàticament aquesta restricció en el disseny de la L1.
 
 ::: {#cau-mv-cache-comparacio .callout-caution}
-## Comparació dels esquemes d'integració TLB–cache
+## Comparació dels esquemes d'integració TLB–memòria cau
 
 | Esquema | Indexació | Etiqueta | Avantatge | Inconvenient |
 | :--- | :---: | :---: | :--- | :--- |
-| PIPT | Física | Física | Simple, sense aliasing | TLB i cache en sèrie |
-| VIVT | Virtual | Virtual | Ràpid (sense TLB) | Aliasing |
-| VIPT | Virtual | Física | Ràpid i sense aliasing | Restricció de mida |
+| PIPT | Física | Física | Simple, sense *aliasing* | TLB i MC en sèrie |
+| VIVT | Virtual | Virtual | Ràpid (sense TLB) | *Aliasing* |
+| VIPT | Virtual | Física | Ràpid i sense *aliasing* | Restricció de mida |
 : {.striped tbl-colwidths="[12,13,13,31,31]"}
 
-VIPT és l'esquema estàndard en els processadors actuals per a la cache L1. Les caches L2 i L3, menys crítiques en latència, usen habitualment PIPT.
+VIPT és l'esquema estàndard en els processadors actuals per a la memòria cau L1. Les memòries cau L2 i L3, menys crítiques en latència, usen habitualment PIPT.
 :::
