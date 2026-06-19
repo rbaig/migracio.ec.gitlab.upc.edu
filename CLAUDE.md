@@ -72,29 +72,26 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Teoria (T1–T9)
 
-- Pendents de revisió interna: `T5.qmd`–`T9.qmd`.
-- Preparats per a revisió externa: `T1.qmd`–`T4.qmd`.
+- En curs (figures SVG pendents): `T9.qmd`.
+- Pendent de revisió interna: `T5.qmd`.
+- Preparats per a revisió externa: `T1.qmd`–`T4.qmd`, `T6.qmd`–`T8.qmd`.
 
-#### Enunciats (`PE_Tx.qmd`)
+#### Enunciats (`PE_Tx.qmd`) i Solucionaris (`PS_Tx.qmd`)
 
-- Pendents de revisió interna: `PE_T1.qmd`–`PE_T5.qmd`.
-- Preparats per a revisió externa: `PE_T6.qmd`–`PE_T9.qmd`.
-
-#### Solucionaris (`PS_Tx.qmd`)
-
-- Preparats per a revisió externa: `PS_T1.qmd`–`PS_T9.qmd`.
+- **Tots els fitxers** (`PE_T1.qmd`–`PE_T9.qmd` i `PS_T1.qmd`–`PS_T9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Tx.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
+- Tasca prèvia opcional (Claude Code): substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web.
 
 #### Laboratori (`L1`–`L6`)
 
-- Preparats per a revisió interna: `L1.qmd`–`L6.qmd`.
+- Pendents de revisió interna: `L1.qmd`–`L6.qmd`.
 
 ### Etiquetes `{#sec-}` a les capçaleres
 
 Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un identificador `{#sec-nom}` per ser referenciables amb `@sec-nom`.
 
 **Estat:**
-- `T4.qmd` — **complet** (referència per a la resta). Pot servir com a model.
-- `T1.qmd`–`T3.qmd`, `T5.qmd`–`T9.qmd` — **pendent** (tasca sistemàtica futura).
+- `T4.qmd`, `T6.qmd`–`T9.qmd` — **complet** (`T4` és la referència; `T6`–`T8` amb prefixos propis; `T9` amb prefix `ei-`).
+- `T1.qmd`–`T3.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 3 de la seqüència de revisió).
 
 **Criteris de generació de l'slug** (aplicats a `T4.qmd`):
 
@@ -109,6 +106,15 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 **Excepcions:**
 - Les capçaleres dins callouts (`## Títol del callout`) **no** reben `{#sec-}` (són títols visuals, no seccions del document).
 - Les capçaleres `#` de nivell superior (títol del tema) ja solen tenir el tag de tema (`{#sec-tema-x}`); revisar que sigui consistent.
+
+### Seqüència de revisió pendent
+
+1. **T9 figures** (xat actual): generació SVG i integració (`F/G`).
+2. **T5** (1 xat): revisió interna teoria coma flotant.
+3. **Slugs T1–T6** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals.
+4. **PE_T1–PE_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
+5. **PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
+6. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
 
 ### Flux de treball
 
@@ -178,12 +184,7 @@ Seqüència de tasques a realitzar durant la sessió:
 - Tasca E: Revisió format Quarto
 - Tasca F: Generació figures SVG
 - Tasca G: Integració figures SVG
-- Tens permís per modificar tots els fitxers que et passi (e.g. T7.qmd, T8.qmd)  per assegurar la coherència entre Temes
-- Tant bon punt detectis un Tx.qmd que no tens però que has de modificar, para i demana-me'l o descarrega'l del repositori si t'és millor
-- Abans de fer cap canvi, mostra-me'l
-- Ves-me oferint els fitxers addicionals per descarregar sempre que hi facis algun canvi
-- No treguis cap fitxer per output a no ser que t'ho demani explícitament
-- Al final de la sessió passa'm l'actualització de tots els fitxers que hagis modificat (e.g. `T9.qmd`, `T9_tasques`, `CLAUDE.md`)
+- Actualització de `T9.qmd`, `T9_tasques`, `CLAUDE.md`
 
 Comencem la tasca A:
 

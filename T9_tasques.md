@@ -136,3 +136,59 @@ Només es toca el patró d'integració (E1/E2) en aquesta passada.
 | `contrib.qmd` | decisió Zifencei (taula d'extensions) i, si escau, `@wrn-mv-notacio-v` |
 | `T8.qmd` | només si D-CC3 es resol documentant divergència (afegir nota) |
 | `sigles.qmd` | si apareixen sigles noves de T9 no recollides |
+
+---
+
+## Estat d'execució
+
+### Aplicats en aquest xat ✅
+
+| Canvi | Descripció |
+| :-- | :-- |
+| A1 | Fila «Fallada de TLB» eliminada de `@tbl-tipologia` |
+| A2–A5 | Mencions soltes de «fallada de TLB» corregides a «fallada de pàgina» (línies 49, 72, 344, 379) |
+| B (CC2) | Secció `## Fallada de TLB` reescrita com `## La fallada de pàgina` — model RISC-V correcte: TLB miss transparent (walker); fallada de pàgina = excepció |
+| B (CC3) | Bit D alineat al model maquinari de T8: inicialització D=0 en càrrega, consulta D en reemplaçament; D=1 el posa el maquinari (sense excepció) |
+| B (D4) | `sfence.vma` corregit: «Supervisor ISA» (no Zicsr ni Zifencei); TODOs eliminats |
+| B (DRY) | `@wrn-tlb-page-table-walker` eliminat → ref. a `@wrn-mv-tlb-hw-walker` (T8); `@sec-tlb-bit-v` plegat dins del recordatori → ref. a `@sec-mv-tlb-bitv` i `@wrn-mv-notacio-v`; `@cau-tlb-reexecucio` plegat dins `@cau-tlb-miss-excepcio` |
+| B (refs creuades) | Afegides: `@wrn-mv-tlb-hw-walker`, `@wrn-mv-notacio-v`, `@nte-mcause-mes-rellevants`, `@sec-mv-fallada-pagina`, `@sec-mv-tlb-bitv`, `@sec-mv-tlb-bitd`, `@sec-escriptura-encert`, `@nte-csr-modes-s` |
+| B (codi) | `tlb_miss_handler` → `page_fault_handler`; indentació `lw` corregida; comentari `@sec-tlb-bit-v` eliminat del codi |
+| C | Fila `Zifencei` eliminada de la taula d'extensions a `contrib.qmd` |
+
+### Pendents ⏳
+
+| # | Tasca |
+| :-- | :-- |
+| C1 | DRY: `@cau-mip-mie-combinat` (265) i `@cau-permisos-interrupcions` (764) — consolidar les condicions d'interrupció |
+| C2 | DRY: `mtval` explicat a `@sec-csr-mtval` i repetit a `@sec-flux-hardware-diferencies` |
+| D-L1 | «per al caller» (538) → «per al procés que l'ha cridat» |
+| D-L2 | Llista tipologia (47-51): puntuació i paral·lelisme |
+| D-L4 | Passada completa de majúscules/minúscules |
+| E1 | Figures sense `content-visible when-format` (duplicació al PDF) |
+| E2 | `style="text-align: center;"` a `@fig-cicle-interrupcio` |
+| E3 | Slugs genèrics sense prefix de tema (tasca sistemàtica futura) |
+| D-RSE | Etiquetar `@sec-rse-exemple` com a il·lustratiu (no executable) |
+| F/G | Figures SVG — fase posterior |
+
+### Aplicats en aquest bloc (D/C/E) ✅
+
+| Canvi | Descripció |
+| :-- | :-- |
+| D-L2/C3 | Llista tipologia: coma suprimida, «Són» → «són», paral·lelisme restaurat |
+| C2 | DRY `mtval`: bold suprimit (referència creuada `@sec-csr-mtval` ja present) |
+| C1 | DRY condicions interrupció: `@cau-permisos-interrupcions` ja referencia `@cau-mip-mie-combinat`; no cal canvi |
+| D-RSE | `@sec-rse-exemple` etiquetat com a «il·lustratiu (no executable directament)» |
+| E1 (×7) | Patró `content-visible when-format` aplicat a totes les figures: mcause, mepc, mstatus, mtvec, mip/mie, cicle-interrupcio, satp |
+| E2 | `style="text-align: center;"` eliminat de `@fig-cicle-interrupcio` |
+| E4 | TODO `.section`/RARS eliminats + bloc comentat eliminat (decisió: il·lustratiu) |
+
+### Estat final
+
+| Tasca | Estat |
+| :-- | :-- |
+| B (CC2, CC3, D4, DRY, refs) | ✅ |
+| C (C1, C2, C3) | ✅ |
+| D (D-L1, D-L2, D-L3, D-L4, D-RSE) | ✅ |
+| E (E1, E2, E4) | ✅ |
+| E3 — Slugs sense prefix de tema | ⏳ tasca sistemàtica futura (tots els Tx) |
+| F/G — Figures SVG | ⏳ fase posterior |

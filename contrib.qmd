@@ -94,6 +94,7 @@ git push origin contingut/t5-vectors
 - Un commit per canvi lògic — no agrupeu canvis no relacionats en un sol commit.
 - Missatge en català, en present i descriptiu: `"T5: afegeix secció sobre vectors"`, no `"canvis"` ni `"wip"`.
 - Abans de fer commit, assegureu-vos que no hi ha cap etiqueta `-TODO` ni cap `TODO` que pugueu solucionar vosaltres mateixos al codi (vegeu @sec-callouts).
+- Abans de fer commit, apliqueu **linting** a la prosa dels fitxers `.qmd` modificats: elimineu dobles espais (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu que no hi ha cometes rectes `"..."` que haurien de ser guillemets `«...»`.
 - Abans de fer commit, verifiqueu que el projecte renderitza correctament.
 
 ### Push directe a `main` (només maintainers)
@@ -141,11 +142,13 @@ Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapide
 ### Centrats
 
 - **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tbl-}`, etc. no cal perquè ja centren automàticament.
-    - Imatges dins callouts.
+    - Imatges dins callouts (**només HTML**; al PDF no té efecte).
     - Mermaids (diagrames renderitzats in-line).
 - **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100% de l'amplada.
     - Taules.
     - Elements de bloc.
+
+**Criteri per a figures SVG (`.light-content` / `.dark-content`):** els blocs de figura **no** porten `style="text-align: center;"`. Les figures amb `{#fig-}` ja centren automàticament a HTML i PDF.
 
 ### Callouts {#sec-callouts}
 
@@ -451,14 +454,14 @@ Regla dels `:` addicionals:
 ::: {#fig-TODO-nom-figura}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](figures/Tx_nom_figura_light.svg)
+![](/figures/Tx_nom_figura_light.svg)
 :::
 ::: {.dark-content}
-![](figures/Tx_nom_figura_dark.svg)
+![](/figures/Tx_nom_figura_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](figures/Tx_nom_figura_light.svg)
+![](/figures/Tx_nom_figura_light.svg)
 :::
 Caption acabat amb punt.
 :::
@@ -468,14 +471,14 @@ Caption acabat amb punt.
 ::: {#fig-TODO-nom-figura}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](figures/Tx_nom_figura_light.svg)
+![](/figures/Tx_nom_figura_light.svg)
 :::
 ::: {.dark-content}
-![](figures/Tx_nom_figura_dark.svg)
+![](/figures/Tx_nom_figura_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](figures/Tx_nom_figura_light.svg)
+![](/figures/Tx_nom_figura_light.svg)
 :::
 Caption acabat amb punt.
 :::
@@ -524,16 +527,30 @@ Per a figures creades manualment o extretes de PDFs, **no cal fer res**: el pipe
 
 #### Integració al `.qmd`
 
+<!-- TODO: Figures dins callouts queden centrades a l'HTML però alineades a l'esquerra al PDF. Cal investigar la solució via preamble.tex (p. ex. redefinir l'entorn de callout per afegir \centering). -->
+
 ``` code
 ::: {#fig-nom-figura}
-::: {.light-content style="text-align: center;"}
-![](figures/nom_figura_light.svg)
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figures/Tx_nom_figura_light.svg)
 :::
-::: {.dark-content style="text-align: center;"}
-![](figures/nom_figura_dark.svg)
+::: {.dark-content}
+![](/figures/Tx_nom_figura_dark.svg)
 :::
-Caption de la figura.
 :::
+::: {.content-visible when-format="pdf"}
+![](/figures/Tx_nom_figura_light.svg)
+:::
+Caption acabat amb punt.
+:::
+```
+
+Notes:
+- La ruta `/figures/` comença amb `/`, que Quarto interpreta com a relativa a l'arrel del projecte (on és `_quarto.yml`). És el mètode més robust: no depèn de la ubicació del `.qmd` dins l'arbre de directoris.
+- El bloc `content-visible when-format="html"` conté les dues variants (light/dark); el bloc `when-format="pdf"` conté només la versió light. Sense aquesta separació, el PDF renderitza totes dues variants i les figures surten duplicades.
+- Els blocs `.light-content` i `.dark-content` **no** porten `style="text-align: center;"`: les figures amb `{#fig-}` ja centren automàticament.
+- El caption (última línia abans del `:::` de tancament) és text lliure; Quarto l'associa automàticament a `{#fig-}` com a caption de la figura.
 ```
 
 #### Convencions CSS (mode fosc)
@@ -739,7 +756,6 @@ A EC s'estudien les extensions següents:
 | M | Multiplicació i divisió entera | T4 |
 | F | Coma flotant | T5 |
 | Zicsr | Registres de control i estat | T9 |
-| Zifencei | Sincronització d'instruccions | T9 |
 
 El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`, `RV32IM`, `RV32IF`, `RV32IZicsr`.
 
@@ -775,7 +791,6 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 
 #### T8
 
-- **Bit de presència de la PTE — notació `V` (ISA/H&H) vs. `P` (Patterson & Hennessy clàssic)**: a EC s'usa la notació de la ISA de RISC-V i de Harris & Harris: el bit de presència de cada entrada de la taula de pàgines s'anomena **`V`** (*Valid*, bit 0 de la PTE en Sv32), el mateix nom que a T9. Patterson & Hennessy (*Computer Organization and Design*, ed. RISC-V) usa **`P`** per a la PTE i reserva **`V`** per al TLB. La decisió de seguir la ISA es fonamenta en tres raons: (1) H&H, el llibre de referència del curs des del curs 2025/26, usa `V` a la PTE; (2) els alumnes que consultin l'especificació oficial o T9 trobaran `V`; (3) la distinció pedagògica entre el `V` de la PTE («pàgina present a memòria») i el `V` del TLB («entrada inicialitzada i vàlida») s'explica per **context d'ús**, no per noms de camps. **Impacte als enunciats i solucions**: qualsevol `PE_T8` o `PS_T8` que usi `P` per al bit de presència de la PTE ha de ser actualitzat a `V`. Els exàmens anteriors (format MIPS) que circulen als alumnes i usen `P` han d'anar acompanyats d'una nota de notació quan es reutilitzin.
 - **Bit de permís d'escriptura `E`**: la teoria i els enunciats/solucions usen el bit **E** (`E = 1` → permís d'escriptura; `E = 0` → només lectura), **no `W`**. Quan un enunciat heretat usava `W` (`1` = només lectura, polaritat oposada), s'ha reescrit a `E`: la teoria preval sobre l'enunciat dels problemes.
 - **Mida de pàgina explícita**: si un enunciat de memòria virtual no especifica la mida de pàgina però les adreces la impliquen, s'afegeix explícitament a l'enunciat (rigor i bona definició).
 - **Estat inicial del TLB**: quan es dona l'estat inicial d'un TLB completament associatiu amb LRU, cal especificar també l'**ordre d'ús** (MRU→LRU) de les entrades vàlides; sense això el reemplaçament és ambigu.
