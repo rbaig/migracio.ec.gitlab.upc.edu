@@ -15,6 +15,11 @@ Abans de qualsevol acció, llegeix:
 3. `07_contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
 4. `TODO.md` — tasques pendents i decisions obertes.
 
+Per a tasques que impliquin figures SVG, llegeix també:
+
+- `21_specs/svg.md` — paleta de colors, mapes de fonts i taula de substitució dark.
+- `21_specs/registres.toml` — definicions dels registres de bits (font de veritat).
+
 Repartiment de responsabilitats entre fitxers:
 
 - `07_contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
@@ -72,9 +77,8 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Teoria (T1–T9)
 
-- En curs (figures SVG pendents): `T9.qmd`.
 - Pendent de revisió interna: `T5.qmd`.
-- Preparats per a revisió externa: `T1.qmd`–`T4.qmd`, `T6.qmd`–`T8.qmd`.
+- Preparats per a revisió externa: `T1.qmd`–`T4.qmd`, `T6.qmd`–`T9.qmd`.
 
 #### Enunciats (`PE_Tx.qmd`) i Solucionaris (`PS_Tx.qmd`)
 
@@ -109,12 +113,11 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 ### Seqüència de revisió pendent
 
-1. **T9 figures** (xat actual): generació SVG i integració (`F/G`).
-2. **T5** (1 xat): revisió interna teoria coma flotant.
-3. **Slugs T1–T6** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals.
-4. **PE_T1–PE_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
-5. **PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
-6. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
+1. **T5** (1 xat): revisió interna teoria coma flotant.
+2. **Slugs T1–T6** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals.
+3. **PE_T1–PE_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
+4. **PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
+5. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
 
 ### Flux de treball
 
@@ -149,21 +152,33 @@ Regles operatives:
 
 **Figures de nova creació (opció per defecte, tots els temes):**
 - Construïdes des de zero amb elements SVG (`<rect>`, `<line>`, `<text>`, etc.).
-- Text editable, font `'Source Sans Pro', sans-serif`.
-- Colors de la paleta del projecte (vegeu `21_specs/svg.md §10`).
-- Variant dark generada automàticament per `22_scripts/svg_generate_dark.py`.
+- Fonts i colors de la paleta del projecte (vegeu `21_specs/svg.md`).
+- Es desen a `12_figs_originals/`; la variant dark es genera automàticament pel pre-render (`22_scripts/gen_dark.py`).
 
 **Figures extretes de PDFs originals (reservat per a figures complexes):**
 
-L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que, per la seva complexitat, no és viable reproduir com a SVG natiu en un temps raonable. Exemples típics: gràfics de dades multisèrie (p. ex. corbes de rendiment amb molts punts mesurats), diagrames de circuits elèctrics detallats, o il·lustracions amb geometria molt densa. La decisió de si una figura és prou complexa per justificar l'extracció es pren conjuntament amb l'usuari.
+L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que, per la seva complexitat, no és viable reproduir com a SVG natiu en un temps raonable. Exemples típics: gràfics de dades multisèrie, diagrames de circuits elèctrics detallats, o il·lustracions amb geometria molt densa. La decisió de si una figura és prou complexa per justificar l'extracció es pren conjuntament amb l'usuari.
 
 Característiques tècniques de les figures extretes:
 - Text traçat (corbes de Bézier), no editable com a text. Per editar cal partir del PDF original.
 - Negre implícit convertit en `fill="#000000"` explícit a l'element `<svg>` arrel, perquè sigui substituïble per l'script dark.
-- Variant dark generada automàticament per `22_scripts/svg_generate_dark.py` gràcies a les entrades `#000000`, `#ffffff` i `#b3b3b3` de la taula `REPLACEMENTS` (vegeu `21_specs/svg.md §14`).
-- **No cal afegir-les a `dark_exclusions.txt`**.
+- Es desen a `13_figs_externes/`; la variant dark es genera automàticament pel pre-render (`22_scripts/gen_dark.py`).
 
-En tots dos casos, la font de veritat per a les variants dark és `21_specs/svg.md §12` (taula `REPLACEMENTS`).
+**Figures de registres de bits:**
+- Definides a `21_specs/registres.toml` (font de veritat).
+- Generades automàticament pel pre-render (`22_scripts/gen_regs.py`).
+
+**Flux de pre-render** (`_quarto.yml`):
+```yaml
+pre-render:
+  - bash -c "rm -rf figs_auto && mkdir figs_auto"
+  - 22_scripts/gen_regs.py  21_specs/registres.toml                              "__registre_light" --output-dir="figs_auto/"
+  - 22_scripts/norm_font.py 21_specs/svg.md "12_figs_originals/[^/]+[.]svg" "__original_light" --output-dir="figs_auto/"
+  - 22_scripts/norm_font.py 21_specs/svg.md "13_figs_externes/[^/]+[.]svg"  "__extern_light"   --output-dir="figs_auto/"
+  - 22_scripts/gen_dark.py  21_specs/svg.md "figs_auto/[^/]+_light[.]svg"                      --output-dir="figs_auto/"
+```
+
+En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`.
 
 ### Text d'obertura (web)
 
@@ -190,10 +205,10 @@ Comencem la tasca A:
 
 0. Explora els fitxers que t'he passat
 1. Llegeix `CLAUDE.md`, `07_contrib.qmd` i `21_specs/svg.md`
-2. Llegeix `7.qmd`, `T8.qmd` i `T9.qmd`
+2. Llegeix `T7.qmd`, `T8.qmd` i `T9.qmd`
 3. Demana'm o busca al repositori els fitxers que necessitis
 4. Fes un anàlisi profund del contingut
-5. Genera la llista d'accions a realitzar; guarda-la a fitxer T9_tasques.md​ i ofereix-me-la per descarregar. 
+5. Genera la llista d'accions a realitzar; guarda-la a fitxer T9_tasques.md i ofereix-me-la per descarregar.
 6. Comença a realitzar les accions que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
-7. Abans de començar amb les figues, atura't perquè mirarem d'extreure-les del PDF perquè els textos que contenen són seleccionables, cosa que em fa pensar que com a mínim una part la podem extreure del PDF.
+7. Abans de començar amb les figures, atura't perquè mirarem d'extreure-les del PDF perquè els textos que contenen són seleccionables, cosa que em fa pensar que com a mínim una part la podem extreure del PDF.
 ```

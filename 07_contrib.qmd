@@ -457,7 +457,7 @@ Regla dels `:` addicionals:
 ![](/figs_auto/Tx_nom_figura__original_light.svg)
 :::
 ::: {.dark-content}
-![](/figs_auto/Tx_nom_figura_dark.svg)
+![](/figs_auto/Tx_nom_figura__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
@@ -474,7 +474,7 @@ Caption acabat amb punt.
 ![](/figs_auto/Tx_nom_figura__original_light.svg)
 :::
 ::: {.dark-content}
-![](/figs_auto/Tx_nom_figura_dark.svg)
+![](/figs_auto/Tx_nom_figura__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
@@ -518,24 +518,24 @@ El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les
 - Cel·les destacades es dibuixen **sempre al damunt** de les grises (ordre de dibuix: grises primer, destacades després) per evitar solapaments de vores.
 - Cel·les grises: `stroke-width="0.5"`. Cel·les destacades: `stroke-width="1"`.
 - No s'usen línies separadores entre quadrants: només espai buit.
-- Convenció de noms: `T<N>_nom_figura__original_light.svg` / `T<N>_nom_figura_dark.svg` (guió baix, no guió).
+- Convenció de noms dels fitxers font: `T<N>_nom_figura.svg` (guió baix, no guió). Els fitxers generats a `figs_auto/` reben el sufix `__original_light` / `__original_dark` o `__extern_light` / `__extern_dark` segons l'origen.
 - Paquet Debian necessari: `fonts-liberation` (`sudo apt install fonts-liberation`).
 
 #### Figures externes
 
-Les figures que provenen de fonts externes s'emmagatzemen a `extern/`. El nom del fitxer integrat al projecte conserva el nom del fitxer d'`extern/` amb el sufix `_light` o `_dark`:
+Les figures que provenen de fonts externes s'emmagatzemen a `13_figs_externes/`. El pre-render les copia a `figs_auto/` afegint el sufix `__extern_light`:
 
 ```
-extern/T2_svg-5d875942584dea27_typeR.svg   →   figs_auto/T2_svg-5d875942584dea27_typeR__original_light.svg
+13_figs_externes/T7_lru_exemple.svg   →   figs_auto/T7_lru_exemple__extern_light.svg
 ```
 
 Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`. La taula completa de figures externes i les llicències corresponents és a @sec-llicencia-figures-externes.
 
 #### Generació de la versió dark
 
-> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `22_scripts/svg_generate_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `21_specs/svg.md §12`.
+> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `22_scripts/gen_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `21_specs/svg.md`.
 
-Per a figures creades manualment o extretes de PDFs, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `21_specs/svg.md §12` (pipeline i taula de colors) i `21_specs/svg.md §14` (figures extretes de PDFs) per als detalls tècnics.
+Per a figures creades manualment, extretes de PDFs o de registres de bits, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `21_specs/svg.md` (pipeline, taula de colors i mapa de fonts) i `21_specs/registres.toml` (definicions de registres de bits) per als detalls tècnics.
 
 #### Integració al `.qmd`
 
@@ -548,11 +548,11 @@ Per a figures creades manualment o extretes de PDFs, **no cal fer res**: el pipe
 ![](/figs_auto/Tx_nom_figura__original_light.svg)
 :::
 ::: {.dark-content}
-![](/figs_auto/Tx_nom_figura_dark.svg)
+![](/figs_auto/Tx_nom_figura__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/figs_auto/Tx_nom_figura__original__original_light.svg)
+![](/figs_auto/Tx_nom_figura__original_light.svg)
 :::
 Caption acabat amb punt.
 :::
@@ -827,7 +827,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
 - **Lectura prèvia**: primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
 - **Lliurament**: última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
-- **Nom de figura SVG**: `L<N>_nom_figura_light.svg` / `L<N>_nom_figura_dark.svg`.
+- **Nom de figura SVG**: `L<N>_nom_figura.svg` (fitxer font a `12_figs_originals/`). El pre-render genera `figs_auto/L<N>_nom_figura__original_light.svg` i `_dark` automàticament.
 - **Comprovació pràctica**: les verificacions a RARS (valors esperats, ús del depurador) s'inclouen com a `{.callout-tip title="Comprovació pràctica"}` dins el bloc `{#sol-...}` corresponent. No porten etiqueta `#tip-` perquè no es referencien des d'altres punts del text.
 - **Directives `.eqv`**: es defineixen **abans** de la primera directiva de segment (`.data` o `.text`), fora de qualsevol secció.
 
@@ -893,6 +893,11 @@ Cal passar-los sempre els fitxers següents:
 - `07_contrib.qmd`
 - `_quarto.yml`
 - `TODO.md` (per a tasques que depenguin de decisions obertes)
+
+Per a tasques que impliquin figures SVG, afegir també:
+
+- `21_specs/svg.md`
+- `21_specs/registres.toml` (si la tasca inclou figures de registres de bits)
 
 `CLAUDE.md` especifica el model i l'effortness recomanats per a cada tipus de tasca.
 

@@ -162,9 +162,7 @@ $$V = \texttt{0xC480B5C3}$$
 **g) Error de representació**:
 
 $$\varepsilon = \bigl|1{,}0000\,0001\,0110\,1011\,1000\,011 - 1{,}0000\,0001\,0110\,1011\,1000\,0101\,0001\ldots\bigr| \times 2^{10}$$
-$$= 0{,}0000\,0000\,0000\,0000\,0000\,0001\,111\ldots \times 2^{10} \approx 1{,}111_2 \times 2^{-15} $$
-
-$$= (1 + 0{,}5 + 0{,}25 + 0{,}125) / 2 \times 10^{5} = \frac{1{,}875}{32768} = 5{,}722 \times 10^{-5}$$
+$$= 0{,}0000\,0000\,0000\,0000\,0000\,0000\,1111\ldots \times 2^{10} \approx 1{,}111_2 \times 2^{-15} $$
 
 $$= (1 + 0{,}5 + 0{,}25 + 0{,}125) \times 2^{-15} = \frac{1{,}875}{32768} = 5{,}722 \times 10^{-5}$$
 
@@ -196,7 +194,7 @@ $$v = 1\,0000\,0010\,1000{,}0010\,1000\,000_2$$
 
 **d) Convertir la part entera**:
 
-$$1\,0000\,0010\,1000_2 = 2^{12} + 2^5 + 2^3 + 2^2 = 4096 + 32 + 8 = 4136$$
+$$1\,0000\,0010\,1000_2 = 2^{12} + 2^5 + 2^3 = 4096 + 32 + 8 = 4136$$
 
 
 **e) Convertir la part fraccionària**:
@@ -224,7 +222,7 @@ La **precisió** d'una representació és el seu nombre de bits significatius. E
 Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redueix el rang (menys bits d'exponent) i viceversa. El format de simple precisió (8 bits d'exponent, 23 de fracció) és el compromís adoptat per l'estàndard IEEE-754 per a aplicacions de propòsit general.
 :::
 
-### Error de representació i underflow {#sec-error-representacio}
+### Error de representació i subdesbordament {#sec-error-representacio}
 
 El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut de representació** es defineix com $\varepsilon = |v - v_0|$ i l'**error relatiu** com $\eta = \varepsilon\,/\,|v|$.
 
@@ -239,11 +237,11 @@ $$\eta_{\max} < \frac{2^{e-23}}{m \times 2^e} = \frac{2^{-23}}{m} \leq 2^{-23} =
 La quantitat $1\ \text{ULP}$ (***Unit in the Last Place***) és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menor pes de la mantissa. La fita $\eta_{\max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
 
 ::: {#cau-underflow .callout-caution}
-## Underflow
+## Subdesbordament
 
 Hi ha una excepció important a la fita d'error relatiu. Quan el valor absolut del resultat és inferior al mínim positiu normalitzat representable $2^{E_{\min}} = 2^{-126}$, si s'aproxima simplement per zero l'error relatiu és $\eta = 1$, és a dir, de l'ordre del 100%. Això pot invalidar completament el significat del resultat.
 
-Quan el maquinari detecta aquesta situació genera una excepció d'***underflow***, que permet al programari tractar-la adequadament. Els nombres **denormals** (@sec-codificacions-especials) són el mecanisme que defineix l'IEEE-754 per reduir aquest error de forma gradual.
+Quan el maquinari detecta aquesta situació genera una excepció de **subdesbordament** (*underflow*), que permet al programari tractar-la adequadament. Els nombres **denormals** (@sec-codificacions-especials) són el mecanisme que defineix l'IEEE-754 per reduir aquest error de forma gradual.
 :::
 
 ::: {#wrn-error-relatiu-formal .callout-warning collapse=true}
@@ -309,7 +307,7 @@ Amb denormals, la fita d'error absolut dins l'interval $(0,\ 2^{-126})$ és la m
 
 $$\varepsilon_{\max} < 2^{-149}$$
 
-L'error relatiu ja no està uniformement acotat, però **creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com ***gradual underflow***.
+L'error relatiu ja no està uniformement acotat, però **creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com a **subdesbordament gradual** (*gradual underflow*).
 
 En simple precisió, la fita d'error relatiu és $2^{-23}$ a l'extrem superior de l'interval $(0,\ 2^{-126})$ i creix progressivament fins a $2^0 = 1$ a mesura que $v$ s'acosta a zero i la mantissa no-normalitzada perd dígits significatius.
 
@@ -384,7 +382,7 @@ L'algorisme de suma i resta en coma flotant segueix cinc passos:
 
 1. **Igualar els exponents** al major dels dos operands, desplaçant a la dreta la mantissa del de menor magnitud.
 2. **Sumar o restar les mantisses** segons els signes dels operands.
-3. **Normalitzar** el resultat (desplaçar la mantissa fins que la part entera sigui 1, ajustant l'exponent en conseqüència). Cal comprovar sobreeiximent/*underflow*.
+3. **Normalitzar** el resultat (desplaçar la mantissa fins que la part entera sigui 1, ajustant l'exponent en conseqüència). Cal comprovar sobreeiximent/subdesbordament.
 4. **Arrodonir** la mantissa a $p$ bits.
 5. **Codificar** signe, exponent i fracció.
 
@@ -460,7 +458,7 @@ $$z = 1\;|\;1000\,0000\;|\;101\,0000\,0000\,0000\,0000\,0101_2 = \texttt{0xC0500
 **Error de precisió**:
 
 $$\varepsilon = |1{,}1010\,0000\,0000\,0000\,0000\,101 - 1{,}1010\,0000\,0000\,0000\,0000\,10011| \times 2^1$$
-$$= 0{,}0000\,0000\,0000\,0000\,0000\,001 \times 2^1 = 1{,}0_2 \times 2^{-24} \approx 6{,}0 \times 10^{-8}$$
+$$= 0{,}0000\,0000\,0000\,0000\,0000\,0000\,1 \times 2^1 = 1{,}0_2 \times 2^{-24} \approx 6{,}0 \times 10^{-8}$$
 :::
 
 ### Multiplicació i divisió {#sec-multiplicacio-divisio-cf}
@@ -470,7 +468,7 @@ L'algorisme de multiplicació i divisió és més simple que el de suma i resta 
 1. **Sumar els exponents** (multiplicació) o **restar-los** (divisió).
 2. **Multiplicar o dividir les mantisses**.
 3. **Determinar el signe**: negatiu si els operands tenen signes diferents.
-4. **Normalitzar** el resultat. cal comprovar sobreeiximent/*underflow*.
+4. **Normalitzar** el resultat. Cal comprovar sobreeiximent/subdesbordament.
 5. **Arrodonir** la mantissa a $p$ bits.
 6. **Codificar** signe, exponent i fracció.
 
@@ -519,29 +517,29 @@ $$\begin{array}{r}
 1{,}11 \\
 \times\ 1{,}1010\,0000\,0000\,0000\,0000\,010 \\
 \hline
-10{,}1101\,1000\,0000\,0000\,0000\,0111\,10
+10{,}1101\,1000\,0000\,0000\,0000\,0111
 \end{array}$$
 
 **Pas 3. Signe**: negatiu (signes oposats).
 
 **Pas 4. Normalitzar** (desplaçar 1 posició a la dreta, $e = -3 + 1 = -2$):
 
-$$|z| = 1{,}0110\,1100\,0000\,0000\,0000\,0011\,110_2 \times 2^{-2}$$
+$$|z| = 1{,}0110\,1100\,0000\,0000\,0000\,0011\,1_2 \times 2^{-2}$$
 
 $e = -2 \in [-126,+127]$: cap excepció.
 
-**Pas 5. Arrodonir** a 24 bits (bits de guarda: $\mathbf{110}$; $G=1$, $R=1$ → al següent):
+**Pas 5. Arrodonir** a 24 bits (bits de guarda: $\mathbf{11}$; $G=1$, $R=1$ → al següent):
 
 $$\begin{array}{r}
-1{,}0110\,1100\,0000\,0000\,0000\,011 \\
+1{,}0110\,1100\,0000\,0000\,0000\,001 \\
 +\hspace{10.3em}1 \\
 \hline
-1{,}0110\,1100\,0000\,0000\,0000\,100
+1{,}0110\,1100\,0000\,0000\,0000\,010
 \end{array} \times 2^{-2}$$
 
 **Pas 6. Codificar** ($S=1$, $E_u = -2 + 127 = 125 = 0111\,1101_2$):
 
-$$z = 1\;|\;0111\,1101\;|\;011\,0110\,0000\,0000\,0000\,0100_2 = \texttt{0xBEB60004}$$
+$$z = 1\;|\;0111\,1101\;|\;011\,0110\,0000\,0000\,0000\,0010_2 = \texttt{0xBEB60002}$$
 :::
 
 ### No-associativitat {#sec-no-associativitat}
@@ -641,7 +639,7 @@ Camps del registre `fcsr` (RV32F).
 | `4` | `NV` | Operació invàlida ($\sqrt{-1}$, $0/0$, $\infty - \infty$…) |
 | `3` | `DZ` | Divisió per zero |
 | `2` | `OF` | Sobreeiximent |
-| `1` | `UF` | *Underflow* |
+| `1` | `UF` | Subdesbordament |
 | `0` | `NX` | Resultat inexacte (arrodoniment) |
 : {tbl-colwidths="[15,15,70]" .striped}
 
@@ -696,8 +694,7 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-| `flw` | `rd, off(rs1)` | $rd \leftarrow M_w[rs1 + SignExt(off)]$ | *Float Load Word* | I |
-| `fsw` | `rs2, off(rs1)` | $M_w[rs1 + SignExt(off)] \leftarrow rs2$ | *Float Store Word* | S |
+{{< include ../11_riscv/RV32F_instruccions_carrega_emmagatzemament.qmd >}}
 : {tbl-colwidths="[8,18,35,30,9]" .striped}
 
 `rs1` és sempre un registre **enter**. L'adreça efectiva ha de ser múltiple de 4 (alineació de paraula).
@@ -708,13 +705,7 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-| `fadd.s` | `rd, rs1, rs2` | $rd = rs1 + rs2$ | *Float Add* | R |
-| `fsub.s` | `rd, rs1, rs2` | $rd = rs1 - rs2$ | *Float Subtract* | R |
-| `fmul.s` | `rd, rs1, rs2` | $rd = rs1 \times rs2$ | *Float Multiply* | R |
-| `fdiv.s` | `rd, rs1, rs2` | $rd = rs1 \div rs2$ | *Float Divide* | R |
-| `fsqrt.s` | `rd, rs1` | $rd = \sqrt{rs1}$ | *Float Square Root* | R |
-| `fmin.s` | `rd, rs1, rs2` | $rd = \min(rs1, rs2)$ | *Float Minimum* | R |
-| `fmax.s` | `rd, rs1, rs2` | $rd = \max(rs1, rs2)$ | *Float Maximum* | R |
+{{< include ../11_riscv/RV32F_instruccions_aritmetiques.qmd >}}
 : {tbl-colwidths="[8,18,35,30,9]" .striped}
 :::
 
@@ -722,7 +713,7 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 ## RV32F ABI — Moviments
 | Mnemònic | Operands | Operació | Nom |
 | :--- | :--- | :--- | :--- |
-| `fmv.s` | `rd, rs1` | $rd = rs1$ | *Float Move* (pseudo) |
+{{< include ../11_riscv/RV32F_instruccions_moviment.qmd >}}
 
 `fmv.s rd, rs1` és una pseudoinstrucció equivalent a `fsgnj.s rd, rs1, rs1`. Copia el registre `rs1` a `rd` sense modificar el signe. RARS la suporta directament.
 :::
@@ -732,9 +723,7 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-| `feq.s` | `rd, rs1, rs2` | $rd = (rs1 = rs2)\ ?\ 1 : 0$ | *Float Equal* | R |
-| `flt.s` | `rd, rs1, rs2` | $rd = (rs1 < rs2)\ ?\ 1 : 0$ | *Float Less Than* | R |
-| `fle.s` | `rd, rs1, rs2` | $rd = (rs1 \leq rs2)\ ?\ 1 : 0$ | *Float Less or Equal* | R |
+{{< include ../11_riscv/RV32F_instruccions_comparacio.qmd >}}
 : {tbl-colwidths="[8,18,35,30,9]" .striped}
 
 El resultat s'escriu en un registre **enter** `rd` (0 o 1). Per implementar un salt condicional, cal combinar la comparació amb `beq` o `bne`:
@@ -754,10 +743,7 @@ Si algun operand és NaN, totes les comparacions retornen 0.
 
 | Mnemònic | Operands | Operació | Nom |
 | :--- | :--- | :--- | :--- |
-| `fcvt.s.w` | `rd, rs1` | $rd = (float)\ rs1$ | Enter amb signe → flotant |
-| `fcvt.s.wu` | `rd, rs1` | $rd = (float)\ rs1$ | Natural → flotant |
-| `fcvt.w.s` | `rd, rs1` | $rd = (int)\ rs1$ | Flotant → enter amb signe (trunca) |
-| `fcvt.wu.s` | `rd, rs1` | $rd = (unsigned)\ rs1$ | Flotant → natural (trunca) |
+{{< include ../11_riscv/RV32F_instruccions_conversio.qmd >}}
 : {tbl-colwidths="[12,15,30,43]" .striped}
 
 `rd` de `fcvt.s.w`/`fcvt.s.wu` és un registre de coma flotant; `rs1` és un registre enter. A `fcvt.w.s`/`fcvt.wu.s` és a l'inrevés.
@@ -766,8 +752,7 @@ Si algun operand és NaN, totes les comparacions retornen 0.
 
 | Mnemònic | Operands | Operació | Nom |
 | :--- | :--- | :--- | :--- |
-| `fmv.w.x` | `rd, rs1` | $rd \leftarrow rs1$ | Enter → flotant (bits) |
-| `fmv.x.w` | `rd, rs1` | $rd \leftarrow rs1$ | Flotant → enter (bits) |
+{{< include ../11_riscv/RV32F_instruccions_moviment_bits.qmd >}}
 : {tbl-colwidths="[12,15,30,43]" .striped}
 
 `fmv.w.x` i `fmv.x.w` copien el patró de 32 bits sense cap conversió: el valor numèric en coma flotant del resultat és en general diferent del valor enter de l'operand.
@@ -778,7 +763,7 @@ Si algun operand és NaN, totes les comparacions retornen 0.
 
 Convertiu el valor enter de `a0` a `float`, sumeu-hi `0,5` i convertiu el resultat de nou a enter:
 
-```{.C filename="C"}
+```{.c filename="C"}
 int arrodoneix(int n) {
     return (int)(n + 0.5f);
 }
@@ -823,7 +808,7 @@ const_u: .float 1.0
 
 Traduïu la funció C següent a RV32F:
 
-```{.C filename="C"}
+```{.c filename="C"}
 float func(float x) {
     if (x < 1.0f)
         return x * x;
