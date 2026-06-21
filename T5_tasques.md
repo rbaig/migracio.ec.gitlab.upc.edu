@@ -1,7 +1,7 @@
 # T5.qmd — Llista d'accions de la revisió interna
 
 > Fitxer objectiu: `01_T/T5.qmd` (Tema 5: Coma flotant) · Intensitat: **profunda**
-> Model de referència: `T4.qmd` · Convencions: `CLAUDE.md`, `contrib.qmd`, `svg_specs.md`
+> Model de referència: `T4.qmd` · Convencions: `CLAUDE.md`, `07_contrib.qmd`, `21_specs/svg.md`
 > Llegenda de severitat: 🔴 crític · 🟠 important · 🟡 menor/cosmètic · 🔵 decisió pendent
 
 ---
@@ -75,7 +75,7 @@ sobra** (el bit 2² no està actiu i tampoc s'ha sumat). Correcte: `2¹² + 2⁵
 ### 🔵 D2 — *underflow* vs terme català
 Apareix *underflow* en cursiva (anglicisme) i com a títol de secció. Cal decidir si
 s'unifica amb un terme català (p. ex. **subdesbordament**, ja usat en altres temes
-segons les substitucions de `contrib.qmd`) amb `(*underflow*)` a la primera aparició,
+segons les substitucions de `07_contrib.qmd`) amb `(*underflow*)` a la primera aparició,
 o si es manté *underflow* com a terme tècnic acceptat. → **decisió**.
 
 ---
@@ -92,7 +92,7 @@ correcte. Les 35 capçaleres `##` sense slug són **títols de callout**, que pe
 convenció **no** han de portar `{#sec-}`. Aquesta tasca ja està feta a T5.
 
 ### 🟡 E3 — Coherència de títols en `.callout-caution`
-`contrib.qmd` indica que `.callout-caution` (Essencial) no porta títol; a T5 alguns
+`07_contrib.qmd` indica que `.callout-caution` (Essencial) no porta títol; a T5 alguns
 en porten. Cal una passada de coherència (o bé acceptar-ho com a excepció documentada).
 → revisió menor.
 
@@ -101,7 +101,7 @@ en porten. Cal una passada de coherència (o bé acceptar-ho com a excepció doc
 ## F. Figures SVG
 
 ### 🔵 F1 — T5 no té CAP figura
-Confirmat: T5.qmd no referencia cap `figures/*.svg` (T4, en contrast, en té 18). El
+Confirmat: T5.qmd no referencia cap `figs_auto/*.svg` (T4, en contrast, en té 18). El
 tema és intrínsecament visual. Candidates proposades (a decidir):
 
 1. **Disposició de camps S | E | F** (32 bits, simple precisió) — molt recomanable.
@@ -113,16 +113,16 @@ tema és intrínsecament visual. Candidates proposades (a decidir):
 
 ### 🔵 F2 — Taula de registres FP: inline vs include
 T5 té la taula inline (`nte-registres-coma-flotant`); el repo ja conté
-`riscv/RV32I_registres_coma_flotant.qmd` (versió diferent, més verbosa). Per la
-convenció «contingut compartit → include a `/riscv/` usat a tema i compendi», caldria
+`11_riscv/RV32I_registres_coma_flotant.qmd` (versió diferent, més verbosa). Per la
+convenció «contingut compartit → include a `/11_riscv/` usat a tema i compendi», caldria
 reconciliar-les. Les dues versions difereixen en estil. → **decisió** sobre quina és
 canònica.
 
 ### 🔵 F3 — Taules d'instruccions RV32F inline
 Les taules de l'extensió F (càrrega/emmagatzemament, aritmètiques, moviments,
-comparacions, conversions) són inline a T5; a `/riscv/` només hi ha includes `RV32I_*`
+comparacions, conversions) són inline a T5; a `/11_riscv/` només hi ha includes `RV32I_*`
 (cap de l'extensió F). Possible tasca: factoritzar-les a includes si també han
-d'aparèixer a `riscv.qmd`. → **decisió**.
+d'aparèixer a `05_riscv.qmd`. → **decisió**.
 
 ---
 

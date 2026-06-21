@@ -1,7 +1,7 @@
 # T9 — Revisió interna: llista d'accions (revisada amb T7/T8 correctes)
 
 **Fitxer objectiu:** `01_T/T9.qmd` (Excepcions i interrupcions)
-**Fonts creuades:** `T7.qmd`, `T8.qmd`, `T7_tasques.md`, `T8_tasques.md`, `contrib.qmd`, `svg_specs.md`
+**Fonts creuades:** `T7.qmd`, `T8.qmd`, `T7_tasques.md`, `T8_tasques.md`, `07_contrib.qmd`, `21_specs/svg.md`
 **Llegenda:** 🔴 error · 🟡 millora · 🔵 decisió · ✅ resolt · ⏳ pendent · ⚪ neteja
 
 > **Nota:** aquesta versió substitueix la inicial, que es basava en una còpia antiga de T8.
@@ -63,7 +63,7 @@ Accions (alineades amb la decisió Opció C de T8, `@wrn-mv-tlb-hw-walker`):
 ### D-Zicsr/Zifencei — `sfence.vma` mal atribuïda 🔴 + decisió
 - L. 859: «`sfence.vma` pertany a Zifencei» i títol «Zicsr ISA — `sfence.vma`» → **incorrecte**.
   `sfence.vma` és de l'arquitectura **Supervisor** (privilegiada). Zifencei = `fence.i`.
-- **Decisió:** a `contrib.qmd` (taula d'extensions, l. 758-759) Zifencei surt per a T9. Si no
+- **Decisió:** a `07_contrib.qmd` (taula d'extensions, l. 758-759) Zifencei surt per a T9. Si no
   s'usa `fence.i` enlloc, (i) corregir l'atribució i (ii) **treure Zifencei** de la taula
   d'extensions d'EC.
 
@@ -133,9 +133,9 @@ Només es toca el patró d'integració (E1/E2) en aquesta passada.
 | Fitxer | Motiu |
 | :-- | :-- |
 | `T9.qmd` | totes les tasques anteriors |
-| `contrib.qmd` | decisió Zifencei (taula d'extensions) i, si escau, `@wrn-mv-notacio-v` |
+| `07_contrib.qmd` | decisió Zifencei (taula d'extensions) i, si escau, `@wrn-mv-notacio-v` |
 | `T8.qmd` | només si D-CC3 es resol documentant divergència (afegir nota) |
-| `sigles.qmd` | si apareixen sigles noves de T9 no recollides |
+| `06_sigles.qmd` | si apareixen sigles noves de T9 no recollides |
 
 ---
 
@@ -153,7 +153,7 @@ Només es toca el patró d'integració (E1/E2) en aquesta passada.
 | B (DRY) | `@wrn-tlb-page-table-walker` eliminat → ref. a `@wrn-mv-tlb-hw-walker` (T8); `@sec-tlb-bit-v` plegat dins del recordatori → ref. a `@sec-mv-tlb-bitv` i `@wrn-mv-notacio-v`; `@cau-tlb-reexecucio` plegat dins `@cau-tlb-miss-excepcio` |
 | B (refs creuades) | Afegides: `@wrn-mv-tlb-hw-walker`, `@wrn-mv-notacio-v`, `@nte-mcause-mes-rellevants`, `@sec-mv-fallada-pagina`, `@sec-mv-tlb-bitv`, `@sec-mv-tlb-bitd`, `@sec-escriptura-encert`, `@nte-csr-modes-s` |
 | B (codi) | `tlb_miss_handler` → `page_fault_handler`; indentació `lw` corregida; comentari `@sec-tlb-bit-v` eliminat del codi |
-| C | Fila `Zifencei` eliminada de la taula d'extensions a `contrib.qmd` |
+| C | Fila `Zifencei` eliminada de la taula d'extensions a `07_contrib.qmd` |
 
 ### Pendents ⏳
 

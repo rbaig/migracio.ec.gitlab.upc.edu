@@ -45,19 +45,19 @@ Directori `04_L/`:
 | :--- | :--- |
 | `_quarto.yml` | Configuració del projecte Quarto |
 | `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
-| `bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
+| `09_bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
 | `CLAUDE.md` | Instruccions operatives per a Claude |
-| `contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
+| `07_contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
 | `custom_dark.scss` | Estils CSS addicionals per al mode fosc (HTML) |
 | `custom_light.scss` | Estils CSS addicionals per al mode clar (HTML) |
 | `custom.scss` | Estils CSS comuns a tots dos modes (HTML) |
 | `ieee.csl` | Estil de citació IEEE (CSL) |
 | `index.qmd` | Pàgina de presentació (avaluació, eines, bibliografia) |
 | `preamble.tex` | Preàmbul LaTeX addicional (PDF) |
-| `riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
-| `sigles.qmd` | Glossari de sigles |
+| `05_riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
+| `06_sigles.qmd` | Glossari de sigles |
 | `styles.css` | Estils CSS addicionals (HTML) |
-| `svg_specs.md` | Especificacions d'estil per a les figures SVG |
+| `21_specs/svg.md` | Especificacions d'estil per a les figures SVG |
 | `TODO.md` | Llista de tasques pendents (contingut transitori) |
 
 ### Arbre de directoris
@@ -73,34 +73,34 @@ EC/
 │   └── PS_criteris.qmd
 ├── 04_L/                       # Laboratori
 │   └── Ly.qmd                  # y = 1–6
-├── figures/                    # Figures SVG (variants light i dark)
+├── figs_auto/                    # Figures SVG (variants light i dark)
 │   └── T<N>_nom_figura_{light,dark}.svg
 ├── laboratori/                 # Fitxers de suport del laboratori
 │   ├── L0/–L5/                 # Plantilles i fitxers per sessió
 │   ├── rars1_6.jar             # Simulador RARS (versió de referència)
 │   └── startup.s               # Fitxer d'inicialització RARS
-├── riscv/                      # Fragments de referència RISC-V (inclosos via `include`)
+├── 11_riscv/                      # Fragments de referència RISC-V (inclosos via `include`)
 │   ├── RV32I_instruccions_*.qmd
 │   ├── RV32I_registres_*.qmd
 │   ├── RV32I_format_instruccions.qmd
 │   └── RARS_*.qmd
 ├── extern/                     # Figures i recursos externs (no SVG propi)
-├── scripts/                    # Scripts auxiliars (p. ex. generació de SVGs)
+├── 22_scripts/                    # Scripts auxiliars (p. ex. generació de SVGs)
 ├── _quarto.yml
 ├── _variables.yml
-├── bibliografia.bib
+├── 09_bibliografia.bib
 ├── CLAUDE.md
-├── contrib.qmd
+├── 07_contrib.qmd
 ├── custom_dark.scss
 ├── custom_light.scss
 ├── custom.scss
 ├── ieee.csl
 ├── index.qmd
 ├── preamble.tex
-├── riscv.qmd
-├── sigles.qmd
+├── 05_riscv.qmd
+├── 06_sigles.qmd
 ├── styles.css
-├── svg_specs.md
+├── 21_specs/svg.md
 └── TODO.md
 ```
 
@@ -162,7 +162,7 @@ Descarregueu [`rars1_6.jar`](https://github.com/TheThirdOne/rars/releases/downlo
 
 ## Contribució
 
-Vegeu el fitxer [`contrib.qmd`](contrib.qmd), que conté:
+Vegeu el fitxer [`07_contrib.qmd`](07_contrib.qmd), que conté:
 
 - El flux de treball amb Git (branques, commits, Merge Requests).
 - Les convencions d'estil (veu, puntuació, negretes, anglicismes, sigles).

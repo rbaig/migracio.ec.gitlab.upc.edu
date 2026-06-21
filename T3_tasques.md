@@ -16,6 +16,6 @@
 
 ## Figures amb retocs manuals pendents (Roger)
 
-- `figures/T3_ba_exemple_light.svg`
-- `figures/T3_deps_multi_light.svg`
-- `figures/T3_deps_exemple_light.svg`
+- `figs_auto/T3_ba_exemple__original_light.svg`
+- `figs_auto/T3_deps_multi__original_light.svg`
+- `figs_auto/T3_deps_exemple__original_light.svg`

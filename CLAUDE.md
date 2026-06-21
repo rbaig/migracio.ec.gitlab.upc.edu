@@ -12,17 +12,17 @@ Abans de qualsevol acció, llegeix:
 
 1. `_quarto.yml` — configuració del projecte.
 2. `index.qmd` — fitxers que componen el llibre.
-3. `contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
+3. `07_contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
 4. `TODO.md` — tasques pendents i decisions obertes.
 
 Repartiment de responsabilitats entre fitxers:
 
-- `contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
-- `CLAUDE.md` (aquest fitxer) recull **només** l'operació a claude.ai. Qualsevol altre aspecte va a `contrib.qmd`.
+- `07_contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
+- `CLAUDE.md` (aquest fitxer) recull **només** l'operació a claude.ai. Qualsevol altre aspecte va a `07_contrib.qmd`.
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
 - `TODO.md` només conté contingut transitori; al final ha de quedar buit.
 
-Altres fitxers transversals: `riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `sigles.md` (glossari de sigles).
+Altres fitxers transversals: `05_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `sigles.md` (glossari de sigles).
 
 ## Abast del projecte
 
@@ -121,7 +121,7 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 En començar un xat:
 
 1. Explora el repositori. Si hi ha fitxers als quals no tens accés, demana'ls.
-2. Llegeix a fons `_quarto.yml`, `index.qmd`, `contrib.qmd` i la resta de fitxers necessaris per a la tasca.
+2. Llegeix a fons `_quarto.yml`, `index.qmd`, `07_contrib.qmd` i la resta de fitxers necessaris per a la tasca.
 3. Presenta'm la llista exhaustiva de tasques o problemes que proposes **abans de fer cap canvi**, i digues si cal que canviï el model o l'effortness.
 4. Espera confirmació per procedir.
 5. En cas de dubte, atura't, exposa el dubte i, si pots, proposa solucions.
@@ -145,13 +145,13 @@ Regles operatives:
 
 ### Figures SVG: política de generació
 
-**La prioritat és sempre generar el SVG des de zero** amb elements natius (`<rect>`, `<line>`, `<text>`, etc.), seguint `svg_specs.md`. El PDF original es pot usar com a referència visual, però la figura es reprodueix com a SVG natiu.
+**La prioritat és sempre generar el SVG des de zero** amb elements natius (`<rect>`, `<line>`, `<text>`, etc.), seguint `21_specs/svg.md`. El PDF original es pot usar com a referència visual, però la figura es reprodueix com a SVG natiu.
 
 **Figures de nova creació (opció per defecte, tots els temes):**
 - Construïdes des de zero amb elements SVG (`<rect>`, `<line>`, `<text>`, etc.).
 - Text editable, font `'Source Sans Pro', sans-serif`.
-- Colors de la paleta del projecte (vegeu `svg_specs.md §10`).
-- Variant dark generada automàticament per `scripts/svg_generate_dark.py`.
+- Colors de la paleta del projecte (vegeu `21_specs/svg.md §10`).
+- Variant dark generada automàticament per `22_scripts/svg_generate_dark.py`.
 
 **Figures extretes de PDFs originals (reservat per a figures complexes):**
 
@@ -160,10 +160,10 @@ L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que
 Característiques tècniques de les figures extretes:
 - Text traçat (corbes de Bézier), no editable com a text. Per editar cal partir del PDF original.
 - Negre implícit convertit en `fill="#000000"` explícit a l'element `<svg>` arrel, perquè sigui substituïble per l'script dark.
-- Variant dark generada automàticament per `scripts/svg_generate_dark.py` gràcies a les entrades `#000000`, `#ffffff` i `#b3b3b3` de la taula `REPLACEMENTS` (vegeu `svg_specs.md §14`).
+- Variant dark generada automàticament per `22_scripts/svg_generate_dark.py` gràcies a les entrades `#000000`, `#ffffff` i `#b3b3b3` de la taula `REPLACEMENTS` (vegeu `21_specs/svg.md §14`).
 - **No cal afegir-les a `dark_exclusions.txt`**.
 
-En tots dos casos, la font de veritat per a les variants dark és `svg_specs.md §12` (taula `REPLACEMENTS`).
+En tots dos casos, la font de veritat per a les variants dark és `21_specs/svg.md §12` (taula `REPLACEMENTS`).
 
 ### Text d'obertura (web)
 
@@ -189,7 +189,7 @@ Seqüència de tasques a realitzar durant la sessió:
 Comencem la tasca A:
 
 0. Explora els fitxers que t'he passat
-1. Llegeix `CLAUDE.md`, `contrib.qmd` i `svg_specs.md`
+1. Llegeix `CLAUDE.md`, `07_contrib.qmd` i `21_specs/svg.md`
 2. Llegeix `7.qmd`, `T8.qmd` i `T9.qmd`
 3. Demana'm o busca al repositori els fitxers que necessitis
 4. Fes un anàlisi profund del contingut

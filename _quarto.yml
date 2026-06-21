@@ -1,12 +1,17 @@
 project:
   type: book
   output-dir: _book
-  # pre-render:
-  #   - bash -c "rm -rf figs_auto && mkdir figs_auto"
-  #   - scripts/gen_regs.py  specs/registres.toml                           "__registre_light" --output-dir="figs_auto/"
-  #   - scripts/norm_svg.py  specs/svg.md        "figs_extern/.*\\.svg"     "__extern_light"   --output-dir="figs_auto/"
-  #   - scripts/norm_svg.py  specs/svg.md        "figs_original/.*\\.svg"   "__original_light" --output-dir="figs_auto/"
-  #   - scripts/gen_dark.py  specs/svg.md        "figs_auto/.*_light\\.svg"                    --output-dir="figs_auto/"
+  pre-render:
+    - bash -c "rm -rf figs_auto && mkdir figs_auto"
+    - 22_scripts/norm_font.py 21_specs/svg.md "12_figs_originals/[^/]+[.]svg" "__original_light" --output-dir="figs_auto/"
+    - 22_scripts/norm_font.py 21_specs/svg.md "13_figs_externes/[^/]+[.]svg"  "__extern_light"   --output-dir="figs_auto/"
+    - 22_scripts/gen_regs.py  21_specs/registres.toml                          "__registre_light" --output-dir="figs_auto/"
+    - 22_scripts/gen_dark.py  21_specs/svg.md "figs_auto/[^/]+_light[.]svg"                      --output-dir="figs_auto/"
+    # - bash -c "rm -rf figs_auto && mkdir figs_auto"
+    # - 22_scripts/gen_regs.py 21_specs/registres.toml                              "__registre_light" --output-dir="figs_auto/"
+    # - 22_scripts/norm_svg.py 21_specs/svg.md         "12_figs_originals/.*\\.svg" "__original_light" --output-dir="figs_auto/"
+    # - 22_scripts/norm_svg.py 21_specs/svg.md         "13_figs_externes/.*\\.svg"  "__extern_light"   --output-dir="figs_auto/"
+    # - 22_scripts/gen_dark.py 21_specs/svg.md         "figs_auto/.*_light\\.svg"                      --output-dir="figs_auto/"
 
 book:
 #  date: "2026-05-04"
@@ -105,10 +110,10 @@ book:
           file: 04_L/L6.qmd
         - text: "Calendari"
           file: Lcalendari.qmd
-    - riscv.qmd
-    - sigles.qmd
-    - contrib.qmd
-    - LICENSE.qmd
+    - 05_riscv.qmd
+    - 06_sigles.qmd
+    - 07_contrib.qmd
+    - 08_LICENSE.qmd
 
 lang: ca
 
@@ -204,5 +209,5 @@ format:
     include-in-header:
       - preamble.tex
 
-bibliography: bibliografia.bib
+bibliography: 09_bibliografia.bib
 csl: ieee.csl

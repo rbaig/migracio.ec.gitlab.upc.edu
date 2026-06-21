@@ -9,7 +9,7 @@ Llegenda: ✅ **FET** · ⏳ **PENDENT (xat de T9)**
 ### ✅ CC1 — Bit de presència de la PTE: `V` (ISA/H&H)
 `V` adoptat arreu a T8 (PTE, TLB, exemple, comentaris de figures).
 Callout `@wrn-mv-notacio-v` (Aprofundiment) avisa de la divergència amb P&H.
-Justificació a `contrib.qmd` § Decisions T8.
+Justificació a `07_contrib.qmd` § Decisions T8.
 ⏳ Al xat de T9: afegir referència enrere a `@wrn-mv-notacio-v` a `@sec-tlb-bit-v`.
 
 ### ✅ CC2 — Model de fallada de TLB: Opció C (abstracte + aprofundiment)
@@ -68,7 +68,7 @@ Ja remet a `@sec-csr-privilegis` (T9) per als modes M/S/U de RISC-V.
 
 ---
 
-## Sigles (`sigles.qmd`)
+## Sigles (`06_sigles.qmd`)
 - ✅ VPN, PPN afegides.
 
 ---
@@ -78,8 +78,8 @@ Ja remet a `@sec-csr-privilegis` (T9) per als modes M/S/U de RISC-V.
 | Fitxer | Canvis principals |
 |:---|:---|
 | `T8.qmd` | CC1, CC2, B1, B2, B5, C1, C2, D1, D2, D3 |
-| `sigles.qmd` | VPN, PPN |
-| `contrib.qmd` | Decisió CC1 documentada a § Decisions T8 |
+| `06_sigles.qmd` | VPN, PPN |
+| `07_contrib.qmd` | Decisió CC1 documentada a § Decisions T8 |
 | `T7.qmd` | Etiquetes `{#sec-}` duplicades eliminades (línies 41, 50) |
 
 ---
@@ -87,4 +87,4 @@ Ja remet a `@sec-csr-privilegis` (T9) per als modes M/S/U de RISC-V.
 ## Figures (F/G) — fase posterior
 
 8 figures de nova creació. Prioritat: `T8_mv_flux_traduccio` (resol E1).
-Rutes des de `01_T/`: `../figures/T8_*_light.svg`.
+Rutes des de `01_T/`: `/figs_auto/T8_*__original_light.svg`.

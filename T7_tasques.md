@@ -40,8 +40,8 @@ Les figures de LO Draw es passen com a SVG exportat (esbós de referència); Cla
 
 | ID | Descripció | Notes |
 |:---|:---|:---|
-| `fig-mc-exemple-descomposicio-32bits` | Taula MC (V, Etiqueta, Bloc de dades) — contingut igual a `mc_organitzacio` però per a l'exemple de `0x100100F8` dins `@tip-mc-numbloc` | Referència: `T7_mc_organitzacio_light.svg` existent |
-| `fig-cd-diagrama` | Diagrama blocs maquinari MC correspondència directa (decodificador, comparador, mux) | Referència: `T7_cd_diagrama_light.svg` (LO Draw, passat per Roger) |
+| `fig-mc-exemple-descomposicio-32bits` | Taula MC (V, Etiqueta, Bloc de dades) — contingut igual a `mc_organitzacio` però per a l'exemple de `0x100100F8` dins `@tip-mc-numbloc` | Referència: `T7_mc_organitzacio__original_light.svg` existent |
+| `fig-cd-diagrama` | Diagrama blocs maquinari MC correspondència directa (decodificador, comparador, mux) | Referència: `T7_cd_diagrama__original_light.svg` (LO Draw, passat per Roger) |
 | `fig-assoc-conjunts-diagrama` | Diagrama blocs MC associativa per conjunts (N comparadors en paral·lel, OR, mux N:1) | Anàleg a fig-cd-diagrama però associativa |
 | `fig-ca-diagrama` | Diagrama blocs MC completament associativa (tots comparadors sobre totes les línies, sense decodificador) | 🔴 referència trencada al `.qmd` |
 | `fig-texe-diagrama` | Diagrama temporal lw/addu/lw (etapes F/D/R/A/M/W, ideal vs. real amb penalització) | Referència: pàg. 24 PDF original |
@@ -66,13 +66,13 @@ Les figures de LO Draw es passen com a SVG exportat (esbós de referència); Cla
 ### Figures de referència disponibles (al repositori)
 
 Per mantenir coherència visual, usar sempre com a referència:
-- `T7_mc_organitzacio_light.svg` — estil de taules (blau, neutre, capçalera)
-- `T7_cd_descomposicio_bits_light.svg` — estil de descomposició de bits (claudàtors, colors camps)
-- `T7_mc_encert_light.svg` — estil de diagrames CPU/MC/MP amb fletxes
+- `T7_mc_organitzacio__original_light.svg` — estil de taules (blau, neutre, capçalera)
+- `T7_cd_descomposicio_bits__original_light.svg` — estil de descomposició de bits (claudàtors, colors camps)
+- `T7_mc_encert__original_light.svg` — estil de diagrames CPU/MC/MP amb fletxes
 
 ---
 
 ## Pendent d'actualitzar (ja fet en aquest xat)
 
-- `contrib.qmd`: criteri linting ✅, criteri E6 ✅, convenció A d'integració ✅
+- `07_contrib.qmd`: criteri linting ✅, criteri E6 ✅, convenció A d'integració ✅
 - `CLAUDE.md`: política figures SVG ✅

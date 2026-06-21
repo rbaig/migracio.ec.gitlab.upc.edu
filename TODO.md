@@ -55,7 +55,7 @@ afegir solucionari:
 
 - A `CLAUDE.md` → 
 
-## Criteris pendents de documentar a `contrib.qmd`
+## Criteris pendents de documentar a `07_contrib.qmd`
 
 - **Adreces de memòria**: `0x00000000` o `0x0000 0000` (amb espai cada 4 nibbles)?
 - **Directives**: quin títol de callout? `## Directives —` o `## RARS —`?

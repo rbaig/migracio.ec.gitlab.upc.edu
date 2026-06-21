@@ -22,7 +22,7 @@
 
 | # | Estat | Resultat |
 | :--- | :---: | :--- |
-| 4.21 | 📌 | `sec-extraccio-invariants` es defineix a **T2** (l.1916) i T4 l'usa. La nota de `contrib.qmd` (§T2/T4) que diu "es defineixen totes a T4" és imprecisa → **actualitzar contrib**. Sense col·lisió d'etiquetes. |
+| 4.21 | 📌 | `sec-extraccio-invariants` es defineix a **T2** (l.1916) i T4 l'usa. La nota de `07_contrib.qmd` (§T2/T4) que diu "es defineixen totes a T4" és imprecisa → **actualitzar contrib**. Sense col·lisió d'etiquetes. |
 
 ## 5. Format Quarto
 
@@ -40,5 +40,5 @@
 
 | # | Estat | Tasca |
 | :--- | :---: | :--- |
-| 7.42 | ✅ | SVG *light* dels formats renombrats a `T2_typeR/S/I_light.svg`; refs actualitzades. Fitxers a `outputs/figures/`. |
-| 7.43 | ✅ | Creat `T2_acces_vector_light.svg` + `_dark.svg` (verificats); etiqueta `#fig-acces-vector`, integració light/dark al `.qmd`. |
+| 7.42 | ✅ | SVG *light* dels formats renombrats a `T2_typeR/S/I__original_light.svg`; refs actualitzades. Fitxers a `outputs/figs_auto/`. |
+| 7.43 | ✅ | Creat `T2_acces_vector__original_light.svg` + `_dark.svg` (verificats); etiqueta `#fig-acces-vector`, integració light/dark al `.qmd`. |
