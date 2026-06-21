@@ -328,7 +328,63 @@ font-size: 11 px   fill: color de la zona   text-anchor: middle
 
 ---
 
-## 12. Variant dark
+## 12. Fonts
+
+Les fonts usades als SVG del projecte han de ser fonts de sistema disponibles sense instal·lació addicional a les plataformes habituals (Linux/Debian, macOS, Windows). Els SVG s'insereixen com a `<img>` i no hereten les fonts carregades pel CSS de Quarto.
+
+Paquet Debian necessari: `fonts-liberation` (`sudo apt install fonts-liberation`).
+
+### Taula de fonts
+
+El bloc següent és la **font de veritat** de la taula de fonts i de les substitucions de migració. L'script `scripts/svg_migrate_fonts.py` el llegeix directament d'aquest fitxer en temps d'execució. Per afegir o modificar fonts, editeu només aquest bloc.
+
+```{.python #svg-font-map}
+SANS = "'Liberation Sans', Arial, Helvetica, sans-serif"
+MONO = "'Liberation Mono', 'Courier New', Courier, monospace"
+
+# Ús als SVG:
+#   font-family="'Liberation Sans', Arial, Helvetica, sans-serif"   → cos de text, etiquetes
+#   font-family="'Liberation Mono', 'Courier New', Courier, monospace" → adreces, instruccions, valors hex
+
+# Mapa de substitució: clau = valor normalitzat (minúscules, espais col·lapsats)
+# valor = nova cadena font-family
+FONT_MAP = {
+    # Proporcionals (llegat: Source Sans Pro, genèrics Inkscape)
+    "'source sans pro', sans-serif": SANS,
+    "source sans pro, sans-serif":   SANS,
+    "'source sans pro'":             "'Liberation Sans'",
+    "source sans pro":               "Liberation Sans",
+    "'sans'":                        "Liberation Sans",
+    "sans":                          "Liberation Sans",
+    "sans-serif":                    SANS,
+    # Monoespaciades (llegat: FreeMono, M+ 1p Fallback, Courier malformat)
+    "m+ 1p fallback":                                MONO,
+    "'m+ 1p fallback'":                              MONO,
+    "courier new, monospace":                        MONO,
+    "'courier new', monospace":                      MONO,
+    "'courier new, monospace'":                      MONO,
+    "courier new,monospace":                         MONO,
+    "freemono":                                      "'Liberation Mono'",
+    "freemono, monospace":                           MONO,
+    "freemono, 'courier new', monospace":            MONO,
+    "freemono,'courier new',monospace":              MONO,
+    "freemono, \"courier new\", monospace":          MONO,
+}
+
+# Valors considerats correctes (no es reporten com a desconeguts)
+KNOWN_NORMALIZED = {
+    "liberation sans",
+    SANS.lower(),
+    "liberation mono",
+    MONO.lower(),
+    "arial", "helvetica", "courier new", "courier", "monospace",
+    "",   # font-family="" buit (artefacte Inkscape); s'ignora silenciosament
+}
+```
+
+---
+
+## 13. Variant dark
 
 > **Les variants dark no es creen ni editen manualment.** Es generen automàticament com a part del procés de render de Quarto mitjançant l'script `scripts/svg_generate_dark.py`.
 
@@ -355,7 +411,7 @@ T3_ba_general_dark.svg
 
 ### Taula de substitució light → dark
 
-El bloc següent és la **font de veritat** de la taula. L'script `scripts/svg_generate_dark.py` el llegeix directament d'aquest fitxer en temps d'execució (vegeu §12 «Generació automàtica»). Per modificar la paleta dark, editeu només aquest bloc.
+El bloc següent és la **font de veritat** de la taula. L'script `scripts/svg_generate_dark.py` el llegeix directament d'aquest fitxer en temps d'execució (vegeu §13 «Generació automàtica»). Per modificar la paleta dark, editeu només aquest bloc.
 
 ```{.python #svg-dark-replacements}
 REPLACEMENTS = [
@@ -371,7 +427,7 @@ REPLACEMENTS = [
     ('#664d03', '#ffd966'),
     ('#f8d7da', '#3a1a1e'),  # .text / executable (rosa)
     ('#842029', '#f1a8ae'),
-    # Figures extretes de PDF (text traçat, vegeu §14)
+    # Figures extretes de PDF (text traçat, vegeu §15)
     ('#000000', '#adb5bd'),  # línies i text negre implícit → gris clar
     ('#ffffff', '#2d2d2d'),  # fons blanc de zones internes → gris molt fosc
     ('#b3b3b3', '#666666'),  # gris mig (p. ex. barres de tc/tc') → gris fosc llegible
@@ -382,9 +438,9 @@ Els colors dins els marcadors `<polygon fill="...">` també es substitueixen aut
 
 ---
 
-## 13. Figures afectades per aquests patrons
+## 14. Figures afectades per aquests patrons
 
-Les variants dark de totes les figures es generen automàticament (vegeu §12). La columna «Notes» indica el contingut o les convencions específiques.
+Les variants dark de totes les figures es generen automàticament (vegeu §13). La columna «Notes» indica el contingut o les convencions específiques.
 
 | Figura | Tipus | Notes |
 |:---|:---|:---|
@@ -400,11 +456,11 @@ Les variants dark de totes les figures es generen automàticament (vegeu §12). 
 | `T3_deps_multi` | Dependències de dades | `c`, `d` (blau `#084298`) travessen la frontera; `c`, `d`, `e` al return (vermell `#cc0000`) |
 | `T3_deps_exemple` | Dependències de dades | `a`, `b`, `c`, `d` (blau); `res_f`, `res_g` com a òvals (vermell `#cc0000`); dues fronteres |
 
-> **Nota sobre les figures de dependències:** el color `#cc0000` s'usa per a cercles/òvals de resultats intermedis i per als usos posteriors a la crida. Aquest color **no forma part de la taula de substitució dark** (§12) i, per tant, les figures `T3_deps_*` s'han d'afegir a `scripts/dark_exclusions.txt` fins que es defineixi la seva variant dark manualment.
+> **Nota sobre les figures de dependències:** el color `#cc0000` s'usa per a cercles/òvals de resultats intermedis i per als usos posteriors a la crida. Aquest color **no forma part de la taula de substitució dark** (§13) i, per tant, les figures `T3_deps_*` s'han d'afegir a `scripts/dark_exclusions.txt` fins que es defineixi la seva variant dark manualment.
 
 ---
 
-## 14. Figures extretes de PDFs existents
+## 15. Figures extretes de PDFs existents
 
 Algunes figures del projecte provenen de PDFs originals (material docent anterior) i es generen amb el script Python `scripts/extract_pdf_figure.py` (o equivalent), que fa servir `pymupdf` i `text_as_path=True`.
 
@@ -416,7 +472,7 @@ Algunes figures del projecte provenen de PDFs originals (material docent anterio
 
 ### Generació de la variant dark
 
-Les figures extretes de PDF **es generen automàticament** per `svg_generate_dark.py` com la resta de figures, gràcies a les tres entrades específiques de la taula `REPLACEMENTS` (§12):
+Les figures extretes de PDF **es generen automàticament** per `svg_generate_dark.py` com la resta de figures, gràcies a les tres entrades específiques de la taula `REPLACEMENTS` (§13):
 
 | Light | Dark | Ús |
 |:---|:---|:---|
@@ -440,7 +496,7 @@ Les figures extretes de PDF **es generen automàticament** per `svg_generate_dar
 
 | Propietat | Figura extreta de PDF | Figura de nova creació |
 |:---|:---|:---|
-| Text | Traçat (corbes) | Editable, font `'Source Sans Pro', sans-serif` |
+| Text | Traçat (corbes) | Editable, font `'Liberation Sans', Arial, Helvetica, sans-serif` |
 | Colors | Negre implícit → explícit (`#000000`) | Paleta del projecte (§10) |
 | Edició | Inkscape (corbes) o regeneració des de PDF | Inkscape (text editable) |
 | Dark | Automàtica via `REPLACEMENTS` | Automàtica via `REPLACEMENTS` |
