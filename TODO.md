@@ -86,6 +86,14 @@ Decisions obertes que, un cop preses, han d'aterrar a `07_contrib.qmd`.
 - **Identificador `#cau-underflow`**: opcionalment renombrar a `#cau-subdesbordament` (ara no es
   referencia enlloc; és cosmètic).
 
+**Pedagògic** (segona passada — fet: G/R/S al cos, notació unificada, aprofundiments aprimats,
+5è mode d'arrodoniment, «dígits» en context decimal, **exemple de divisió** `#tip-divisio-ieee754`
+afegit). Pendent:
+
+- **P7** — Alinear l'ordre de la taula de codificacions especials amb el de les subseccions
+  (o afegir frase pont). Molt menor.
+- **P8** — `fcsr` té una dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
+
 ### T6
 
 - SVGs `T6_not_cmos`, `T6_not_1_0`, `T6_not_0_1`: alçades diferents; textos solapats al PDF. Provar les versions `___tracable____original_light.svg` (desagrupant i tornant a agrupar s'hi poden fer modificacions petites).

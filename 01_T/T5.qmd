@@ -226,13 +226,13 @@ Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redu
 
 El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut de representació** es defineix com $\varepsilon = |v - v_0|$ i l'**error relatiu** com $\eta = \varepsilon\,/\,|v|$.
 
-Per a un nombre normalitzat qualsevol de la forma $v_0 = m \times 2^e$, el valor representable següent és $v_1 = (m + 2^{-23}) \times 2^e$, de manera que:
+Per a un nombre normalitzat qualsevol de la forma $v_0 = m \times 2^e$, el valor representable següent és $v_1 = (m + 2^{-23}) \times 2^e$, de manera que l'error absolut màxim és:
 
 $$\varepsilon_{\max} < 2^{e-23}$$
 
-L'error relatiu màxim s'obté dividint per $v_0$ i tenint en compte que $m \geq 1{,}0$:
+Dividint per $v_0$ i tenint en compte que $m \geq 1{,}0$, l'error relatiu queda acotat uniformement (@wrn-error-relatiu-formal):
 
-$$\eta_{\max} < \frac{2^{e-23}}{m \times 2^e} = \frac{2^{-23}}{m} \leq 2^{-23} = 1\ \text{ULP}$$
+$$\eta_{\max} < 2^{-23} = 1\ \text{ULP}$$
 
 La quantitat $1\ \text{ULP}$ (***Unit in the Last Place***) és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menor pes de la mantissa. La fita $\eta_{\max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
 
@@ -313,7 +313,7 @@ En simple precisió, la fita d'error relatiu és $2^{-23}$ a l'extrem superior d
 
 ### Arrodoniment {#sec-arrodoniment}
 
-Quan el resultat exacte $v$ d'una operació no és representable, cal triar entre els dos valors representables $v_0 < v < v_1$ més pròxims. Aquesta aproximació s'anomena **arrodoniment**. L'IEEE-754 defineix quatre modes:
+Quan el resultat exacte $v$ d'una operació no és representable, cal triar entre els dos valors representables $v_0 < v < v_1$ més pròxims. Aquesta aproximació s'anomena **arrodoniment**. L'IEEE-754 (revisió de 2008) defineix cinc modes; els quatre d'ús més habitual són:
 
 | Mode | Criteri |
 | :--- | :--- |
@@ -324,41 +324,43 @@ Quan el resultat exacte $v$ d'una operació no és representable, cal triar entr
 
 El mode per defecte és l'**arrodoniment al més pròxim** (***Round to Nearest Even***, **RNE**). Proporciona l'error mínim possible i, en el cas equidistant, tria el valor parell (el que té el bit de menor pes a 0) per evitar biaixos sistemàtics en cadenes llargues de càlculs.
 
-Els modes d'arrodoniment a $+\infty$ i a $-\infty$ s'usen conjuntament en **aritmètica d'intervals**, una tècnica que acota els errors d'arrodoniment per garantir la fiabilitat dels resultats numèrics.
+Els modes d'arrodoniment a $+\infty$ i a $-\infty$ s'usen conjuntament en **aritmètica d'intervals**, una tècnica que acota els errors d'arrodoniment per garantir la fiabilitat dels resultats numèrics. L'estàndard inclou encara un cinquè mode, *al més pròxim amb empat cap a la magnitud major* (RMM), poc emprat; RISC-V implementa els cinc modes al registre `fcsr` (@nte-fcsr).
 
-::: {#tip-arrodoniment-rne .callout-tip}
-## Arrodoniment RNE
+#### Bits de guarda {#sec-bits-de-guarda}
 
-Arrodoniu les mantisses de 6 bits següents a 3 bits:
+Quan el resultat exacte d'una operació té més bits que la mantissa, els bits sobrants (els **bits de guarda**) determinen com s'arrodoneix. N'hi ha prou amb tres:
 
-| Valor exacte | Bits descartats | Criteri | Resultat |
-| :---: | :---: | :--- | :---: |
-| $101{,}010$ | $010$ | 1r bit descartat = 0 → a l'anterior | $101$ |
-| $101{,}011$ | $011$ | 1r bit descartat = 0 → a l'anterior | $101$ |
-| $101{,}101$ | $101$ | 1r bit descartat = 1, resta ≠ 0 → al següent | $110$ |
-| $101{,}100$ | $100$ | 1r bit descartat = 1, resta = 0 → empat → al parell ($110$) | $110$ |
-| $100{,}100$ | $100$ | 1r bit descartat = 1, resta = 0 → empat → al parell ($100$) | $100$ |
-:::
+- **G** (*Guard*): el primer bit descartat.
+- **R** (*Round*): el segon bit descartat.
+- **S** (*Sticky*): l'OR lògic de la resta de bits descartats.
 
-::: {#wrn-bits-guarda .callout-warning collapse=true}
-## Bits de guarda: per què 3 bits són suficients
+La regla RNE en funció de $G$, $R$ i $S$ és:
 
-Durant una suma o resta en coma flotant, la mantissa del sumand de menor magnitud es desplaça a la dreta per igualar els exponents. Els bits que queden fora de la mantissa de $p$ bits s'anomenen **bits de guarda**. Descartar-los introdueix errors; conservar-los tots requeriria un sumador de mida arbitrària.
-
-Es demostra que **tres bits de guarda** (anomenats **G**, **R** i **S**) són suficients per obtenir exactament el mateix resultat arrodonit que amb tots els bits:
-
-- **G** (*Guard*): primer bit de guarda; pot passar a la mantissa final després de la normalització.
-- **R** (*Round*): segon bit de guarda; determina si el resultat s'arrodoneix al valor següent.
-- **S** (*Sticky*): OR lògica de tots els bits restants; distingeix el cas equidistant del cas "al següent".
-
-La regla d'arrodoniment RNE amb tres bits de guarda és:
-
-| G | R | S | Acció |
+| $G$ | $R$ | $S$ | Acció |
 | :---: | :---: | :---: | :--- |
 | 0 | — | — | A l'anterior (truncar) |
 | 1 | 0 | 0 | Empat → al parell |
 | 1 | 1 | — | Al següent (sumar 1 ULP) |
 | 1 | 0 | 1 | Al següent (sumar 1 ULP) |
+
+::: {#tip-arrodoniment-rne .callout-tip}
+## Arrodoniment RNE
+
+Arrodoniu les mantisses de 6 bits següents a 3 bits (els 3 bits descartats són directament $G$, $R$ i $S$):
+
+| Valor exacte | $G\,R\,S$ | Criteri | Resultat |
+| :---: | :---: | :--- | :---: |
+| $101{,}010$ | $0\;1\;0$ | $G=0$ → a l'anterior | $101$ |
+| $101{,}011$ | $0\;1\;1$ | $G=0$ → a l'anterior | $101$ |
+| $101{,}101$ | $1\;0\;1$ | $G=1$, $R$ o $S=1$ → al següent | $110$ |
+| $101{,}100$ | $1\;0\;0$ | $G=1$, $R=S=0$ → empat → al parell ($110$) | $110$ |
+| $100{,}100$ | $1\;0\;0$ | $G=1$, $R=S=0$ → empat → al parell ($100$) | $100$ |
+:::
+
+::: {#wrn-bits-guarda .callout-warning collapse=true}
+## Per què 3 bits de guarda són suficients
+
+Durant una suma o resta, la mantissa del sumand de menor magnitud es desplaça a la dreta per igualar els exponents, i alguns bits queden fora de la mantissa de $p$ bits. Descartar-los introdueix error; conservar-los tots requeriria un sumador de mida arbitrària. Es demostra que els tres bits $G$, $R$ i $S$ (@sec-bits-de-guarda) basten per obtenir **exactament** el mateix resultat arrodonit que amb tots els bits: $G$ pot incorporar-se a la mantissa en normalitzar, $R$ decideix l'arrodoniment i $S$ (l'OR de la resta) distingeix el cas equidistant.
 
 **Exemple** (precisió $p = 6$ bits):
 
@@ -403,7 +405,7 @@ $$\begin{array}{r} 9{,}999 \\ +\ 0{,}01680 \\ \hline 10{,}01580 \end{array} \tim
 
 $$z = 1{,}001580 \times 10^2 \qquad (e = 2 \in [-99,+99],\ \text{cap excepció})$$
 
-**Pas 4. Arrodonir** a 4 dígits (bits descartats en negreta: $\mathbf{580}$; primer dígit descartat $\geq 5$ → al següent):
+**Pas 4. Arrodonir** a 4 dígits (dígits descartats en negreta: $\mathbf{580}$; primer dígit descartat $\geq 5$ → al següent):
 
 $$z \approx 1{,}002 \times 10^2$$
 :::
@@ -489,7 +491,7 @@ $$2{,}111 \times 9{,}200 = 19{,}4212$$
 
 $$|z| = 1{,}94212 \times 10^6 \qquad (e = 6 \in [-99,+99])$$
 
-**Pas 5. Arrodonir** a 4 dígits (bits descartats: $\mathbf{12}$; primer dígit descartat $< 5$ → a l'anterior):
+**Pas 5. Arrodonir** a 4 dígits (dígits descartats: $\mathbf{12}$; primer dígit descartat $< 5$ → a l'anterior):
 
 $$z \approx -1{,}942 \times 10^6$$
 :::
@@ -540,6 +542,46 @@ $$\begin{array}{r}
 **Pas 6. Codificar** ($S=1$, $E_u = -2 + 127 = 125 = 0111\,1101_2$):
 
 $$z = 1\;|\;0111\,1101\;|\;011\,0110\,0000\,0000\,0000\,0010_2 = \texttt{0xBEB60002}$$
+:::
+
+::: {#tip-divisio-ieee754 .callout-tip}
+## Divisió en coma flotant, simple precisió
+
+Calculeu $z = x / y$ amb $x = $ `0x41000000` i $y = $ `0x40400000`.
+
+**Descodificació**:
+
+- $x$: $S=0$, $e=3$, mantissa $= +1{,}0_2$ → $x = +8{,}0$
+- $y$: $S=0$, $e=1$, mantissa $= +1{,}1_2$ → $y = +3{,}0$
+
+**Pas 1. Restar els exponents**: $e = 3 - 1 = 2$
+
+**Pas 2. Dividir les mantisses**:
+
+$$\frac{1{,}0_2}{1{,}1_2} = 0{,}1010\,1010\,1010\ldots_2$$
+
+A diferència de la multiplicació, la divisió de mantisses sol donar un quocient **periòdic que no acaba**, de manera que l'arrodoniment és gairebé sempre necessari.
+
+**Pas 3. Signe**: positiu (mateix signe).
+
+**Pas 4. Normalitzar** (desplaçar 1 posició a l'esquerra, $e = 2 - 1 = 1$):
+
+$$|z| = 1{,}0101\,0101\,0101\,0101\,0101\,010\;\mathbf{1010}\ldots_2 \times 2^{1}$$
+
+$e = 1 \in [-126,+127]$: cap excepció.
+
+**Pas 5. Arrodonir** a 24 bits (bits de guarda: $G=1$, $R=0$, $S=1$ → al següent):
+
+$$\begin{array}{r}
+1{,}0101\,0101\,0101\,0101\,0101\,010 \\
++\hspace{10.3em}1 \\
+\hline
+1{,}0101\,0101\,0101\,0101\,0101\,011
+\end{array} \times 2^{1}$$
+
+**Pas 6. Codificar** ($S=0$, $E_u = 1 + 127 = 128 = 1000\,0000_2$):
+
+$$z = 0\;|\;1000\,0000\;|\;010\,1010\,1010\,1010\,1010\,1011_2 = \texttt{0x402AAAAB} \approx 2{,}6667$$
 :::
 
 ### No-associativitat {#sec-no-associativitat}
