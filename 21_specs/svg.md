@@ -276,6 +276,8 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | Heap / fitxers objecte `.o` / registres segurs (BA) | `#d1e7dd` | `#0a3622` |
 | Pila / biblioteques `lib.a` / `ra` desat (BA) | `#fff3cd` | `#664d03` |
 | Dependències de dades — resultat intermedi | — | `#cc0000` |
+| Miss (fallada de MC) — etiqueta de resultat | — | `#dc3545` |
+| Hit (encert de MC) — etiqueta de resultat   | — | `#198754` |
 
 ---
 
