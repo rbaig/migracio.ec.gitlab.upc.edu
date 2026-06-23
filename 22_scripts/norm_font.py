@@ -22,10 +22,10 @@ Arguments opcionals
 --output-dir    Directori on es desen els fitxers de sortida (per defecte: .).
                 La sortida és plana: no es preserva l'estructura de subdirectoris.
                 Exemple: --output-dir="figs_auto/"
---on-unknown-font report|default
+--on-unknown-font `report`|`normalize`
                 Comportament davant fonts no reconegudes:
-                  report   (per defecte) Reporta i no modifica.
-                  default  Substitueix per la font SANS estàndard del projecte.
+                  `report`     (per defecte) Reporta i no modifica.
+                  `normalize`  Substitueix per la font SANS estàndard del projecte.
 --verbosity 0|1|2
                 Nivell de detall del log (per defecte: 1).
                   0  Només errors i resum final.
@@ -184,7 +184,7 @@ def migrate_fonts(
             print(f'  {f!r}')
         if unknown_font_policy != 'report':
             default_font = sans_default or '(SANS no definit)'
-            print(f'[norm-font] Política fonts desconegudes: substituir per {default_font!r}')
+            print(f'[norm-font] Política `--on-unknown-font normalize`: substituir per {default_font!r}')
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -221,7 +221,7 @@ def migrate_fonts(
                 unknown_report.setdefault(uf, []).append(rel_path)
 
             # Aplica política per a fonts desconegudes
-            if unknown_font_policy == 'default' and unknowns and sans_default:
+            if unknown_font_policy == 'normalize' and unknowns and sans_default:
                 for uf in unknowns:
                     new_content = new_content.replace(uf, sans_default)
                     new_content = re.sub(
@@ -230,7 +230,7 @@ def migrate_fonts(
 
             # Sempre escriu el fitxer de sortida (gen_dark.py necessita tots els _light)
             out_path.write_text(new_content, encoding='utf-8')
-            if counts or (unknown_font_policy == 'default' and unknowns):
+            if counts or (unknown_font_policy == 'normalize' and unknowns):
                 written_sub += 1
                 if verbosity >= 2:
                     detail = ', '.join(f'{n}× {f!r}' for f, n in counts.items())
@@ -255,12 +255,12 @@ def migrate_fonts(
             if unknown_font_policy == 'report':
                 print(
                     '\n[norm-font] AVÍS — fonts desconegudes '
-                    '(no modificades per política "report"):'
+                    '(no modificades per política `--on-unknown-font report`):'
                 )
             else:
                 print(
                     '\n[norm-font] AVÍS — fonts desconegudes '
-                    f'(substituïdes per {sans_default!r}):'
+                    f'(substituïdes per `--on-unknown-font normalize` → {sans_default!r}):'
                 )
             for font, files in sorted(unknown_report.items()):
                 print(f'  Font: {font!r}')
@@ -269,7 +269,7 @@ def migrate_fonts(
             if unknown_font_policy == 'report':
                 print(
                     '\n[norm-font] Per resoldre les fonts desconegudes: corregiu la font '
-                    'al fitxer SVG original, o useu --on-unknown-font default per substituir-les '
+                    "al fitxer SVG original, o useu `--on-unknown-font normalize` per substituir-les "
                     'per la font SANS estàndard del projecte.'
                 )
 
@@ -326,11 +326,11 @@ if __name__ == '__main__':
         '--on-unknown-font',
         default='report',
         metavar='POLÍTICA',
-        choices=['report', 'default'],
+        choices=['report', 'normalize'],
         help=(
-            "Comportament davant fonts no reconegudes: "
-            "'report' (per defecte, no modifica) o "
-            "'default' (substitueix per la font SANS estàndard del projecte)."
+            'Comportament davant fonts no reconegudes: '
+            '\'report\' (per defecte, no modifica) o '
+            '\'normalize\' (substitueix per la font SANS estàndard del projecte).'
         ),
     )
     parser.add_argument(

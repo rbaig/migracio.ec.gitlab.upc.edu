@@ -32,11 +32,11 @@ Arguments opcionals
 --output-dir        Directori on es desen els fitxers dark generats (per defecte: .).
                     La sortida és plana: no es preserva l'estructura de subdirectoris.
                     El nom de sortida substitueix el sufix `_light` per `_dark`.
---on-unknown-color  report|invert|#RRGGBB
+--on-unknown-color  `report`|`invert`|`#RRGGBB`
                     Comportament davant colors no reconeguts:
-                      report   (per defecte) Reporta i no modifica.
-                      invert   Inverteix la lluminositat HSL automàticament.
-                      #RRGGBB  Substitueix per un color fix.
+                      `report`   (per defecte) Reporta i no modifica.
+                      `invert`   Inverteix la lluminositat HSL automàticament.
+                      `#RRGGBB`  Substitueix per un color fix.
 --verbosity 0|1|2
                     Nivell de detall del log (per defecte: 1).
                       0  Només errors i resum final.
@@ -239,7 +239,7 @@ def generate_dark_svgs(
             for c in extra:
                 print(f'  {c!r}')
         if unknown_color_policy != 'report':
-            print(f'[gen-dark] Política colors desconeguts: {unknown_color_policy!r}')
+            print(f'[gen-dark] Política `--on-unknown-color`: {unknown_color_policy!r}')
 
     apply_dark = _build_substituter(replacements)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -289,12 +289,12 @@ def generate_dark_svgs(
             if unknown_color_policy == 'report':
                 print(
                     '\n[gen-dark] AVÍS — colors no reconeguts '
-                    '(no modificats per política "report"):'
+                    '(no modificats per política `--on-unknown-color report`):'
                 )
             else:
                 print(
                     f'\n[gen-dark] AVÍS — colors no reconeguts '
-                    f'(transformats per política {unknown_color_policy!r}):'
+                    f'(transformats per `--on-unknown-color {unknown_color_policy}`):'
                 )
             for color, files in sorted(unknown_report.items()):
                 print(f'  Color: {color!r}')
@@ -303,7 +303,7 @@ def generate_dark_svgs(
             if unknown_color_policy == 'report':
                 print(
                     '\n[gen-dark] Passa la llista de colors no reconeguts a Claude perquè '
-                    "els incorpori a 21_specs/svg.md (bloc #svg-dark-replacements) i torna a "
+                    "els incorpori a 21_specs/svg.md (bloc `#svg-dark-replacements`) i torna a "
                     "executar l'script. Hauria de reportar 0 colors no reconeguts."
                 )
 
@@ -356,7 +356,7 @@ if __name__ == '__main__':
             "Comportament davant colors no reconeguts: "
             "'report' (per defecte, no modifica), "
             "'invert' (inverteix lluminositat HSL), "
-            "o '#RRGGBB' (substitueix per color fix)."
+            "o '#RRGGBB' (color fix hexadecimal)."
         ),
     )
     parser.add_argument(
@@ -375,8 +375,8 @@ if __name__ == '__main__':
     policy = args.on_unknown_color
     if policy not in ('report', 'invert') and not _HEX_RE.match(policy):
         print(
-            f'[gen-dark] ERROR: --on-unknown-color ha de ser "report", "invert" '
-            f'o un color hexadecimal (#RRGGBB). Valor rebut: {policy!r}',
+            f'[gen-dark] ERROR: `--on-unknown-color` ha de ser `report`, `invert` '
+            f'o un color hexadecimal `#RRGGBB`. Valor rebut: {policy!r}',
             file=sys.stderr,
         )
         sys.exit(1)
