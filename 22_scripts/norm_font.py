@@ -15,7 +15,7 @@ specs_file      Fitxer 21_specs/svg.md amb el bloc #svg-font-map.
 regex_entrada   Expressió regular aplicada sobre rutes relatives al CWD.
                 Exemple: "figs_externes/[^/]+[.]svg"
 sufix_sortida   Sufix que s'afegeix al nom base del fitxer de sortida.
-                Exemple: __extern_light  →  T2_fig.svg  →  T2_fig__extern_light.svg
+                Exemple: __extern_light  +  T2_fig.svg  ⇒  T2_fig__extern_light.svg
 
 Arguments opcionals
 -------------------
@@ -309,7 +309,7 @@ if __name__ == '__main__':
         metavar='sufix_sortida',
         help=(
             "Sufix afegit al nom base del fitxer de sortida. "
-            "Exemple: __extern_light  →  T2_fig.svg  →  T2_fig__extern_light.svg"
+            "Exemple: __extern_light  +  T2_fig.svg  ⇒  T2_fig__extern_light.svg"
         ),
     )
     parser.add_argument(

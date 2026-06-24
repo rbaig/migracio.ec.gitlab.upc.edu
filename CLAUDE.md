@@ -185,10 +185,28 @@ En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
 ```
-Nom del xat: `EC T9 Revisió interna`
+Nom d'aquest xat: `EC T2, PE_T2 i PS_T2 Revisió interna`
 
-Objectiu d'aquest xat: T9.qmd
+Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 Intensitat: Profunda
+Fitxers a revisar:
+
+- Principals: els especificats al "Nom d'aquest xat"
+- Addicionalment: qualsevol que processis
+
+Aspectes a revisar:
+
+- Correcció tècnica
+    - Font de veritat: tots els documents de l'autor "RISC-V International" de `09_bibliografia.bib`
+    - Les versions més recents d'altres documents del repositori oficial de "RISC-V International"
+- Coherència entre Teoria, Problemes enunciats i Problemes solució
+- Eficiència pedagògica
+    - Ordre de presentació de la matèria autocontingut: presentació lineal de continguts (no emprar cap concepte que no s'hagi introduït encara, dificultat creixent, etc.)
+    - Coherència estilística del llenguatge, dels recursos didàctics (ús de callouts, de referències creuades, freqüència dels exemples, ús consistent de termes, etc.)
+- Català normatiu
+    - Evitar anglicismes
+    - Ús dels termes especificats a 
+
 Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
 
 Seqüència de tasques a realitzar durant la sessió:
@@ -199,16 +217,16 @@ Seqüència de tasques a realitzar durant la sessió:
 - Tasca E: Revisió format Quarto
 - Tasca F: Generació figures SVG
 - Tasca G: Integració figures SVG
-- Actualització de `T9.qmd`, `T9_tasques`, `CLAUDE.md`
+- Actualització i presentació de tots els arxius que has modificat
 
 Comencem la tasca A:
 
 0. Explora els fitxers que t'he passat
 1. Llegeix `CLAUDE.md`, `07_contrib.qmd` i `21_specs/svg.md`
-2. Llegeix `T7.qmd`, `T8.qmd` i `T9.qmd`
+2. Llegeix els fitxers principals a revisar
 3. Demana'm o busca al repositori els fitxers que necessitis
 4. Fes un anàlisi profund del contingut
-5. Genera la llista d'accions a realitzar; guarda-la a fitxer T9_tasques.md i ofereix-me-la per descarregar.
-6. Comença a realitzar les accions que no necessiten la meva aprovació. Per cada tasca que requereixi decisió meva, atura't i presenta'm les opcions.
-7. Abans de començar amb les figures, atura't perquè mirarem d'extreure-les del PDF perquè els textos que contenen són seleccionables, cosa que em fa pensar que com a mínim una part la podem extreure del PDF.
+5. Genera la llista d'accions a realitzar; guarda-la a fitxer T2_P_tasques.md i ofereix-me-la per descarregar.
+6. Comença a realitzar les accions que no necessiten la meva aprovació. Fes una llista les tasques que requereixi decisió meva i quan hagis acabat la tasca anterior (6.) atura't i presenta'm la llista i les opcions de cada ítem que conté.
 ```
+Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
