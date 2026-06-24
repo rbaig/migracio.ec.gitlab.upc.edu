@@ -13,622 +13,122 @@ Aquest document de convencions només està disponible en la versió web:
 ## Ús d'aquesta guia
 
 - S'ha d'actualitzar sempre que es prengui una decisió de format, estil, etc.
-- **Fase actual**: revisió (tècnica i lingüística) de tot el material. Vegeu `CLAUDE.md` per al flux de treball i el model d'IA recomanat per a cada tasca.
+- Per al flux de treball, model d'IA i fase actual del projecte, vegeu `CLAUDE.md`.
 - Per a tasques pendents i decisions obertes, vegeu `TODO.md`.
 
-## Flux de treball amb Git
+## Contingut
 
-### Requisits previs
+### Criteri general
 
-Abans de contribuir cal tenir instal·lat:
+- S'ha d'evitar emprar conceptes, termes, etc. que encara no s'han introduït al cos del text. Si es fa, cal referenciar la secció o el callout on s'explica el concepte en detall.
+- No s'ha de repetir informació (*Don't Repeat Yourself*, DRY): ús de referències creuades; per a recordatoris puntuals, `{.callout-caution}`.
+- **Mnemònics**: El primer cop, si no estan prop d'una taula on se n'indiqui l'expansió, han d'anar seguits de l'expansió entre parèntesis. Ex: `addi` (***add immediate***).
+- No es permet que un nivell de profunditat tingui un sol ítem. En aquest cas, s'ha de pujar el contingut un nivell.
+- L'arquitectura de referència és RISC-V. No s'ha de fer cap referència a MIPS (tret d'on ja s'ha fet explícitament).
 
-- **Git** i accés com a **Developer**: [{{< var website >}}]({{< var repo >}}) ([Cal ser membre del grup `ec`](https://gitlab.upc.edu/groups/ec/)).
-- **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/). Extensions recomanades:
-    - [Quarto](https://marketplace.visualstudio.com/items?itemName=quarto.quarto)
-    - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
-    - [Spell Right](https://marketplace.visualstudio.com/items?itemName=ban.spellright)
-        - L'*spell checker* local (`.vscode/settings.json`) inclou els mnemònics de l'assignatura.
-- **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
-- **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que s'instal·la des de la pròpia CLI de Quarto:
+### Extensions RISC-V a EC
 
-```bash
-quarto install tinytex
-```
+A EC s'estudien les extensions següents:
 
-- **RARS** (simulador RISC-V): [RARS](https://github.com/TheThirdOne/rars/releases).
-
-### Verificació de l'entorn
-
-Comproveu que el projecte renderitza correctament abans de fer push. Des de la línia de comandes, a la carpeta arrel del projecte, executeu:
-
-```bash
-quarto render --to html
-```
-
-- Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
-
-### Protocol de contribució
-
-La branca `main` està **protegida**: ningú hi fa commits directament. Tot canvi s'integra a través d'una **Merge Request (MR)**.
-
-El flux per a qualsevol contribució és:
-
-1. Assegureu-vos de tenir `main` actualitzada:
-
-```bash
-git checkout main
-git pull
-```
-
-2. Creeu una branca nova amb un nom descriptiu:
-
-```bash
-git checkout -b contingut/t5-vectors
-```
-
-3. Feu els canvis, afegiu-los i feu commit:
-
-```bash
-git add T5.qmd
-git commit -m "T5: afegeix secció sobre vectors"
-```
-
-4. Pugeu la branca al servidor:
-
-```bash
-git push origin contingut/t5-vectors
-```
-
-5. Obriu una **Merge Request** a GitLab apuntant a `main`.
-
-### Convenció de noms de branques
-
-| Tipus de canvi | Format | Exemple |
+| Extensió | Descripció | Tema |
 | :--- | :--- | :--- |
-| Contingut nou | `contingut/<tema>-<descriptor>` | `contingut/t5-vectors` |
-| Correcció | `fix/<descriptor>` | `fix/t3-errada-alineacio` |
-| Configuració/tooling | `config/<descriptor>` | `config/quarto-pdf-output` |
+| RV32I | Base entera | Tots |
+| M | Multiplicació i divisió entera | T4 |
+| F | Coma flotant | T5 |
+| Zicsr | Registres de control i estat | T9 |
+| Zifencei | Instruccions de barrera d'instruccions (`fence.i`) | T9 |
 
-### Commits
+El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`, `RV32IM`, `RV32IF`, `RV32IZicsr`, `RV32IZicsrZifencei`.
 
-- Un commit per canvi lògic — no agrupeu canvis no relacionats en un sol commit.
-- Missatge en català, en present i descriptiu: `"T5: afegeix secció sobre vectors"`, no `"canvis"` ni `"wip"`.
-- Abans de fer commit, assegureu-vos que no hi ha cap etiqueta `-TODO` ni cap `TODO` que pugueu solucionar vosaltres mateixos al codi (vegeu @sec-callouts).
-- Abans de fer commit, apliqueu **linting** a la prosa dels fitxers `.qmd` modificats: elimineu dobles espais (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu que no hi ha cometes rectes `"..."` que haurien de ser guillemets `«...»`.
-- Abans de fer commit, verifiqueu que el projecte renderitza correctament.
+### Decisions per tema
 
-### Push directe a `main` (només maintainers)
+#### T2 i T3
 
-La branca `main` està protegida. El nivell d'accés és el següent:
+- **`.globl` vs. `.global`**: s'usa `.globl` (forma estàndard de GNU AS); `.global` és un àlies acceptat però no s'usa als exemples ni al laboratori.
+- **Modes d'adreçament**: quatre modes a EC: registre, immediat, base+desplaçament, relatiu al PC. `lui` → immediat; `jalr` → base+desplaçament.
+- **Terminologia de salts**: relatiu al PC (`beq`, `jal`) vs. indirecte (`jalr`). Tots els salts condicionals de RV32I són relatius al PC.
+- **Etiquetes de bucle**: `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.).
+- **Registres als exemples**: `t0`, `t1`, `t2`... tant en C com en assemblador per eliminar el soroll del mapatge.
+- **`la label+offset`**: admès a EC (pissarra i exàmens) però no suportat per RARS; al laboratori cal `la` + `addi`.
+- **Optimitzacions de bucle**: les tres optimitzacions numerades es defineixen a T4 (§4.5); el prerequisit no numerat (extracció d'invariants) s'introdueix a T2 (@sec-extraccio-invariants) i s'hi remet des de T4. La numeració és única per al bloc, no es reparteix entre temes, i és: #1 accés seqüencial, #2 avaluació de la condició al final, #3 eliminació de la variable d'inducció (vegeu §T4 a continuació).
+- **Pseudoinstruccions vs. macros**: distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
 
-| Rol | Push directe a `main` | Merge Requests |
-| :--- | :---: | :---: |
-| Maintainer | ✓ (canvis trivials) | ✓ |
-| Developer | ✗ | ✓ |
+#### T4
 
-Els **Maintainers** poden fer push directe a `main` exclusivament per a canvis trivials, definits com aquells que afecten **un sol fitxer** i **menys de 5 línies**. Per exemple:
+- Prerequisit implícit (no numerat): **Extracció d'invariants**.
+- **Optimització #1**: Accés seqüencial.
+- **Optimització #2**: Avaluació de la condició al final.
+- **Optimització #3**: Eliminació de la variable d'inducció.
 
-- Correccions tipogràfiques.
-- Canvis d'una sola línia en fitxers de configuració (`_quarto.yml`, `.gitignore`).
-- Actualitzacions de `CLAUDE.md`.
+#### T5
 
-Qualsevol altre canvi, independentment del rol, requereix una **Merge Request**. Els **Developers** sempre han d'usar el flux de Merge Request, sense excepcions.
+- **`quartet`** (no `nibble`): terme preferit per als grups de 4 bits.
+- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació.
+- **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des del LSB.
+- **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`).
+- **Solucionari (PS)**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
+- **`fcvt.w.s` trunca cap a zero** (mode RTZ) independentment del `fcsr`. Per arrodonir al més pròxim cal afegir 0,5 abans de la conversió.
+- **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
+- **No associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$.
 
-### Renderitzar el projecte
+#### T8
 
-El projecte té dues sortides independents: **HTML** i **PDF**. Són pipelines completament separades — HTML usa Bootstrap, PDF usa LaTeX (`scrbook`). Cap de les dues es construeix sobre l'altra.
+- **Bit de permís d'escriptura `E`**: la teoria i els enunciats/solucions usen el bit **E** (`E = 1` → permís d'escriptura; `E = 0` → només lectura), **no `W`**. Quan un enunciat heretat usava `W` (`1` = només lectura, polaritat oposada), s'ha reescrit a `E`: la teoria preval sobre l'enunciat dels problemes.
+- **Mida de pàgina explícita**: si un enunciat de memòria virtual no especifica la mida de pàgina però les adreces la impliquen, s'afegeix explícitament a l'enunciat (rigor i bona definició).
+- **Estat inicial del TLB**: quan es dona l'estat inicial d'un TLB completament associatiu amb LRU, cal especificar també l'**ordre d'ús** (MRU→LRU) de les entrades vàlides; sense això el reemplaçament és ambigu.
+- **Canvi de mida de pàgina sobre un estat fix**: una pregunta que reutilitzi una taula de pàgines o un TLB donats per a una mida de pàgina concreta i en canviï la mida es torna incoherent; en aquests casos es reformula en clau **qualitativa** (efecte sobre el nombre de fallades).
 
-```bash
-quarto render --to html   # ràpid, recomanat durant el desenvolupament
-quarto render --to pdf    # lent (compilació LaTeX), recomanat abans de la MR
-quarto render             # genera les dues sortides
+#### T9
+
+- **`ecall`**: la convenció de crides al sistema Linux/RISC-V usa `a7` per al codi de servei (no `a0`) i admet fins a sis arguments (`a0`–`a5`).
+- **RSE**: cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
+- **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del hardware.
+- **Zicsr**: les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
+- **Mode S**: el tractament de fallades de TLB per programari requereix mode S (`satp`, `stval`, `sfence.vma`). El cos del text descriu el mecanisme en mode M; l'aprofundiment cobreix mode S.
+
+### Laboratori
+
+#### Convencions globals del laboratori
+
+- **Punt d'entrada**: `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
+- **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
+- **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
+- **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
+- **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
+- **Lectura prèvia**: primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
+- **Lliurament**: última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
+- **Nom de figura SVG**: `L<N>_nom_figura.svg` (fitxer font a `12_figs_originals/`). El pre-render genera `figs_auto/L<N>_nom_figura__original_light.svg` i `_dark` automàticament.
+- **Comprovació pràctica**: les verificacions a RARS (valors esperats, ús del depurador) s'inclouen com a `{.callout-tip title="Comprovació pràctica"}` dins el bloc `{#sol-...}` corresponent. No porten etiqueta `#tip-` perquè no es referencien des d'altres punts del text.
+- **Directives `.eqv`**: es defineixen **abans** de la primera directiva de segment (`.data` o `.text`), fora de qualsevol secció.
+
+#### Nom dels fitxers de lliurament
+
+Patró: `s<N>_<S>_<E>.<ext>` — sessió, secció, exercici, extensió (`.s` per a codi assemblador, `.md` per a documents escrits). Exemples: `s2_3_1.s`, `s2_4_2.md`, `s2_4_2.s`.
+
+#### Ordre i atribut de seccions no numerades
+
+Les seccions `## Lliuraments` i `## Lectura prèvia` porten `{.unnumbered}` per evitar que incrementin el comptador i provoquin un decalatge entre la numeració dels exercicis i els noms dels fitxers de lliurament. L'ordre fix al principi de cada sessió és:
+
+```markdown
+## Lliuraments {.unnumbered}
+## Lectura prèvia {.unnumbered}
 ```
 
-::: {.callout-warning}
-`quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si necessiteu conservar el PDF generat anteriorment, feu `quarto render` (les dues sortides) o guardeu el PDF abans de renderitzar només HTML.
+A continuació comencen les seccions numerades d'exercicis.
+
+#### Títol del bloc d'exercici i lliuraments
+
+El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliuraments (`.md` + `.s`), ambdós apareixen al títol; la taula de lliuraments els reflecteix tots dos. Els exercicis amb `.md` requereixen anàlisi escrita prèvia (identificació de registres segurs, esquema del BA).
+
+```markdown
+::: {#exr-nom}
+## `s2_4_1.s`
 :::
 
-Durant el desenvolupament, renderitzeu sempre amb `--to html` per la seva rapidesa. Feu `quarto render` complet (HTML + PDF) com a verificació final abans d'obrir la Merge Request.
-
-
-## Format
-
-### Quarto: notes generals
-
-- Ni les etiquetes (*labels*) ni els IDs poden incloure guions baixos (`_`).
-- Una bona font per aprendre és la [pròpia documentació de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/).
-- `::: {` (amb espai, Quarto) però ```{` (sense espai, Markdown).
-
-### Centrats
-
-- **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tbl-}`, etc. no cal perquè ja centren automàticament.
-    - Imatges dins callouts (**només HTML**; al PDF no té efecte).
-    - Mermaids (diagrames renderitzats in-line).
-- **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100% de l'amplada.
-    - Taules.
-    - Elements de bloc.
-
-**Criteri per a figures SVG (`.light-content` / `.dark-content`):** els blocs de figura **no** porten `style="text-align: center;"`. Les figures amb `{#fig-}` ja centren automàticament a HTML i PDF.
-
-### Callouts {#sec-callouts}
-
-- Tots han d'anar etiquetats (p. ex. `::: {#nte-TODO .callout-note}`). Cal substituir el `TODO` de l'etiqueta per una cadena de caràcters única.
-- Sempre s'ha d'usar l'etiqueta corresponent (p. ex. `@nte-TODO`) quan es fa referència a un callout des del cos del text, altres callouts, etc.
-- El títol `## títol` no és obligatori, especialment per a callouts curts.
-- **Localització dins del cos del text**: a continuació de la referència o explicació al text.
-- No hi ha d'haver repeticions de callouts: ús de referències creuades.
-<!-- TODO: Revisar criteris de numeració de callouts i aparença -->
-
-#### RISC-V (`.callout-note`)
-
-::::: {layout="[100,-1,100]"}
-:::: {}
-
-- **Ús**: Material de referència d'assemblador de RISC-V: instruccions, pseudoinstruccions, directives, registres.
-- **Continguts nous avaluables**: Sí.
-- **Introducció al cos del text**: Sempre que sigui possible.
-- **Referències des del cos del text**: Sempre que el text hi faci referència (desitjable, però no necessari).
-- **Particularitats**:
-    - Si el contingut del callout també va a la secció de compendi "RISC-V", s'ha de fer creant un fitxer a `/11_riscv/` i emprant [`include`](https://quarto.org/docs/authoring/includes.html) tant al tema en qüestió com al compendi.
-    - Les figures i taules dins de `{.callout-note}` no porten etiqueta `#fig-`/`#tbl-` ni caption.
-- **Títols de callout ISA**: segueixen el patró `## <extensió> ISA — <descripció>`:
-    - `## RV32I ISA — `, `## Zicsr ISA — `, `## M ISA — `, `## F ISA — `
-    - `## RV32I ABI — `, `## Pseudoinstruccions — `, `## Directives — `
-    - `## RARS — `, `## RV32I Registres — `
-
-::::
-:::: {}
-
-::: {#nte-TODO .callout-note}
-## RV32I ISA — Instruccions de lectura/escriptura a memòria
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{< include 11_riscv/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}
-: {tbl-colwidths="[5,20,35,35,5]" .striped}
-:::
-
-``` code
-::: {#nte-TODO .callout-note}
-## RV32I ISA — Instruccions de lectura/escriptura a memòria
-
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{{< include 11_riscv/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}}
-: {tbl-colwidths="[5,20,35,35,5]" .striped}
+::: {#exr-nom2}
+## `s2_4_2.md` i `s2_4_2.s`
 :::
 ```
-
-La referència és @nte-TODO.
-::::
-:::::
-
-#### Criteri EC (`.callout-important`)
-
-::::: {layout="[100,-1,100]"}
-:::: {}
-
-- **Ús**: Criteris de l'assignatura.
-- **Continguts nous avaluables**: Sí.
-- **Introducció al cos del text**: No.
-- **Particularitats**:
-    - Sense títol.
-    - Curt.
-    - Ressaltats en **negretes**.
-
-::::
-:::: {}
-
-::: {#imp-TODO .callout-important}
-A **EC**, TODO
-:::
-
-``` code
-::: {#imp-TODO .callout-important}
-A **EC**, TODO
-:::
-```
-
-La referència és @imp-TODO.
-::::
-:::::
-
-#### Essencial (`.callout-caution`)
-
-::::: {layout="[100,-1,100]"}
-:::: {}
-
-- **Ús**: Contingut indispensable, observació fonamental, recordatori bàsic, etc.
-- **Continguts nous avaluables**: Sí.
-- **Introducció al cos del text**: No. És tan important que s'ha de llegir com un ressaltat del cos del text.
-- **Particularitats**:
-    - Sense títol.
-    - Curt.
-    - Ressaltats en **negretes**.
-
-::::
-:::: {}
-
-::: {#cau-TODO .callout-caution}
-Exemple d'Essencial.
-:::
-
-``` code
-::: {#cau-TODO .callout-caution}
-Exemple d'Essencial.
-:::
-```
-
-La referència és @cau-TODO.
-::::
-:::::
-
-#### Exemple (`.callout-tip`)
-
-::::: {layout="[100,-1,100]"}
-:::: {}
-
-- **Ús**: Exemples per il·lustrar explicacions.
-- **Continguts nous avaluables**: Marginalment, només detalls i observacions.
-- **Introducció al cos del text**: No.
-- **Referències des del cos del text**: Només té sentit fer-hi referència explícita per il·lustrar alguna explicació.
-- **Particularitats**:
-    - Pot ser en format **Pregunta**: → **Solució**: → **Resposta**:.
-    - Veu en segona persona del plural.
-
-::::
-:::: {}
-
-::: {#tip-TODO .callout-tip}
-## TODO títol
-:::
-
-```` code
-::: {#tip-TODO .callout-tip}
-## TODO títol
-
-```{.c filename="C"}
-
-```
-
-```{.s filename="RV32IZicsr"}
-
-```
-:::
-````
-
-La referència és @tip-TODO.
-::::
-:::::
-
-#### Aprofundiment (`.callout-warning`) {#sec-contrib-callout-aprofundiment}
-
-::::: {layout="[100,-1,100]"}
-:::: {}
-
-- **Ús**: Contingut addicional, d'enriquiment, no avaluable.
-- **Continguts nous avaluables**: No.
-- **Introducció/referència al cos del text**: Mai.
-- **Particularitats**:
-    - Si hi ha més d'una línia: `collapse=true` i porta títol.
-
-::::
-:::: {}
-
-::: {#wrn-TODO .callout-warning collapse=true}
-## Això és un Aprofundiment
-Exemple d'Aprofundiment.
-:::
-
-``` code
-::: {#wrn-TODO .callout-warning collapse=true}
-## Això és un Aprofundiment
-Exemple d'Aprofundiment
-:::
-```
-
-La referència és @wrn-TODO.
-::::
-:::::
-
-### Prefixos reservats
-
-| Prefix d'etiqueta | Tipus | Callout | Color (light) | `## títol` | Caption |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `#nte-` | RISC-V | {.callout-note} | Verd | Sí | No |
-| `#imp-` | Criteri EC | {.callout-important} | Blau | No | No |
-| `#cau-` | Essencial | {.callout-caution} | Vermell | No | No |
-| `#tip-` | Exemple | {.callout-tip} | Groc | Sí | No |
-| `#wrn-` | Aprofundiment | {.callout-warning} | Lila | Sí | No |
-| `#fig-` | Figura | | | No | Sí |
-| `#tbl-` | Taula | | | No | Sí |
-| `#lst-` | Codi | | | No | Sí |
-| `#eq-`  | Equació | | | No | No |
-| `#sec-` | Secció | | | No | No |
-| `#exr-` | Exercici | | | No | No |
-| `#sol-` | Solució | | | No | No |
-| `#thm-` | Algorisme | | | No | No |
-
-Disponibles: `#alg- #thm- #lem- #cor- #prp- #cnj-`
-
-### Referències creuades
-
-Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
-
-- **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta` (funciona a HTML i PDF).
-- **Enllaços a seccions dins del mateix fitxer**: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
-- ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: la sintaxi `@` per a seccions **només funciona a PDF**.
-
-Exemple — fitxer `PS.qmd` amb una secció etiquetada:
-
-```{.text filename="PS.qmd"}
-# Problemes: Solucions seleccionades {#sec-problemes-solucions}
-```
-
-Referència des d'un altre fitxer:
-
-```{.text filename="un_altre_fitxer.qmd"}
-- [Solucions de problemes](#sec-problemes-solucions)   ✓ HTML i PDF
-```
-
-A més, com a criteri d'estil de redacció:
-
-- Com més precises siguin, millor. Ordre de preferència creixent:
-    - Tema → secció → subsecció → callout → figura → taula → equació.
-    - `sec-tema-exemple`, `@sec-exemple`, `@fig-exemple`, `@tbl-exemple`, `@nte-exemple`.
-- Article determinat:
-    - **Amb**: "La" `@sec-exemple`, `@fig-exemple`, `@tbl-exemple` mostra...
-    - **Sense**: "`@nte-exemple` recull..."
-- **Figures i Taules**: no han d'estar necessàriament referenciades al text.
-
-### Blocs de codi
-
-El camp `filename` indica el llenguatge o el context del bloc:
-
-| Contingut | Sintaxi |
-| :--- | :--- |
-| Pseudocodi | ` ```{.default filename="Pseudocodi"} ` |
-| C | ` ```{.c filename="C"} ` |
-| Assemblador RV32I | ` ```{.s filename="RV32I"} ` |
-| Assemblador RV32IM | ` ```{.s filename="RV32IM"} ` |
-| Assemblador RV32IF | ` ```{.s filename="RV32IF"} ` |
-| Assemblador RV32IZicsr | ` ```{.s filename="RV32IZicsr"} ` |
-| Bash | ` ```bash ` |
-
-- `.s filename=<nom_fitxer_si_es_especific.s"` (e.g. `startup.s`)
-
-
-
-:::: {layout="[100,-1,100]"}
-::: {}
-```{.c filename="C"}
-int main(){}
-```
-```` code
-```{.c filename="C"}
-
-```
-````
-:::
-::: {}
-```{.s filename="RV32IZicsr"}
-.text
-        add     x0, x1, x2      # rd = rs1 + rs2;
-```
-```` code
-```{.s filename="RV32IZicsr"}
-
-```
-````
-:::
-::::
-
-#### Estil de codi C
-
-- Indentats: múltiples de 4.
-- Comentaris d'una sola línia: `//`. Més d'una línia: `/* */`.
-
-#### Estil de codi RISC-V
-
-@imp-codi-format-criteris
-
-### Aniuaments
-
-Regla dels `:` addicionals:
-
-- Estrictament, Quarto només imposa pujar un nivell (p. ex. `:::` → `::::`) quan s'aniuen `divs` del mateix tipus.
-- A EC s'usa un nivell addicional per facilitar-ne la gestió visual.
-
-| EC | Quarto |
-| --- | --- |
-| `::::` -- `::: {.callout-note}` -- `:::` -- `::::` | `:::` -- `::: {.callout-note}` -- `:::` -- `:::` |
-| `:::: {.callout-note}` -- `:::` -- `:::` -- `::::` | `::: {.callout-note}` -- `:::` -- `:::` -- `:::` |
-
-#### HTML: comportament en callouts encastats
-
-- Es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben. Vegeu @sec-contrib-callout-aprofundiment.
-
-### Figures
-
-::::: {layout="[50,-1,100]"}
-:::: {}
-::: {#fig-TODO-nom-figura}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
-:::
-::: {.dark-content}
-![](/figs_auto/Tx_nom_figura__original_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
-:::
-Caption acabat amb punt.
-:::
-::::
-:::: {}
-``` code
-::: {#fig-TODO-nom-figura}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
-:::
-::: {.dark-content}
-![](/figs_auto/Tx_nom_figura__original_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
-:::
-Caption acabat amb punt.
-:::
-```
-El bloc `content-visible when-format="html"` conté les dues variants (light/dark); el bloc `when-format="pdf"` conté només la versió light. Sense aquesta separació, el PDF renderitza totes dues variants i les figures surten duplicades.
-
-La referència és @fig-TODO-nom-figura.
-::::
-:::::
-
-Per a les figures SVG amb variants *light*/*dark*, vegeu la secció «Material gràfic» → «Integració al `.qmd`».
-
-- Tots els diagrames nous es generen com a SVG (no Mermaid).
-
-### Material gràfic
-
-#### Paleta de colors
-
-| Element | Light (fill / stroke) | Dark (fill / stroke) |
-| :--- | :--- | :--- |
-| Cel·la neutra | `#f8f9fa` / `#adb5bd` | `#3d3d3d` / `#888` |
-| Text secundari | `#6c757d` | `#adb5bd` |
-| Text principal | `#343a40` | `#fff` |
-| Destacat blau | `#cfe2ff` / `#084298` | `#1a3a5c` / `#90bfff` |
-| Destacat verd | `#d1e7dd` / `#0a3622` | `#1a3a2a` / `#90d4aa` |
-| Destacat groc | `#fff3cd` / `#664d03` | `#3a2e00` / `#ffd966` |
-| Destacat vermell | `#f8d7da` / `#842029` | `#3a1a1e` / `#f1a8ae` |
-: {.striped}
-
-El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les figures SVG com a les taules amb color. Cada tema pot introduir associacions semàntiques pròpies (per exemple, a T7: blau=memòria cau, verd=memòria principal, groc=SSD, vermell=disc), però sempre dins la mateixa paleta.
-
-#### Convencions SVG
-
-- `width="680"`, `viewBox="0 0 680 H"` on H = contingut + 20 px de buffer.
-- **Font proporcional**: `font-family="'Liberation Sans', Arial, Helvetica, sans-serif"`. Mides: `font-size="11"` per a etiquetes de cel·la, `font-size="12"` per a text secundari, `font-size="13"` per a títols de quadrant.
-- **Font monoespaciada** (adreces, valors hexadecimals, instruccions): `font-family="'Liberation Mono', 'Courier New', Courier, monospace"`.
-- Cel·les destacades es dibuixen **sempre al damunt** de les grises (ordre de dibuix: grises primer, destacades després) per evitar solapaments de vores.
-- Cel·les grises: `stroke-width="0.5"`. Cel·les destacades: `stroke-width="1"`.
-- No s'usen línies separadores entre quadrants: només espai buit.
-- Convenció de noms dels fitxers font: `T<N>_nom_figura.svg` (guió baix, no guió). Els fitxers generats a `figs_auto/` reben el sufix `__original_light` / `__original_dark` o `__extern_light` / `__extern_dark` segons l'origen.
-- Paquet Debian necessari: `fonts-liberation` (`sudo apt install fonts-liberation`).
-
-#### Figures externes
-
-Les figures que provenen de fonts externes s'emmagatzemen a `13_figs_externes/`. El pre-render les copia a `figs_auto/` afegint el sufix `__extern_light`:
-
-```
-13_figs_externes/T7_lru_exemple.svg   →   figs_auto/T7_lru_exemple__extern_light.svg
-```
-
-Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`. La taula completa de figures externes i les llicències corresponents és a @sec-llicencia-figures-externes.
-
-#### Generació de la versió dark
-
-> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `22_scripts/gen_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `21_specs/svg.md`.
-
-Per a figures creades manualment, extretes de PDFs o de registres de bits, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `21_specs/svg.md` (pipeline, taula de colors i mapa de fonts) i `21_specs/registres.toml` (definicions de registres de bits) per als detalls tècnics.
-
-#### Integració al `.qmd`
-
-<!-- TODO: Figures dins callouts queden centrades a l'HTML però alineades a l'esquerra al PDF. Cal investigar la solució via preamble.tex (p. ex. redefinir l'entorn de callout per afegir \centering). -->
-
-``` code
-::: {#fig-nom-figura}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
-:::
-::: {.dark-content}
-![](/figs_auto/Tx_nom_figura__original_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
-:::
-Caption acabat amb punt.
-:::
-```
-
-Notes:
-- La ruta `/figs_auto/` comença amb `/`, que Quarto interpreta com a relativa a l'arrel del projecte (on és `_quarto.yml`). És el mètode més robust: no depèn de la ubicació del `.qmd` dins l'arbre de directoris.
-- El bloc `content-visible when-format="html"` conté les dues variants (light/dark); el bloc `when-format="pdf"` conté només la versió light. Sense aquesta separació, el PDF renderitza totes dues variants i les figures surten duplicades.
-- Els blocs `.light-content` i `.dark-content` **no** porten `style="text-align: center;"`: les figures amb `{#fig-}` ja centren automàticament.
-- El caption (última línia abans del `:::` de tancament) és text lliure; Quarto l'associa automàticament a `{#fig-}` com a caption de la figura.
-```
-
-#### Convencions CSS (mode fosc)
-
-A `custom_dark.scss`, dins la secció `/*-- scss:rules --*/`, el codi inline (`code`) dins de llegendes, capçaleres i títols de callout porta colors propis perquè es llegeixi bé sobre fons fosc:
-
-```scss
-figcaption,
-caption,
-.footnotes,
-h1, h2, h3, h4,
-.callout-title-container {
-  code {
-    color: #e8e6e3 !important;
-    background-color: #2b2d2f !important;
-  }
-}
-```
-
-### Taules
-
-- Caption només obligatori en el cos del text.
-- Hi ha l'opció de `.hover`.
-
-| A | B | C | D |
-| --- | :--- | :---: | :--- |
-| defecte | esquerra | centre | dreta |
-: Caption de la taula opcional {#tbl-TODO tbl-colwidths="[15,15,55,15]" style="width: 40%; margin: auto;" .striped}
-
-``` code
-| A | B | C | D |
-| --- | :--- | :---: | :--- |
-| defecte | esquerra | centre | dreta |
-: Caption de la taula opcional {#tbl-TODO tbl-colwidths="[15,15,55,15]" style="width: 40%; margin: auto;" .striped}
-```
-
-**Important**: `tbl-colwidths="[15,15,55,15]"` **ha de sumar 100**. Si no, el PDF no renderitza bé. L'amplada de la taula es pot ajustar amb `style="width: X%; margin: auto;"` (recomanat per a taules dins de callouts). La classe `.striped` és opcional, però recomanada per a taules amb moltes files.
-
-La referència és @tbl-TODO.
-
-### Equacions
-
-<!-- TODO: Definir criteri de numeració d'equacions (només les referenciades? Totes? Les importants?) -->
-<!-- TODO: Definir criteri d'ús de LaTeX math vs. backticks dins del text:
-     contextos: cos del text, títols de secció, títols de callout, cel·les de taula,
-     captions de figura, captions de taula, blocs de codi (comentaris), etiquetes SVG -->
-
-:::: {layout="[20,-1,100]"}
-::: {}
-$$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
-:::
-::: {}
-``` code
-$$Rendiment = \frac{1}{t_{exe}} \qquad [s^{-1}]$$ {#eq-TODO}
-```
-:::
-::::
-
-### Bibliografia
-
-- Ús: `[@patterson2020riscv]`
-- Definició: al fitxer `bibliografia.qmd` amb format BibTeX.
-
-### Gestió d'errades
-
-<!-- TODO: Definir protocol de gestió d'errades detectades post-commit -->
 
 ## Llenguatge
 
@@ -748,144 +248,316 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
     - Noms d'etiquetes `#nte-TODO`, `@sec-callouts`.
     - Adreces de memòria concretes `0x00400000`, `0x10100000`–`0x10100003`.
 
-## Contingut
+## Format
 
-### Criteri general
+### Callouts {#sec-callouts}
 
-- S'ha d'evitar emprar conceptes, termes, etc. que encara no s'han introduït al cos del text. Si es fa, cal referenciar la secció o el callout on s'explica el concepte en detall.
-- No s'ha de repetir informació (*Don't Repeat Yourself*, DRY): ús de referències creuades. Per a recordatoris: `{.callout-caution}`.
-- **Mnemònics**: El primer cop, si no estan prop d'una taula on se n'indiqui l'expansió, han d'anar seguits de l'expansió entre parèntesis. Ex: `addi` (***add immediate***).
-- No es permet que un nivell de profunditat tingui un sol ítem. En aquest cas, s'ha de pujar el contingut un nivell.
-- L'arquitectura de referència és RISC-V. No s'ha de fer cap referència a MIPS (tret d'on ja s'ha fet explícitament).
+Regles generals:
 
-### Extensions RISC-V a EC
+- Tots han d'anar etiquetats (p. ex. `::: {#nte-TODO .callout-note}`). Cal substituir el `TODO` per una cadena única.
+- Referenciar sempre amb `@prefix-etiqueta` des del cos del text, altres callouts, etc.
+- El títol `## títol` no és obligatori en callouts curts.
+- **Localització**: a continuació de la referència o explicació al text.
+- No hi ha d'haver repeticions: ús de referències creuades.
+<!-- TODO: Revisar criteris de numeració de callouts i aparença -->
 
-A EC s'estudien les extensions següents:
+| Tipus | Prefix | Classe | Color | Aval. | Títol | Ús i particularitats |
+| :--- | :--- | :--- | :--- | :---: | :---: | :--- |
+| RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/11_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## M ISA — `, `## F ISA — `, `## RV32I ABI — `, `## Pseudoinstruccions — `, `## Directives — `, `## RARS — `, `## RV32I Registres — `. |
+| Criteri EC | `#imp-` | `.callout-important` | Blau | Sí | No | Criteris de l'assignatura. Sense títol, curt, en **negretes**. No s'introdueix al text. |
+| Essencial | `#cau-` | `.callout-caution` | Vermell | Sí | No | Contingut indispensable o recordatori fonamental. Sense títol, curt, en **negretes**. S'ha de llegir com un ressaltat del text. |
+| Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu en 2a persona del plural. No s'introdueix al text. |
+| Aprofundiment | `#wrn-` | `.callout-warning` | Lila | No | Sí | Contingut d'enriquiment no avaluable. Mai introduït ni referenciat al text. Si >1 línia: `collapse=true`. {#sec-contrib-callout-aprofundiment} |
+| Figura | `#fig-` | | | | No | Porta caption. |
+| Taula | `#tbl-` | | | | No | Porta caption. |
+| Codi | `#lst-` | | | | No | Porta caption. |
+| Equació | `#eq-` | | | | No | |
+| Secció | `#sec-` | | | | No | |
+| Exercici | `#exr-` | | | | No | |
+| Solució | `#sol-` | | | | No | |
+| Algorisme | `#thm-` | | | | No | |
 
-| Extensió | Descripció | Tema |
+Disponibles: `#alg- #lem- #cor- #prp- #cnj-`
+
+### Blocs de codi
+
+El camp `filename` indica el llenguatge o el context del bloc:
+
+| Contingut | Sintaxi |
+| :--- | :--- |
+| Pseudocodi | ` ```{.default filename="Pseudocodi"} ` |
+| C | ` ```{.c filename="C"} ` |
+| Assemblador RV32I | ` ```{.s filename="RV32I"} ` |
+| Assemblador RV32IM | ` ```{.s filename="RV32IM"} ` |
+| Assemblador RV32IF | ` ```{.s filename="RV32IF"} ` |
+| Assemblador RV32IZicsr | ` ```{.s filename="RV32IZicsr"} ` |
+| Fitxer `.s` específic | ` ```{.s filename="startup.s"} ` |
+| Bash | ` ```bash ` |
+
+#### Estil de codi C
+
+- Indentats: múltiples de 4.
+- Comentaris d'una sola línia: `//`. Més d'una línia: `/* */`.
+
+#### Estil de codi RISC-V
+
+@imp-codi-format-criteris
+
+### Figures i material gràfic
+
+- Tots els diagrames nous es generen com a SVG (no Mermaid).
+
+#### Paleta de colors
+
+La paleta completa (colors light i dark, per zona semàntica) és a `21_specs/svg.md §10`. La taula de substitució light → dark per al pipeline automàtic és el bloc `#svg-dark-replacements` de `21_specs/svg.md §13`. Per modificar qualsevol color, editeu **només** aquells blocs.
+
+El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les figures SVG com a les taules amb color. Cada tema pot introduir associacions semàntiques pròpies (per exemple, a T7: blau=memòria cau, verd=memòria principal, groc=SSD, vermell=disc), però sempre dins la mateixa paleta.
+
+#### Convencions SVG
+
+Totes les convencions tècniques de les figures SVG (canvas, marges, escales, fonts, colors, ratlles indicadores, etiquetes, fletxes) són a `21_specs/svg.md`. Per crear o modificar una figura SVG, llegiu aquest fitxer com a primera referència.
+
+Convenció de noms dels fitxers font: `T<N>_nom_figura.svg` (guió baix, no guió), desats a `12_figs_originals/`. Les figures externes s'emmagatzemen a `13_figs_externes/`. Els fitxers generats a `figs_auto/` reben el sufix `__original_light/dark`, `__extern_light/dark` o `__registre_light/dark` segons l'origen.
+
+Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`. La taula completa de figures externes i les llicències corresponents és a @sec-llicencia-figures-externes.
+
+#### Generació de la versió dark
+
+> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `22_scripts/gen_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `21_specs/svg.md §13`.
+
+Per a figures creades manualment, extretes de PDFs o de registres de bits, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `21_specs/svg.md` (pipeline, taula de colors, canvas i mapa de fonts) i `21_specs/registres.toml` (definicions de registres de bits) per als detalls tècnics.
+
+#### Integració al `.qmd`
+
+<!-- TODO: Figures dins callouts queden centrades a l'HTML però alineades a l'esquerra al PDF. Cal investigar la solució via preamble.tex (p. ex. redefinir l'entorn de callout per afegir \centering). -->
+
+``` code
+::: {#fig-nom-figura}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/Tx_nom_figura__original_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/Tx_nom_figura__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/Tx_nom_figura__original_light.svg)
+:::
+Caption acabat amb punt.
+:::
+```
+
+Notes:
+- La ruta `/figs_auto/` comença amb `/`, que Quarto interpreta com a relativa a l'arrel del projecte (on és `_quarto.yml`). És el mètode més robust: no depèn de la ubicació del `.qmd` dins l'arbre de directoris.
+- El bloc `content-visible when-format="html"` conté les dues variants (light/dark); el bloc `when-format="pdf"` conté només la versió light. Sense aquesta separació, el PDF renderitza totes dues variants i les figures surten duplicades.
+- Els blocs `.light-content` i `.dark-content` **no** porten `style="text-align: center;"`: les figures amb `{#fig-}` ja centren automàticament.
+- El caption (última línia abans del `:::` de tancament) és text lliure; Quarto l'associa automàticament a `{#fig-}` com a caption de la figura.
+```
+
+### Taules
+
+- Caption només obligatori en el cos del text.
+- Hi ha l'opció de `.hover`.
+- `tbl-colwidths="[...]"` **ha de sumar 100**; si no, el PDF no renderitza bé.
+- Amplada: `style="width: X%; margin: auto;"` (recomanat dins callouts). Classe `.striped` recomanada per a taules llargues.
+
+```code
+| A | B | C |
+| :--- | :---: | :--- |
+| esquerra | centre | dreta |
+: Caption opcional {#tbl-TODO tbl-colwidths="[20,60,20]" style="width: 60%; margin: auto;" .striped}
+```
+
+La referència és `@tbl-TODO`.
+
+### Equacions
+
+<!-- TODO: Definir criteri de numeració d'equacions (només les referenciades? Totes? Les importants?) -->
+<!-- TODO: Definir criteri d'ús de LaTeX math vs. backticks dins del text:
+     contextos: cos del text, títols de secció, títols de callout, cel·les de taula,
+     captions de figura, captions de taula, blocs de codi (comentaris), etiquetes SVG -->
+
+Sintaxi: `$$expressió$$ {#eq-NOM}`. La referència és `@eq-NOM`.
+
+### Bibliografia
+
+- Ús: `[@patterson2020riscv]`
+- Definició: al fitxer `bibliografia.qmd` amb format BibTeX.
+
+### Referències creuades
+
+Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
+
+- **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta` (funciona a HTML i PDF).
+- **Enllaços a seccions dins del mateix fitxer**: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
+- ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: la sintaxi `@` per a seccions **només funciona a PDF**.
+
+Exemple — fitxer `PS.qmd` amb una secció etiquetada:
+
+```{.text filename="PS.qmd"}
+# Problemes: Solucions seleccionades {#sec-problemes-solucions}
+```
+
+Referència des d'un altre fitxer:
+
+```{.text filename="un_altre_fitxer.qmd"}
+- [Solucions de problemes](#sec-problemes-solucions)   ✓ HTML i PDF
+```
+
+A més, com a criteri d'estil de redacció:
+
+- Com més precises siguin, millor. Ordre de preferència creixent:
+    - Tema → secció → subsecció → callout → figura → taula → equació.
+    - `sec-tema-exemple`, `@sec-exemple`, `@fig-exemple`, `@tbl-exemple`, `@nte-exemple`.
+- Article determinat:
+    - **Amb**: "La" `@sec-exemple`, `@fig-exemple`, `@tbl-exemple` mostra...
+    - **Sense**: "`@nte-exemple` recull..."
+- **Figures i Taules**: no han d'estar necessàriament referenciades al text.
+
+### Aniuaments
+
+Regla dels `:` addicionals:
+
+- Estrictament, Quarto només imposa pujar un nivell (p. ex. `:::` → `::::`) quan s'aniuen `divs` del mateix tipus.
+- A EC s'usa un nivell addicional per facilitar-ne la gestió visual.
+
+| EC | Quarto |
+| --- | --- |
+| `::::` -- `::: {.callout-note}` -- `:::` -- `::::` | `:::` -- `::: {.callout-note}` -- `:::` -- `:::` |
+| `:::: {.callout-note}` -- `:::` -- `:::` -- `::::` | `::: {.callout-note}` -- `:::` -- `:::` -- `:::` |
+
+#### HTML: comportament en callouts encastats
+
+- Es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben. Vegeu @sec-contrib-callout-aprofundiment.
+
+### Presentació visual
+
+- **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tbl-}`, etc. no cal perquè ja centren automàticament.
+    - Imatges dins callouts (**només HTML**; al PDF no té efecte).
+    - Mermaids (diagrames renderitzats in-line).
+- **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100% de l'amplada.
+    - Taules.
+    - Elements de bloc.
+- **Figures SVG** (`.light-content` / `.dark-content`): els blocs de figura **no** porten `style="text-align: center;"`. Les figures amb `{#fig-}` ja centren automàticament a HTML i PDF.
+- **CSS mode fosc** (`custom_dark.scss`, secció `/*-- scss:rules --*/`): el codi inline dins de llegendes, capçaleres i títols de callout porta colors propis:
+
+```scss
+figcaption,
+caption,
+.footnotes,
+h1, h2, h3, h4,
+.callout-title-container {
+  code {
+    color: #e8e6e3 !important;
+    background-color: #2b2d2f !important;
+  }
+}
+```
+
+### Quarto: notes generals
+
+- Ni les etiquetes (*labels*) ni els IDs poden incloure guions baixos (`_`).
+- Una bona font per aprendre és la [pròpia documentació de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/).
+- `::: {` (amb espai, Quarto) però ```{` (sense espai, Markdown).
+
+### Gestió d'errades
+
+<!-- TODO: Definir protocol de gestió d'errades detectades post-commit -->
+
+## Eines
+
+### Requisits previs
+
+Abans de contribuir cal tenir instal·lat:
+
+- **Git** i accés com a **Developer**: [{{< var website >}}]({{< var repo >}}) ([Cal ser membre del grup `ec`](https://gitlab.upc.edu/groups/ec/)).
+- **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/). Extensions recomanades:
+    - [Quarto](https://marketplace.visualstudio.com/items?itemName=quarto.quarto)
+    - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+    - [Spell Right](https://marketplace.visualstudio.com/items?itemName=ban.spellright)
+        - L'*spell checker* local (`.vscode/settings.json`) inclou els mnemònics de l'assignatura.
+- **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
+- **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que s'instal·la des de la pròpia CLI de Quarto:
+
+```bash
+quarto install tinytex
+```
+
+- **RARS** (simulador RISC-V): [RARS](https://github.com/TheThirdOne/rars/releases).
+
+### Verificació de l'entorn
+
+Comproveu que el projecte renderitza correctament abans de fer push. Des de la línia de comandes, a la carpeta arrel del projecte, executeu:
+
+```bash
+quarto render --to html
+```
+
+- Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
+
+### Protocol de contribució
+
+La branca `main` està **protegida**: tot canvi s'integra a través d'una **Merge Request (MR)**.
+
+```bash
+git checkout main && git pull                   # 1. Actualitzar main
+git checkout -b contingut/t5-vectors           # 2. Branca nova (vegeu convenció de noms)
+# ... canvis ...
+git add T5.qmd
+git commit -m "T5: afegeix secció sobre vectors"  # missatge: en català, present, descriptiu
+git push origin contingut/t5-vectors           # 3. Pujar branca
+# 4. Obrir Merge Request a GitLab apuntant a main
+```
+
+### Convenció de noms de branques
+
+| Tipus de canvi | Format | Exemple |
 | :--- | :--- | :--- |
-| RV32I | Base entera | Tots |
-| M | Multiplicació i divisió entera | T4 |
-| F | Coma flotant | T5 |
-| Zicsr | Registres de control i estat | T9 |
+| Contingut nou | `contingut/<tema>-<descriptor>` | `contingut/t5-vectors` |
+| Correcció | `fix/<descriptor>` | `fix/t3-errada-alineacio` |
+| Configuració/tooling | `config/<descriptor>` | `config/quarto-pdf-output` |
 
-El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`, `RV32IM`, `RV32IF`, `RV32IZicsr`.
+### Commits
 
-### Decisions per tema
+- Un commit per canvi lògic — no agrupeu canvis no relacionats en un sol commit.
+- Missatge en català, en present i descriptiu: `"T5: afegeix secció sobre vectors"`, no `"canvis"` ni `"wip"`.
+- Abans de fer commit, assegureu-vos que no hi ha cap etiqueta `-TODO` ni cap `TODO` que pugueu solucionar vosaltres mateixos al codi (vegeu @sec-callouts).
+- Abans de fer commit, apliqueu **linting** a la prosa dels fitxers `.qmd` modificats: elimineu dobles espais (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu que no hi ha cometes rectes `"..."` que haurien de ser guillemets `«...»`.
+- Abans de fer commit, verifiqueu que el projecte renderitza correctament.
 
-#### T2 i T3
+### Push directe a `main` (només maintainers)
 
-- **Modes d'adreçament**: quatre modes a EC: registre, immediat, base+desplaçament, relatiu al PC. `lui` → immediat; `jalr` → base+desplaçament.
-- **Terminologia de salts**: relatiu al PC (`beq`, `jal`) vs. indirecte (`jalr`). Tots els salts condicionals de RV32I són relatius al PC.
-- **Etiquetes de bucle**: `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.).
-- **Registres als exemples**: `t0`, `t1`, `t2`... tant en C com en assemblador per eliminar el soroll del mapatge.
-- **`la label+offset`**: admès a EC (pissarra i exàmens) però no suportat per RARS; al laboratori cal `la` + `addi`.
-- **Optimitzacions de bucle**: les tres optimitzacions numerades es defineixen a T4 (§4.5); el prerequisit no numerat (extracció d'invariants) s'introdueix a T2 (@sec-extraccio-invariants) i s'hi remet des de T4. La numeració és única per al bloc, no es reparteix entre temes, i és: #1 accés seqüencial, #2 avaluació de la condició al final, #3 eliminació de la variable d'inducció (vegeu §T4 a continuació).
-- **Pseudoinstruccions vs. macros**: distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
+La branca `main` està protegida. El nivell d'accés és el següent:
 
-#### T4
+| Rol | Push directe a `main` | Merge Requests |
+| :--- | :---: | :---: |
+| Maintainer | ✓ (canvis trivials) | ✓ |
+| Developer | ✗ | ✓ |
 
-- Prerequisit implícit (no numerat): **Extracció d'invariants**.
-- **Optimització #1**: Accés seqüencial.
-- **Optimització #2**: Avaluació de la condició al final.
-- **Optimització #3**: Eliminació de la variable d'inducció.
+Els **Maintainers** poden fer push directe a `main` exclusivament per a canvis trivials, definits com aquells que afecten **un sol fitxer** i **menys de 5 línies**. Per exemple:
 
-#### T5
+- Correccions tipogràfiques.
+- Canvis d'una sola línia en fitxers de configuració (`_quarto.yml`, `.gitignore`).
+- Actualitzacions de `CLAUDE.md`.
 
-- **`quartet`** (no `nibble`): terme preferit per als grups de 4 bits.
-- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació.
-- **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des del LSB.
-- **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`).
-- **Solucionari (PS)**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
-- **`fcvt.w.s` trunca cap a zero** (mode RTZ) independentment del `fcsr`. Per arrodonir al més pròxim cal afegir 0,5 abans de la conversió.
-- **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
-- **No associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$.
+Qualsevol altre canvi, independentment del rol, requereix una **Merge Request**. Els **Developers** sempre han d'usar el flux de Merge Request, sense excepcions.
 
-#### T8
+### Renderitzar el projecte
 
-- **Bit de permís d'escriptura `E`**: la teoria i els enunciats/solucions usen el bit **E** (`E = 1` → permís d'escriptura; `E = 0` → només lectura), **no `W`**. Quan un enunciat heretat usava `W` (`1` = només lectura, polaritat oposada), s'ha reescrit a `E`: la teoria preval sobre l'enunciat dels problemes.
-- **Mida de pàgina explícita**: si un enunciat de memòria virtual no especifica la mida de pàgina però les adreces la impliquen, s'afegeix explícitament a l'enunciat (rigor i bona definició).
-- **Estat inicial del TLB**: quan es dona l'estat inicial d'un TLB completament associatiu amb LRU, cal especificar també l'**ordre d'ús** (MRU→LRU) de les entrades vàlides; sense això el reemplaçament és ambigu.
-- **Canvi de mida de pàgina sobre un estat fix**: una pregunta que reutilitzi una taula de pàgines o un TLB donats per a una mida de pàgina concreta i en canviï la mida es torna incoherent; en aquests casos es reformula en clau **qualitativa** (efecte sobre el nombre de fallades).
+El projecte té dues sortides independents: **HTML** i **PDF**. Són pipelines completament separades — HTML usa Bootstrap, PDF usa LaTeX (`scrbook`). Cap de les dues es construeix sobre l'altra.
 
-#### T9
-
-- **`ecall`**: la convenció de crides al sistema Linux/RISC-V usa `a7` per al codi de servei (no `a0`) i admet fins a sis arguments (`a0`–`a5`).
-- **RSE**: cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
-- **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del hardware.
-- **Zicsr**: les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
-- **Mode S**: el tractament de fallades de TLB per programari requereix mode S (`satp`, `stval`, `sfence.vma`). El cos del text descriu el mecanisme en mode M; l'aprofundiment cobreix mode S.
-
-### Laboratori
-
-#### Convencions globals del laboratori
-
-- **Punt d'entrada**: `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
-- **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
-- **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
-- **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
-- **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
-- **Lectura prèvia**: primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
-- **Lliurament**: última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
-- **Nom de figura SVG**: `L<N>_nom_figura.svg` (fitxer font a `12_figs_originals/`). El pre-render genera `figs_auto/L<N>_nom_figura__original_light.svg` i `_dark` automàticament.
-- **Comprovació pràctica**: les verificacions a RARS (valors esperats, ús del depurador) s'inclouen com a `{.callout-tip title="Comprovació pràctica"}` dins el bloc `{#sol-...}` corresponent. No porten etiqueta `#tip-` perquè no es referencien des d'altres punts del text.
-- **Directives `.eqv`**: es defineixen **abans** de la primera directiva de segment (`.data` o `.text`), fora de qualsevol secció.
-
-#### Nom dels fitxers de lliurament
-
-El nom dels fitxers de laboratori segueix el patró `s<N>_<S>_<E>.<ext>`, on:
-
-- `<N>` és el número de sessió,
-- `<S>` és el número de secció dins la sessió,
-- `<E>` és el número d'exercici dins la secció,
-- `<ext>` és l'extensió: `.s` per a codi assemblador, `.md` per a documents escrits.
-
-Exemples: `s2_3_1.s`, `s2_4_2.md`, `s2_4_2.s`.
-
-#### Ordre de seccions
-
-Les seccions no numerades segueixen sempre aquest ordre fix al principi de cada sessió, independentment de la longitud del contingut:
-
-1. `## Lliuraments {.unnumbered}` — primera secció, perquè els alumnes tinguin clar des del principi què han de lliurar.
-2. `## Lectura prèvia {.unnumbered}` — segona secció.
-
-A continuació comencen les seccions numerades d'exercicis.
-
-#### Seccions no numerades
-
-Les seccions `## Lectura prèvia` i `## Lliuraments` porten l'atribut `{.unnumbered}` per evitar que facin incrementar el comptador de secció i provoquin un decalatge entre la numeració de les seccions d'exercicis i els noms dels fitxers de lliurament:
-
-```markdown
-## Lectura prèvia {.unnumbered}
-## Lliuraments {.unnumbered}
+```bash
+quarto render --to html   # ràpid, recomanat durant el desenvolupament
+quarto render --to pdf    # lent (compilació LaTeX), recomanat abans de la MR
+quarto render             # genera les dues sortides
 ```
 
-#### Títol del "bloc d'exercici"
-
-El títol del "bloc d'exercici" i `{#exr-...}` és el nom del fitxer de lliurament principal:
-
-```markdown
-::: {#exr-nom}
-## `s2_4_1.s`
-...
+::: {.callout-warning}
+`quarto render --to html` neteja `_book` i és el més ràpid: recomanat durant el desenvolupament. Feu `quarto render` complet (HTML + PDF) com a verificació final abans d'obrir la Merge Request. Si necessiteu conservar un PDF generat anteriorment, feu `quarto render` o guardeu-lo abans de renderitzar només HTML.
 :::
-```
 
-Si l'exercici té dos lliuraments (`.md` + `.s`), ambdós apareixen al títol:
-
-```markdown
-::: {#exr-nom}
-## `s2_4_2.md` i `s2_4_2.s`
-...
-:::
-```
-
-#### Lliurament `.md` + `.s`
-
-Els exercicis que requereixen anàlisi escrita prèvia al codi (identificació de registres segurs, esquema del bloc d'activació) es lliuren en dos fitxers: un `.md` amb l'anàlisi i un `.s` amb el codi. La taula de lliuraments reflecteix ambdós.
-
-
-## IAs
+### IAs
 
 Cal passar-los sempre els fitxers següents:
 
@@ -901,11 +573,7 @@ Per a tasques que impliquin figures SVG, afegir també:
 
 `CLAUDE.md` especifica el model i l'effortness recomanats per a cada tipus de tasca.
 
-Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa. El contingut generat per IA pot contenir errors tècnics subtils, especialment en:
-
-- Valors de registres i codis de causa (verificar sempre contra l'especificació oficial).
-- Terminologia: comprovar substitucions obligatòries i anglicismes.
-- Coherència amb decisions preses en sessions anteriors (vegeu @sec-callouts i les decisions per tema).
+Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa.
 
 :::::::::
 <!-- Aquest `div` s'obre a l'inici del fitxer. No esborreu aquest comentari. -->

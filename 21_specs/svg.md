@@ -50,29 +50,30 @@ Evitar decimals i valors arbitraris.
 
 ---
 
-## 2. Canvas i marges
+## 2. Canvas
 
-El canvas **es calcula** a partir dels marges fixos i l'extensió dels objectes; no té mida fixa.
-
-```
-marge_superior  = 10 px
-marge_inferior  = 10 px
-marge_esquerre  = 76 px   (reservat per a etiquetes d'adreça + eix visual)
-marge_dret      = 10 px
-```
-
-Fórmules:
+Totes les figures usen `width="100%"` amb `viewBox` d'**amplada fixa**, garantint coherència visual (pes de línia, mida de text, espaiat) entre figures de la mateixa classe. `H` es calcula sempre a partir del contingut.
 
 ```
-W = 76 + w_rect + 10  =  76 + 230 + 10  =  316 + 10  =  326 px
-H = 10 + h_total_segments + 10
+width="100%"   viewBox="0 0 {W} {H}"
 ```
 
-On `w_rect = 230 px` i `h_total_segments` és la suma de les alçades de totes les zones.
+| Classe | W | Ús típic |
+|:---|:---:|:---|
+| `estreta` | **340** | Figures de detall: BA, descomposicions de bits. Dues en `layout="[50,-2,50]"` ocupen un textwidth. |
+| `estàndard` | **680** | Valor per defecte: mapes de memòria, diagrames de blocs, taules de caché, gràfics. |
+| `ampla` | **960** | Figures panoràmiques: pipelines multi-etapa, diagrames multicore. El PDF les redueix al textwidth. |
+
+**Excepcions:**
+
+- **Registres de bits** (`gen_regs.py`): `W = 2 + total_bits × 22 + 2` px (708 px per a 32 bits). `width="100%"` igual.
+- **BA i mapes de memòria** *(pendent de migrar a `estreta`)*: marges fixos `sup=inf=10 px`, `esq=76 px`, `dret=10 px`; `w_rect=230 px`; `W=316 px`. Vegeu `TODO.md` per al pla de migració.
 
 ---
 
 ## 3. Escala i alçades
+
+> **Nota:** Els valors numèrics de coordenades i dimensions de les seccions §3–§11 corresponen al canvas actual de les figures de BA i mapes de memòria (`w_rect=230`, `W=316 px`). S'actualitzaran quan s'executi la migració a classe `estreta` (340 px); vegeu `TODO.md`.
 
 **Factor d'escala de referència: 20 px/byte.**
 
@@ -120,19 +121,19 @@ Cada zona es construeix amb **3 sub-rectangles apilats**:
 ### Sub-rect sòlid
 
 ```xml
-<rect x="86" y="{y}" width="230" height="{h}"
+<rect x="{x_rect}" y="{y}" width="{w_rect}" height="{h}"
       fill="{fill}" stroke="{stroke}" stroke-width="1"/>
 ```
 
-Porta **ratlles indicadores** als costats esquerre i dret (vegeu §6).
+Porta **ratlles indicadores** als costats esquerre i dret (vegeu §6). Valors de `x_rect` i `w_rect`: vegeu §5.
 
 ### Sub-rect mig (discontíu)
 
 ```xml
-<rect x="86" y="{y}" width="230" height="{h}" fill="{fill}" stroke="none"/>
-<line x1="86"  y1="{y}" x2="86"  y2="{y+h}"
+<rect x="{x_rect}" y="{y}" width="{w_rect}" height="{h}" fill="{fill}" stroke="none"/>
+<line x1="{x_rect}"          y1="{y}" x2="{x_rect}"          y2="{y+h}"
       stroke="{stroke}" stroke-width="1" stroke-dasharray="4,3"/>
-<line x1="316" y1="{y}" x2="316" y2="{y+h}"
+<line x1="{x_rect+w_rect}"   y1="{y}" x2="{x_rect+w_rect}"   y2="{y+h}"
       stroke="{stroke}" stroke-width="1" stroke-dasharray="4,3"/>
 ```
 
@@ -205,8 +206,6 @@ Una línia grisa fina a cada frontera entre zones (no entre sub-rects de la mate
 
 S'inclou la línia a `y = marge_sup` (inici) i a `y = H - marge_inf` (final).
 
-> **Nota:** La documentació anterior indicava `x2="316"` (amplada total). Els SVGs de referència usen `x2="86"` (10 px). La mida correcta és **10 px**.
-
 ---
 
 ## 8. Text dins les zones
@@ -269,8 +268,7 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 
 | Zona / tipus | `fill` | `stroke` / text |
 |:---|:---|:---|
-| Reservada / espai lliure / processos | `#f8f9fa` | `#adb5bd` / `#6c757d` |
-| Alineació | `#f8f9fa` | `#adb5bd` / `#6c757d` |
+| Reservada / espai lliure / processos / alineació | `#f8f9fa` | `#adb5bd` / `#6c757d` |
 | `.text` / executable | `#f8d7da` | `#842029` |
 | `.data` / fitxers font `.c` `.h` / variables locals (BA) | `#cfe2ff` | `#084298` |
 | Heap / fitxers objecte `.o` / registres segurs (BA) | `#d1e7dd` | `#0a3622` |
@@ -338,7 +336,7 @@ Paquet Debian necessari: `fonts-liberation` (`sudo apt install fonts-liberation`
 
 ### Taula de fonts
 
-El bloc següent és la **font de veritat** de la taula de fonts i de les substitucions de migració. L'script `22_scripts/svg_migrate_fonts.py` el llegeix directament d'aquest fitxer en temps d'execució. Per afegir o modificar fonts, editeu només aquest bloc.
+El bloc següent és la **font de veritat** de la taula de fonts i de les substitucions de migració. L'script `22_scripts/norm_font.py` el llegeix directament d'aquest fitxer en temps d'execució. Per afegir o modificar fonts, editeu només aquest bloc.
 
 ```{.python #svg-font-map}
 SANS = "'Liberation Sans', Arial, Helvetica, sans-serif"
@@ -388,32 +386,9 @@ KNOWN_NORMALIZED = {
 
 ## 13. Variant dark
 
-> **Les variants dark no es creen ni editen manualment.** Es generen automàticament com a part del procés de render de Quarto mitjançant l'script `22_scripts/svg_generate_dark.py`.
+> **Les variants dark no es creen ni editen manualment.** Es generen automàticament com a part del procés de pre-render de Quarto mitjançant l'script `22_scripts/gen_dark.py`.
 
-### Generació automàtica
-
-L'script s'executa com a `pre-render` a `_quarto.yml`:
-
-```yaml
-project:
-  pre-render: 22_scripts/svg_generate_dark.py
-```
-
-Per a cada `figs_auto/*_light.svg`, l'script genera (o actualitza) el fitxer `figs_auto/*_dark.svg` corresponent aplicant la taula de substitució de colors. La generació es **salta** si:
-
-- El fitxer dark és **més nou** que el light (ja és vigent).
-- El nom del fitxer dark és a `22_scripts/dark_exclusions.txt` (dark gestionada manualment).
-
-Per protegir una dark retocada manualment a Inkscape, afegiu el seu nom a `22_scripts/dark_exclusions.txt`:
-
-```
-# 22_scripts/dark_exclusions.txt
-T3_ba_general_dark.svg
-```
-
-### Taula de substitució light → dark
-
-El bloc següent és la **font de veritat** de la taula. L'script `22_scripts/svg_generate_dark.py` el llegeix directament d'aquest fitxer en temps d'execució (vegeu §13 «Generació automàtica»). Per modificar la paleta dark, editeu només aquest bloc.
+L'script s'executa com a darrer pas del `pre-render` a `_quarto.yml` (vegeu `_quarto.yml` per al pipeline complet). Per a cada `figs_auto/*_light.svg`, genera el fitxer `figs_auto/*_dark.svg` corresponent aplicant la taula de substitució definida al bloc `#svg-dark-replacements` d'aquest fitxer. Per modificar la paleta dark, editeu **només** aquest bloc.
 
 ```{.python #svg-dark-replacements}
 REPLACEMENTS = [
@@ -440,25 +415,11 @@ Els colors dins els marcadors `<polygon fill="...">` també es substitueixen aut
 
 ---
 
-## 14. Figures afectades per aquests patrons
+## 14. Notes operatives sobre figures específiques
 
-Les variants dark de totes les figures es generen automàticament (vegeu §13). La columna «Notes» indica el contingut o les convencions específiques.
+Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
-| Figura | Tipus | Notes |
-|:---|:---|:---|
-| `T3_mapa_memoria` | Mapa de memòria | Figura de referència del conveni de colors |
-| `T3_ba_general` | BA genèric | Figura de referència del model de BA |
-| `T3_ba_func` | BA | `v` (char×10), alineació, `w` (int×10); escala ×½ |
-| `T3_ba_multi` | BA | `s0`, `s1`, `ra`; escala ×1 |
-| `T3_ba_exemple` | BA | `q`, `v`, `w`, alineació, `s0`–`s2`, `ra`; escala ×½ |
-| `T3_func_uninivell_pila` | Pila dinàmica | 3 estats: avant/durant/après crida a `funcB` |
-| `T3_pila_crides_aniuades` | Pila dinàmica | 5 estats: crides aniuades `funcA`/`funcB` |
-| `T3_compilacio_separada` | Graf de flux | Graf LR: `p1.c`/`p9.c` → `gcc` → `.o` → `ld` → executable |
-| `T3_flux_gcc_complet` | Graf de flux | Graf TD: flux complet GCC amb subgraphs |
-| `T3_deps_multi` | Dependències de dades | `c`, `d` (blau `#084298`) travessen la frontera; `c`, `d`, `e` al return (vermell `#cc0000`) |
-| `T3_deps_exemple` | Dependències de dades | `a`, `b`, `c`, `d` (blau); `res_f`, `res_g` com a òvals (vermell `#cc0000`); dues fronteres |
-
-> **Nota sobre les figures de dependències:** el color `#cc0000` s'usa per a cercles/òvals de resultats intermedis i per als usos posteriors a la crida. Aquest color **no forma part de la taula de substitució dark** (§13) i, per tant, les figures `T3_deps_*` s'han d'afegir a `22_scripts/dark_exclusions.txt` fins que es defineixi la seva variant dark manualment.
+**Figures de dependències de dades** (`T3_deps_*`): el color `#cc0000` (resultats intermedis i usos posteriors a la crida) **no forma part de la taula de substitució dark** (§13). La variant dark requereix intervenció manual: cal afegir `#cc0000` a `REPLACEMENTS` amb el seu equivalent dark, o bé crear la variant dark manualment a Inkscape.
 
 ---
 
@@ -469,12 +430,12 @@ Algunes figures del projecte provenen de PDFs originals (material docent anterio
 ### Característiques tècniques
 
 - **Text traçat**: el text es converteix a corbes de Bézier. No és editable com a text, però és totalment portable (sense dependència de fonts instal·lades al sistema). Per editar el text cal partir del PDF original i regenerar.
-- **Negre implícit fet explícit**: el SVG generat afegeix `fill="#000000" stroke="none"` a l'element `<svg>` arrel. Això fa que el negre per defecte (heretat implícitament per tots els paths i formes sense color explícit) sigui substituïble per `svg_generate_dark.py` com qualsevol altre color de la paleta.
+- **Negre implícit fet explícit**: el SVG generat afegeix `fill="#000000" stroke="none"` a l'element `<svg>` arrel. Això fa que el negre per defecte (heretat implícitament per tots els paths i formes sense color explícit) sigui substituïble per `gen_dark.py` com qualsevol altre color de la paleta.
 - **Fons verd eliminat**: el color `#d9ffd9` (realçat del visor de PDFs) s'elimina durant l'extracció.
 
 ### Generació de la variant dark
 
-Les figures extretes de PDF **es generen automàticament** per `svg_generate_dark.py` com la resta de figures, gràcies a les tres entrades específiques de la taula `REPLACEMENTS` (§13):
+Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com la resta de figures, gràcies a les tres entrades específiques de la taula `REPLACEMENTS` (§13):
 
 | Light | Dark | Ús |
 |:---|:---|:---|
@@ -482,7 +443,7 @@ Les figures extretes de PDF **es generen automàticament** per `svg_generate_dar
 | `#ffffff` | `#2d2d2d` | Zones blanques internes (p. ex. àrea buida de barres) |
 | `#b3b3b3` | `#666666` | Gris mig de figures (p. ex. barres de `T6_tc_tc_prima`) |
 
-**No cal afegir-les a `dark_exclusions.txt`**: el pipeline automàtic les gestiona correctament.
+**El pipeline automàtic gestiona correctament totes les figures extretes de PDF**: no cal cap configuració addicional.
 
 ### Figures del projecte generades per aquest mètode
 
@@ -494,11 +455,3 @@ Les figures extretes de PDF **es generen automàticament** per `svg_generate_dar
 | `T6_not_1_0` | `T6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=Vcc(1-e^{-t/RC})$ |
 | `T6_not_0_1` | `T6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=Vcc\,e^{-t/RC}$ |
 
-### Distinció respecte a figures de nova creació
-
-| Propietat | Figura extreta de PDF | Figura de nova creació |
-|:---|:---|:---|
-| Text | Traçat (corbes) | Editable, font `'Liberation Sans', Arial, Helvetica, sans-serif` |
-| Colors | Negre implícit → explícit (`#000000`) | Paleta del projecte (§10) |
-| Edició | Inkscape (corbes) o regeneració des de PDF | Inkscape (text editable) |
-| Dark | Automàtica via `REPLACEMENTS` | Automàtica via `REPLACEMENTS` |

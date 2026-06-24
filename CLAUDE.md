@@ -33,13 +33,6 @@ Altres fitxers transversals: `05_riscv.qmd` (compendi de referència RISC-V, inc
 
 ### Estructura de fitxers `.qmd`
 
-La nova estructura **no és un mapatge 1:1** dels temes originals (MIPS). MIPS: 8 temes; RISC-V: 9 temes:
-
-- T1 dividit: «Introducció» → T1; «Rendiment, Amdahl i potència» → T6.
-- T2–T5 → T2–T5.
-- T6–T8 → T7–T9.
-- Laboratoris (només +1): L0 → L1, L1 → L2, etc.
-
 Convenció de noms (x = número de tema, 1–9; y = sessió de laboratori):
 
 - `Tx.qmd`: teoria del tema x.
@@ -50,12 +43,12 @@ Convenció de noms (x = número de tema, 1–9; y = sessió de laboratori):
 
 ### Volum
 
-| Material | Fitxers `.qmd` | PDFs originals |
-| :--- | :--- | :--- |
-| Teoria | `T1.qmd`–`T9.qmd` | 8 PDFs, ~200 pàgines |
-| Enunciats | `PE_Tx.qmd` (x = 1–9) | |
-| Solucions | `PS_Tx.qmd` (x = 2–9), `PS_criteris.qmd` | |
-| Laboratori | `L1.qmd`–`L6.qmd` | 6 PDFs + plantilles |
+| Material | Fitxers `.qmd` |
+| :--- | :--- |
+| Teoria | `T1.qmd`–`T9.qmd` |
+| Enunciats | `PE_Tx.qmd` (x = 1–9) |
+| Solucions | `PS_Tx.qmd` (x = 2–9), `PS_criteris.qmd` |
+| Laboratori | `L1.qmd`–`L6.qmd` |
 
 Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats (es comenten per escurçar el temps de renderització en proves).
 
@@ -77,8 +70,7 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Teoria (T1–T9)
 
-- Pendent de revisió interna: `T5.qmd`.
-- Preparats per a revisió externa: `T1.qmd`–`T4.qmd`, `T6.qmd`–`T9.qmd`.
+- Preparats per a revisió externa: `T1.qmd`–`T9.qmd`.
 
 #### Enunciats (`PE_Tx.qmd`) i Solucionaris (`PS_Tx.qmd`)
 
@@ -95,7 +87,7 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 **Estat:**
 - `T4.qmd`, `T6.qmd`–`T9.qmd` — **complet** (`T4` és la referència; `T6`–`T8` amb prefixos propis; `T9` amb prefix `ei-`).
-- `T1.qmd`–`T3.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 3 de la seqüència de revisió).
+- `T1.qmd`–`T3.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 1 de la seqüència de revisió).
 
 **Criteris de generació de l'slug** (aplicats a `T4.qmd`):
 
@@ -113,18 +105,17 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 ### Seqüència de revisió pendent
 
-1. **T5** (1 xat): revisió interna teoria coma flotant.
-2. **Slugs T1–T6** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals.
-3. **PE_T1–PE_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
-4. **PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
-5. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
+1. **Slugs T1–T6** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals.
+2. **PE_T1–PE_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
+3. **PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
+4. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
 
 ### Flux de treball
 
 En començar un xat:
 
 1. Explora el repositori. Si hi ha fitxers als quals no tens accés, demana'ls.
-2. Llegeix a fons `_quarto.yml`, `index.qmd`, `07_contrib.qmd` i la resta de fitxers necessaris per a la tasca.
+2. Llegeix els fitxers de referència obligatòria (vegeu §Fitxers de referència obligatòria) i la resta de fitxers necessaris per a la tasca.
 3. Presenta'm la llista exhaustiva de tasques o problemes que proposes **abans de fer cap canvi**, i digues si cal que canviï el model o l'effortness.
 4. Espera confirmació per procedir.
 5. En cas de dubte, atura't, exposa el dubte i, si pots, proposa solucions.
@@ -157,26 +148,15 @@ Regles operatives:
 
 **Figures extretes de PDFs originals (reservat per a figures complexes):**
 
-L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que, per la seva complexitat, no és viable reproduir com a SVG natiu en un temps raonable. Exemples típics: gràfics de dades multisèrie, diagrames de circuits elèctrics detallats, o il·lustracions amb geometria molt densa. La decisió de si una figura és prou complexa per justificar l'extracció es pren conjuntament amb l'usuari.
-
-Característiques tècniques de les figures extretes:
-- Text traçat (corbes de Bézier), no editable com a text. Per editar cal partir del PDF original.
-- Negre implícit convertit en `fill="#000000"` explícit a l'element `<svg>` arrel, perquè sigui substituïble per l'script dark.
-- Es desen a `13_figs_externes/`; la variant dark es genera automàticament pel pre-render (`22_scripts/gen_dark.py`).
+L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que no és viable reproduir com a SVG natiu en un temps raonable (gràfics multisèrie, circuits detallats, geometria molt densa). La decisió es pren conjuntament amb l'usuari. Es desen a `13_figs_externes/`; vegeu `21_specs/svg.md §15` per als detalls tècnics i la llista de figures existents.
 
 **Figures de registres de bits:**
 - Definides a `21_specs/registres.toml` (font de veritat).
 - Generades automàticament pel pre-render (`22_scripts/gen_regs.py`).
 
 **Flux de pre-render** (`_quarto.yml`):
-```yaml
-pre-render:
-  - bash -c "rm -rf figs_auto && mkdir figs_auto"
-  - 22_scripts/gen_regs.py  21_specs/registres.toml                              "__registre_light" --output-dir="figs_auto/"
-  - 22_scripts/norm_font.py 21_specs/svg.md "12_figs_originals/[^/]+[.]svg" "__original_light" --output-dir="figs_auto/"
-  - 22_scripts/norm_font.py 21_specs/svg.md "13_figs_externes/[^/]+[.]svg"  "__extern_light"   --output-dir="figs_auto/"
-  - 22_scripts/gen_dark.py  21_specs/svg.md "figs_auto/[^/]+_light[.]svg"                      --output-dir="figs_auto/"
-```
+
+El pipeline de pre-render és a `_quarto.yml` (clau `project.pre-render`). La font de veritat és sempre `_quarto.yml`; no es duplica aquí.
 
 En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`.
 
@@ -184,8 +164,7 @@ En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`
 
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
-```
-Nom d'aquest xat: `EC T2, PE_T2 i PS_T2 Revisió interna`
+Nom d'aquest xat: `EC T3, PE_T3 i PS_T3 Revisió interna`
 
 Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 Intensitat: Profunda
@@ -199,28 +178,33 @@ Aspectes a revisar:
 - Correcció tècnica
     - Font de veritat: tots els documents de l'autor "RISC-V International" de `09_bibliografia.bib`
     - Les versions més recents d'altres documents del repositori oficial de "RISC-V International"
+    - Molta atenció en la revisió dels càlculs
 - Coherència entre Teoria, Problemes enunciats i Problemes solució
 - Eficiència pedagògica
     - Ordre de presentació de la matèria autocontingut: presentació lineal de continguts (no emprar cap concepte que no s'hagi introduït encara, dificultat creixent, etc.)
     - Coherència estilística del llenguatge, dels recursos didàctics (ús de callouts, de referències creuades, freqüència dels exemples, ús consistent de termes, etc.)
+    - Manca d'exercicis, manca de solucions, necessitat de reordenació d'exercicis
 - Català normatiu
     - Evitar anglicismes
     - Ús dels termes especificats a 
 
-Model i effortness: [p. ex. Opus 4.8 / High]. Si convé canviar-los durant el xat, digues-m'ho.
+Model i effortness:
 
-Seqüència de tasques a realitzar durant la sessió:
-- Tasca A: Exploració dels fitxers subministrats
-- Tasca B: Revisió tècnica (formats d'instrucció, codificació, rigor ISA)
-- Tasca C: Revisió pedagògica: ordre de presentació dels conceptes (no emprar conceptes que encara no s'han presentat, nivell de detall), ús dels recursos discursius (quarto callouts, llistes de vinyetes, paràgrafs), etc.
-- Tasca D: Revisió lingüística
-- Tasca E: Revisió format Quarto
-- Tasca F: Generació figures SVG
-- Tasca G: Integració figures SVG
-- Actualització i presentació de tots els arxius que has modificat
+- Ara estàs en Sonnet 4.6 Medium sense Thinking. Confirma'm **explícitament** si t'esta bé aquesta configuració o si vols que et canviï de model, effortness o Thinking, digues-m'ho i para perquè pugui fer el canvi de configuració. Quan l'hagi fet te n'informaré i et demanaré que continuïs a partir d'aquest punt.
+- En aquesta revisió hi ha molts càlculs a fer. Suposo que quan hagis llegit tota la documentació em demanaràs que et passi a Opus High Thinking. Quan ho necessitis, para i digues-m'ho tan aviat com ho necessitis.
+- Has d'interrompre l'execució sempre que vulguis que et canviï la configuració.
+- Quan arribis a la verificació aritmètica de la pila i la generació dels solucionaris:
+    - Demana'm el canvi a Opus High Thinking
+    - Atura't perquè et pugui canviar el model
 
-Comencem la tasca A:
+Canvis:
 
+- Fes els canvis a tots els fitxers que creguis oportú. Al final, ofereix-me tots els fitxers que hagis modificat
+
+Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
+Renderització HTML: https://loi.ac.upc.edu/ec
+
+Comença:
 0. Explora els fitxers que t'he passat
 1. Llegeix `CLAUDE.md`, `07_contrib.qmd` i `21_specs/svg.md`
 2. Llegeix els fitxers principals a revisar
@@ -229,4 +213,3 @@ Comencem la tasca A:
 5. Genera la llista d'accions a realitzar; guarda-la a fitxer T2_P_tasques.md i ofereix-me-la per descarregar.
 6. Comença a realitzar les accions que no necessiten la meva aprovació. Fes una llista les tasques que requereixi decisió meva i quan hagis acabat la tasca anterior (6.) atura't i presenta'm la llista i les opcions de cada ítem que conté.
 ```
-Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu

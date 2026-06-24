@@ -6,6 +6,36 @@ number-sections: true
 
 ### Operands en registre
 
+::: {#sol-p3-registre-ctorv .callout-tip}
+## Solució: traducció de C a assemblador RISC-V (operands en registre)
+
+**Enunciat**: @exr-p3-registre-ctorv.
+
+Variables: `f`→`t0`, `g`→`t1`, `h`→`t2`, `i`→`t3`, `j`→`t4`.
+
+**a)** `f = g + h + i + j`
+
+Cal tres `add` encadenats; no existeix cap `add` de quatre operands:
+
+```{.s filename="RV32I"}
+add  t0, t1, t2     # t0 = g + h
+add  t0, t0, t3     # t0 = g + h + i
+add  t0, t0, t4     # f  = g + h + i + j
+```
+
+**b)** `g = f + (h + 5) - i`
+
+Es calcula primer `h + 5` (amb `addi`), s'afegeix `f` i finalment es resta `i`:
+
+```{.s filename="RV32I"}
+addi t5, t2, 5      # t5 = h + 5
+add  t5, t0, t5     # t5 = f + (h + 5)
+sub  t1, t5, t3     # g  = f + (h + 5) - i
+```
+
+Cal usar un registre temporal (`t5`) per no sobreescriure `f` (`t0`) ni `h` (`t2`) abans d'acabar el càlcul.
+:::
+
 ::: {#sol-p3-registre-rtovc .callout-tip}
 ## Solució: desassemblar fragments a C
 
@@ -116,6 +146,72 @@ Memòria modificada: `M[0x10010008..0x1001000B] = 04 05 06 07`.
 
 ### Constants i immediats
 
+::: {#sol-p3-memoria-lb-lh .callout-tip}
+## Solució: instruccions de càrrega i emmagatzematge de byte i mig paraula
+
+**Enunciat**: @exr-p3-memoria-lb-lh.
+
+Estat inicial: `t0 = 0x10010000`.
+
+| Adreça | `+0` | `+1` | `+2` | `+3` |
+| :--- | :---: | :---: | :---: | :---: |
+| `0x10010000` | `11` | `22` | `CC` | `DD` |
+
+**a)** Resultat de cada instrucció (partint sempre del contingut inicial):
+
+**`lb t1, 1(t0)`** — adreça efectiva `0x10010001`, byte = `0x22`.
+
+El bit 7 de `0x22` és 0 → extensió de signe afegeix zeros: `t1 = 0x00000022`.
+
+**`lb t1, 2(t0)`** — adreça efectiva `0x10010002`, byte = `0xCC`.
+
+El bit 7 de `0xCC` és 1 → extensió de signe afegeix uns: `t1 = 0xFFFFFFCC`.
+
+**`lh t1, 0(t0)`** — adreça efectiva `0x10010000`, dos bytes (little-endian): `11 22` → `0x2211`.
+
+El bit 15 de `0x2211` és 0 → extensió de signe: `t1 = 0x00002211`.
+
+**`lh t1, 2(t0)`** — adreça efectiva `0x10010002`, dos bytes: `CC DD` → `0xDDCC`.
+
+El bit 15 de `0xDDCC` és 1 → extensió de signe: `t1 = 0xFFFFDDCC`.
+
+**`lbu t1, 2(t0)`** — adreça efectiva `0x10010002`, byte = `0xCC`.
+
+Extensió **per zero** (sense signe): `t1 = 0x000000CC`.
+
+**`lhu t1, 2(t0)`** — adreça efectiva `0x10010002`, dos bytes: `CC DD` → `0xDDCC`.
+
+Extensió **per zero**: `t1 = 0x0000DDCC`.
+
+**Resum**:
+
+| Instrucció | Resultat al registre |
+| :--- | :--- |
+| `lb  t1, 1(t0)` | `t1 = 0x00000022` |
+| `lb  t1, 2(t0)` | `t1 = 0xFFFFFFCC` |
+| `lh  t1, 0(t0)` | `t1 = 0x00002211` |
+| `lh  t1, 2(t0)` | `t1 = 0xFFFFDDCC` |
+| `lbu t1, 2(t0)` | `t1 = 0x000000CC` |
+| `lhu t1, 2(t0)` | `t1 = 0x0000DDCC` |
+
+**b)** Execució seqüencial:
+
+```{.s filename="RV32I"}
+lb   t1, 2(t0)      # t1 = SignExt(0xCC) = 0xFFFFFFCC
+sb   t1, 1(t0)      # M[0x10010001] <- byte LSB de t1 = 0xCC
+```
+
+`sb` escriu **només el byte menys significatiu** del registre font (0xCC), sense extensió de cap mena.
+
+Estat final de la memòria:
+
+| Adreça | `+0` | `+1` | `+2` | `+3` |
+| :--- | :---: | :---: | :---: | :---: |
+| `0x10010000` | `11` | `CC` ← | `CC` | `DD` |
+:::
+
+### Constants i immediats
+
 ::: {#sol-p3-immediats-luiaddi .callout-tip}
 ## Solució: expansió de `lui` + `addi` i rang d'immediats
 
@@ -142,9 +238,9 @@ Comprovació: `0xDEADC000 - 0x111 = 0xDEADBEEF` ✓
 
 **b)** Per què cal ajustar `hi20` quan el bit 11 de `lo12` val 1.
 
-`addi` fa **extensió de signe** de l'immediat de 12 bits. Si el bit 11 és 1, el valor s'interpreta com a negatiu: en lloc de sumar `lo12`, resta `0x1000 - lo12`. Sense l'ajust, el resultat seria `0x1000` (4096) menys del valor desitjat.
+`addi` fa **extensió de signe** de l'immediat de 12 bits. Si el bit 11 és 1, el valor s'interpreta com a enter negatiu: el valor efectiu és $lo_{12} - \texttt{0x1000}$ (en lloc de $lo_{12}$). Sense l'ajust, el resultat seria 0x1000 (4096) menys del valor desitjat.
 
-Per `0xDEADBEEF`: sense ajust, `lui t0, 0xDEADB` → `t0 = 0xDEADB000`; `addi t0, t0, 0xEEF` → extensió de signe fa −273 → `0xDEADB000 - 273 = 0xDEADAEEF` ≠ `0xDEADBEEF`. Amb l'ajust `hi20 = 0xDEADC`: `0xDEADC000 - 273 = 0xDEADBEEF` ✓
+Per `0xDEADBEEF`: sense ajust, `lui t0, 0xDEADB` → `t0 = 0xDEADB000`; `addi t0, t0, 0xEEF` → l'extensió de signe interpreta `0xEEF` com $\texttt{0xEEF} - \texttt{0x1000} = -273$ → `0xDEADB000 - 273 = 0xDEADAEEF` ≠ `0xDEADBEEF`. Amb l'ajust `hi20 = 0xDEADC`: `0xDEADC000 - 273 = 0xDEADBEEF` ✓
 
 **c)** Rangs de valors.
 
@@ -395,7 +491,7 @@ Cal carregar el valor de `punter` (una adreça), desreferenciar-lo per obtenir e
 
 ```{.s filename="RV32I"}
         la      t0, punter
-        lw      t2, 0(t0)       # t2 = punter
+        lw      t2, 0(t0)       # t2 = valor de punter (adreça apuntada)
         lw      t3, 0(t2)       # t3 = *punter
         addi    t3, t3, 1       # t3 = *punter + 1
         sw      t3, 8(t2)       # *(punter + 2) = *punter + 1
@@ -463,7 +559,7 @@ bucle_c:
         bge     t0, t4, fibucle_c
         slli    t6, t0, 2       # t6 = i * 4
         add     t6, t6, t2      # t6 = @v[i]
-        lw      a0, 0(t6)       # a0 = v[i]  (t0-t6 exhaurits; a0/a1 com a temporals addicionals)
+        lw      a0, 0(t6)       # a0 = v[i]  (t0–t6 exhaurits; a0/a1 com a temporals addicionals)
         sub     a1, t5, t0      # a1 = 9 - i
         slli    a1, a1, 2       # a1 = (9 - i) * 4
         add     a1, a1, t3      # a1 = @w[9 - i]
@@ -472,6 +568,8 @@ bucle_c:
         j       bucle_c
 fibucle_c:
 ```
+
+**Nota**: `a0` i `a1` s'usen aquí com a registres temporals addicionals perquè `t0`–`t6` ja estan ocupats. En un context sense subrutines (com és el cas a T2), és acceptable. En un context de subrutines (T3 en endavant), `a0`/`a1` són registres caller-saved reservats per a paràmetres i retorn, i caldria tenir-ho en compte.
 
 A la declaració cal afegir `w` a continuació de `v`:
 
@@ -510,5 +608,5 @@ fi:
         ret
 ```
 
-La funció no modifica cap registre guardat (`s0`–`s11`), de manera que no cal bloc d'activació.
+La funció usa únicament registres temporals (`t0`–`t2`), de manera que no cal preservar cap registre.
 :::

@@ -28,7 +28,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 | Operacions lògiques bit a bit (`and`, `or`, `slt`) | @nte-instruccions-logiques, @nte-instruccions-comparacio |
 | Subrutines: pas de paràmetres i retorn de resultats | @sec-pas-parametres-retorn, @nte-abi-pas-parametres |
 | Subrutines multinivell: registres segurs i bloc d'activació | @sec-multinivell-pila, @nte-abi-registres-temporals-segurs |
-| Compilació separada i directiva `.global` | @sec-compilacio, @nte-globl |
+| Compilació separada i directiva `.globl` | @sec-compilacio, @nte-globl |
 : {.striped .hover}
 
 ## Compilació separada a RARS
@@ -38,9 +38,9 @@ En un projecte real, el codi es divideix en **mòduls** independents que es comp
 RARS reprodueix aquest flux de manera directa: amb l'opció **Settings → Assemble all files currently open** activada, l'assemblador processa tots els fitxers oberts alhora i resol automàticament les referències entre ells, fent el rol combinat d'assemblador i enllaçador.
 
 ::: {#cau-global-compilacio-separada .callout-caution}
-## Compilació separada — directiva `.global`
+## Compilació separada — directiva `.globl`
 
-Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.global` al fitxer on es defineix, inclòs `_start`. Sense aquesta declaració, l'etiqueta és invisible per als altres mòduls i RARS finalitza amb un error de símbol no resolt.
+Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.globl` al fitxer on es defineix, inclòs `_start`. Sense aquesta declaració, l'etiqueta és invisible per als altres mòduls i RARS finalitza amb un error de símbol no resolt.
 :::
 
 ::: {.callout-tip title="Comprovació pràctica"}
@@ -96,7 +96,7 @@ Tingueu en compte:
 Mida del BA: 16 bytes (@imp-ec-alineacio-pila).
 
 ```{.s filename="s4_1_1.s"}
-.global abs
+.globl abs
 
 .text
 
@@ -110,7 +110,7 @@ positiu:
 ```
 
 ```{.s filename="s4_1_2.s"}
-.global _start
+.globl _start
 
 .data
 resultat: .word 0
@@ -231,7 +231,7 @@ Els paràmetres arriben per convenció ABI: `a0 = cf`, `a1 = @s`, `a2 = @e`, `a3
 `descompon` és uninivell sense variables locals: BA buit.
 
 ```{.s filename="s4_2_1.s"}
-.global descompon
+.globl descompon
 
 .text
 
@@ -284,7 +284,7 @@ desa:
 Per provar `descompon` de manera aïllada, creeu temporalment un `_start` mínim al fitxer `s4_3_1.s` (que desenvolupareu a la secció següent) que declari les variables globals i faci la crida:
 
 ```{.s filename="s4_3_1.s"}
-.global _start
+.globl _start
 
 .data
 signe:    .word 0
@@ -378,8 +378,8 @@ Abans d'escriure cap instrucció:
 Mida del BA: 16 bytes (@imp-ec-alineacio-pila).
 
 ```{.s filename="s4_3_1.s"}
-.global _start
-.global compon
+.globl _start
+.globl compon
 
 .data
 signe:    .word 0
