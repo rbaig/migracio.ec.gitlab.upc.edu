@@ -166,7 +166,7 @@ En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`
 
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
-Nom d'aquest xat: `EC T3, PE_T3 i PS_T3 Revisió interna`
+Nom d'aquest xat: `EC T4, PE_T4 i PS_T4 Revisió interna`
 
 Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 Intensitat: Profunda
