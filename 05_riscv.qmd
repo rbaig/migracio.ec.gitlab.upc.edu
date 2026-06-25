@@ -32,6 +32,56 @@
 : {tbl-colwidths="[15,15,55,15]" .striped}
 :::
 
+### Registre de control `fcsr` (RV32F) {#sec-reftecnica-registres-fcsr .unnumbered}
+
+::: {#nte-rv-fcsr .callout-note}
+## RV32F — Registre de control `fcsr`
+
+::: {#fig-rv-fcsr}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T5_fcsr__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T5_fcsr__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T5_fcsr__registre_light.svg)
+:::
+Camps del registre `fcsr` (RV32F).
+:::
+
+| Bits | Camp | Descripció |
+| :---: | :---: | :--- |
+| `31:8` | — | Reservats (llegeixen com a 0) |
+| `7:5` | `frm` | Mode d'arrodoniment |
+| `4:0` | `fflags` | Indicadors d'excepció (*sticky*) |
+: {tbl-colwidths="[15,15,70]" .striped}
+
+**Modes d'arrodoniment** (`frm`):
+
+| Codi | Mnemònic | Criteri |
+| :---: | :---: | :--- |
+| `000` | `RNE` | Al més pròxim, empat al parell (per defecte) |
+| `001` | `RTZ` | A zero (truncament) |
+| `010` | `RDN` | A $-\infty$ |
+| `011` | `RUP` | A $+\infty$ |
+| `100` | `RMM` | Al més pròxim, empat al de major magnitud |
+: {tbl-colwidths="[15,15,70]" .striped}
+
+**Indicadors d'excepció** (`fflags`):
+
+| Bit | Mnemònic | Excepció |
+| :---: | :---: | :--- |
+| `4` | `NV` | Operació invàlida ($\sqrt{-1}$, $0/0$, $\infty - \infty$…) |
+| `3` | `DZ` | Divisió per zero |
+| `2` | `OF` | Sobreeiximent |
+| `1` | `UF` | Subdesbordament |
+| `0` | `NX` | Resultat inexacte (arrodoniment) |
+: {tbl-colwidths="[15,15,70]" .striped}
+:::
+
 ---
 
 ## Formats d'instrucció (RV32I) {#sec-reftecnica-formats .unnumbered}
@@ -43,6 +93,69 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 {{< include 11_riscv/RV32I_format_instruccions.qmd >}}
 : {.striped}
+:::
+
+### Format Tipus-R {#sec-reftecnica-formats-r .unnumbered}
+
+::: {#nte-rv-instruccions-Tipus-R .callout-note}
+## RV32I ISA — Format Tipus-R
+
+::: {#fig-rv-typeR}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T2_instruccio_tipus_R__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T2_instruccio_tipus_R__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T2_instruccio_tipus_R__registre_light.svg)
+:::
+Format d'instrucció tipus R (RV32I).
+:::
+:::
+
+### Format Tipus-I {#sec-reftecnica-formats-i .unnumbered}
+
+::: {#nte-rv-instruccions-Tipus-I .callout-note}
+## RV32I ISA — Format Tipus-I
+
+::: {#fig-rv-typeI}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T2_instruccio_tipus_I__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T2_instruccio_tipus_I__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T2_instruccio_tipus_I__registre_light.svg)
+:::
+Format d'instrucció tipus I (RV32I).
+:::
+:::
+
+### Format Tipus-S {#sec-reftecnica-formats-s .unnumbered}
+
+::: {#nte-rv-instruccions-Tipus-S .callout-note}
+## RV32I ISA — Format Tipus-S
+
+::: {#fig-rv-typeS}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T2_instruccio_tipus_S__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T2_instruccio_tipus_S__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T2_instruccio_tipus_S__registre_light.svg)
+:::
+Format d'instrucció tipus S (RV32I).
+:::
 :::
 
 ---
@@ -295,7 +408,7 @@
 : {tbl-colwidths="[15,12,48,25]" .striped}
 :::
 
-### Registres de causa (`mcause`) {#sec-reftecnica-ei-mcause .unnumbered}
+### Registres CSR {#sec-reftecnica-ei-csr .unnumbered}
 
 ::: {#nte-rv-mcause-taula .callout-note}
 ## RV32I ISA — `mcause` — Valors més rellevants
@@ -306,10 +419,65 @@
 : {.striped}
 :::
 
-### Mode d'adreçament de `mtvec` {#sec-reftecnica-ei-mtvec .unnumbered}
+::: {#nte-rv-mepc .callout-note}
+## RV32I ISA — `mepc`
 
-::: {#nte-rv-mtvec-modes .callout-note}
-## RV32I ISA — `mtvec` — Modes d'adreçament
+::: {#fig-rv-mepc}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T9_mepc__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T9_mepc__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T9_mepc__registre_light.svg)
+:::
+Camps del registre `mepc`.
+:::
+:::
+
+::: {#nte-rv-mstatus .callout-note}
+## RV32I ISA — `mstatus`
+
+::: {#fig-rv-mstatus}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T9_mstatus__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T9_mstatus__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T9_mstatus__registre_light.svg)
+:::
+Camps del registre `mstatus` (RV32).
+:::
+
+- **`MIE`** (bit 3): permís global d'interrupcions.
+- **`MPIE`** (bit 7): valor de `MIE` anterior a l'excepció o interrupció.
+- **`MPP`** (bits 12:11): mode de privilegi anterior (M, S o U).
+:::
+
+::: {#nte-rv-mtvec .callout-note}
+## RV32I ISA — `mtvec`
+
+::: {#fig-rv-mtvec}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T9_mtvec__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T9_mtvec__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T9_mtvec__registre_light.svg)
+:::
+Camps del registre `mtvec`.
+:::
 
 | `MODE` | Nom | Comportament |
 | :---: | :--- | :--- |
@@ -317,18 +485,44 @@
 : {tbl-colwidths="[5,15,80]" .striped}
 :::
 
-### Registres d'interrupció (`mip` / `mie`) {#sec-reftecnica-ei-mip-mie .unnumbered}
+::: {#nte-rv-mip-mie .callout-note}
+## RV32I ISA — `mip` i `mie`
 
-::: {#nte-rv-mip-mie-taula .callout-note}
-## RV32I ISA — `mip` i `mie` — Bits
+::: {#fig-rv-mip}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T9_mip__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T9_mip__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T9_mip__registre_light.svg)
+:::
+Camps del registre `mip`.
+:::
+
+::: {#fig-rv-mie}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T9_mie__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T9_mie__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T9_mie__registre_light.svg)
+:::
+Camps del registre `mie`.
+:::
 
 | Bit | Nom `mip` | Nom `mie` | Tipus d'interrupció |
 | :---: | :--- | :--- | :--- |
 {{< include 11_riscv/RV32I_csr_mip_mie_taula.qmd >}}
 : {.striped}
 :::
-
-### Registres CSR de mode M i mode S {#sec-reftecnica-ei-csr-modes .unnumbered}
 
 ::: {#nte-rv-csr-modes-ms .callout-note}
 ## RV32I ISA — Registres CSR de mode M i mode S
@@ -339,8 +533,6 @@
 : {.striped}
 :::
 
-### Registres CSR de memòria virtual {#sec-reftecnica-ei-csr-tlb .unnumbered}
-
 ::: {#nte-rv-csr-tlb .callout-note}
 ## RV32I ISA — Registres CSR de memòria virtual
 
@@ -348,6 +540,28 @@
 | :--- | :--- | :--- |
 {{< include 11_riscv/RV32I_csr_tlb_taula.qmd >}}
 : {.striped}
+:::
+
+::: {#nte-rv-satp .callout-note}
+## RV32I ISA — `satp`
+
+::: {#fig-rv-satp}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T9_satp__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T9_satp__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T9_satp__registre_light.svg)
+:::
+Camps del registre `satp` en mode SV32.
+:::
+
+- **`MODE`** (bit 31): `0` = sense traducció d'adreces (*bare*); `1` = traducció Sv32 activa.
+- **`PPN`** (bits 21:0): número de pàgina física de la taula de pàgines de primer nivell.
 :::
 
 ---
@@ -358,8 +572,23 @@
 ## Directives — RARS
 
 | Directiva | Operands | Descripció |
-|-----------|----------|------------|
-{{< include 11_riscv/RARS_directives.qmd >}}
+| :--- | :--- | :--- |
+| `.align` | `n` | Alinea el següent element a la frontera $2^n$ bytes |
+| `.ascii` | `"cadena"` | Emmagatzema la cadena al segment de dades sense terminador nul |
+| `.asciz` | `"cadena"` | Emmagatzema la cadena al segment de dades amb terminador nul |
+| `.byte` | `v1, v2, ...` | Emmagatzema els valors com a bytes de 8 bits |
+| `.data` | — | Els elements següents s'emmagatzemen al segment de dades |
+| `.double` | `v1, v2, ...` | Emmagatzema els valors com a coma flotant de doble precisió |
+| `.dword` | `v1, v2, ...` | Emmagatzema els valors com a paraules dobles de 64 bits |
+| `.eqv` | `símbol, expr` | Substitueix el símbol per l'expressió (com `#define`) |
+| `.float` | `v1, v2, ...` | Emmagatzema els valors com a coma flotant de precisió simple |
+| `.globl` | `etiqueta` | Declara l'etiqueta com a global (també s'accepta `.global`) |
+| `.half` | `v1, v2, ...` | Emmagatzema els valors com a mitges paraules de 16 bits |
+| `.space` | `n` | Reserva `n` bytes al segment de dades |
+| `.string` | `"cadena"` | Àlies de `.asciz` |
+| `.text` | — | Els elements següents s'emmagatzemen al segment de text |
+| `.word` | `v1, v2, ...` | Emmagatzema els valors com a paraules de 32 bits |
+| `.section` | `nom` | Especifica una secció; inclòs per compatibilitat amb `gcc` |
 : {tbl-colwidths="[15,15,70]" .striped}
 :::
 

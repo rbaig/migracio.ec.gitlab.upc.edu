@@ -51,8 +51,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
 ### T5
 
-- **F2** — Taula de registres FP: `11_riscv/RV32I_registres_coma_flotant.qmd` existeix amb contingut **divergent** del de T5 (alineació, noms, cursives). Decidir versió canònica abans de connectar; ara la taula es manté inline.
-- **Taules de camps de `fcsr`** (`frm`, `fflags`): decidir si van a includes de `11_riscv/` o es mantenen inline.
+- ~~**F2** — Taula de registres FP: `11_riscv/RV32I_registres_coma_flotant.qmd` existeix amb contingut **divergent** del de T5 (alineació, noms, cursives). Decidir versió canònica abans de connectar; ara la taula es manté inline.~~ → ✓ Unificat el format amb `RV32I_registres_proposit_general.qmd` (negretes, cursives, rangs amb guió). T5 ara usa `{{< include >}}`. `05_riscv.qmd` també.
+- ~~**Taules de camps de `fcsr`** (`frm`, `fflags`): decidir si van a includes de `11_riscv/` o es mantenen inline.~~ → ✓ Mantingudes inline a T5 i a `05_riscv.qmd` (la figura SVG fa inviable l'externalització per include).
 - **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.
 - **Harmonització notacional RV32I ↔ RV32F**: taules RV32F usen `\leftarrow` i `off`; RV32I usen `=` i `offset`. Unificar.
 - **P7** — Alinear l'ordre de la taula de codificacions especials amb el de les subseccions.
