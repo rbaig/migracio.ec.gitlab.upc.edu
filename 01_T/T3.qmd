@@ -148,24 +148,16 @@ Per exemple, la divisió entera (-15 / 4) dóna quocient -3 i residu -3, mentre 
 
 ### Instruccions `&`, `|`, `^` (AND, OR, XOR) {#sec-instruccions-logiques-bit-a-bit}
 
-Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`.
-
-<!--
-    TODO Roger `git show a288aaf`
-        1. revisió de paràgraf cos del text, #cau-cas-extensio-zero i #cau-immediats-logics-extensio-signe
-        2. reparar link @nte-pseudoinstruccions-salt-condicional-zero
--->
-
-<!-- TODO @Adria: validar si he fet bé (Roger) la integració del teu patch -->
-Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que la resta d'instruccions de tipus I.
-
-::: {#cau-cas-extensio-zero .callout-caution}
-A **RV32I**, **tots** els immediats de 12 bits (aritmètics, lògics, de comparació i de lectura/escriptura) s'estenen amb **extensió de signe**. No hi ha cap excepció.
-Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**.
-:::
+Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que la resta d'instruccions de tipus I.
 
 ::: {#cau-immediats-logics-extensio-signe .callout-caution}
-Els immediats de `andi`, `ori` i `xori` no permeten construir màscares arbitràries de 32 bits. Si el bit 11 val `1`, els bits 31..12 queden a `1` per extensió de signe. Per a màscares més grans, cal carregar la màscara en un registre amb `li` i usar `and`/`or`/`xor`.
+Els immediats de `andi`, `ori` i `xori` s'interpreten en **complement a 2**: si el bit 11 de l'immediat val `1`, el valor estès a 32 bits té els bits 31..12 a `1`. Això pot produir màscares no desitjades. Per exemple:
+
+```{.s filename="RV32I"}
+        andi    t0, t1, 0x800   # t0 = t1 & 0xFFFFF800  (no t1 & 0x00000800!)
+```
+
+Per a màscares arbitràries de 32 bits, cal carregar la màscara en un registre amb `li` i usar `and`/`or`/`xor`.
 :::
 
 ::: {#nte-instruccions-logiques .callout-note}
@@ -177,7 +169,7 @@ Els immediats de `andi`, `ori` i `xori` no permeten construir màscares arbitrà
 :::
 
 ::: {#nte-pseudoinstruccio-not .callout-note}
-## Pseudoinstrucció — `~` (NOT)
+## Pseudoinstrucció — `not`
 
 **RV32I** no inclou la instrucció `not`. La **negació bit a bit** (NOT) d'un registre, equivalent al `~` de **C**, s'obté amb la pseudoinstrucció `not`:
 
@@ -186,13 +178,6 @@ Els immediats de `andi`, `ori` i `xori` no permeten construir màscares arbitrà
 | `not rd, rs` | `rd = ~rs` | `xori rd, rs, -1` |
 
 `xori rd, rs, -1` funciona perquè `-1` en Ca2 és `0xFFFFFFFF`, i fer XOR amb tots uns complementa tots els bits.
-
-La instrucció `nor` (equivalent a `NOT(rs1 OR rs2)`) es pot compondre amb:
-
-```{.s filename="RV32I"}
-        or      rd, rs1, rs2    # rd = rs1 OR rs2
-        not     rd, rd          # rd = NOT rd
-```
 :::
 
 ### Aplicació d'`and`: selecció de bits (màscara) {#sec-and-mascara}
@@ -267,7 +252,7 @@ La instrucció `slt` compara dos enters amb signe i **posa a** `1` (LSB a `1` i 
 : {tbl-colwidths="[5,20,35,35,5]"}
 :::
 
-Per a les comparacions freqüents amb zero, RISC-V també defineix pseudoinstruccions de salt condicional específiques (`beqz`, `bnez`, `bltz`, `bgez`, `bgtz`, `blez`), que es presenten amb la resta de pseudoinstruccions de salt a @nte-pseudoinstruccions-salt-condicional-zero.
+Per a les comparacions freqüents amb zero, RISC-V també defineix pseudoinstruccions de salt condicional específiques (`beqz`, `bnez`, `bltz`, `bgez`, `bgtz`, `blez`), que es presenten amb la resta de pseudoinstruccions de salt a @nte-pseudoinstruccions-salt-zero.
 
 ### Traducció de `==` i `!=` {#sec-traduccio-igualtat}
 
@@ -1122,7 +1107,7 @@ Per analogia, és comú emprar els termes mare/pare i fill/a, per referir-se als
 :::
 
 ::: {#nte-caller-saved-vs-callee-saved .callout-note}
-## RV32I ISA — Gestió dels registres de propòsit general: *caller-saved* vs *callee-saved*
+## RV32I ABI — Gestió dels registres de propòsit general: *caller-saved* vs *callee-saved*
 La columna «Qui el guarda (*Saver*)» de les taules de registres de la ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
 
 - **Caller-saved**: És el caller qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
@@ -1521,7 +1506,7 @@ Els registres són compartits per totes les subrutines. Per tant, hi ha d'haver 
 
 L'**ABI** de RV32I resol aquest problema mitjançant una solució elegant i eficient, però que pot semblar contraintuïtiva a primera vista.
 
-Aquesta solució es basa en la classificació dels registres en **temporals** i **segurs** i en el repartiment de responsabilitats entre caller i callee per preservar-los: Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat del caller, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és del callee.
+Aquesta solució es basa en la classificació dels registres en **temporals** (*caller-saved* en terminologia ABI) i **segurs** (*callee-saved* en terminologia ABI) i en el repartiment de responsabilitats entre caller i callee per preservar-los (@nte-caller-saved-vs-callee-saved): Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat del caller, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és del callee.
 
 Que el pare hagi de prendre mesures per preservar el seu context sembla raonable, ja que és qui té la necessitat de recuperar-lo després de la crida. El que pot semblar contraintuïtiu és que el fill hagi d'ajudar al pare a preservar el context d'aquest últim preservant-ne els valors dels registres segurs, tot i no tenir-ne cap dependència. No obstant això, aquesta solució és molt eficient perquè permet a **les subrutines** modificar lliurement els registres temporals sense haver de preocupar-se per preservar-los, havent-se de preocupar **només de preservar els registres segurs**, assegurant, així, per economia, que només faran servir aquells registres que realment necessiten.
 
@@ -1529,7 +1514,7 @@ Dit de manera informal, el sistema no es basa en la idea que el pare s'hagi de p
 
 ::: {#nte-abi-registres-temporals-segurs .callout-note}
 ## RV32I ABI — Registres *caller-saved* i *callee-saved*
-De @nte-registres-proposit-general:
+De @nte-registres-proposit-general (vegeu @nte-caller-saved-vs-callee-saved):
 
 | Categoria | Registres ABI | Qui els preserva |
 | :--- | :--- | :--- |
@@ -1542,7 +1527,7 @@ De @nte-registres-proposit-general:
 Resumint:
 
 - Una subrutina, abans de retornar, ha de deixar els registres **segurs** (`s0`–`s11`) en el mateix estat que tenien quan ha estat invocada.
-- `ra` és **caller-saved**, però una subrutina multinivell l'ha de desar abans de fer una crida i restaurar-lo abans de retornar, ja que `jal` sobreescriu aquest registre en fer la crida a la subrutina filla.
+- `ra` és **caller-saved** (@nte-caller-saved-vs-callee-saved), però una subrutina multinivell l'ha de desar abans de fer una crida i restaurar-lo abans de retornar.
 :::
 
 #### Determinació dels registres segurs necessaris {#sec-determinacio-registres-segurs}

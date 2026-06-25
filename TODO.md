@@ -40,6 +40,10 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 ### T3
 
 - ~~Corregir etiqueta `#cau-instruccions-no-sla` (ln 106): parla de `sla`/`slai`, no de `lwu`. Reanomenar a la revisió de T3.~~ → ✓ El slug és correcte: el callout parla de `sla`/`slai`. El TODO era imprecís.
+- ~~Revisió del fragment AND/OR/XOR (`git show a288aaf`): `#cau-cas-extensio-zero`, `#cau-immediats-logics-extensio-signe`, títol `#nte-pseudoinstruccio-not`, composició `nor`.~~ → ✓ Resolt en la revisió interna: callout redundant eliminat, `#cau-immediats-logics-extensio-signe` reescrit amb exemple numèric, títol `not` corregit, `nor` eliminat.
+- ~~TODO Adrià: validar integració del patch AND/OR/XOR (`git show a288aaf`).~~ → ✓ Fragment integrat i revisat. Pendent validació d'Adrià sobre la terminologia «unes expressions» (L. 253, vegeu ítem pendent a continuació).
+- ~~**Referència trencada `@nte-pseudoinstruccions-salt-condicional-zero`** (T3): verificar on ha d'apuntar (probablement T2 o compendi `05_riscv.qmd`) i reparar.~~ → ✓ El callout és `#nte-pseudoinstruccions-salt-zero` (T3 §4). Referència corregida a T3.qmd L. 255.
+- **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que T2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb T2.qmd i T3.qmd.
 - Retocs manuals pendents (Roger) a les figures:
   - `figs_auto/T3_ba_exemple__original_light.svg`
   - `figs_auto/T3_deps_multi__original_light.svg`
@@ -128,7 +132,7 @@ Referència d'estil: `T7_mc_organitzacio` (taules), `T7_cd_descomposicio_bits` (
 | T2 | Cerca en vector, retorn −1 (`exr-p3-vectors-cerca`) | Pendent (Opus High Thinking) |
 | T2 | Aritmètica de punters sobre `short` (`exr-p3-vectors-punter-aritm`) | Pendent (Opus High Thinking) |
 | T2 | Còpia de string (`exr-p3-strings-copia`) | Pendent (Opus High Thinking) |
-| T3 | `switch` amb salts encadenats i *jump table* | ✓ Afegit a `PS_T3.qmd` en la revisió interna |
+| T3 | `switch` amb salts encadenats i *jump table* (`exr-p4-bucles-switch`) | ✓ Resolt a `PS_T3.qmd` |
 | T3 | `exr-p4-compilacio-auipc`: expansió de `la`, rang ±2 GiB | Pendent (Opus High Thinking) |
 | T3 | `exr-p4-memoria-jalr`: tracing de `jalr` (resposta: 3 vegades) | Pendent (Opus High Thinking) |
 | T3 | `exr-p4-logica-rotacio` apartat b): rotació de 16 posicions | Pendent (Opus High Thinking) |

@@ -74,10 +74,8 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Enunciats (`PE_Tx.qmd`) i Solucionaris (`PS_Tx.qmd`)
 
-- **`PE_T1.qmd` i `PS_T1.qmd`** — **revisió interna completada**. Inclou: secció de naturals (traslladada de PE_T2), secció nova d'aritmètica Ca2 (suma, resta, multiplicació), exercicis nous (`exr-p1-naturals`, `exr-p1-enters-extensio-signe`, `exr-p1-aritm-*`), i 14 solucions cobertes a `PS_T1.qmd`.
-- **`PE_T2.qmd` i `PS_T2.qmd`** — revisió interna completada. Pendent: 4 solucions noves (`exr-p3-memoria-endianness`, `exr-p3-vectors-cerca`, `exr-p3-vectors-punter-aritm`, `exr-p3-strings-copia`; vegeu `TODO.md §Solucionaris pendents`).
-- **`PE_T3.qmd` i `PS_T3.qmd`** — revisió interna completada. Pendent: afegir solucions a `PS_T3.qmd` per als exercicis sense cobertura (vegeu `TODO.md §Solucionaris pendents`).
-- **La resta de fitxers** (`PE_T4.qmd`–`PE_T9.qmd` i `PS_T4.qmd`–`PS_T9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Tx.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
+- **`PE_T3.qmd` i `PS_T3.qmd`** — revisió interna completada. Pendent: afegir solucions a `PS_T3.qmd` per als exercicis sense cobertura (vegeu `TODO.md §Solucionaris pendents`); encaix T2↔T3 en terminologia caller-saved/callee-saved (vegeu `TODO.md §T3`).
+- **La resta de fitxers** (`PE_T1.qmd`–`PE_T2.qmd`, `PE_T4.qmd`–`PE_T9.qmd` i `PS_T1.qmd`–`PS_T2.qmd`, `PS_T4.qmd`–`PS_T9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Tx.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
 - Tasca prèvia opcional (Claude Code): substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web.
 
 #### Laboratori (`L1`–`L6`)
@@ -90,8 +88,7 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 **Estat:**
 - `T3.qmd`, `T4.qmd`, `T6.qmd`–`T9.qmd` — **complet** (`T4` és la referència; `T6`–`T8` amb prefixos propis; `T9` amb prefix `ei-`; `T3` completat en la revisió interna d'aquest tema).
-- `T1.qmd` — **complet** (45 slugs únics; completat en la revisió interna de T1).
-- `T2.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 1 de la seqüència de revisió).
+- `T1.qmd`, `T2.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 1 de la seqüència de revisió).
 
 **Criteris de generació de l'slug** (aplicats a `T4.qmd`):
 
@@ -109,8 +106,8 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 ### Seqüència de revisió pendent
 
-1. **Slugs T2, T5** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals. *(T1 completat en la revisió interna; T3 completat en la revisió interna de T3; T4, T6–T9 ja estaven complerts.)*
-2. **PE_T1–PE_T9, PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna. *(T1, T2 i T3 completats.)*
+1. **Slugs T1–T2, T5** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals. *(T3 completat; T4, T6–T9 ja estaven complerts.)*
+2. **PE_T1–PE_T9, PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna. *(T3 completat.)*
 3. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
 
 ### Flux de treball
