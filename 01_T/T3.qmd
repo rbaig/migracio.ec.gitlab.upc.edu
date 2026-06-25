@@ -175,7 +175,7 @@ Per a màscares arbitràries de 32 bits, cal carregar la màscara en un registre
 
 | Pseudoinstrucció | Operació | Expansió |
 | :--- | :--- | :--- |
-{{< include ../11_riscv/RV32I_pseudo_not.qmd >}}
+| `not rd, rs` | `rd = ~rs` | `xori rd, rs, -1` |
 
 `xori rd, rs, -1` funciona perquè `-1` en Ca2 és `0xFFFFFFFF`, i fer XOR amb tots uns complementa tots els bits.
 :::
@@ -390,9 +390,27 @@ No existeix cap salt condicional indirecte a RV32I.
 
 Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
 
-En les taules d'instruccions, `offset13` no vol dir que la instrucció contingui 13 bits independents de desplaçament. En el format B es codifiquen 12 bits del desplaçament i el bit 0 és implícit perquè les destinacions de salt estan alineades, com a mínim, a 2 bytes. En executar la instrucció, aquest bit implícit val `0` i el desplaçament de 13 bits resultant s'estén de signe; per això l'operació s'escriu com `PC + SignExt(offset13)`. El rang efectiu és de **±4 KiB** respecte a la instrucció de salt.
+Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
 
-A **RV32I** base (sense l'extensió C, cas d'**EC**), totes les instruccions tenen 32 bits i estan alineades a 4 bytes. Tot i això, el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
+:::: {#nte-format-b .callout-note}
+## RV32I ISA — Format Tipus-B
+::: {#fig-typeB}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T3_instruccio_tipus_B__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T3_instruccio_tipus_B__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T3_instruccio_tipus_B__registre_light.svg)
+:::
+Format d'instrucció tipus B, *branch* (RV32I).
+:::
+
+Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` a [31:25] i `imm[4:1|11]` a [11:7]) per mantenir `rs1` i `rs2` en les mateixes posicions que en els formats R i S, cosa que simplifica la descodificació al maquinari.
+::::
 
 ::: {#cau-salts-condicionals-relatius-pc .callout-caution}
 A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existeix cap salt condicional indirecte.
@@ -412,7 +430,10 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 
 | Pseudoinstrucció | Expansió |
 | :--- | :--- |
-{{< include ../11_riscv/RV32I_pseudo_salt_condicional.qmd >}}
+| `bgt rs1, rs2, label` | `blt rs2, rs1, label` |
+| `ble rs1, rs2, label` | `bge rs2, rs1, label` |
+| `bgtu rs1, rs2, label` | `bltu rs2, rs1, label` |
+| `bleu rs1, rs2, label` | `bgeu rs2, rs1, label` |
 :::
 
 ::: {#nte-pseudoinstruccions-salt-zero .callout-note}
@@ -420,7 +441,12 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 
 | Pseudoinstrucció | Expansió | Condició |
 | :--- | :--- | :--- |
-{{< include ../11_riscv/RV32I_pseudo_salt_zero.qmd >}}
+| `beqz rs, label` | `beq rs, zero, label` | salta si `rs == 0` |
+| `bnez rs, label` | `bne rs, zero, label` | salta si `rs != 0` |
+| `bltz rs, label` | `blt rs, zero, label` | salta si `rs < 0` |
+| `bgez rs, label` | `bge rs, zero, label` | salta si `rs ≥ 0` |
+| `bgtz rs, label` | `blt zero, rs, label` | salta si `rs > 0` |
+| `blez rs, label` | `bge zero, rs, label` | salta si `rs ≤ 0` |
 :::
 
 
@@ -484,7 +510,27 @@ Les instruccions de salt condicional són la base per implementar les sentèncie
 
 La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
 
-Com en el format B, `offset21` no vol dir que el format J emmagatzemi 21 bits independents de desplaçament. La instrucció codifica 20 bits del desplaçament i el bit 0 és implícit; en executar-la, aquest bit val `0` i el desplaçament de 21 bits resultant s'estén de signe. El rang efectiu és de **±1 MiB** respecte a la instrucció de salt.
+La instrucció `jal` és de format **Tipus-J** (@nte-format-j). Com en el format B (@nte-format-b), el bit 0 de l'immediat és implícit (val `0`), de manera que la instrucció codifica 20 bits i obté un rang efectiu de **±1 MiB** respecte al PC.
+
+:::: {#nte-format-j .callout-note}
+## RV32I ISA — Format Tipus-J
+::: {#fig-typeJ}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T3_instruccio_tipus_J__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T3_instruccio_tipus_J__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T3_instruccio_tipus_J__registre_light.svg)
+:::
+Format d'instrucció tipus J, *jump* (RV32I).
+:::
+
+Com en el format B, els bits de l'immediat estan reordenats (`imm[20|10:1|11|19:12]` a [31:12]) per mantenir `rd` en la mateixa posició que en els formats R, I i U, cosa que simplifica la descodificació al maquinari.
+::::
 
 ::: {#nte-instruccions-salt-incondicional-relatiu-jal .callout-note}
 ## RV32I ISA — Instrucció de salt incondicional relatiu al PC
@@ -500,7 +546,7 @@ Com en el format B, `offset21` no vol dir que el format J emmagatzemi 21 bits in
 
 | Pseudoinstrucció | Expansió | Ús |
 | :--- | :--- | :--- |
-{{< include ../11_riscv/RV32I_pseudo_j.qmd >}}
+| `j label` | `jal zero, label` | Salt incondicional relatiu al PC (±1 MiB) |
 :::
 
 ### Salts incondicionals indirectes {#sec-salts-incondicionals-indirectes}
@@ -521,7 +567,8 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 
 | Pseudoinstrucció | Expansió | Ús |
 | :--- | :--- | :--- |
-{{< include ../11_riscv/RV32I_pseudo_salt_indirecte.qmd >}}
+| `jr rs` | `jalr zero, rs, 0` | Salt a l'adreça continguda a `rs` |
+| `ret` | `jalr zero, ra, 0` | Retorn de subrutina |
 :::
 
 ::: {#tip-salt-llunya .callout-tip}
@@ -1024,6 +1071,28 @@ En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que car
 
 Si s'accedeix diverses vegades a la mateixa variable dins una mateixa funció, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
 
+Les dues instruccions en què s'expandeix `la` pertanyen al format **Tipus-U**: `lui` (ja presentada a T2) i `auipc`.
+
+:::: {#nte-format-u .callout-note}
+## RV32I ISA — Format Tipus-U
+::: {#fig-typeU}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T3_instruccio_tipus_U__registre_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T3_instruccio_tipus_U__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T3_instruccio_tipus_U__registre_light.svg)
+:::
+Format d'instrucció tipus U, immediat superior (RV32I).
+:::
+
+El camp `imm[31:12]` conté els 20 bits superiors de l'immediat; els 12 bits inferiors del resultat els determina la instrucció concreta (`lui` els posa a `0`; `auipc` els suma via `addi`). És el format amb l'immediat més gran de tota la ISA, i no té camps `rs1`, `rs2` ni `funct`.
+::::
+
 ::: {#nte-la-auipc .callout-note}
 ## RARS — Expansió de `la`
 
@@ -1509,7 +1578,9 @@ De @nte-registres-proposit-general (vegeu @nte-caller-saved-vs-callee-saved):
 
 | Categoria | Registres ABI | Qui els preserva |
 | :--- | :--- | :--- |
-{{< include ../11_riscv/RV32I_abi_registres_resum.qmd >}}
+| **Temporals i arguments** | `t0`–`t6`, `a0`–`a7` | **Caller** (la subrutina que fa la crida) |
+| **Adreça de retorn** | `ra` | **Caller** (la subrutina que fa la crida) |
+| **Segurs** | `s0`–`s11`, `sp` | **Callee** (la subrutina cridada) |
 :::
 
 ::: {#cau-regla-registres-segurs .callout-caution}

@@ -105,6 +105,7 @@ Referència d'estil: `T7_mc_organitzacio` (taules), `T7_cd_descomposicio_bits` (
 - **Migració de canvas a amplades estàndard**: figures de BA i mapa de memòria (`W=316 px`) → classe `estreta` (`W=340 px`). Decisió pendent: mantenir `w_rect=230` (marge dret 10→34) o ampliar `w_rect` a 254 (marges simètrics). Un cop decidit, aplicar a les 7 figures afectades i actualitzar `21_specs/svg.md §2`. Figures: `T3_mapa_memoria`, `T3_ba_general`, `T3_ba_func`, `T3_ba_multi`, `T3_ba_exemple`, `T3_func_uninivell_pila`, `T3_pila_crides_aniuades`.
 - **Migrar diagrames Mermaid existents a SVG**.
 - **`T3_deps_*` dark**: afegir `#cc0000` a `REPLACEMENTS` de `21_specs/svg.md` o crear dark manualment.
+- ~~**Formats d'instrucció B, U, J, R4**: figures individuals i compendi `compendi_registres` generats i integrats a `22_scripts/gen_regs.py` + `21_specs/registres.toml`.~~ → ✓ Completat.
 
 ### Contingut global
 

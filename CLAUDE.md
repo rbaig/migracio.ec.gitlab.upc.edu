@@ -153,6 +153,8 @@ L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que
 **Figures de registres de bits:**
 - Definides a `21_specs/registres.toml` (font de veritat).
 - Generades automàticament pel pre-render (`22_scripts/gen_regs.py`).
+- Inclou formats d'instrucció (R, I, S, B, U, J, R4) i el compendi `compendi_registres` (generat automàticament a partir de les entrades `instruccio_tipus_*` del TOML, sense entrada pròpia).
+- Figures de registres CSR: `T5_fcsr`, `T9_mstatus`, `T9_mtvec`, `T9_mepc`, `T9_mcause`, `T9_mip`, `T9_mie`, `T9_satp`.
 
 **Flux de pre-render** (`_quarto.yml`):
 
