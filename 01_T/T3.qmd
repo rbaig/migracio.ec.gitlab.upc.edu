@@ -175,7 +175,7 @@ Per a màscares arbitràries de 32 bits, cal carregar la màscara en un registre
 
 | Pseudoinstrucció | Operació | Expansió |
 | :--- | :--- | :--- |
-| `not rd, rs` | `rd = ~rs` | `xori rd, rs, -1` |
+{{< include ../11_riscv/RV32I_pseudo_not.qmd >}}
 
 `xori rd, rs, -1` funciona perquè `-1` en Ca2 és `0xFFFFFFFF`, i fer XOR amb tots uns complementa tots els bits.
 :::
@@ -412,10 +412,7 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 
 | Pseudoinstrucció | Expansió |
 | :--- | :--- |
-| `bgt rs1, rs2, label` | `blt rs2, rs1, label` |
-| `ble rs1, rs2, label` | `bge rs2, rs1, label` |
-| `bgtu rs1, rs2, label` | `bltu rs2, rs1, label` |
-| `bleu rs1, rs2, label` | `bgeu rs2, rs1, label` |
+{{< include ../11_riscv/RV32I_pseudo_salt_condicional.qmd >}}
 :::
 
 ::: {#nte-pseudoinstruccions-salt-zero .callout-note}
@@ -423,12 +420,7 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 
 | Pseudoinstrucció | Expansió | Condició |
 | :--- | :--- | :--- |
-| `beqz rs, label` | `beq rs, zero, label` | salta si `rs == 0` |
-| `bnez rs, label` | `bne rs, zero, label` | salta si `rs != 0` |
-| `bltz rs, label` | `blt rs, zero, label` | salta si `rs < 0` |
-| `bgez rs, label` | `bge rs, zero, label` | salta si `rs ≥ 0` |
-| `bgtz rs, label` | `blt zero, rs, label` | salta si `rs > 0` |
-| `blez rs, label` | `bge zero, rs, label` | salta si `rs ≤ 0` |
+{{< include ../11_riscv/RV32I_pseudo_salt_zero.qmd >}}
 :::
 
 
@@ -508,7 +500,7 @@ Com en el format B, `offset21` no vol dir que el format J emmagatzemi 21 bits in
 
 | Pseudoinstrucció | Expansió | Ús |
 | :--- | :--- | :--- |
-| `j label` | `jal zero, label` | Salt incondicional relatiu al PC (±1 MiB) |
+{{< include ../11_riscv/RV32I_pseudo_j.qmd >}}
 :::
 
 ### Salts incondicionals indirectes {#sec-salts-incondicionals-indirectes}
@@ -529,8 +521,7 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 
 | Pseudoinstrucció | Expansió | Ús |
 | :--- | :--- | :--- |
-| `jr rs` | `jalr zero, rs, 0` | Salt a l'adreça continguda a `rs` |
-| `ret` | `jalr zero, ra, 0` | Retorn de subrutina |
+{{< include ../11_riscv/RV32I_pseudo_salt_indirecte.qmd >}}
 :::
 
 ::: {#tip-salt-llunya .callout-tip}
@@ -1518,9 +1509,7 @@ De @nte-registres-proposit-general (vegeu @nte-caller-saved-vs-callee-saved):
 
 | Categoria | Registres ABI | Qui els preserva |
 | :--- | :--- | :--- |
-| **Temporals i arguments** | `t0`–`t6`, `a0`–`a7` | **Caller** (la subrutina que fa la crida) |
-| **Adreça de retorn** | `ra` | **Caller** (la subrutina que fa la crida) |
-| **Segurs** | `s0`–`s11`, `sp` | **Callee** (la subrutina cridada) |
+{{< include ../11_riscv/RV32I_abi_registres_resum.qmd >}}
 :::
 
 ::: {#cau-regla-registres-segurs .callout-caution}

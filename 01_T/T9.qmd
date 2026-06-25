@@ -80,11 +80,7 @@ L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als **registr
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-| `csrr` | `rd, csr` | `rd ← csr` | *CSR read* (pseudoinstrucció) | I |
-| `csrw` | `csr, rs1` | `csr ← rs1` | *CSR write* (pseudoinstrucció) | I |
-| `csrrw` | `rd, csr, rs1` | `rd ← csr; csr ← rs1` | *CSR read/write* | I |
-| `csrrs` | `rd, csr, rs1` | `rd ← csr; csr ← csr OR rs1` | *CSR read and set bits* | I |
-| `csrrc` | `rd, csr, rs1` | `rd ← csr; csr ← csr AND NOT rs1` | *CSR read and clear bits* | I |
+{{< include ../11_riscv/Zicsr_instruccions.qmd >}}
 : {tbl-colwidths="[5,20,35,35,5]" .striped}
 :::
 
@@ -102,9 +98,7 @@ Les instruccions `csrrwi`, `csrrsi` i `csrrci` operen igual que `csrrw`, `csrrs`
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-| `csrrwi` | `rd, csr, uimm5` | `rd ← csr; csr ← uimm5` | *CSR read/write immediate* | I |
-| `csrrsi` | `rd, csr, uimm5` | `rd ← csr; csr ← csr OR uimm5` | *CSR read and set bits immediate* | I |
-| `csrrci` | `rd, csr, uimm5` | `rd ← csr; csr ← csr AND NOT uimm5` | *CSR read and clear bits immediate* | I |
+{{< include ../11_riscv/Zicsr_pseudo_immediats.qmd >}}
 : {tbl-colwidths="[5,20,35,35,5]" .striped}
 :::
 :::
@@ -132,23 +126,7 @@ Camps del registre `mcause` (Int. = Interrupt).
 
 | Bit 31 | Codi | Causa |
 | :---: | :---: | :--- |
-| 0 | 0 | Instrucció mal alineada |
-| 0 | 1 | Error d'accés a instrucció |
-| 0 | 2 | Instrucció il·legal |
-| 0 | 3 | Punt de parada (`ebreak`) |
-| 0 | 4 | Lectura de dada mal alineada |
-| 0 | 5 | Error d'accés en lectura de dada |
-| 0 | 6 | Escriptura de dada mal alineada |
-| 0 | 7 | Error d'accés en escriptura de dada |
-| 0 | 8 | Crida al sistema des de mode U (`ecall`) |
-| 0 | 9 | Crida al sistema des de mode S (`ecall`) |
-| 0 | 11 | Crida al sistema des de mode M (`ecall`) |
-| 0 | 12 | Fallada de pàgina en cerca d'instrucció |
-| 0 | 13 | Fallada de pàgina en lectura |
-| 0 | 15 | Fallada de pàgina en escriptura/AMO |
-| 1 | 3 | Interrupció de programari en mode M |
-| 1 | 7 | Interrupció de temporitzador en mode M |
-| 1 | 11 | Interrupció externa (E/S) en mode M |
+{{< include ../11_riscv/RV32I_csr_mcause_taula.qmd >}}
 : {.striped}
 :::
 
@@ -234,8 +212,7 @@ RISC-V defineix dos modes:
 
 | `MODE` | Nom | Comportament |
 | :---: | :--- | :--- |
-| 0 | Directe | Totes les excepcions i interrupcions salten a `BASE` |
-| 1 | Vectoritzat | Les interrupcions salten a `BASE + 4 × causa`; les excepcions sempre a `BASE` |
+{{< include ../11_riscv/RV32I_csr_mtvec_modes.qmd >}}
 : {tbl-colwidths="[5,5,40]" .striped}
 :::
 
@@ -291,13 +268,7 @@ Camps del registre `mie`.
 
 | Bit | Nom `mip` | Nom `mie` | Tipus d'interrupció |
 | :---: | :--- | :--- | :--- |
-| 11 | `MEIP` | `MEIE` | Externa (E/S) en mode M |
-| 9 | `SEIP` | `SEIE` | Externa (E/S) en mode S |
-| 7 | `MTIP` | `MTIE` | Temporitzador en mode M |
-| 5 | `STIP` | `STIE` | Temporitzador en mode S |
-| 3 | `MSIP` | `MSIE` | Programari en mode M |
-| 1 | `SSIP` | `SSIE` | Programari en mode S |
-| 13 | `LCOFIP` | `LCOFIE` | Desbordament de comptador de rendiment |
+{{< include ../11_riscv/RV32I_csr_mip_mie_taula.qmd >}}
 : {.striped}
 
 - **`mip`**: cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. És de **sols lectura** per al programari (el hardware l'actualitza).
@@ -318,12 +289,7 @@ Per al mode S, RISC-V defineix un conjunt de registres CSR paral·lel al de mode
 ## RV32I ISA — Registres CSR de mode M i mode S
 | Registre mode M | Registre mode S | Funció |
 | :---: | :---: | :--- |
-| `mcause` | `scause` | Codi de causa de l'excepció o interrupció |
-| `mepc` | `sepc` | Adreça de retorn |
-| `mstatus` | `sstatus` | Estat global (subconjunt dels bits de `mstatus`) |
-| `mtvec` | `stvec` | Adreça de la rutina de servei |
-| `mip` | `sip` | Peticions d'interrupció pendents |
-| `mie` | `sie` | Màscares d'interrupció |
+{{< include ../11_riscv/RV32I_csr_modes_ms_taula.qmd >}}
 : {.striped}
 :::
 
@@ -410,7 +376,7 @@ La instrucció **`mret`** (*machine return*) finalitza l'execució de la RSE i r
 
 | Mnemònic | Operands | Operació | Nom |
 | :--- | :--- | :--- | :--- |
-| `mret` | — | `MIE←MPIE; MPIE←1; mode←MPP; MPP←U; PC←mepc` | *Machine return* |
+{{< include ../11_riscv/RV32I_mret.qmd >}}
 : {tbl-colwidths="[10,5,60,25]" .striped}
 :::
 
@@ -550,8 +516,7 @@ Per tal que un programa d'usuari pugui sol·licitar un servei al SO, cal un meca
 
 | Mnemònic | Operands | Operació | Nom |
 | :--- | :--- | :--- | :--- |
-| `ecall` | — | Causa excepció (crida al sistema) | *Environment call* |
-| `ebreak` | — | Causa excepció (punt de parada) | *Environment break* |
+{{< include ../11_riscv/RV32I_ecall_ebreak.qmd >}}
 : {tbl-colwidths="[12,8,55,25]" .striped}
 :::
 
@@ -573,19 +538,7 @@ Els SOs estableixen una convenció de crides al sistema per passar el codi de se
 
 | Codi | Nom | Arguments | Retorn |
 | :---: | :--- | :--- | :--- |
-| 1 | `print_int` | `a0` = enter | — |
-| 2 | `print_float` | `fa0` = flotant | — |
-| 4 | `print_string` | `a0` = adreça string | — |
-| 5 | `read_int` | — | `a0` = enter |
-| 6 | `read_float` | — | `fa0` = flotant |
-| 8 | `read_string` | `a0` = buffer, `a1` = longitud màxima | — |
-| 10 | `exit` | — | — |
-| 11 | `print_char` | `a0` = caràcter (ASCII) | — |
-| 12 | `read_char` | — | `a0` = caràcter (ASCII) |
-| 34 | `print_hex` | `a0` = enter | — |
-| 35 | `print_bin` | `a0` = enter | — |
-| 36 | `print_unsigned` | `a0` = enter sense signe | — |
-| 93 | `exit2` | `a0` = el nombre amb el que sortir | — |
+{{< include ../11_riscv/RARS_syscall_codis.qmd >}}
 : RARS: Codis de crides al sistema de més rellevants. {#tbl-syscalls-rars .striped}
 :::
 
@@ -848,8 +801,7 @@ En un sistema amb Linux, la memòria virtual i les fallades de pàgina es gestio
 
 | Registre | Nom complet | Funció |
 | :--- | :--- | :--- |
-| `satp` | *Supervisor Address Translation and Protection* | Mode de traducció i adreça física de la taula de pàgines de primer nivell |
-| `stval` | *Supervisor Trap Value* | Adreça virtual que ha causat la fallada de pàgina |
+{{< include ../11_riscv/RV32I_csr_tlb_taula.qmd >}}
 : {.striped}
 :::
 
@@ -883,7 +835,7 @@ Quan la RSE en mode S modifica la taula de pàgines en memòria, executa la inst
 
 | Mnemònic | Operands | Operació | Nom |
 | :--- | :--- | :--- | :--- |
-| `sfence.vma` | `rs1, rs2` | Invalida les entrades del TLB per a l'adreça `rs1` i l'ASID `rs2` (`x0` = totes) | *Supervisor fence* |
+{{< include ../11_riscv/RV32I_sfence_vma.qmd >}}
 : {tbl-colwidths="[15,12,48,25]" .striped}
 
 `sfence.vma` és una instrucció de l'arquitectura **Supervisor** (privilegiada), disponible sempre que el processador implementi el mode S. No pertany ni a Zicsr ni a cap altra extensió estàndard.
