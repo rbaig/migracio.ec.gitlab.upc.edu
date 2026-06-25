@@ -6,14 +6,451 @@ number-sections: true
 
 ## El cicle de vida del programa: Generació vs. Execució
 
-@exr-p1-jerarquia-python Solució:
+@exr-p1-jerarquia-python i @exr-p1-jerarquia-c
 
-<!-- TODO comprovar que la resposta és correcta -->
+::: {#sol-p1-jerarquia-python .callout-tip}
+## Solució: executar Python en RISC-V
 
-Cal compilar l’intèrpret de Python escrit en C, a llenguatge màquina RISC-V per executar un programa escrit en Python. El problema és que tenim un compilador de C a x86, escrit en llenguatge màquina x86. Cal, doncs, de fer la següent seqüència en una màquina RISC-V:
-1. En la màquina RISC-V traduirem el binari x86 del compilador de C a llenguatge màquina RISC-V (però el compilador seguirà generant codi x86).
-2. En la màquina RISC-V compilarem l'intèrpret de Python escrit en C amb el nou compilador de C. Obtindrem un intèrpret de Python per x86.
-3. En la màquina RISC-V traduirem el binari per x86 de l'intèrpret de Python a llenguatge màquina RISC-V.
-4. En la màquina RISC-V interpretarem el programa Python amb el nou intèrpret de Python per RISC-V
+**Enunciat**: @exr-p1-jerarquia-python.
 
-<!-- @exr-p1-jerarquia-c Solució: -->
+Tots els passos s'executen en la **màquina RISC-V**. El traductor binari (element 2) és executable en RISC-V i permet convertir qualsevol binari x86-64 a RISC-V.
+
+1. **Traduir el compilador de C a RISC-V**: S'aplica el traductor x86→RISC-V (element 2) al compilador de C (element 1, binari x86-64). S'obté un compilador de C **executable en RISC-V**, però que genera codi x86-64 (és un **compilador creuat**: s'executa en RISC-V i produeix binaris x86-64).
+2. **Compilar l'intèrpret de Python**: S'usa el compilador del pas 1 per compilar l'intèrpret de Python (element 3, escrit en C). S'obté un binari x86-64 de l'intèrpret de Python.
+3. **Traduir l'intèrpret de Python a RISC-V**: S'aplica de nou el traductor x86→RISC-V (element 2) al binari x86-64 del pas 2. S'obté un intèrpret de Python **executable en RISC-V**.
+4. **Executar el programa Python**: S'usa l'intèrpret del pas 3 per executar el programa en Python a la màquina RISC-V.
+:::
+
+::: {#sol-p1-jerarquia-c .callout-tip}
+## Solució: executar C en x86-64
+
+**Enunciat**: @exr-p1-jerarquia-c.
+
+Tots els passos s'executen en la **màquina x86-64**, ja que el traductor (element 3) és un binari x86-64 i s'hi pot executar directament.
+
+**a)**
+
+1. **Traduir l'intèrpret de Python a x86-64**: S'aplica el traductor RISC-V→x86-64 (element 3, escrit en x86-64) a l'intèrpret de Python (element 1, escrit en RISC-V). S'obté un intèrpret de Python **executable en x86-64**.
+2. **Interpretar el compilador de C**: El compilador de C (element 2) és un programa escrit en Python. S'usa l'intèrpret del pas 1 per executar-lo. Ara ja és possible compilar C a x86-64 des de la màquina x86-64.
+3. **Compilar el programa en C**: S'usa el compilador del pas 2 (via l'intèrpret) per compilar el programa en C. S'obté un binari x86-64 del programa.
+4. **Executar el binari**: S'executa directament el binari resultant a la màquina x86-64.
+
+**b)** Per tornar a executar **el mateix programa**: si el binari del pas 3 s'ha conservat, s'executa directament (pas 4) sense repetir cap pas anterior. Si s'ha esborrat, cal repetir únicament el pas 3 (l'intèrpret del pas 1 i el compilador del pas 2 es poden conservar entre execucions).
+:::
+
+## Codificació de nombres naturals i enters
+
+::: {#sol-p1-naturals .callout-tip}
+## Solució: interpretació i representació de naturals
+
+**Enunciat**: @exr-p1-naturals.
+
+**a)** Aplicant @eq-natural-interpretacio:
+
+| Patró de bits | $n$ | Valor decimal |
+| :--- | :---: | :---: |
+| `0001 1001` | 8 | $2^4 + 2^3 + 2^0 = 16 + 8 + 1 = 25$ |
+| `1010 0110` | 8 | $2^7 + 2^5 + 2^2 + 2^1 = 128 + 32 + 4 + 2 = 166$ |
+| `0000 0000 1010 1101` | 16 | $2^7 + 2^5 + 2^3 + 2^2 + 2^0 = 128 + 32 + 8 + 4 + 1 = 173$ |
+
+**b)** Per divisions successives entre 2 (residus de menor a major pes):
+
+$25 \div 2$: residus $1, 0, 0, 1, 1, 0, 0, 0$ (de LSB a MSB) $\rightarrow 0001\,1001_2$. ✓
+
+$173 \div 2$: residus $1, 0, 1, 1, 0, 1, 0, 1$ $\rightarrow 1010\,1101_2$. ✓
+
+$256$ en 8 bits: $256 > 2^8 - 1 = 255$. **NC** (no representable en 8 bits).
+
+$173$ en 16 bits: extensió de zeros (@sec-extensio-zeros) de $1010\,1101_2$ $\rightarrow 0000\,0000\,1010\,1101_2$. ✓
+
+| Decimal | $n$ | Binari |
+| :---: | :---: | :--- |
+| 25 | 8 | `0001 1001` |
+| 173 | 8 | `1010 1101` |
+| 256 | 8 | NC |
+| 173 | 16 | `0000 0000 1010 1101` |
+:::
+
+::: {#sol-p1-enters-minim13 .callout-tip}
+## Solució: menor enter en Ca2 de 13 bits
+
+**Enunciat**: @exr-p1-enters-minim13.
+
+Amb $n = 13$ bits, el rang de Ca2 és $[-2^{12},\ 2^{12}-1] = [-4096,\ +4095]$.
+
+El menor enter (el més negatiu) és $x_s = -4096 = -2^{12}$.
+
+**a) En hexadecimal**: el codi és $x_u = 2^{12} = 4096 = 1\,0000\,0000\,0000_2$. Expressat en hexadecimal (s'omple amb zeros fins a 16 bits): $\mathtt{0x1000}$.
+
+**b) En decimal**: $-4096$.
+:::
+
+::: {#sol-p1-enters-maxim13 .callout-tip}
+## Solució: major enter en Ca2 de 13 bits
+
+**Enunciat**: @exr-p1-enters-maxim13.
+
+El major enter positiu és $x_s = 2^{12} - 1 = 4095$.
+
+**a) En hexadecimal**: $4095 = 0\,1111\,1111\,1111_2 = \mathtt{0x0FFF}$.
+
+**b) En decimal**: $+4095$.
+:::
+
+::: {#sol-p1-enters-taules .callout-tip}
+## Solució: rang i taula de codificació de formats d'enters
+
+**Enunciat**: @exr-p1-enters-taules.
+
+**a)** Rang i representació del zero per a $n$ bits:
+
+| Format | Rang | Representació del zero |
+| :--- | :--- | :--- |
+| Signe i magnitud | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | `0...00` i `1...00` (doble zero) |
+| Complement a 1 | $[-(2^{n-1}-1),\ 2^{n-1}-1]$ | `0...00` i `1...11` (doble zero) |
+| Complement a 2 | $[-2^{n-1},\ 2^{n-1}-1]$ | `0...00` |
+| Excés a $2^{n-1}-1$ | $[-(2^{n-1}-1),\ 2^{n-1}]$ | `0111...1` ($n-1$ uns) |
+
+**b)** Taula de codificació en 4 bits ($n = 4$). L'excés és $2^{n-1}-1 = 7$, de manera que el codi d'excés és `decimal + 7`.
+
+| Decimal | Ca2 | Ca1 | Excés a 7 | Signe i magnitud |
+| :---: | :---: | :---: | :---: | :---: |
+| 8 | NC | NC | `1111` | NC |
+| 7 | `0111` | `0111` | `1110` | `0111` |
+| 4 | `0100` | `0100` | `1011` | `0100` |
+| 1 | `0001` | `0001` | `1000` | `0001` |
+| 0 | `0000` | `0000` i `1111` | `0111` | `0000` i `1000` |
+| −1 | `1111` | `1110` | `0110` | `1001` |
+| −4 | `1100` | `1011` | `0011` | `1100` |
+| −7 | `1001` | `1000` | `0000` | `1111` |
+| −8 | `1000` | NC | NC | NC |
+
+Observacions:
+- El 8 **no** és representable en Ca2 (rang $[-8, 7]$) ni en Ca1 ni en signe i magnitud (rang $[-7, 7]$ en tots dos). Sí que és representable en excés a 7 (rang $[-7, 8]$): el seu codi és $8 + 7 = 15 = \mathtt{1111}_2$.
+- El −8 no és representable en Ca1, en excés a 7 ni en signe i magnitud (el mínim en tots tres formats és −7); sí ho és en Ca2 (codi $\mathtt{1000}$).
+- En Ca1 i signe i magnitud, el 0 té dues representacions.
+:::
+
+::: {#sol-p1-enters-conversio8 .callout-tip}
+## Solució: conversió a Ca1, Ca2, S&M i Excés a 127 (8 bits)
+
+**Enunciat**: @exr-p1-enters-conversio8.
+
+Per a cada valor, el procediment és:
+
+- **Ca2**: els positius coincideixen amb la representació binària natural; els negatius, $x + 2^8 = x + 256$.
+- **Ca1**: els positius coincideixen amb Ca2; els negatius s'obtenen complementant tots els bits de la representació de $|x|$.
+- **Signe i magnitud (S&M)**: bit de signe ($0$ si positiu, $1$ si negatiu) i $|x|$ als bits restants. Rang: $[-127, +127]$.
+- **Excés a 127**: codi $= x + 127$. Rang: $[-127, +128]$.
+
+**$x = -78$**
+
+$|-78| = 78 = 0100\,1110_2$.
+
+- Ca2: $256 - 78 = 178 = 1011\,0010_2 \rightarrow \mathtt{0xB2}$
+- Ca1: $\overline{0100\,1110} = 1011\,0001_2 \rightarrow \mathtt{0xB1}$
+- S&M: bit signe $= 1$; $78 = 0100\,1110_2$ → $1100\,1110_2 \rightarrow \mathtt{0xCE}$
+- Excés: $-78 + 127 = 49 = 0011\,0001_2 \rightarrow \mathtt{0x31}$
+
+**$x = +125$**
+
+$125 = 0111\,1101_2$.
+
+- Ca2, Ca1, S&M: $\mathtt{0x7D}$ (coincideixen per als positius)
+- Excés: $125 + 127 = 252 = 1111\,1100_2 \rightarrow \mathtt{0xFC}$
+
+**$x = 0$**
+
+- Ca2, Ca1, S&M: $\mathtt{0x00}$
+- Excés: $0 + 127 = 127 = 0111\,1111_2 \rightarrow \mathtt{0x7F}$
+
+**$x = -1$**
+
+$|-1| = 1 = 0000\,0001_2$.
+
+- Ca2: $256 - 1 = 255 = 1111\,1111_2 \rightarrow \mathtt{0xFF}$
+- Ca1: $\overline{0000\,0001} = 1111\,1110_2 \rightarrow \mathtt{0xFE}$
+- S&M: $1000\,0001_2 \rightarrow \mathtt{0x81}$
+- Excés: $-1 + 127 = 126 = 0111\,1110_2 \rightarrow \mathtt{0x7E}$
+
+**Resum**:
+
+| Decimal | Ca1 | Ca2 | S&M | Excés a 127 |
+| :---: | :---: | :---: | :---: | :---: |
+| $-78$ | `0xB1` | `0xB2` | `0xCE` | `0x31` |
+| $+125$ | `0x7D` | `0x7D` | `0x7D` | `0xFC` |
+| $0$ | `0x00` | `0x00` | `0x00` | `0x7F` |
+| $-1$ | `0xFE` | `0xFF` | `0x81` | `0x7E` |
+:::
+
+::: {#sol-p1-enters-implicit .callout-tip}
+## Solució: interpretació com a natural i Ca2
+
+**Enunciat**: @exr-p1-enters-implicit.
+
+**a) `0000 1111` (8 bits)**
+
+El bit de signe és $0$ → el valor és el mateix en Ca2 que en natural.
+
+- Natural: $2^3 + 2^2 + 2^1 + 2^0 = 8 + 4 + 2 + 1 = 15$
+- Ca2: $+15$
+
+**b) `1000 0000` (8 bits)**
+
+Natural: $2^7 = 128$.
+
+Ca2: bit de signe $= 1$ → $128 - 2^8 = 128 - 256 = -128$.
+
+**c) `1111 1111` (8 bits)**
+
+Natural: $2^7 + 2^6 + \ldots + 2^0 = 255$.
+
+Ca2: $255 - 256 = -1$.
+
+**Verificació**: $(-1)$ en Ca2 $= \overline{0000\,0001} + 1 = 1111\,1110 + 1 = 1111\,1111$ ✓
+
+**d) `1111 1111 1111 0000` (16 bits)**
+
+Natural: $2^{16} - 2^4 = 65536 - 16 = 65520$.
+
+Ca2: $65520 - 65536 = -16$.
+
+**Verificació**: $(-16)$ en Ca2 (16 bits) $= 65536 - 16 = 65520 = 1111\,1111\,1111\,0000_2$ ✓
+
+| Patró | Natural | Ca2 |
+| :--- | :---: | :---: |
+| `0000 1111` | 15 | +15 |
+| `1000 0000` | 128 | −128 |
+| `1111 1111` | 255 | −1 |
+| `1111 1111 1111 0000` | 65520 | −16 |
+:::
+
+::: {#sol-p1-enters-extensio-signe .callout-tip}
+## Solució: extensió de signe a 16 bits
+
+**Enunciat**: @exr-p1-enters-extensio-signe.
+
+Per aplicar l'extensió de signe, es replica el bit de signe ($X_{n-1}$) a totes les posicions noves a l'esquerra. El valor representat no canvia.
+
+**a) `0011 0101` (8 bits)**
+
+Bit de signe $= 0$ → nombre positiu. Valor: $32 + 16 + 4 + 1 = +53$.
+
+Extensió de signe a 16 bits: es repliquen vuit $0$:
+
+$$0011\,0101_2 \rightarrow 0000\,0000\,0011\,0101_2 = \mathtt{0x0035}$$
+
+Comprovació: $\mathtt{0x0035} = 53$ ✓
+
+**b) `1100 1101` (8 bits)**
+
+Bit de signe $= 1$ → nombre negatiu. Valor (per @eq-ca2-interpretacio): $-128 + 64 + 8 + 4 + 1 = -51$.
+
+Extensió de signe a 16 bits: es repliquen vuit $1$:
+
+$$1100\,1101_2 \rightarrow 1111\,1111\,1100\,1101_2 = \mathtt{0xFFCD}$$
+
+Comprovació: $\mathtt{0xFFCD} = 65485 - 65536 = -51$ ✓
+:::
+
+::: {#sol-p1-enters-ca2-16bits .callout-tip}
+## Solució: Ca2 en 16 bits → decimal
+
+**Enunciat**: @exr-p1-enters-ca2-16bits.
+
+**a) `0x0123`**
+
+$\mathtt{0x0123} = 0000\,0001\,0010\,0011_2$. El bit de signe (bit 15) és $0$ → nombre positiu.
+
+$$x_s = 1{\cdot}2^8 + 1{\cdot}2^5 + 1{\cdot}2^1 + 1{\cdot}2^0 = 256 + 32 + 2 + 1 = +291$$
+
+**b) `0xFE23`**
+
+$\mathtt{0xFE23} = 1111\,1110\,0010\,0011_2$. El bit de signe (bit 15) és $1$ → nombre negatiu.
+
+Aplicant @eq-ca2-interpretacio:
+
+$$x_s = \mathtt{0xFE23} - 2^{16} = 65059 - 65536 = -477$$
+
+**Verificació**: $|-477| = 477 = 0000\,0001\,1101\,1101_2$; complementant i sumant 1: $\overline{0000\,0001\,1101\,1101} + 1 = 1111\,1110\,0010\,0010 + 1 = 1111\,1110\,0010\,0011 = \mathtt{0xFE23}$ ✓
+:::
+
+::: {#sol-p1-enters-codificacio .callout-tip}
+## Solució: Ca2 en mínim format (8 o 16 bits)
+
+**Enunciat**: @exr-p1-enters-codificacio.
+
+El rang de Ca2 amb 8 bits és $[-128, +127]$; amb 16 bits, $[-32768, +32767]$. S'usa 8 bits si el valor hi cap; altrament, 16 bits.
+
+| Valor | Format | Ca2 | Hex |
+| :---: | :---: | :---: | :---: |
+| $+123$ | 8 bits | $0111\,1011$ | `0x7B` |
+| $+255$ | 16 bits | $0000\,0000\,1111\,1111$ | `0x00FF` |
+| $-127$ | 8 bits | $1000\,0001$ | `0x81` |
+| $+170$ | 16 bits | $0000\,0000\,1010\,1010$ | `0x00AA` |
+| $+128$ | 16 bits | $0000\,0000\,1000\,0000$ | `0x0080` |
+| $-230$ | 16 bits | $1111\,1111\,0001\,1010$ | `0xFF1A` |
+| $-18$ | 8 bits | $1110\,1110$ | `0xEE` |
+| $-128$ | 8 bits | $1000\,0000$ | `0x80` |
+| $-1$ | 8 bits | $1111\,1111$ | `0xFF` |
+
+**Nota sobre $+255$**: cal 16 bits perquè $255 > 127$ (màxim de Ca2 en 8 bits). El valor $1111\,1111_2$ en 8 bits representaria $-1$ en Ca2, no $+255$.
+
+**Nota sobre $-230$**: $-230 < -128$, per tant cal 16 bits. Càlcul: $65536 - 230 = 65306 = 1111\,1111\,0001\,1010_2$.
+:::
+
+## Operacions aritmètiques en complement a 2
+
+*Vegeu @sec-operacions-ca2.*
+
+::: {#sol-p1-aritm-suma .callout-tip}
+## Solució: sumes en Ca2 (8 bits)
+
+**Enunciat**: @exr-p1-aritm-suma.
+
+Rang Ca2 de 8 bits: $[-128, +127]$. Hi ha sobreeiximent si els dos operands tenen el mateix signe i el resultat té signe contrari.
+
+**a) $45 + 30 = 75$**
+
+$$\underbrace{0010\,1101}_{+45} + \underbrace{0001\,1110}_{+30} = \underbrace{0100\,1011}_{+75}$$
+
+Resultat $+75 \in [-128, +127]$. **Sense sobreeiximent** ✓
+
+**b) $100 + 80$**
+
+$$\underbrace{0110\,0100}_{+100} + \underbrace{0101\,0000}_{+80} = \underbrace{1011\,0100}_{?}$$
+
+$1011\,0100_2$ s'interpreta com a $-76$ en Ca2. Tots dos operands positius i resultat aparentment negatiu: **sobreeiximent** ($100 + 80 = 180 > 127$).
+
+**c) $(-45) + (-30) = -75$**
+
+Ca2: $-45 \rightarrow 1101\,0011$; $-30 \rightarrow 1110\,0010$.
+
+$$\underbrace{1101\,0011}_{-45} + \underbrace{1110\,0010}_{-30} = \underbrace{1011\,0101}_{-75}$$
+
+(El carry final es descarta.) $1011\,0101_2 = -75$ en Ca2. **Sense sobreeiximent** ✓
+
+**d) $(-100) + (-80)$**
+
+Ca2: $-100 \rightarrow 1001\,1100$; $-80 \rightarrow 1011\,0000$.
+
+$$\underbrace{1001\,1100}_{-100} + \underbrace{1011\,0000}_{-80} = \underbrace{0100\,1100}_{?}$$
+
+$0100\,1100_2 = +76$ en Ca2. Tots dos operands negatius i resultat aparentment positiu: **sobreeiximent** ($-180 < -128$).
+
+**e) $45 + (-30) = +15$**
+
+Ca2: $-30 \rightarrow 1110\,0010$.
+
+$$\underbrace{0010\,1101}_{+45} + \underbrace{1110\,0010}_{-30} = \underbrace{0000\,1111}_{+15}$$
+
+(El carry final es descarta.) Els operands tenen signes contraris: **no hi pot haver sobreeiximent** quan els signes dels operands difereixen. Resultat: $+15$ ✓
+:::
+
+::: {#sol-p1-aritm-resta .callout-tip}
+## Solució: restes en Ca2 (8 bits)
+
+**Enunciat**: @exr-p1-aritm-resta.
+
+La resta $a - b$ es calcula com $a + (-b)$: es nega $b$ (complement de tots els bits i suma 1) i se suma.
+
+**a) $45 - 30 = +15$**
+
+$-30$ en Ca2: $\overline{0001\,1110} + 1 = 1110\,0001 + 1 = 1110\,0010$.
+
+$$\underbrace{0010\,1101}_{+45} + \underbrace{1110\,0010}_{-30} = \underbrace{0000\,1111}_{+15}$$
+
+**Sense sobreeiximent** ✓
+
+**b) $30 - 45 = -15$**
+
+$-45$ en Ca2: $\overline{0010\,1101} + 1 = 1101\,0010 + 1 = 1101\,0011$.
+
+$$\underbrace{0001\,1110}_{+30} + \underbrace{1101\,0011}_{-45} = \underbrace{1111\,0001}_{-15}$$
+
+$1111\,0001_2 = -15$ en Ca2. **Sense sobreeiximent** ✓
+
+**c) $(-100) - 45 = -145$**
+
+$-45$ en Ca2: $1101\,0011$ (calculat a l'apartat b).
+
+$$\underbrace{1001\,1100}_{-100} + \underbrace{1101\,0011}_{-45} = \underbrace{0110\,1111}_{?}$$
+
+$0110\,1111_2 = +111$ en Ca2. Tots dos operands negatius i resultat aparentment positiu: **sobreeiximent** ($-145 < -128$).
+:::
+
+::: {#sol-p1-aritm-multiplicacio .callout-tip}
+## Solució: multiplicacions en Ca2 (8 bits)
+
+**Enunciat**: @exr-p1-aritm-multiplicacio.
+
+Mètode: (1) signe del resultat (positiu si els signes coincideixen, negatiu si difereixen), (2) calcular el producte de les magnituds, (3) aplicar el signe i codificar en Ca2.
+
+**a) $6 \times 5 = +30$**
+
+Magnituds: $6 \times 5 = 30$. Signe: $(+) \times (+) \rightarrow (+)$.
+
+$30 = 0001\,1110_2 = \mathtt{0x1E}$. Rang $[-128, +127]$: $30 \in$ rang. **Sense sobreeiximent** ✓
+
+**b) $(-6) \times 5 = -30$**
+
+Magnituds: $6 \times 5 = 30$. Signe: $(-) \times (+) \rightarrow (-)$.
+
+Ca2 de $-30$: $\overline{0001\,1110} + 1 = 1110\,0001 + 1 = 1110\,0010_2 = \mathtt{0xE2}$. **Sense sobreeiximent** ✓
+
+**c) $(-6) \times (-5) = +30$**
+
+Magnituds: $6 \times 5 = 30$. Signe: $(-) \times (-) \rightarrow (+)$.
+
+Igual que l'apartat a): $\mathtt{0x1E}$. **Sense sobreeiximent** ✓
+
+**d) $20 \times 10 = +200$**
+
+Magnituds: $20 \times 10 = 200$. Signe: $(+) \times (+) \rightarrow (+)$.
+
+$200 > 127$: **sobreeiximent**. El resultat no és representable en Ca2 de 8 bits (caldrien almenys 9 bits; en Ca2 de 16 bits: $200 = \mathtt{0x00C8}$).
+:::
+
+::: {#sol-p1-aritm-divisio .callout-tip}
+## Solució: divisions en Ca2 (8 bits)
+
+**Enunciat**: @exr-p1-aritm-divisio.
+
+Mètode: (1) signe del quocient (positiu si els signes coincideixen, negatiu si difereixen), (2) dividir les magnituds com a naturals, (3) aplicar el signe al quocient; el residu pren el signe del **dividend**.
+
+**a) $30 \div 5$**
+
+Magnituds: $30 \div 5 = 6$, residu $0$. Signe: $(+) \div (+) \rightarrow (+)$.
+
+Quocient $= +6 \rightarrow 0000\,0110_2$; residu $= 0 \rightarrow 0000\,0000_2$. **Sense sobreeiximent** ✓
+
+**b) $(-30) \div 5$**
+
+Magnituds: $30 \div 5 = 6$, residu $0$. Signe: $(-) \div (+) \rightarrow (-)$.
+
+$\text{Ca2}(-6): \overline{0000\,0110} + 1 = 1111\,1010$.
+
+Quocient $= -6 \rightarrow 1111\,1010_2$; residu $= 0 \rightarrow 0000\,0000_2$. **Sense sobreeiximent** ✓
+
+**c) $(-30) \div (-5)$**
+
+Magnituds: $30 \div 5 = 6$, residu $0$. Signe: $(-) \div (-) \rightarrow (+)$.
+
+Quocient $= +6 \rightarrow 0000\,0110_2$; residu $= 0 \rightarrow 0000\,0000_2$. **Sense sobreeiximent** ✓
+
+**d) $(-7) \div 2$**
+
+Magnituds: $7 \div 2 = 3$, residu $1$. Signe quocient: $(-) \div (+) \rightarrow (-)$. Signe residu: igual que el dividend $\rightarrow (-)$.
+
+$\text{Ca2}(-3): \overline{0000\,0011} + 1 = 1111\,1101$. $\text{Ca2}(-1): \overline{0000\,0001} + 1 = 1111\,1111$.
+
+Quocient $= -3 \rightarrow 1111\,1101_2$; residu $= -1 \rightarrow 1111\,1111_2$.
+
+**Comprovació**: $2 \times (-3) + (-1) = -7$ ✓
+
+**e) $(-128) \div (-1)$**
+
+Magnituds: $128 \div 1 = 128$, residu $0$. Signe: $(-) \div (-) \rightarrow (+)$.
+
+El quocient matemàtic és $+128$, però $128 > 127 = 2^7 - 1$: **sobreeiximent**. El valor $+128$ no és representable en Ca2 de 8 bits (rang $[-128, +127]$). És l'únic cas de sobreeiximent possible en la divisió Ca2 de $n$ bits: quan el dividend és el mínim ($-2^{n-1}$) i el divisor és $-1$.
+:::

@@ -5,20 +5,12 @@
 Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
 - **`startup.s`**: mantenir o eliminar? Proposta: eliminar; forçar `li a7, 93` + `ecall`. Afecta T2: `#nte-programa-esquelet` i blocs comentats `__start`/`a7,10` (ln 742-772).
-- **Retorn de 2 paràmetres**: restricció EC a 1 resultat (`a0`) o ampliar a 2 (`a0`/`a1`)? Posició d'Adrià: ampliar, el segon com a codi d'error. Afecta T3 (L1106).
-- **Alineació de la pila**: múltiples de 16 (ABI real) o mantenir relaxació a múltiples de 4? Posició de Roger: eliminar la relaxació. Afecta T3 (L1322) i `{#imp-ec-alineacio-pila}`.
+- ~~**Retorn de 2 paràmetres**: restricció EC a 1 resultat (`a0`) o ampliar a 2 (`a0`/`a1`)? Posició d'Adrià: ampliar, el segon com a codi d'error. Afecta T3 (L1106).~~ → ✓ Decisió: `a0` i `a1` (fins a dos resultats escalars). Ja implementat a `{#nte-abi-pas-parametres}` (T3, L1140).
+- ~~**Alineació de la pila**: múltiples de 16 (ABI real) o mantenir relaxació a múltiples de 4?~~ → ✓ Decisió: múltiples de **4** a EC (relaxació pedagògica). L'ABI estàndard (×16) es menciona a `{#nte-abi-alineacio-pila}`. Afecta T3 (L1322) i `{#imp-ec-alineacio-pila}` (si existeix).
 - ~~**`.globl` vs `.global`**: quin usar als exemples?~~ → ✓ Decisió: `.globl`. Documentat a `07_contrib.qmd §T2 i T3`.
 - **`ret` vs `jalr x0, 0(ra)`**: criteri al retorn de funcions. Pendent de consens del professorat. Criteri provisional: `ret` als exemples (pseudoinstrucció estàndard, més llegible).
 - **Adreces de memòria**: format `0x00000000` o `0x0000 0000` (espai cada 4 nibbles)? Pendent de decisió global. Criteri provisional: sense espais (`0x10010000`), coherent amb l'ús actual a T2–T9.
 - **`.section`**: usar o no? si sí, amb quin criteri?
-- **`ret` vs `jalr x0, 0(ra)`**: criteri al retorn de funcions. Pendent de consens del professorat. Criteri provisional: `ret` als exemples.- **Codi testejat**: cal que el codi estigui sempre testejat abans de commit?
-- **`gp` al mapa de memòria** (T3, L983): incloure el *global pointer* o esmentar-lo de passada.
-- **Pseudoinstrucció `lla`** (T3, L1016): incloure o no.
-- **Terminologia *leaf*/*non-leaf*** (T3, L1049): eliminar o restituir com a `wrn-` d'aprofundiment.
-- **Verificació ABI sobre el BA** (T3, L1304): confirmar contra psABI que «les subrutines reserven tot l'espai a l'inici i l'alliberen just abans de retornar».
-- **«De sols lectura»** (T8): decisió global sobre l'expressió.
-- **TLB validity bit**: unificar criteri `V` vs `E` a tot el projecte.
-- **Adreces de memòria**: format `0x00000000` o `0x0000 0000` (espai cada 4 nibbles)? Pendent de decisió global. Criteri provisional: sense espais, coherent amb l'ús actual a T2–T9.
 - ~~**Directives**: títol de callout `## Directives —` o `## RARS —`?~~ → ✓ Decisió: `## Directives —` (genèric) per a callouts amb directives estàndard GNU AS; `## RARS —` per a comportament exclusiu de RARS. Aplicat a T2 i T3.
 - **ISA/ABI**: on posar la informació de l'ABI de RV? `{.callout-note}` `## RV32I ABI —` o `{.callout-important}`?
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
@@ -47,7 +39,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
 ### T3
 
-- Corregir etiqueta `#cau-instruccions-no-sla` (ln 106): parla de `sla`/`slai`, no de `lwu`. Reanomenar a la revisió de T3.
+- ~~Corregir etiqueta `#cau-instruccions-no-sla` (ln 106): parla de `sla`/`slai`, no de `lwu`. Reanomenar a la revisió de T3.~~ → ✓ El slug és correcte: el callout parla de `sla`/`slai`. El TODO era imprecís.
 - Retocs manuals pendents (Roger) a les figures:
   - `figs_auto/T3_ba_exemple__original_light.svg`
   - `figs_auto/T3_deps_multi__original_light.svg`
@@ -112,6 +104,9 @@ Referència d'estil: `T7_mc_organitzacio` (taules), `T7_cd_descomposicio_bits` (
 
 ### Contingut global
 
+- ~~**Exercicis Ca1/Ca2/excés a PE_T2**: la secció «Representació de naturals i enters» de PE_T2 s'ha traslladat a PE_T1 (IDs `exr-p1-enters-*`); PE_T2 conté una nota de remissió. La solució `sol-p1-enters-taules` s'ha traslladat a PS_T1.~~ → ✓ Completat.
+- ~~**Ordre de seccions PE_T2**: «Constants i immediats» és ara la 2a secció (entre «Operands en registre» i «Operands en memòria»), consistent amb l'ordre de T2.qmd.~~ → ✓ Completat.
+
 - **Cometes** `"..."` → `«...»`: substitució global.
 - **`****` sobrants**: eliminar.
 - **Equacions a MathML**: passar totes les equacions; definir criteris d'inline.
@@ -120,13 +115,23 @@ Referència d'estil: `T7_mc_organitzacio` (taules), `T7_cd_descomposicio_bits` (
 
 ### Solucionaris pendents d'afegir
 
-| Tema | Cobertura |
-| :--- | :--- |
-| T2 | *Little-endian*, ordre de bytes |
-| T2 | Cerca en vector, retorn −1 |
-| T2 | Aritmètica de punters sobre `short` |
-| T2 | Còpia de string |
-| T3 | `switch` amb salts encadenats i *jump table* |
+| Tema | Cobertura | Estat |
+| :--- | :--- | :--- |
+| T1 | Conversió a Ca1/Ca2/SM/Excés per a 4 valors de 8 bits (`exr-p1-enters-conversio8`) | ✓ Resolt a `PS_T1.qmd` |
+| T1 | Ca2 en mínim format (8 o 16 bits) per a 9 valors (`exr-p1-enters-codificacio`) | ✓ Resolt a `PS_T1.qmd` |
+| T1 | Ca2 16 bits → decimal per a 2 valors (`exr-p1-enters-ca2-16bits`) | ✓ Resolt a `PS_T1.qmd` |
+| T1 | Natural vs. Ca2 per a 4 patrons de bits (`exr-p1-enters-implicit`) | ✓ Resolt a `PS_T1.qmd` |
+| T1 | Mínim Ca2 en 13 bits (`exr-p1-enters-minim13`) | ✓ Resolt a `PS_T1.qmd` |
+| T1 | Màxim Ca2 en 13 bits (`exr-p1-enters-maxim13`) | ✓ Resolt a `PS_T1.qmd` |
+| T1 | Divisió en Ca2: quocient, residu i sobreeiximent (`exr-p1-aritm-divisio`) | ✓ Afegit i resolt a `PE_T1.qmd`/`PS_T1.qmd` |
+| T2 | *Little-endian*, ordre de bytes (`exr-p3-memoria-endianness`) | Pendent (Opus High Thinking) |
+| T2 | Cerca en vector, retorn −1 (`exr-p3-vectors-cerca`) | Pendent (Opus High Thinking) |
+| T2 | Aritmètica de punters sobre `short` (`exr-p3-vectors-punter-aritm`) | Pendent (Opus High Thinking) |
+| T2 | Còpia de string (`exr-p3-strings-copia`) | Pendent (Opus High Thinking) |
+| T3 | `switch` amb salts encadenats i *jump table* | ✓ Afegit a `PS_T3.qmd` en la revisió interna |
+| T3 | `exr-p4-compilacio-auipc`: expansió de `la`, rang ±2 GiB | Pendent (Opus High Thinking) |
+| T3 | `exr-p4-memoria-jalr`: tracing de `jalr` (resposta: 3 vegades) | Pendent (Opus High Thinking) |
+| T3 | `exr-p4-logica-rotacio` apartat b): rotació de 16 posicions | Pendent (Opus High Thinking) |
 
 ### `index.qmd`
 

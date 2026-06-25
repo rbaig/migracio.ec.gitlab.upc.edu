@@ -18,6 +18,8 @@ El **canvi de signe** d'un registre s'obté amb la pseudoinstrucció `neg`:
 | `neg rd, rs` | `rd = -rs` | `sub rd, x0, rs` |
 :::
 
+Gràcies a l'equivalència entre la resta la resta i la suma amb el negatiu del subtrahend, el maquinari necessita **un sol circuit** per a la suma i la resta (@sec-suma-resta-i-canvi-de-signe).
+
 ## Sobreeiximent en suma i resta d'enters {#sec-suma-resta-enters}
 
 El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$ (@eq-rang-ca2). Es produeix **sobreeiximent** (***overflow***) en una operació quan el resultat exacte no pertany a aquest rang; en aquest cas, el resultat calculat amb $n$ bits no és correcte.
@@ -26,7 +28,7 @@ El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bi
 
 Per a la **suma** $s = a + b$, es produeix sobreeiximent **si i només si els dos operands són del mateix signe i el resultat és de signe diferent**.
 
-Per a la **diferència** $d = a - b$, es produeix sobreeiximent **si i només si la diferència és del mateix signe que el subtraend $b$ però de signe diferent que el minuend $a$**.
+Per a la **diferència** $d = a - b$, es produeix sobreeiximent **si i només si la diferència és del mateix signe que el subtrahend $b$ però de signe diferent que el minuend $a$**.
 
 ::: {#wrn-sobreeiximent-demostracio .callout-warning collapse=true}
 ## Demostració de les condicions de sobreeiximent en Ca2 {#sec-demostracio-de-les-condicions-de-sobreeiximent-en-ca2}
@@ -43,19 +45,20 @@ Per a la diferència $d = a - b$, es pot aplicar la mateixa regla a l'expressió
 
 ### Detecció del sobreeiximent per maquinari {#sec-deteccio-del-sobreeiximent-per-maquinari}
 
-En un sumador amb propagació de *carry* de $n$ bits, es produeix sobreeiximent quan el *carry* d'entrada al bit de més pes difereix del *carry* de sortida:
+En un sumador amb propagació de **sobreeiximent** (*carry*) de $n$ bits, es produeix sobreeiximent quan el sobreeiximent d'entrada al bit de més pes difereix del sobreeiximent de sortida:
 
 $$
 v = c_{n-1} \oplus c_n
 $$ {#eq-sobreeiximent-hardware}
 
+<!-- TODO: S'hi ha d'afegir la figura d'un half-adder i la d'un full-adder? -->
+<!-- TODO: S'hi ha d'afegir la figura de la seqüència de full-adders amb la porta XOR per detectar el sobreeiximent en el darrer? -->
 ::: {#wrn-sobreeiximent-maquinari .callout-warning collapse=true}
 ## Detecció de sobreeiximent per maquinari: el sumador amb propagació de l'arrossegament {#sec-deteccio-de-sobreeiximent-per-maquinari-el-sumador-amb-propagacio-de-larrossegament}
 
 Un sumador de $n$ bits es construeix amb una cadena de $n$ **sumadors complets** (*full-adders*). Cada sumador complet rep el bit $a_i$, el bit $b_i$ i el bit d'arrossegament d'entrada (*carry-in*) $c_i$, i produeix el bit de suma $s_i = a_i \oplus b_i \oplus c_i$ i el bit d'arrossegament de sortida (*carry-out*) $c_{i+1} = (a_i \oplus b_i) \land c_i \lor a_i \land b_i$.
 
-Al darrer sumador complet (bit de més pes), el *carry-in* és $c_{n-1}$ i el *carry-out* és $c_n$. El sobreeiximent es detecta amb una sola porta lògica
-afegida al darrer sumador: $v = c_{n-1} \oplus c_n$.
+Al darrer sumador complet (bit de més pes), el *carry-in* és $c_{n-1}$ i el *carry-out* és $c_n$. El sobreeiximent es detecta amb una sola porta lògica afegida al darrer sumador: $v = c_{n-1} \oplus c_n$.
 :::
 
 ### Detecció del sobreeiximent per programari {#sec-sobreeiximent-programari}

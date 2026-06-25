@@ -34,6 +34,76 @@ add  t0, t0, t0
 ```
 :::
 
+## Constants i immediats
+
+::: {#exr-p3-immediats-declaracio}
+Donades les declaracions de variables següents, emmagatzemades a partir de l'adreça `0x10010000`:
+
+```{.s filename="RV32I"}
+.data
+A: .word 5, 2
+B: .word 3
+C: .word 4, 0x0FFFF, 0x4180
+D: .word 0x10010008, 0
+```
+
+amb els continguts inicials de memòria:
+
+| Adreça | Contingut (byte a byte, hex) |
+| :--- | :--- |
+| `0x10010000` | `00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F` |
+| `0x10010010` | `00 00 00 00 EC FD 0E 0F 00 00 00 00 00 00 00 00` |
+
+Tots els apartats parteixen del mateix estat inicial.
+
+a) Quin és el valor final de la variable `B` després d'executar el codi següent?
+
+```{.s filename="RV32I"}
+.text
+la   t1, C
+lw   t2, 12(t1)
+lb   t1, 8(t2)
+la   t3, B
+lb   t4, 0(t3)
+add  t1, t1, t4
+sb   t1, 0(t3)
+```
+
+b) Explica textualment i de forma concisa què fa el fragment següent:
+
+```{.s filename="RV32I"}
+.text
+la  t1, A+1
+lw  t1, 0(t1)
+```
+
+**Nota**: La sintaxi `la label+offset` és admesa a EC (teoria i exàmens), però a RARS cal substituir-la per `la` + `addi`. A més, `lw` sobre una adreça no múltiple de 4 genera una excepció d'alineació.
+:::
+
+::: {#exr-p3-immediats-contingut}
+Indica quin és el contingut de memòria a partir de l'adreça `0x10010000`, a nivell de paraula, per a la declaració de variables globals següent:
+
+```{.s filename="RV32I"}
+.data
+        .byte  0, 1, 2
+A:      .byte  5, -1
+B:      .half  0x66
+C:      .word  4, 0x0FDF
+D:      .half  3
+E:      .byte  25
+F:      .byte  0x08
+G:      .dword 0x10010008
+```
+:::
+
+::: {#exr-p3-immediats-luiaddi}
+En RISC-V, la pseudoinstrucció `li rd, imm` s'expandeix en instruccions reals quan l'immediat no cap en 12 bits amb extensió de signe.
+
+a) Quina seqüència d'instruccions genera el compilador per carregar el valor `0xDEADBEEF` al registre `t0`? Calcula els valors exactes dels operands de cada instrucció.
+b) Per què cal ajustar el camp immediat d'`addi` quan el bit 11 del valor original és 1? Il·lustra-ho amb el valor `0xDEADBEEF`.
+c) Quin és el rang de valors immediats que accepta `addi` (és a dir, el rang de constants que es pot carregar a un registre amb `addi rd, zero, imm`)? I quin és el rang de constants que es pot carregar a un registre amb la seqüència `lui` + `addi`?
+:::
+
 ## Operands en memòria
 
 ::: {#exr-p3-memoria-declaracio}
@@ -143,156 +213,10 @@ sb   t1, 1(t0)
 ```
 :::
 
-## Constants i immediats
-
-::: {#exr-p3-immediats-declaracio}
-Donades les declaracions de variables següents, emmagatzemades a partir de l'adreça `0x10010000`:
-
-```{.s filename="RV32I"}
-.data
-A: .word 5, 2
-B: .word 3
-C: .word 4, 0x0FFFF, 0x4180
-D: .word 0x10010008, 0
-```
-
-amb els continguts inicials de memòria:
-
-| Adreça | Contingut (byte a byte, hex) |
-| :--- | :--- |
-| `0x10010000` | `00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F` |
-| `0x10010010` | `00 00 00 00 EC FD 0E 0F 00 00 00 00 00 00 00 00` |
-
-Tots els apartats parteixen del mateix estat inicial.
-
-a) Quin és el valor final de la variable `B` després d'executar el codi següent?
-
-```{.s filename="RV32I"}
-.text
-la   t1, C
-lw   t2, 12(t1)
-lb   t1, 8(t2)
-la   t3, B
-lb   t4, 0(t3)
-add  t1, t1, t4
-sb   t1, 0(t3)
-```
-
-b) Explica textualment i de forma concisa què fa el fragment següent:
-
-```{.s filename="RV32I"}
-.text
-la  t1, A+1
-lw  t1, 0(t1)
-```
-
-**Nota**: La sintaxi `la label+offset` és admesa a EC (teoria i exàmens), però a RARS cal substituir-la per `la` + `addi`. A més, `lw` sobre una adreça no múltiple de 4 genera una excepció d'alineació.
-:::
-
-::: {#exr-p3-immediats-contingut}
-Indica quin és el contingut de memòria a partir de l'adreça `0x10010000`, a nivell de paraula, per a la declaració de variables globals següent:
-
-```{.s filename="RV32I"}
-.data
-        .byte  0, 1, 2
-A:      .byte  5, -1
-B:      .half  0x66
-C:      .word  4, 0x0FDF
-D:      .half  3
-E:      .byte  25
-F:      .byte  0x08
-G:      .dword 0x10010008
-```
-:::
-
-::: {#exr-p3-immediats-luiaddi}
-En RISC-V, la pseudoinstrucció `li rd, imm` s'expandeix en instruccions reals quan l'immediat no cap en 12 bits amb extensió de signe.
-
-a) Quina seqüència d'instruccions genera el compilador per carregar el valor `0xDEADBEEF` al registre `t0`? Calcula els valors exactes dels operands de cada instrucció.
-b) Per què cal ajustar el camp immediat d'`addi` quan el bit 11 del valor original és 1? Il·lustra-ho amb el valor `0xDEADBEEF`.
-c) Quin és el rang de valors immediats que accepta `addi` (és a dir, el rang de constants que es pot carregar a un registre amb `addi rd, zero, imm`)? I quin és el rang de constants que es pot carregar a un registre amb la seqüència `lui` + `addi`?
-:::
-
 ## Representació de naturals i enters
 
-::: {#exr-p3-enters-taules}
-a) Completa la taula de rang i representació del zero per als formats d'enters en $n$ bits:
-
-| Format | Rang | Representació del zero |
-| :--- | :--- | :--- |
-| Signe i magnitud | | |
-| Complement a 1 | | |
-| Complement a 2 | $[-2^{n-1},\ 2^{n-1}-1]$ | $0\ldots00$ |
-| Excés a $2^{n-1}-1$ | | |
-
-b) Completa la taula de codificació en 4 bits per als enters de l'interval $[-8, 8]$. Per als valors no codificables amb 4 bits, posa NC.
-
-| Decimal | Ca2 | Ca1 | Excés a 7 | Signe i magnitud |
-| :---: | :---: | :---: | :---: | :---: |
-| 8 | | | | |
-| 7 | | | | |
-| 4 | | | | |
-| 1 | | | | |
-| 0 | | | | |
-| −1 | | | | |
-| −4 | | | | |
-| −7 | | | | |
-| −8 | | | | |
-:::
-
-::: {#exr-p3-enters-conversio8}
-Converteix els enters decimals següents als formats de representació binària per a 8 bits. Escriu el resultat en hexadecimal:
-
-| Decimal | Ca1 | Ca2 | Signe i magnitud | Excés a $2^7-1$ |
-| :---: | :---: | :---: | :---: | :---: |
-| −78 | | | | |
-| 125 | | | | |
-| 0 | | | | |
-| −1 | | | | |
-:::
-
-::: {#exr-p3-enters-codificacio}
-Codifica en complement a 2 els enters següents, emprant el mínim format possible (8 o 16 bits), i expressa el resultat en hexadecimal:
-
-a) +123
-b) +255
-c) −127
-d) +170
-e) +128
-f) −230
-g) −18
-h) −128
-i) −1
-:::
-
-::: {#exr-p3-enters-ca2-16bits}
-Converteix els nombres enters següents, representats en complement a 2 de 16 bits, a la representació decimal amb signe:
-
-a) `0x0123`
-b) `0xFE23`
-:::
-
-::: {#exr-p3-enters-implicit}
-Donats els números en base 2 següents, calcula el seu valor implícit en decimal, primer interpretant-los com a naturals i després com a enters en Ca2:
-
-a) `0000 1111`
-b) `1000 0000`
-c) `1111 1111`
-d) `1111 1111 1111 0000`
-:::
-
-::: {#exr-p3-enters-minim13}
-Quin és el menor enter (el més negatiu) representable en complement a 2 amb 13 bits?
-
-a) Expressat en hexadecimal (en complement a 2).
-b) Expressat en decimal.
-:::
-
-::: {#exr-p3-enters-maxim13}
-Quin és el major enter positiu representable en complement a 2 amb 13 bits?
-
-a) Expressat en hexadecimal (en complement a 2).
-b) Expressat en decimal.
+::: {#nte-p3-remissio-enters .callout-note}
+Els exercicis de representació de naturals i enters (complement a 2, complement a 1, signe i magnitud, excés) corresponen al [{{< var tema1 >}}](#sec-tema-introduccio-enunciats) i es troben a @sec-tema-introduccio-enunciats.
 :::
 
 ## Representació de caràcters

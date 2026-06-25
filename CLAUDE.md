@@ -74,7 +74,10 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Enunciats (`PE_Tx.qmd`) i Solucionaris (`PS_Tx.qmd`)
 
-- **Tots els fitxers** (`PE_T1.qmd`–`PE_T9.qmd` i `PS_T1.qmd`–`PS_T9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Tx.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
+- **`PE_T1.qmd` i `PS_T1.qmd`** — **revisió interna completada**. Inclou: secció de naturals (traslladada de PE_T2), secció nova d'aritmètica Ca2 (suma, resta, multiplicació), exercicis nous (`exr-p1-naturals`, `exr-p1-enters-extensio-signe`, `exr-p1-aritm-*`), i 14 solucions cobertes a `PS_T1.qmd`.
+- **`PE_T2.qmd` i `PS_T2.qmd`** — revisió interna completada. Pendent: 4 solucions noves (`exr-p3-memoria-endianness`, `exr-p3-vectors-cerca`, `exr-p3-vectors-punter-aritm`, `exr-p3-strings-copia`; vegeu `TODO.md §Solucionaris pendents`).
+- **`PE_T3.qmd` i `PS_T3.qmd`** — revisió interna completada. Pendent: afegir solucions a `PS_T3.qmd` per als exercicis sense cobertura (vegeu `TODO.md §Solucionaris pendents`).
+- **La resta de fitxers** (`PE_T4.qmd`–`PE_T9.qmd` i `PS_T4.qmd`–`PS_T9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Tx.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
 - Tasca prèvia opcional (Claude Code): substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web.
 
 #### Laboratori (`L1`–`L6`)
@@ -86,8 +89,9 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un identificador `{#sec-nom}` per ser referenciables amb `@sec-nom`.
 
 **Estat:**
-- `T4.qmd`, `T6.qmd`–`T9.qmd` — **complet** (`T4` és la referència; `T6`–`T8` amb prefixos propis; `T9` amb prefix `ei-`).
-- `T1.qmd`–`T3.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 1 de la seqüència de revisió).
+- `T3.qmd`, `T4.qmd`, `T6.qmd`–`T9.qmd` — **complet** (`T4` és la referència; `T6`–`T8` amb prefixos propis; `T9` amb prefix `ei-`; `T3` completat en la revisió interna d'aquest tema).
+- `T1.qmd` — **complet** (45 slugs únics; completat en la revisió interna de T1).
+- `T2.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 1 de la seqüència de revisió).
 
 **Criteris de generació de l'slug** (aplicats a `T4.qmd`):
 
@@ -105,10 +109,9 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 ### Seqüència de revisió pendent
 
-1. **Slugs T1–T6** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals.
-2. **PE_T1–PE_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
-3. **PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna.
-4. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
+1. **Slugs T2, T5** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals. *(T1 completat en la revisió interna; T3 completat en la revisió interna de T3; T4, T6–T9 ja estaven complerts.)*
+2. **PE_T1–PE_T9, PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna. *(T1, T2 i T3 completats.)*
+3. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
 
 ### Flux de treball
 
@@ -183,7 +186,6 @@ Aspectes a revisar:
 - Eficiència pedagògica
     - Ordre de presentació de la matèria autocontingut: presentació lineal de continguts (no emprar cap concepte que no s'hagi introduït encara, dificultat creixent, etc.)
     - Coherència estilística del llenguatge, dels recursos didàctics (ús de callouts, de referències creuades, freqüència dels exemples, ús consistent de termes, etc.)
-    - Manca d'exercicis, manca de solucions, necessitat de reordenació d'exercicis
 - Català normatiu
     - Evitar anglicismes
     - Ús dels termes especificats a 
@@ -193,16 +195,10 @@ Model i effortness:
 - Ara estàs en Sonnet 4.6 Medium sense Thinking. Confirma'm **explícitament** si t'esta bé aquesta configuració o si vols que et canviï de model, effortness o Thinking, digues-m'ho i para perquè pugui fer el canvi de configuració. Quan l'hagi fet te n'informaré i et demanaré que continuïs a partir d'aquest punt.
 - En aquesta revisió hi ha molts càlculs a fer. Suposo que quan hagis llegit tota la documentació em demanaràs que et passi a Opus High Thinking. Quan ho necessitis, para i digues-m'ho tan aviat com ho necessitis.
 - Has d'interrompre l'execució sempre que vulguis que et canviï la configuració.
-- Quan arribis a la verificació aritmètica de la pila i la generació dels solucionaris:
-    - Demana'm el canvi a Opus High Thinking
-    - Atura't perquè et pugui canviar el model
 
 Canvis:
 
 - Fes els canvis a tots els fitxers que creguis oportú. Al final, ofereix-me tots els fitxers que hagis modificat
-
-Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
-Renderització HTML: https://loi.ac.upc.edu/ec
 
 Comença:
 0. Explora els fitxers que t'he passat
@@ -213,3 +209,5 @@ Comença:
 5. Genera la llista d'accions a realitzar; guarda-la a fitxer T2_P_tasques.md i ofereix-me-la per descarregar.
 6. Comença a realitzar les accions que no necessiten la meva aprovació. Fes una llista les tasques que requereixi decisió meva i quan hagis acabat la tasca anterior (6.) atura't i presenta'm la llista i les opcions de cada ítem que conté.
 ```
+Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
+Renderització HTML: https://loi.ac.upc.edu/ec

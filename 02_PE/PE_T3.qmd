@@ -18,13 +18,13 @@ d) `0x7654 >> 3` (desplaçament lògic)
 ::: {#exr-p4-logica-xor}
 Donada la sentència en C:
 
-```c
+```{.c filename="C"}
 C = A ^ B;
 ```
 
 Tradueix-la a assemblador RISC-V sense utilitzar la instrucció `xor`. Recorda que l'operació és equivalent a:
 
-```c
+```{.c filename="C"}
 C = (~A & B) | (A & ~B);
 ```
 :::
@@ -71,7 +71,7 @@ Representa el valor inicial de cada bit de `t4` amb una lletra: el bit 31 és `b
 a) Escriu les instruccions necessàries perquè el bit de més pes passi a ser el de menys pes i la resta de bits es desplacin una posició cap a l'esquerra.
 b) Seguint la mateixa notació, escriu el contingut del registre `t4` després d'executar les instruccions següents:
 
-```s
+```{.s filename="RV32I"}
 li    t1, 16
 mv    t2, t4
 bucle:
@@ -85,167 +85,10 @@ or    t4, t4, t2
 
 ## Sentències condicionals i bucles
 
-::: {#exr-p4-bucles-ordenacio}
-El vector d'enters `Array` està ubicat a l'adreça `0x10000000` de memòria i ha estat declarat així:
-
-```s
-.data
-Array: .word 2, 4, 6, 1
-```
-
-Fes un programa en assemblador RISC-V que ordeni els elements del vector del menor al major, deixant el valor més petit a la posició de memòria més baixa.
-:::
-
-::: {#exr-p4-bucles-suma-ascii}
-Donades les declaracions:
-
-```s
-.data
-v1: .byte '0', '0', '4', '1', '9'
-v2: .byte '8', '9', '7', '2', '3'
-v3: .byte  0,   0,   0,   0,   0,  0
-```
-
-Cada vector conté caràcters ASCII que representen dígits numèrics. En conjunt, cada vector representa un natural decimal amb les unitats a l'última posició. Escriu un programa que sumi els naturals representats per `v1` i `v2` i deixi el resultat a `v3`, que té un dígit de més per poder representar qualsevol suma sense desbordament. Fes servir l'algorisme típic de la suma dígit a dígit.
-:::
-
-::: {#exr-p4-bucles-for}
-Donat el programa en C:
-
-```c
-int main() {
-    int a = 23;  /* guardat a t0 */
-    int b = 12;  /* guardat a t1 */
-    int i;       /* guardat a t2 */
-    for (i = 0; i < 10; i++)
-        a += b;
-}
-```
-
-a) Tradueix-lo a assemblador RISC-V.
-b) Quin és el nombre total d'instruccions que s'executen?
-c) Suposant un processador a 2 GHz on totes les instruccions tenen CPI = 2, si el nombre d'instruccions executades fossin 10, quants segons trigaria a executar-se el programa?
-d) En un processador a 2 GHz, sabent que el programa triga $5 \times 10^{-9}$ s, quin és el CPI del programa?
-:::
-
-::: {#exr-p4-bucles-suma-vector}
-Donada la variable global (on `N` és una constant):
-
-```c
-int v[N];
-```
-
-Calcula el temps d'execució en cicles de rellotge de cada versió del programa que suma els elements de `v`, suposant que:
-
-- Els accessos a memòria triguen 4 cicles.
-- Els salts que no salten triguen 1 cicle.
-- Els salts que salten triguen 2 cicles.
-- La resta d'instruccions triguen 1 cicle.
-
-a)
-```s
-        li    t0, 0          # suma
-        li    t1, 0          # i
-        li    t2, 0          # offset
-bucle:
-        li    t3, N
-        bge   t1, t3, fi
-        la    t4, v
-        add   t4, t4, t2
-        lw    t4, 0(t4)
-        add   t0, t0, t4
-        addi  t2, t2, 4
-        addi  t1, t1, 1
-        j     bucle
-fi:
-```
-
-b)
-```s
-        li    t0, 0          # suma
-        li    t1, 0          # i
-bucle:
-        li    t3, N
-        bge   t1, t3, fi
-        la    t3, v
-        slli  t2, t1, 2
-        add   t2, t3, t2
-        lw    t2, 0(t2)
-        add   t0, t0, t2
-        addi  t1, t1, 1
-        j     bucle
-fi:
-```
-
-c)
-```s
-        li    t0, 0          # suma
-        li    t1, 0          # i
-bucle:
-        la    t3, v
-        slli  t2, t1, 2
-        add   t2, t2, t3
-        lw    t2, 0(t2)
-        add   t0, t0, t2
-        addi  t1, t1, 1
-        li    t3, N
-        blt   t1, t3, bucle
-```
-
-d)
-```s
-        li    t0, 0          # suma
-        li    t1, N-1        # i
-bucle:
-        la    t3, v
-        slli  t2, t1, 2
-        add   t2, t3, t2
-        lw    t2, 0(t2)
-        add   t0, t0, t2
-        addi  t1, t1, -1
-        bge   t1, zero, bucle
-```
-
-e)
-```s
-        li    t0, 0          # suma
-        li    t1, N          # i
-        la    t2, v
-bucle:
-        lw    t3, 0(t2)
-        add   t0, t0, t3
-        addi  t2, t2, 4
-        addi  t1, t1, -1
-        bne   t1, zero, bucle
-```
-
-f) Programa una nova versió que disminueixi el temps d'execució de l'apartat e).
-:::
-
-::: {#exr-p4-bucles-multiplicacio}
-Donades dues variables enteres `a` i `b`, ja inicialitzades als registres `t1` i `t2`:
-
-a) Programa en C una seqüència d'instruccions que multipliqui `a * b` usant un bucle `while` i operacions de suma. El resultat s'ha de deixar a `c`, ubicada al registre `t3`.
-b) Tradueix-lo a assemblador RISC-V.
-c) Quin és el nombre màxim d'instruccions RISC-V que poden arribar a executar-se?
-d) En un processador a 2 GHz on totes les instruccions usen 2 cicles de rellotge, quants segons trigaria a executar-se el programa?
-e) Si en comptes de sumes s'usa una única instrucció de multiplicació que utilitza 10 cicles de rellotge, quants segons trigaria a executar-se? Quin seria el CPI del programa?
-:::
-
-::: {#exr-p4-bucles-intercanvi-parells}
-Donada la declaració en C (on `N` és una constant):
-
-```c
-int V[2*N];
-```
-
-Escriu un fragment de codi assemblador RISC-V que intercanviï cada element d'índex parell amb l'element següent d'índex senar.
-:::
-
 ::: {#exr-p4-bucles-if-aniuat}
 Tradueix a assemblador RISC-V el programa en C següent, suposant que `a`, `b` i `c` ja han estat inicialitzades als registres `t1`, `t2` i `t3`:
 
-```c
+```{.c filename="C"}
 int main() {
     int a, b, c, i;  /* i s'emmagatzema a t0 */
     ...
@@ -265,7 +108,7 @@ int main() {
 ::: {#exr-p4-bucles-hexadecimal}
 Tradueix a assemblador RISC-V la sentència `if` del programa en C següent, que converteix un dígit hexadecimal (representat per un caràcter ASCII guardat a la variable global `c`) al seu valor binari equivalent i l'escriu a la variable global `num` (enter de 8 bits). Suposa que el valor de `c` és un dels caràcters `{'0'..'9', 'A'..'F', 'a'..'f'}`.
 
-```c
+```{.c filename="C"}
 char c, num;
 int main() {
     ...
@@ -279,10 +122,57 @@ int main() {
 ```
 :::
 
+::: {#exr-p4-bucles-switch}
+Tradueix a assemblador RISC-V la sentència `switch` del programa en C següent. La variable `op` ocupa el registre `t0` i les variables `a`, `b`, `res` ocupen `t1`, `t2`, `t3`:
+
+```{.c filename="C"}
+int op, a, b, res;
+...
+switch (op) {
+    case 0:  res = a + b;  break;
+    case 1:  res = a - b;  break;
+    case 2:  res = a & b;  break;
+    case 3:  res = a | b;  break;
+    default: res = 0;
+}
+```
+
+Proposa dues implementacions: una amb salts encadenats i una altra amb taula de salts (*jump table*). Quan és preferible cada enfocament?
+:::
+
+::: {#exr-p4-bucles-for}
+Donat el programa en C:
+
+```{.c filename="C"}
+int main() {
+    int a = 23;  /* guardat a t0 */
+    int b = 12;  /* guardat a t1 */
+    int i;       /* guardat a t2 */
+    for (i = 0; i < 10; i++)
+        a += b;
+}
+```
+
+a) Tradueix-lo a assemblador RISC-V.
+b) Quin és el nombre total d'instruccions que s'executen?
+c) Suposant un processador a 2 GHz on totes les instruccions tenen CPI = 2, si el nombre d'instruccions executades fossin 10, quants segons trigaria a executar-se el programa?
+d) En un processador a 2 GHz, sabent que el programa triga $5 \times 10^{-9}$ s, quin és el CPI del programa?
+:::
+
+::: {#exr-p4-bucles-multiplicacio}
+Donades dues variables enteres `a` i `b`, ja inicialitzades als registres `t1` i `t2`:
+
+a) Programa en C una seqüència d'instruccions que multipliqui `a * b` usant un bucle `while` i operacions de suma. El resultat s'ha de deixar a `c`, ubicada al registre `t3`.
+b) Tradueix-lo a assemblador RISC-V.
+c) Quin és el nombre màxim d'instruccions RISC-V que poden arribar a executar-se?
+d) En un processador a 2 GHz on totes les instruccions usen 2 cicles de rellotge, quants segons trigaria a executar-se el programa?
+e) Si en comptes de sumes s'usa una única instrucció de multiplicació que utilitza 10 cicles de rellotge, quants segons trigaria a executar-se? Quin seria el CPI del programa?
+:::
+
 ::: {#exr-p4-bucles-while-vector}
 Tradueix a assemblador RISC-V el programa en C següent:
 
-```c
+```{.c filename="C"}
 int D[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 int main() {
     int a = 0;   /* guardat a t0 */
@@ -298,7 +188,7 @@ int main() {
 ::: {#exr-p4-bucles-suma-positius}
 Tradueix a assemblador RISC-V el programa en C següent, suposant que les variables globals ja han estat inicialitzades:
 
-```c
+```{.c filename="C"}
 #define N 30
 int V[N], suma, elems;
 int main() {
@@ -318,59 +208,138 @@ int main() {
 ```
 :::
 
-::: {#exr-p4-bucles-switch}
-Tradueix a assemblador RISC-V la sentència `switch` del programa en C següent. La variable `op` ocupa el registre `t0` i les variables `a`, `b`, `res` ocupen `t1`, `t2`, `t3`:
+::: {#exr-p4-bucles-suma-vector}
+Donada la variable global (on `N` és una constant):
 
-```c
-int op, a, b, res;
-...
-switch (op) {
-    case 0:  res = a + b;  break;
-    case 1:  res = a - b;  break;
-    case 2:  res = a & b;  break;
-    case 3:  res = a | b;  break;
-    default: res = 0;
-}
+```{.c filename="C"}
+int v[N];
 ```
 
-Proposa dues implementacions: una amb salts encadenats i una altra amb taula de salts (*jump table*). Quan és preferible cada enfocament?
+Calcula el temps d'execució en cicles de rellotge de cada versió del programa que suma els elements de `v`, suposant que:
+
+- Els accessos a memòria triguen 4 cicles.
+- Els salts que no salten triguen 1 cicle.
+- Els salts que salten triguen 2 cicles.
+- La resta d'instruccions triguen 1 cicle.
+
+a)
+```{.s filename="RV32I"}
+        li    t0, 0          # suma
+        li    t1, 0          # i
+        li    t2, 0          # offset
+bucle:
+        li    t3, N
+        bge   t1, t3, fi
+        la    t4, v
+        add   t4, t4, t2
+        lw    t4, 0(t4)
+        add   t0, t0, t4
+        addi  t2, t2, 4
+        addi  t1, t1, 1
+        j     bucle
+fi:
+```
+
+b)
+```{.s filename="RV32I"}
+        li    t0, 0          # suma
+        li    t1, 0          # i
+bucle:
+        li    t3, N
+        bge   t1, t3, fi
+        la    t3, v
+        slli  t2, t1, 2
+        add   t2, t3, t2
+        lw    t2, 0(t2)
+        add   t0, t0, t2
+        addi  t1, t1, 1
+        j     bucle
+fi:
+```
+
+c)
+```{.s filename="RV32I"}
+        li    t0, 0          # suma
+        li    t1, 0          # i
+bucle:
+        la    t3, v
+        slli  t2, t1, 2
+        add   t2, t2, t3
+        lw    t2, 0(t2)
+        add   t0, t0, t2
+        addi  t1, t1, 1
+        li    t3, N
+        blt   t1, t3, bucle
+```
+
+d)
+```{.s filename="RV32I"}
+        li    t0, 0          # suma
+        li    t1, N-1        # i
+bucle:
+        la    t3, v
+        slli  t2, t1, 2
+        add   t2, t3, t2
+        lw    t2, 0(t2)
+        add   t0, t0, t2
+        addi  t1, t1, -1
+        bge   t1, zero, bucle
+```
+
+e)
+```{.s filename="RV32I"}
+        li    t0, 0          # suma
+        li    t1, N          # i
+        la    t2, v
+bucle:
+        lw    t3, 0(t2)
+        add   t0, t0, t3
+        addi  t2, t2, 4
+        addi  t1, t1, -1
+        bne   t1, zero, bucle
+```
+
+f) Programa una nova versió que disminueixi el temps d'execució de l'apartat e).
+:::
+
+::: {#exr-p4-bucles-intercanvi-parells}
+Donada la declaració en C (on `N` és una constant):
+
+```{.c filename="C"}
+int V[2*N];
+```
+
+Escriu un fragment de codi assemblador RISC-V que intercanviï cada element d'índex parell amb l'element següent d'índex senar.
+:::
+
+::: {#exr-p4-bucles-suma-ascii}
+Donades les declaracions:
+
+```{.s filename="RV32I"}
+.data
+v1: .byte '0', '0', '4', '1', '9'
+v2: .byte '8', '9', '7', '2', '3'
+v3: .byte  0,   0,   0,   0,   0,  0
+```
+
+Cada vector conté caràcters ASCII que representen dígits numèrics. En conjunt, cada vector representa un natural decimal amb les unitats a l'última posició. Escriu un programa que sumi els naturals representats per `v1` i `v2` i deixi el resultat a `v3`, que té un dígit de més per poder representar qualsevol suma sense desbordament. Fes servir l'algorisme típic de la suma dígit a dígit.
+:::
+
+::: {#exr-p4-bucles-ordenacio}
+El vector d'enters `Array` està ubicat a l'adreça `0x10000000` de memòria i ha estat declarat així:
+
+```{.s filename="RV32I"}
+.data
+Array: .word 2, 4, 6, 1
+```
+
+Fes un programa en assemblador RISC-V que ordeni els elements del vector del menor al major, deixant el valor més petit a la posició de memòria més baixa.
 :::
 
 ## Subrutines: introducció
 
 ::: {#exr-p4-subrutines-minim}
 Escriu en C i en assemblador RISC-V una funció que, donats dos enters de 32 bits passats per valor, retorni el mínim dels dos.
-:::
-
-::: {#exr-p4-subrutines-recursiva-pell}
-Tradueix a assemblador RISC-V la funció recursiva següent:
-
-```c
-int pellnumber(int n) {
-    if (n < 2)
-        return n;
-    else
-        return 2 * pellnumber(n - 1) + pellnumber(n - 2);
-}
-```
-:::
-
-::: {#exr-p4-subrutines-maxv}
-Tradueix a assemblador RISC-V la subrutina en C següent:
-
-```c
-int maxv(int vector[], int length) {
-    int temp;
-    if (length == 1)
-        temp = vector[0];
-    else {
-        temp = maxv(vector, length - 1);
-        if (vector[length - 1] > temp)
-            temp = vector[length - 1];
-    }
-    return temp;
-}
-```
 :::
 
 ::: {#exr-p4-subrutines-strlen}
@@ -451,23 +420,6 @@ for (i = 0; i < 10; i++) {
 ```
 :::
 
-::: {#exr-p4-subrutines-s1}
-Donades les declaracions en C:
-
-```c
-int s2(int c, long long *d, long long w[]);
-
-int s1(int x, long long v[], int *p) {
-    long long *k;
-    k = &v[x];
-    x = s2(*p, k, v);
-    return *p + x;
-}
-```
-
-Tradueix a assemblador RISC-V la funció `s1`.
-:::
-
 ::: {#exr-p4-subrutines-swap}
 Donades les funcions en C:
 
@@ -486,20 +438,6 @@ void examen(int vector[], char c, int j) {
 
 a) Tradueix a assemblador RISC-V la subrutina `swap`.
 b) Tradueix a assemblador RISC-V la subrutina `examen`.
-:::
-
-::: {#exr-p4-subrutines-func1}
-Tradueix a assemblador RISC-V la funció `func1`:
-
-```c
-unsigned int func1(unsigned int v, unsigned int *p) {
-    if (v == 0)
-        *p = 0;
-    else
-        *p = func1(func1(v - 1, p), p + 1) - 1;
-    return *p;
-}
-```
 :::
 
 ::: {#exr-p4-subrutines-inversa}
@@ -529,89 +467,50 @@ a) Quin valor retorna `f` per a `n = 0x6789ABCD`?
 b) Explica textualment què calcula la funció `f`.
 :::
 
-## Subrutines: context i bloc d'activació
-
-::: {#exr-p4-ba-subr1}
-Donades les declaracions en C:
+::: {#exr-p4-subrutines-recursiva-pell}
+Tradueix a assemblador RISC-V la funció recursiva següent:
 
 ```c
-int subr2(int a, char *b, char c, int d);
-
-int subr1(char v[], int e2, int *var, char p) {
-    int valor;
-    valor = subr2(*var, &v[e2], p, e2);
-    return valor + e2;
-}
-```
-
-Tradueix a assemblador RISC-V la funció `subr1`.
-:::
-
-::: {#exr-p4-ba-funcioA}
-Donades les declaracions de variables globals i de la funció `A`:
-
-```c
-char  x;
-int   z;
-char  w[20];
-
-char A(char i, int k, char *v) {
-    char r[10];
-    char c;
-    c    = v[3];
-    r[k] = i;
-    return c;
-}
-```
-
-a) Tradueix a assemblador RISC-V la sentència:
-
-```c
-x = A(x, z, w);
-```
-
-b) Dibuixa el bloc d'activació d'una crida a la funció `A`.
-c) Tradueix a assemblador RISC-V la funció `A`.
-:::
-
-::: {#exr-p4-ba-funcioA2}
-Tradueix a assemblador RISC-V la funció `A`:
-
-```c
-int B(short *x, short y[], int z, char m);
-
-int A(int a[], short b[], char c) {
-    int   p1 = 0;
-    short p2[5];
-    p1         = B(b, p2, p1, 'A');
-    p2[p1 + a[2]] = b[p1];
-    if (c == 'z')
-        p1 = p1 - 3;
+int pellnumber(int n) {
+    if (n < 2)
+        return n;
     else
-        p1 = 2;
-    return p1;
+        return 2 * pellnumber(n - 1) + pellnumber(n - 2);
 }
 ```
 :::
 
-::: {#exr-p4-ba-sub}
-Tradueix a assemblador RISC-V la funció `sub` (escrivint punts suspensius per a les sentències desconegudes):
+::: {#exr-p4-subrutines-maxv}
+Tradueix a assemblador RISC-V la subrutina en C següent:
 
 ```c
-void sub(int p1[10], int p2, int p3) {
-    int x1[10], x2;
-    ...
-    x1[p2]  = p1[x2] + p3;
-    ...
-    sub(x1, p2, p1[3]);
-    ...
-    x2 = p2 + p3;
-    ...
+int maxv(int vector[], int length) {
+    int temp;
+    if (length == 1)
+        temp = vector[0];
+    else {
+        temp = maxv(vector, length - 1);
+        if (vector[length - 1] > temp)
+            temp = vector[length - 1];
+    }
+    return temp;
 }
 ```
 :::
 
-## Estructura de la memòria
+::: {#exr-p4-subrutines-func1}
+Tradueix a assemblador RISC-V la funció `func1`:
+
+```c
+unsigned int func1(unsigned int v, unsigned int *p) {
+    if (v == 0)
+        *p = 0;
+    else
+        *p = func1(func1(v - 1, p), p + 1) - 1;
+    return *p;
+}
+```
+:::
 
 ::: {#exr-p4-memoria-jalr}
 El repertori de RISC-V inclou la instrucció `jalr` per cridar subrutines i per a salts indirectes. Suposem que s'executa el fragment de codi RISC-V següent:
@@ -631,6 +530,104 @@ d) La instrucció `jalr` s'executa infinites vegades (el programa entra en un bu
 e) Sense saber el contingut d'altres posicions de memòria no es pot saber quants cops s'executa.
 :::
 
+::: {#exr-p4-subrutines-s1}
+Donades les declaracions en C:
+
+```c
+int s2(int c, long long *d, long long w[]);
+
+int s1(int x, long long v[], int *p) {
+    long long *k;
+    k = &v[x];
+    x = s2(*p, k, v);
+    return *p + x;
+}
+```
+
+Tradueix a assemblador RISC-V la funció `s1`.
+:::
+## Subrutines: context i bloc d'activació
+
+::: {#exr-p4-ba-subr1}
+Donades les declaracions en C:
+
+```{.c filename="C"}
+int subr2(int a, char *b, char c, int d);
+
+int subr1(char v[], int e2, int *var, char p) {
+    int valor;
+    valor = subr2(*var, &v[e2], p, e2);
+    return valor + e2;
+}
+```
+
+Tradueix a assemblador RISC-V la funció `subr1`.
+:::
+
+::: {#exr-p4-ba-funcioA}
+Donades les declaracions de variables globals i de la funció `A`:
+
+```{.c filename="C"}
+char  x;
+int   z;
+char  w[20];
+
+char A(char i, int k, char *v) {
+    char r[10];
+    char c;
+    c    = v[3];
+    r[k] = i;
+    return c;
+}
+```
+
+a) Tradueix a assemblador RISC-V la sentència:
+
+```{.c filename="C"}
+x = A(x, z, w);
+```
+
+b) Dibuixa el bloc d'activació d'una crida a la funció `A`.
+c) Tradueix a assemblador RISC-V la funció `A`.
+:::
+
+::: {#exr-p4-ba-funcioA2}
+Tradueix a assemblador RISC-V la funció `A`:
+
+```{.c filename="C"}
+int B(short *x, short y[], int z, char m);
+
+int A(int a[], short b[], char c) {
+    int   p1 = 0;
+    short p2[5];
+    p1         = B(b, p2, p1, 'A');
+    p2[p1 + a[2]] = b[p1];
+    if (c == 'z')
+        p1 = p1 - 3;
+    else
+        p1 = 2;
+    return p1;
+}
+```
+:::
+
+::: {#exr-p4-ba-sub}
+Tradueix a assemblador RISC-V la funció `sub` (escrivint punts suspensius per a les sentències desconegudes):
+
+```{.c filename="C"}
+void sub(int p1[10], int p2, int p3) {
+    int x1[10], x2;
+    ...
+    x1[p2]  = p1[x2] + p3;
+    ...
+    sub(x1, p2, p1[3]);
+    ...
+    x2 = p2 + p3;
+    ...
+}
+```
+:::
+
 ## Compilació, muntatge i càrrega
 
 ::: {#exr-p4-compilacio-auipc}
@@ -640,13 +637,13 @@ La pseudoinstrucció `la rd, symbol` s'expandeix habitualment en dues instruccio
 ::: {#exr-p4-compilacio-relocacio}
 Un projecte té dos fitxers font:
 
-```c
+```{.c filename="C"}
 /* fitxer a.c */
 int x = 42;
 int f(int n) { return n + x; }
 ```
 
-```c
+```{.c filename="C"}
 /* fitxer b.c */
 extern int x;
 int f(int n);

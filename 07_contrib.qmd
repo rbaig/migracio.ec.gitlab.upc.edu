@@ -45,6 +45,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### T2 i T3
 
 - **`.globl` vs. `.global`**: s'usa `.globl` (forma estàndard de GNU AS); `.global` és un àlies acceptat però no s'usa als exemples ni al laboratori.
+- **Mode base + desplaçament** (terme canònic a EC): el mode d'adreçament que usa la sintaxi `offset(rs1)` s'anomena **mode base + desplaçament** a EC. El terme **mode memòria** és un sinònim de la literatura; es menciona com a tal al callout `{#cau-mode-base-desplacament}` de T2, però no s'usa com a terme principal.
 - **Modes d'adreçament**: quatre modes a EC: registre, immediat, base+desplaçament, relatiu al PC. `lui` → immediat; `jalr` → base+desplaçament.
 - **Terminologia de salts**: relatiu al PC (`beq`, `jal`) vs. indirecte (`jalr`). Tots els salts condicionals de RV32I són relatius al PC.
 - **Etiquetes de bucle**: `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.).
@@ -52,6 +53,8 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **`la label+offset`**: admès a EC (pissarra i exàmens) però no suportat per RARS; al laboratori cal `la` + `addi`.
 - **Optimitzacions de bucle**: les tres optimitzacions numerades es defineixen a T4 (§4.5); el prerequisit no numerat (extracció d'invariants) s'introdueix a T2 (@sec-extraccio-invariants) i s'hi remet des de T4. La numeració és única per al bloc, no es reparteix entre temes, i és: #1 accés seqüencial, #2 avaluació de la condició al final, #3 eliminació de la variable d'inducció (vegeu §T4 a continuació).
 - **Pseudoinstruccions vs. macros**: distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
+- **Alineació de la pila**: la mida del BA i el valor de `sp` han de ser **múltiples de 4 bytes** a EC (relaxació pedagògica). L'ABI estàndard de RV32I exigeix múltiples de 16 bytes; aquest fet es menciona explícitament a `{#nte-abi-alineacio-pila}` de T3.
+- **Retorn de resultats**: les subrutines retornen com a màxim dos resultats escalars, per `a0` i `a1`. El segon (`a1`) s'usa habitualment per a un codi d'error o un segon valor de retorn. Documentat a `{#nte-abi-pas-parametres}` de T3.
 
 #### T4
 
@@ -86,7 +89,12 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Zicsr**: les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
 - **Mode S**: el tractament de fallades de TLB per programari requereix mode S (`satp`, `stval`, `sfence.vma`). El cos del text descriu el mecanisme en mode M; l'aprofundiment cobreix mode S.
 
-### Laboratori
+### Problemari i solucionari (PE/PS)
+
+- **Referències creuades cap a la teoria** (Nivell 2): als exercicis i solucions, afegir referències `@sec-nom` a la secció de teoria rellevant quan el concepte clau no és obvi o quan l'estudiant típicament s'encalla. No de forma mecànica a tots els exercicis, sinó selectivament. Nivell 3 (`@nte-`, `@tip-`...) admès quan la solució és aplicació directa d'un exemple concret de teoria.
+  - Format recomanat als enunciats: nota al final del bloc `{#exr-}`: «*Vegeu @sec-nom.*»
+  - Format recomanat a les solucions: integrat al text de la solució on es fa servir el concepte.
+- **Cobertura**: aplicar als xats de revisió de cada tema. PE_T2/PS_T2 es retoquen en un xat breu un cop T2.qmd tingui els slugs complets (tasca Claude Code).
 
 #### Convencions globals del laboratori
 
