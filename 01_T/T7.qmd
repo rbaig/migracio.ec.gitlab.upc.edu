@@ -236,7 +236,7 @@ Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament
 Fallada en un accés a l'adreça `0x100100F8`: el bloc es copia de la MP a la MC i la dada es transfereix a la CPU.
 :::
 
-## Política d'emplaçament {#sec-politica-emplacament}
+## Polítiques d'emplaçament {#sec-politica-emplacament}
 
 Quan la MC ha de guardar un bloc procedent de la memòria principal, cal decidir en quina línia l'emmagatzema. Aquest és el problema que resol la **política d'emplaçament** (*placement policy*). La política d'emplaçament determina també
 on cal cercar un bloc quan la CPU hi vol accedir: si se sap en quines línies pot estar, la cerca és més ràpida.
@@ -371,7 +371,7 @@ $$\underbrace{\hspace{4.5em}}_{\text{etiqueta}}
 Els casos extrems encaixen naturalment: si $N_C = N_L$ (correspondència directa), $n_c = n_l$ i l'etiqueta és mínima; si $N_C = 1$ (completament associativa), $n_c = 0$ i no hi ha bits d'índex.
 :::
 
-## Política de reemplaçament {#sec-politica-reemplacament}
+## Polítiques de reemplaçament {#sec-politica-reemplacament}
 
 Quan la MC ha d'emmagatzemar un nou bloc i totes les vies del conjunt corresponent estan ocupades, cal alliberar-ne una. L'algorisme que decideix quina via s'elimina s'anomena **política de reemplaçament**. En una memòria cau de correspondència directa no hi ha elecció possible —cada bloc té una única línia assignada—, de manera que la política de reemplaçament només és rellevant per a les memòries cau associatives.
 
@@ -403,7 +403,7 @@ requereix conèixer els accessos futurs. La seva utilitat pràctica és establir
 
 <!-- TODO fig-lru-roger: diagrama d'estats -->
 
-## Política d'escriptura {#sec-politica-escriptura}
+## Polítiques d'escriptura {#sec-politica-escriptura}
 
 Fins ara s'ha suposat que tots els accessos a memòria són lectures. Les escriptures introdueixen un problema nou: quan la CPU modifica una dada, la còpia a la MC i la còpia a la memòria principal divergeixen. Cal decidir com i quan sincronitzar-les. Això és el que resol la **política d'escriptura**.
 
@@ -424,7 +424,7 @@ L'inconvenient és que cada escriptura accedeix a la memòria principal, que és
 
 L'escriptura retardada té l'avantatge que múltiples escriptures al mateix bloc generen una sola escriptura a la memòria principal (quan el bloc s'expulsa), reduint el tràfic total. El desavantatge és que una fallada que requereix expulsar un bloc amb $D = 1$ allarga el temps de penalització, ja que cal copiar primer el bloc antic a la memòria principal abans de copiar el nou bloc a la MC.
 
-### Política en cas de fallada {#sec-escriptura-fallada}
+### Polítiques en cas de fallada {#sec-escriptura-fallada}
 
 Quan una escriptura produeix una fallada (el bloc no és a la MC), hi ha dues alternatives:
 
@@ -500,6 +500,25 @@ En aquest cas la memòria cau incorpora el bit $D$. Partint del mateix estat ini
 - `sw @252` (bloc 63, índex 0) → **Fallada** amb $D = 0$ a la línia 0: es copia el bloc 63 a la línia 0 i s'escriu a la MC ($D \leftarrow 1$).
 
 <!-- fig-escriptura-retardada: taula de la memòria cau amb columnes V, D, etiqueta i dades, mostrant l'evolució dels tres accessos: sw@10 (D←1), lw@0 (còpia del bloc 2 a MP, carrega bloc 0, D←0), sw@252 (carrega bloc 63, D←1). Basada en la Figura 6.19 del PDF. Caption: "Escriptura retardada amb assignació: quan s'expulsa un bloc amb D=1, cal copiar-lo primer a la memòria principal." -->
+:::
+
+## Polítiques — Resum {#sec-mc-politiques-resum}
+
+<!-- TODO text introductori -->
+
+::: {#fig-mc-politiques-resum}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T7_mc_politiques_resum__graphviz__original_light.svg){width="40%"}
+:::
+::: {.dark-content}
+![](/figs_auto/T7_mc_politiques_resum__graphviz__original_dark.svg){width="40%"}
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T7_mc_politiques_resum__graphviz__original_light.svg){width="50%"}
+:::
+Resum de les polítiques de memòria cau.
 :::
 
 ## Rendiment {#sec-rendiment-mc}

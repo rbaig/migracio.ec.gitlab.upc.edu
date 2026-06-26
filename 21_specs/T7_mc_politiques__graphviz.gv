@@ -1,0 +1,74 @@
+digraph mc_politiques {
+    rankdir=LR;
+    splines=line;
+    nodesep=0.22;
+    ranksep=0.52;
+
+    node [
+        shape=none,
+        fontname="Liberation Sans",
+        fontsize=10,
+        margin="0.06,0.03",
+        height=0.2
+    ];
+
+    edge [
+        arrowhead=none,
+        color="#adb5bd",
+        penwidth=0.8
+    ];
+
+    /* Arrel */
+    MC [label="MC", fontsize=11, fontname="Liberation Sans Bold"];
+
+    /* Nivell 1 */
+    Emp  [label="Emplaçament"];
+    Ree  [label="Reemplaçament"];
+    Esc  [label="Escriptura"];
+
+    /* Emplaçament */
+    ED   [label="Directe"];
+    EAC  [label="Assoc. per conjunts"];
+    ETA  [label="Totalment assoc."];
+
+    /* Reemplaçament */
+    RLRU [label="LRU"];
+    RFIFO[label="FIFO"];
+    RRand[label="Rand"];
+    ROPT [label="OPT"];
+
+    /* Escriptura */
+    EEnc [label="Encert"];
+    EFal [label="Fallada"];
+
+    /* Escriptura → Encert */
+    EEI  [label="Immediata\n(buffer d'escriptura ideal)", fontsize=9];
+    EER  [label="Retardada\n(Dirty bit)", fontsize=9];
+
+    /* Escriptura → Fallada */
+    EFA  [label="Amb assignació"];
+    EFSA [label="Sense assignació"];
+
+    /* Arcs */
+    MC   -> Emp;
+    MC   -> Ree;
+    MC   -> Esc;
+
+    Emp  -> ED;
+    Emp  -> EAC;
+    Emp  -> ETA;
+
+    Ree  -> RLRU;
+    Ree  -> RFIFO;
+    Ree  -> RRand;
+    Ree  -> ROPT;
+
+    Esc  -> EEnc;
+    Esc  -> EFal;
+
+    EEnc -> EEI;
+    EEnc -> EER;
+
+    EFal -> EFA;
+    EFal -> EFSA;
+}
