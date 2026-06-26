@@ -33,7 +33,7 @@ d) Ídem per a la resta $C-D$.
 :::
 
 ::: {#exr-p5-sr-overflow-naturals-8bits}
-Per a les operacions següents amb naturals de 8 bits, codifica els operands en binari, realitza l'operació i indica si s'ha produït desbordament (*carry*). Converteix el resultat a decimal:
+Per a les operacions següents amb naturals de 8 bits, codifica els operands en binari, realitza l'operació i indica si s'ha produït arrossegament (*carry*). Converteix el resultat a decimal:
 
 a) $200 + 50$
 b) $25 + 34$
@@ -42,24 +42,28 @@ d) $128 - 20$
 :::
 
 ::: {#exr-p5-sr-overflow-enters-8bits}
-Per a les operacions següents amb enters en Ca2 de 8 bits, codifica els operands en binari, realitza l'operació i indica si s'ha produït desbordament (*overflow*). Converteix el resultat a decimal:
+Per a les operacions següents amb enters en Ca2 de 8 bits, codifica els operands en binari, realitza l'operació i indica si s'ha produït sobreeiximent (*overflow*). Converteix el resultat a decimal:
 
 a) $(-25) + (-34)$
 b) $(-25) - (-34)$
 c) $(+127) - (-20)$
 d) $(-128) - (-20)$
+
+*Vegeu @sec-condicions-de-sobreeiximent.*
 :::
 
 ::: {#exr-p5-sr-overflow-deteccio-natural}
-Donades dues variables naturals de 32 bits emmagatzemades a `t1` i `t2`, escriu un programa que calculi la seva suma (`t0 = t1 + t2`) i determini si s'ha produït desbordament (*carry*), desant 1 a `t3` en cas afirmatiu i 0 altrament. El programa no ha de contenir cap instrucció de salt.
+Donades dues variables naturals de 32 bits emmagatzemades a `t1` i `t2`, escriu un programa que calculi la seva suma (`t0 = t1 + t2`) i determini si s'ha produït arrossegament (*carry*), desant 1 a `t3` en cas afirmatiu i 0 altrament. El programa no ha de contenir cap instrucció de salt.
 
 *Indicació:* si es produeix *carry*, el resultat `t0` és menor que qualsevol dels dos sumands.
 :::
 
 ::: {#exr-p5-sr-overflow-deteccio-enter}
-Donades dues variables enteres de 32 bits emmagatzemades a `t1` i `t2`, escriu un programa que calculi la seva suma (`t0 = t1 + t2`) i determini si s'ha produït desbordament (*overflow*). El programa no ha de contenir cap instrucció de salt.
+Donades dues variables enteres de 32 bits emmagatzemades a `t1` i `t2`, escriu un programa que calculi la seva suma (`t0 = t1 + t2`) i determini si s'ha produït sobreeiximent (*overflow*). El programa no ha de contenir cap instrucció de salt.
 
-*Indicació:* hi ha desbordament si i només si els dos sumands tenen el mateix signe i el resultat té signe oposat. A RISC-V, la detecció es fa combinant instruccions de comparació i lògica de bits sobre els bits de signe.
+*Indicació:* hi ha sobreeiximent si i només si els dos sumands tenen el mateix signe i el resultat té signe oposat. A RISC-V, la detecció es fa combinant instruccions de comparació i lògica de bits sobre els bits de signe.
+
+*Vegeu @sec-sobreeiximent-programari i @tip-sobreeiximent-programari.*
 :::
 
 ::: {#exr-p5-sr-64bits}
@@ -80,6 +84,8 @@ c) `if (x > y) x = 1;`
 
 ::: {#exr-p5-mul-algorisme}
 Donat el diagrama del multiplicador seqüencial de naturals de 32 bits estudiat a classe, que calcula el producte de 64 bits, completa l'algorisme iteratiu que en descriu el funcionament cicle a cicle, indicant el valor inicial dels registres i les operacions de cada iteració.
+
+*Vegeu @thm-multiplicacio-sequencial.*
 :::
 
 ::: {#exr-p5-mul-passos}
@@ -87,17 +93,23 @@ Seguint el circuit multiplicador seqüencial, descriu els passos per a la multip
 
 a) $X =$ `101000`, $Y =$ `010011`.
 b) $X =$ `110110`, $Y =$ `000100`.
+
+*Vegeu @thm-multiplicacio-sequencial i @tip-seguiment-multiplicacio.*
 :::
 
 ::: {#exr-p5-mul-programa}
 Seguint el mateix algorisme del circuit multiplicador, i sense usar cap instrucció de multiplicació, escriu un programa en assemblador RISC-V que calculi el producte de dos naturals de 32 bits guardats als registres `t0` i `t2`. El resultat de 64 bits s'ha de guardar a `t3` (part baixa) i `t4` (part alta).
+
+*Vegeu @thm-multiplicacio-sequencial.*
 :::
 
 ::: {#exr-p5-mul-overflow}
-Siguin `x`, `y` i `z` variables de 32 bits emmagatzemades a `t1`, `t2` i `t3`. Escriu un programa en RISC-V que calculi `z = x * y` i escrigui a `t0` el valor 0 si el resultat és correcte o 1 si s'ha produït desbordament. El programa no ha de fer servir cap instrucció de salt. Considera:
+Siguin `x`, `y` i `z` variables de 32 bits emmagatzemades a `t1`, `t2` i `t3`. Escriu un programa en RISC-V que calculi `z = x * y` i escrigui a `t0` el valor 0 si el resultat és correcte o 1 si s'ha produït sobreeiximent. El programa no ha de fer servir cap instrucció de salt. Considera:
 
 a) `unsigned int x, y, z;`
 b) `int x, y, z;`
+
+*Vegeu @sec-sobreeiximent-en-la-multiplicacio.*
 :::
 
 ::: {#exr-p5-mul-instruccions}
@@ -105,24 +117,7 @@ Completa el contingut que han de tenir els registres operands de les instruccion
 
 a) `mul t3, t1, t2` — el resultat als 32 bits baixos és `0xFFFFFFFA`; `t1 = 0x00000002`; calcula el valor de `t2`.
 b) `div t3, t1, t2` (divisió entera signada, truncament cap a zero) — `t1 = 0x00000005`, `t2 = 0xFFFFFFFE`; calcula el quocient a `t3` i el residu.
-c) En quins casos concrets pot produir-se desbordament en una divisió entera signada en Ca2?
-:::
-
-## Divisió
-
-::: {#exr-p5-div-algorisme}
-Donat el diagrama del divisor seqüencial de naturals de 32 bits amb restauració estudiat a classe, que calcula el quocient i el residu, completa l'algorisme iteratiu que en descriu el funcionament cicle a cicle.
-:::
-
-::: {#exr-p5-div-passos}
-Seguint el circuit divisor seqüencial amb restauració, descriu els passos per a la divisió dels naturals de 6 bits $X$ (dividend) entre $Y$ (divisor), calculant en cada pas el valor dels registres $Q$, $D$ i $R$ en binari:
-
-a) $X =$ `101000`, $Y =$ `010011`.
-b) $X =$ `010101`, $Y =$ `100100`.
-:::
-
-::: {#exr-p5-div-programa}
-Seguint el mateix algorisme del circuit divisor, i sense usar cap instrucció de multiplicació ni divisió, escriu un programa en assemblador RISC-V que calculi el quocient i el residu de la divisió de dos naturals de 32 bits guardats als registres `t3` i `t1`. El quocient s'ha de guardar a `t2` i el residu a `t3`.
+c) En quins casos concrets pot produir-se sobreeiximent en una divisió entera signada en Ca2?
 :::
 
 ## Matrius
@@ -146,6 +141,8 @@ c) `mat[3][j]`
 d) `mat[i][j]`
 e) `mat[i+5][j-1]`
 f) `mat[i*10+4][6]`
+
+*Vegeu @eq-acces-aleatori-matriu.*
 :::
 
 ::: {#exr-p5-matrius-funcio}
@@ -508,6 +505,8 @@ fi:
 a) Identifica quantes instruccions s'executen per iteració i calcula el temps total en cicles per a $N$ iteracions (usa el model de costos: memòria = 4 cicles, salt pres = 2, salt no pres = 1, resta = 1).
 b) Aplica l'optimització de condició al final del bucle (*do-while*). Escriu la versió optimitzada i calcula de nou el temps total.
 c) Quina reducció percentual del temps s'obté per a $N = 100$?
+
+*Vegeu @sec-opt-condicio-final.*
 :::
 
 ::: {#exr-p5-opt-variable-induccio}
@@ -522,4 +521,29 @@ El bucle `for (i = 0; i < N; i++) w[i] = v[i] * 2;` es pot optimitzar eliminant 
 a) Escriu la versió assemblador RISC-V **sense** l'optimització (usant `i` explícitament).
 b) Aplica l'eliminació de la variable d'inducció: usa dos punters que avancin directament i elimina tots els càlculs d'adreça. Escriu la versió optimitzada.
 c) Combina les dues optimitzacions anteriors (condició al final + eliminació IV). Quantes instruccions té el cos del bucle resultant?
+
+*Vegeu @sec-opt-acces-sequencial, @sec-opt-condicio-final i @sec-opt-eliminacio-induccio.*
+:::
+
+## Divisió
+
+::: {#exr-p5-div-algorisme}
+Donat el diagrama del divisor seqüencial de naturals de 32 bits amb restauració estudiat a classe, que calcula el quocient i el residu, completa l'algorisme iteratiu que en descriu el funcionament cicle a cicle.
+
+*Vegeu @thm-divisio-sequencial-restauracio.*
+:::
+
+::: {#exr-p5-div-passos}
+Seguint el circuit divisor seqüencial amb restauració, descriu els passos per a la divisió dels naturals de 6 bits $X$ (dividend) entre $Y$ (divisor), calculant en cada pas el valor dels registres $Q$, $D$ i $R$ en binari:
+
+a) $X =$ `101000`, $Y =$ `010011`.
+b) $X =$ `010101`, $Y =$ `100100`.
+
+*Vegeu @thm-divisio-sequencial-restauracio i @tip-seguiment-divisio.*
+:::
+
+::: {#exr-p5-div-programa}
+Seguint el mateix algorisme del circuit divisor, i sense usar cap instrucció de multiplicació ni divisió, escriu un programa en assemblador RISC-V que calculi el quocient i el residu de la divisió de dos naturals de 32 bits guardats als registres `t3` i `t1`. El quocient s'ha de guardar a `t2` i el residu a `t3`.
+
+*Vegeu @thm-divisio-sequencial-restauracio.*
 :::

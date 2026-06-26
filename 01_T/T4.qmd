@@ -9,7 +9,7 @@ number-sections: true
 Les instruccions de **suma** (`add`) i **resta** (`sub`) d'enters ja s'han introduït a @nte-instruccions-aritmetica-entera-rv32i; aquí se'n reprèn l'ús per estudiar-ne el **sobreeiximent** i per definir el **canvi de signe**.
 
 ::: {#nte-pseudoinstruccio-neg .callout-note}
-## Pseudoinstrucció — `neg` (canvi de signe) {#sec-pseudoinstruccio-neg-canvi-de-signe}
+## Pseudoinstrucció — `neg` (canvi de signe)
 
 El **canvi de signe** d'un registre s'obté amb la pseudoinstrucció `neg`:
 
@@ -18,11 +18,15 @@ El **canvi de signe** d'un registre s'obté amb la pseudoinstrucció `neg`:
 {{< include ../11_riscv/RV32I_pseudo_neg.qmd >}}
 :::
 
-Gràcies a l'equivalència entre la resta la resta i la suma amb el negatiu del subtrahend, el maquinari necessita **un sol circuit** per a la suma i la resta (@sec-suma-resta-i-canvi-de-signe).
+Gràcies a l'equivalència entre la resta i la suma amb el negatiu del subtrahend, el maquinari necessita **un sol circuit** per a la suma i la resta (@sec-suma-resta-i-canvi-de-signe).
 
 ## Sobreeiximent en suma i resta d'enters {#sec-suma-resta-enters}
 
 El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$ (@eq-rang-ca2). Es produeix **sobreeiximent** (***overflow***) en una operació quan el resultat exacte no pertany a aquest rang; en aquest cas, el resultat calculat amb $n$ bits no és correcte.
+
+::: {#cau-ec-no-overflow .callout-caution}
+A **RV32I**, les operacions de suma i resta **ignoren** el sobreeiximent: el resultat és simplement els 32 bits de menys pes de l'operació, independentment de si és correcte en el rang dels enters representables.
+:::
 
 ### Condicions de sobreeiximent {#sec-condicions-de-sobreeiximent}
 
@@ -31,7 +35,7 @@ Per a la **suma** $s = a + b$, es produeix sobreeiximent **si i només si els do
 Per a la **diferència** $d = a - b$, es produeix sobreeiximent **si i només si la diferència és del mateix signe que el subtrahend $b$ però de signe diferent que el minuend $a$**.
 
 ::: {#wrn-sobreeiximent-demostracio .callout-warning collapse=true}
-## Demostració de les condicions de sobreeiximent en Ca2 {#sec-demostracio-de-les-condicions-de-sobreeiximent-en-ca2}
+## Demostració de les condicions de sobreeiximent en Ca2
 
 Considerem la suma exacta $s = a + b$, on $a$ i $b$ estan representats per les cadenes de bits $A = A_{n-1}\ldots A_0$ i $B = B_{n-1}\ldots B_0$. La suma exacta sempre es pot representar amb $n+1$ bits com $S = S_n\,S_{n-1}\ldots S_0$.
 
@@ -52,7 +56,7 @@ v = c_{n-1} \oplus c_n
 $$ {#eq-sobreeiximent-hardware}
 
 ::: {#wrn-sobreeiximent-maquinari .callout-warning collapse=true}
-## Detecció de sobreeiximent per maquinari: el sumador amb propagació de l'arrossegament {#sec-deteccio-de-sobreeiximent-per-maquinari-el-sumador-amb-propagacio-de-larrossegament}
+## Detecció de sobreeiximent per maquinari: el sumador amb propagació de l'arrossegament
 
 Un sumador de $n$ bits es construeix amb una cadena de $n$ **sumadors complets** (*full-adders*). Cada sumador complet rep el bit $a_i$, el bit $b_i$ i el bit d'arrossegament d'entrada (*carry-in*) $c_i$, i produeix el bit de suma $s_i = a_i \oplus b_i \oplus c_i$ i el bit d'arrossegament de sortida (*carry-out*) $c_{i+1} = (a_i \oplus b_i) \land c_i \lor a_i \land b_i$.
 
@@ -73,7 +77,7 @@ $$ {#eq-sobreeiximent-software}
 és a dir, sobreeiximent si els operands **tenen el mateix signe** i el resultat **té signe diferent**.
 
 ::: {#tip-sobreeiximent-programari .callout-tip}
-## Càlcul de la condició de sobreeiximent per programari {#sec-calcul-de-la-condicio-de-sobreeiximent-per-programari}
+## Càlcul de la condició de sobreeiximent per programari
 
 Suposant que els enters `a`, `b`, `s` estan a `t0`, `t1`, `t2`, i que s'ha
 executat `add t2, t0, t1`:
@@ -107,7 +111,7 @@ L'algorisme per calcular el producte $z = x \times y$ d'enters és:
 Per multiplicar dos naturals en base 2, s'obtenen tants **productes parcials** com bits té el multiplicador: el producte parcial $i$ és el multiplicand desplaçat $i$ posicions a l'esquerra si el bit $i$ del multiplicador és 1, o zero si és 0. La suma de tots els productes parcials és el resultat.
 
 ::: {#tip-multiplicacio-naturals .callout-tip}
-## Algorisme de multiplicació de naturals en base 2 {#sec-algorisme-de-multiplicacio-de-naturals-en-base-2}
+## Algorisme de multiplicació de naturals en base 2
 
 Multiplicar $x = 1010_2$ ($10_{10}$) per $y = 1101_2$ ($13_{10}$):
 
@@ -170,7 +174,7 @@ z = P
 :::
 
 ::: {#tip-seguiment-multiplicacio .callout-tip}
-## Seguiment del circuit multiplicador (4 bits) {#sec-seguiment-del-circuit-multiplicador-4-bits}
+## Seguiment del circuit multiplicador (4 bits)
 
 Multiplicar $x = 1010_2$ per $y = 1101_2$:
 
@@ -188,7 +192,7 @@ Resultat: $P = 10000010_2 = 130_{10}$ ✓
 Aquest circuit tarda un mínim de 33 cicles per obtenir el producte (32 iteracions més la inicialització).
 
 ::: {#wrn-circuit-multiplicacio-combinacional .callout-warning collapse=true}
-## Circuit combinacional de multiplicació {#sec-circuit-combinacional-de-multiplicacio}
+## Circuit combinacional de multiplicació
 
 Una alternativa al circuit seqüencial és un **circuit combinacional** que calcula tots els productes parcials en paral·lel i els suma amb una cadena de sumadors:
 
@@ -222,7 +226,7 @@ Com s'ha vist a @sec-multiplicacio-potencies-2, `slli` permet multiplicar per po
 Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv): l'extensió **M** (@sec-extensio-m-t2) afegeix instruccions de multiplicació i divisió entera per maquinari. Per activar-la, cal afegir `m` al paràmetre `-march` del compilador: `-march=rv32im`.
 
 ::: {#nte-rv32im-instruccions-multiplicacio .callout-note}
-## RV32IM ISA — Instruccions de multiplicació entera {#sec-rv32im-isa-instruccions-de-multiplicacio-entera}
+## RV32IM ISA — Instruccions de multiplicació entera
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
@@ -231,7 +235,7 @@ Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv
 :::
 
 ::: {#tip-exemple-mul .callout-tip}
-## Ús de `mul` {#sec-us-de-mul}
+## Ús de `mul`
 
 ```{.c filename="C"}
 int a = 5, b = 6, c;
@@ -255,7 +259,7 @@ Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters 
 - En **enters** (`mulh`): hi ha sobreeiximent si el resultat de `mulh` no és l'extensió de signe del resultat de `mul`.
 
 ::: {#tip-sobreeiximent-multiplicacio .callout-tip}
-## Detecció de sobreeiximent en la multiplicació entera {#sec-deteccio-de-sobreeiximent-en-la-multiplicacio-entera}
+## Detecció de sobreeiximent en la multiplicació entera
 
 ```{.c filename="C"}
 int a, b, s;
@@ -359,7 +363,7 @@ A **EC**, en els càlculs d'adreces amb multiplicacions per constants que no só
 :::
 
 ::: {#tip-matriu-acces-ij .callout-tip}
-## Accés a `mat[i][j]` — índexs variables {#sec-acces-a-mat-i-j-indexs-variables}
+## Accés a `mat[i][j]` — índexs variables
 
 ```{.c filename="C"}
 int mat[NF][NC];
@@ -384,7 +388,7 @@ Suposant que `i`, `j`, `k` ocupen `t0`, `t1`, `t2`:
 :::
 
 ::: {#tip-matriu-acces-col-cte .callout-tip}
-## Accés a `mat[i][j]` — columna constant {#sec-acces-a-mat-i-j-columna-constant}
+## Accés a `mat[i][j]` — columna constant
 
 Si la columna `j` és una constant (aquí `j = 5`):
 
@@ -404,7 +408,7 @@ El terme `5*T` és un invariant que el compilador pot incorporar directament a l
 :::
 
 ::: {#tip-matriu-acces-fila-cte .callout-tip}
-## Accés a `mat[i][j]` — fila constant {#sec-acces-a-mat-i-j-fila-constant}
+## Accés a `mat[i][j]` — fila constant
 
 Si la fila `i` és una constant (aquí `i = 3`):
 
@@ -423,7 +427,7 @@ El terme `3*NC*T` és un invariant incorporable a l'adreça base, i l'escalat de
 :::
 
 ::: {#tip-matriu-acces-fila-col-ctes .callout-tip}
-## Accés a `mat[i][j]` — fila i columna constants {#sec-acces-a-mat-i-j-fila-i-columna-constants}
+## Accés a `mat[i][j]` — fila i columna constants
 
 Si tant la fila com la columna són constants, tota l'adreça és un invariant calculable en temps de compilació:
 
@@ -462,7 +466,7 @@ Això elimina el producte `i*T` del càlcul d'adreça i el substitueix per una s
 3. A cada iteració: accedir a l'element desreferenciant `p`, i sumar-li    l'stride per avançar al següent.
 
 ::: {#tip-opt1-sequencial .callout-tip}
-## Optimització #1 — Accés seqüencial aplicat a una fila de matriu {#sec-optimitzacio-1-acces-sequencial-aplicat-a-una-fila-de-matriu}
+## Optimització #1 — Accés seqüencial aplicat a una fila de matriu
 
 Considerem la funció que posa a zero una fila d'una matriu:
 
@@ -535,7 +539,7 @@ while (condició) {          if (condició)
 ```
 
 ::: {#tip-opt2-condicio-final .callout-tip}
-## Optimització #2 — Avaluació de la condició al final {#sec-optimitzacio-2-avaluacio-de-la-condicio-al-final}
+## Optimització #2 — Avaluació de la condició al final
 
 Partint de la versió amb accés seqüencial (#1):
 
@@ -568,7 +572,7 @@ Com que es comparen **adreces** (naturals sense signe), cal usar `bgeu` / `bltu`
 :::
 
 ::: {#tip-opt3-eliminacio-induccio .callout-tip}
-## Optimització #3 — Eliminació de la variable d'inducció {#sec-optimitzacio-3-eliminacio-de-la-variable-dinduccio}
+## Optimització #3 — Eliminació de la variable d'inducció
 
 Partint de la versió amb #1 i #2:
 
@@ -617,7 +621,7 @@ Recorreguts de matrius, `mat[4][5]` a dalt i `mat[4][4]` a baix, i els strides c
 :::
 
 ::: {#tip-sumacolumna-aleatori .callout-tip}
-## `sumacolumna` — accés aleatori {#sec-sumacolumna-acces-aleatori}
+## `sumacolumna` — accés aleatori
 
 ```{.c filename="C"}
 short sumacolumna(short mat[][NC], int col, int nfiles) {
@@ -655,7 +659,7 @@ fifor:
 :::
 
 ::: {#tip-sumacolumna-sequencial .callout-tip}
-## `sumacolumna` — accés seqüencial (optimitzacions #1, #2 i #3) {#sec-sumacolumna-acces-sequencial-optimitzacions-1-2-i-3}
+## `sumacolumna` — accés seqüencial (optimitzacions #1, #2 i #3)
 
 L'stride per recórrer una columna és $\texttt{NC} \cdot T = \texttt{NC} \cdot 2$.
 
@@ -702,7 +706,7 @@ desplaçat $i$ posicions a l'esquerra: si el dividend parcial és major o igual,
 parcial; si no, $q_i = 0$ i el dividend parcial no canvia.
 
 ::: {#tip-divisio-naturals .callout-tip}
-## Algorisme de divisió de naturals en base 2 {#sec-algorisme-de-divisio-de-naturals-en-base-2}
+## Algorisme de divisió de naturals en base 2
 
 Dividir $D = 1011_2$ ($11_{10}$) entre $d = 0010_2$ ($2_{10}$):
 
@@ -767,7 +771,7 @@ w = R[n-1:0]    // residu
 :::
 
 ::: {#tip-seguiment-divisio .callout-tip}
-## Seguiment del circuit divisor (4 bits) {#sec-seguiment-del-circuit-divisor-4-bits}
+## Seguiment del circuit divisor (4 bits)
 
 Dividir $x = 1011_2$ entre $y = 0010_2$:
 
@@ -787,7 +791,7 @@ Quocient: $Q = 0101_2 = 5_{10}$, residu: $R[3:0] = 0001_2 = 1_{10}$ ✓
 L'extensió **M** proporciona quatre instruccions de divisió entera:
 
 ::: {#nte-rv32im-instruccions-divisio .callout-note}
-## RV32IM ISA — Instruccions de divisió entera {#sec-rv32im-isa-instruccions-de-divisio-entera}
+## RV32IM ISA — Instruccions de divisió entera
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
@@ -808,10 +812,10 @@ Això **difereix** de la divisió euclidiana, on el residu és sempre no negatiu
 #### Casos especials {#sec-casos-especials}
 
 - **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
-- **sobreeiximent enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
+- **Sobreeiximent en enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
 
 ::: {#tip-divisio-exemple .callout-tip}
-## Traducció de divisió i mòdul enters {#sec-traduccio-de-divisio-i-modul-enters}
+## Traducció de divisió i mòdul enters
 
 ```{.c filename="C"}
 int a, b, q, r;
