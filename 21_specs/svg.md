@@ -276,6 +276,8 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | Dependències de dades — resultat intermedi | — | `#cc0000` |
 | Miss (fallada de MC) — etiqueta de resultat | — | `#dc3545` |
 | Hit (encert de MC) — etiqueta de resultat   | — | `#198754` |
+| Miss (zona de bloc) — fons de cel·la MC/MP  | `#f8d0d3` | `#dc3545` |
+| Hit (zona de bloc) — fons de cel·la MC/MP   | `#c8ebd8` | `#198754` |
 
 ---
 
@@ -408,6 +410,10 @@ REPLACEMENTS = [
     ('#000000', '#adb5bd'),  # línies i text negre implícit → gris clar
     ('#ffffff', '#2d2d2d'),  # fons blanc de zones internes → gris molt fosc
     ('#b3b3b3', '#666666'),  # gris mig (p. ex. barres de tc/tc') → gris fosc llegible
+    ('#f8d0d3', '#3d1a1e'),  # Miss zona bloc (vermell clar → fosc)
+    ('#dc3545', '#f07080'),  # Miss zona bloc stroke
+    ('#c8ebd8', '#1a3328'),  # Hit zona bloc (verd clar → fosc)
+    ('#198754', '#70c898'),  # Hit zona bloc stroke
 ]
 ```
 
