@@ -611,89 +611,10 @@ $$\underbrace{0110\,0100}_{+100} + \underbrace{0101\,0000}_{+80} = \underbrace{1
 
 El resultat $1011\,0100_2$ s'interpreta com a $-76$ en Ca2, no com a $+180$. Els dos operands eren positius i el resultat sembla negatiu: **sobreeiximent**.
 :::
-::: {#tip-suma-ca2-mono .callout-tip}
-## Suma en Ca2 — visualització bit a bit
-
-Els mateixos exemples amb la fila d'**arrossegament** (*carry*) explícita:
-
-**Sense sobreeiximent**: $45 + 30 = 75$
-
-```
-  Arrosseg.:  0 1 1 1 1 0 0 0
-              0 0 1 0 1 1 0 1   (+45)
-            + 0 0 0 1 1 1 1 0   (+30)
-            ─────────────────
-              0 1 0 0 1 0 1 1   (+75) ✓
-```
-
-**Amb sobreeiximent**: $100 + 80$
-
-```
-  Arrosseg.:  1 0 0 0 0 0 0 0
-              0 1 1 0 0 1 0 0   (+100)
-            + 0 1 0 1 0 0 0 0   (+80)
-            ─────────────────
-              1 0 1 1 0 1 0 0   (−76 en Ca2, no +180)
-```
-
-L'arrossegament entra al bit de signe (posició 7) però **no en surt**: aquesta asimetria és exactament la condició de sobreeiximent detectable per maquinari.
-:::
-
-
-
-### Inversió de signe {#sec-inversio-signe}
-
-Per obtenir l'**invers** d'un enter en Ca2 s'aplica la regla següent: complementar tots els bits i sumar 1.
-
-$$-x \quad\Rightarrow\quad \overline{\text{Ca2}(x)} + 1 \pmod{2^n}$$ {#eq-inversio-signe}
-
-La regla és la seva pròpia inversa: aplicar-la dues vegades retorna el valor original.
-
-::: {#tip-inversio-signe .callout-tip}
-## Inversió de signe
-
-**Primera inversió** — de $-45$ a $+45$:
-
-```
-  Original:   1101 0011   (−45)
-  Complement: 0010 1100
-            +          1
-            ───────────
-  Resultat:   0010 1101   (+45) ✓
-```
-
-**Segona inversió** — de $+45$ de tornada a $-45$:
-
-```
-  Original:   0010 1101   (+45)
-  Complement: 1101 0010
-            +          1
-            ───────────
-  Resultat:   1101 0011   (−45) ✓
-```
-
-Aplicar la inversió dues vegades retorna el valor inicial.
-:::
-
-::: {#wrn-inversio-limit .callout-warning collapse="true"}
-## Aprofundiment: el cas límit $-2^{n-1}$
-
-El valor mínim de Ca2 ($-2^{n-1}$, representat com $1000\ldots0$) **no té invers representable** en $n$ bits. Aplicant la regla:
-
-```
-  Original:   1000 0000   (−128)
-  Complement: 0111 1111
-            +          1
-            ───────────
-  Resultat:   1000 0000   (−128)  ← sobreeiximent: el resultat és el mateix!
-```
-
-El valor $+128$ requeriria $n+1$ bits per ser representat en Ca2. És l'única excepció del format.
-:::
 
 ### Resta en Ca2 {#sec-resta-ca2}
 
-La resta s'implementa com una suma amb el **negatiu del subtrahend** (vegeu @sec-inversio-signe per a la regla d'inversió de signe).
+La resta s'implementa com una suma amb el **negatiu del subtrahend**. Per negar un nombre en Ca2 s'aplica la **regla del canvi de signe**: complementar tots els bits i sumar 1.
 
 $$a - b \equiv a + (-b) \quad\Rightarrow\quad \text{Ca2}(a) + \text{Ca2}(-b) \pmod{2^n}$$ {#eq-resta-ca2}
 
@@ -716,35 +637,6 @@ $$\underbrace{1001\,1100}_{-100} + \underbrace{1101\,0011}_{-45} = \underbrace{0
 
 El resultat $0110\,1111_2 = +111$ en Ca2, no $-145$: **sobreeiximent** (dos operands negatius, resultat positiu).
 :::
-::: {#tip-resta-ca2-mono .callout-tip}
-## Resta en Ca2 — visualització bit a bit
-
-Els mateixos exemples amb la fila de **préstec** (*borrow*) explícita:
-
-**Sense sobreeiximent**: $45 - 30 = 15$
-
-```
-  Préstec:    0 0 1 1 1 1 0 0
-              0 0 1 0 1 1 0 1   (+45)
-            - 0 0 0 1 1 1 1 0   (+30)
-            ─────────────────
-              0 0 0 0 1 1 1 1   (+15) ✓
-```
-
-**Amb sobreeiximent**: $-100 - 45 = -145$
-
-```
-  Préstec:    0 0 0 0 0 0 1 0
-              1 0 0 1 1 1 0 0   (−100)
-            - 0 0 1 0 1 1 0 1   (+45)
-            ─────────────────
-              0 1 1 0 1 1 1 1   (+111 en Ca2, no −145)
-```
-
-Dos operands negatius i resultat positiu: **sobreeiximent**.
-:::
-
-
 
 ### Multiplicació en Ca2 {#sec-multiplicacio-ca2}
 
