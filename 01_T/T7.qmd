@@ -28,6 +28,21 @@ La RAM es pot implementar com a memòria estàtica (**SRAM**) o dinàmica (**DRA
 
 Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidament que la velocitat de la memòria principal. La @fig-gap-processador-memoria il·lustra aquesta divergència entre 1980 i 2010: mentre el rendiment dels processadors creixia a un ritme d'entre el 35% i el 55% anual, la latència de la DRAM millorava menys d'un 7% anual. El resultat és que el temps d'accés a la memòria principal pot arribar a ser de 200 a 400 cicles de CPU, és a dir, centenars de vegades superior al temps que tarda la resta d'operacions d'una instrucció (descodificació, lectura de registres, ALU, etc.). Aquesta diferència s'anomena ***gap*** entre processador i memòria.
 
+::: {#fig-gap-processador-memoria}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T7_gap_processador_memoria_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T7_gap_processador_memoria_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T7_gap_processador_memoria__extern_light.svg)
+:::
+Evolució del rendiment relatiu de processadors i memòria DRAM entre 1980 i 2010 (escala logarítmica). El creixement anual dels processadors (35–55%) supera àmpliament el de la latència de la DRAM (<7%), generant un *gap* de fins a dos ordres de magnitud.
+:::
+
 Per veure l'impacte d'aquest *gap* en el rendiment, apliquem la llei d'Amdahl (@sec-amdahl). Si $t_{acc}$ és el temps d'accés a la memòria principal i $t_{proc}$ el temps de la resta d'operacions d'una instrucció, el **CPI** és proporcional a $t_{proc} + t_{acc}$. Suposant $t_{acc} = 200 \cdot t_{proc}$, la fracció del temps d'execució que correspon al processament de la instrucció (sense l'accés a memòria) és:
 
 $$P_x = \frac{t_{proc}}{t_{proc} + t_{acc}} \approx 0{,}005$$
@@ -93,7 +108,6 @@ Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un
 La jerarquia de memòria: cada nivell conserva les dades del nivell inferior que tinguin més probabilitat de ser accedides.
 :::
 
-
 Cada nivell emmagatzema un subconjunt del contingut del nivell immediatament inferior. Quan el processador necessita una dada, la cerca primer al nivell més ràpid (la memòria cau); si no hi és, baixa al nivell següent, i així successivament. La **memòria cau** (**MC**) és el nom que rep el nivell que s'interposa entre el processador i la memòria principal; és la peça central d'aquest tema.
 
 A banda del rendiment, la memòria cau té també un impacte positiu en el **consum energètic**: com que la majoria dels accessos es resolen a la MC sense necessitat d'accedir a la memòria principal, el nombre total d'operacions que activen els circuits de la DRAM disminueix, i amb ell el factor d'activitat $\alpha$ de la fórmula de potència dinàmica $P_d = \alpha \cdot C \cdot V^2 \cdot f_{clock}$ (@sec-potencia-dinamica).
@@ -121,9 +135,9 @@ La MC no guarda dades soltes sinó **blocs** sencers de mida fixa $B$ bytes, on 
 
 Internament, la MC s'organitza com una taula. Cada entrada d'aquesta taula s'anomena **línia** i pot contenir un bloc de dades o estar buida. Per a cada línia, la MC emmagatzema tres elements:
 
-- Un **bit de validesa** ($V$): indica si la línia conté un bloc vàlid ($V=1$) o està buida ($V=0$).
-- Una **etiqueta** (*tag*): identifica quin bloc de la memòria principal és guardat a la línia. Està formada pels bits del número de bloc (o una part d'aquests, com es veurà a la @sec-politica-emplacament).
-- Les **dades** del bloc.
+- El **bit de validesa** ($V$, *validity bit*): indica si la línia conté un bloc vàlid ($V=1$) o està buida ($V=0$).
+- L'**etiqueta** (*tag* o *label*): identifica quin bloc de la memòria principal és guardat a la línia. Està formada pels bits del número de bloc (o una part d'aquests, com es veurà a la @sec-politica-emplacament).
+- Les **dades**: el contingut del bloc de memòria que s'ha copiat a la línia.
 
 ::: {#fig-mc-organitzacio}
 ::: {.content-visible when-format="html"}
@@ -137,12 +151,18 @@ Internament, la MC s'organitza com una taula. Cada entrada d'aquesta taula s'ano
 ::: {.content-visible when-format="pdf"}
 ![](/figs_auto/T7_mc_organitzacio__original_light.svg)
 :::
-Organització interna d'una memòria cau: cada línia conté un bit de validesa, una etiqueta i un bloc de dades.
+Organització interna d'una memòria cau de quatre línies. Cada línia conté un bit de validesa ($V$), una etiqueta i un bloc de dades.
 :::
 
-Per calcular el **número de bloc** i el **desplaçament** (posició de la dada dins el bloc, ***offset***) a partir d'una adreça $A$:
+El **número de bloc** (identificador de bloc) i el **desplaçament** (posició de la dada dins el bloc, ***offset***) s'obtenen partir de l'adreça $A$ de la dada a la memòria principal mitjançant la divisió i el mòdul de $B$, respectivament:
 
-$$\text{num\_bloc} = A \div B \qquad \text{offset} = A \bmod B$$
+::: {#eq-mc-numbloc-offset}
+$$\text{num\_bloc} = A \div B$$
+:::
+
+::: {#eq-mc-desplacament}
+$$\text{offset} = A \bmod B$$
+:::
 
 Com que $B = 2^b$, aquestes operacions es redueixen a una simple descomposició de bits: els $b$ bits de menys pes de $A$ són el desplaçament, i la resta és el número de bloc.
 
@@ -157,23 +177,6 @@ $$A = \underbrace{0001\,0000\,0000\,0001\,0000\,0000\,1111}_{\text{num\_bloc}
 Si l'accés és a un word de 4 bytes (`lw`), el **word offset** (posició del word dins el bloc) és:
 
 $$\text{word\_offset} = \text{offset} \div 4 = 2$$
-
-<!-- TODO fig-mc-exemple-descomposicio-32bits: descomposició dels 32 bits de l'adreça 0x100100F8 en num_bloc (28 bits) i offset (4 bits), i del offset en word_offset (2 bits) i byte dins el word (2 bits). Basada en la Figura 6.7 del PDF. Caption: "Descomposició dels bits d'una adreça de 32 bits en número de bloc i offset per a blocs de 16 bytes." -->
-::: {#fig-mc-exemple-descomposicio-32bits}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/figs_auto/T7_mc_exemple_descomposicio_32bits__extern_light.svg)
-:::
-::: {.dark-content}
-![](/figs_auto/T7_mc_exemple_descomposicio_32bits__extern_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/figs_auto/T7_mc_exemple_descomposicio_32bits__extern_light.svg)
-:::
-Descomposició dels bits de l'adreça `0x100100F8` en número de bloc (28 bits) i desplaçament (4 bits), i del desplaçament en word offset (2 bits) i byte dins el word (2 bits).
-:::
-:::
 
 ### Terminologia de rendiment {#sec-mc-terminologia}
 
@@ -507,14 +510,14 @@ Estat resultant: línia 0 conté el bloc 2 (`@8`–`@11`), línia 1 conté el bl
 ::: {#fig-escriptura-estat-inicial}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/figs_auto/T7_escriptura_estat_inicial__original_light.svg){width="100%"}
+![](/figs_auto/T7_escriptura_estat_inicial__mod_750__original_light.svg){width="100%"}
 :::
 ::: {.dark-content}
-![](/figs_auto/T7_escriptura_estat_inicial__original_dark.svg){width="100%"}
+![](/figs_auto/T7_escriptura_estat_inicial__mod_750__original_dark.svg){width="100%"}
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/figs_auto/T7_escriptura_estat_inicial__original_light.svg)
+![](/figs_auto/T7_escriptura_estat_inicial__mod_750__original_light.svg)
 :::
 Estat de la memòria cau al final de la seqüència inicial de 5 lectures, partint d'una MC buida. La línia 0 conté el bloc 2 (`@8`–`@11`) i la línia 1 conté el bloc 1 (`@4`–`@7`).
 :::

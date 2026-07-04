@@ -23,6 +23,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 - **Estudi previ de laboratori** (`L1.qmd`–`L6.qmd`): lliurar com a fitxers separats o integrat al `.qmd`?
 - **Plantilles Markdown** (`L2.qmd` i resta): posar-ne a tots excepte `L2.qmd`, o eliminar de `L2.qmd`?
 - **Descàrrega de `laboratori/`**: codi encastat per C&P o fitxers descarregables?
+- **Figures portades d'extern**: afegir font (dels PDF n'hi ha que són del Patterson -e.g. T7 MC)
 
 ---
 
@@ -58,6 +59,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 - **P7** — Alinear l'ordre de la taula de codificacions especials amb el de les subseccions.
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
 - **`#cau-underflow`**: opcionalment reanomenar a `#cau-subdesbordament` (cosmètic; no referenciat).
+- Explicar perquè quantitat de denormals 2·(2^(23)-1) v.s. qualsevol rang normalitzat 2·2^(23) Nota: `2·` és per les dues opcions del bit de signe. L'explicació està a draw.io
+- Assegurar que es diu que en denormals bit ocult és o
 
 ### T6
 
@@ -65,27 +68,28 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
 ### T7 — Figures pendents de creació
 
-Referència d'estil: `T7_mc_organitzacio` (taules), `T7_cd_descomposicio_bits` (bits), `T7_mc_encert` (diagrames CPU/MC/MP).
+~~`fig-escriptura-estat-inicial`, `fig-escriptura-immediata-amb-assignacio`, `fig-escriptura-immediata-sense-assignacio`, `fig-escriptura-retardada`, `fig-lru-exemple`, `fig-assoc-conjunts-taula`, `fig-conflicte-exemple`, `fig-capacitat-exemple-bucle-primera-passada`, `fig-capacitat-exemple-bucle-segona-passada`, `fig-gap-processador-memoria`~~ → ✓ Generades i integrades a `T7.qmd`.
+
+Figures pendents (totes requereixen LO Draw de Roger):
 
 | Figura | Descripció | Notes |
 | :--- | :--- | :--- |
-| `fig-mc-exemple-descomposicio-32bits` | Taula MC (V, Etiqueta, Bloc de dades) per a `0x100100F8` dins `@tip-mc-numbloc` | Basar-se en `T7_mc_organitzacio` |
-| `fig-cd-diagrama` | Diagrama blocs MC correspondència directa | 🔴 Referència trencada |
-| `fig-assoc-conjunts-diagrama` | Diagrama blocs MC associativa per conjunts | 🔴 Referència trencada |
-| `fig-ca-diagrama` | Diagrama blocs MC completament associativa | 🔴 Referència trencada |
-| `fig-texe-diagrama` | Diagrama temporal lw/addu/lw (etapes F/D/R/A/M/W) | 🔴 Referència trencada |
-| `fig-lru-exemple` | Evolució estat MC (conjunt 1, 2 vies) als 4 accessos LRU | Possible mosca `fig-lru-roger` |
-| `fig-lru-roger` | Màquina d'estats LRU | SVG natiu; pot anar com a mosca |
-| `fig-assoc-conjunts-taula` | Taula 4 conjunts × 3 vies | |
-| `fig-escriptura-estat-inicial` | Estat MC 5 lectures inicials | |
-| `fig-escriptura-immediata-assignacio` | | |
-| `fig-escriptura-immediata-sense-assignacio` | | |
-| `fig-escriptura-retardada` | Inclou columna D (dirty bit) | |
-| `fig-tres-c-barres` | Gràfic % fallades vs. associativitat | |
-| `fig-conflicte-exemple` | Taula estat MC exemple conflicte | |
-| `fig-capacitat-exemple` | Taula estat MC exemple capacitat | |
-| `fig-multinivell-diagrama` | CPU→L1→L2→MP | |
-| `fig-multinivell-multicore` | Xip 4 nuclis L1/L2/L3 | |
+| `fig-mc-exemple-descomposicio-32bits` | Descomposició 32 bits adreça `0x100100F8` | Export LO Draw existent a `13_figs_externes`; reconstruir com a natiu |
+| `fig-cd-diagrama` | Diagrama blocs MC correspondència directa | 🔴 Referència trencada · LO Draw pendent |
+| `fig-assoc-conjunts-diagrama` | Diagrama blocs MC associativa per conjunts | 🔴 Referència trencada · LO Draw pendent |
+| `fig-ca-diagrama` | Diagrama blocs MC completament associativa | 🔴 Referència trencada · LO Draw pendent |
+| `fig-texe-diagrama` | Diagrama temporal lw/addu/lw (etapes F/D/R/A/M/W) | 🔴 Referència trencada · Referència: PDF pàg. 24 |
+| `fig-lru-roger` | Màquina d'estats LRU | Ja inclosa dins `T7_lru_exemple.svg`; decidir si cal figura independent |
+| `fig-multinivell-diagrama` | CPU→L1→L2→MP | LO Draw pendent |
+| `fig-multinivell-multicore` | Xip 4 nuclis L1/L2/L3 | LO Draw pendent |
+
+Decisions obertes de T7:
+- 🔵 **`fig-capacitat-exemple` a HTML**: dues figures separades (primera+segona passada) o figura única combinada? Pendent de decisió.
+- ~~`fig-tres-c-barres`~~ → ✓ Descartada (gràfic de dades sense valors numèrics disponibles).
+
+Colors nous afegits a `21_specs/svg.md` en aquest xat:
+- Miss zona bloc: `#f8d0d3` / `#dc3545` (light/stroke) · `#3d1a1e` / `#f07080` (dark)
+- Hit zona bloc: `#c8ebd8` / `#198754` (light/stroke) · `#1a3328` / `#70c898` (dark)
 
 ### T8 — Figures pendents de creació
 
