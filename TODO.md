@@ -136,14 +136,14 @@ Colors nous afegits a `21_specs/svg.md` en aquest xat:
 | T1 | Mínim Ca2 en 13 bits (`exr-p1-enters-minim13`) | ✓ Resolt a `PS_T1.qmd` |
 | T1 | Màxim Ca2 en 13 bits (`exr-p1-enters-maxim13`) | ✓ Resolt a `PS_T1.qmd` |
 | T1 | Divisió en Ca2: quocient, residu i sobreeiximent (`exr-p1-aritm-divisio`) | ✓ Afegit i resolt a `PE_T1.qmd`/`PS_T1.qmd` |
-| T2 | *Little-endian*, ordre de bytes (`exr-p3-memoria-endianness`) | Pendent (Opus High Thinking) |
-| T2 | Cerca en vector, retorn −1 (`exr-p3-vectors-cerca`) | Pendent (Opus High Thinking) |
-| T2 | Aritmètica de punters sobre `short` (`exr-p3-vectors-punter-aritm`) | Pendent (Opus High Thinking) |
-| T2 | Còpia de string (`exr-p3-strings-copia`) | Pendent (Opus High Thinking) |
+| T2 | *Little-endian*, ordre de bytes (`exr-p3-memoria-endianness`) | ✓ Resolt a `PS_T2.qmd` |
+| T2 | Cerca en vector, retorn −1 (`exr-p3-vectors-cerca`) | ✓ Resolt a `PS_T2.qmd` |
+| T2 | Aritmètica de punters sobre `short` (`exr-p3-vectors-punter-aritm`) | ✓ Resolt a `PS_T2.qmd` |
+| T2 | Còpia de string (`exr-p3-strings-copia`) | ✓ Resolt a `PS_T2.qmd` |
 | T3 | `switch` amb salts encadenats i *jump table* (`exr-p4-bucles-switch`) | ✓ Resolt a `PS_T3.qmd` |
-| T3 | `exr-p4-compilacio-auipc`: expansió de `la`, rang ±2 GiB | Pendent (Opus High Thinking) |
-| T3 | `exr-p4-memoria-jalr`: tracing de `jalr` (resposta: 3 vegades) | Pendent (Opus High Thinking) |
-| T3 | `exr-p4-logica-rotacio` apartat b): rotació de 16 posicions | Pendent (Opus High Thinking) |
+| T3 | `exr-p4-compilacio-auipc`: expansió de `la`, rang ±2 GiB | ✓ Resolt a `PS_T3.qmd` |
+| T3 | `exr-p4-memoria-jalr`: tracing de `jalr` (resposta: 3 vegades) | ✓ Resolt a `PS_T3.qmd` |
+| T3 | `exr-p4-logica-rotacio` apartats a) i b): rotació d'1 i de 16 posicions | ✓ Resolt a `PS_T3.qmd` |
 
 ### `index.qmd`
 

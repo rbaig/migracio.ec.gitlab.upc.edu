@@ -98,7 +98,7 @@ La diferència entre els apartats b) i c) és l'última instrucció: `srli` ompl
 
 **d) Desplaçament lògic a l'esquerra de $n$ posicions ($n < 32$, $n$ a `t3`)**
 
-Els bits superiors de `t1` que "surten" per la part alta han d'entrar a `t2` per la part baixa. Per obtenir-los, cal desplaçar `t1` a la dreta `32 - n` posicions.
+Els bits superiors de `t1` que «surten» per la part alta han d'entrar a `t2` per la part baixa. Per obtenir-los, cal desplaçar `t1` a la dreta `32 - n` posicions.
 
 En RV32I, les instruccions de desplaçament usen els **5 bits de menys pes** de l'operand de desplaçament (mòdul 32). Això implica que si `n = 0`, `32 - n = 32` ≡ `0 (mod 32)`, de manera que `srl t5, t1, t4` desplaçaria 0 posicions en lloc de 32, donant un resultat incorrecte.
 
@@ -157,6 +157,46 @@ Simètric a l'apartat d): els bits inferiors de `t2` han d'entrar a `t1` per la 
         or      t1, t1, t5      # insereix els bits provinents de t2
         srl     t2, t2, t3      # desplaça t2 n posicions
 ```
+:::
+
+::: {#sol-p4-logica-rotacio .callout-tip}
+## Solució: rotació de bits
+
+**Enunciat**: @exr-p4-logica-rotacio.
+
+Notació: el contingut inicial de `t4` és `b31 b30 ... b1 b0`.
+
+**a)** Rotació a l'esquerra d'1 posició.
+
+Cal combinar dos desplaçaments amb un `or`: el desplaçament a l'esquerra d'1 posició mou tots els bits cap a l'esquerra (perd `b31` i deixa un `0` al bit 0), i el desplaçament lògic a la dreta de 31 posicions aïlla `b31` al bit 0:
+
+```{.s filename="RV32I"}
+        srli    t1, t4, 31      # t1 = 0 0 ... 0 b31
+        slli    t4, t4, 1       # t4 = b30 b29 ... b0 0
+        or      t4, t4, t1      # t4 = b30 b29 ... b0 b31
+```
+
+Contingut final: `b30 b29 ... b1 b0 b31`.
+
+**b)** Seguiment del codi.
+
+El bucle s'executa **16 vegades** (`t1` va de 16 a 0). A cada iteració:
+
+- `srli t4, t4, 1` desplaça `t4` una posició a la dreta (lògic: entra un `0` per l'esquerra).
+- `add t2, t2, t2` suma `t2` amb si mateix, és a dir, el duplica: equival a desplaçar-lo una posició a l'esquerra (@sec-multiplicacio-potencies-2).
+
+Després de les 16 iteracions:
+
+- `t4` = valor inicial desplaçat 16 posicions a la dreta: `0 0 ... 0 b31 b30 ... b16` (16 zeros seguits dels 16 bits de més pes).
+- `t2` = valor inicial desplaçat 16 posicions a l'esquerra: `b15 b14 ... b0 0 0 ... 0` (els 16 bits de menys pes seguits de 16 zeros).
+
+L'`or` final combina les dues meitats, que no se solapen:
+
+```{.default filename="t4 final"}
+b15 b14 ... b1 b0 b31 b30 ... b17 b16
+```
+
+El codi fa una **rotació de 16 posicions**: les dues meitats de 16 bits del registre s'intercanvien. Amb una rotació de 16 posicions sobre 32 bits, rotar a l'esquerra o a la dreta dona el mateix resultat.
 :::
 
 ## Sentències condicionals i bucles
@@ -502,6 +542,38 @@ fivi:
 **Anàlisi**: la funció recorre `vi` byte a byte fins al `'\0'`. Per a cada caràcter que no és un espai, en resta 32 (que és la diferència entre els codis ASCII de les minúscules i les majúscules corresponents, `'a' - 'A' = 32`) i el desa a `vo`, convertint-lo a majúscula. Els espais es copien sense modificar. El `'\0'` final s'escriu explícitament a `vo` després del bucle.
 :::
 
+::: {#sol-p4-memoria-jalr .callout-tip}
+## Solució: seguiment de `jalr`
+
+**Enunciat**: @exr-p4-memoria-jalr.
+
+Primer cal fixar les adreces de les instruccions. La pseudoinstrucció `la` s'expandeix en dues instruccions reals, `auipc` + `addi` (@nte-la-auipc). Suposant que el fragment comença a l'adreça $A$:
+
+| Adreça | Instrucció | Observacions |
+| :--- | :--- | :--- |
+| $A$ | `auipc ra, ...` | expansió de `la ra, etiq` |
+| $A + 4$ | `addi ra, ra, ...` | expansió de `la ra, etiq` |
+| $A + 8$ | `addi ra, ra, -4` | |
+| $A + 12$ | `jalr ra, 0(ra)` | `etiq` |
+
+Per tant, `etiq` $= A + 12$.
+
+Per fer el seguiment cal recordar la semàntica de `jalr rd, offset(rs1)`: l'adreça de destinació es calcula amb el valor **actual** de `rs1`, i **després** s'escriu `rd` ← PC + 4. Quan `rd` i `rs1` són el mateix registre (com aquí, `ra`), la lectura es fa abans de l'escriptura.
+
+Seguiment pas a pas:
+
+1. `la ra, etiq` → `ra` $= A + 12$.
+2. `addi ra, ra, -4` → `ra` $= A + 8$.
+3. **1a execució de `jalr`** (PC $= A + 12$): destinació $=$ `ra` $+\ 0 = A + 8$; `ra` ← PC $+\ 4 = A + 16$. Salta a $A + 8$, la instrucció `addi ra, ra, -4`.
+4. `addi ra, ra, -4` → `ra` $= A + 16 - 4 = A + 12$. El flux continua seqüencialment cap a $A + 12$.
+5. **2a execució de `jalr`** (PC $= A + 12$): destinació $= A + 12$ (salta a si mateixa!); `ra` ← $A + 16$.
+6. **3a execució de `jalr`** (PC $= A + 12$): destinació $=$ `ra` $= A + 16$; `ra` ← $A + 16$. Salta a $A + 16$, fora del fragment: l'execució continua amb el codi que segueixi.
+
+**Resposta**: **c)** la instrucció `jalr` s'executa **3 vegades**.
+
+Observeu que el resultat no depèn de quantes instruccions ocupi l'expansió de `la`: el primer `jalr` salta a `etiq` $- 4$, que és sempre la instrucció `addi ra, ra, -4` immediatament anterior.
+:::
+
 ## Subrutines: context i bloc d'activació
 
 ::: {#sol-p4-ba-funcioA .callout-tip}
@@ -578,6 +650,25 @@ A:
 
 ## Compilació, muntatge i càrrega
 
+::: {#sol-p4-compilacio-auipc .callout-tip}
+## Solució: expansió de `la` i rang del desplaçament
+
+**Enunciat**: @exr-p4-compilacio-auipc.
+
+**Quines instruccions?** `la rd, symbol` s'expandeix en `auipc` + `addi` (@nte-la-auipc):
+
+```{.s filename="RV32I"}
+        auipc   rd, hi_20(offset)     # rd ← PC + (hi_20(offset) << 12)
+        addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
+```
+
+on `offset = @symbol − PC` és la distància entre la instrucció `auipc` i el símbol.
+
+**Per què en calen dues?** Un desplaçament de 32 bits no cap en cap immediat de RV32I: el més gran és el de 20 bits del format U. Calen dues instruccions per construir els 32 bits: `auipc` aporta els 20 bits superiors (sumats al PC) i `addi` els 12 bits inferiors. Com en l'expansió de `li` amb `lui` + `addi`, si el bit 11 de `lo_12` val 1 cal incrementar `hi_20` en 1 per compensar l'extensió de signe d'`addi` (el mecanisme detallat és a @exr-p3-immediats-luiaddi).
+
+**Limitació del desplaçament**: l'expansió codifica un offset de 32 bits amb signe, $[-2^{31}, 2^{31}-1]$, de manera que el símbol ha de ser dins d'un rang de **±2 GiB** respecte al PC. En RV32I, on l'espai d'adreces és de 32 bits (4 GiB) i l'aritmètica d'adreces és mòdul $2^{32}$, aquest rang cobreix a la pràctica tot l'espai d'adreces; en arquitectures de 64 bits, en canvi, és una limitació real que obliga a usar altres mecanismes per a símbols més llunyans.
+:::
+
 ::: {#sol-p4-compilacio-relocacio .callout-tip}
 ## Solució: compilació separada i reubicació
 
@@ -621,7 +712,7 @@ En RV32I, les adreces de 32 bits no caben en un únic immediat de 12 bits. La ps
         addi    t0, t0, lo_12(offset) # t0 ← t0 + lo_12(offset)
 ```
 
-on `offset = @x − PC` és la distància entre la instrucció `auipc` i el símbol `x`. `auipc` usa els 20 bits superiors de l'offset i `addi` afegeix els 12 bits inferiors. D'aquesta manera es pot referenciar qualsevol adreça dins d'un rang de ±2 GB respecte al PC.
+on `offset = @x − PC` és la distància entre la instrucció `auipc` i el símbol `x`. `auipc` usa els 20 bits superiors de l'offset i `addi` afegeix els 12 bits inferiors. D'aquesta manera es pot referenciar qualsevol adreça dins d'un rang de ±2 GiB respecte al PC.
 
 La raó d'usar `auipc` (relatiu al PC) en lloc de `lui` (adreça absoluta) és que en un fitxer objecte reubicable les adreces absolutes no es coneixen fins a l'enllaçat. Amb adreces relatives al PC, l'offset entre la instrucció i el símbol és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació.
 :::

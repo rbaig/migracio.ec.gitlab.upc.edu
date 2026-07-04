@@ -80,6 +80,44 @@ Instrucció per instrucció:
 **Resposta**: `f = 2 * (g + h + i + j + 2)`
 :::
 
+### Constants i immediats
+
+::: {#sol-p3-immediats-luiaddi .callout-tip}
+## Solució: expansió de `lui` + `addi` i rang d'immediats
+
+**Enunciat**: @exr-p3-immediats-luiaddi.
+
+**a)** Seqüència per carregar `0xDEADBEEF` a `t0`.
+
+El valor `0xDEADBEEF` no cap en 12 bits, de manera que calen dues instruccions. Es divideix en:
+
+- **20 bits superiors** (`hi20`): `0xDEADB`
+- **12 bits inferiors** (`lo12`): `0xEEF` = `1110_1110_1111₂`
+
+El bit 11 de `lo12` val 1, de manera que `addi` aplicarà extensió de signe i restarà `0x111` (273 en positiu). Cal incrementar `hi20` en 1 per compensar:
+
+- `hi20` ajustat: `0xDEADB + 1 = 0xDEADC`
+- `lo12` com a enter de 12 bits amb signe: `0xEEF - 0x1000 = -273`
+
+```{.s filename="RV32I"}
+lui   t0, 0xDEADC      # t0 = 0xDEADC000
+addi  t0, t0, -273     # t0 = 0xDEADC000 - 273 = 0xDEADBEEF
+```
+
+Comprovació: `0xDEADC000 - 0x111 = 0xDEADBEEF` ✓
+
+**b)** Per què cal ajustar `hi20` quan el bit 11 de `lo12` val 1.
+
+`addi` fa **extensió de signe** de l'immediat de 12 bits. Si el bit 11 és 1, el valor s'interpreta com a enter negatiu: el valor efectiu és $lo_{12} - \texttt{0x1000}$ (en lloc de $lo_{12}$). Sense l'ajust, el resultat seria 0x1000 (4096) menys del valor desitjat.
+
+Per `0xDEADBEEF`: sense ajust, `lui t0, 0xDEADB` → `t0 = 0xDEADB000`; `addi t0, t0, 0xEEF` → l'extensió de signe interpreta `0xEEF` com $\texttt{0xEEF} - \texttt{0x1000} = -273$ → `0xDEADB000 - 273 = 0xDEADAEEF` ≠ `0xDEADBEEF`. Amb l'ajust `hi20 = 0xDEADC`: `0xDEADC000 - 273 = 0xDEADBEEF` ✓
+
+**c)** Rangs de valors.
+
+- **Amb una sola instrucció `addi`**: l'immediat és de 12 bits amb extensió de signe → rang $[-2048,\ 2047]$.
+- **Amb `lui` + `addi`**: `lui` carrega 20 bits als bits [31:12]; `addi` afegeix fins a 12 bits amb signe. El rang cobert és $[-2^{31},\ 2^{31}-1]$, és a dir, tots els enters representables en 32 bits.
+:::
+
 ### Operands en memòria
 
 ::: {#sol-p3-memoria-lw-sw .callout-tip}
@@ -144,7 +182,36 @@ Memòria modificada: `M[0x10010008..0x1001000B] = 04 05 06 07`.
 | `sw t4, 0(t2)` | `M[0x10010008]` | `04 05 06 07` |
 :::
 
-### Constants i immediats
+::: {#sol-p3-memoria-endianness .callout-tip}
+## Solució: *little-endian* i ordre dels bytes
+
+**Enunciat**: @exr-p3-memoria-endianness.
+
+**a)** Significat de *little-endian*.
+
+En una arquitectura *little-endian*, el byte de **menys pes** (LSB) d'una dada de més d'un byte s'emmagatzema a l'adreça **més baixa**, i el byte de **més pes** (MSB) a l'adreça més alta (vegeu @sec-endianness). Per a un enter de 32 bits, doncs, els 4 bytes s'emmagatzemen en l'ordre invers al que s'escriu el valor en hexadecimal: el parell de dígits de la dreta (LSB) ocupa la primera adreça, i així successivament.
+
+**b)** `int x = 0x12345678` a partir de `0x10010000`.
+
+Els bytes del valor, del MSB al LSB, són `12 34 56 78`. En *little-endian* s'emmagatzemen començant pel LSB:
+
+| Adreça | Contingut | Byte |
+| :--- | :---: | :--- |
+| `0x10010000` | `78` | LSB |
+| `0x10010001` | `56` | |
+| `0x10010002` | `34` | |
+| `0x10010003` | `12` | MSB |
+
+**c)** Valor de `t1`.
+
+`lb t1, 0(t0)` llegeix **un sol byte** de l'adreça `0x10010000`, que en *little-endian* conté el byte de menys pes de `x`: `0x78`. El bit 7 de `0x78` és 0, de manera que l'extensió de signe afegeix zeros:
+
+`t1 = 0x00000078`
+
+**d)** Resultat en *big-endian*.
+
+En *big-endian*, l'adreça més baixa (`0x10010000`) contindria el byte de **més pes**: `0x12`. La mateixa instrucció retornaria `t1 = 0x00000012` (el bit 7 de `0x12` també és 0). El mateix codi pot produir, doncs, resultats diferents segons l'*endianness* de la màquina quan s'accedeix a fragments d'una dada de més d'un byte.
+:::
 
 ::: {#sol-p3-memoria-lb-lh .callout-tip}
 ## Solució: instruccions de càrrega i emmagatzematge de byte i mig paraula
@@ -208,44 +275,6 @@ Estat final de la memòria:
 | Adreça | `+0` | `+1` | `+2` | `+3` |
 | :--- | :---: | :---: | :---: | :---: |
 | `0x10010000` | `11` | `CC` ← | `CC` | `DD` |
-:::
-
-### Constants i immediats
-
-::: {#sol-p3-immediats-luiaddi .callout-tip}
-## Solució: expansió de `lui` + `addi` i rang d'immediats
-
-**Enunciat**: @exr-p3-immediats-luiaddi.
-
-**a)** Seqüència per carregar `0xDEADBEEF` a `t0`.
-
-El valor `0xDEADBEEF` no cap en 12 bits, de manera que calen dues instruccions. Es divideix en:
-
-- **20 bits superiors** (`hi20`): `0xDEADB`
-- **12 bits inferiors** (`lo12`): `0xEEF` = `1110_1110_1111₂`
-
-El bit 11 de `lo12` val 1, de manera que `addi` aplicarà extensió de signe i restarà `0x111` (273 en positiu). Cal incrementar `hi20` en 1 per compensar:
-
-- `hi20` ajustat: `0xDEADB + 1 = 0xDEADC`
-- `lo12` com a enter de 12 bits amb signe: `0xEEF - 0x1000 = -273`
-
-```{.s filename="RV32I"}
-lui   t0, 0xDEADC      # t0 = 0xDEADC000
-addi  t0, t0, -273     # t0 = 0xDEADC000 - 273 = 0xDEADBEEF
-```
-
-Comprovació: `0xDEADC000 - 0x111 = 0xDEADBEEF` ✓
-
-**b)** Per què cal ajustar `hi20` quan el bit 11 de `lo12` val 1.
-
-`addi` fa **extensió de signe** de l'immediat de 12 bits. Si el bit 11 és 1, el valor s'interpreta com a enter negatiu: el valor efectiu és $lo_{12} - \texttt{0x1000}$ (en lloc de $lo_{12}$). Sense l'ajust, el resultat seria 0x1000 (4096) menys del valor desitjat.
-
-Per `0xDEADBEEF`: sense ajust, `lui t0, 0xDEADB` → `t0 = 0xDEADB000`; `addi t0, t0, 0xEEF` → l'extensió de signe interpreta `0xEEF` com $\texttt{0xEEF} - \texttt{0x1000} = -273$ → `0xDEADB000 - 273 = 0xDEADAEEF` ≠ `0xDEADBEEF`. Amb l'ajust `hi20 = 0xDEADC`: `0xDEADC000 - 273 = 0xDEADBEEF` ✓
-
-**c)** Rangs de valors.
-
-- **Amb una sola instrucció `addi`**: l'immediat és de 12 bits amb extensió de signe → rang $[-2048,\ 2047]$.
-- **Amb `lui` + `addi`**: `lui` carrega 20 bits als bits [31:12]; `addi` afegeix fins a 12 bits amb signe. El rang cobert és $[-2^{31},\ 2^{31}-1]$, és a dir, tots els enters representables en 32 bits.
 :::
 
 ### Representació de naturals i enters
@@ -550,6 +579,75 @@ w:      .space 40       # int w[10]
 ```
 :::
 
+::: {#sol-p3-vectors-cerca .callout-tip}
+## Solució: cerca d'un valor en un vector
+
+**Enunciat**: @exr-p3-vectors-cerca.
+
+Declaracions: `int vec[100]` global; `i` a `t0`, `val` a `t1`; el resultat (l'índex de la primera ocurrència o −1) s'ha de deixar a `t2`.
+
+El bucle recorre el vector i compara cada element amb `val`. La novetat respecte als bucles de @exr-p3-vectors-bucle és la **sortida anticipada**: en trobar la primera coincidència, se surt del bucle immediatament amb l'índex actual, sense recórrer la resta del vector.
+
+```{.s filename="RV32I"}
+        la      t3, vec         # invariant: @vec[0]
+        li      t4, 100         # invariant: N
+        li      t0, 0           # i = 0
+bucle:
+        bge     t0, t4, notrobat # final del vector sense coincidència
+        slli    t5, t0, 2       # t5 = i * 4
+        add     t5, t5, t3      # t5 = @vec[i]
+        lw      t5, 0(t5)       # t5 = vec[i]
+        beq     t5, t1, trobat  # coincidència: surt amb l'i actual
+        addi    t0, t0, 1       # i++
+        j       bucle
+trobat:
+        mv      t2, t0          # t2 = índex de la primera ocurrència
+        j       fi
+notrobat:
+        li      t2, -1          # t2 = -1 (val no és a vec)
+fi:
+```
+
+El `j fi` després de `mv t2, t0` és imprescindible: sense aquest salt, el flux d'execució continuaria seqüencialment cap a `notrobat` i sobreescriuria l'índex trobat amb −1.
+:::
+
+::: {#sol-p3-vectors-punter-aritm .callout-tip}
+## Solució: aritmètica de punters sobre `short`
+
+**Enunciat**: @exr-p3-vectors-punter-aritm.
+
+Declaracions: `short v[8]` global; `p` a `t0`, `i` a `t1`.
+
+**a)** `p = v + 3;`
+
+`p` apunta a `short`, un tipus de mida 2 bytes. Per la regla d'escalat de l'aritmètica de punters (@sec-aritmetica-punters), `v + 3` desplaça l'adreça base $3 \times 2 = 6$ bytes: el punter s'incrementa en **6 bytes** (no en 3).
+
+```{.s filename="RV32I"}
+        la      t0, v+6         # p = v + 3  (3 elements × 2 bytes = 6 bytes)
+```
+
+**Nota**: la sintaxi `la label+offset` és admesa a EC, però a RARS cal substituir-la per `la t0, v` seguit d'`addi t0, t0, 6` (@imp-ec-la-offset).
+
+**b)** Bucle que dobla cada element usant `p`:
+
+```{.s filename="RV32I"}
+        la      t0, v           # p = v  (@v[0])
+        li      t2, 8           # invariant: N
+        li      t1, 0           # i = 0
+bucle:
+        bge     t1, t2, fibucle
+        lh      t3, 0(t0)       # t3 = *p
+        add     t3, t3, t3      # t3 = 2 * (*p)
+        sh      t3, 0(t0)       # *p = 2 * (*p)
+        addi    t0, t0, 2       # p++  (stride = 2 bytes: mida d'un short)
+        addi    t1, t1, 1       # i++
+        j       bucle
+fibucle:
+```
+
+Com que els elements són `short`, l'accés a memòria es fa amb `lh`/`sh` i l'increment del punter (`p++`) és de 2 bytes per element, a diferència dels 4 bytes dels vectors d'`int` vistos fins ara.
+:::
+
 ### Strings
 
 ::: {#sol-p3-strings-longitud .callout-tip}
@@ -579,4 +677,27 @@ fi:
 ```
 
 La funció usa únicament registres temporals (`t0`–`t2`), de manera que no cal preservar cap registre.
+:::
+
+::: {#sol-p3-strings-copia .callout-tip}
+## Solució: còpia de string
+
+**Enunciat**: @exr-p3-strings-copia.
+
+Es recorre `src` byte a byte amb dos punters que avancen alhora, un per a cada cadena. Cada byte es copia **abans** de comprovar si és el `'\0'`; d'aquesta manera, el caràcter de final de cadena també queda copiat a `dst` sense cap instrucció addicional després del bucle:
+
+```{.s filename="RV32I"}
+        la      t0, src         # punter a src
+        la      t1, dst         # punter a dst
+bucle:
+        lb      t2, 0(t0)       # t2 = caràcter actual de src
+        sb      t2, 0(t1)       # el copia a dst (inclòs el '\0')
+        beq     t2, zero, fibucle # si era '\0', la còpia és completa
+        addi    t0, t0, 1       # avança el punter de src
+        addi    t1, t1, 1       # avança el punter de dst
+        j       bucle
+fibucle:
+```
+
+Si la comprovació del `'\0'` es fes abans de l'`sb` (com al bucle de @exr-p3-strings-longitud), el bucle acabaria sense copiar el terminador i caldria un `sb` addicional després de l'etiqueta de sortida.
 :::
