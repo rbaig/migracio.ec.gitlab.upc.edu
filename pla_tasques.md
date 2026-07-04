@@ -74,8 +74,8 @@ La majoria depenen d'A1 (els destins són a T2/T5/T9 sense slug) o de decisions 
 
 `norm_font.py` reporta Arial/Courier/Symbol/TimesNewRoman (incrustades i CSS) a 16 fitxers `13_figs_externes/T7_*.svg`.
 
-- [ ] Decidir política: afegir aquestes fonts al mapa de `21_specs/svg.md`, o passar a `--on-unknown-font normalize` per a les externes (canvi a `_quarto.yml`).
-- [ ] Aplicar i verificar `0 avisos` al pre-render.
+- [x] Afegides al `FONT_MAP` de `21_specs/svg.md`: `Arial embedded`/`Arial, sans-serif`/`Symbol`/`Symbol embedded`/`TimesNewRoman embedded`/`TimesNewRoman, serif`/`Helvetica` → SANS; `Courier`/`Courier embedded` → MONO.
+- [x] Pipeline re-executat: `0 avisos` de fonts desconegudes (18 fitxers normalitzats a `13_figs_externes/`).
 
 ---
 

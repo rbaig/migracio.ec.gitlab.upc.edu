@@ -371,6 +371,17 @@ FONT_MAP = {
     "freemono, 'courier new', monospace":            MONO,
     "freemono,'courier new',monospace":              MONO,
     "freemono, \"courier new\", monospace":          MONO,
+    # Figures externes extretes de PDF via pymupdf (text traçat, vegeu §15)
+    # o exportades de LO Draw / draw.io (13_figs_externes/T7_*)
+    "arial embedded":                                SANS,
+    "arial, sans-serif":                              SANS,
+    "courier":                                        MONO,
+    "courier embedded":                               MONO,
+    "symbol":                                         SANS,
+    "symbol embedded":                                SANS,
+    "timesnewroman embedded":                         SANS,
+    "timesnewroman, serif":                            SANS,
+    "helvetica":                                      SANS,
 }
 
 # Valors considerats correctes (no es reporten com a desconeguts)
