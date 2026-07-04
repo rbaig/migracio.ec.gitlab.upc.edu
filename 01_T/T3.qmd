@@ -592,7 +592,7 @@ A **RV32I**, els salts **incondicionals** poden ser **relatius al PC** (`jal`, `
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
-Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@nte-riscv-rv32i), tret de `auipc` (@nte-la-auipc) i `ecall` (@sec-ecall), l'exercici de classificar-les segons el **mode d'adreçament**
+Ara que ja s'han presentat totes les instruccions de la base **RV32I** (@nte-riscv-rv32i), tret de `auipc` (@nte-la-auipc) i `ecall` (@sec-ei-ecall), l'exercici de classificar-les segons el **mode d'adreçament**
 (@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de la ISA, sinó també, a nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
 
 La classificació proposada inclou quatre decisions que cal justificar:
@@ -600,7 +600,7 @@ La classificació proposada inclou quatre decisions que cal justificar:
 - **`lui`** s'ha classificat com a mode **immediat** perquè el seu únic operand font és un valor constant de 20 bits codificat directament a la instrucció; no hi ha cap registre base ni cap referència al PC.
 - **`auipc`** s'ha classificat com a mode **relatiu al PC** perquè suma un immediat de 20 bits al valor actual del PC per construir adreces relatives a la posició actual del programa.
 - **`jalr`** s'ha classificat com a mode **base + desplaçament** perquè calcula l'adreça de salt sumant un registre base (`rs1`) i un immediat de 12 bits, exactament com fan les instruccions de càrrega i emmagatzematge. L'única diferència és que el resultat s'usa com a adreça de salt en lloc d'adreça de memòria.
-- **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una trucada al sistema operatiu (@sec-ecall).
+- **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una trucada al sistema operatiu (@sec-ei-ecall).
 
 | Mode | Instruccions |
 | :--- | :--- |
@@ -1543,7 +1543,7 @@ Evolució de la pila durant les crides aniuades de `funcA` i `funcB`. El registr
 ::: {#tip-rars-main-multinivell .callout-tip}
 ## RARS — `main` com a subrutina multinivell
 
-A **RARS**, el fitxer `startup.s` emula el mecanisme d'inici i finalització del programa (@imp-exception-handler). Per acabar l'execució correctament cal retornar des de `main` amb `ret`, en lloc de saltar a una adreça d'aturada com es faria en un sistema real.
+A **RARS**, el fitxer `startup.s` emula el mecanisme d'inici i finalització del programa que, en un sistema real, gestionaria la rutina de servei d'excepcions del SO (@sec-ei-rse). Per acabar l'execució correctament cal retornar des de `main` amb `ret`, en lloc de saltar a una adreça d'aturada com es faria en un sistema real.
 
 Per tant, si `main` és multinivell, cal preservar `ra` i restaurar-lo abans de retornar, exactament igual que qualsevol altra subrutina multinivell.
 :::

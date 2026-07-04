@@ -11,6 +11,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 - **`ret` vs `jalr x0, 0(ra)`**: criteri al retorn de funcions. Pendent de consens del professorat. Criteri provisional: `ret` als exemples (pseudoinstrucció estàndard, més llegible).
 - **Adreces de memòria**: format `0x00000000` o `0x0000 0000` (espai cada 4 nibbles)? Pendent de decisió global. Criteri provisional: sense espais (`0x10010000`), coherent amb l'ús actual a T2–T9.
 - **`.section`**: usar o no? si sí, amb quin criteri?
+- **Terminologia «excés» vs. «biaix»**: a T1.qmd (seccions `#sec-enters-en-exces`, `#sec-altres-codificacions`) es fa servir «excés»; decidir si cal unificar a «biaix» (o a la inversa) i aplicar-ho de forma consistent.
 - ~~**Directives**: títol de callout `## Directives —` o `## RARS —`?~~ → ✓ Decisió: `## Directives —` (genèric) per a callouts amb directives estàndard GNU AS; `## RARS —` per a comportament exclusiu de RARS. Aplicat a T2 i T3.
 - **ISA/ABI**: on posar la informació de l'ABI de RV? `{.callout-note}` `## RV32I ABI —` o `{.callout-important}`?
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
@@ -45,6 +46,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 - ~~TODO Adrià: validar integració del patch AND/OR/XOR (`git show a288aaf`).~~ → ✓ Fragment integrat i revisat. Pendent validació d'Adrià sobre la terminologia «unes expressions» (L. 253, vegeu ítem pendent a continuació).
 - ~~**Referència trencada `@nte-pseudoinstruccions-salt-condicional-zero`** (T3): verificar on ha d'apuntar (probablement T2 o compendi `05_riscv.qmd`) i reparar.~~ → ✓ El callout és `#nte-pseudoinstruccions-salt-zero` (T3 §4). Referència corregida a T3.qmd L. 255.
 - **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que T2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb T2.qmd i T3.qmd.
+- **Revisar referència `@imp-exception-handler` reparada** (T3.qmd, ~L. 1546, callout `#tip-rars-main-multinivell`): l'etiqueta original no tenia destí; s'ha reescrit apuntant a `@sec-ei-rse` (T9) i retocat la frase perquè tingués sentit gramatical. És una interpretació de Claude Code, no una simple correcció mecànica d'slug — verificar que el destí i la redacció són correctes.
 - Retocs manuals pendents (Roger) a les figures:
   - `figs_auto/T3_ba_exemple__original_light.svg`
   - `figs_auto/T3_deps_multi__original_light.svg`
@@ -108,7 +110,7 @@ Colors nous afegits a `21_specs/svg.md` en aquest xat:
 
 - **Migració de canvas a amplades estàndard**: figures de BA i mapa de memòria (`W=316 px`) → classe `estreta` (`W=340 px`). Decisió pendent: mantenir `w_rect=230` (marge dret 10→34) o ampliar `w_rect` a 254 (marges simètrics). Un cop decidit, aplicar a les 7 figures afectades i actualitzar `21_specs/svg.md §2`. Figures: `T3_mapa_memoria`, `T3_ba_general`, `T3_ba_func`, `T3_ba_multi`, `T3_ba_exemple`, `T3_func_uninivell_pila`, `T3_pila_crides_aniuades`.
 - **Migrar diagrames Mermaid existents a SVG**.
-- **`T3_deps_*` dark**: afegir `#cc0000` a `REPLACEMENTS` de `21_specs/svg.md` o crear dark manualment.
+- ~~**`T3_deps_*` dark**: afegir `#cc0000` a `REPLACEMENTS` de `21_specs/svg.md` o crear dark manualment.~~ → ✓ Afegit `#cc0000 → #ff6b6b` a §13, juntament amb la resta de colors llegat i de figures externes (0 colors no reconeguts al pre-render).
 - ~~**Formats d'instrucció B, U, J, R4**: figures individuals i compendi `compendi_registres` generats i integrats a `22_scripts/gen_regs.py` + `21_specs/registres.toml`.~~ → ✓ Completat.
 
 ### Contingut global

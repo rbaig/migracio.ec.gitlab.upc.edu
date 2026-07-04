@@ -81,11 +81,11 @@ Els tres camps de bits del format de simple precisió s'organitzen de la manera 
 
 $$\underbrace{S}_{1}\;\underbrace{E_7 E_6 \ldots E_0}_{8}\;\underbrace{F_{22} F_{21} \ldots F_0}_{23}$$
 
-#### Signe (S)
+#### Signe (S) {#sec-camp-signe}
 
 El bit de signe $S$ indica el signe del nombre: $S = 0$ per a valors positius i $S = 1$ per a valors negatius.
 
-#### Fracció (F)
+#### Fracció (F) {#sec-camp-fraccio}
 
 El camp de fracció $F$ emmagatzema els $p-1 = 23$ bits de la part fraccionària de la mantissa normalitzada. La mantissa completa s'obté afegint el bit ocult: $1{,}F$.
 
@@ -329,17 +329,17 @@ L'estàndard IEEE-754 reserva dos valors del camp d'exponent per a codificacions
 Mapa de codificacions IEEE-754 de simple precisió: els eixos $E$ i $F$ determinen unívocament la interpretació de cada patró de bits.
 :::
 
-#### Zero
+#### Zero {#sec-codificacio-zero-cf}
 
 Els formats normalitzats no poden representar el zero, ja que el bit ocult imposa $m \geq 1{,}0$. El zero es codifica convencionalment amb tots els bits d'exponent i fracció a zero. A causa del bit de signe, existeixen dues representacions: $+0$ i $-0$. L'estàndard defineix que $+0 = -0$ en les comparacions.
 
-#### Infinit
+#### Infinit {#sec-codificacio-infinit}
 
 L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expressió $1\,/\,(1 + 100/x)$ per a valors de $x$ pròxims a zero: sense infinit, el càlcul $100/x$ produiria una excepció de sobreeiximent que avortaria el programa, tot i que el resultat final de l'expressió convergeix a zero. Amb infinit, la seqüència d'operacions és $100/x = \pm\infty$, $1 + \infty = \infty$, $1/\infty = 0$, i el programa continua sense excepcions.
 
 L'infinit es codifica amb tots els bits d'exponent a 1 i tots els de fracció a zero. S'apliquen regles aritmètiques senzilles: $1/0 = \infty$, $1/\infty = 0$, $x + \infty = \infty$, etc.
 
-#### NaN
+#### NaN {#sec-codificacio-nan}
 
 Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN** (***Not a Number***), i l'execució continua. Qualsevol operació posterior amb un operand NaN produeix un altre NaN, de manera que l'error es **propaga** fins al resultat final, on el programa pot fer un únic test.
 

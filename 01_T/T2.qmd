@@ -4,13 +4,13 @@ number-sections: true
 
 # {{< var tema2 >}} {#sec-tema-assemblador}
 
-## Introducció a l'ISA de RISC-V
+## Introducció a l'ISA de RISC-V {#sec-introduccio-isa-riscv-t2}
 
 A l'assignatura IC, s'estudia en detall el disseny d'un computador simple, analitzant la relació entre el **llenguatge màquina** i el disseny a nivell de **circuits lògics digitals**. A **EC**, s'aprofundeix en el **llenguatge d'assemblador** i s'estudia la relació entre aquest i un **llenguatge d'alt nivell**.
 
 La taula d'@imp-llenguatges-de-referencia recull les especificacions més rellevants de les eines i llenguatges d'**EC**.
 
-### *Instruction Set Architecture*, ISA
+### *Instruction Set Architecture*, ISA {#sec-instruction-set-architecture}
 
 S'anomena **conjunt** d'instruccions, **repertori** d'instruccions o **joc** d'instruccions (***Instruction Set Architecture***, **ISA**) d'un processador, a l'especificació de la **interfície** entre el **maquinari** (*hardware*) i el **programari** (*software*). La **ISA**, en tant que **interfície**, constitueix un **contracte** entre els fabricants del maquinari i els de programari. Al llarg dels anys, el fabricant d'un processador pot introduir en el seu disseny successives millores, a fi d'augmentar-ne el **rendiment**. Però s'ha demostrat que comercialment resulta crític mantenir la **compatibilitat** dels nous processadors amb els programes existents, i per a això cal que el nou disseny respecti punt per punt totes les **especificacions** de la **ISA**.
 
@@ -38,7 +38,7 @@ Els termes **arquitectura de computadors** i **estructura de computadors** s'use
 A la pràctica, tots dos aspectes s'estudien de forma conjunta, ja que les decisions d'arquitectura condicionen l'estructura i viceversa. El nom de l'assignatura, **Estructura de Computadors**, reflecteix l'èmfasi en la implementació, però el seu contingut cobreix els dos nivells.
 :::
 
-### Arquitectura de tipus RISC (vs. CISC)
+### Arquitectura de tipus RISC (vs. CISC) {#sec-risc-vs-cisc}
 
 El terme ***Reduced Instruction Set Computer*** (**RISC**) apareix a principis dels anys 80 per designar l'arquitectura de certs processadors dissenyats amb criteris innovadors respecte a la tendència dels processadors existents fins llavors, els quals van passar a anomenar-se per contraposició ***Complex Instruction Set Computers*** (**CISC**).
 
@@ -161,7 +161,7 @@ Totes les instruccions:
 - **Salts incondicionals**: `jal`, `jalr`.
 - **Sistema**: `ecall`, `ebreak`, `fence`, `fence.tso`
 
-A **EC**, s'estudien totes excepte les de sistema, de les quals només es tracta `ecall` (@sec-ecall).
+A **EC**, s'estudien totes excepte les de sistema, de les quals només es tracta `ecall` (@sec-ei-ecall).
 :::
 
 ::: {#wrn-riscv-ec-toolchain .callout-warning collapse=true}
@@ -342,7 +342,7 @@ Camps de la instrucció `add` (format **Tipus-R**):
 Algunes edicions de [@patterson2020riscv] anomenen el format B com **SB** i el format J com **UJ**, reflectint que B és una variant de S (*store*) i J és una variant de U (*upper immediate*). Harris & Harris [@harris2021riscv] i les edicions modernes de Patterson & Hennessy ja han adoptat la nomenclatura oficial de l'especificació RISC-V: **B** i **J**, que és la que s'usa a **EC**.
 :::
 
-## Estructura d'un programa en assemblador
+## Estructura d'un programa en assemblador {#sec-estructura-programa-assemblador}
 
 Un programa en assemblador es compon de:
 
@@ -384,11 +384,11 @@ A RARS, tant `.rodata` com `.bss` es substitueixen per `.data`: les constants no
 ::::
 :::::
 
-### Etiquetes
+### Etiquetes {#sec-etiquetes-assemblador}
 
 Una **etiqueta** (***label***) és un nom simbòlic que representa una adreça de memòria. Es declara escrivint el nom seguit de dos punts (`:`), sense indentació. L'assemblador la substitueix per l'adreça definitiva durant el procés d'assemblatge (@sec-compilacio).
 
-### Directives
+### Directives {#sec-directives-assemblador}
 
 ::: {#cau-directives .callout-caution}
 Les **directives** són instruccions per a l'**assemblador** (o el simulador); no generen codi màquina ni afegeixen codi d'execució.
@@ -396,7 +396,7 @@ Les **directives** són instruccions per a l'**assemblador** (o el simulador); n
 
 Les directives cobreixen funcions molt diverses: reservar espai en memòria, inicialitzar dades, declarar constants simbòliques, especificar visibilitat de símbols, etc. Es detallen a les seccions següents i a mesura que apareixen al llarg del manual.
 
-### Constants simbòliques
+### Constants simbòliques {#sec-constants-simboliques}
 
 Les **constants simbòliques** faciliten l'escriptura i la lectura dels programes: permeten donar un nom significatiu a un valor que pot aparèixer en múltiples llocs, de manera que una sola modificació actualitza totes les ocurrències.
 
@@ -421,9 +421,9 @@ Un cop definida, es pot usar en qualsevol context on s'usaria el literal equival
 ```
 :::
 
-### Instruccions, pseudoinstruccions i macros
+### Instruccions, pseudoinstruccions i macros {#sec-instruccions-pseudoinstruccions-macros}
 
-#### Instruccions
+#### Instruccions {#sec-instruccions-assemblador}
 
 Les instruccions són les operacions que el processador executa directament. Cada **instrucció** té una codificació binària única i es **correspon amb una operació real del maquinari**, tal com s'ha vist a la @sec-format-instruccions. @nte-instruccions-aritmetica-entera-rv32i mostra les **instruccions d'aritmètica** entera bàsica de **RV32I**. Es presenten en aquest punt perquè n'hi ha **només tres** i són força **intuïtives**. D'aquesta manera es disposarà, d'ara endavant, d'un joc d'instruccions mínim per il·lustrar conceptes i altres instruccions a mesura que es vagin introduint. La resta d'instruccions de l'aritmètica entera de RV32I es presenten al [Tema 4](#sec-tema-enters-matrius).
 
@@ -638,11 +638,11 @@ Restriccions de RARS:
 - Dues macros amb el mateix nom però diferent nombre de paràmetres es consideren macros diferents.
 :::
 
-### Comentaris
+### Comentaris {#sec-comentaris-assemblador}
 
 A RV32I, els comentaris s'introdueixen amb el caràcter `#`. Tot el text a partir del `#` fins al final de la línia és ignorat per l'assemblador.
 
-### Format del codi
+### Format del codi {#sec-format-del-codi}
 
 ::: {#cau-format-acurat .callout-caution}
 Un **format acurat** facilita la comprensió i la gestió del codi.
@@ -688,7 +688,7 @@ main:
 :::
 ::::
 
-### Esquelet d'un programa
+### Esquelet d'un programa {#sec-esquelet-programa}
 
 <!-- TODO(startup.s) Decidir si es manté l'esquelet específic d'EC amb startup.s o s'elimina. Veure imp-programa-esquelet i imp-exception-handler. -->
 L'esquelet mínim d'un programa en assemblador té dues variants: la genèrica, vàlida per a qualsevol entorn RISC-V, i la específica d'EC, que inclou la configuració de RARS necessària per al laboratori.
@@ -775,7 +775,7 @@ Tècnicament, el flux complet és `_start` → `main` → `exit` → `_exit`. A 
 :::
 --- TODO -->
 
-## Variables escalars
+## Variables escalars {#sec-variables-escalars}
 
 ::: {#cau-dades-escalars-en-regs-estructurades-en-mem .callout-caution}
 En C i en RV32I, les variables es classifiquen en dos grans grups segons la seva estructura:
@@ -789,7 +789,7 @@ En C i en RV32I, les variables es classifiquen en dos grans grups segons la seva
     - A **EC**, de variables estructurades només s'estudien els **vectors** (@sec-vectors) i les **matrius** (@sec-matrius).
 :::
 
-### Declaració
+### Declaració {#sec-declaracio-variables-escalars}
 
 En **C**, tota variable s'ha de **declarar** abans d'usar-la. La declaració especifica el **tipus** i el **nom** de la variable, i opcionalment un **valor inicial**:
 
@@ -803,7 +803,7 @@ En **C**, tota variable s'ha de **declarar** abans d'usar-la. La declaració esp
 
 El **tipus** determina la mida en memòria (@imp-variables-mida-naturals, @imp-variables-mida-enters) i les operacions vàlides sobre la variable. El **nom** és l'identificador simbòlic que el compilador substitueix per una adreça de memòria o un registre.
 
-### Tipus
+### Tipus {#sec-tipus-variables-escalars}
 
 En **C**, el **tipus** d'una variable determina:
 
@@ -853,7 +853,7 @@ codi_erroni__gcc_tipus.c:5:14: warning: format ‘%f’ expects argument of type
 
 ::::
 
-### Visibilitat i durada
+### Visibilitat i durada {#sec-visibilitat-i-durada}
 
 En **C**, les variables s'han de declarar explícitament abans d'emprar-les. La declaració ha d'incloure el **tipus de dada** (*data type*; en **C**, els tipus bàsics són: `char`, `int`, `long`, `long long`, `float`, `double`, `long double`) i el **nom**, i opcionalment un **valor inicial** (inicialització de variable). Una variable que es declara fora de qualsevol funció és una **variable global** i una que es declara dins d'un bloc o funció és una **variable local** (***local variable***) al bloc o funció (l'àmbit (*scope*)). Aquestes dues classes de variables tenen assignades per defecte propietats de **visibilitat** i de **durada** (o **categoria d'emmagatzemament**) següents:
 
@@ -1102,7 +1102,7 @@ No respectar l'alineació:
 - A **RARS**, genera una excepció i atura l'execució.
 :::
 
-### Directives d'alineació de memòria
+### Directives d'alineació de memòria {#sec-directives-alineacio-memoria}
 
 RARS té les **directives** de @nte-directives-alineacio-inicialitzacio per gestionar les restriccions d'alineació de memòria. Aquestes directives apliquen automàticament la restricció d’alineació, descartant tantes posicions de memòria com sigui necessari. Opcionalment, la directiva pot anar **precedida** d’una **etiqueta** amb el **nom de la variable**, la qual representa de forma simbòlica l’adreça inicial de la dada definida.[^etiqueta]
 
@@ -1350,7 +1350,7 @@ El mode base + desplaçament és el més lent, ja que implica un accés a memòr
 ```
 :::
 
-#### Accessos a paraula: `lw`, `sw`
+#### Accessos a paraula: `lw`, `sw` {#sec-acces-paraula-lw-sw}
 
 La instrucció `lw` (*load word*) copia **quatre bytes** consecutius de la **memòria**, a partir de l'**adreça efectiva**, el **LSB**, al **registre** destinació. Per la seva banda, `sw` (*store word*) copia els **quatre bytes** del registre font a altres tantes posicions consecutives de memòria a partir de l'adreça efectiva.
 
@@ -1358,7 +1358,7 @@ La instrucció `lw` (*load word*) copia **quatre bytes** consecutius de la **mem
 No existeix la instrucció ~~`lwu`~~.
 :::
 
-#### Accés a enters de mig paraula o byte: `lh`, `lb`, `sh`, `sb`
+#### Accés a enters de mig paraula o byte: `lh`, `lb`, `sh`, `sb` {#sec-acces-mig-paraula-byte}
 
 Les instruccions `lh` (*load half*) i `lb` (*load byte*) carreguen de la memòria, a partir de l'adreça efectiva, a un registre **dos bytes** o **un byte**, respectivament. Com que el registre destinació és de 32 bits, es fa una **extensió de signe** del bit més significatiu del valor carregat (el bit de signe en el cas dels enters) per omplir els bits més significatius del registre destinació.
 
@@ -1400,7 +1400,7 @@ Suposant que `t2` conté l'adreça `0x10010000`, i que en aquesta adreça i les 
 | `0x10010003` | `0xDD` | `0xDD` |
 :::
 
-#### Càrrega de naturals de mitja paraula o byte: `lhu`, `lbu`
+#### Càrrega de naturals de mitja paraula o byte: `lhu`, `lbu` {#sec-carrega-naturals-mig-paraula-byte}
 
 Les instruccions `lhu` (*load half unsigned*) i `lbu` (*load byte unsigned*) copien a un registre destí els **dos bytes** o el **byte** de memòria, respectivament, a partir de l'adreça efectiva. Com que el registre destinació és de 32 bits, es fa una **extensió per zero** afegint zeros als bits més significatius del registre destinació. Aquestes instruccions s'utilitzen per carregar valors que es consideren naturals (sense signe), com ara caràcters o valors de mida menor a 32 bits que no s'han d'interpretar com a enters amb signe.
 
@@ -1414,7 +1414,7 @@ Considerant el mateix contingut inicial de la memòria de l'exemple anterior, de
 | `lhu t1, 2(t2)` | Càrrega de la mitja paraula `0xDDCC` | `t1 = 0x0000DDCC` |
 :::
 
-#### Restricció d'alineació
+#### Restricció d'alineació {#sec-restriccio-alineacio-carrega}
 Les adreces utilitzades en les instruccions `lw` i `sw` han de ser múltiples de quatre, i les adreces usades en `lh` i `sh` han de ser múltiples de dos. Altrament, a **RARS** es produeix una **excepció** (***exception***) per adreça no alineada i l'execució s'**avorta**.
 
 ::: {#tip-alineacio-load-store .callout-tip}
@@ -1431,7 +1431,7 @@ x:    .word 0xDDCCAABB
 ```
 :::
 
-## Punters
+## Punters {#sec-punters}
 
 Un punter és una **variable escalar** que conté una **adreça de memòria**.
 
@@ -1623,7 +1623,7 @@ g:
 La primera sentència carrega a la variable local `tmp` el contingut de la posició de memòria apuntada per `ploc`. Com que `ploc` està en un registre, n’hi ha prou d’executar una instrucció `lb` on el registre-base sigui el que conté el punter. La segona sentència és similar, però com que `pglob` és global, està emmagatzemada en memòria. Cal prèviament carregar la variable global `pglob` en el registre `t3` (es copia l’etiqueta en `t2` amb la macro `la`, i a continuació s'accedeix al punter en memòria amb `lw`). Un cop carregat el punter `pglob` en un registre, es fa la desreferència de la mateixa manera que en el cas de `ploc`, amb `lb`.
 :::
 
-### Aritmètica de punters
+### Aritmètica de punters {#sec-aritmetica-punters}
 
 En **C**, quan es suma un enter `i` a un punter `p` que apunta a un tipus de mida `T` bytes, el resultat és un punter que apunta `i * T` bytes més endavant. De manera simètrica, restar `i` desplaça el punter `i * T` bytes enrere. Aquesta regla d'escalat permet navegar per elements consecutius d'un vector.
 
@@ -1701,7 +1701,7 @@ Les **variables estructurades** són **agrupacions** d'elements. Aquests element
 
 Els **vectors** (***arrays***) són **variables estructurades unidimensionals**, on tots els elements són del **mateix** tipus i s'identifiquen per un **índex**, $i$.
 
-### Declaració i inicialització
+### Declaració i inicialització {#sec-vectors-declaracio-inicialitzacio}
 
 En **C**, els elements dels **vectors** només poden ser del mateix tipus, el qual s'ha d'especificar en el moment de la declaració.
 
@@ -1774,7 +1774,7 @@ v:      .space 400      # Reserva 400 bytes (100 enters * 4 bytes)
 ```
 :::
 
-### Tipus `<tipus> nom_vector[<quantitat_d_elements>]`
+### Tipus `<tipus> nom_vector[<quantitat_d_elements>]` {#sec-tipus-declaracio-vector}
 
 En **C**, `int vec[<quantitat_elements>]` no és només una declaració: constitueix un **tipus complet** (`int[<quantitat_elements>]`).
 
@@ -1958,7 +1958,7 @@ En **C**, en sentències, l'operador `[]`, precedit del nom d'una variable de ti
 Per tant, és una forma compacta de realitzar aritmètica de punters i desreferència simultàniament.
 :::
 
-### Accés a vectors amb bucles
+### Accés a vectors amb bucles {#sec-acces-vectors-bucles}
 
 Hi ha dues maneres bàsiques per recórrer els elements d'un vector amb un bucle:
 
@@ -1973,7 +1973,7 @@ Un **invariant de bucle** és qualsevol valor que no depèn de la variable d'ite
 A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevol bucle, llevat que s'indiqui explícitament el contrari. És un prerequisit implícit de totes les optimitzacions de bucle que es veuran al @sec-optimitzacions-bucle.
 :::
 
-#### Accés aleatori
+#### Accés aleatori {#sec-vectors-acces-aleatori}
 
 ::: {#cau-acces-aleatori-significat .callout-caution}
 L'accés aleatori **no implica atzar**[^comram], sinó la capacitat d'accedir directament a qualsevol element d'un vector o matriu (vegeu @sec-matrius-acces-aleatori) en temps constant $\mathcal{O}(1)$, independentment de la seva posició.
@@ -2025,7 +2025,7 @@ fiwhile:
 L'adreça base `@V[0]` és un invariant i s'ha extret del bucle (`la t4, V`). La infraestructura de control del bucle ocupa **5 instruccions** per iteració (les marcades `[ctrl]`). Al @sec-optimitzacions-bucle es reduirà fins a **2** aplicant les tres optimitzacions, cada una de les quals comportarà l'estalvi d'una instrucció.
 :::
 
-#### Accés seqüencial {#sec-opt-acces-sequencial}
+#### Accés seqüencial {#sec-acces-sequencial-exemple}
 
 ::: {#tip-optimitzacio-acces-sequencial .callout-tip}
 ## Recorregut d'un vector: Accés seqüencial (Optimització #1)
@@ -2075,9 +2075,9 @@ fiwhile:
 Aplicant l'**accés seqüencial** (Optimització #1, @sec-optimitzacions-bucle), la infraestructura de control ha quedat en **4 instruccions** (les marcades `[ctrl]`). Al @sec-optimitzacions-bucle es reduirà fins a **2** avaluant la condició al final (Optimització #2) i eliminant la variable d'inducció `i` (Optimització #3).
 :::
 
-## Caràcters i cadenes de caràcters
+## Caràcters i cadenes de caràcters {#sec-caracters-cadenes}
 
-### Codificació de caràcters
+### Codificació de caràcters {#sec-codificacio-caracters}
 
 Els **caràcters** es representen mitjançant codis numèrics. El sistema de codificació més utilitzat ha estat el **codi ASCII** (*American Standard Code for Information Interchange*). En ASCII, els caràcters imprimibles (com les lletres, dígits i símbols) es representen amb números entre 32 i 126 ([0x20–0x7E]), mentre que els caràcters de control (com el salt de línia) es representen amb números entre 0 i 31 ([0x00–0x1F]). Els caràcters s’emmagatzemen usant 1 byte (8 bits), però el bit de més pes val sempre zero. La @tbl-codi-ascii mostra els rangs de codis ASCII.
 
@@ -2090,7 +2090,7 @@ Els **caràcters** es representen mitjançant codis numèrics. El sistema de cod
 | `0x61`–`0x7A` | Lletres minúscules `a`–`z` |
 : Rangs de codis ASCII {#tbl-codi-ascii}
 
-### Representació de caràcters en C i RV32I
+### Representació de caràcters en C i RV32I {#sec-representacio-caracters-c-rv32i}
 
 En C i RV32I, un literal de tipus caràcter imprimible s’escriu usant el caràcter (entre cometes simples), el seu codi ASCII en decimal, en hexadecimal precedit per `0x` o octal precedit per `0`. Per exemple, la A majúscula es pot escriure: `'A'`, `65`, `0x41` o `0101`. Els caràcters de control s’escriuen mitjançant **seqüències d’escapament** (*escape sequences*), que comencen amb una barra invertida (`\`) seguida d’un caràcter que indica el tipus de control. Per exemple, el salt de línia es pot escriure com `'\n'` o `0x0A`.
 
@@ -2108,7 +2108,7 @@ En C i RV32I, un literal de tipus caràcter imprimible s’escriu usant el carà
 
 :::
 
-### Declaració i inicialització de caràcters
+### Declaració i inicialització de caràcters {#sec-declaracio-inicialitzacio-caracters}
 
 
 ::: {#tip-codi-caracters .callout-tip}
@@ -2142,7 +2142,7 @@ L'estàndard Unicode és un sistema de codificació de caràcters que assigna un
 En UTF-8, els caràcters ASCII es representen amb un sol byte (igual que en ASCII), però els caràcters no ASCII es representen amb múltiples bytes. Per exemple, els caràcters de l'alfabet català com *ç*, *ü* o *à* es representen amb dos bytes en UTF-8. En RV32I, les cadenes de caràcters es poden emmagatzemar en memòria seguint la codificació UTF-8, però cal tenir en compte que els caràcters no ASCII ocuparan més d'un byte, i que el final de la cadena encara ha de ser indicat amb un byte nul (`0x00`).
 :::
 
-### Cadenes de caràcters
+### Cadenes de caràcters {#sec-cadenes-de-caracters}
 
 Una **cadena de caràcters** (*string*) és una seqüència de caràcters.
 

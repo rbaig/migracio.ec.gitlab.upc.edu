@@ -63,9 +63,10 @@ La majoria depenen d'A1 (els destins són a T2/T5/T9 sense slug) o de decisions 
 
 `gen_dark.py` reporta ~30 colors no reconeguts (llista completa a `log.log:91-274`). Cal criteri de contrast per triar cada equivalent dark.
 
-- [ ] Colors «legacy» de figures natives (`#d1d1d1`, `#999999`, `#dee2e6`, `#333333`, `#4d4d4d`, `#cc0000`, `#185fa5`, `#1a5276`, `#4a90b8`, `#e8f4f8`, `#e6f1fb`, `#888780`, `#0b449a`, `#7d6d6c`, `#0099e5`, `rgb(0, 0, 0)`…): decidir per a cadascun si (a) s'afegeix a `#svg-dark-replacements` o (b) es normalitza el SVG original a la paleta del projecte (preferible segons `21_specs/svg.md`).
-- [ ] Paleta LO Draw de les figures externes de T7 (`#0000ff`, `#8080ff`, `#80ff80`, `#ffff00`, `#ff8080`…): afegir al bloc de substitucions (aquestes no es toquen al SVG original).
-- [ ] Re-executar `quarto render` (o només el pre-render) i comprovar `0 colors no reconeguts`.
+- [x] Colors «legacy» de figures natives: afegits al bloc `#svg-dark-replacements` de `21_specs/svg.md`, marcats com a «Colors llegat» retirables quan les figures es migrin a la paleta §10.
+- [x] Paleta LO Draw de les figures externes de T7: afegida al bloc de substitucions.
+- [x] `#d1d1d1` i `#0099e5` eren falsos positius (metadades d'Inkscape: `deskcolor` i graella d'edició). Resolt amb lookbehind a la regex de `gen_dark.py` + entrada identitat per a `#0099e5`.
+- [x] Pre-render re-executat: **0 colors no reconeguts**, substitucions verificades als fitxers dark generats.
 
 ### B2. Fonts desconegudes a les figures externes de T7
 

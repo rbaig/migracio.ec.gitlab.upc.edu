@@ -149,8 +149,11 @@ def _load_replacements(specs_file: Path) -> list[tuple[str, str]]:
 # Substitució de colors
 # ---------------------------------------------------------------------------
 
+# El lookbehind negatiu evita falsos positius amb atributs que acaben en
+# "color" però no són contingut visible (p. ex. inkscape:deskcolor,
+# empcolor de la graella d'edició d'Inkscape).
 _COLOR_RE = re.compile(
-    r'(?:fill|stroke|stop-color|color)\s*[=:]\s*["\']?\s*(#[0-9a-fA-F]{3,8}|'
+    r'(?<![-\w])(?:fill|stroke|stop-color|color)\s*[=:]\s*["\']?\s*(#[0-9a-fA-F]{3,8}|'
     r'none|transparent|currentColor|rgb\([^)]+\))\s*["\']?',
     re.IGNORECASE,
 )
