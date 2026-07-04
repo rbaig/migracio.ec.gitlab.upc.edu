@@ -99,9 +99,9 @@ El LaTeX de display desborda per la dreta en pantalles petites i «embruta» les
 
 Decisió de disseny transversal, ja oberta a `TODO.md §Decisions obertes` i com a TODO a `07_contrib.qmd:480-481`. Dues fases:
 
-- [ ] **Fase 1 — proposta**: auditar l'ús actual als 27 fitxers principals (Tx, PE, PS, Lx) i redactar una proposta de criteri per context: cos del text, títols de secció, títols de callout, cel·les de taula, captions, blocs de codi. Inclou els subcasos oberts de `TODO.md`: noms de registres CSR amb/sense backtick, negretes dins de callouts, numeració d'equacions.
-- [ ] **Aprovació de l'usuari** (i, si escau, del professorat). El criteri aprovat aterra a `07_contrib.qmd`.
-- [ ] **Fase 2 — aplicació global**: substitució sistemàtica als fitxers segons el criteri (aquesta fase pot baixar a Sonnet / Low, és mecànica).
+- [x] **Fase 1 — proposta**: auditoria feta (vegeu `D_criteri_estil.md`); el corpus ja seguia de facto un criteri semàntic coherent.
+- [x] **Aprovació de l'usuari**: les 4 recomanacions (D1–D4) acceptades el 2026-07-04.
+- [x] **Fase 2 — aplicació**: criteri integrat a `07_contrib.qmd` (nou §«Codi, matemàtiques i cursiva», §Equacions amb criteri de numeració, §Ressaltat amb negretes en callouts); 20 superíndexs Pandoc → math (T2, PE_T6); apòstrof «d'10⁶» corregit; separadors de milers anglesos de T2 → espais (nova decisió oberta a `TODO.md`); 38 etiquetes `{#eq-}` revisades (totes canòniques, cap canvi); renders de verificació nets. `D_criteri_estil.md` es pot esborrar quan es vulgui.
 
 ---
 

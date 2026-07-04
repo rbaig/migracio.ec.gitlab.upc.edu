@@ -15,10 +15,11 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 - ~~**Directives**: títol de callout `## Directives —` o `## RARS —`?~~ → ✓ Decisió: `## Directives —` (genèric) per a callouts amb directives estàndard GNU AS; `## RARS —` per a comportament exclusiu de RARS. Aplicat a T2 i T3.
 - **ISA/ABI**: on posar la informació de l'ABI de RV? `{.callout-note}` `## RV32I ABI —` o `{.callout-important}`?
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
-- **Negretes dins de callouts vs. cos del text**: definir criteri.
-- **Noms de registres CSR al cos del text**: amb o sense backtick?
-- **Numeració d'equacions**: només les referenciades? totes? les importants?
-- **LaTeX math vs. backticks**: definir contextos (cos del text, títols de secció, títols de callout, cel·les de taula, captions, blocs de codi).
+- ~~**Negretes dins de callouts vs. cos del text**: definir criteri.~~ → ✓ Criteri a `07_contrib.qmd §Ressaltat conceptual`: als `#cau-`/`#imp-` la negreta marca el nucli; als llargs, criteri general.
+- ~~**Noms de registres CSR al cos del text**: amb o sense backtick?~~ → ✓ Sempre amb backtick (també en títols de secció, com T9). Documentat a `07_contrib.qmd §Codi, matemàtiques i cursiva`.
+- ~~**Numeració d'equacions**: només les referenciades? totes? les importants?~~ → ✓ Només referenciades + fórmules canòniques (`07_contrib.qmd §Equacions`). Revisades les 38 etiquetes existents: totes canòniques, cap canvi necessari.
+- ~~**LaTeX math vs. backticks**: definir contextos.~~ → ✓ Criteri semàntic per context a `07_contrib.qmd §Codi, matemàtiques i cursiva`. Aplicat: 20 superíndexs Pandoc (`2^8^`) unificats a math a T2 i PE_T6.
+- **Separadors de milers**: a les taules de rangs de T2 hi havia comes angleses («65,535»), ambigües amb la coma decimal catalana; s'han substituït per espais («65 535»). Decidir si es prefereix espai fi (`&#8239;`) o punt, i si cal revisar la resta del corpus.
 - **Coherència de títols en `.callout-caution`**: `07_contrib.qmd` indica sense títol; a T5 alguns en porten. Excepció o unificar?
 - **Criteris de codi C**: completar.
 - **Estudi previ de laboratori** (`L1.qmd`–`L6.qmd`): lliurar com a fitxers separats o integrat al `.qmd`?

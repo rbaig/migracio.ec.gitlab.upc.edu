@@ -238,7 +238,11 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 - **Atributs clau**: Paraules que marquen diferències operatives (ex: **màxim rendiment**, **més lenta**).
 - **Sigles i acrònims**: En la seva definició i aparicions clau.
 - **Referències a objectes**: (ex: "Tal com mostra la **Figura 1.2**").
-<!-- TODO: Definir criteri per a negretes dins de callouts vs. cos del text -->
+
+**Negretes dins de callouts**:
+
+- Als callouts **curts i sense títol** (`#cau-` Essencial, `#imp-` Criteri EC), la negreta marca el **nucli del recordatori o criteri** (coherent amb la taula de callouts de §Callouts).
+- Als callouts **llargs** (`#tip-` Exemple, `#nte-` RISC-V, `#wrn-` Aprofundiment), s'aplica el mateix criteri de ressaltat conceptual que al cos del text.
 
 ### Anglicismes i terminologia obligatòria
 
@@ -297,9 +301,35 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
 **SIGLA** *definició en anglès* o bé definició en català si no n'hi ha d'establerta en anglès
 ```
 
-### Backticks
+### Codi, matemàtiques i cursiva
 
-<!-- TODO: Definir criteri per a noms de registres CSR al cos del text -->
+**Regla general**: el format el determina la **naturalesa de l'element**, no el context on apareix.
+
+- **Backtick** (`` ` ``) — **codi**: tot allò que existeix literalment en un programa, en una ISA o en un fitxer: registres (`t0`; també els CSR: `mepc`, `mstatus`…, fins i tot en títols de secció, com fa T9), instruccions (`addi`), directives (`.data`), variables i expressions C (`i`, `p++`), camps de bits (`opcode`), adreces concretes (`0x10010000`), fitxers, comandes i etiquetes.
+- **LaTeX math** (`$…$`) — **matemàtiques**: quantitats, variables i expressions matemàtiques: mides genèriques ($n$ bits, $B = 2^b$), índexs de fórmules i algorismes ($q_i$), rangs ($[-2^{11}, 2^{11}-1]$), operacions ($rd = M_w[rs1 + SignExt(offset)]$). Els superíndexs numèrics s'escriuen sempre en math (`$2^{8}$`), també dins de cel·les de taula; no s'usa la sintaxi Pandoc `2^8^`.
+- **Cursiva** — **llengua**: anglicismes en primera aparició (vegeu §Anglicismes) i èmfasi lleu. Mai per a codi ni per a variables matemàtiques.
+- **Text pla** — la resta: nombres amb unitats («8 bits», «4 bytes»), noms d'arquitectures i extensions (RISC-V, RV32I, extensió M), tipus de format d'instrucció (S, B).
+
+**Cas fronterer — variables d'una lletra**: si l'element viu en un programa concret (està declarat al codi de l'exemple), backtick (`i`, `p`); si viu en una fórmula o algorisme abstracte, math ($i$, $n-1$).
+
+**Dins de les fórmules**:
+
+- `\text{…}`: paraules catalanes, sigles i unitats ($\text{CPI}$, $t_h = 2\text{ ns}$, $\text{núm. encerts}$). És l'opció per defecte per a qualsevol camp o paraula ($\text{offset}$, $\text{índex}$).
+- `\texttt{…}`: literals de codi dins d'una fórmula ($\texttt{0x100100F}$, $\texttt{vec[i]}$).
+
+**Criteri per context**:
+
+| Context | Backtick | Math | Cursiva |
+| :--- | :---: | :---: | :---: |
+| Cos del text | ✓ | ✓ | ✓ (anglicismes) |
+| Títols de secció `{#sec-}` | ✓ | ✗ (reescriure el títol) | ✗ |
+| Títols de callout | ✓ | ✓ | ✓ (anglicismes) |
+| Cel·les de taula | ✓ | ✓ | ✓ |
+| Captions de figura/taula | ✓ | ✓ | ✓ |
+| Comentaris de blocs de codi | (tot és codi) | ✗ (no es renderitza) | ✗ |
+| Etiquetes SVG | segons `21_specs/svg.md` (MONO per a codi); sense MathJax: notació Unicode (×, ≤, ²) | | |
+
+**Exemples d'aplicació** (llista de referència ràpida):
 
 - **Sense backtick**:
     - RISC-V, RV32I, Extensió "M", Extensió "Zicsr".
@@ -477,12 +507,16 @@ La referència és `@tbl-TODO`.
 
 ### Equacions
 
-<!-- TODO: Definir criteri de numeració d'equacions (només les referenciades? Totes? Les importants?) -->
-<!-- TODO: Definir criteri d'ús de LaTeX math vs. backticks dins del text:
-     contextos: cos del text, títols de secció, títols de callout, cel·les de taula,
-     captions de figura, captions de taula, blocs de codi (comentaris), etiquetes SVG -->
-
 Sintaxi: `$$expressió$$ {#eq-NOM}`. La referència és `@eq-NOM`.
+
+**Criteri de numeració**: s'etiqueten (`{#eq-NOM}`) — i per tant es numeren — només:
+
+- les equacions **referenciades** amb `@eq-` des d'algun punt del llibre (mateix tema, PE/PS o laboratori), i
+- les **fórmules canòniques** del tema susceptibles de ser referenciades (p. ex. la definició del TAM, la Llei d'Amdahl).
+
+La resta d'equacions display queden sense etiqueta ni número. Si més endavant cal referenciar una equació no etiquetada, s'etiqueta en aquell moment.
+
+Per al criteri d'ús de LaTeX math vs. backticks per context, vegeu §Codi, matemàtiques i cursiva.
 
 ### Bibliografia
 
