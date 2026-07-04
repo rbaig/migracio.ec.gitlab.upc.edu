@@ -20,6 +20,54 @@
   height: auto !important;
 } */
 
+/* Equacions display (MathJax CHTML): en pantalles estretes, les fórmules més
+   amples que el viewport es desplacen horitzontalment dins del seu propi
+   contenidor en lloc de desbordar per la dreta. */
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-top: 2px;     /* evita que l'scroll retalli superíndexs/subíndexs */
+  padding-bottom: 2px;
+}
+
+/* Equacions inline llargues: mateixa estratègia, mantenint el flux inline.
+   MathJax 3 no parteix línies automàticament; sense això, una expressió
+   inline més ampla que el viewport quedaria tallada. La barra de scroll
+   s'amaga (desbordaments de subpíxel la farien aparèixer sota expressions
+   curtes); el desplaçament tàctil o amb roda segueix funcionant. */
+mjx-container:not([display="true"]) {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;             /* Firefox */
+}
+mjx-container:not([display="true"])::-webkit-scrollbar {
+  display: none;                     /* Chrome/Safari */
+}
+
+/* Taules en pantalles estretes: scroll horitzontal propi en lloc de desbordar
+   el cos de la pàgina (afecta especialment taules amb math inline). */
+@media (max-width: 767.98px) {
+  main table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Per sota del breakpoint de col·lapse de la sidebar de Quarto (992 px), els
+   elements off-canvas del tema (#quarto-sidebar-glass, cercador) eixamplen el
+   scrollWidth de la pàgina. Amb el contingut ja contingut (equacions i taules
+   amb scroll propi), s'elimina el desbordament residual de la pàgina. */
+@media (max-width: 991.98px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
 .taula-vores td,
 .taula-vores th {
   border-left: 1px solid #dee2e6;

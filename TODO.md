@@ -120,7 +120,7 @@ Colors nous afegits a `21_specs/svg.md` en aquest xat:
 
 - **Cometes** `"..."` → `«...»`: substitució global.
 - **`****` sobrants**: eliminar.
-- **Equacions a MathML**: passar totes les equacions; definir criteris d'inline.
+- **Equacions a MathML**: passar totes les equacions; definir criteris d'inline. **Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`)**: funciona (`underbrace`, `cases`, taules amb math correctes a Chrome), i elimina el JS de MathJax (render instantani, funciona offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), la numeració d'equacions queda inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. Recomanació: mantenir MathJax 3 (el desbordament mòbil ja està resolt via CSS); reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa).
 - **PDF**: figures dins callouts no queden centrades → investigar via `preamble.tex`.
 - **Gestió d'errades post-commit**: definir protocol (vegeu `07_contrib.qmd §Gestió d'errades`).
 

@@ -85,11 +85,11 @@ La majoria depenen d'A1 (els destins són a T2/T5/T9 sense slug) o de decisions 
 
 El LaTeX de display desborda per la dreta en pantalles petites i «embruta» les taules.
 
-- [ ] Diagnosticar: quin motor s'usa (MathJax per defecte a Quarto) i quins contenidors desborden (equacions display, equacions dins de cel·les de taula, o totes dues).
-- [ ] Proposar i aplicar solució CSS a `styles.css` (p. ex. `overflow-x: auto` als contenidors `mjx-container[display="true"]` / `.math.display`, i tractament específic per a taules amb math).
-- [ ] Valorar si algunes equacions llargues s'han de partir (`aligned`/`split`) en lloc de fer scroll.
-- [ ] Relació amb `TODO.md §Tasques globals`: «Equacions a MathML» — si es migra a MathML, revalidar el comportament responsive després.
-- [ ] Provar a viewport estret (p. ex. 360 px) abans de donar per tancat.
+- [x] Diagnòstic (Chrome headless CDP a 360 px): motor MathJax 3 CHTML; desbordaven (1) equacions display, (2) equacions inline llargues, (3) taules senceres, (4) elements off-canvas del tema Quarto (`#quarto-sidebar-glass`).
+- [x] Solució aplicada a `styles.css`: `overflow-x: auto` a `mjx-container` display i inline (inline amb barra amagada per evitar barres espúries per subpíxels), taules amb scroll propi per sota de 768 px, `body{overflow-x:hidden}` per sota de 992 px per a la UI del tema.
+- [x] Verificat a 360 px amb mesures CDP (0 elements desbordats sense scroll propi) i captures (equació display, inline, taula ampla); verificat desktop 1280 px sense regressions.
+- [ ] (Opcional, si molesta l'scroll) Valorar partir les equacions display més llargues amb `aligned`/`split`.
+- [ ] ⚠ Si es migra a MathML (`TODO.md §Tasques globals`), els selectors `mjx-container` de `styles.css` s'hauran d'adaptar (`math[display="block"]`).
 
 ---
 
