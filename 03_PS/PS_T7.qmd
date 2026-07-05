@@ -2,15 +2,9 @@
 number-sections: true
 ---
 
-## {{< var tema7 >}} {#sec-solucions-mc}
+# {{< var tema7 >}} {#sec-tema-mc-solucions}
 
-Punts que val la pena revisar amb atenció:
-
-- sol-p7-assoc-2vies: el bit 8 de 0xA972 (provinent del dígit hex 9 = 1001₂) fa que el conjunt sigui 23 (10111₂), no 7. He detallat l'explicació perquè és una trampa d'examen clàssica.
-- sol-p7-cache-politiques: la mida de l'accés (2 B per paraula) afecta la columna "Bytes escrits MP". He assumit paraula = 2 B per processador de 16 bits.
-- sol-p7-fallades-programa apartat c): he notat que B a 0x200 se solaparia físicament amb A, però l'anàlisi de mapatge és igualment vàlida.
-
-### Disseny bàsic
+## Disseny bàsic
 
 ::: {#sol-p7-cache-adreces .callout-tip}
 ## Solució: adreçament i seqüència de blocs
@@ -145,7 +139,7 @@ Justificació dels casos clau:
 L'escriptura retardada amb assignació té una taxa de fallades inferior (l'accés #4 passa de fallada a encert perquè el bloc es va assignar al pas 3), però genera més tràfic total amb MP: cada assignació per escriptura carrega un bloc de 16 B, i cada *writeback* d'un bloc modificat n'escriu 16 B més. L'escriptura immediata sense assignació genera menys tràfic perquè les escriptures que fallen només transfereixen la paraula escrita (2 B), sense carregar blocs sencers.
 :::
 
-### Rendiment
+## Rendiment
 
 ::: {#sol-p7-rend-politiques .callout-tip}
 ## Solució: comparació de polítiques d'escriptura
@@ -154,7 +148,7 @@ L'escriptura retardada amb assignació té una taxa de fallades inferior (l'acc�
 
 Dades: $p_e = 20\%$, $p_m = 1/3$, $t_h = 10$ ns, $t_{bloc} = 100$ ns, $h_1 = 0{,}9$ (immediata s/a), $h_2 = 0{,}85$ (retardada a/a).
 
-**a)** Temps de penalització mitjà per fallada:
+**a)** Aplicant @eq-tam, amb el temps de penalització mitjà per fallada de cada política (@cau-model-temps):
 
 *Escriptura immediata sense assignació* ($m_1 = 0{,}10$): les fallades de lectura paguen $t_{bloc} + t_h$ i les d'escriptura paguen 0 (el buffer absorbeix l'escriptura):
 
@@ -214,7 +208,7 @@ $$t_{exe} = \text{CPI} \cdot t_c = 2{,}86 \cdot 10 = \mathbf{28{,}6} \text{ ns/i
 Observació: les fallades de memòria cau incrementen el CPI un $90{,}7\%$ respecte del valor ideal (de $1{,}5$ a $2{,}86$). La MC de dades, amb només el $37{,}5\%$ dels accessos, contribueix el $70{,}6\%$ de la penalització ($0{,}96 / 1{,}36$), a causa de la seva taxa de fallades més alta i la penalització per *writebacks*.
 :::
 
-### Associativitat i multinivell
+## Associativitat i multinivell
 
 ::: {#sol-p7-assoc-2vies .callout-tip}
 ## Solució: associativa de 2 vies
@@ -317,7 +311,7 @@ El temps mitjà d'accés és la suma del temps d'L1 més les penalitzacions pond
 
 $$\boxed{\text{TAM} = t_{h1} + m_1 \cdot \bigl(t_{h2} + m_2 \cdot t_{p2}\bigr)}$$
 
-Desenvolupant:
+La fórmula coincideix amb @eq-tam-multinivell. Desenvolupant:
 
 $$\text{TAM} = t_{h1} + m_1 \cdot t_{h2} + m_1 \cdot m_2 \cdot t_{p2}$$
 
@@ -326,14 +320,14 @@ El terme $m_1 \cdot m_2$ és la **taxa de fallades global** de L2 (proporció de
 Observació: en un sistema ben dissenyat, $t_{h1}$ domina el TAM perquè afecta tots els accessos. Per això L1 s'optimitza per minimitzar $t_{h1}$, mentre que L2 s'optimitza per minimitzar $m_2$.
 :::
 
-### Tipologia de fallades
+## Tipologia de fallades
 
 ::: {#sol-p7-fallades-tipologia .callout-tip}
 ## Solució: classificació de fallades
 
 **Enunciat**: @exr-p7-fallades-tipologia.
 
-MC de correspondència directa, 8 línies, blocs de 4 bytes ($b = 2$). Capacitat total: $8 \times 4 = 32$ bytes. El mapatge és $\text{línia} = \text{bloc} \bmod 8$, on $\text{bloc} = \text{adreça} \div 4$.
+MC de correspondència directa, 8 línies, blocs de 4 bytes ($b = 2$). Capacitat total: $8 \times 4 = 32$ bytes. El mapatge és $\text{línia} = \text{bloc} \bmod 8$, on $\text{bloc} = \text{adreça} \div 4$. La classificació de les fallades segueix les tres C (@sec-tipologia-fallades, @cau-tres-c).
 
 **a) Seqüència A**: 0, 4, 8, 12, 16, 20, 24, 28, 0, 4, 8, 12
 

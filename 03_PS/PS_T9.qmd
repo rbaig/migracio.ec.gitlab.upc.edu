@@ -2,9 +2,9 @@
 number-sections: true
 ---
 
-## {{< var tema9 >}} {#sec-solucions-excepcions}
+# {{< var tema9 >}} {#sec-tema-excepcions-interrupcions-solucions}
 
-### Excepcions i interrupcions
+## Excepcions i interrupcions
 
 ::: {#sol-p9-exc-conceptes .callout-tip}
 ## Solució: conceptes bàsics d'excepcions i interrupcions
@@ -15,7 +15,7 @@ number-sections: true
 
 **b)** En cas d'**excepció**, `mepc` apunta a la **instrucció causant** (la que s'ha interromput sense completar-se). En cas d'**interrupció**, `mepc` apunta a la **instrucció següent** a la instrucció que s'estava executant (la instrucció en curs ha finalitzat completament i el PC ja s'ha incrementat).
 
-**c)** Quan el processador detecta una excepció o interrupció, executa automàticament, per maquinari:
+**c)** Quan el processador detecta una excepció o interrupció, executa automàticament, per maquinari (@sec-ei-flux-hardware-accions):
 
 1. Guarda el PC a `mepc`.
 2. Escriu el codi de causa a `mcause` (bit 31 = 0 per a excepcions, bit 31 = 1 per a interrupcions).
@@ -29,7 +29,7 @@ number-sections: true
 ::: {#sol-p9-exc-rse .callout-tip}
 ## Solució: RSE mínima en assemblador
 
-**Enunciat**: @exr-p9-exc-rse.
+**Enunciat**: @exr-p9-exc-rse. *Vegeu l'estructura general de la RSE a @sec-ei-rse.*
 
 ```{.s filename="RV32IZicsr"}
 rse:
@@ -134,12 +134,12 @@ Observacions:
 - El salt `j` és una pseudoinstrucció equivalent a `jal x0, offset`.
 :::
 
-### Crides al sistema
+## Crides al sistema
 
 ::: {#sol-p9-syscall-basic .callout-tip}
 ## Solució: crides al sistema bàsiques a RARS
 
-**Enunciat**: @exr-p9-syscall-basic.
+**Enunciat**: @exr-p9-syscall-basic. *Els codis de servei de RARS són a @nte-ecall-taula-rars.*
 
 **a)** Imprimir l'enter de `t0`:
 
@@ -173,7 +173,7 @@ Observacions:
 ```
 :::
 
-### Entrada/Sortida
+## Entrada/Sortida
 
 ::: {#sol-p9-io-conceptes .callout-tip}
 ## Solució: conceptes d'entrada/sortida
@@ -200,7 +200,7 @@ Observacions:
 **c)** El bit `MIE` (bit 3 de `mstatus`) és el **permís global**: si val 0, cap interrupció no s'atén, independentment de la resta de bits. El bit `MTIE` (bit 7 de `mie`) és la **màscara específica** de les interrupcions de temporitzador en mode M: si val 0, les interrupcions de temporitzador queden inhibides fins i tot quan `MIE = 1`. Cal que tots dos valguin 1 (i el bit corresponent de `mip` estigui actiu) perquè una interrupció de temporitzador sigui atesa.
 :::
 
-### Registres `mepc` i `mtvec`
+## Registres `mepc` i `mtvec`
 
 ::: {#sol-p9-exc-mepc-mtvec .callout-tip}
 ## Solució: `mepc`, `mtvec` i ajust de retorn
@@ -234,34 +234,33 @@ $$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
 ```
 :::
 
-### Fallada de TLB
+## Fallada de pàgina
 
 ::: {#sol-p9-exc-tlb-miss .callout-tip}
-## Solució: fallada de TLB com a excepció
+## Solució: fallada de pàgina i TLB gestionat per programari
 
 **Enunciat**: @exr-p9-exc-tlb-miss, apartats a–b.
 
-**a)** RISC-V no distingeix, a `mcause`, entre fallada de TLB i fallada de pàgina: tots dos usen el mateix codi de causa.
+**a)** Una fallada de pàgina escriu a `mcause` (@nte-mcause-mes-rellevants):
 
-- Fallada de TLB per **lectura**: `mcause = 13` (fallada de pàgina en lectura).
-- Fallada de TLB per **escriptura**: `mcause = 15` (fallada de pàgina en escriptura/AMO).
+- En **lectura** de dada: `mcause = 13` (*load page fault*).
+- En **escriptura**: `mcause = 15` (*store/AMO page fault*).
 
-En tots dos casos, `mtval` conté l'**adreça virtual** que ha causat la fallada.
+En tots dos casos, `mtval` conté l'**adreça virtual** que ha causat la fallada (@sec-ei-tlb-mecanisme).
 
-La distinció entre fallada de TLB i fallada de pàgina la fa la RSE per programari, consultant el bit V de l'entrada de la taula de pàgines: si V = 1 és una fallada de TLB (la pàgina és present a memòria); si V = 0 és una fallada de pàgina (la pàgina no és present).
+Cal recordar que, a RISC-V, l'excepció només es produeix quan la pàgina no és a la memòria física (bit V = 0 a la PTE): la fallada de TLB amb la pàgina present la resol el *page-table walker* sense interrompre el programa (@cau-tlb-miss-excepcio).
 
-**b)** El flux que ha de seguir la RSE:
+**b)** El flux que ha de seguir la RSE (la rutina completa és a @sec-ei-tlb-modes-rutina):
 
 1. Llegir `mtval` per obtenir l'adreça virtual que ha causat la fallada.
-2. Extreure el VPN de l'adreça virtual (els bits superiors al desplaçament de pàgina).
-3. Localitzar l'entrada corresponent a la taula de pàgines (a partir de l'adreça física base de la taula de pàgines i el VPN com a índex).
-4. Comprovar el bit V de l'entrada:
-   - V = 1: la pàgina és present; és una fallada de TLB. Cal executar `sfence.vma` per invalidar l'entrada obsoleta i forçar que el maquinari refaci el *page table walk* en la reexecució.
-   - V = 0: la pàgina no és present; és una fallada de pàgina. Cal copiar la pàgina de disc a un marc lliure, actualitzar la taula de pàgines (V ← 1, PPN ← marc assignat) i executar `sfence.vma`.
-5. No incrementar `mepc`: la instrucció causant s'ha de **reexecutar**, i ara el TLB contindrà la traducció correcta.
+2. Extreure'n el VPN (els bits per sobre del desplaçament de pàgina) i localitzar la PTE corresponent a la taula de pàgines del procés actiu (a partir del registre de taula de pàgines; `satp` en mode S).
+3. Si l'adreça no pertany a cap regió vàlida del procés, avortar el programa (*segmentation fault*).
+4. Si la pàgina és vàlida però no present (V = 0): copiar-la del disc a un marc lliure (reemplaçant-ne un si cal, i escrivint-lo prèviament al disc si té D = 1) i actualitzar la PTE (V ← 1, PPN ← marc assignat, D ← 0).
+5. Executar `sfence.vma` perquè el TLB no conservi cap còpia obsoleta de la PTE i el walker la torni a llegir.
+6. No incrementar `mepc`: la instrucció causant s'ha de **reexecutar**; en la reexecució, el walker trobarà la PTE vàlida i l'accés es completarà.
 :::
 
-### Interrupcions d'entrada/sortida
+## Interrupcions d'entrada/sortida
 
 ::: {#sol-p9-exc-interrupcions-io .callout-tip}
 ## Solució: RSE per a interrupcions de teclat

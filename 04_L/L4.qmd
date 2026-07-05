@@ -6,12 +6,14 @@ number-sections: true
 
 ### Lliuraments {.unnumbered}
 
+Cal lliurar les respostes als exercicis següents al campus virtual abans de l'inici de la sessió de laboratori:
+
 | Exercici | Nom i format del fitxer |
 | :--- | :--- |
-| @exr-declaracio-matrius | `s3_1_1.s` |
-| @exr-adreces-matrius | `s3_2_1.md` |
-| @exr-subr-matrius | `s3_2_2.md` i `s3_2_2.s` |
-| @exr-suma-columna | `s3_3_1.md` i `s3_3_1.s` |
+| @exr-declaracio-matrius | `s4_1_1.s` |
+| @exr-adreces-matrius | `s4_2_1.md` |
+| @exr-subr-matrius | `s4_2_2.md` i `s4_2_2.s` |
+| @exr-suma-columna | `s4_3_1.md` i `s4_3_1.s` |
 : {.striped .hover}
         
 ### Lectura prèvia {.unnumbered}
@@ -37,7 +39,7 @@ Les matrius multidimensionals s'emmagatzemen en memòria en ordre de files (*row
 ---
 
 ::: {#exr-declaracio-matrius}
-## `s3_1_1.s`
+## `s4_1_1.s`
 
 Declareu a la secció `.data` les variables globals següents. Useu `.eqv` per a les dimensions de cada matriu (@imp-eqv-dimensions). Garantiu l'alineació correcta de cada variable amb la directiva `.align` on calgui.
 
@@ -58,7 +60,7 @@ Recordeu que en C els elements d'una matriu es guarden per files, i que en RV32I
 ---
 
 ::: {#sol-declaracio-matrius}
-```{.s filename="s3_1_1.s"}
+```{.s filename="s4_1_1.s"}
 .globl _start
 
 .eqv NF1, 5
@@ -103,7 +105,7 @@ $$\texttt{@mat[i][j]} = \texttt{@mat} + (i \cdot NC + j) \cdot NB$$
 ---
 
 ::: {#exr-adreces-matrius}
-## `s3_2_1.md`
+## `s4_2_1.md`
 
 Donades les variables globals declarades a @sol-declaracio-matrius, calculeu l'adreça de memòria de cada un dels elements següents en funció de l'adreça base de la matriu corresponent:
 
@@ -132,11 +134,11 @@ Per a `mat3`, `NB = 8` perquè cada element és de tipus `long long` (64 bits). 
 ---
 
 ::: {#exr-subr-matrius}
-## `s3_2_2.md` i `s3_2_2.s`
+## `s4_2_2.md` i `s4_2_2.s`
 
 Traduïu a RV32IM el programa C següent. `_start` crida `subr` dues vegades; `subr` accedeix a `mat1` per índexs variables.
 
-```{.c filename="s3_2_2.c"}
+```{.c filename="s4_2_2.c"}
 int mat1[5][6];
 int mat4[2][3] = {{2, 3, 1}, {2, 4, 3}};
 int col = 2;
@@ -164,8 +166,6 @@ Abans d'escriure cap instrucció:
 
 ---
 
-<!-- TODO Decidir si `sp` múltiple de 4 o de 16. L'ABI RISC-V imposa `sp` múltiple de 16. Roger: 16 -->
-<!-- TODO Aplicar el criteri a aquesta solució -->
 ::: {#sol-subr-matrius}
 **Pas 1–2. Uninivell o multinivell.**
 
@@ -197,12 +197,11 @@ Entre la primera crida a `subr` i la segona, `_start` necessita les adreces de `
 | `+0` | `s0` desat |
 | `+4` | `s1` desat |
 | `+8` | `ra` desat |
-| `+12` | padding (alineació ABI) |
 : {.striped .hover}
 
-Mida del BA: 16 bytes (@nte-abi-alineacio-pila).
+Mida del BA: 12 bytes (@nte-abi-alineacio-pila).
 
-```{.s filename="s3_2_2.s"}
+```{.s filename="s4_2_2.s"}
 .globl _start
 
 .eqv NF1, 5
@@ -247,7 +246,7 @@ subr:
 
 _start:
         # pròleg
-        addi sp, sp, -16
+        addi sp, sp, -12
         sw   s0,  0(sp)
         sw   s1,  4(sp)
         sw   ra,  8(sp)
@@ -278,7 +277,7 @@ _start:
         lw   s0,  0(sp)
         lw   s1,  4(sp)
         lw   ra,  8(sp)
-        addi sp, sp, 16
+        addi sp, sp, 12
 
         li   a7, 93
         li   a0, 0
@@ -316,11 +315,11 @@ L'stride depèn del patró de recorregut. Per a una matriu d'elements de mida $T
 ---
 
 ::: {#exr-suma-columna}
-## `s3_3_1.md` i `s3_3_1.s`
+## `s4_3_1.md` i `s4_3_1.s`
 
 Considereu la matriu i el programa C següents:
 
-```{.c filename="s3_3_1.c"}
+```{.c filename="s4_3_1.c"}
 int mat[4][6] = { {0, 0, 2, 0, 0, 0},
                   {0, 0, 4, 0, 0, 0},
                   {0, 0, 6, 0, 0, 0},
@@ -343,7 +342,7 @@ int suma_col(int m[][6]) {
 }
 ```
 
-Abans d'escriure cap instrucció, responeu al fitxer `s3_3_1.md`:
+Abans d'escriure cap instrucció, responeu al fitxer `s4_3_1.md`:
 
 1. Calculeu l'adreça de `m[i][2]` en funció de `@m` i `i`.
 2. Calculeu l'stride per recórrer la columna 2 (distància en bytes entre `m[i][2]` i `m[i+1][2]`).
@@ -391,9 +390,9 @@ En C, `p` és de tipus `int *`. Un increment d'una unitat (`p += 1`) equival a s
 | `+0` | `ra` desat |
 : {.striped .hover}
 
-Mida del BA: 16 bytes (@nte-abi-alineacio-pila).
+Mida del BA: 4 bytes (@nte-abi-alineacio-pila).
 
-```{.s filename="s3_3_1.s"}
+```{.s filename="s4_3_1.s"}
 .globl _start
 
 .eqv NF, 4
@@ -428,7 +427,7 @@ fifor:
         ret
 
 _start:
-        addi sp, sp, -16
+        addi sp, sp, -4
         sw   ra,  0(sp)
 
         la   a0, mat
@@ -438,7 +437,7 @@ _start:
         sw   a0, 0(t0)          # resultat = a0
 
         lw   ra,  0(sp)
-        addi sp, sp, 16
+        addi sp, sp, 4
 
         li   a7, 93
         li   a0, 0

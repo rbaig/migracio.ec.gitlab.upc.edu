@@ -2,16 +2,18 @@
 number-sections: true
 ---
 
-## {{< var tema8 >}} {#sec-solucions-mv}
+# {{< var tema8 >}} {#sec-tema-mv-solucions}
 
-### Traducció d'adreces i fallada de pàgina
+## Traducció d'adreces i fallada de pàgina
 
 ::: {#sol-p8-mv-paginacio-basica .callout-tip}
 ## Solució: paginació bàsica i traça LRU
 
 **Enunciat**: @exr-p8-mv-paginacio-basica.
 
-Memòria virtual de 16 MB ($2^{24}$ B → 24 bits d'adreça lògica), memòria física de 16 KB ($2^{14}$ B → 14 bits d'adreça física) i pàgines de 256 B ($2^8$ B → desplaçament de 8 bits).
+Memòria virtual de 16 MiB ($2^{24}$ B → 24 bits d'adreça lògica), memòria física de 16 KiB ($2^{14}$ B → 14 bits d'adreça física) i pàgines de 256 B ($2^8$ B → desplaçament de 8 bits).
+
+La descomposició VPN/desplaçament segueix @cau-mv-traduccio:
 
 - VPN: $24 - 8 = 16$ bits → $2^{16} = 65536$ pàgines virtuals.
 - PPN: $14 - 8 = 6$ bits → $2^6 = 64$ marcs de pàgina.
@@ -20,7 +22,7 @@ Memòria virtual de 16 MB ($2^{24}$ B → 24 bits d'adreça lògica), memòria f
 
 $$6 + 1 + 1 = 8 \text{ bits} = 1 \text{ byte/entrada}$$
 
-$$\text{Mida TP} = 2^{16} \times 1 \text{ B} = 64 \text{ KB}$$
+$$\text{Mida TP} = 2^{16} \times 1 \text{ B} = 64 \text{ KiB}$$
 
 **b)** El VPN és $\lfloor \text{adreça} / \texttt{0x100} \rfloor$ (els dos dígits hexadecimals inferiors són el desplaçament de 8 bits). Hi caben 3 pàgines a memòria física, amb reemplaçament LRU. Seqüència de VPN: 0, 1, 1, 2, 0, 1, 4, 5, 1.
 
@@ -45,25 +47,25 @@ Hi ha **5 fallades** i 4 encerts. A `000416` s'expulsa la pàgina 2 (la menys re
 
 **Enunciat**: @exr-p8-mv-multinivell.
 
-Adreces de 32 bits, pàgines de 4 KB ($2^{12}$ B), entrades de 4 B, dos nivells amb repartiment simètric.
+Adreces de 32 bits, pàgines de 4 KiB ($2^{12}$ B), entrades de 4 B, dos nivells amb repartiment simètric.
 
-**a)** Desplaçament: $\log_2(4\text{ KB}) = 12$ bits. Resten $32 - 12 = 20$ bits d'índex, repartits simètricament:
+**a)** Desplaçament: $\log_2(4\text{ KiB}) = 12$ bits. Resten $32 - 12 = 20$ bits d'índex, repartits simètricament:
 
 $$\underbrace{10 \text{ bits}}_{\text{índex N1}} \; \underbrace{10 \text{ bits}}_{\text{índex N2}} \; \underbrace{12 \text{ bits}}_{\text{desplaçament}}$$
 
 **b)** Cada taula (de qualsevol nivell) té $2^{10} = 1024$ entrades de 4 B:
 
-$$2^{10} \times 4 \text{ B} = 4 \text{ KB}$$
+$$2^{10} \times 4 \text{ B} = 4 \text{ KiB}$$
 
-Tant la taula de primer nivell com cada taula de segon nivell ocupen **4 KB** (exactament una pàgina).
+Tant la taula de primer nivell com cada taula de segon nivell ocupen **4 KiB** (exactament una pàgina).
 
 **c)** Cada entrada del primer nivell pot apuntar a una taula de segon nivell: com a màxim $2^{10} = 1024$ taules de segon nivell. Mida total en el **pitjor cas** (totes assignades):
 
-$$\underbrace{4 \text{ KB}}_{\text{N1}} + 1024 \times \underbrace{4 \text{ KB}}_{\text{N2}} = 4 \text{ KB} + 4 \text{ MB} = 4 \text{ MB} + 4 \text{ KB}$$
+$$\underbrace{4 \text{ KiB}}_{\text{N1}} + 1024 \times \underbrace{4 \text{ KiB}}_{\text{N2}} = 4 \text{ KiB} + 4 \text{ MiB} = 4 \text{ MiB} + 4 \text{ KiB}$$
 
-**d)** Una taula de **nivell únic** tindria $2^{20}$ entrades de 4 B $= 4$ MB. La jerarquia de dos nivells, en el pitjor cas, ocupa lleugerament **més** (4 MB + 4 KB: el sobrecost del directori de primer nivell).
+**d)** Una taula de **nivell únic** tindria $2^{20}$ entrades de 4 B $= 4$ MiB. La jerarquia de dos nivells, en el pitjor cas, ocupa lleugerament **més** (4 MiB + 4 KiB: el sobrecost del directori de primer nivell).
 
-L'avantatge apareix en el **cas típic**, en què el procés només usa una fracció de l'espai lògic: només cal assignar les taules de segon nivell de les regions realment utilitzades. Per exemple, un procés que toqui codi, dades i pila en 3 regions disjuntes necessita la taula de primer nivell (4 KB) i unes poques de segon nivell, de l'ordre de **desenes de KB** en lloc de 4 MB. Amb un nivell únic, en canvi, sempre cal reservar els 4 MB sencers encara que la majoria d'entrades siguin invàlides.
+L'avantatge apareix en el **cas típic**, en què el procés només usa una fracció de l'espai lògic: només cal assignar les taules de segon nivell de les regions realment utilitzades. Per exemple, un procés que toqui codi, dades i pila en 3 regions disjuntes necessita la taula de primer nivell (4 KiB) i unes poques de segon nivell, de l'ordre de **desenes de KiB** en lloc de 4 MiB. Amb un nivell únic, en canvi, sempre cal reservar els 4 MiB sencers encara que la majoria d'entrades siguin invàlides.
 :::
 
 ::: {#sol-p8-mv-taula-referencies .callout-tip}
@@ -71,7 +73,7 @@ L'avantatge apareix en el **cas típic**, en què el procés només usa una frac
 
 **Enunciat**: @exr-p8-mv-taula-referencies.
 
-Adreça lògica de 16 bits, física de 15 bits, pàgines de 8 KB ($2^{13}$ → desplaçament de 13 bits). VPN: $16 - 13 = 3$ bits (8 pàgines); PPN: $15 - 13 = 2$ bits (4 marcs). El VPN és $\lfloor \text{adreça}/\texttt{0x2000} \rfloor$ (els 3 bits de més pes de l'adreça).
+Adreça lògica de 16 bits, física de 15 bits, pàgines de 8 KiB ($2^{13}$ → desplaçament de 13 bits). VPN: $16 - 13 = 3$ bits (8 pàgines); PPN: $15 - 13 = 2$ bits (4 marcs). El VPN és $\lfloor \text{adreça}/\texttt{0x2000} \rfloor$ (els 3 bits de més pes de l'adreça).
 
 Estat inicial: PPN 0 = VPN 2, PPN 1 = VPN 3, PPN 2 = VPN 4, PPN 3 lliure. Ordre LRU (MRU→LRU): VPN 3, VPN 2, VPN 4. Cap pàgina està modificada ($D = 0$).
 
@@ -107,14 +109,14 @@ Estat final de la taula de pàgines:
 Estat final de la memòria física: PPN 0 = VPN 0, PPN 1 = VPN 2, PPN 2 = VPN 4, PPN 3 = VPN 3.
 :::
 
-### TLB
+## TLB
 
 ::: {#sol-p8-tlb-estat .callout-tip}
 ## Solució: traça del TLB i de la taula de pàgines
 
 **Enunciat**: @exr-p8-tlb-estat.
 
-Pàgines de 4 KB → $\text{VPN} = \lfloor \text{adreça}/4096 \rfloor$. TLB de 4 entrades completament associatiu, LRU. L'entrada amb $V = 0$ (VPN 9) és lliure i s'omple en la primera fallada. Ordre LRU inicial de les vàlides (MRU→LRU): VPN 11, VPN 7, VPN 3.
+Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/4096 \rfloor$. TLB de 4 entrades completament associatiu, LRU (vegeu @sec-mv-tlb). L'entrada amb $V = 0$ (VPN 9) és lliure i s'omple en la primera fallada. Ordre LRU inicial de les vàlides (MRU→LRU): VPN 11, VPN 7, VPN 3.
 
 **a) Llista 1.** VPN: 0, 7, 3, 3, 1, 1, 2.
 
@@ -155,7 +157,7 @@ TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP:
 
 TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). TP: VPN 2 → P 1/PPN 13, VPN 9 → P 1/PPN 14.
 
-**b)** Amb pàgines de 16 KB, $\text{VPN} = \lfloor \text{adreça}/16384 \rfloor$ i moltes adreces que abans queien en pàgines diferents passen a compartir pàgina:
+**b)** Amb pàgines de 16 KiB, $\text{VPN} = \lfloor \text{adreça}/16384 \rfloor$ i moltes adreces que abans queien en pàgines diferents passen a compartir pàgina:
 
 - Llista 1: pàgines 0, 1, 0, 0, 0, 0, 0 → només **2 pàgines diferents** (abans 5). Les fallades de TLB baixen de 3 a **2**.
 - Llista 2: pàgines 0, 1, 1, 2, 2, 1, 2 → **3 pàgines diferents** (abans 5). El TLB de 32 entrades les reté totes; hi ha **3 fallades** (la primera referència a cada pàgina nova), menys que les 4 originals.
@@ -166,20 +168,20 @@ En general, augmentar la mida de pàgina **redueix el nombre de pàgines diferen
 
 $$\text{Nre. entrades} = \frac{2^{\text{bits adreça}}}{\text{mida pàgina}}, \qquad \text{Mida TP} = \text{Nre. entrades} \times \text{mida entrada}$$
 
-- 32 bits, pàgines de 4 KB, entrades de 4 B: $\dfrac{2^{32}}{2^{12}} \times 4 = 2^{20} \times 4 = \mathbf{4 \text{ MB}}$.
-- 64 bits, pàgines de 16 KB, entrades de 8 B: $\dfrac{2^{64}}{2^{14}} \times 8 = 2^{50} \times 2^3 = 2^{53} \text{ B} = \mathbf{8 \text{ PiB}}$.
+- 32 bits, pàgines de 4 KiB, entrades de 4 B: $\dfrac{2^{32}}{2^{12}} \times 4 = 2^{20} \times 4 = \mathbf{4 \text{ MiB}}$.
+- 64 bits, pàgines de 16 KiB, entrades de 8 B: $\dfrac{2^{64}}{2^{14}} \times 8 = 2^{50} \times 2^3 = 2^{53} \text{ B} = \mathbf{8 \text{ PiB}}$.
 
 El segon resultat (8 PiB **per procés**) és inviable i justifica les taules de pàgines multinivell de @sol-p8-mv-multinivell.
 :::
 
-### Protecció
+## Protecció
 
 ::: {#sol-p8-mv-proteccio .callout-tip}
 ## Solució: bit de permís d'escriptura i excepcions
 
 **Enunciat**: @exr-p8-mv-proteccio.
 
-Pàgines de 4 KB → $\text{VPN} = \lfloor \text{adreça}/\texttt{0x1000} \rfloor$. Criteri: una **lectura** té èxit sempre que $P = 1$ (el bit E només restringeix escriptures); una **escriptura** requereix $P = 1$ **i** $E = 1$. Si $P = 0$ → fallada de pàgina; si l'escriptura troba $E = 0$ → excepció de protecció.
+Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/\texttt{0x1000} \rfloor$. Criteri: una **lectura** té èxit sempre que $P = 1$ (el bit E només restringeix escriptures); una **escriptura** requereix $P = 1$ **i** $E = 1$. Si $P = 0$ → fallada de pàgina; si l'escriptura troba $E = 0$ → excepció de protecció.
 
 | Accés | Adreça | VPN | P | E | Resultat |
 | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -193,18 +195,18 @@ Pàgines de 4 KB → $\text{VPN} = \lfloor \text{adreça}/\texttt{0x1000} \rfloo
 Observació: els casos a) i e) accedeixen a la **mateixa pàgina** (VPN 0, només lectura). La lectura té èxit i l'escriptura provoca excepció: és el patró típic d'una pàgina de codi o de dades constants, protegida contra modificacions accidentals.
 :::
 
-### Integració del TLB i la memòria cau
+## Integració del TLB i la memòria cau
 
 ::: {#sol-p8-mv-tlb-cau .callout-tip}
 ## Solució: flux VIPT i condició antialiàsing
 
 **Enunciat**: @exr-p8-mv-tlb-cau.
 
-Pàgines de 4 KB, cau de dades de correspondència directa amb 64 blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces virtuals de 32 bits.
+Pàgines de 4 KiB, cau de dades de correspondència directa amb 64 blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces virtuals de 32 bits.
 
 **a)** Descomposició de l'adreça virtual:
 
-- Desplaçament dins la pàgina: $\log_2(4\text{ KB}) = 12$ bits.
+- Desplaçament dins la pàgina: $\log_2(4\text{ KiB}) = 12$ bits.
 - VPN: $32 - 12 = 20$ bits.
 - Desplaçament dins el bloc: $\log_2(32) = 5$ bits.
 - Índex de la cau: $\log_2(64) = 6$ bits.
@@ -231,13 +233,13 @@ Com que la traducció i la indexació es fan alhora, el temps d'accés és pràc
 
 El cost addicional respecte de b) és **un accés a memòria** per llegir la PTE.
 
-**d)** Perquè una cau **VIPT** sigui equivalent a una **PIPT** sense aliàsing, l'índex de la cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:
+**d)** Com s'explica a @sec-mv-vipt, perquè una cau **VIPT** sigui equivalent a una **PIPT** sense aliàsing, l'índex de la cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:
 
 $$C \leq a \cdot T$$
 
-on $C$ és la mida de la cau, $a$ l'associativitat i $T$ la mida de pàgina. Aquí: $C = 64 \times 32 = 2 \text{ KB}$, $a = 1$, $T = 4 \text{ KB}$:
+on $C$ és la mida de la cau, $a$ l'associativitat i $T$ la mida de pàgina. Aquí: $C = 64 \times 32 = 2 \text{ KiB}$, $a = 1$, $T = 4 \text{ KiB}$:
 
-$$2 \text{ KB} \leq 1 \times 4 \text{ KB} \quad \checkmark$$
+$$2 \text{ KiB} \leq 1 \times 4 \text{ KiB} \quad \checkmark$$
 
 es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaçament de pàgina), de manera que la cau es comporta com una PIPT i no pateix aliàsing.
 :::
@@ -247,7 +249,7 @@ es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaç
 
 **Enunciat**: @exr-p8-mv-cache-tlb.
 
-Enters de 4 B. Cau: 4 vies × 64 conjunts × 32 B/bloc $= 8$ KB; un bloc conté $32/4 = 8$ enters. TLB de 32 entrades, pàgines de 8 KB (2048 enters per pàgina; cada fila de `A` ocupa 1024 enters $= 4$ KB, és a dir, mitja pàgina). La matriu `A[128][1024]` ocupa $512$ KB $= 64$ pàgines $= 16384$ blocs.
+Enters de 4 B. Cau: 4 vies × 64 conjunts × 32 B/bloc $= 8$ KiB; un bloc conté $32/4 = 8$ enters. TLB de 32 entrades, pàgines de 8 KiB (2048 enters per pàgina; cada fila de `A` ocupa 1024 enters $= 4$ KiB, és a dir, mitja pàgina). La matriu `A[128][1024]` ocupa $512$ KiB $= 64$ pàgines $= 16384$ blocs.
 
 Adreça de l'element `A[i][j]`: byte $= (i \cdot 1024 + j) \cdot 4 = i \cdot 4096 + j \cdot 4$.
 

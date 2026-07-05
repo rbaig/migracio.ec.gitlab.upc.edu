@@ -4,14 +4,14 @@
 
 Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
-- **`startup.s`**: mantenir o eliminar? Proposta: eliminar; forçar `li a7, 93` + `ecall`. Afecta T2: `#nte-programa-esquelet` i blocs comentats `__start`/`a7,10` (ln 742-772).
+- **`startup.s`**: mantenir o eliminar? Proposta: eliminar; forçar `li a7, 93` + `ecall`. Afecta T2: `#nte-programa-esquelet` i blocs comentats `__start`/`a7,10` (ln 742-772). Afecta també PE_T9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93` quan es prengui la decisió.
 - ~~**Retorn de 2 paràmetres**: restricció EC a 1 resultat (`a0`) o ampliar a 2 (`a0`/`a1`)? Posició d'Adrià: ampliar, el segon com a codi d'error. Afecta T3 (L1106).~~ → ✓ Decisió: `a0` i `a1` (fins a dos resultats escalars). Ja implementat a `{#nte-abi-pas-parametres}` (T3, L1140).
 - ~~**Alineació de la pila**: múltiples de 16 (ABI real) o mantenir relaxació a múltiples de 4?~~ → ✓ Decisió: múltiples de **4** a EC (relaxació pedagògica). L'ABI estàndard (×16) es menciona a `{#nte-abi-alineacio-pila}`. Afecta T3 (L1322) i `{#imp-ec-alineacio-pila}` (si existeix).
 - ~~**`.globl` vs `.global`**: quin usar als exemples?~~ → ✓ Decisió: `.globl`. Documentat a `07_contrib.qmd §T2 i T3`.
 - **`ret` vs `jalr x0, 0(ra)`**: criteri al retorn de funcions. Pendent de consens del professorat. Criteri provisional: `ret` als exemples (pseudoinstrucció estàndard, més llegible).
 - **Adreces de memòria**: format `0x00000000` o `0x0000 0000` (espai cada 4 nibbles)? Pendent de decisió global. Criteri provisional: sense espais (`0x10010000`), coherent amb l'ús actual a T2–T9.
 - **`.section`**: usar o no? si sí, amb quin criteri?
-- **Terminologia «excés» vs. «biaix»**: a T1.qmd (seccions `#sec-enters-en-exces`, `#sec-altres-codificacions`) es fa servir «excés»; decidir si cal unificar a «biaix» (o a la inversa) i aplicar-ho de forma consistent.
+- ~~**Terminologia «excés» vs. «biaix»**~~ → ✓ Decisió: «excés» és el terme canònic (37 aparicions a 8 fitxers, T1/T5/PE_T1/PE_T2/PE_T5/PS_T1/PS_T5/L5, tots consistents). L'única aparició de «biaix» (T5, L. 396) és sobre un concepte diferent (biaix estadístic de l'arrodoniment RNE), no la codificació de l'exponent: no hi havia conflicte real. Documentat a `07_contrib.qmd §Decisions per tema — T1 i T5`.
 - ~~**Directives**: títol de callout `## Directives —` o `## RARS —`?~~ → ✓ Decisió: `## Directives —` (genèric) per a callouts amb directives estàndard GNU AS; `## RARS —` per a comportament exclusiu de RARS. Aplicat a T2 i T3.
 - **ISA/ABI**: on posar la informació de l'ABI de RV? `{.callout-note}` `## RV32I ABI —` o `{.callout-important}`?
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
@@ -103,6 +103,11 @@ Colors nous afegits a `21_specs/svg.md` en aquest xat:
 - **E3 — Slugs sense prefix**: `sec-introduccio`, `sec-flux-hardware`, `sec-rse`, `sec-ecall`, `sec-interrupcions`, `sec-tlb`… Risc de col·lisió global. Vegeu pas 1 de la seqüència a `CLAUDE.md`.
 - **F/G — Figures SVG**: diferides a una fase posterior.
 
+### Laboratori
+
+- **L2 §«Pseudoinstrucció `la` i `li`»**: el cos de la secció és només «TODO»; redactar-ne el contingut o eliminar la secció.
+- **Renumeració de lliuraments (2026-07-05)**: els fitxers de lliurament de L2–L6 s'han renumerat al número de sessió (`s2_*`–`s6_*`; abans anaven una sessió endarrerits i col·lidien amb L1). El directori `laboratori/` conserva els subdirectoris `L0`–`L5` amb `TODO.s`: revisar-ne els noms quan es decideixi el mecanisme de descàrrega.
+
 ---
 
 ## Tasques globals
@@ -144,6 +149,18 @@ Colors nous afegits a `21_specs/svg.md` en aquest xat:
 | T3 | `exr-p4-compilacio-auipc`: expansió de `la`, rang ±2 GiB | ✓ Resolt a `PS_T3.qmd` |
 | T3 | `exr-p4-memoria-jalr`: tracing de `jalr` (resposta: 3 vegades) | ✓ Resolt a `PS_T3.qmd` |
 | T3 | `exr-p4-logica-rotacio` apartats a) i b): rotació d'1 i de 16 posicions | ✓ Resolt a `PS_T3.qmd` |
+
+### Harmonització KB/MB/GB/TB → KiB/MiB/GiB/TiB (prefixos binaris)
+
+Aplicat el criteri de `07_contrib.qmd §Nombres` (prefixos IEC per a mides que són potències de 2) a tots els valors exactes de mida de memòria/pàgina/cau del projecte:
+
+- ✓ `T2.qmd` (línia «4 GiB ($2^{32}$ bytes)»).
+- ✓ `T8.qmd`, `PE_T8.qmd`, `PS_T8.qmd` (mida de pàgina, TP, espai lògic/físic, TLB).
+- ✓ `PE_T7.qmd` (`exr-p7-rend-mida-bloc`: 8 KiB; `exr-p7-assoc-multinivell`: 1 MiB).
+
+✓ Decisió: es mantenen en `KB`/`MB`/`GB`/`TB` decimal els tres blocs de `T7.qmd` amb mides aproximades de referència real de mercat (no càlculs pedagògics exactes): taula «Capacitat, temps d'accés i cost per GB» (L. 18–25), callout «Les GPUs i la memòria en l'era de la IA» (L. 70–81) i taula de disseny L1/L2 (L. 923).
+
+Afegit `#cau-prefixos-binaris` a `T2.qmd` (primera aparició del llibre, dins §La base RV32I): taula IEC/SI que explica `KiB`/`MiB`/`GiB`/`TiB` (amb «i», binari) vs. `KB`/`MB`/`GB`/`TB` (sense «i», decimal), amb referències des de `T3.qmd`, `T8.qmd` i `07_contrib.qmd`.
 
 ### `index.qmd`
 

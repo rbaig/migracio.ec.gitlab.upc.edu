@@ -6,6 +6,8 @@ number-sections: true
 
 ## Excepcions i interrupcions
 
+*Vegeu @sec-ei-introduccio, @sec-ei-csr, @sec-ei-flux-hardware i @sec-ei-rse.*
+
 ::: {#exr-p9-exc-conceptes}
 Respon les preguntes següents sobre el mecanisme d'excepcions i interrupcions en RISC-V:
 
@@ -37,6 +39,8 @@ Assumeix que el processador opera en mode màquina (M-mode) i que el registre `s
 :::
 
 ## Crides al sistema
+
+*Vegeu @sec-ei-ecall.*
 
 ::: {#exr-p9-syscall-basic}
 En RISC-V, les crides al sistema es fan amb la instrucció `ecall`. El número de crida al sistema es passa al registre `a7` i els arguments a `a0`.
@@ -70,6 +74,8 @@ e) Finalitzi correctament.
 :::
 
 ## Entrada/Sortida
+
+*Vegeu @sec-ei-interrupcions.*
 
 ::: {#exr-p9-io-conceptes}
 Respon les preguntes següents sobre els mecanismes d'entrada/sortida:
@@ -105,11 +111,11 @@ d) La RSE ha d'incrementar `mepc` en 4 per a les crides al sistema (`ecall`). Pe
 :::
 
 ::: {#exr-p9-exc-tlb-miss}
-En un sistema RISC-V en mode màquina (M-mode), una fallada de TLB (*TLB miss*) genera una excepció.
+A RISC-V, la fallada de TLB (*TLB miss*) la resol el maquinari (*page-table walker*) de manera transparent, sense generar cap excepció; només quan el walker troba que la pàgina no és a la memòria física (bit V = 0 a la PTE) es genera una excepció de **fallada de pàgina** (@cau-tlb-miss-excepcio). En canvi, en arquitectures amb TLB gestionat per **programari** (com MIPS), la mateixa fallada de TLB genera una excepció, i és una rutina del SO qui llegeix la taula de pàgines i actualitza el TLB (@wrn-mv-tlb-hw-walker).
 
-a) Quin codi de causa (`mcause`) s'assigna a una fallada de TLB per lectura? I per escriptura? Quin valor pren `mtval`? Nota: RISC-V no distingeix, a `mcause`, entre fallada de TLB i fallada de pàgina.
-b) Descriu els passos que ha de realitzar la RSE per gestionar una fallada de TLB: com troba l'entrada correcta a la taula de pàgines, com invalida l'entrada del TLB i prepara la reexecució de la instrucció causant.
-c) En RISC-V mode M, quan la RSE accedeix a la taula de pàgines per resoldre una fallada de TLB, pot generar una nova fallada de TLB si la pàgina que conté la taula de pàgines tampoc no és al TLB. Explica per què aquesta situació és problemàtica i com es pot evitar.
+a) En RISC-V, quin codi de causa (`mcause`) s'assigna a una fallada de pàgina en una lectura de dada? I en una escriptura? Quin valor pren `mtval` en tots dos casos?
+b) Descriu els passos que ha de seguir la RSE de RISC-V per gestionar una fallada de pàgina: com localitza la PTE a partir de `mtval`, què fa segons el bit V, quin paper hi té `sfence.vma` i com es prepara la reexecució de la instrucció causant.
+c) En un sistema amb TLB gestionat per programari, la rutina que atén una fallada de TLB accedeix a la taula de pàgines i pot provocar, al seu torn, una nova fallada de TLB si la pàgina que conté la taula tampoc no és al TLB. Explica per què aquesta situació és problemàtica i com es pot evitar.
 :::
 
 ::: {#exr-p9-exc-interrupcions-io}

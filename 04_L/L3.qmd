@@ -6,14 +6,16 @@ number-sections: true
 
 ### Lliuraments {.unnumbered}
 
+Cal lliurar les respostes als exercicis següents al campus virtual abans de l'inici de la sessió de laboratori:
+
 | Exercici | Nom i format del fitxer |
 | :--- | :--- |
-| @exr-bits-invertir | `s2_1_1.s` |
-| @exr-classifica-caracter | `s2_2_1.s` |
-| @exr-compta-caracter | `s2_3_1.s` |
-| @exr-update | `s2_4_1.s` |
-| @exr-moda | `s2_4_2.md` i `s2_4_2.s` |
-| @exr-depuracio | `s2_5_1.s` |
+| @exr-bits-invertir | `s3_1_1.s` |
+| @exr-classifica-caracter | `s3_2_1.s` |
+| @exr-compta-caracter | `s3_3_1.s` |
+| @exr-update | `s3_4_1.s` |
+| @exr-moda | `s3_4_2.md` i `s3_4_2.s` |
+| @exr-depuracio | `s3_5_1.s` |
 : {.striped .hover}
 
 ### Lectura prèvia  {.unnumbered}
@@ -44,7 +46,7 @@ Les operacions de desplaçament i lògiques bit a bit permeten manipular bits in
 ---
 
 ::: {#exr-bits-invertir}
-## `s2_1_1.s`
+## `s3_1_1.s`
 
 Donats dos enters `X` (X ∈ [0,31]) i `Y` als registres `s0` i `s1` respectivament, escriviu un programa RV32I que complementi els `X` bits de menor pes de `Y` i deixi el resultat a `s1`. No podeu usar instruccions de salt ni de comparació, i el programa ha de tenir menys de 5 instruccions.
 
@@ -60,7 +62,7 @@ on `^` és la XOR bit a bit i `1 << X` desplaça el valor `1` exactament `X` pos
 ---
 
 ::: {#sol-bits-invertir}
-```{.s filename="s2_1_1.s"}
+```{.s filename="s3_1_1.s"}
 .globl _start
 
 .text
@@ -87,11 +89,11 @@ Una sentència `if-then-else` aniuada es tradueix aplicant el patró de @sec-if-
 ---
 
 ::: {#exr-classifica-caracter}
-## `s2_2_1.s`
+## `s3_2_1.s`
 
 Traduïu a RV32I el programa C següent. Les variables globals `num` i `result` s'han de declarar a la secció `.data`. Tots els temporals van a registres `t`.
 
-```{.c filename="s2_2_1.c"}
+```{.c filename="s3_2_1.c"}
 char   num    = '7';
 int    result = 0;
 
@@ -111,7 +113,7 @@ El programa ha de respectar l'avaluació lazy de `&&` i `||` (@imp-ec-lazy-evalu
 ---
 
 ::: {#sol-classifica-caracter}
-```{.s filename="s2_2_1.s"}
+```{.s filename="s3_2_1.s"}
 .globl _start
 
 .data
@@ -125,36 +127,36 @@ _start:
 
         # if (num >= 'a' && num <= 'z')
         li   t2, 'a'
-        blt  t0, t2, comp-maj
+        blt  t0, t2, comp_maj
         li   t2, 'z'
-        bgt  t0, t2, comp-maj
-        j    es-alfa
+        bgt  t0, t2, comp_maj
+        j    es_alfa
 
-comp-maj:
+comp_maj:
         # || (num >= 'A' && num <= 'Z')
         li   t2, 'A'
-        blt  t0, t2, comp-esp
+        blt  t0, t2, comp_esp
         li   t2, 'Z'
-        bgt  t0, t2, comp-esp
+        bgt  t0, t2, comp_esp
 
-es-alfa:
+es_alfa:
         la   t1, result
         sw   t0, 0(t1)          # result = num
         j    fi
 
-comp-esp:
+comp_esp:
         # else if (num == ' ' || num == '!')
         li   t2, ' '
-        beq  t0, t2, es-esp     # primer operand || cert → lazy
+        beq  t0, t2, es_esp     # primer operand || cert → lazy
         li   t2, '!'
-        bne  t0, t2, es-altre
+        bne  t0, t2, es_altre
 
-es-esp:
+es_esp:
         la   t1, result
         sw   zero, 0(t1)        # result = 0
         j    fi
 
-es-altre:
+es_altre:
         la   t1, result
         li   t2, -1
         sw   t2, 0(t1)          # result = -1
@@ -165,7 +167,7 @@ fi:
         ecall
 ```
 
-La primera branca del `||` exterior usa dos `&&` encadenats (dos rangs); la segona branca usa un `||` simple entre dues igualtats. En el `||` intern (`' '` o `'!'`), el salt a `es-esp` quan la primera condició és certa implementa l'avaluació lazy: si `num == ' '`, no s'avalua la comparació amb `'!'`.
+La primera branca del `||` exterior usa dos `&&` encadenats (dos rangs); la segona branca usa un `||` simple entre dues igualtats. En el `||` intern (`' '` o `'!'`), el salt a `es_esp` quan la primera condició és certa implementa l'avaluació lazy: si `num == ' '`, no s'avalua la comparació amb `'!'`.
 :::
 
 ---
@@ -177,11 +179,11 @@ El patró de traducció d'un `while` (@sec-bucles) consisteix a avaluar la condi
 ---
 
 ::: {#exr-compta-caracter}
-## `s2_3_1.s`
+## `s3_3_1.s`
 
 La cadena de caràcters `w` conté 31 dígits numèrics seguits del sentinella `'\0'`. Escriviu un programa RV32I que compti quantes vegades apareix el caràcter `'4'` a `w` i deixi el resultat al registre `s0`.
 
-```{.c filename="s2_3_1.c"}
+```{.c filename="s3_3_1.c"}
 char w[32] = "4444185720444938167204449251044";
 
 void main() {
@@ -201,7 +203,7 @@ void main() {
 ---
 
 ::: {#sol-compta-caracter}
-```{.s filename="s2_3_1.s"}
+```{.s filename="s3_3_1.s"}
 .globl _start
 
 .data
@@ -241,7 +243,7 @@ En una subrutina multinivell cal preservar `ra` i els registres segurs (`s0`–`
 ---
 
 ::: {#exr-update}
-## `s2_4_1.s`
+## `s3_4_1.s`
 
 La funció `update` rep un punter a l'histograma `h`, l'índex `i` del caràcter actual i l'índex `imax` del caràcter més freqüent fins ara. Incrementa `h[i]` i retorna `i` si ara és el més freqüent, o `imax` en cas contrari.
 
@@ -267,7 +269,7 @@ Traduïu `update` a RV32I. Tingueu en compte:
 ::: {#sol-update}
 **Anàlisi de registres segurs.** `update` és uninivell: no hi ha cap crida, de manera que cap valor travessa una frontera de crida. Tots els temporals van a registres `t`; no cal cap registre `s`. El BA és buit.
 
-```{.s filename="s2_4_1.s"}
+```{.s filename="s3_4_1.s"}
 update:
         # update(int *h, char i, char imax)
         # a0 = h, a1 = i, a2 = imax
@@ -283,10 +285,10 @@ update:
         slli t2, a2, 2          # t2 = imax * 4
         add  t2, a0, t2         # t2 = &h[imax]
         lw   t2, 0(t2)          # t2 = h[imax]
-        ble  t1, t2, ret-imax
+        ble  t1, t2, ret_imax
         mv   a0, a1             # return i
         ret
-ret-imax:
+ret_imax:
         mv   a0, a2             # return imax
         ret
 ```
@@ -297,11 +299,11 @@ Com que `update` és uninivell, els paràmetres `a0`–`a2` es poden usar direct
 ---
 
 ::: {#exr-moda}
-## `s2_4_2.md` i `s2_4_2.s`
+## `s3_4_2.md` i `s3_4_2.s`
 
 La funció `moda` recorre la cadena `vec` de `num` caràcters, construeix un histograma local `histo[10]` i, per a cada caràcter, crida `update` (traduïda a @sol-update) per actualitzar el dígit més freqüent.
 
-```{.c filename="s2_4_2.c"}
+```{.c filename="s3_4_2.c"}
 char w[32]    = "4444185720444938167204449251044";
 char resultat;
 
@@ -352,7 +354,7 @@ Dades generades abans de la crida a `update` i usades després: `histo` (adreça
 
 Mida del BA: 60 bytes (@nte-abi-alineacio-pila).
 
-```{.s filename="s2_4_2.s"}
+```{.s filename="s3_4_2.s"}
 .globl _start
 
 .data
@@ -441,7 +443,7 @@ _start:
         ecall
 ```
 
-El patró de @exr-compta-caracter` reapareix al segon `for`: `add t0, s0, s2` calcula l'adreça del caràcter actual (equivalent a avançar el punter), `lb t0, 0(t0)` el carrega, i `bge s2, s1, ffor2` comprova la condició de fi (aquí amb comptador explícit en lloc de sentinella, perquè `num` és conegut). El resultat esperat a `resultat` és `'4'` (`0x34`).
+El patró de @exr-compta-caracter reapareix al segon `for`: `add t0, s0, s2` calcula l'adreça del caràcter actual (equivalent a avançar el punter), `lb t0, 0(t0)` el carrega, i `bge s2, s1, ffor2` comprova la condició de fi (aquí amb comptador explícit en lloc de sentinella, perquè `num` és conegut). El resultat esperat a `resultat` és `'4'` (`0x34`).
 :::
 
 ---
@@ -453,7 +455,7 @@ La depuració és el procés d'identificar i corregir errors en un programa. En 
 ---
 
 ::: {#exr-depuracio}
-## `s2_5_1.s`
+## `s3_5_1.s`
 
 El programa següent declara el vector global `alfabet` amb les lletres majúscules de l'A a la Z i una cadena de caràcters d'entrada `w1`. La funció `codifica` recorre `w1` caràcter a caràcter i, per a cada lletra, crida la funció `g`, que calcula la lletra simètrica (A↔Z, B↔Y, etc.) i en retorna el codi ASCII. El resultat s'escriu al vector de sortida `w2`.
 
@@ -594,7 +596,7 @@ Correcció:
 
 **Versió corregida de `codifica`**:
 
-```{.s filename="s2_5_1.s"}
+```{.s filename="s3_5_1.s"}
 codifica:
         addi sp, sp, -16
         sw   s0,  0(sp)

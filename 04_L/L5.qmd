@@ -8,10 +8,10 @@ number-sections: true
 
 | Exercici | Nom i format del fitxer |
 | :--- | :--- |
-| @exr-compilacio-separada | `s4_1_1.s` i `s4_1_2.s` |
-| @exr-descompon | `s4_2_1.md` i `s4_2_1.s` |
-| @exr-compon | `s4_3_1.s` |
-| @exr-precisio | `s4_4_1.md` |
+| @exr-compilacio-separada | `s5_1_1.s` i `s5_1_2.s` |
+| @exr-descompon | `s5_2_1.md` i `s5_2_1.s` |
+| @exr-compon | `s5_3_1.s` |
+| @exr-precisio | `s5_4_1.md` |
 : {.striped .hover}
 
 ### Lectura prèvia {.unnumbered}
@@ -20,7 +20,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 | Concepte | On trobar-ho |
 | :--- | :--- |
-| Format IEEE-754 de simple precisió: signe, exponent en excés, fracció | @sec-ieee754, @nte-ieee754-formats |
+| Format IEEE-754 de simple precisió: signe, exponent esbiaixat, fracció | @sec-ieee754, @nte-ieee754-formats |
 | El bit ocult | @cau-bit-ocult |
 | Codificació i decodificació de nombres en coma flotant | @tip-ieee754-codificacio, @tip-ieee754-decodificacio |
 | Modes d'arrodoniment | @sec-arrodoniment |
@@ -50,12 +50,12 @@ Un cop oberts tots els fitxers i activada l'opció **Assemble all files currentl
 ---
 
 ::: {#exr-compilacio-separada}
-## `s4_1_1.s` i `s4_1_2.s`
+## `s5_1_1.s` i `s5_1_2.s`
 
 Traduïu a RV32I el programa C següent, repartint el codi en **dos fitxers** tal com s'indica:
 
-- `s4_1_1.s`: conté únicament la subrutina `abs`.
-- `s4_1_2.s`: conté `_start`, que crida `abs` i emmagatzema el resultat a `resultat`.
+- `s5_1_1.s`: conté únicament la subrutina `abs`.
+- `s5_1_2.s`: conté `_start`, que crida `abs` i emmagatzema el resultat a `resultat`.
 
 ```{.c filename="abs.c"}
 int resultat;
@@ -93,9 +93,9 @@ Tingueu en compte:
 | `+0` | `ra` desat |
 : {.striped .hover}
 
-Mida del BA: 16 bytes (@nte-abi-alineacio-pila).
+Mida del BA: 4 bytes (@nte-abi-alineacio-pila).
 
-```{.s filename="s4_1_1.s"}
+```{.s filename="s5_1_1.s"}
 .globl abs
 
 .text
@@ -109,7 +109,7 @@ positiu:
         ret
 ```
 
-```{.s filename="s4_1_2.s"}
+```{.s filename="s5_1_2.s"}
 .globl _start
 
 .data
@@ -118,7 +118,7 @@ resultat: .word 0
 .text
 
 _start:
-        addi sp, sp, -16
+        addi sp, sp, -4
         sw   ra, 0(sp)
 
         li   a0, -7
@@ -128,7 +128,7 @@ _start:
         sw   a0, 0(t0)          # resultat = 7
 
         lw   ra, 0(sp)
-        addi sp, sp, 16
+        addi sp, sp, 4
 
         li   a7, 93
         li   a0, 0
@@ -136,7 +136,7 @@ _start:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Obriu `s4_1_1.s` i `s4_1_2.s` a RARS, activeu **Settings → Assemble all files currently open** i assembleu. Al panell **Labels** han d'aparèixer les etiquetes `abs`, `_start` i `resultat` amb les seves adreces.
+Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu **Settings → Assemble all files currently open** i assembleu. Al panell **Labels** han d'aparèixer les etiquetes `abs`, `_start` i `resultat` amb les seves adreces.
 
 Executeu el programa i comproveu que la variable global `resultat` conté el valor `7`.
 
@@ -152,7 +152,7 @@ El **format de coma fixa** que s'usa en aquesta sessió té 32 bits: el bit 31 c
 
 $$\text{valor}(A) = (-1)^{A_{31}} \times \sum_{i=0}^{30} A_i \cdot 2^{i-12}$$
 
-El **format de coma flotant IEEE-754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent en excés a 127 (bits 30–23) i 23 bits de fracció amb bit ocult (@cau-bit-ocult) (bits 22–0).
+El **format de coma flotant IEEE-754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent esbiaixat (biaix 127) (bits 30–23) i 23 bits de fracció amb bit ocult (@cau-bit-ocult) (bits 22–0).
 
 El programa de conversió s'organitza en dos passos:
 
@@ -169,7 +169,7 @@ void main() {
 }
 ```
 
-La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE-754: el signe, la mantissa normalitzada sense bit ocult (23 bits) i l'exponent en excés a 127 (8 bits):
+La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE-754: el signe, la mantissa normalitzada sense bit ocult (23 bits) i l'exponent esbiaixat (biaix 127) (8 bits):
 
 ```{.c filename="descompon.c"}
 void descompon(int cf, int *s, int *e, int *m) {
@@ -192,16 +192,16 @@ void descompon(int cf, int *s, int *e, int *m) {
 }
 ```
 
-L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 13 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menor pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en excés.
+L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 13 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menor pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
 
 ---
 
 ::: {#exr-descompon}
-## `s4_2_1.md` i `s4_2_1.s`
+## `s5_2_1.md` i `s5_2_1.s`
 
-Traduïu a RV32I la subrutina `descompon`. El fitxer `s4_2_1.s` ha de contenir **únicament** la subrutina, sense `_start`.
+Traduïu a RV32I la subrutina `descompon`. El fitxer `s5_2_1.s` ha de contenir **únicament** la subrutina, sense `_start`.
 
-Abans d'escriure cap instrucció, responeu al fitxer `s4_2_1.md`:
+Abans d'escriure cap instrucció, responeu al fitxer `s5_2_1.md`:
 
 1. Determineu si `descompon` és uninivell o multinivell i justifiqueu-ho.
 2. Assigneu cada variable local (`cf`, `exp`) i cada paràmetre (`cf`, `*s`, `*e`, `*m`) a un registre i justifiqueu l'elecció.
@@ -230,7 +230,7 @@ Els paràmetres arriben per convenció ABI: `a0 = cf`, `a1 = @s`, `a2 = @e`, `a3
 
 `descompon` és uninivell sense variables locals: BA buit.
 
-```{.s filename="s4_2_1.s"}
+```{.s filename="s5_2_1.s"}
 .globl descompon
 
 .text
@@ -281,9 +281,9 @@ desa:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Per provar `descompon` de manera aïllada, creeu temporalment un `_start` mínim al fitxer `s4_3_1.s` (que desenvolupareu a la secció següent) que declari les variables globals i faci la crida:
+Per provar `descompon` de manera aïllada, creeu temporalment un `_start` mínim al fitxer `s5_3_1.s` (que desenvolupareu a la secció següent) que declari les variables globals i faci la crida:
 
-```{.s filename="s4_3_1.s"}
+```{.s filename="s5_3_1.s"}
 .globl _start
 
 .data
@@ -294,7 +294,7 @@ cfixa:    .word 0x87D18A00
 
 .text
 _start:
-        addi sp, sp, -16
+        addi sp, sp, -4
         sw   ra, 0(sp)
 
         la   a0, cfixa
@@ -305,14 +305,14 @@ _start:
         jal  ra, descompon
 
         lw   ra, 0(sp)
-        addi sp, sp, 16
+        addi sp, sp, 4
 
         li   a7, 93
         li   a0, 0
         ecall
 ```
 
-Obriu `s4_2_1.s` i `s4_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
+Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
 
 - `signe` = `0x00000001`
 - `exponent` = `0x0000008D` (141 en decimal)
@@ -335,9 +335,9 @@ Els tres camps no se solapen (cada un ocupa exclusivament els seus bits), de man
 ---
 
 ::: {#exr-compon}
-## `s4_3_1.s`
+## `s5_3_1.s`
 
-Substituïu el `_start` temporal de la secció anterior pel programa complet. El fitxer `s4_3_1.s` ha de contenir `compon` i `_start`, que crida `descompon` (definida a `s4_2_1.s`) i `compon` en seqüència i emmagatzema el resultat a `cflotant`.
+Substituïu el `_start` temporal de la secció anterior pel programa complet. El fitxer `s5_3_1.s` ha de contenir `compon` i `_start`, que crida `descompon` (definida a `s5_2_1.s`) i `compon` en seqüència i emmagatzema el resultat a `cflotant`.
 
 Abans d'escriure cap instrucció:
 
@@ -377,7 +377,7 @@ Abans d'escriure cap instrucció:
 
 Mida del BA: 16 bytes (@nte-abi-alineacio-pila).
 
-```{.s filename="s4_3_1.s"}
+```{.s filename="s5_3_1.s"}
 .globl _start
 .globl compon
 
@@ -442,7 +442,7 @@ _start:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Obriu `s4_2_1.s` i `s4_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
+Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
 
 - `cflotant` = `0xC6FA3140`
 
@@ -464,7 +464,7 @@ El programa de conversió desenvolupat en aquesta sessió és correcte per a la 
 ---
 
 ::: {#exr-precisio}
-## `s4_4_1.md`
+## `s5_4_1.md`
 
 Responeu les preguntes següents sobre el programa de conversió de coma fixa a coma flotant:
 

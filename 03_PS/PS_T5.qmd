@@ -1,16 +1,15 @@
 ---
-title: "Problemes: Solucions seleccionades (T5)"
 number-sections: true
 ---
 
-## Coma flotant
+# {{< var tema5 >}} {#sec-tema-coma-flotant-solucions}
 
-### Representació IEEE 754
+## Representació IEEE 754
 
 ::: {#sol-p6-ieee-interpretacio .callout-tip}
 ## Solució: interpretació de patrons de bits
 
-**Enunciat:** @exr-p6-ieee-interpretacio.
+**Enunciat**: @exr-p6-ieee-interpretacio.
 
 Treballem amb `A = 0x407302B3` i `B = 0xF9C40513`.
 
@@ -101,7 +100,7 @@ El mateix patró de 32 bits representa quatre coses completament diferents: un n
 ::: {#sol-p6-ieee-rang .callout-tip}
 ## Solució: rang del format IEEE 754 de simple precisió
 
-**Enunciat:** @exr-p6-ieee-rang.
+**Enunciat**: @exr-p6-ieee-rang.
 
 **a) Major nombre positiu representable**
 
@@ -135,9 +134,9 @@ F  = 000 0000 0000 0000 0000 0000b
 
 $$\boxed{v_{\min,\text{norm}} = 1{,}0 \times 2^{-126} \approx 1{,}175 \times 10^{-38} = \texttt{0x00800000}}$$
 
-**c) Menor nombre positiu no nul en format desnormalitzat**
+**c) Menor nombre positiu no nul en format denormal**
 
-En format desnormalitzat ($E_u = 0$), el valor és $0{,}F \times 2^{-126}$. El menor valor no nul s'obté amb un sol bit a `1` a la posició menys significativa de la fracció (1 ULP):
+En format denormal ($E_u = 0$), el valor és $0{,}F \times 2^{-126}$. El menor valor no nul s'obté amb un sol bit a `1` a la posició menys significativa de la fracció (1 ULP):
 
 ```{.default filename="Càlcul"}
 S = 0
@@ -153,7 +152,7 @@ $$\boxed{v_{\min,\text{denorm}} = 2^{-23} \times 2^{-126} = 2^{-149} \approx 1{,
 ::: {#sol-p6-ieee-doble-precisio .callout-tip}
 ## Solució: simple i doble precisió, error de representació
 
-**Enunciat:** @exr-p6-ieee-doble-precisio.
+**Enunciat**: @exr-p6-ieee-doble-precisio.
 
 Treballem amb $A = -1609{,}5$ i $B = -938{,}8125$.
 
@@ -249,12 +248,12 @@ En aquest exercici, tant $A$ com $B$ resulten ser exactament representables en s
 
 :::
 
-### Suma i multiplicació
+## Suma i multiplicació
 
 ::: {#sol-p6-ops-assemblador-cf .callout-tip}
 ## Solució: traducció de sentències amb `float`
 
-**Enunciat:** @exr-p6-ops-assemblador-cf.
+**Enunciat**: @exr-p6-ops-assemblador-cf.
 
 En RV32F **no hi ha operands immediats flotants**: cap instrucció admet una constant de coma flotant directament. Per usar un literal cal declarar-lo al segment `.data` i carregar-lo amb `la` + `flw`.
 
@@ -300,7 +299,7 @@ La directiva `.float` accepta decimals: `.float 3.14` converteix el valor a IEEE
 ::: {#sol-p6-ops-rv32f-memoria .callout-tip}
 ## Solució: càrrega, suma i comparació de `float` en memòria
 
-**Enunciat:** @exr-p6-ops-rv32f-memoria.
+**Enunciat**: @exr-p6-ops-rv32f-memoria.
 
 ```{.c filename="C"}
 float v[4] = {1.5, -2.0, 3.25, 0.5};
@@ -350,7 +349,7 @@ Per a `v[0] = 1.5` i `v[2] = 3.25`, $1{,}5 \not> 3{,}25$, per tant `t0 = 0`.
 ::: {#sol-p6-ops-rv32f-conversio .callout-tip}
 ## Solució: conversions entre `int` i `float`
 
-**Enunciat:** @exr-p6-ops-rv32f-conversio.
+**Enunciat**: @exr-p6-ops-rv32f-conversio.
 
 **a) `int i = (int) f;`**
 
@@ -391,7 +390,7 @@ No es produeix arrodoniment: `fcvt.w.s` trunca sempre, no arrodoneix al més pr�
 ::: {#sol-p6-ops-suma-simple .callout-tip}
 ## Solució: suma de nombres en coma flotant
 
-**Enunciat:** @exr-p6-ops-suma-simple.
+**Enunciat**: @exr-p6-ops-suma-simple.
 
 **Descodificació dels operands**
 
@@ -463,7 +462,7 @@ Comprovació: $15{,}671875 + 0{,}578125 = 16{,}25$ ✓
 ::: {#sol-p6-ops-variancia .callout-tip}
 ## Solució: funció `variancia` amb crides a subrutina
 
-**Enunciat:** @exr-p6-ops-variancia.
+**Enunciat**: @exr-p6-ops-variancia.
 
 **a) Anàlisi de les variables locals**
 
@@ -555,14 +554,14 @@ fibucle:
 
 :::
 
-### No associativitat
+## No associativitat
 
 ::: {#sol-p6-assoc-suma .callout-tip}
 ## Solució: no associativitat de la suma en coma flotant
 
-**Enunciat:** @exr-p6-assoc-suma.
+**Enunciat**: @exr-p6-assoc-suma.
 
-`A = 0xF3FD`, `B = 0x73FD`, `C = 0x3C00` en format *half* (1 bit signe, 5 bits exponent amb excés a 15, 10 bits fracció).
+`A = 0xF3FD`, `B = 0x73FD`, `C = 0x3C00` en format *half* (1 bit signe, 5 bits exponent esbiaixat (biaix 15), 10 bits fracció).
 
 **Descodificació**
 

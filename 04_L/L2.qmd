@@ -10,14 +10,14 @@ Cal lliurar les respostes als exercicis següents al campus virtual abans de l'i
 
 | Exercici | Nom i format del fitxer |
 | :--- | :--- |
-| @exr-declaracio-variables | `s1_1_1.s` |
-| @exr-mapa-memoria  | `s1_1_2.md` |
-| @exr-rars-vista-memoria | `s1_1_3.md` |
-| @exr-punters-valors | `s1_2_1.md` |
-| @exr-punters-codi | `s1_2_2.s` |
-| @exr-vectors-declaracio | `s1_3_1.md` i `s1_3_1.s` |
-| @exr-vectors-fibonacci | `s1_3_2.s` |
-| @exr-strings-ascii | `s1_4_1.s` |
+| @exr-declaracio-variables | `s2_1_1.s` |
+| @exr-mapa-memoria  | `s2_1_2.md` |
+| @exr-rars-vista-memoria | `s2_1_3.md` |
+| @exr-punters-valors | `s2_2_1.md` |
+| @exr-punters-codi | `s2_2_2.s` |
+| @exr-vectors-declaracio | `s2_3_1.md` i `s2_3_1.s` |
+| @exr-vectors-fibonacci | `s2_3_2.s` |
+| @exr-strings-ascii | `s2_4_1.s` |
 : {.striped .hover}
 
 ### Lectura prèvia {.unnumbered}
@@ -47,11 +47,11 @@ Quan es declaren diverses variables globals consecutivament, l'assemblador inser
 ---
 
 ::: {#exr-declaracio-variables}
-## `s1_1_1.s`
+## `s2_1_1.s`
 
 Traduïu a RV32I la declaració següent de variables globals en C:
 
-```{.c filename="s1_1_1.c"}
+```{.c filename="s2_1_1.c"}
 char      aa = -5;
 short     bb = -344;
 long long cc = -3;
@@ -64,7 +64,7 @@ short     ff = -1;
 ---
 
 ::: {#sol-declaracio-variables}
-```{.s filename="s1_1_1.s"}
+```{.s filename="s2_1_1.s"}
 .data
 aa: .byte  -5
 bb: .half  -344
@@ -78,7 +78,7 @@ ff: .half  -1
 ---
 
 ::: {#exr-mapa-memoria}
-## `s1_1_2.md`
+## `s2_1_2.md`
 
 Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, ompliu la taula de distribució de variables:
 
@@ -137,7 +137,7 @@ Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Ind
 :::
 :::
 
-```{.markdown filename="s1_1_2.md"}
+```{.markdown filename="s2_1_2.md"}
 | Variable | Tipus | Mida | Alineació | Adreça | *Padding* |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `aa` |  |  |  |  |
@@ -308,7 +308,7 @@ i RARS el mostra com `0xFEA800FB`.
 ---
 
 ::: {#exr-rars-vista-memoria}
-## `s1_1_3.md`
+## `s2_1_3.md`
 
 Després d'assemblar el programa de l'@exr-declaracio-variables, RARS mostra la vista de memòria següent:
 
@@ -319,7 +319,7 @@ Address      Value (+0)  Value (+4)  Value (+8)  Value (+c)  Value (+10) Value (
 
 Per a cada word, identifiqueu a quina variable correspon cada byte i expliqueu per què apareix en aquest ordre.
 
-```{.markdown filename="s1_1_3.md"}
+```{.markdown filename="s2_1_3.md"}
 | Adreça | Valor RARS | `+0` | @`+1` | @`+2` | @`+3` | Variable(s) |
 | :--- | :---: | :---: | :---: | :---: | :--- | :--- |
 | `0x10010000` |  |  |  |  |  |
@@ -342,12 +342,12 @@ El byte de menor adreça ocupa la posició de la dreta; el de major adreça, la 
 | :--- | :---: | :---: | :---: | :---: | :--- | :--- |
 | `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, *padding*, `bb` |
 | `0x10010004` | `0xfffffffd` | `0xFD` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 0–3) |
-| `0x10010008` | `0xffffffff` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 4–7) |
-| `0x1001000C` | `0x000000a0` | `--` | `--` | `--` | `dd`, *padding* |
-| `0x10010010` | `0x000016a7` | `0x16` | `0x00` | `0x00` | `ee` |
-| `0x10010014` | `0x0000ffff` | `0xff` |  |  | `ff` |
-| `0x10010018` |  |  |  |  |  |
-| `0x1001001C` |  |  |  |  |  |
+| `0x10010008` | `0xffffffff` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 4–7) |
+| `0x1001000C` | `0x000000a0` | `0xA0` | `--` | `--` | `--` | `dd`, *padding* |
+| `0x10010010` | `0x000016a7` | `0xA7` | `0x16` | `0x00` | `0x00` | `ee` |
+| `0x10010014` | `0x0000ffff` | `0xFF` | `0xFF` |  |  | `ff` |
+| `0x10010018` | `0x00000000` |  |  |  |  |  |
+| `0x1001001C` | `0x00000000` |  |  |  |  |  |
 : {tbl-colwidths="[3,3,1,1,1,1,4]" .striped .hover}
 :::
 
@@ -365,11 +365,11 @@ Un **punter** és una variable que conté l'adreça de memòria d'una altra vari
 ---
 
 ::: {#exr-punters-valors}
-## `s1_2_1.md`
+## `s2_2_1.md`
 
 Donada la declaració següent, on `pdada` és un punter inicialitzat amb l'adreça de `dada`:
 
-```{.s filename="s1_2_1.s"}
+```{.s filename="s2_2_1.s"}
 .data
 dada:  .half 3
 pdada: .word dada
@@ -388,9 +388,8 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 | `pdada` | |
 | `*pdada` | |
 : {.striped .hover}
-:::
 
-```{.markdown filename="s1_1_3.md"}
+```{.markdown filename="s2_2_1.md"}
 
 - `dada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__`.
 - `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de *padding*).
@@ -403,6 +402,7 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 | `pdada` | |
 | `*pdada` | |
 ```
+:::
 
 ---
 
@@ -424,11 +424,11 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 ---
 
 ::: {#exr-punters-codi}
-## `s1_2_2.s`
+## `s2_2_2.s`
 
 Traduïu a RV32I el programa C següent. La variable temporal `temp` s'emmagatzema al registre `s0`:
 
-```{.c filename="s1_1_3.c"}
+```{.c filename="s2_2_2.c"}
 int A[3] = {3, 5, 7};
 int *punter = 0;
 
@@ -445,7 +445,7 @@ void main() {
 ---
 
 ::: {#sol-punters-codi}
-```{.s filename="s1_2_2.s"}
+```{.s filename="s2_2_2.s"}
 .globl _start
 
 .data
@@ -493,11 +493,11 @@ En RV32I, l'accés indexat requereix calcular aquesta adreça explícitament, ja
 ---
 
 ::: {#exr-vectors-declaracio}
-## `s1_3_1.md` i `s1_3_1.s`
+## `s2_3_1.md` i `s2_3_1.s`
 
 Donat el vector global següent en C:
 
-```{.c filename="s1_2_1.c"}
+```{.c filename="s2_3_1.c"}
 int vec[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 ```
 
@@ -513,9 +513,9 @@ int vec[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 $$@\texttt{vec[i]} = @\texttt{vec} + i \times 4$$
 
 
-**1. Declaració en RV32I i 3. Fragment de codi**:
+**2. Declaració en RV32I i fragment de codi**:
 
-```{.s filename="s1_3_1.s"}
+```{.s filename="s2_3_1.s"}
 .data
 vec: .word 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
@@ -530,11 +530,11 @@ vec: .word 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 ---
 
 ::: {#exr-vectors-fibonacci}
-## `s1_3_2.s`
+## `s2_3_2.s`
 
 Traduïu a RV32I el programa C següent, que calcula els 10 primers termes de la sèrie de Fibonacci i els emmagatzema al vector `fib`. La variable `i` s'emmagatzema al registre `s0`:
 
-```{.c filename="s1_3_2.c"}
+```{.c filename="s2_3_2.c"}
 int fib[10];
 
 void main() {
@@ -552,7 +552,7 @@ void main() {
 ---
 
 ::: {#sol-vectors-fibonacci}
-```{.s filename="s1_3_2.s"}
+```{.s filename="s2_3_2.s"}
 .globl _start
 
 .data
@@ -610,11 +610,11 @@ Una **cadena de caràcters** (*string*) és un vector de caràcters (`char`) que
 ---
 
 ::: {#exr-strings-ascii}
-## `s1_4_1.s`
+## `s2_4_1.s`
 
 El vector `vec` conté els dígits decimals del nombre `19865`, ordenats de menor a major pes. El programa següent converteix cada dígit a la seva representació ASCII i l'emmagatzema a la cadena `cadena`, ordenat de major a menor pes per poder-lo imprimir correctament.
 
-```{.c filename="s1_4_1.c"}
+```{.c filename="s2_4_1.c"}
 char         cadena[6];
 unsigned int vec[5] = {5, 6, 8, 9, 1};
 
@@ -636,7 +636,7 @@ Traduïu el programa a RV32I. La variable `i` s'emmagatzema al registre `s0`.
 ---
 
 ::: {#sol-strings-ascii}
-```{.s filename="s1_4_1.s"}
+```{.s filename="s2_4_1.s"}
 .globl _start
 
 .data

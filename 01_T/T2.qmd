@@ -145,7 +145,7 @@ Característiques bàsiques:
 - **Paraula nativa** (***word***) de **32 bits**.
 - **32 registres** de **32 bits** (**x0 fins a x31**, segons l'ISA).
 - El registre **x0** (també anomenat **zero**) està fixat per **maquinari** al valor 0 i, per tant, no es pot modificar.
-- **Espai d'adreces** de **32 bits**: $2^{32}$ adreces (**0x00000000**--**0xFFFFFFFF**); una adreça per **byte**; 4GB ($2^{32}$ bytes).
+- **Espai d'adreces** de **32 bits**: $2^{32}$ adreces (**0x00000000**--**0xFFFFFFFF**); una adreça per **byte**; 4 GiB ($2^{32}$ bytes).
 - L'espai de memòria és **unificat** (instruccions i dades comparteixen el mateix espai d'adreces).
 - **Model lectura/escriptura** (*load/store*): accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
 - Nombre d'instruccions: **41**
@@ -163,6 +163,20 @@ Totes les instruccions:
 
 A **EC**, s'estudien totes excepte les de sistema, de les quals només es tracta `ecall` (@sec-ei-ecall).
 :::
+
+:::: {#cau-prefixos-binaris .callout-caution}
+::: {#tbl-prefixos-binaris tbl-colwidths="[20,15,30,35]" style="width: 90%; margin: auto;"}
+| Prefix | Símbol | Valor | Origen |
+| :--- | :---: | :--- | :--- |
+| Kilo / Kibi | `KB` / `KiB` | $10^3 = 1000$ / $2^{10} = 1024$ bytes | SI (decimal) / IEC (binari) |
+| Mega / Mebi | `MB` / `MiB` | $10^6$ / $2^{20} = 1\,048\,576$ bytes | SI (decimal) / IEC (binari) |
+| Giga / Gibi | `GB` / `GiB` | $10^9$ / $2^{30}$ bytes | SI (decimal) / IEC (binari) |
+| Tera / Tebi | `TB` / `TiB` | $10^{12}$ / $2^{40}$ bytes | SI (decimal) / IEC (binari) |
+: Prefixos de mida: amb «i» (binaris, potències de 2) vs. sense «i» (decimals, potències de 10)
+:::
+
+El prefix **amb `i`** (`KiB`, `MiB`, `GiB`, `TiB`, definits per l'**IEC**) denota sempre una potència de **2**: `1 KiB = 1024 bytes`. El prefix **sense `i`** (`KB`, `MB`, `GB`, `TB`, prefixos del **SI**) denota, estrictament, una potència de **10**: `1 KB = 1000 bytes`. A **EC**, gairebé totes les mides que apareixen (espais d'adreçament, pàgines, memòries cau, TLB) són potències de 2 exactes, de manera que s'utilitzen sistemàticament els prefixos **amb `i`**. Els prefixos **sense `i`** només s'usen quan la mida és genuïnament decimal, com en capacitats comercials de disc anunciades pels fabricants.
+::::
 
 ::: {#wrn-riscv-ec-toolchain .callout-warning collapse=true}
 ## RISC-V GNU Compiler Toolchain — Paràmetres rellevants i traducció de C a RV32I comprensible
@@ -449,7 +463,7 @@ A **EC**, es fa l'extensió per l'**esquerra** i només de dues maneres:
 - **Extensió de signe** ($SignExt()$): **Replica** el bit més significatiu (el de signe en Ca2) tantes vegades que calgui.
 :::
 
-::: {#cau-ec-no-overflow .callout-caution}
+::: {#cau-rv32i-ignora-sobreeiximent .callout-caution}
 A **RV32I**, les operacions de suma i resta **ignoren** el sobreeiximent (*overflow*): el resultat és simplement els 32 bits de menor pes de l'operació, independentment de si el resultat és correcte o no en el rang dels enters representables.
 :::
 
@@ -586,12 +600,6 @@ Les pseudoinstruccions no formen part de l'ISA. Estan documentades al RISC-V Ass
 ## RISC-V — Pseudoinstruccions: estatus de l'especificació 
 
 L'Assembly Programmer's Manual es manté sota riscv-non-isa (especificacions no-ISA), cosa que significa que no és una especificació ISA ratificada en el mateix sentit que la ISA no privilegiada. És un document de referència normatiu, però no figura a la Ratified Specifications Library. Defineix un conjunt estàndard de pseudoinstruccions, però el seu estatus és més aviat estandarditzat per convenció i consens de les toolchains que no pas ratificat pel *Technical Steering Committee*.
-:::
-
-::: {#wrn-godbolt .callout-warning collapse=true}
-## https://godbolt.org/ - Compilador en línia
-
-Es pot utilitzar el compilador en línia https://godbolt.org/ per veure com es tradueix el codi C a llenguatge d'assemblador, comprovar l'expansió de pseudoinstruccions i macros, etc. Permet seleccionar diferents compiladors i opcions, i veure el codi generat interactivament.
 :::
 
 #### Macros {#sec-macros}
@@ -1027,7 +1035,7 @@ A **EC**, **només** s'utilitza l'ordenació **Little-endian** (en tots els exem
 
 :::: {#wrn-endianness-regla-pi .callout-warning collapse="true"}
 ## Endianness — Regla mnemotècnica (regla de la lletra Pi)
-::: {#fig-mc-politiques-resum}
+::: {#fig-endianness-regla-pi}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
 ![](/figs_auto/T2_endianness_regla_pi__original_light.svg){width="40%"}
@@ -1039,7 +1047,7 @@ A **EC**, **només** s'utilitza l'ordenació **Little-endian** (en tots els exem
 ::: {.content-visible when-format="pdf"}
 ![](/figs_auto/T2_endianness_regla_pi__original_light.svg){width="50%"}
 :::
-Resum de les polítiques de memòria cau.
+Regla mnemotècnica de la lletra grega pi (Π) per recordar l'ordenació dels bytes Little-endian i Big-endian.
 :::
 ::::
 
@@ -1047,6 +1055,7 @@ Resum de les polítiques de memòria cau.
 
 Les **restriccions d'alineació** (***alignment constraints***) són regles que imposen condicions sobre l'**adreça inicial** de les dades emmagatzemades en memòria.
 
+<!-- TODO: Verificar que la informació de la taula és correcta i coincideix amb l'ABI `ilp32` **i que no hi ha col·lisió amb l'ABI RV de Bloc d'Activació alineació a 16** -->
 ::: {#cau-memoria-restriccions-alineacio .callout-caution}
 A **EC**, es segueixen les restriccions definides per l'**ABI** `ilp32` de RISC-V.
 :::

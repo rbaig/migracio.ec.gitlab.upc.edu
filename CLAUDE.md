@@ -63,6 +63,7 @@ Fase actual del projecte. El contingut de teoria (T1–T9), laboratori (L1–L6)
 - Prioritats màximes: **coherència pedagògica** i **rigor tècnic** en tot el contingut.
 - Revisió tècnica profunda i revisió lingüística en **català normatiu**.
 - Solucionaris: detall **pas a pas**, excepte els passos trivials.
+- **Harmonització abans de la revisió externa**: «Preparat per a revisió externa» no vol dir tancat a canvis profunds, especialment els d'harmonització (terminologia, estil, convencions transversals). Tot el que es pugui detectar i corregir abans que comenci la revisió externa s'ha de fer ara, encara que impliqui tocar fitxers ja marcats com a preparats: un cop entrin altres professors en la revisió, qualsevol canvi transversal té un cost de coordinació molt més alt. Si detectes una inconsistència que afecta múltiples fitxers (per exemple, terminologia o notació aplicada de manera desigual), proposa'n la correcció sistemàtica encara que surti de l'abast estricte del xat en curs.
 
 ### Estat dels materials
 
@@ -87,8 +88,7 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un identificador `{#sec-nom}` per ser referenciables amb `@sec-nom`.
 
 **Estat:**
-- `T3.qmd`, `T4.qmd`, `T6.qmd`–`T9.qmd` — **complet** (`T4` és la referència; `T6`–`T8` amb prefixos propis; `T9` amb prefix `ei-`; `T3` completat en la revisió interna d'aquest tema).
-- `T1.qmd`, `T2.qmd`, `T5.qmd` — **pendent** (tasca sistemàtica: Claude Code, pas 1 de la seqüència de revisió).
+- Tots els fitxers `T1.qmd`–`T9.qmd` tenen les capçaleres etiquetades: **complet**.
 
 **Criteris de generació de l'slug** (aplicats a `T4.qmd`):
 
@@ -106,7 +106,7 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 ### Seqüència de revisió pendent
 
-1. **Slugs T1–T2, T5** (Claude Code): prefixat sistemàtic `{#sec-}` + verificació de refs creuades globals. *(T3 completat; T4, T6–T9 ja estaven complerts.)*
+1. ~~**Slugs T1–T2, T5**~~ → ✓ Completat: totes les capçaleres de `T1.qmd`–`T9.qmd` etiquetades amb `{#sec-}`.
 2. **PE_T1–PE_T9, PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna. *(T3 completat.)*
 3. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
 

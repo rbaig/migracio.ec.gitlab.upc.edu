@@ -8,7 +8,7 @@ number-sections: true
 A **EC**, les traduccions des de C a codi d'assemblador han de ser **el més literal possible**, si no s'indica explícitament el contrari. Per tant, **sense optimitzacions**.
 :::
 
-## Desplaçaments de bits
+## Desplaçaments de bits {#sec-desplacaments-de-bits}
 
 ### Desplaçaments lògics {#sec-desplacaments-logics}
 
@@ -144,7 +144,7 @@ La semàntica de l'operador `/` de C requereix que el residu tingui el **mateix 
 Per exemple, la divisió entera (-15 / 4) dóna quocient -3 i residu -3, mentre que el desplaçament `-15 >> 2` dóna quocient -4 i residu 1. Només cal usar `sra`/`srai` per traduir `/` si es pot garantir que el dividend no és negatiu.
 :::
 
-## Operacions lògiques bit a bit
+## Operacions lògiques bit a bit {#sec-operacions-logiques-bit-a-bit}
 
 ### Instruccions `&`, `|`, `^` (AND, OR, XOR) {#sec-instruccions-logiques-bit-a-bit}
 
@@ -229,7 +229,7 @@ Complement dels bits parells de `t0`:
 ```
 :::
 
-## Comparacions i operacions booleanes
+## Comparacions i operacions booleanes {#sec-comparacions-i-operacions-booleanes}
 
 En **C**, les expressions enters admeten els **operadors de comparació** `==`, `!=`, `<`, `<=`, `>`, `>=`. A diferència d'altres llenguatges, en C **no existeix el tipus booleà**: el resultat d'una comparació és un enter, `1` si la comparació és certa i `0` si és altrament. Les **comparacions** seran **amb signe o sense signe** segons el tipus declarat dels operands.
 
@@ -390,7 +390,7 @@ No existeix cap salt condicional indirecte a RV32I.
 
 Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
 
-Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
+Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** (@cau-prefixos-binaris) respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
 
 :::: {#nte-format-b .callout-note}
 ## RV32I ISA — Format Tipus-B
@@ -1854,7 +1854,7 @@ exemple:
 ::: {#wrn-godbolt .callout-warning collapse=true}
 ## Compiler Explorer (Godbolt)
 
-*Compiler Explorer* ([godbolt.org](https://godbolt.org/)) permet introduir codi C directament al navegador i veure en temps real el codi assemblador generat per GCC, Clang i altres compiladors per a múltiples ISA, inclòs RISC-V (RV32 i RV64). És una eina útil per explorar l'efecte de les optimitzacions del compilador i comparar traduccions entre arquitectures.
+*Compiler Explorer* ([godbolt.org](https://godbolt.org/)) permet introduir codi C directament al navegador i veure en temps real el codi assemblador generat per GCC, Clang i altres compiladors per a múltiples ISA, inclòs RISC-V (RV32 i RV64). És una eina útil per explorar l'efecte de les optimitzacions del compilador, comparar traduccions entre arquitectures i observar l'ús de pseudoinstruccions al codi generat.
 :::
 
 En general, el procés pel qual un programa escrit en **C** es **converteix en** un programa **executable** consta de quatre passos: 
