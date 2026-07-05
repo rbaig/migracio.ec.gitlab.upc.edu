@@ -166,7 +166,7 @@ En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`
 
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
-Nom d'aquest xat: `EC T4, PE_T4 i PS_T4 Revisió interna`
+Nom d'aquest xat: `EC T5-PE_T5-PS_T5 Revisió interna`
 
 Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 Intensitat: Profunda
@@ -185,14 +185,16 @@ Aspectes a revisar:
 - Eficiència pedagògica
     - Ordre de presentació de la matèria autocontingut: presentació lineal de continguts (no emprar cap concepte que no s'hagi introduït encara, dificultat creixent, etc.)
     - Coherència estilística del llenguatge, dels recursos didàctics (ús de callouts, de referències creuades, freqüència dels exemples, ús consistent de termes, etc.)
+    - Idoneïtat dels problemes proposats i dels problemes resolts
+    - Detecció de llacunes o repeticions
 - Català normatiu
     - Evitar anglicismes
     - Ús dels termes especificats a 
 
 Model i effortness:
 
-- Ara estàs en Sonnet 4.6 Medium sense Thinking. Confirma'm **explícitament** si t'esta bé aquesta configuració o si vols que et canviï de model, effortness o Thinking, digues-m'ho i para perquè pugui fer el canvi de configuració. Quan l'hagi fet te n'informaré i et demanaré que continuïs a partir d'aquest punt.
-- En aquesta revisió hi ha molts càlculs a fer. Suposo que quan hagis llegit tota la documentació em demanaràs que et passi a Opus High Thinking. Quan ho necessitis, para i digues-m'ho tan aviat com ho necessitis.
+- Ara estàs en Sonnet 5 Medium sense Thinking. Confirma'm **explícitament** si t'està bé aquesta configuració o si vols que et canviï de model, effortness o Thinking, digues-m'ho i para perquè pugui fer el canvi de configuració. Quan l'hagi fet te n'informaré i et demanaré que continuïs a partir d'aquest punt.
+- En aquesta revisió hi ha molts càlculs a fer. Quan necessitis que et canviï de configuració, digues quin model vols, quin effort i quin Thinking i atura't
 - Has d'interrompre l'execució sempre que vulguis que et canviï la configuració.
 
 Canvis:

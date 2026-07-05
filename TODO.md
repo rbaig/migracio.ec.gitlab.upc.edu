@@ -27,7 +27,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 ### T5
 
 - **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.
-- **Harmonització notacional RV32I ↔ RV32F**: taules RV32F usen `\leftarrow` i `off`; RV32I usen `=` i `offset`. Unificar.
 - **P7** — Alinear l'ordre de la taula de codificacions especials amb el de les subseccions.
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
 - **`#cau-underflow`**: opcionalment reanomenar a `#cau-subdesbordament` (cosmètic; no referenciat).
@@ -73,6 +72,10 @@ Decisions obertes de T7:
 ---
 
 ## Tasques globals
+
+### Notació
+
+- **Unificar notació RTL `=`→`\leftarrow` també a RV32I/RV32M** (`RV32I_instruccions_comparacio.qmd`, `RV32I_instruccions_desplacament_bits_aritmetics.qmd`, `RV32I_instruccions_desplacament_bits_logics.qmd`, `RV32I_instruccions_lectura_escriptura.qmd`, `RV32I_instruccions_logiques_bit_a_bit.qmd`, `RV32I_instruccions_salt_incondicional.qmd`, `RV32I_instruccions_salt_incondicional_indirecte.qmd`, `RV32I_pseudo_mv.qmd`; 8 fitxers, ~27 ocurrències). Afecta T2/T3/T4/T9: cal fer-ho en un xat propi de revisió d'aquests temes, no com a tasca operativa aïllada, perquè pot requerir revisar la coherència de cada fórmula amb el seu context narratiu.
 
 ### SVG
 
