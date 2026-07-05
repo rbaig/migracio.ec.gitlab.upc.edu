@@ -121,6 +121,9 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Pseudoinstruccions vs. macros**: distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
 - **Alineació de la pila**: la mida del BA i el valor de `sp` han de ser **múltiples de 4 bytes** a EC (relaxació pedagògica). L'ABI estàndard de RV32I exigeix múltiples de 16 bytes; aquest fet es menciona explícitament a `{#nte-abi-alineacio-pila}` de T3.
 - **Retorn de resultats**: les subrutines retornen com a màxim dos resultats escalars, per `a0` i `a1`. El segon (`a1`) s'usa habitualment per a un codi d'error o un segon valor de retorn. Documentat a `{#nte-abi-pas-parametres}` de T3.
+- **Retorn de subrutines — `ret`**: als exemples s'usa sempre `ret` (pseudoinstrucció estàndard, més llegible), no `jalr x0, 0(ra)`.
+- **Format d'adreces de memòria**: sense espais (`0x10010000`), no amb separador cada 4 nibbles.
+- **`.section`**: no s'utilitza. Només `.data` i `.text`, sense indentar, a columna 0 (vegeu també §Convencions globals del laboratori).
 
 #### T4
 
@@ -225,6 +228,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 - **Nombres**:
     - Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres.
     - La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`.
+    - **Separador de milers**: espai («65 535»), no coma anglesa («65,535», ambigua amb la coma decimal catalana) ni punt.
 - **Prefixos de mida binaris vs. decimals**: `KiB`, `MiB`, `GiB`, `TiB` (IEC, base 2) per a qualsevol mida que sigui una potència de 2 —mida de cau, de memòria, de pàgina, de bloc, rangs d'adreçament, etc.—, que és la immensa majoria de casos a EC. `KB`, `MB`, `GB`, `TB` (base 10) es reserven exclusivament per a mides genuïnament decimals (p. ex. la capacitat comercial anunciada d'un disc, o les referències de mercat aproximades de `T2.qmd §El problema de la diferència entre processador i memòria`). Explicat a `T2.qmd` (@cau-prefixos-binaris), primera aparició al llibre; en cas de dubte, per defecte `KiB`/`MiB`/`GiB`/`TiB`.
 - **Veu impersonal**: Sempre: "Cal verificar que no hi ha errors" (no "hem de verificar"). Excepcions:
     - **`{.callout-tip}`**: segona persona del plural (*calculeu*, *determineu*, *suposeu que...*).

@@ -4,48 +4,19 @@
 
 Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
-- **`startup.s`**: mantenir o eliminar? Proposta: eliminar; forçar `li a7, 93` + `ecall`. Afecta T2: `#nte-programa-esquelet` i blocs comentats `__start`/`a7,10` (ln 742-772). Afecta també PE_T9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93` quan es prengui la decisió.
-- ~~**Retorn de 2 paràmetres**: restricció EC a 1 resultat (`a0`) o ampliar a 2 (`a0`/`a1`)? Posició d'Adrià: ampliar, el segon com a codi d'error. Afecta T3 (L1106).~~ → ✓ Decisió: `a0` i `a1` (fins a dos resultats escalars). Ja implementat a `{#nte-abi-pas-parametres}` (T3, L1140).
-- ~~**Alineació de la pila**: múltiples de 16 (ABI real) o mantenir relaxació a múltiples de 4?~~ → ✓ Decisió: múltiples de **4** a EC (relaxació pedagògica). L'ABI estàndard (×16) es menciona a `{#nte-abi-alineacio-pila}`. Afecta T3 (L1322) i `{#imp-ec-alineacio-pila}` (si existeix).
-- ~~**`.globl` vs `.global`**: quin usar als exemples?~~ → ✓ Decisió: `.globl`. Documentat a `07_contrib.qmd §T2 i T3`.
-- **`ret` vs `jalr x0, 0(ra)`**: criteri al retorn de funcions. Pendent de consens del professorat. Criteri provisional: `ret` als exemples (pseudoinstrucció estàndard, més llegible).
-- **Adreces de memòria**: format `0x00000000` o `0x0000 0000` (espai cada 4 nibbles)? Pendent de decisió global. Criteri provisional: sense espais (`0x10010000`), coherent amb l'ús actual a T2–T9.
-- **`.section`**: usar o no? si sí, amb quin criteri?
-- ~~**Terminologia «excés» vs. «biaix»**~~ → ✓ Decisió: «excés» és el terme canònic (37 aparicions a 8 fitxers, T1/T5/PE_T1/PE_T2/PE_T5/PS_T1/PS_T5/L5, tots consistents). L'única aparició de «biaix» (T5, L. 396) és sobre un concepte diferent (biaix estadístic de l'arrodoniment RNE), no la codificació de l'exponent: no hi havia conflicte real. Documentat a `07_contrib.qmd §Decisions per tema — T1 i T5`.
-- ~~**Directives**: títol de callout `## Directives —` o `## RARS —`?~~ → ✓ Decisió: `## Directives —` (genèric) per a callouts amb directives estàndard GNU AS; `## RARS —` per a comportament exclusiu de RARS. Aplicat a T2 i T3.
-- **ISA/ABI**: on posar la informació de l'ABI de RV? `{.callout-note}` `## RV32I ABI —` o `{.callout-important}`?
+- **`startup.s`**: mantenir o eliminar? Decisió ajornada a la fase de revisió externa. Hipòtesi de treball durant la revisió interna: **no hi ha `startup.s`** (sense SO); tot el material nou es genera sense considerar-lo, i el material existent relatiu a l'opció «amb `startup.s`» es manté comentat (no s'elimina). Blocs comentats amb les instruccions de reactivació: T2.qmd (`#imp-programa-esquelet`/`#imp-exception-handler`, ln 719-784), T3.qmd (`#tip-rars-main-multinivell`, ln 1543-1550), `index.qmd` (descàrrega i configuració de l'*Exception Handler*, ln 181-198). Afecta també PE_T9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93` quan es prengui la decisió.
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
-- ~~**Negretes dins de callouts vs. cos del text**: definir criteri.~~ → ✓ Criteri a `07_contrib.qmd §Ressaltat conceptual`: als `#cau-`/`#imp-` la negreta marca el nucli; als llargs, criteri general.
-- ~~**Noms de registres CSR al cos del text**: amb o sense backtick?~~ → ✓ Sempre amb backtick (també en títols de secció, com T9). Documentat a `07_contrib.qmd §Codi, matemàtiques i cursiva`.
-- ~~**Numeració d'equacions**: només les referenciades? totes? les importants?~~ → ✓ Només referenciades + fórmules canòniques (`07_contrib.qmd §Equacions`). Revisades les 38 etiquetes existents: totes canòniques, cap canvi necessari.
-- ~~**LaTeX math vs. backticks**: definir contextos.~~ → ✓ Criteri semàntic per context a `07_contrib.qmd §Codi, matemàtiques i cursiva`. Aplicat: 20 superíndexs Pandoc (`2^8^`) unificats a math a T2 i PE_T6.
-- **Separadors de milers**: a les taules de rangs de T2 hi havia comes angleses («65,535»), ambigües amb la coma decimal catalana; s'han substituït per espais («65 535»). Decidir si es prefereix espai fi (`&#8239;`) o punt, i si cal revisar la resta del corpus.
-- **Coherència de títols en `.callout-caution`**: `07_contrib.qmd` indica sense títol; a T5 alguns en porten. Excepció o unificar?
+- **Coherència de títols en `.callout-caution`**: `07_contrib.qmd` indica sense títol. No és una excepció puntual de T5: és una deriva d'estil real entre temes. Recompte: T2/T3/T4/T9 mai en porten (0 casos); T7 (5/5) i T8 (6/6) sempre en porten; T5 és mixt (4/7 amb títol). Decisió pendent (2026-07-05, deixada oberta expressament): unificar sense títol (coherent amb el criteri actual, 15 callouts a retocar a T5/T7/T8), unificar amb títol (canviar el criteri, 22 callouts a retocar a T2/T3/T4/T9), o valorar cas per cas si el títol aporta valor real.
 - **Criteris de codi C**: completar.
-- **Estudi previ de laboratori** (`L1.qmd`–`L6.qmd`): lliurar com a fitxers separats o integrat al `.qmd`?
 - **Plantilles Markdown** (`L2.qmd` i resta): posar-ne a tots excepte `L2.qmd`, o eliminar de `L2.qmd`?
-- **Descàrrega de `laboratori/`**: codi encastat per C&P o fitxers descarregables?
-- **Figures portades d'extern**: afegir font (dels PDF n'hi ha que són del Patterson -e.g. T7 MC)
+- **Figures portades d'extern**: afegir font (dels PDF n'hi ha que són del Patterson -e.g. T7 MC).
 
 ---
 
 ## Tasques per tema
 
-### T2
-
-- ~~Verificar a RARS: `.byte 0101` (octal, ln 2082)~~ → ✓ `0101₈ = 65`. Corregit el comentari.
-- ~~`.byte`/`.half`/... sense operands (ln 1112)~~ → ✓ Nota corregida; eliminar la instrucció sense operands.
-- ~~`li` amb `lo₁₂==0` (ln 524)~~ → ✓ TODO eliminat; nota aclarida.
-- ~~`#tbl-tipus-alineacio` sense caption~~ → ✓ Caption afegit.
-- ~~Nota `07_contrib.qmd` §T2/T4 imprecisa~~ → ✓ Verificat que el text actual de `07_contrib.qmd` ja és precís.
-- ~~Redundància «modularitat» (ln 57/69/86)~~ → ✓ L. 86 reformulada.
-
 ### T3
 
-- ~~Corregir etiqueta `#cau-instruccions-no-sla` (ln 106): parla de `sla`/`slai`, no de `lwu`. Reanomenar a la revisió de T3.~~ → ✓ El slug és correcte: el callout parla de `sla`/`slai`. El TODO era imprecís.
-- ~~Revisió del fragment AND/OR/XOR (`git show a288aaf`): `#cau-cas-extensio-zero`, `#cau-immediats-logics-extensio-signe`, títol `#nte-pseudoinstruccio-not`, composició `nor`.~~ → ✓ Resolt en la revisió interna: callout redundant eliminat, `#cau-immediats-logics-extensio-signe` reescrit amb exemple numèric, títol `not` corregit, `nor` eliminat.
-- ~~TODO Adrià: validar integració del patch AND/OR/XOR (`git show a288aaf`).~~ → ✓ Fragment integrat i revisat. Pendent validació d'Adrià sobre la terminologia «unes expressions» (L. 253, vegeu ítem pendent a continuació).
-- ~~**Referència trencada `@nte-pseudoinstruccions-salt-condicional-zero`** (T3): verificar on ha d'apuntar (probablement T2 o compendi `05_riscv.qmd`) i reparar.~~ → ✓ El callout és `#nte-pseudoinstruccions-salt-zero` (T3 §4). Referència corregida a T3.qmd L. 255.
 - **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que T2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb T2.qmd i T3.qmd.
 - **Revisar referència `@imp-exception-handler` reparada** (T3.qmd, ~L. 1546, callout `#tip-rars-main-multinivell`): l'etiqueta original no tenia destí; s'ha reescrit apuntant a `@sec-ei-rse` (T9) i retocat la frase perquè tingués sentit gramatical. És una interpretació de Claude Code, no una simple correcció mecànica d'slug — verificar que el destí i la redacció són correctes.
 - Retocs manuals pendents (Roger) a les figures:
@@ -55,23 +26,19 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
 ### T5
 
-- ~~**F2** — Taula de registres FP: `11_riscv/RV32I_registres_coma_flotant.qmd` existeix amb contingut **divergent** del de T5 (alineació, noms, cursives). Decidir versió canònica abans de connectar; ara la taula es manté inline.~~ → ✓ Unificat el format amb `RV32I_registres_proposit_general.qmd` (negretes, cursives, rangs amb guió). T5 ara usa `{{< include >}}`. `05_riscv.qmd` també.
-- ~~**Taules de camps de `fcsr`** (`frm`, `fflags`): decidir si van a includes de `11_riscv/` o es mantenen inline.~~ → ✓ Mantingudes inline a T5 i a `05_riscv.qmd` (la figura SVG fa inviable l'externalització per include).
 - **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.
 - **Harmonització notacional RV32I ↔ RV32F**: taules RV32F usen `\leftarrow` i `off`; RV32I usen `=` i `offset`. Unificar.
 - **P7** — Alinear l'ordre de la taula de codificacions especials amb el de les subseccions.
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
 - **`#cau-underflow`**: opcionalment reanomenar a `#cau-subdesbordament` (cosmètic; no referenciat).
-- Explicar perquè quantitat de denormals 2·(2^(23)-1) v.s. qualsevol rang normalitzat 2·2^(23) Nota: `2·` és per les dues opcions del bit de signe. L'explicació està a draw.io
-- Assegurar que es diu que en denormals bit ocult és o
+- Explicar perquè quantitat de denormals 2·(2^(23)-1) v.s. qualsevol rang normalitzat 2·2^(23). Nota: `2·` és per les dues opcions del bit de signe. L'explicació està a draw.io.
+- Assegurar que es diu que en denormals bit ocult és 0.
 
 ### T6
 
 - SVGs `T6_not_cmos`, `T6_not_1_0`, `T6_not_0_1`: alçades diferents; textos solapats al PDF. Provar les versions `___tracable____original_light.svg`.
 
 ### T7 — Figures pendents de creació
-
-~~`fig-escriptura-estat-inicial`, `fig-escriptura-immediata-amb-assignacio`, `fig-escriptura-immediata-sense-assignacio`, `fig-escriptura-retardada`, `fig-lru-exemple`, `fig-assoc-conjunts-taula`, `fig-conflicte-exemple`, `fig-capacitat-exemple-bucle-primera-passada`, `fig-capacitat-exemple-bucle-segona-passada`, `fig-gap-processador-memoria`~~ → ✓ Generades i integrades a `T7.qmd`.
 
 Figures pendents (totes requereixen LO Draw de Roger):
 
@@ -88,11 +55,6 @@ Figures pendents (totes requereixen LO Draw de Roger):
 
 Decisions obertes de T7:
 - 🔵 **`fig-capacitat-exemple` a HTML**: dues figures separades (primera+segona passada) o figura única combinada? Pendent de decisió.
-- ~~`fig-tres-c-barres`~~ → ✓ Descartada (gràfic de dades sense valors numèrics disponibles).
-
-Colors nous afegits a `21_specs/svg.md` en aquest xat:
-- Miss zona bloc: `#f8d0d3` / `#dc3545` (light/stroke) · `#3d1a1e` / `#f07080` (dark)
-- Hit zona bloc: `#c8ebd8` / `#198754` (light/stroke) · `#1a3328` / `#70c898` (dark)
 
 ### T8 — Figures pendents de creació
 
@@ -116,51 +78,14 @@ Colors nous afegits a `21_specs/svg.md` en aquest xat:
 
 - **Migració de canvas a amplades estàndard**: figures de BA i mapa de memòria (`W=316 px`) → classe `estreta` (`W=340 px`). Decisió pendent: mantenir `w_rect=230` (marge dret 10→34) o ampliar `w_rect` a 254 (marges simètrics). Un cop decidit, aplicar a les 7 figures afectades i actualitzar `21_specs/svg.md §2`. Figures: `T3_mapa_memoria`, `T3_ba_general`, `T3_ba_func`, `T3_ba_multi`, `T3_ba_exemple`, `T3_func_uninivell_pila`, `T3_pila_crides_aniuades`.
 - **Migrar diagrames Mermaid existents a SVG**.
-- ~~**`T3_deps_*` dark**: afegir `#cc0000` a `REPLACEMENTS` de `21_specs/svg.md` o crear dark manualment.~~ → ✓ Afegit `#cc0000 → #ff6b6b` a §13, juntament amb la resta de colors llegat i de figures externes (0 colors no reconeguts al pre-render).
-- ~~**Formats d'instrucció B, U, J, R4**: figures individuals i compendi `compendi_registres` generats i integrats a `22_scripts/gen_regs.py` + `21_specs/registres.toml`.~~ → ✓ Completat.
 
 ### Contingut global
-
-- ~~**Exercicis Ca1/Ca2/excés a PE_T2**: la secció «Representació de naturals i enters» de PE_T2 s'ha traslladat a PE_T1 (IDs `exr-p1-enters-*`); PE_T2 conté una nota de remissió. La solució `sol-p1-enters-taules` s'ha traslladat a PS_T1.~~ → ✓ Completat.
-- ~~**Ordre de seccions PE_T2**: «Constants i immediats» és ara la 2a secció (entre «Operands en registre» i «Operands en memòria»), consistent amb l'ordre de T2.qmd.~~ → ✓ Completat.
 
 - **Cometes** `"..."` → `«...»`: substitució global.
 - **`****` sobrants**: eliminar.
 - **Equacions a MathML**: passar totes les equacions; definir criteris d'inline. **Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`)**: funciona (`underbrace`, `cases`, taules amb math correctes a Chrome), i elimina el JS de MathJax (render instantani, funciona offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), la numeració d'equacions queda inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. Recomanació: mantenir MathJax 3 (el desbordament mòbil ja està resolt via CSS); reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa).
 - **PDF**: figures dins callouts no queden centrades → investigar via `preamble.tex`.
 - **Gestió d'errades post-commit**: definir protocol (vegeu `07_contrib.qmd §Gestió d'errades`).
-
-### Solucionaris pendents d'afegir
-
-| Tema | Cobertura | Estat |
-| :--- | :--- | :--- |
-| T1 | Conversió a Ca1/Ca2/SM/Excés per a 4 valors de 8 bits (`exr-p1-enters-conversio8`) | ✓ Resolt a `PS_T1.qmd` |
-| T1 | Ca2 en mínim format (8 o 16 bits) per a 9 valors (`exr-p1-enters-codificacio`) | ✓ Resolt a `PS_T1.qmd` |
-| T1 | Ca2 16 bits → decimal per a 2 valors (`exr-p1-enters-ca2-16bits`) | ✓ Resolt a `PS_T1.qmd` |
-| T1 | Natural vs. Ca2 per a 4 patrons de bits (`exr-p1-enters-implicit`) | ✓ Resolt a `PS_T1.qmd` |
-| T1 | Mínim Ca2 en 13 bits (`exr-p1-enters-minim13`) | ✓ Resolt a `PS_T1.qmd` |
-| T1 | Màxim Ca2 en 13 bits (`exr-p1-enters-maxim13`) | ✓ Resolt a `PS_T1.qmd` |
-| T1 | Divisió en Ca2: quocient, residu i sobreeiximent (`exr-p1-aritm-divisio`) | ✓ Afegit i resolt a `PE_T1.qmd`/`PS_T1.qmd` |
-| T2 | *Little-endian*, ordre de bytes (`exr-p3-memoria-endianness`) | ✓ Resolt a `PS_T2.qmd` |
-| T2 | Cerca en vector, retorn −1 (`exr-p3-vectors-cerca`) | ✓ Resolt a `PS_T2.qmd` |
-| T2 | Aritmètica de punters sobre `short` (`exr-p3-vectors-punter-aritm`) | ✓ Resolt a `PS_T2.qmd` |
-| T2 | Còpia de string (`exr-p3-strings-copia`) | ✓ Resolt a `PS_T2.qmd` |
-| T3 | `switch` amb salts encadenats i *jump table* (`exr-p4-bucles-switch`) | ✓ Resolt a `PS_T3.qmd` |
-| T3 | `exr-p4-compilacio-auipc`: expansió de `la`, rang ±2 GiB | ✓ Resolt a `PS_T3.qmd` |
-| T3 | `exr-p4-memoria-jalr`: tracing de `jalr` (resposta: 3 vegades) | ✓ Resolt a `PS_T3.qmd` |
-| T3 | `exr-p4-logica-rotacio` apartats a) i b): rotació d'1 i de 16 posicions | ✓ Resolt a `PS_T3.qmd` |
-
-### Harmonització KB/MB/GB/TB → KiB/MiB/GiB/TiB (prefixos binaris)
-
-Aplicat el criteri de `07_contrib.qmd §Nombres` (prefixos IEC per a mides que són potències de 2) a tots els valors exactes de mida de memòria/pàgina/cau del projecte:
-
-- ✓ `T2.qmd` (línia «4 GiB ($2^{32}$ bytes)»).
-- ✓ `T8.qmd`, `PE_T8.qmd`, `PS_T8.qmd` (mida de pàgina, TP, espai lògic/físic, TLB).
-- ✓ `PE_T7.qmd` (`exr-p7-rend-mida-bloc`: 8 KiB; `exr-p7-assoc-multinivell`: 1 MiB).
-
-✓ Decisió: es mantenen en `KB`/`MB`/`GB`/`TB` decimal els tres blocs de `T7.qmd` amb mides aproximades de referència real de mercat (no càlculs pedagògics exactes): taula «Capacitat, temps d'accés i cost per GB» (L. 18–25), callout «Les GPUs i la memòria en l'era de la IA» (L. 70–81) i taula de disseny L1/L2 (L. 923).
-
-Afegit `#cau-prefixos-binaris` a `T2.qmd` (primera aparició del llibre, dins §La base RV32I): taula IEC/SI que explica `KiB`/`MiB`/`GiB`/`TiB` (amb «i», binari) vs. `KB`/`MB`/`GB`/`TB` (sense «i», decimal), amb referències des de `T3.qmd`, `T8.qmd` i `07_contrib.qmd`.
 
 ### `index.qmd`
 
