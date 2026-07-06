@@ -6,6 +6,7 @@ number-sections: true
 
 ::: {#imp-traduccions-literals .callout-important}
 A **EC**, les traduccions des de C a codi d'assemblador han de ser **el més literal possible**, si no s'indica explícitament el contrari. Per tant, **sense optimitzacions**.
+<!-- PM: Et refereixes a optimitzacions del compilador, de l'estudiant?  Queda una mica extrany.  Interessa que els codis creats pels estudiants siguin més o menys òptims (p.ex. sense abusar del nombre de registres)-->
 :::
 
 ## Desplaçaments de bits {#sec-desplacaments-de-bits}
@@ -109,7 +110,9 @@ No existeix la instrucció ~~`sla`~~ ni la ~~`slai`~~ .
 
 ### Traducció dels operadors C `<<` i `>>` {#sec-traduccio-desplacament-c}
 
-L'operador `<<` de **C** (*desplaçament a l'esquerra*) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix amb `srl`/`srli` si l'operand és de tipus `unsigned` (natural), o amb `sra`/`srai` si és un enter amb signe.
+L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix amb `srl`/`srli` si l'operand és de tipus `unsigned` (natural), o amb `sra`/`srai` si és un enter amb signe.
+
+<!-- PM: Per simplificar, jo faria la distinició entre "natural" (sense signe) i "enter" (amb signe).-->
 
 ::: {#tip-traduccio-desplacament-c .callout-tip}
 ## Traducció de `<<` i `>>`
@@ -128,15 +131,16 @@ Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
 
 ### Aplicació d'`sll`/`slli`: multiplicació per potències de 2 {#sec-multiplicacio-potencies-2}
 
-Desplaçar a l'esquerra un enter o natural amb `sll`/`slli` equival a **multiplicar**-lo per una potència de 2: `rd` ← `rs1` × 2^shamt^.
+Desplaçar a l'esquerra un enter o natural amb `sll`/`slli` equival a **multiplicar-lo** per una potència de 2: `rd` ← `rs1` × 2^shamt^.
 
 ::: {#imp-ec-sll-acces-vector .callout-important}
 A **EC**, s'usa `slli` per calcular l'**offset** en bytes per accedir a elements d'un vector quan la mida de l'element és una potència de 2 (@eq-acces-aleatori-vector).
+<!-- PM: Vector o matriu.  Queda raro perquè els elements són sempre potència de 2 també en el cas de caracters (2^0). -->
 :::
 
 ### Aplicació d'`sll`/`slli`: divisió entera per potències de 2 {#sec-sll-divisio-potencies}
 
-Desplaçar a la dreta naturals amb `srl`/`srli` o enters (amb signe) `sra`/`srai` equival a **dividir**-los per una potència de 2: `rd` ← `rs1` / 2^shamt^.
+Desplaçar a la dreta naturals amb `srl`/`srli` o enters amb `sra`/`srai` equival a **dividir-los** per una potència de 2: `rd` ← `rs1` / 2^shamt^.
 
 ::: {#cau-sra-divisio .callout-caution}
 La semàntica de l'operador `/` de C requereix que el residu tingui el **mateix signe** que el dividend. En canvi, `sra`/`srai` produeix sempre un residu **no negatiu**. Per tant, `sra`/`srai` **no és equivalent** a `/` quan el **dividend és negatiu**.
@@ -146,9 +150,9 @@ Per exemple, la divisió entera (-15 / 4) dóna quocient -3 i residu -3, mentre 
 
 ## Operacions lògiques bit a bit {#sec-operacions-logiques-bit-a-bit}
 
-### Instruccions `&`, `|`, `^` (AND, OR, XOR) {#sec-instruccions-logiques-bit-a-bit}
+### Instruccions `&`, `|` i `^` (`and`, `or` i `xor`) {#sec-instruccions-logiques-bit-a-bit}
 
-Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori`, `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que la resta d'instruccions de tipus I.
+Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori` i `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que la resta d'instruccions de tipus I.
 
 ::: {#cau-immediats-logics-extensio-signe .callout-caution}
 Els immediats de `andi`, `ori` i `xori` s'interpreten en **complement a 2**: si el bit 11 de l'immediat val `1`, el valor estès a 32 bits té els bits 31..12 a `1`. Això pot produir màscares no desitjades. Per exemple:
@@ -171,6 +175,7 @@ Per a màscares arbitràries de 32 bits, cal carregar la màscara en un registre
 ::: {#nte-pseudoinstruccio-not .callout-note}
 ## Pseudoinstrucció — `not`
 
+<!-- PM: jo no faria servir la paraula "NOT".  En estalviem així una altra keyword.  Ja he eliminat algunes més a dalt.-->
 **RV32I** no inclou la instrucció `not`. La **negació bit a bit** (NOT) d'un registre, equivalent al `~` de **C**, s'obté amb la pseudoinstrucció `not`:
 
 | Pseudoinstrucció | Operació | Expansió |
@@ -199,7 +204,7 @@ Selecció dels 16 bits de menor pes de `rs1`:
 
 ### Aplicació d'`or`: posar bits a `1` {#sec-or-bits-a-1}
 
-La instrucció `or` s'usa per **posar a $1$** aquells bits d'un registre que valen `1` a la màscara.
+La instrucció `or` s'usa per **posar a 1** aquells bits d'un registre que valen `1` a la màscara.
 
 ::: {#tip-exemple-or-mascara .callout-tip}
 ## Posar bits a `1` amb `or`
@@ -224,25 +229,25 @@ La instrucció `xor` s'usa per **complementar** aquells bits d'un registre que v
 Complement dels bits parells de `t0`:
 
 ```{.s filename="RV32I"}
-        li      t1, 0x55555555      # màscara amb uns als bits parells
+        li      t1, 0x55555555  # màscara amb uns als bits parells
         xor     t0, t0, t1
 ```
 :::
 
 ## Comparacions i operacions booleanes {#sec-comparacions-i-operacions-booleanes}
 
-En **C**, les expressions enters admeten els **operadors de comparació** `==`, `!=`, `<`, `<=`, `>`, `>=`. A diferència d'altres llenguatges, en C **no existeix el tipus booleà**: el resultat d'una comparació és un enter, `1` si la comparació és certa i `0` si és altrament. Les **comparacions** seran **amb signe o sense signe** segons el tipus declarat dels operands.
+En **C**, les expressions enteres admeten els **operadors de comparació** `==`, `!=`, `<`, `<=`, `>`, `>=`. A diferència d'altres llenguatges, en C **no existeix el tipus booleà**: el resultat d'una comparació és l'enter `1` si la comparació és certa, o altrament és un `0`. Les **comparacions** seran **amb signe o sense signe** segons el tipus declarat dels operands.
 
-En **C** existeixen també **operadors booleans** (`&&`, `||`, `!`). Cada operand s'interpreta com a **fals** si val `0`, o com a **cert** si val **diferent de `0`**. El resultat és també un enter **normalitzat**: `1` si cert, `0` si fals.
+En **C** existeixen també els **operadors booleans** `&&`, `||`, `!`. Cada operand s'interpreta com a **fals** si val `0`, o com a **cert** si val **diferent de `0`**. El resultat és també un enter **normalitzat**: `1` si cert, `0` si fals.
 
 <!-- TODO Adrià: tu has proposat "unes expressions" (abans era "les expressions"); cal indicar com es poden identificar les que sí i les que no -->
 ::: {#cau-boolea-c .callout-caution}
-En C, unes expressions no nul·les s'interpreten com a certes **sense ser iguals**. Tant les comparacions com els operadors booleans sempre donen com a resultat un enter normalitzat, `0` o `1`. Per exemple, si `y = 2` i `z = 0`, la sentència `x = (y >= z) + 5;` assigna a `x` el valor `6`.
+En C, unes expressions no nul·les s'interpreten com a certes **sense ser iguals**. Tant les comparacions com els operadors booleans sempre donen com a resultat un enter normalitzat: `0` o `1`. Per exemple, si `y = 2` i `z = 0`, la sentència `x = (y >= z) + 5;` assigna a `x` el valor `6`.
 :::
 
 ### Instruccions de comparació: `slt` i `sltu` {#sec-instruccions-comparacio-slt}
 
-La instrucció `slt` compara dos enters amb signe i **posa a** `1` (LSB a `1` i la resta a `0`) al registre destinació si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
+La instrucció `slt` compara dos enters amb signe i **posa a** `1` al registre destinació (LSB a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
 
 ::: {#nte-instruccions-comparacio .callout-note}
 ## RV32I ISA — Instruccions de comparació
@@ -313,8 +318,10 @@ t1 = !t0;               /* equival a: t1 = (t0 == 0) */
 
 - Si se sap amb certesa que `t0` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
 
+<!-- El caràcter "↔" no surt al PDF.  Proposo canviar a "inverteix el LSB".-->
 ```{.s filename="RV32I"}
         xori    t1, t0, 1       # complementa el bit 0 (inverteix 0↔1)
+
 ```
 :::
 
@@ -366,6 +373,7 @@ En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de form
 En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**, sinó que és una condició obligatòria imposada per la semàntica del llenguatge.
 :::
 
+<!-- PM: Jo faria un merge d'aquests dos callouts -->
 ::: {#imp-ec-lazy-evaluation .callout-important}
 A **EC**, la traducció de `&&` i `||` ha de respectar l'avaluació lazy.
 :::
@@ -384,13 +392,15 @@ La combinació d'aquests dos eixos dona lloc a tres categories:
 | **Condicional** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu` | — |
 | **Incondicional** | `jal`, `j` | `jalr`, `jr`, `ret` |
 
-No existeix cap salt condicional indirecte a RV32I.
+::: {#cau-salts-condicionals-relatius-pc .callout-caution}
+A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existeix cap salt condicional indirecte.
+:::
 
 ### Salts condicionals {#sec-salts-condicionals}
 
 Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
 
-Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** (@cau-prefixos-binaris) respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
+Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** (@cau-prefixos-binaris) respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*compressed*).
 
 :::: {#nte-format-b .callout-note}
 ## RV32I ISA — Format Tipus-B
@@ -411,10 +421,6 @@ Format d'instrucció tipus B, *branch* (RV32I).
 
 Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` a [31:25] i `imm[4:1|11]` a [11:7]) per mantenir `rs1` i `rs2` en les mateixes posicions que en els formats R i S, cosa que simplifica la descodificació al maquinari.
 ::::
-
-::: {#cau-salts-condicionals-relatius-pc .callout-caution}
-A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existeix cap salt condicional indirecte.
-:::
 
 ::: {#nte-instruccions-salt-condicional .callout-note}
 ## RV32I ISA — Instruccions de salt condicional
@@ -499,7 +505,7 @@ Suposant que `a` i `b` ocupen els registres `t0` i `t1`:
         andi    t0, t1, 0x0055      # selecciona els bits 0, 2, 4 i 6
         li      t4, 0x0011
         bne     t0, t4, endif       # if (a == 0x11) ...
-...                         # codi si es compleix la condició
+        ...                         # codi si es compleix la condició
 endif:
 ```
 :::
@@ -637,7 +643,7 @@ sino:
 fisi:
 ```
 
-La clàusula `else` és opcional. Si no existeix, el primer salt va directament a `fisi`, que es col·loca just després de la traducció de `sentencia_then`.
+La clàusula `sino` (`else`) és opcional. Si no existeix, el primer salt va directament a `fisi`, que es col·loca just després de la traducció de `sentencia_then`.
 
 ::: {#tip-traduccio-if-simple .callout-tip}
 ## `if-then-else` amb condició simple
@@ -738,10 +744,10 @@ Suposant que `t0` conté el resultat de l'expressió del `switch` i que `switch_
 
 ```{.s filename="RV32I"}
         la      t1, switch_vec  # adreça base del vector
-        slli    t2, t0, 2      # offset = índex * 4 (mida d'una paraula)
+        slli    t2, t0, 2       # offset = índex * 4 (mida d'una paraula)
         add     t1, t1, t2      # adreça efectiva de l'element
         lw      t3, 0(t1)       # carrega l'adreça de la clàusula
-        jalr    zero, t3, 0     # salta al codi de la clàusula
+        jalr    zero, t3, 0     # salta al codi de la clàusula (equivalent a: jr t3)
 ```
 
 El vector de salts es declara a la secció `.data`:
@@ -866,7 +872,7 @@ fibucle:
 Al bucle `for`, el més habitual és que `sentència1` inicialitzi la variable de control del bucle (típicament un comptador) i que `sentència2` l'actualitzi després de cada iteració.
 
 ```{.c filename="C"}
-for (sentència1; condicio; sentència2) {
+for (sentència1; condició; sentència2) {
     sentència3;
 }
 ```
@@ -875,7 +881,7 @@ Quan es fa així, el `for` agrupa tots els elements que controlen el bucle en un
 
 ```{.c filename="C"}
 sentència1;
-while (condicio) {
+while (condició) {
     sentència3;
     sentència2;
 }
@@ -908,6 +914,8 @@ fibucle:
 ```
 :::
 
+<!-- PM: Crec que té més sentit deixar les seccións while i do-while consecutives i posar la secció for abans o després d'introduir aquestes dues-->
+
 ### Sentència `do-while` {#sec-do-while}
 
 La sentència `do-while` executa el cos **sempre almenys una vegada**, i la condició s'avalua al final de cada iteració.
@@ -915,7 +923,7 @@ La sentència `do-while` executa el cos **sempre almenys una vegada**, i la cond
 ```{.c filename="C"}
 do
     sentencia_cos;
-while (condicio);
+while (condició);
 ```
 
 El patró de traducció és més senzill que el del `while` perquè no cal comprovació inicial: el cos s'executa primer i el salt condicional al final decideix si tornar a iterar:
@@ -923,7 +931,7 @@ El patró de traducció és més senzill que el del `while` perquè no cal compr
 ```{.s filename="RV32I"}
 bucle:
         # traducció de sentencia_cos
-        # avaluar condicio
+        # avaluar condició
         # salt si és certa a bucle
 ```
 
@@ -993,7 +1001,7 @@ Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el
 
 Les dades (instruccions i variables) d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
 
-A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants simbòliques** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` per a les instruccions del programa en assemblador i `.data` per a les variables globals i constants simbòliques, a les quals en temps de compilació s'hi escriu mitjançant les directives de segment (@nte-segments-memoria).
+A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants simbòliques** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` per a les instruccions del programa en assemblador i `.data` per a les variables globals i constants simbòliques, a les quals s'hi escriu en temps de compilació mitjançant les directives de segment (@nte-segments-memoria).
 
 A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap***. La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el heap s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fa explícitament per part del programador (mitjançant `malloc()` i `free()`).
 
@@ -1055,12 +1063,12 @@ RARS: *Settings* → *Memory Configuration...* mostra totes les regions de memò
 ::: {#wrn-gp-global-pointer .callout-warning collapse=true}
 ## El registre `gp` (*global pointer*)
 
-L'ABI reserva el registre `gp` (`x3`, ***global pointer***) per optimitzar l'accés a variables globals petites situades dins d'un rang de ±2 KiB respecte al valor de `gp`. El carregador l'inicialitza automàticament en arrencar el programa; el programador no l'ha de manipular mai directament. A **EC** no s'estudia aquest mecanisme.
+L'ABI reserva el registre `gp` (`x3`, *global pointer*) per optimitzar l'accés a variables globals petites situades dins d'un rang de ±2 KiB respecte al valor de `gp`. El carregador l'inicialitza automàticament en arrencar el programa; el programador no l'ha de manipular mai directament. A **EC** no s'estudia aquest mecanisme.
 :::
 
 ### Accés a variables globals {#sec-acces-variables-globals}
 
-En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que carreguen l'adreça de 32 bits de la variable en un registre. Un cop carregada l'adreça, l'accés a la variable es fa amb una instrucció de `lw`/`sw` (o les variants de byte i mig-word):
+En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que carreguen l'adreça de 32 bits de la variable en un registre. Un cop carregada l'adreça, l'accés a la variable es fa amb una instrucció de `lw`/`sw` (o les variants de *byte*, *half-word* i *double-word*):
 
 ```{.s filename="RV32I"}
         la      t0, variable    # t0 <- adreça de variable
@@ -1132,7 +1140,7 @@ Per tal que una subrutina i el codi que la **crida** puguin ser programats en ll
 Una subrutina és:
 
 - **Uninivell**, si el seu codi no conté cap crida a una altra subrutina.
-- **Multinivell**, si el seu codi conté alguna crida a una altra subrutina. 
+- **Multinivell**, si el seu codi conté alguna crida a una altra subrutina.
 :::
 
 ### Crida i retorn (el registre `ra`) {#sec-crida-retorn}
@@ -1273,7 +1281,7 @@ void f() {
 ```
 :::
 
-Les variables **escalars** (globals i locals) es poden passar per **valor** o per **referència** si es passa la seva adreça.
+Les variables **escalars** (globals i locals) es poden passar per **valor** o bé per **referència** en cas que es passi la seva adreça.
 
 Els **vectors** i **matrius** només es poden passar per **referència**.
 
@@ -1509,11 +1517,11 @@ func:
 
 En un programa multinivell, una subrutina pot cridar una altra subrutina, que al seu torn pot cridar una altra, i així successivament. En aquest cas, el bloc d'activació de cada subrutina s'apila sobre el de la subrutina que la va cridar.
 
-La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política de última en entrar, primera en sortir (*last in, first out*, LIFO), la qual s'implementa mitjançant el registre de pila `sp`.
+La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política d'«última en entrar, primera en sortir» (LIFO: *last in, first out*), la qual s'implementa mitjançant el registre de pila `sp`.
 
 ::: {#nte-rars-fons-pila .callout-note}
 ## RARS — Fons de pila
-A RARS, **fons de pila**, és a dir, el valor inicial d'`sp`, és `0x7fffeffc`.
+A RARS, el **fons de pila**, és a dir, el valor inicial d'`sp`, és `0x7fffeffc`.
 :::
 
 ::: {#tip-exemple-pila-multinivell .callout-tip}
@@ -1551,7 +1559,7 @@ Per tant, si `main` és multinivell, cal preservar `ra` i restaurar-lo abans de 
 :::
 -->
 
-Una subrutina multinivell ha de preservar, com a mínim, el valor de `ra` abans de la crida al callee i restaurar-lo després:
+Una subrutina multinivell ha de preservar, com a mínim, el valor de `ra` abans de la crida al *callee* i restaurar-lo després:
 ```{.s filename="RV32I"}
 sub:
         ...
@@ -1569,7 +1577,7 @@ Els registres són compartits per totes les subrutines. Per tant, hi ha d'haver 
 
 L'**ABI** de RV32I resol aquest problema mitjançant una solució elegant i eficient, però que pot semblar contraintuïtiva a primera vista.
 
-Aquesta solució es basa en la classificació dels registres en **temporals** (*caller-saved* en terminologia ABI) i **segurs** (*callee-saved* en terminologia ABI) i en el repartiment de responsabilitats entre caller i callee per preservar-los (@nte-caller-saved-vs-callee-saved): Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat del caller, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és del callee.
+Aquesta solució es basa en la classificació dels registres en **temporals** (*caller-saved* en terminologia ABI) i **segurs** (*callee-saved* en terminologia ABI) i en el repartiment de responsabilitats entre caller i callee per preservar-los (@nte-caller-saved-vs-callee-saved). Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat del caller, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és del callee.
 
 Que el pare hagi de prendre mesures per preservar el seu context sembla raonable, ja que és qui té la necessitat de recuperar-lo després de la crida. El que pot semblar contraintuïtiu és que el fill hagi d'ajudar al pare a preservar el context d'aquest últim preservant-ne els valors dels registres segurs, tot i no tenir-ne cap dependència. No obstant això, aquesta solució és molt eficient perquè permet a **les subrutines** modificar lliurement els registres temporals sense haver de preocupar-se per preservar-los, havent-se de preocupar **només de preservar els registres segurs**, assegurant, així, per economia, que només faran servir aquells registres que realment necessiten.
 
@@ -1711,9 +1719,9 @@ multi:
         add     a0, t1, t0      # c + d + e → a0
 
         # epíleg
-        lw      s0, 0(sp)
-        lw      s1, 4(sp)
-        lw      ra, 8(sp)
+        lw      s0, 0(sp)       # restaura s0
+        lw      s1, 4(sp)       # restaura s1
+        lw      ra, 8(sp)       # restaura ra
         addi    sp, sp, 12
         ret
 ```
@@ -1875,7 +1883,7 @@ En **C**, un **mòdul** (també anomenat unitat de traducció) és una unitat fu
 
 Hi ha moltes situacions on resulta convenient separar el codi i les dades en **mòduls**. Algunes d'aquestes situacions són:
 
-- Fer possible reutilitzar codi (biblioteques de funcions).
+- Fer possible la reutilització de codi (biblioteques de funcions).
 - Estructurar racionalment projectes complexos.
 - Permetre que equips independents de programadors treballin en paral·lel.
 - Fer que només s'hagin de recompilar els mòduls modificats.
@@ -1909,7 +1917,11 @@ El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que 
 
 ### Assemblatge {#sec-assemblatge}
 
-L'**assemblador** pren com a entrada el fitxer `.s` i el tradueix a codi màquina en un **fitxer objecte** (`.o`). Durant l'assemblatge es produeixen tres tasques fonamentals:
+L'**assemblador** pren com a entrada el **fitxer assemblador** `.s` i el tradueix a codi màquina en un **fitxer objecte** `.o`. Durant l'assemblatge es produeixen tres tasques fonamentals:
+
+1. Expansió de macros i pseudoinstruccions.
+2. Construcció de la taula de símbols.
+3. Reubicació i referències externes.
 
 #### Expansió de macros i pseudoinstruccions {#sec-expansio-macros-pseudo}
 
@@ -1937,6 +1949,7 @@ L'assemblador genera per a cada fitxer objecte:
 - Una **taula de símbols globals**: etiquetes declarades amb `.globl` i les seves adreces provisionals, visibles des d'altres mòduls.
 - Una **llista de referències externes no resoltes**: instruccions que fan referència a etiquetes definides en altres mòduls.
 
+<!-- PM: podríem obviar .global per simplificar el material?-->
 ::: {#nte-globl .callout-note}
 ## Directives — `.globl` (i `.global`)
 Si una etiqueta ha de ser referenciada des d'un altre mòdul, cal declarar-la amb la directiva `.globl`, altrament només és visible localment dins el seu mòdul.
@@ -2008,7 +2021,7 @@ Els fitxers objecte contindran:
 
 L'**enllaçador** (*linker*) combina múltiples fitxers objecte i fitxers de biblioteca en un sol fitxer executable. Ho fa en quatre passos:
 
-**1. Resolució de símbols.** L'enllaçador reuneix totes les taules de símbols globals i llistes de referències externes. S'assegura que cada referència externa té una definició, cercant-la primer als fitxers objecte i després als fitxers de biblioteca. Si no troba alguna definició, finalitza amb un error `unresolved reference to symbol X`.
+**1. Resolució de símbols.** L'enllaçador reuneix totes les taules de símbols globals i llistes de referències externes. S'assegura que cada referència externa té una definició, cercant-la primer als fitxers objecte i després als fitxers de biblioteca. Si no troba alguna definició, finalitza amb un error: `unresolved reference to symbol X`.
 
 **2. Combinació de seccions.** Les seccions `.text` i `.data` de tots els mòduls es concatenen. Les seccions dels mòduls que no són el primer queden desplaçades. L'enllaçador calcula i anota el desplaçament sofert per les seccions de cada mòdul.
 
