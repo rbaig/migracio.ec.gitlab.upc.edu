@@ -27,11 +27,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 ### T5
 
 - **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.
-- **P7** — Alinear l'ordre de la taula de codificacions especials amb el de les subseccions.
+- **Harmonització notacional RV32I ↔ RV32F**: taules RV32F usen `\leftarrow` i `off`; RV32I usen `=` i `offset`. Unificar.
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
-- **`#cau-underflow`**: opcionalment reanomenar a `#cau-subdesbordament` (cosmètic; no referenciat).
-- Explicar perquè quantitat de denormals 2·(2^(23)-1) v.s. qualsevol rang normalitzat 2·2^(23). Nota: `2·` és per les dues opcions del bit de signe. L'explicació està a draw.io.
-- Assegurar que es diu que en denormals bit ocult és 0.
 
 ### T6
 

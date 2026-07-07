@@ -181,14 +181,19 @@ $$V = \texttt{0xC480B5C3}$$
 
 **g) Error de representació**:
 
-$$\varepsilon = \bigl|1{,}0000\,0001\,0110\,1011\,1000\,011 - 1{,}0000\,0001\,0110\,1011\,1000\,0101\,0001\ldots\bigr| \times 2^{10}$$
-$$= 0{,}0000\,0000\,0000\,0000\,0000\,0000\,1111\ldots \times 2^{10} \approx 1{,}111_2 \times 2^{-15} $$
+L'error de representació és la diferència entre el valor realment emmagatzemat i el valor exacte original. Com que el valor exacte té infinits bits en binari, és més senzill calcular aquesta diferència en decimal. Desfent la normalització de la mantissa arrodonida (coma 10 posicions a la dreta), el valor emmagatzemat (en valor absolut) és:
 
-$$= (1 + 0{,}5 + 0{,}25 + 0{,}125) \times 2^{-15} = \frac{1{,}875}{32768} = 5{,}722 \times 10^{-5}$$
+$$1{,}0000\,0001\,0110\,1011\,1000\,011_2 \times 2^{10} = 1000\,0000\,101{,}1010\,1110\,0001\,1_2$$
+
+La part entera ($1000\,0000\,101_2 = 1029$) no ha canviat amb l'arrodoniment: l'error és, doncs, la diferència entre les parts fraccionàries. La part fraccionària emmagatzemada val:
+
+$$0{,}1010\,1110\,0001\,1_2 = 1\,0101\,1100\,0011_2 \times 2^{-13} = \frac{5571}{8192}$$
+
+$$\varepsilon = \left|\frac{5571}{8192} - 0{,}68\right| = \frac{5571 - 0{,}68 \times 8192}{8192} = \frac{0{,}44}{8192} \approx 5{,}371 \times 10^{-5}$$
 
 **Solució**: 
 
-$$\varepsilon = 5{,}722 \times 10^{-5}$$
+$$\varepsilon = 5{,}371 \times 10^{-5}$$
 :::
 
 ::: {#tip-ieee754-decodificacio .callout-tip}
@@ -339,12 +344,6 @@ L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expre
 
 L'infinit es codifica amb tots els bits d'exponent a 1 i tots els de fracció a zero. S'apliquen regles aritmètiques senzilles: $1/0 = \infty$, $1/\infty = 0$, $x + \infty = \infty$, etc.
 
-#### NaN {#sec-codificacio-nan}
-
-Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN** (***Not a Number***), i l'execució continua. Qualsevol operació posterior amb un operand NaN produeix un altre NaN, de manera que l'error es **propaga** fins al resultat final, on el programa pot fer un únic test.
-
-Un NaN es codifica amb tots els bits d'exponent a 1 i almenys un bit de fracció no nul (per distingir-lo de l'infinit). El valor concret de la fracció no està fixat per l'estàndard.
-
 #### Denormals {#sec-denormals}
 
 Com s'ha vist a @sec-error-representacio, quan $|v| < 2^{-126}$ l'error relatiu pot arribar al 100% si s'arrodoneix a zero. Els **nombres denormals** (o subnormals) cobreixen l'interval $(0,\ 2^{-126})$ amb nombres de la forma:
@@ -381,6 +380,12 @@ Per als denormals ($E = 0$), el rang de $F$ és el mateix, però $F = 0$ codific
 :::
 Zoom al voltant del zero: $\pm 0$ i els denormals ($E=0$) omplen el buit entre el zero i el normal més petit ($2^{-126}$).
 :::
+
+#### NaN {#sec-codificacio-nan}
+
+Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN** (***Not a Number***), i l'execució continua. Qualsevol operació posterior amb un operand NaN produeix un altre NaN, de manera que l'error es **propaga** fins al resultat final, on el programa pot fer un únic test.
+
+Un NaN es codifica amb tots els bits d'exponent a 1 i almenys un bit de fracció no nul (per distingir-lo de l'infinit). El valor concret de la fracció no està fixat per l'estàndard.
 
 ### Arrodoniment {#sec-arrodoniment}
 

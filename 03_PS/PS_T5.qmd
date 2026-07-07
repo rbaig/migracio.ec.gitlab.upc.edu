@@ -97,6 +97,42 @@ El mateix patró de 32 bits representa quatre coses completament diferents: un n
 
 :::
 
+::: {#sol-p6-ieee-tipus .callout-tip}
+## Solució: classificació de patrons IEEE 754
+
+**Enunciat**: @exr-p6-ieee-tipus.
+
+La classificació només depèn dels camps $E$ (exponent) i $F$ (fracció), segons les codificacions especials (@sec-codificacions-especials):
+
+| $E$ | $F$ | Tipus |
+| :--- | :--- | :--- |
+| `0000 0000` | $= 0$ | zero ($\pm 0$, segons el signe) |
+| `0000 0000` | $\neq 0$ | denormal |
+| `1111 1111` | $= 0$ | infinit ($\pm\infty$, segons el signe) |
+| `1111 1111` | $\neq 0$ | NaN |
+| qualsevol altre | qualsevol | normalitzat |
+
+Aplicant aquestes regles a cada fila:
+
+| Signe | Exponent | Fracció | NRM | DNRM | 0 | INF | NAN |
+| :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| 0 | `0000 0000` | `110 0010 0000 1110 1110 1011` | | X | | | |
+| 0 | `0000 0000` | `000 0000 0000 0000 0000 0000` | | | X | | |
+| 0 | `0010 0100` | `000 0000 0000 0000 0000 0000` | X | | | | |
+| 1 | `1111 1111` | `000 0000 0000 0000 0000 0000` | | | | X | |
+| 0 | `0010 0100` | `110 0010 0000 1110 1110 1011` | X | | | | |
+| 1 | `0000 0000` | `000 0000 0000 0000 0000 0000` | | | X | | |
+| 0 | `1111 1111` | `101 0001 0001 0000 1001 0100` | | | | | X |
+
+Observacions:
+
+- Files 1 i 2: amb $E = 0$, el que distingeix el zero del denormal és la fracció ($F = 0$ → zero; $F \neq 0$ → denormal).
+- Fila 3: $F = 0$ amb exponent normalitzat ($E = 0010\,0100_2 = 36$) és un nombre normalitzat vàlid: la potència de 2 exacta $+1{,}0 \times 2^{36-127} = 2^{-91}$ (@cau-cardinalitat-codificacions).
+- Files 4 i 7: amb $E = 255$, la fracció distingeix l'infinit ($F = 0$) del NaN ($F \neq 0$).
+- Fila 6: el zero té signe: aquesta fila codifica $-0$.
+
+:::
+
 ::: {#sol-p6-ieee-rang .callout-tip}
 ## Solució: rang del format IEEE 754 de simple precisió
 
@@ -146,6 +182,91 @@ F  = 000 0000 0000 0000 0000 0001b
 ```
 
 $$\boxed{v_{\min,\text{denorm}} = 2^{-23} \times 2^{-126} = 2^{-149} \approx 1{,}401 \times 10^{-45} = \texttt{0x00000001}}$$
+
+:::
+
+::: {#sol-p6-ieee-decimal-a-hex .callout-tip}
+## Solució: codificació de decimal a IEEE 754
+
+**Enunciat**: @exr-p6-ieee-decimal-a-hex.
+
+Els apartats a), c), d) i e) tenen part fraccionària que és suma **finita** de potències negatives de 2 ($0$; $0{,}125 = 2^{-3}$; $0{,}75 = 2^{-1} + 2^{-2}$; $0{,}5 = 2^{-1}$): la conversió és **exacta** i no cal arrodonir. L'apartat b) té part fraccionària periòdica en binari i requereix arrodoniment.
+
+**a) 340** (exacte):
+
+```{.default filename="a) 340"}
+340 = 1 0101 0100b = 1,01010100 × 2⁸
+e = 8  →  Eu = 8 + 127 = 135 = 1000 0111b
+F = 010 1010 0000 0000 0000 0000
+0 | 1000 0111 | 010 1010 0000 0000 0000 0000  =  0x43AA0000
+```
+
+**c) −255,125** (exacte):
+
+```{.default filename="c) −255,125"}
+255 = 1111 1111b     0,125 = 0,001b
+−255,125 = −1111 1111,001b = −1,1111111001 × 2⁷
+e = 7  →  Eu = 134 = 1000 0110b
+F = 111 1111 0010 0000 0000 0000
+1 | 1000 0110 | 111 1111 0010 0000 0000 0000  =  0xC37F2000
+```
+
+**d) −10,75** (exacte):
+
+```{.default filename="d) −10,75"}
+10 = 1010b     0,75 = 0,11b
+−10,75 = −1010,11b = −1,01011 × 2³
+e = 3  →  Eu = 130 = 1000 0010b
+F = 010 1100 0000 0000 0000 0000
+1 | 1000 0010 | 010 1100 0000 0000 0000 0000  =  0xC12C0000
+```
+
+**e) 6,5** (exacte):
+
+```{.default filename="e) 6,5"}
+6 = 110b     0,5 = 0,1b
+6,5 = 110,1b = 1,101 × 2²
+e = 2  →  Eu = 129 = 1000 0001b
+F = 101 0000 0000 0000 0000 0000
+0 | 1000 0001 | 101 0000 0000 0000 0000 0000  =  0x40D00000
+```
+
+**b) 44,4** (amb arrodoniment):
+
+*Pas 1. Conversió a binari.* Part entera: $44 = 10\,1100_2$. Part fraccionària, per multiplicacions successives per 2: $0{,}4 \to 0{,}8 \to 1{,}6 \to 1{,}2 \to 0{,}4 \to \ldots$, que dona l'expansió **periòdica**:
+
+$$0{,}4 = 0{,}0110\,0110\,0110\ldots_2$$
+
+*Pas 2. Normalitzar:*
+
+$$44{,}4 = 10\,1100{,}0110\,0110\,0110\ldots_2 = 1{,}0110\,0011\,0011\,0011\,0011\,001\,\underbrace{1}_{G}\,\underbrace{0}_{R}\,\underbrace{0110\ldots}_{S}\ \times\ 2^5$$
+
+*Pas 3. Arrodonir (RNE).* Els bits descartats són $G = 1$, $R = 0$ i $S = 1$ (la cua periòdica conté uns): com que $G = 1$ i $(R \lor S) = 1$, s'arrodoneix **al següent** (+1 al bit de menys pes):
+
+```{.default filename="Arrodoniment de la fracció (23 bits)"}
+F truncada   = 011 0001 1001 1001 1001 1001   (G=1, R=0, S=1)
+F arrodonida = 011 0001 1001 1001 1001 1010
+```
+
+*Pas 4. Codificar:* $e = 5 \Rightarrow E_u = 132 = 1000\,0100_2$:
+
+$$V = 0\ |\ 1000\,0100\ |\ 011\,0001\,1001\,1001\,1001\,1010 = \texttt{0x4231999A}$$
+
+*Pas 5. Error de representació.* Desfent la normalització de la mantissa arrodonida (coma 5 posicions a la dreta), la part entera ($44$) no ha canviat: l'error és la diferència entre les parts fraccionàries. La part fraccionària emmagatzemada val:
+
+$$0{,}0110\,0110\,0110\,0110\,10_2 = 1\,1001\,1001\,1001\,1010_2 \times 2^{-18} = \frac{104\,858}{262\,144} = \frac{52\,429}{131\,072}$$
+
+$$\varepsilon = \left|\frac{52\,429}{131\,072} - 0{,}4\right| = \frac{52\,429 - 0{,}4 \times 131\,072}{131\,072} = \frac{0{,}2}{131\,072} \approx 1{,}526 \times 10^{-6}$$
+
+**Resum**:
+
+| Apartat | Valor | IEEE 754 | Error |
+| :---: | ---: | :--- | :--- |
+| a) | $340$ | `0x43AA0000` | exacte |
+| b) | $44{,}4$ | `0x4231999A` | $\approx 1{,}526 \times 10^{-6}$ |
+| c) | $-255{,}125$ | `0xC37F2000` | exacte |
+| d) | $-10{,}75$ | `0xC12C0000` | exacte |
+| e) | $6{,}5$ | `0x40D00000` | exacte |
 
 :::
 
@@ -443,9 +564,9 @@ El resultat té un `1` extra a l'esquerra de la coma. Es desplaça 1 posició a 
 
 $$e = 4 \Rightarrow E_u = 4 + 127 = 131 = 1000\,0011_2$$
 
-$$F = 000\,0001\,0000\,0000\,0000\,0000$$
+$$F = 000\,0010\,0000\,0000\,0000\,0000$$
 
-$$\texttt{ft6} = 0\ |\ 1000\,0011\ |\ 000\,0001\,0000\,0000\,0000\,0000 = \texttt{0x41820000}$$
+$$\texttt{ft6} = 0\ |\ 1000\,0011\ |\ 000\,0010\,0000\,0000\,0000\,0000 = \texttt{0x41820000}$$
 
 **a)** $\boxed{\texttt{ft6} = \texttt{0x41820000}}$
 
@@ -456,6 +577,234 @@ $$\texttt{ft6} = 0\ |\ 1000\,0011\ |\ 000\,0001\,0000\,0000\,0000\,0000 = \textt
 $$\texttt{ft6} = 1{,}015625 \times 2^4 = \mathbf{16{,}25}$$
 
 Comprovació: $15{,}671875 + 0{,}578125 = 16{,}25$ ✓
+
+:::
+
+::: {#sol-p6-ops-half-suma .callout-tip}
+## Solució: suma en format *half* amb bits de guarda
+
+**Enunciat**: @exr-p6-ops-half-suma.
+
+Format *half*: 1 bit de signe, 5 bits d'exponent esbiaixat (biaix 15), 10 bits de fracció (amb bit ocult). El sumador manté els bits $G$, $R$ i $S$ (@sec-bits-de-guarda) i arrodoneix amb RNE.
+
+**a) `A = 0xE4FE`, `B = 0xB640`**
+
+**Descodificació**
+
+```{.default filename="A = 0xE4FE = 1 11001 0011111110"}
+S=1, Eu=11001b=25 → e = 25−15 = 10
+Mantissa = 1.0011111110
+Valor = −1,0011111110b × 2¹⁰ = −100 1111 1110b = −1278
+```
+
+```{.default filename="B = 0xB640 = 1 01101 1001000000"}
+S=1, Eu=01101b=13 → e = 13−15 = −2
+Mantissa = 1.1001000000
+Valor = −1,1001b × 2⁻² = −0,011001b = −0,390625
+```
+
+**Pas 1. Alinear exponents**
+
+La diferència d'exponents és $10 - (-2) = 12$: la mantissa de $B$ es desplaça 12 posicions a la dreta. Els seus bits cauen tots **fora** dels 10 bits de fracció:
+
+```{.default filename="Alineació (Δe = 12)"}
+A:          1.0011111110                  × 2¹⁰
+B original: 1.1001000000                  × 2⁻²
+B alineat:  0.0000000000 | 0 1 | 1001…    × 2¹⁰
+            ← 10 bits →    G R    S
+```
+
+El bit ocult de $B$ arriba a la posició $2^{-12}$ ($R$); per tant $G = 0$, $R = 1$ i $S = 1$ (els bits `1001` restants contenen uns).
+
+**Pas 2. Sumar les mantisses**
+
+Els dos operands són negatius (mateix signe): se sumen les magnituds. Dins dels 10 bits de fracció, $B$ només aporta zeros, així que la mantissa no canvia:
+
+```{.default filename="Suma"}
+  1.0011111110 | 011…
+= 1.0011111110   amb G=0, R=1, S=1     (sense transport: no cal renormalitzar)
+```
+
+**Pas 3. Arrodonir (RNE)**
+
+$G = 0$ → es **trunca**. Fixeu-vos que $R = S = 1$ no basta per arrodonir cap amunt: si $G = 0$, el residu descartat és inferior a ½ ULP i la decisió és sempre truncar (@sec-bits-de-guarda).
+
+$$\boxed{A + B = -1278 = \texttt{0xE4FE} \;(= A)}$$
+
+**Precisió**: $B$ queda **absorbit** completament pel resultat. L'error absolut és $|B| = 0{,}390625$, per sota de ½ ULP (l'ULP a $e = 10$ val $2^{-10} \times 2^{10} = 1$): la fita d'error de RNE es compleix.
+
+**b) `A = 0x4DC7`, `B = 0x391D`**
+
+**Descodificació**
+
+```{.default filename="A = 0x4DC7 = 0 10011 0111000111"}
+S=0, Eu=10011b=19 → e = 19−15 = 4
+Mantissa = 1.0111000111
+Valor = 1,0111000111b × 2⁴ = 1 0111,000111b = 23,109375
+```
+
+```{.default filename="B = 0x391D = 0 01110 0100011101"}
+S=0, Eu=01110b=14 → e = 14−15 = −1
+Mantissa = 1.0100011101
+Valor = 1,0100011101b × 2⁻¹ = 0,10100011101b = 0,63916015625
+```
+
+**Pas 1. Alinear exponents**
+
+Diferència d'exponents: $4 - (-1) = 5$; la mantissa de $B$ es desplaça 5 posicions a la dreta:
+
+```{.default filename="Alineació (Δe = 5)"}
+A:          1.0111000111                  × 2⁴
+B original: 1.0100011101                  × 2⁻¹
+B alineat:  0.0000101000 | 1 1 | 101      × 2⁴
+            ← 10 bits →    G R    S
+```
+
+Per a $B$ alineat: $G = 1$, $R = 1$ i $S = 1$ (els bits `101` que queden més enllà contenen uns).
+
+**Pas 2. Sumar les mantisses**
+
+```{.default filename="Suma"}
+  1.0111000111 | 000
++ 0.0000101000 | 111
+= 1.0111101111 | 111        (sense transport: no cal renormalitzar)
+```
+
+**Pas 3. Arrodonir (RNE)**
+
+$G = 1$ i $R = 1$ → s'arrodoneix **al següent** (+1 al bit de menys pes):
+
+```{.default filename="Arrodoniment"}
+  1.0111101111
++ 0.0000000001
+= 1.0111110000
+```
+
+**Pas 4. Codificar el resultat**
+
+$$e = 4 \Rightarrow E_u = 19 = 10011_2 \qquad F = 01\,1111\,0000_2$$
+
+$$0\ |\ 10011\ |\ 0111110000 = \texttt{0x4DF0}$$
+
+$$\boxed{A + B = \texttt{0x4DF0} = 1\,0111{,}11_2 = 23{,}75}$$
+
+**Precisió**: la suma exacta és $23{,}109375 + 0{,}63916015625 = 23{,}74853515625$; l'error d'arrodoniment és
+
+$$\varepsilon = 23{,}75 - 23{,}74853515625 = 0{,}00146484375$$
+
+inferior a ½ ULP ($= 2^{-11} \times 2^4 = 2^{-7} = 0{,}0078125$).
+
+:::
+
+::: {#sol-p6-ops-half-multiplicacio .callout-tip}
+## Solució: multiplicació en format *half*
+
+**Enunciat**: @exr-p6-ops-half-multiplicacio.
+
+Se segueix l'algorisme de multiplicació (@sec-multiplicacio-divisio-cf): sumar exponents, calcular el signe ($S_A \oplus S_B$), multiplicar les mantisses (11 bits × 11 bits → fins a 22 bits), normalitzar comprovant el sobreeiximent, arrodonir amb RNE i codificar.
+
+**a) `A = 0x45A9`, `B = 0x484C`**
+
+**Descodificació**
+
+```{.default filename="A = 0x45A9 = 0 10001 0110101001"}
+S=0, Eu=10001b=17 → e = 17−15 = 2
+Mantissa = 1.0110101001  (= 1449/1024)
+Valor = 1,0110101001b × 2² = 101,10101001b = 5,66015625
+```
+
+```{.default filename="B = 0x484C = 0 10010 0001001100"}
+S=0, Eu=10010b=18 → e = 18−15 = 3
+Mantissa = 1.0001001100  (= 1100/1024)
+Valor = 1,00010011b × 2³ = 1000,10011b = 8,59375
+```
+
+**Pas 1. Exponent i signe**: $e = 2 + 3 = 5$; signe $= 0 \oplus 0 = 0$ (positiu).
+
+**Pas 2. Multiplicar les mantisses**
+
+```{.default filename="Producte de mantisses"}
+1449 × 1100 = 1 593 900
+(1449/1024) × (1100/1024) = 1 593 900 / 2²⁰
+1 593 900 = 1 1000 0101 0010 0010 1100b            (21 bits)
+Producte  = 1.1000 0101 0010 0010 1100             (1 ≤ producte < 2)
+```
+
+**Pas 3. Normalitzar**: el producte ja és a $[1, 2)$: no cal renormalitzar; $e = 5$.
+
+**Pas 4. Arrodonir (RNE)**: es conserven 10 bits de fracció; els descartats són $G = 1$, $R = 0$ i $S = 1$ (`0010 1100` conté uns) → s'arrodoneix **al següent**:
+
+```{.default filename="Arrodoniment"}
+F truncada   = 1000010100   (G=1, R=0, S=1)
+F arrodonida = 1000010101
+```
+
+**Pas 5. Codificar**
+
+$$e = 5 \Rightarrow E_u = 20 = 10100_2$$
+
+$$0\ |\ 10100\ |\ 1000010101 = \texttt{0x5215}$$
+
+$$\boxed{A \times B = \texttt{0x5215} = 11\,0000{,}10101_2 = 48{,}65625}$$
+
+**Precisió**: el producte exacte és $5{,}66015625 \times 8{,}59375 = 48{,}6419677734375$; l'error d'arrodoniment és
+
+$$\varepsilon = 48{,}65625 - 48{,}6419677734375 = 0{,}0142822265625$$
+
+inferior a ½ ULP ($= 2^{-11} \times 2^5 = 2^{-6} = 0{,}015625$).
+
+**b) `A = 0x60D4`, `B = 0x533E`**
+
+**Descodificació**
+
+```{.default filename="A = 0x60D4 = 0 11000 0011010100"}
+S=0, Eu=11000b=24 → e = 24−15 = 9
+Mantissa = 1.0011010100  (= 1236/1024)
+Valor = 1,00110101b × 2⁹ = 10 0110 1010b = 618
+```
+
+```{.default filename="B = 0x533E = 0 10100 1100111110"}
+S=0, Eu=10100b=20 → e = 20−15 = 5
+Mantissa = 1.1100111110  (= 1854/1024)
+Valor = 1,1100111110b × 2⁵ = 11 1001,11110b = 57,9375
+```
+
+**Pas 1. Exponent i signe**: $e = 9 + 5 = 14$; signe positiu.
+
+**Pas 2. Multiplicar les mantisses**
+
+```{.default filename="Producte de mantisses"}
+1236 × 1854 = 2 291 544
+2 291 544 = 10 0010 1111 0111 0101 1000b           (22 bits)
+Producte  = 10.0010 1111 0111 0101 1000            (≥ 2: cal renormalitzar)
+```
+
+**Pas 3. Normalitzar**: es desplaça 1 posició a la dreta i s'incrementa l'exponent: $e = 14 + 1 = 15$. **Comprovació de sobreeiximent**: $e = 15$ és exactament l'exponent màxim del format ($E_u = 30$; $E_u = 31$ està reservat per a $\pm\infty$ i NaN): el resultat queda **just al límit**, sense sobreeiximent.
+
+```{.default filename="Producte normalitzat"}
+1.0001 0111 1011 1010 1100 0   × 2¹⁵
+```
+
+**Pas 4. Arrodonir (RNE)**: $G = 1$, $R = 1$ ($S = 1$) → s'arrodoneix **al següent**:
+
+```{.default filename="Arrodoniment"}
+F truncada   = 0001011110   (G=1, R=1, S=1)
+F arrodonida = 0001011111
+```
+
+**Pas 5. Codificar**
+
+$$e = 15 \Rightarrow E_u = 30 = 11110_2$$
+
+$$0\ |\ 11110\ |\ 0001011111 = \texttt{0x785F}$$
+
+$$\boxed{A \times B = \texttt{0x785F} = 100\,0101\,1111_2 \times 2^5 = 1119 \times 2^5 = 35\,808}$$
+
+**Precisió**: el producte exacte és $618 \times 57{,}9375 = 35\,805{,}375$; l'error d'arrodoniment és
+
+$$\varepsilon = 35\,808 - 35\,805{,}375 = 2{,}625$$
+
+Sembla un error gran, però és inferior a ½ ULP ($= 2^{-11} \times 2^{15} = 2^4 = 16$): en coma flotant l'ULP —i, per tant, l'error absolut— **creix amb l'exponent**; el que està acotat és l'error **relatiu** (aquí $2{,}625 / 35\,805{,}375 \approx 7{,}3 \times 10^{-5}$).
 
 :::
 
@@ -631,5 +980,203 @@ $$\boxed{A + (B + C) = 0}$$
 $$(A + B) + C = 1 \neq 0 = A + (B + C)$$
 
 La suma en coma flotant **no és associativa**. La pèrdua de precisió es produeix en calcular $B + C$: $C = 1$ és $2^{13}$ vegades més petit que $B = 16360$, diferència que supera els 10 bits de fracció del format *half*, i queda completament absorbit per arrodoniment. En canvi, quan es calcula $(A+B)$ primer, la cancel·lació exacta de $A$ i $B$ deixa zero, i llavors $C$ és prou gran per ser representat.
+
+:::
+
+::: {#sol-p6-assoc-distributiva .callout-tip}
+## Solució: no distributivitat de la multiplicació sobre la suma
+
+**Enunciat**: @exr-p6-assoc-distributiva.
+
+Els operands són els mateixos que les conversions de @exr-p6-ieee-half-b (apartats b i c). Cada operació s'arrodoneix amb RNE abans de la següent.
+
+**a) `A = 0x30E0`, `B = 0x32A0`, `C = 0x563B`**
+
+**Descodificació**
+
+```{.default filename="A = 0x30E0 = 0 01100 0011100000"}
+S=0, Eu=01100b=12 → e = 12−15 = −3
+Mantissa = 1.0011100000  (= 1248/1024)
+Valor = 1,00111b × 2⁻³ = 0,00100111b = 0,15234375
+```
+
+```{.default filename="B = 0x32A0 = 0 01100 1010100000"}
+S=0, Eu=12 → e = −3
+Mantissa = 1.1010100000  (= 1696/1024)
+Valor = 1,10101b × 2⁻³ = 0,00110101b = 0,20703125
+```
+
+```{.default filename="C = 0x563B = 0 10101 1000111011"}
+S=0, Eu=10101b=21 → e = 21−15 = 6
+Mantissa = 1.1000111011  (= 1595/1024)
+Valor = 1,1000111011b × 2⁶ = 110 0011,1011b = 99,6875
+```
+
+**Operació 1: $B + C$** (per al camí de l'esquerra)
+
+Diferència d'exponents: $6 - (-3) = 9$; la mantissa de $B$ es desplaça 9 posicions a la dreta:
+
+```{.default filename="Alineació (Δe = 9)"}
+C:          1.1000111011                  × 2⁶
+B original: 1.1010100000                  × 2⁻³
+B alineat:  0.0000000011 | 0 1 | 01…      × 2⁶
+            ← 10 bits →    G R    S
+```
+
+```{.default filename="Suma"}
+  1.1000111011 | 000
++ 0.0000000011 | 101
+= 1.1000111110 | 101        (sense transport)
+```
+
+$G = 0$ → es **trunca**:
+
+$$B + C = 0\ |\ 10101\ |\ 1000111110 = \texttt{0x563E} = 110\,0011{,}1110_2 = 99{,}875$$
+
+(La suma exacta és $99{,}89453125$: error $0{,}01953125 < \tfrac{1}{2}\,\text{ULP} = 2^{-5}$.)
+
+**Operació 2: $A \times (B + C)$**
+
+Exponent: $e = -3 + 6 = 3$; signe positiu. Producte de mantisses:
+
+```{.default filename="Producte de mantisses"}
+1248 × 1598 = 1 994 304 = 1 1110 0110 1110 0100 0000b   (21 bits)
+Producte = 1.1110 0110 1110 0100 0000                   (< 2: no cal renormalitzar)
+```
+
+$G = 1$, $R = 0$, $S = 1$ → **al següent**: $F = 1110011011 + 1 = 1110011100$:
+
+$$A \times (B + C) = 0\ |\ 10010\ |\ 1110011100 = \texttt{0x4B9C} = 1111{,}00111_2 = \mathbf{15{,}21875}$$
+
+**Operació 3: $A \times B$** (per al camí de la dreta)
+
+Exponent: $e = -3 + (-3) = -6$; signe positiu. Producte de mantisses:
+
+```{.default filename="Producte de mantisses"}
+1248 × 1696 = 2 116 608 = 10 0000 0100 1100 0000 0000b  (22 bits)
+Producte = 10.0000 0100 1100 0000 0000                  (≥ 2: renormalitzar)
+→ 1.0000 0100 1100 0000 0000 0  × 2⁻⁵
+```
+
+Els bits descartats són $G = 1$, $R = 0$ i $S = 0$: el residu val **exactament** ½ ULP → **empat**. La regla del parell decideix: la fracció truncada `0000001001` acaba en `1` (senar), així que s'arrodoneix **amunt** perquè el resultat acabi en bit parell:
+
+$$F = 0000001001 + 1 = 0000001010$$
+
+$$A \times B = 0\ |\ 01010\ |\ 0000001010 = \texttt{0x280A} = 0{,}03155517578125$$
+
+(És l'únic cas d'aquest problemari on el desempat «al parell» entra en joc: l'error comès és exactament ½ ULP $= 2^{-16}$.)
+
+**Operació 4: $A \times C$**
+
+Exponent: $e = -3 + 6 = 3$; signe positiu. Producte de mantisses:
+
+```{.default filename="Producte de mantisses"}
+1248 × 1595 = 1 990 560 = 1 1110 0101 1111 1010 0000b   (21 bits)
+Producte = 1.1110 0101 1111 1010 0000                   (< 2: no cal renormalitzar)
+```
+
+$G = 1$, $R = 1$ → **al següent**: $F = 1110010111 + 1 = 1110011000$:
+
+$$A \times C = 0\ |\ 10010\ |\ 1110011000 = \texttt{0x4B98} = 1111{,}0011_2 = 15{,}1875$$
+
+**Operació 5: $(A \times B) + (A \times C)$**
+
+Diferència d'exponents: $3 - (-5) = 8$; la mantissa de $A \times B$ es desplaça 8 posicions:
+
+```{.default filename="Alineació (Δe = 8)"}
+A×C:          1.1110011000                    × 2³
+A×B original: 1.0000001010                    × 2⁻⁵
+A×B alineat:  0.0000000100 | 0 0 | 001010     × 2³
+              ← 10 bits →    G R    S
+```
+
+```{.default filename="Suma"}
+  1.1110011000 | 000
++ 0.0000000100 | 001
+= 1.1110011100 | 001        (sense transport)
+```
+
+$G = 0$ → es **trunca**:
+
+$$(A \times B) + (A \times C) = 0\ |\ 10010\ |\ 1110011100 = \texttt{0x4B9C} = \mathbf{15{,}21875}$$
+
+**Comparació de l'apartat a)**
+
+$$\boxed{A \times (B + C) = \texttt{0x4B9C} = 15{,}21875 = (A \times B) + (A \times C)}$$
+
+En aquest cas els dos camins **coincideixen**, tot i haver acumulat quatre arrodoniments diferents (un truncament, dos «al següent» i un empat «al parell»). Fixeu-vos, però, que els valors exactes dels dos camins són diferents ($15{,}21533\ldots$ i $15{,}21906\ldots$): tots dos s'arrodoneixen casualment al mateix representable. La igualtat és **fortuïta**, no una propietat.
+
+**b) `A = 0xCEF9`, `B = 0xEFE6`, `C = 0x70FD`**
+
+**Descodificació**
+
+```{.default filename="A = 0xCEF9 = 1 10011 1011111001"}
+S=1, Eu=10011b=19 → e = 19−15 = 4
+Mantissa = 1.1011111001  (= 1785/1024)
+Valor = −1,1011111001b × 2⁴ = −1 1011,111001b = −27,890625
+```
+
+```{.default filename="B = 0xEFE6 = 1 11011 1111100110"}
+S=1, Eu=11011b=27 → e = 27−15 = 12
+Mantissa = 1.1111100110  (= 2022/1024)
+Valor = −(2022/1024) × 2¹² = −2022 × 2² = −8088
+```
+
+```{.default filename="C = 0x70FD = 0 11100 0011111101"}
+S=0, Eu=11100b=28 → e = 28−15 = 13
+Mantissa = 1.0011111101  (= 1277/1024)
+Valor = (1277/1024) × 2¹³ = 1277 × 2³ = 10 216
+```
+
+**Operació 1: $B + C$**
+
+Els signes són **diferents**: es resten les magnituds i el resultat pren el signe de l'operand més gran ($C$, positiu). Diferència d'exponents: $13 - 12 = 1$:
+
+```{.default filename="Alineació i resta (Δe = 1)"}
+C:          1.0011111101 0        × 2¹³
+B alineat:  0.1111110011 0        × 2¹³     (el desplaçament d'1 bit no en perd cap)
+Resta:      0.0100001010 0                  (exacta: G=R=S=0)
+```
+
+El resultat es renormalitza desplaçant 2 posicions a l'**esquerra** ($e = 13 - 2 = 11$):
+
+$$B + C = 0\ |\ 11010\ |\ 0000101000 = \texttt{0x6828} = 1000\,0101\,0000_2 = 2128 \quad \text{(exacte)}$$
+
+**Operació 2: $A \times (B + C)$**
+
+Exponent: $e = 4 + 11 = 15$, **just el màxim del format**: si el producte de mantisses arribés a 2, la renormalització provocaria sobreeiximent. Signe: $(-) \cdot (+) = -$.
+
+```{.default filename="Producte de mantisses"}
+1785 × 1064 = 1 899 240 = 1 1100 1111 1010 1110 1000b   (21 bits)
+Producte = 1.1100 1111 1010 1110 1000                   (< 2: e = 15, sense sobreeiximent)
+```
+
+$G = 1$, $R = 0$, $S = 1$ → **al següent**: $F = 1100111110 + 1 = 1100111111$:
+
+$$A \times (B + C) = 1\ |\ 11110\ |\ 1100111111 = \texttt{0xFB3F} = -1855 \times 2^5 = \mathbf{-59\,360}$$
+
+(El producte exacte és $-59\,351{,}25$: error $8{,}75 < \tfrac{1}{2}\,\text{ULP} = 2^4 = 16$.)
+
+**Operacions 3 i 4: $A \times B$ i $A \times C$ — sobreeiximent**
+
+Per a $A \times B$, la suma d'exponents ja és $e = 4 + 12 = 16 > e_{\max} = 15$. Com que el producte de dues mantisses normalitzades és sempre $\geq 1$, la normalització **mai no redueix** l'exponent per sota d'aquesta suma: el resultat supera amb seguretat el màxim representable del format *half*, $(2 - 2^{-10}) \times 2^{15} = 65\,504$, sense necessitat de multiplicar les mantisses. **Sobreeiximent**: amb RNE el resultat es converteix en infinit, amb el signe del producte:
+
+$$A \times B \to (-)(-) = +\infty = \texttt{0x7C00} \qquad (|A \times B| \approx 2{,}3 \times 10^5)$$
+
+$$A \times C:\ e = 4 + 13 = 17 > 15 \to (-)(+) = -\infty = \texttt{0xFC00} \qquad (|A \times C| \approx 2{,}8 \times 10^5)$$
+
+**Operació 5: $(A \times B) + (A \times C)$**
+
+$$(+\infty) + (-\infty) = \infty - \infty \to \textbf{NaN}$$
+
+L'operació no té cap valor definit (@sec-codificacio-nan): el resultat és qualsevol patró amb $E_u = 31$ i $F \neq 0$ (per exemple `0x7E00`; l'estàndard no en fixa la fracció).
+
+**Comparació de l'apartat b)**
+
+$$\boxed{A \times (B + C) = -59\,360 \;(\texttt{0xFB3F}) \neq \text{NaN} = (A \times B) + (A \times C)}$$
+
+**Conclusió**
+
+La multiplicació **no és distributiva** sobre la suma en coma flotant. L'apartat a) mostra que la igualtat es pot donar fortuïtament; l'apartat b) mostra la fallada extrema: **factoritzar** l'expressió (calcular primer $B + C = 2128$) manté tots els resultats intermedis representables, mentre que **expandir-la** fa sobreeixir els dos productes parcials cap a $\pm\infty$ i el resultat final és NaN. Com en la no associativitat (@cau-no-associativitat), l'ordre de les operacions altera el resultat: reordenar algebraicament un càlcul en coma flotant no és mai «gratuït».
 
 :::
