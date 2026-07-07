@@ -27,7 +27,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 ### T5
 
 - **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.
-- **Harmonització notacional RV32I ↔ RV32F**: taules RV32F usen `\leftarrow` i `off`; RV32I usen `=` i `offset`. Unificar.
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
 
 ### T6
