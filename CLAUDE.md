@@ -130,9 +130,9 @@ Regles operatives:
 
 | Tasca | Model | Effortness |
 | :--- | :--- | :--- |
-| Revisió tècnica o lingüística de teoria | Sonnet 4.6 | Normal |
-| Solucionari (`PS_Tx.qmd`) | Opus 4.8 | High |
-| Tasques operatives (reorganització, neteja de fitxers) | Sonnet 4.6 | Low |
+| Revisió tècnica o lingüística de teoria | Sonnet | Normal |
+| Solucionari (`PS_Tx.qmd`) | Opus | High |
+| Tasques operatives (reorganització, neteja de fitxers) | Sonnet | Low |
 
 - Si la tasca canvia, indica-ho explícitament.
 - Si vols que et canviï la configuració, digues-m'ho.
