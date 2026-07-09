@@ -84,6 +84,8 @@ EC/
 │   ├── RV32I_registres_*.qmd
 │   ├── RV32I_format_instruccions.qmd
 │   └── RARS_*.qmd
+├── 11_riscv_auto/                 # Fragments fusionats (generats; cal 22_scripts/gen_taules_auto.py)
+│   └── NOM_tot.qmd
 ├── extern/                     # Figures i recursos externs (no SVG propi)
 ├── 22_scripts/                    # Scripts auxiliars (p. ex. generació de SVGs)
 ├── _quarto.yml
@@ -120,6 +122,14 @@ cd ~/git/EC
 | `quarto preview` | Previsualització en viu (VS Code) |
 
 > **Nota**: `quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si cal conservar el PDF generat, feu `quarto render` complet o guardeu el PDF abans.
+
+> **Taules fusionades de `05_riscv.qmd`**: si `quarto render` avorta amb un error del tipus `could not find file .../11_riscv_auto/NOM.qmd`, executeu primer:
+>
+> ```bash
+> python3 22_scripts/gen_taules_auto.py 21_specs/taules_fusio.toml 11_riscv --output-dir="11_riscv_auto/"
+> ```
+>
+> Cal repetir-ho el primer cop després de clonar el repositori, i sempre que editeu un fitxer de `11_riscv/` que aparegui a `21_specs/taules_fusio.toml`: si no, `11_riscv_auto/` queda desactualitzat en silenci (el render no fallarà, però la taula no reflectirà el canvi). Detalls tècnics a `07_contrib.qmd` §Fitxer de referència tècnica.
 
 Neteja:
 
