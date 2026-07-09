@@ -652,8 +652,10 @@ quarto install tinytex
 Comproveu que el projecte renderitza correctament abans de fer push. Des de la línia de comandes, a la carpeta arrel del projecte, executeu:
 
 ```bash
-quarto render --to html
+make render
 ```
+
+(equivalent a generar les taules fusionades de `05_riscv.qmd` amb `22_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf`/`quarto preview` directament, assegureu-vos que `11_riscv_auto/` ja existeix i està al dia.
 
 - Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
@@ -709,14 +711,17 @@ Qualsevol altre canvi, independentment del rol, requereix una **Merge Request**.
 El projecte té dues sortides independents: **HTML** i **PDF**. Són pipelines completament separades — HTML usa Bootstrap, PDF usa LaTeX (`scrbook`). Cap de les dues es construeix sobre l'altra.
 
 ```bash
+make render               # genera les taules fusionades i les dues sortides (recomanat)
 quarto render --to html   # ràpid, recomanat durant el desenvolupament
 quarto render --to pdf    # lent (compilació LaTeX), recomanat abans de la MR
 quarto render             # genera les dues sortides
 ```
 
 ::: {.callout-warning}
-`quarto render --to html` neteja `_book` i és el més ràpid: recomanat durant el desenvolupament. Feu `quarto render` complet (HTML + PDF) com a verificació final abans d'obrir la Merge Request. Si necessiteu conservar un PDF generat anteriorment, feu `quarto render` o guardeu-lo abans de renderitzar només HTML.
+`quarto render --to html` neteja `_book` i és el més ràpid: recomanat durant el desenvolupament. Feu `quarto render` complet (HTML + PDF), o `make render`, com a verificació final abans d'obrir la Merge Request. Si necessiteu conservar un PDF generat anteriorment, feu `quarto render` o guardeu-lo abans de renderitzar només HTML.
 :::
+
+`make clean` elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) sense tocar fitxers font.
 
 ### IAs
 

@@ -44,6 +44,7 @@ Directori `04_L/`:
 | Fitxer | Contingut |
 | :--- | :--- |
 | `_quarto.yml` | Configuració del projecte Quarto |
+| `Makefile` | `make render` (genera les taules fusionades i renderitza) i `make clean` |
 | `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
 | `09_bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
 | `CLAUDE.md` | Instruccions operatives per a Claude |
@@ -116,14 +117,16 @@ cd ~/git/EC
 
 | Comanda | Efecte |
 | :--- | :--- |
+| `make render` | Genera les taules fusionades (`11_riscv_auto/`) i tot seguit renderitza les dues sortides |
+| `make clean` | Elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) |
 | `quarto render --to html` | Renderitza HTML (ràpid; recomanat durant el desenvolupament) |
 | `quarto render --to pdf` | Renderitza PDF (lent; requereix LaTeX) |
 | `quarto render` | Renderitza les dues sortides |
 | `quarto preview` | Previsualització en viu (VS Code) |
 
-> **Nota**: `quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si cal conservar el PDF generat, feu `quarto render` complet o guardeu el PDF abans.
+> **Nota**: `quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si cal conservar el PDF generat, feu `quarto render` complet (o `make render`) o guardeu el PDF abans.
 
-> **Taules fusionades de `05_riscv.qmd`**: si `quarto render` avorta amb un error del tipus `could not find file .../11_riscv_auto/NOM.qmd`, executeu primer:
+> **Taules fusionades de `05_riscv.qmd`**: `make render` ja genera `11_riscv_auto/` abans de renderitzar. Si en comptes d'això useu `quarto render`/`quarto preview` directament (p. ex. des de VS Code) i obteniu un error del tipus `could not find file .../11_riscv_auto/NOM.qmd`, executeu primer:
 >
 > ```bash
 > python3 22_scripts/gen_taules_auto.py 21_specs/taules_fusio.toml 11_riscv --output-dir="11_riscv_auto/"
@@ -134,8 +137,14 @@ cd ~/git/EC
 Neteja:
 
 ```bash
-rm *.html *.log *.tex
-rm -rf *_files
+make clean
+```
+
+O manualment (aneu amb compte: `*.tex` també coincidiria amb `preamble.tex`, que és font versionada — no l'esborreu):
+
+```bash
+rm -f *.html *.log Estructura-de-computadors.tex
+rm -rf *_files _book
 ```
 
 ## Instal·lació
