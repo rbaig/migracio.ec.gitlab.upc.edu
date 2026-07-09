@@ -41,6 +41,8 @@ El directori `11_riscv/` conté els **fragments de taula reutilitzables** (sols 
 
 **IDs dels callouts a `05_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Tx.qmd`), per evitar conflictes de ID Quarto. Les figures dins `05_riscv.qmd` usen `#fig-rv-*`.
 
+**Referències creuades cap als Apunts:** cada callout de `05_riscv.qmd` acaba amb una nota «*Vegeu @X[, @Y] i @Z.*» que apunta al callout (o callouts) del `Tx.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemari i solucionari (PE/PS)). Quan un mateix contingut es presenta a més d'un `Tx.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
+
 **Taules amb més d'un fragment font:** Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa taula pipe — el primer tanca la taula i la resta cau a text cru (line block de Pandoc). Quan una taula de `05_riscv.qmd` combina files de més d'un fitxer de `11_riscv/` (p. ex. aritmètica + `lui` sota un sol header), els fragments es fusionen prèviament en un únic fitxer generat per `22_scripts/gen_taules_auto.py` (manifest: `21_specs/taules_fusio.toml`) i `05_riscv.qmd` hi fa un únic `{{< include 11_riscv_auto/NOM.qmd >}}`. El directori `11_riscv_auto/` és generat (gitignored); no s'edita a mà.
 
 A diferència dels altres scripts de `22_scripts/`, aquest **no** es crida des del `pre-render` de `_quarto.yml`: Quarto resol els `{{< include >}}` dels capítols en un escaneig de configuració que s'executa *abans* del pre-render, de manera que el fitxer fusionat ha d'existir al disc abans d'invocar `quarto`. Cal executar-lo manualment (vegeu `README.md`) el primer cop, i sempre que s'editi un fitxer de `11_riscv/` que aparegui a `21_specs/taules_fusio.toml` (si no, `11_riscv_auto/` queda desactualitzat en silenci: `quarto render` no fallarà, però la taula final no reflectirà el canvi). Els fitxers font de `11_riscv/` continuen sent l'única font de veritat.
@@ -70,7 +72,6 @@ A diferència dels altres scripts de `22_scripts/`, aquest **no** es crida des d
 | `RV32I_csr_mtvec_modes.qmd` | T9, `05_riscv.qmd` |
 | `RV32I_csr_tlb_taula.qmd` | T9, `05_riscv.qmd` |
 | `RV32I_ecall_ebreak.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_format_instruccions.qmd` | T2, `05_riscv.qmd` |
 | `RV32I_instruccions_aritmetiques.qmd` | T2, `05_riscv.qmd` |
 | `RV32I_instruccions_comparacio.qmd` | T3, `05_riscv.qmd` |
 | `RV32I_instruccions_desplacament_bits_aritmetics.qmd` | T3, `05_riscv.qmd` |

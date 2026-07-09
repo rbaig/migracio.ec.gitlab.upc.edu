@@ -83,7 +83,6 @@ EC/
 ├── 11_riscv/                      # Fragments de referència RISC-V (inclosos via `include`)
 │   ├── RV32I_instruccions_*.qmd
 │   ├── RV32I_registres_*.qmd
-│   ├── RV32I_format_instruccions.qmd
 │   └── RARS_*.qmd
 ├── 11_riscv_auto/                 # Fragments fusionats (generats; cal 22_scripts/gen_taules_auto.py)
 │   └── NOM_tot.qmd
