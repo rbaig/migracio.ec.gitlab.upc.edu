@@ -121,11 +121,10 @@ cd ~/git/EC
 | `quarto render --to html` | Renderitza HTML (ràpid; recomanat durant el desenvolupament) |
 | `quarto render --to pdf` | Renderitza PDF (lent; requereix LaTeX) |
 | `quarto render` | Renderitza les dues sortides |
-| `quarto preview` | Previsualització en viu (VS Code) |
 
 > **Nota**: `quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si cal conservar el PDF generat, feu `quarto render` complet (o `make render`) o guardeu el PDF abans.
 
-> **Taules fusionades de `05_riscv.qmd`**: `make render` ja genera `11_riscv_auto/` abans de renderitzar. Si en comptes d'això useu `quarto render`/`quarto preview` directament (p. ex. des de VS Code) i obteniu un error del tipus `could not find file .../11_riscv_auto/NOM.qmd`, executeu primer:
+> **Taules fusionades de `05_riscv.qmd`**: `make render` ja genera `11_riscv_auto/` abans de renderitzar. Si en comptes d'això useu `quarto render` directament i obteniu un error del tipus `could not find file .../11_riscv_auto/NOM.qmd`, executeu primer:
 >
 > ```bash
 > python3 22_scripts/gen_taules_auto.py 21_specs/taules_fusio.toml 11_riscv --output-dir="11_riscv_auto/"

@@ -297,6 +297,20 @@ $$A = \underbrace{0001\,0000\,0000\,0001\,0000\,0000\,1}_{\text{etiqueta}}\,
 El diagrama de blocs de la @fig-cd-diagrama mostra el maquinari necessari per a una lectura. Els bits d'índex de l'adreça seleccionen una línia mitjançant un **decodificador**. Es llegeixen simultàniament l'etiqueta guardada, el bit de validesa i el bloc de dades. Els bits d'etiqueta de l'adreça es comparen amb l'etiqueta guardada: si coincideixen i $V=1$, es produeix un encert i el **multiplexor** selecciona la dada indicada pel desplaçament.
 
 <!-- fig-cd-diagrama: diagrama de blocs d'una lectura en una memòria cau de correspondència directa, amb: adreça dividida en etiqueta/índex/offset, decodificador connectat als bits d'índex, taula de línies (V, Etiqueta, Dades), comparador entre etiqueta de l'adreça i etiqueta guardada, porta AND amb V, senyal Hit, i multiplexor seleccionat per l'offset que produeix la Dada cap a la CPU. Basada en la Figura 6.13 del PDF. Caption: "Diagrama de blocs d'una lectura en una memòria cau de correspondència directa." -->
+::: {#fig-cd-diagrama}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T7_cd_diagrama__extern_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T7_cd_diagrama__extern_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T7_cd_diagrama__extern_light.svg)
+:::
+TODO caption.
+:::
 
 La correspondència directa és la política més senzilla i ràpida: amb un sol accés a la taula i una sola comparació es sap si hi ha encert o fallada. El seu inconvenient és la **rigidesa**: si dos blocs que s'accedeixen alternament es mapen a la mateixa línia, s'expulsaran mútuament a cada accés causant fallades contínues, fins i tot si la resta de línies estan buides. Això s'anomena **conflicte** i s'estudia en detall a la @sec-tipologia-fallades.
 
@@ -338,13 +352,27 @@ $$A = \underbrace{0000}_{\text{etiqueta}}\,
 ::: {.content-visible when-format="pdf"}
 ![](/figs_auto/T7_assoc_conjunts_taula__original_light.svg)
 :::
-Memòria cau associativa per conjunts de 4 conjunts i 3 vies: el bloc 1 de la memòria principal pot ocupar qualsevol de les 3 vies del conjunt 1.
+TODO caption.
 :::
 
 El diagrama de blocs de la @fig-assoc-conjunts-diagrama mostra que els bits d'índex seleccionen el conjunt mitjançant un **decodificador** (com a la correspondència directa), però dins del conjunt hi ha **$N$ comparadors en paral·lel**, un per via. Si alguna via té la mateixa etiqueta i $V=1$, una porta OR genera el senyal d'encert i un **multiplexor $N$:1** selecciona les dades de la via guanyadora, que el segon multiplexor (controlat pel desplaçament)
 usa per extreure la dada sol·licitada.
 
 <!-- fig-assoc-conjunts-diagrama: diagrama de blocs d'una lectura en una memòria cau associativa per conjunts, amb: adreça dividida en etiqueta/índex/offset, decodificador per als bits d'índex, N vies en paral·lel cadascuna amb (V, Etiqueta, Dades), N comparadors simultanis entre l'etiqueta de l'adreça i les etiquetes guardades, porta OR que genera Hit, multiplexor N:1 que selecciona la via amb encert, i multiplexor final controlat per l'offset que produeix la Dada. Basada en la Figura 6.24 del PDF. Caption: "Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de N vies." -->
+::: {#fig-assoc-conjunts-diagrama}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T7_assoc_conjunts_diagrama__extern_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T7_assoc_conjunts_diagrama__extern_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T7_assoc_conjunts_diagrama__extern_light.svg)
+:::
+TODO caption.
+:::
 
 Observem que la correspondència directa és el cas particular $N = 1$: un sol conjunt per posició, un sol comparador, sense necessitat de multiplexor de vies.
 
@@ -362,6 +390,20 @@ L'etiqueta és el número de bloc sencer. El nombre de línies no cal que sigui 
 El diagrama de blocs de la @fig-ca-diagrama mostra que ara tots els comparadors operen sobre totes les línies alhora: no hi ha decodificador. Una porta OR sobre totes les sortides dels comparadors genera el senyal d'encert, i un multiplexor $N_L$:1 selecciona la línia amb encert. El cost en maquinari creix **linealment** amb el nombre de línies $N_L$, cosa que fa que les memòries cau completament associatives pràctiques tinguin pocs centenars de línies com a màxim.
 
 <!-- fig-ca-diagrama: diagrama de blocs d'una lectura en una memòria cau completament associativa, amb: adreça dividida en etiqueta i offset (sense índex), N_L línies cadascuna amb (V, Etiqueta, Dades) i el seu comparador, porta OR sobre totes les sortides dels comparadors que genera Hit, multiplexor N_L:1 que selecciona la línia amb encert, i multiplexor final controlat per l'offset. Caption: "Diagrama de blocs d'una lectura en una memòria cau completament associativa: cal comparar l'etiqueta amb totes les línies en paral·lel." -->
+::: {#fig-ca-diagrama}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T7_ca_diagrama__original_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T7_ca_diagrama__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T7_ca_diagrama__original_light.svg)
+:::
+TODO caption.
+:::
 
 La memòria cau completament associativa és el cas límit $N_C = 1$: un sol conjunt que conté totes les línies. Des d'aquest punt de vista, les tres polítiques d'emplaçament no són categories separades sinó els extrems i el punt mig d'un mateix espectre, parametritzat pel nombre de conjunts $N_C$ i el grau d'associativitat $N$:
 
@@ -740,6 +782,20 @@ $$t_{exe} = (\text{CPI}_{ideal} + t_p \cdot m \cdot n_r) \cdot n_{ins}
 on $t_c$ és el període de rellotge. La @fig-texe-diagrama il·lustra com les fallades de memòria cau s'insereixen com a temps extra en el flux d'execució de les instruccions.
 
 <!-- fig-texe-diagrama: diagrama de línies de temps mostrant l'execució de tres instruccions (lw, addu, lw) en dos escenaris: memòria cau ideal (tots encerts) i memòria cau real (fallada al segon lw). Les etapes Fetch/Decode/ ReadReg/ALU/Mem/WriteReg apareixen en blanc per als encerts i l'etapa de penalització apareix ombrejada. Basada en la Figura del PDF de la pàg. 24. Caption: "Impacte d'una fallada de memòria cau en el temps d'execució: els cicles de penalització (ombrejats) s'afegeixen als cicles ideals (blancs)." -->
+::: {#fig-texe-diagrama}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/figs_auto/T7_texe_diagrama__original_light.svg)
+:::
+::: {.dark-content}
+![](/figs_auto/T7_texe_diagrama__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/figs_auto/T7_texe_diagrama__original_light.svg)
+:::
+TODO caption.
+:::
 
 De l'expressió @eq-texe s'extreuen dues conclusions pràctiques:
 

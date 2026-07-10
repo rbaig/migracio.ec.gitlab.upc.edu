@@ -41,13 +41,11 @@ El directori `11_riscv/` conté els **fragments de taula reutilitzables** (sols 
 
 **IDs dels callouts a `05_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Tx.qmd`), per evitar conflictes de ID Quarto. Les figures dins `05_riscv.qmd` usen `#fig-rv-*`.
 
-**Referències creuades cap als Apunts:** cada callout de `05_riscv.qmd` acaba amb una nota «*Vegeu @X[, @Y] i @Z.*» que apunta al callout (o callouts) del `Tx.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemari i solucionari (PE/PS)). Quan un mateix contingut es presenta a més d'un `Tx.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
+**Referències creuades cap als Apunts:** cada callout de `05_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) del `Tx.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemari i solucionari (PE/PS)). Quan un mateix contingut es presenta a més d'un `Tx.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
 
 **Taules amb més d'un fragment font:** Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa taula pipe — el primer tanca la taula i la resta cau a text cru (line block de Pandoc). Quan una taula de `05_riscv.qmd` combina files de més d'un fitxer de `11_riscv/` (p. ex. aritmètica + `lui` sota un sol header), els fragments es fusionen prèviament en un únic fitxer generat per `22_scripts/gen_taules_auto.py` (manifest: `21_specs/taules_fusio.toml`) i `05_riscv.qmd` hi fa un únic `{{< include 11_riscv_auto/NOM.qmd >}}`. El directori `11_riscv_auto/` és generat (gitignored); no s'edita a mà.
 
 A diferència dels altres scripts de `22_scripts/`, aquest **no** es crida des del `pre-render` de `_quarto.yml`: Quarto resol els `{{< include >}}` dels capítols en un escaneig de configuració que s'executa *abans* del pre-render, de manera que el fitxer fusionat ha d'existir al disc abans d'invocar `quarto`. Cal executar-lo manualment (vegeu `README.md`) el primer cop, i sempre que s'editi un fitxer de `11_riscv/` que aparegui a `21_specs/taules_fusio.toml` (si no, `11_riscv_auto/` queda desactualitzat en silenci: `quarto render` no fallarà, però la taula final no reflectirà el canvi). Els fitxers font de `11_riscv/` continuen sent l'única font de veritat.
-
-**Directives RARS a `05_riscv.qmd`:** la taula de directives és inline (no externalitzada a `11_riscv/`) perquè `RARS_directives.qmd` s'usa únicament des de `05_riscv.qmd`. Si en el futur s'inclou des de T2, cal externalitzar-la.
 
 **Contingut d'Aprofundiment exclòs de `05_riscv.qmd`:** el compendi de referència tècnica no pot incloure contingut que provingui únicament d'un callout d'Aprofundiment d'un `Tx.qmd` (material opcional, no bàsic). Exemple: `Zicsr_pseudo_immediats.qmd` (`csrrwi`/`csrrsi`/`csrrci`) es presenta a `T9.qmd` dins un callout d'Aprofundiment; per això `05_riscv.qmd` només inclou `Zicsr_instruccions.qmd` (les instruccions base), no la taula d'immediats. El fitxer de `11_riscv/` es manté igualment, per a l'ús des del `Tx.qmd` corresponent.
 
@@ -55,7 +53,7 @@ A diferència dels altres scripts de `22_scripts/`, aquest **no** es crida des d
 
 | Fitxer | Usat a |
 | :--- | :--- |
-| `RARS_directives.qmd` | `05_riscv.qmd` (inline) |
+| `RARS_directives.qmd` | `05_riscv.qmd` |
 | `RARS_memoria_regions.qmd` | T3, `05_riscv.qmd` |
 | `RARS_syscall_codis.qmd` | T9, `05_riscv.qmd` |
 | `RARS_syscall_registres.qmd` | T9, `05_riscv.qmd` |
@@ -658,7 +656,7 @@ Comproveu que el projecte renderitza correctament abans de fer push. Des de la l
 make render
 ```
 
-(equivalent a generar les taules fusionades de `05_riscv.qmd` amb `22_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf`/`quarto preview` directament, assegureu-vos que `11_riscv_auto/` ja existeix i està al dia.
+(equivalent a generar les taules fusionades de `05_riscv.qmd` amb `22_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `11_riscv_auto/` ja existeix i està al dia.
 
 - Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
