@@ -12,7 +12,7 @@ gen_regs.py — Generador de figures SVG de registres de bits per al projecte EC
         - 25_scripts/gen_dark.py  24_specs/svg.md "auto_figs/[^/]+_light[.]svg"                      --output-dir="auto_figs/"
 
 Ús manual:
-    python3 25_scripts/gen_regs.py <specs_file> <output_sufix> [--output-dir DIR] [--force] [--verbosity N]
+    python3 25_scripts/gen_regs.py <specs_file> <output_sufix> [--output-dir DIR] [--force] [--preview] [--verbosity N]
 
 Arguments posicionals:
     specs_file      Fitxer de definicions de registres (p. ex. 24_specs/registres.toml).
@@ -23,6 +23,7 @@ Arguments opcionals:
     --output-dir    Directori on es desen els SVG generats (per defecte: auto_figs/).
                     La sortida és plana: no es preserva l'estructura de subdirectoris.
     --force         Regenera tots els SVG ignorant timestamps.
+    --preview       Genera preview_regs.html (a --output-dir) amb tots els SVG incrustats inline.
     --verbosity 0|1|2
                     Nivell de detall del log (per defecte: 1).
                       0  Només errors i resum final.
@@ -550,8 +551,8 @@ def _validate(registers: dict) -> list[str]:
 # Preview HTML
 # ═══════════════════════════════════════════════════════════
 
-def make_preview(registers: dict, out_dir: Path, output_suffix: str, preview_path: Path) -> None:
-    """Genera docs/preview_regs.html amb tots els SVG incrustats inline."""
+def make_preview(registers: dict, out_dir: Path, output_suffix: str) -> None:
+    """Genera preview_regs.html a out_dir amb tots els SVG incrustats inline."""
     palette_chips = [
         ('#f8f9fa', '#adb5bd', '#6c757d', 'Reservat/WPRI'),
         ('#cfe2ff', '#084298', '#084298', 'Blau · habilitació'),
@@ -606,7 +607,7 @@ def make_preview(registers: dict, out_dir: Path, output_suffix: str, preview_pat
 </head>
 <body>
 <h1>Preview registres EC — mode clar</h1>
-<p class="meta">22 px/bit · ticks per bit · marge 1% · auto_figs/</p>
+<p class="meta">22 px/bit · ticks per bit · marge 1% · {out_dir}/</p>
 <div class="palette">
   {chips_html}
 </div>
@@ -614,7 +615,8 @@ def make_preview(registers: dict, out_dir: Path, output_suffix: str, preview_pat
 </body>
 </html>"""
 
-    preview_path.parent.mkdir(exist_ok=True)
+    preview_path = out_dir / 'preview_regs.html'
+    preview_path.parent.mkdir(parents=True, exist_ok=True)
     preview_path.write_text(html, encoding='utf-8')
     print(f'[gen-regs] PREVIEW  {preview_path}')
 
@@ -654,6 +656,11 @@ def main() -> None:
         help='Regenera tots els SVG ignorant timestamps.',
     )
     parser.add_argument(
+        '--preview',
+        action='store_true',
+        help='Genera preview_regs.html (a --output-dir) amb tots els SVG incrustats inline.',
+    )
+    parser.add_argument(
         '--verbosity',
         type=int,
         default=1,
@@ -681,7 +688,6 @@ def main() -> None:
         sys.exit(1)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    preview_path = Path.cwd() / 'docs' / 'preview_regs.html'
     script_mtime = Path(__file__).stat().st_mtime
 
     generated = skipped = errors = 0
@@ -735,7 +741,8 @@ def main() -> None:
             if verbosity >= 2:
                 print(f'[gen-regs] SALTA (vigent)  {compendi_path.name}')
 
-    make_preview(registers, output_dir, output_suffix, preview_path)
+    if args.preview:
+        make_preview(registers, output_dir, output_suffix)
 
     if verbosity >= 1:
         print(
