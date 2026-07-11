@@ -13,7 +13,7 @@ Abans de qualsevol acció, llegeix:
 1. `_quarto.yml` — configuració del projecte.
 2. `index.qmd` — fitxers que componen el llibre.
 3. `13_contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
-4. `TODO.md` — tasques pendents i decisions obertes.
+4. `TODO/TODO.md` — tasques pendents i decisions obertes.
 
 Per a tasques que impliquin figures SVG, llegeix també:
 
@@ -25,7 +25,7 @@ Repartiment de responsabilitats entre fitxers:
 - `13_contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
 - `CLAUDE.md` (aquest fitxer) recull **només** l'operació a claude.ai. Qualsevol altre aspecte va a `13_contrib.qmd`.
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
-- `TODO.md` només conté contingut transitori; al final ha de quedar buit.
+- `TODO/TODO.md` només conté contingut transitori; al final ha de quedar buit.
 
 Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `sigles.md` (glossari de sigles).
 
@@ -38,7 +38,7 @@ Convenció de noms (x = número de tema, 1–9; y = sessió de laboratori):
 - `Ax.qmd`: teoria del tema x.
 - `Ex.qmd`: enunciats dels problemes del tema x.
 - `Sx.qmd`: solucions d'una selecció de problemes del tema x.
-- `S_criteris.qmd`: criteris de selecció dels problemes a solucionar.
+- `S_criteris_seleccio.qmd`: criteris de selecció dels problemes a solucionar.
 - `Ly.qmd`: laboratori, sessió y.
 
 ### Volum
@@ -47,7 +47,7 @@ Convenció de noms (x = número de tema, 1–9; y = sessió de laboratori):
 | :--- | :--- |
 | Teoria | `A1.qmd`–`A9.qmd` |
 | Enunciats | `Ex.qmd` (x = 1–9) |
-| Solucions | `Sx.qmd` (x = 2–9), `S_criteris.qmd` |
+| Solucions | `Sx.qmd` (x = 2–9), `S_criteris_seleccio.qmd` |
 | Laboratori | `L1.qmd`–`L6.qmd` |
 
 Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats (es comenten per escurçar el temps de renderització en proves).
@@ -75,7 +75,7 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
-- **`E3.qmd` i `S3.qmd`** — revisió interna completada. Pendent: afegir solucions a `S3.qmd` per als exercicis sense cobertura (vegeu `TODO.md §Solucionaris pendents`); encaix T2↔T3 en terminologia caller-saved/callee-saved (vegeu `TODO.md §T3`).
+- **`E3.qmd` i `S3.qmd`** — revisió interna completada. Pendent: afegir solucions a `S3.qmd` per als exercicis sense cobertura (vegeu `TODO/TODO.md §Solucionaris pendents`); encaix T2↔T3 en terminologia caller-saved/callee-saved (vegeu `TODO/TODO.md §T3`).
 - **La resta de fitxers** (`E1.qmd`–`E2.qmd`, `E4.qmd`–`E9.qmd` i `S1.qmd`–`S2.qmd`, `S4.qmd`–`S9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Ax.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
 - Tasca prèvia opcional (Claude Code): substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web.
 

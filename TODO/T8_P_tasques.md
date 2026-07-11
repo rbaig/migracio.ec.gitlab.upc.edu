@@ -197,7 +197,7 @@ en aquest xat només es completen les especificacions i els captions.
   - (b) Deixar la política lliure (resposta: 5 amb reemplaçament òptim) — massa
     subtil per al nivell del tema.
 - 🔵⏳ **C6 — «aliàsing» vs. «*aliasing*».** T8 usa l'anglicisme en cursiva
-  (5×); E8, S8 i `S_criteris.qmd` usen la grafia adaptada
+  (5×); E8, S8 i `S_criteris_seleccio.qmd` usen la grafia adaptada
   «aliàsing»/«antialiàsing». El Termcat normalitza «aliàsing» en l'àmbit del
   senyal/imatge; per al sentit de memòria no hi ha fitxa, però l'adaptació és
   transparent i ja majoritària al projecte.
@@ -235,7 +235,7 @@ en aquest xat només es completen les especificacions i els captions.
   amb 6 entrades LRU. `matriu-lru` → primera fallada: `MAT[0][0..255]` i
   `MAT[1][0..255]` (per files) / `MAT[0..31][0..15]` (per columnes); 16 i 512
   fallades respectivament.
-- **Cobertura del solucionari** = selecció documentada a `S_criteris §T8`
+- **Cobertura del solucionari** = selecció documentada a `S_criteris_seleccio §T8`
   (7 de 10; els 3 no resolts hi consten com a no seleccionats).
 - **Referències creuades externes:** totes existeixen (`sec-jerarquia`,
   `tbl-tecnologies-memoria`, `sec-completament-associativa`,

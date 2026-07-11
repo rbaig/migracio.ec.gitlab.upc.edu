@@ -124,7 +124,7 @@ Recomanació: fer-ho **després** dels blocs A i D, perquè els slugs i el crite
 
 **Config:** Fable / High / **Sí** (el TODO els marcava «Opus High Thinking»; Fable hi és superior)
 
-Un xat per tema, seguint `S_criteris.qmd`:
+Un xat per tema, seguint `S_criteris_seleccio.qmd`:
 
 - [ ] T2: `exr-p3-memoria-endianness`, `exr-p3-vectors-cerca`, `exr-p3-vectors-punter-aritm`, `exr-p3-strings-copia` → `S2.qmd`.
 - [ ] T3: `exr-p4-compilacio-auipc`, `exr-p4-memoria-jalr`, `exr-p4-logica-rotacio` (apartat b) → `S3.qmd`.

@@ -13,7 +13,7 @@ Respon les preguntes següents sobre el mecanisme d'excepcions i interrupcions e
 
 a) Quina diferència hi ha entre una excepció i una interrupció? Dona un exemple de cadascuna.
 b) Quan es produeix una excepció, el processador desa l'adreça de retorn al registre `mepc`. A quina instrucció apunta `mepc` en cas d'excepció? I en cas d'interrupció?
-c) Quins passos realitza el maquinari automàticament quan es produeix una excepció en mode màquina?
+c) Quins passos realitza el maquinari automàticament quan es produeix una excepció en mode M?
 d) Quina és la responsabilitat de la rutina de servei d'excepcions (RSE) pel que fa als registres generals? Per què és diferent de la convenció ABI habitual?
 :::
 
@@ -24,7 +24,7 @@ a) Indica el valor de `mcause` per a cadascuna de les situacions següents:
     - Instrucció en adreça no alineada.
     - Accés a memòria en adreça no alineada (load).
     - Crida al sistema (`ecall`) des de mode usuari.
-    - Interrupció de temporitzador en mode màquina.
+    - Interrupció de temporitzador en mode M.
 b) El registre `mtval` conté informació addicional sobre la causa. Quin valor conté en cas d'una excepció per adreça no alineada en un accés a memòria?
 :::
 
@@ -35,7 +35,16 @@ a) Salvi tots els registres generals a la pila.
 b) Llegeixi `mcause` i salti a un gestor específic si la causa és una crida al sistema (`ecall`) des de mode usuari (codi de causa 8); altrament, salti a un gestor d'error genèric.
 c) Restauri tots els registres i retorni amb `mret`.
 
-Assumeix que el processador opera en mode màquina (M-mode) i que el registre `sp` apunta a una pila vàlida en entrar a la RSE.
+Assumeix que el processador opera en mode M i que el registre `sp` apunta a una pila vàlida en entrar a la RSE.
+:::
+
+::: {#exr-p9-exc-mepc-mtvec}
+Respon les preguntes següents sobre els registres `mepc` i `mtvec`:
+
+a) Una instrucció `lw t0, 0(t1)` a l'adreça `0x80001000` causa una excepció perquè `t1` conté una adreça no alineada. A quina adreça apunta `mepc`?
+b) Una interrupció de temporitzador arriba mentre s'executa la instrucció `lw t0, 0(a0)` a l'adreça `0x80002004`. A quina adreça apunta `mepc`? Quan es reprèn l'execució amb `mret`, quina instrucció s'executa?
+c) El registre `mtvec` pot tenir el bit 0 en 0 (mode *direct*) o en 1 (mode *vectored*). Explica la diferència. En mode *vectored*, a quina adreça salta el processador per a una interrupció de temporitzador de màquina (codi 7)?
+d) La RSE ha d'incrementar `mepc` en 4 per a les crides al sistema (`ecall`). Per què? Escriu les instruccions necessàries.
 :::
 
 ## Crides al sistema
@@ -43,9 +52,9 @@ Assumeix que el processador opera en mode màquina (M-mode) i que el registre `s
 *Vegeu @sec-ei-ecall.*
 
 ::: {#exr-p9-syscall-basic}
-En RISC-V, les crides al sistema es fan amb la instrucció `ecall`. El número de crida al sistema es passa al registre `a7` i els arguments a `a0`.
+En RISC-V, les crides al sistema es fan amb la instrucció `ecall`. El codi de servei es passa al registre `a7` i l'argument principal a `a0`.
 
-Escriu fragments de codi assemblador RISC-V per a les operacions següents, usant els números de crida al sistema de RARS:
+Escriu fragments de codi assemblador RISC-V per a les operacions següents, usant els codis de servei de RARS:
 
 a) Imprimir l'enter emmagatzemat al registre `t0` per la sortida estàndard.
 b) Llegir un enter de l'entrada estàndard i deixar el resultat a `t1`.
@@ -101,14 +110,17 @@ b) Una funció `uart_putchar` que esperi fins que el transmissor estigui lliure 
 c) Un programa principal que llegeixi caràcters del port sèrie i els retransmeti en majúscules fins que rebi un caràcter de nova línia (`'\n'`).
 :::
 
-::: {#exr-p9-exc-mepc-mtvec}
-Respon les preguntes següents sobre els registres `mepc` i `mtvec`:
+::: {#exr-p9-exc-interrupcions-io}
+Un sistema RISC-V gestiona un teclat per interrupcions. El controlador del teclat té un registre d'estat a l'adreça `0xF0001000` (bit 0 = tecla disponible) i un registre de dades a `0xF0001004`.
 
-a) Una instrucció `lw t0, 0(t1)` a l'adreça `0x80001000` causa una excepció perquè `t1` conté una adreça no alineada. A quina adreça apunta `mepc`?
-b) Una interrupció de temporitzador arriba mentre s'executa la instrucció `lw t0, 0(a0)` a l'adreça `0x80002004`. A quina adreça apunta `mepc`? Quan es reprèn l'execució amb `mret`, quina instrucció s'executa?
-c) El registre `mtvec` pot tenir el bit 0 en 0 (mode *direct*) o en 1 (mode *vectored*). Explica la diferència. En mode *vectored*, a quina adreça salta el processador per a una interrupció de temporitzador de màquina (codi 7)?
-d) La RSE ha d'incrementar `mepc` en 4 per a les crides al sistema (`ecall`). Per què? Escriu les instruccions necessàries.
+a) Escriu el codi assemblador per habilitar les interrupcions externes en mode M (bits `MIE` de `mstatus` i `MEIE` de `mie`).
+b) Escriu una RSE mínima que, en rebre una interrupció externa (bit `MEIP` de `mip` actiu), comprovi el registre d'estat del teclat (`0xF0001000`, bit 0) per confirmar-ne l'origen, llegeixi el caràcter del registre de dades i el desi a una variable global `car`, i retorni correctament.
+c) Per distingir entre una interrupció de teclat i una altra interrupció externa, es pot usar el codi de causa o cal llegir directament el registre d'estat del dispositiu? Justifica.
 :::
+
+## Fallada de pàgina
+
+*Vegeu @sec-ei-tlb.*
 
 ::: {#exr-p9-exc-tlb-miss}
 A RISC-V, la fallada de TLB (*TLB miss*) la resol el maquinari (*page-table walker*) de manera transparent, sense generar cap excepció; només quan el walker troba que la pàgina no és a la memòria física (bit V = 0 a la PTE) es genera una excepció de **fallada de pàgina** (@cau-tlb-miss-excepcio). En canvi, en arquitectures amb TLB gestionat per **programari** (com MIPS), la mateixa fallada de TLB genera una excepció, i és una rutina del SO qui llegeix la taula de pàgines i actualitza el TLB (@wrn-mv-tlb-hw-walker).
@@ -117,12 +129,3 @@ a) En RISC-V, quin codi de causa (`mcause`) s'assigna a una fallada de pàgina e
 b) Descriu els passos que ha de seguir la RSE de RISC-V per gestionar una fallada de pàgina: com localitza la PTE a partir de `mtval`, què fa segons el bit V, quin paper hi té `sfence.vma` i com es prepara la reexecució de la instrucció causant.
 c) En un sistema amb TLB gestionat per programari, la rutina que atén una fallada de TLB accedeix a la taula de pàgines i pot provocar, al seu torn, una nova fallada de TLB si la pàgina que conté la taula tampoc no és al TLB. Explica per què aquesta situació és problemàtica i com es pot evitar.
 :::
-
-::: {#exr-p9-exc-interrupcions-io}
-Un sistema RISC-V gestiona un teclat per interrupcions. El controlador del teclat té un registre d'estat a l'adreça `0xF0001000` (bit 0 = tecla disponible) i un registre de dades a `0xF0001004`.
-
-a) Escriu el codi assemblador per habilitar les interrupcions externes en mode màquina (bits `MIE` de `mstatus` i `MEIE` de `mie`).
-b) Escriu una RSE mínima que, en rebre una interrupció externa (bit `MEIP` de `mip` actiu), comprovi el registre d'estat del teclat (`0xF0001000`, bit 0) per confirmar-ne l'origen, llegeixi el caràcter del registre de dades i el desi a una variable global `car`, i retorni correctament.
-c) Per distingir entre una interrupció de teclat i una altra interrupció externa, es pot usar el codi de causa o cal llegir directament el registre d'estat del dispositiu? Justifica.
-:::
-

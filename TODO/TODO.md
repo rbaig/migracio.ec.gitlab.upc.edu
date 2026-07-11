@@ -61,7 +61,6 @@ Decisions obertes de T7:
 
 ### T9
 
-- **E3 — Slugs sense prefix**: `sec-introduccio`, `sec-flux-hardware`, `sec-rse`, `sec-ecall`, `sec-interrupcions`, `sec-tlb`… Risc de col·lisió global. Vegeu pas 1 de la seqüència a `CLAUDE.md`.
 - **F/G — Figures SVG**: diferides a una fase posterior.
 
 ### Laboratori

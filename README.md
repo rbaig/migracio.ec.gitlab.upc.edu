@@ -27,7 +27,7 @@ Directori `03_solucions/`:
 | Fitxer | Contingut |
 | :--- | :--- |
 | `S1.qmd`–`S9.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 1–9) |
-| `S_criteris.qmd` | Criteris de selecció dels problemes resolts |
+| `S_criteris_seleccio.qmd` | Criteris de selecció dels problemes resolts |
 
 La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDFs T6–T8 corresponen als temes T7–T9.
 

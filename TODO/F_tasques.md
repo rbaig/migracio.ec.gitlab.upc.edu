@@ -26,10 +26,10 @@
 
 8. **`S2.qmd` — capçalera duplicada/incorrecta**: `sol-p3-memoria-lb-lh` és sota una capçalera «### Constants i immediats» errònia (línia 147); a més, l'ordre de seccions no segueix `E2.qmd`. Es reordena: «Constants i immediats» (`luiaddi`) abans d'«Operands en memòria» (`lw-sw`, `endianness`, `lb-lh`), eliminant la capçalera duplicada.
 9. **`S3.qmd` — «±2 GB» → «±2 GiB»** a `sol-p4-compilacio-relocacio` d), per coherència amb els prefixos binaris de T3 (±4 KiB, ±1 MiB).
-10. **`S_criteris.qmd`**: afegir les 7 solucions noves a les taules de T2 i T3 (amb dificultat i temari).
+10. **`S_criteris_seleccio.qmd`**: afegir les 7 solucions noves a les taules de T2 i T3 (amb dificultat i temari).
 11. **`TODO.md`**: marcar com a resoltes les 7 files de «Solucionaris pendents d'afegir».
 
 ## D. Decisions que et corresponen (es presentaran al final)
 
-- **D1**: validar la dificultat assignada a les noves entrades de `S_criteris.qmd` (proposta: endianness 1, cerca 2, punter-aritm 2, còpia 2; rotació 3, `jalr` 4, `auipc` 2).
+- **D1**: validar la dificultat assignada a les noves entrades de `S_criteris_seleccio.qmd` (proposta: endianness 1, cerca 2, punter-aritm 2, còpia 2; rotació 3, `jalr` 4, `auipc` 2).
 - **D2**: confirmar la correcció «±2 GB → ±2 GiB» aplicada a la solució existent (canvi menor, ja aplicat; reversible).

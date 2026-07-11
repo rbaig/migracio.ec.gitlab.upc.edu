@@ -1,6 +1,6 @@
 # Bloc E — Ús pedagògic de les referències creuades: llista d'accions
 
-Anàlisi de tot el corpus (T1–T9, E1–T9, S1–T9, L1–L6, `index.qmd`, `S_criteris.qmd`).
+Anàlisi de tot el corpus (T1–T9, E1–T9, S1–T9, L1–L6, `index.qmd`, `S_criteris_seleccio.qmd`).
 Les accions **A** (autònomes) s'apliquen en aquest xat; les **D** (decisions) queden pendents de l'usuari.
 
 ## Diagnòstic global
@@ -23,7 +23,7 @@ Les accions **A** (autònomes) s'apliquen en aquest xat; les **D** (decisions) q
 
 - **A4** `A4.qmd:21` — autoreferència `@sec-suma-resta-i-canvi-de-signe` (la frase és dins d'aquesta mateixa secció). → `@sec-resta-ca2` (T1, on es demostra l'equivalència resta = suma del negat).
 - **A5** `A5.qmd:103` (`#cau-exces-comparacio`) — «La codificació en excés (@sec-enters-en-ca2 …)» apuntava a la secció de **Ca2**. → `@sec-enters-en-exces`.
-- **A6** `S_criteris.qmd` — `@exr-p3-enters-taules` trencada (l'exercici va migrar a E1 com a `exr-p1-enters-taules`). → fila traslladada a la taula del Tema 1 amb la referència nova.
+- **A6** `S_criteris_seleccio.qmd` — `@exr-p3-enters-taules` trencada (l'exercici va migrar a E1 com a `exr-p1-enters-taules`). → fila traslladada a la taula del Tema 1 amb la referència nova.
 - **A7** `index.qmd:153,157` — enllaços trencats `#sec-problemes-enunciats` i `#sec-problemes-solucions` (no existeixen al llibre). → apunten a `#sec-tema-introduccio-enunciats` (E1) i `#sec-tema-introduccio-solucions` (S1) (vegeu D7).
 
 ### Errates tècniques (correcció de passada)
@@ -94,15 +94,15 @@ Resolució i acció executada:
 - **D2** ✓ Permeses com a punter opcional: actualitzada la fila «Aprofundiment» de la taula de callouts de `13_contrib.qmd` (les 5 referències existents es mantenen).
 - **D3** ✓ Renumerats els lliuraments al número de sessió: L2→`s2_*` … L6→`s6_*` (145 ocurrències; col·lisions L1/L2 eliminades; cada prefix apareix ara només al seu fitxer). Actualitzats els exemples de `13_contrib.qmd §Nom dels fitxers de lliurament` (ara `s3_*`, de L3). Nota afegida a `TODO.md §Laboratori` sobre el directori `laboratori/` (encara `L0`–`L5`).
 - **D4** ✓ **Totes les alineacions a múltiples de 4**, també el BA: L4 (`s4_2_2.s`: BA 16→12, sense fila de padding; `s4_3_1.s`: BA 16→4) i L5 (`s5_1_2.s` i el `_start` temporal de la comprovació: BA 16→4). Els BA de 16 bytes amb 4 registres desats (L3 `codifica`, L5 `s5_3_1.s`) són exactes i es mantenen. Eliminats els dos TODO de L4 sobre aquesta decisió.
-- **D5** ✓ Reformulats `exr-p9-exc-tlb-miss` (E9) i `sol-p9-exc-tlb-miss` (S9) en clau de **fallada de pàgina** (RISC-V, walker per maquinari) i de **TLB gestionat per programari** (estil MIPS) per a l'apartat c), coherents amb `@cau-tlb-miss-excepcio`. Secció de S9 i fila de `S_criteris.qmd` renomenades.
+- **D5** ✓ Reformulats `exr-p9-exc-tlb-miss` (E9) i `sol-p9-exc-tlb-miss` (S9) en clau de **fallada de pàgina** (RISC-V, walker per maquinari) i de **TLB gestionat per programari** (estil MIPS) per a l'apartat c), coherents amb `@cau-tlb-miss-excepcio`. Secció de S9 i fila de `S_criteris_seleccio.qmd` renomenades.
 - **D6** ✓ Anotat a `TODO.md` (ítem `startup.s`): E9 `exr-p9-syscall-programa` usa `li a7, 10`; unificar amb 93 quan es decideixi.
-- **D7** ✓ `S_criteris.qmd` afegit a `_quarto.yml` com a primer capítol de la part «Solucions» (títol promogut a `#`, seccions a `##`); l'enllaç «Solucions» d'`index.qmd` hi apunta (`#sec-problemes-solucions-criteris`).
+- **D7** ✓ `S_criteris_seleccio.qmd` afegit a `_quarto.yml` com a primer capítol de la part «Solucions» (títol promogut a `#`, seccions a `##`); l'enllaç «Solucions» d'`index.qmd` hi apunta (`#sec-problemes-solucions-criteris`).
 - **D8** ✓ Anotat a `TODO.md §Laboratori` (secció L2 «Pseudoinstrucció `la` i `li`» amb cos TODO).
 - **D9** ✓ Generat `matvec.s` (RV32IM, versió original sense *tiling*) i inserit a L6 abans de la introducció del *loop tiling*, amb la mateixa disciplina de registres que `s6_5_1.s`.
 - **D10** ✓ Sense acció: RARS no defineix `abs`; no hi ha col·lisió.
 - **D11** ✓ Criteri de **direccionalitat** documentat a `13_contrib.qmd §Referències creuades` (punter explícit sí, dependència conceptual no), amb la llista dels punters cap endavant acceptats (T1/T2→T3/T4, T2/T3→T9, T2→T8, T5→T9, T6→T7, T8→T9). L'extensió a tot el projecte ja queda coberta per la revisió d'aquest bloc: totes les referències cap endavant del corpus són de tipus punter.
 
-Verificació final (2a fase): inventari programàtic net (0 duplicats reals, 0 referències trencades noves) i `quarto render --to html` net (només els 5 WARN de figures pendents), amb `S_criteris.qmd` ja integrat al llibre.
+Verificació final (2a fase): inventari programàtic net (0 duplicats reals, 0 referències trencades noves) i `quarto render --to html` net (només els 5 WARN de figures pendents), amb `S_criteris_seleccio.qmd` ja integrat al llibre.
 
 ### Llista original presentada a l'usuari (es conserva com a referència)
 
@@ -112,7 +112,7 @@ Verificació final (2a fase): inventari programàtic net (0 duplicats reals, 0 r
 - **D4 — Alineació de pila al laboratori**: L4/L5 usen BA de 16 bytes («alineació ABI») tot citant `@nte-abi-alineacio-pila`, que fixa el criteri EC en múltiples de 4. TODO existent a L4 («Roger: 16»). Decidir 4 o 16 i unificar T3 + `07_contrib` + L4/L5.
 - **D5 — `exr-p9-exc-tlb-miss` (PE/S9)**: la premissa «una fallada de TLB genera una excepció» contradiu T9 (`@cau-tlb-miss-excepcio`: a RISC-V la resol el *page-table walker*). Reformular l'enunciat (fallada de pàgina, o sistema amb TLB gestionat per programari) o mantenir amb advertiment.
 - **D6 — Codi de sortida a E9**: `exr-p9-syscall-programa` demana «sortida amb `li a7, 10`»; la convenció de `07_contrib` és `li a7, 93`. Lligat a la decisió oberta de `startup.s`/`exit` vs `exit2`.
-- **D7 — `S_criteris.qmd` fora del llibre**: no consta a `_quarto.yml`. Afegir-lo a l'inici de la part «Solucions» (recomanat; donaria destí natural a l'enllaç «Solucions» d'`index.qmd`) i completar la taula del Tema 1 (ara TODO parcial).
+- **D7 — `S_criteris_seleccio.qmd` fora del llibre**: no consta a `_quarto.yml`. Afegir-lo a l'inici de la part «Solucions» (recomanat; donaria destí natural a l'enllaç «Solucions» d'`index.qmd`) i completar la taula del Tema 1 (ara TODO parcial).
 - **D8 — L2 §«Pseudoinstrucció `la` i `li`»**: el cos és «TODO». Redactar contingut o eliminar la secció.
 - **D9 — L6 `exr-tiling`**: el text demana carregar `matvec.s` (versió original) però només existeix `matvec.c`. Afegir la traducció o reformular.
 - **D10 — L5 etiqueta `abs`**: coincideix amb la pseudoinstrucció `abs` de RARS; cal verificar al simulador que s'admet com a etiqueta (si no, renomenar, p. ex. `valabs`).

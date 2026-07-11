@@ -17,10 +17,10 @@ De l'altra, els dispositius d'**entrada/sortida** (**E/S**) necessiten notificar
 En tots dos casos, el mecanisme és el mateix: el processador interromp l'execució del programa, transfereix el control a una **rutina de servei d'excepcions** (**RSE**) del SO, i un cop feta la gestió, pot reprendre el programa interromput.
 
 ::: {#cau-terminologia .callout-caution}
-- **Excepció**: Esdeveniment causat per l'execució d'una instrucció (intern al processador).
-- **Interrupció**: Esdeveniment causat per un dispositiu extern.
+- **Excepció**: esdeveniment causat per l'execució d'una instrucció (intern al processador).
+- **Interrupció**: esdeveniment causat per un dispositiu extern.
 
-Tots dos usen el mateix mecanisme hardware, però difereixen en l'origen, el moment de detecció i, sovint, en el tractament.
+Tots dos usen el mateix mecanisme de maquinari, però difereixen en l'origen, el moment de detecció i, sovint, en el tractament.
 :::
 
 ### Tipologia {#sec-ei-introduccio-tipologia}
@@ -33,7 +33,7 @@ La taula següent classifica els principals tipus d'excepcions i interrupcions, 
 | Instrucció il·legal | Codi d'operació inexistent | Durant la instrucció | Avorta^1^ | Excepció |
 | Fallada de pàgina | Pàgina absent de la memòria física | Durant la instrucció | Reexecuta la instrucció causant | Excepció |
 | Crida al sistema (`ecall`) | Instrucció `ecall` explícita | Durant la instrucció | Continua a instrucció+4 | Excepció |
-| Interrupció d'E/S | Senyal extern d'un dispositiu | En acabar la instrucció en curs | Continua a instrucció+4 | Interrupció |
+| Interrupció d'E/S | Senyal extern d'un dispositiu | En acabar la instrucció en curs | Continua a la instrucció següent | Interrupció |
 : Tipologia d'excepcions i interrupcions {#tbl-tipologia .striped}
 
 ^1^ En el cas general, la RSE avorta el programa i emet un missatge d'error. Tècnicament, una RSE suficientment sofisticada podria recuperar-se d'algunes d'aquestes situacions, però això queda fora de l'abast d'EC.
@@ -50,11 +50,11 @@ Cal destacar dues diferències clau entre excepcions i interrupcions que la taul
         - **són irrecuperables**: el programa s'*avorta*.
     - En les **interrupcions**, el programa sempre es reprèn a la instrucció següent.
 
-## Suport hardware: registres de control i estat {#sec-ei-csr}
+## Suport de maquinari: registres de control i estat {#sec-ei-csr}
 
 ### El model de privilegis de RISC-V {#sec-ei-csr-privilegis}
 
-RISC-V defineix tres **modes de privilegi**, que determinen quines **instruccions** pot executar el processador i **adreces de memòria** pot accedir.
+RISC-V defineix tres **modes de privilegi**, que determinen quines **instruccions** pot executar el processador i a quines **adreces de memòria** pot accedir.
 
 ::: {#nte-modes-privilegi .callout-note}
 ## Modes de privilegi
@@ -64,7 +64,7 @@ RISC-V defineix tres **modes de privilegi**, que determinen quines **instruccion
 | M | Màxim | *Machine* (màquina) | Firmware, arrencada, gestió d'excepcions de baix nivell | Sí |
 | S | Mitja | *Supervisor* | Sistema operatiu (Linux, etc.) | No |
 | U | Mínim | *User* (usuari) | Programes d'usuari | No |
-: {tbl-colwidths="[5,8,10,40, 8]" .striped}
+: {tbl-colwidths="[8,12,20,50,10]" .striped}
 :::
 
 ::: {#imp-mode-ec .callout-important}
@@ -73,7 +73,7 @@ A **EC** s'estudia el mecanisme d'excepcions en **mode M**, que és el més dire
 
 El mode en què opera el processador en cada moment es controla mitjançant uns registres especials anomenats **registres de control i estat** (***Control and Status Registers***, **CSR**). A aquests registres només s'hi pot accedir amb instruccions específiques.
 
-L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als **registres de control i estat** (***Control and Status Registers***, **CSR**). Encara que en versions antigues de l'especificació aquestes instruccions formaven part de la ISA base, a partir de la versió 2.2 es van segregar en una extensió independent per permetre implementacions minimalistes sense suport CSR. En la pràctica, qualsevol processador RISC-V que implementi el mecanisme d'excepcions i interrupcions requereix Zicsr.
+L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als CSR. Encara que en versions antigues de l'especificació aquestes instruccions formaven part de la ISA base, a partir de la versió 2.2 es van segregar en una extensió independent per permetre implementacions minimalistes sense suport CSR. En la pràctica, qualsevol processador RISC-V que implementi el mecanisme d'excepcions i interrupcions requereix Zicsr.
 
 ::: {#nte-zicsr .callout-note}
 ## Zicsr ISA — Instruccions d'accés als CSR
@@ -88,24 +88,24 @@ Les pseudoinstruccions `csrr` i `csrw` són les formes habituals per llegir i es
 
 Les instruccions d'accés als CSR són **privilegiades**: en mode U, intentar executar-les genera una excepció d'instrucció il·legal.
 
-::: {#wrn-zicsr-pseudoinstruccions .callout-warning collapse=true}
+::: {#wrn-zicsr-immediats .callout-warning collapse=true}
 ## Aprofundiment: variants immediates de les instruccions CSR
 
 Les instruccions `csrrwi`, `csrrsi` i `csrrci` operen igual que `csrrw`, `csrrs` i `csrrc` respectivament, però accepten un immediat de 5 bits sense signe (`uimm5`) en lloc del registre `rs1`. Són útils per activar o desactivar bits individuals d'un CSR sense necessitat de carregar un valor en un registre prèviament.
 
-::: {#nte-zicsr-pseudoinstruccions .callout-note}
-## Zicsr ISA — Pseudoinstruccions d'accés als CSR (immediats)
+::: {#nte-zicsr-immediats .callout-note}
+## Zicsr ISA — Instruccions d'accés als CSR amb immediat
 
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
-{{< include ../21_riscv/Zicsr_pseudo_immediats.qmd >}}
+{{< include ../21_riscv/Zicsr_instruccions_immediats.qmd >}}
 : {tbl-colwidths="[5,20,35,35,5]" .striped}
 :::
 :::
 
 ### `mcause` — Codi de causa {#sec-ei-csr-mcause}
 
-Quan es produeix una excepció o interrupció, el hardware escriu automàticament al registre **`mcause`** un codi que n'identifica la causa. El bit de més pes (bit 31) indica si l'origen és una interrupció (bit 31 = 1) o una excepció (bit 31 = 0). Els 31 bits restants contenen el codi de causa.
+Quan es produeix una excepció o interrupció, el maquinari escriu automàticament al registre **`mcause`** un codi que n'identifica la causa. El bit de més pes (bit 31) indica si l'origen és una interrupció (bit 31 = 1) o una excepció (bit 31 = 0). Els 31 bits restants contenen el codi de causa.
 
 ::: {#nte-mcause-mes-rellevants .callout-note}
 ## RV32I ISA — `mcause` — Valors més rellevants
@@ -132,9 +132,9 @@ Camps del registre `mcause` (Int. = Interrupt).
 
 ### `mepc` — Adreça de retorn {#sec-ei-csr-mepc}
 
-El registre **`mepc`** (*Machine Exception Program Counter*) guarda l'adreça de la instrucció que el processador estava executant quan s'ha produït l'excepció o interrupció. La RSE usa aquest valor per saber on ha de retornar el control en acabar.
+El registre **`mepc`** (*Machine Exception Program Counter*) guarda l'adreça on la RSE ha de retornar el control en acabar: la de la instrucció causant o la de la següent, segons el tipus d'esdeveniment.
 
-El valor que el hardware hi escriu depèn del tipus d'esdeveniment.
+El valor que el maquinari hi escriu depèn del tipus d'esdeveniment.
 
 - **Excepció**: `mepc` apunta a la instrucció causant (la que s'ha interromput sense finalitzar). En casos on es vol continuar a la instrucció següent (per exemple, `ecall`), la pròpia RSE incrementa `mepc` en 4 abans de retornar.
 - **Interrupció**: `mepc` apunta a la instrucció que *hauria* executat el processador a continuació (la instrucció causant ja ha finalitzat i el PC ja s'ha incrementat).
@@ -213,10 +213,10 @@ RISC-V defineix dos modes:
 | `MODE` | Nom | Comportament |
 | :---: | :--- | :--- |
 {{< include ../21_riscv/RV32I_csr_mtvec_modes.qmd >}}
-: {tbl-colwidths="[5,5,40]" .striped}
+: {tbl-colwidths="[10,15,75]" .striped}
 :::
 
-En el **mode directe**, la RSE és responsable de llegir `mcause` i derivar el control a la rutina específica de cada causa. En el **mode vectoritzat**, el hardware calcula directament l'adreça de la rutina per a cada tipus d'interrupció, cosa que estalvia el temps de llegir `mcause` i saltar a la rutina corresponent.
+En el **mode directe**, la RSE és responsable de llegir `mcause` i derivar el control a la rutina específica de cada causa. En el **mode vectoritzat**, el maquinari calcula directament l'adreça de la rutina per a cada tipus d'interrupció, cosa que estalvia el temps de llegir `mcause` i saltar a la rutina corresponent.
 
 ::: {#imp-mtvec-ec .callout-important}
 A **EC** s'usa sempre el **mode directe** (`MODE=0`): totes les excepcions i interrupcions salten a l'adreça `BASE`, i és la RSE qui consulta `mcause` per determinar-ne la causa.
@@ -224,7 +224,7 @@ A **EC** s'usa sempre el **mode directe** (`MODE=0`): totes les excepcions i int
 
 ### `mtval` — Informació addicional de l'excepció {#sec-ei-csr-mtval}
 
-El registre **`mtval`** (*Machine Trap Value*) conté informació addicional sobre la causa de l'excepció, per ajudar la RSE en el tractament. El valor que hi escriu el hardware depèn del tipus d'excepció:
+El registre **`mtval`** (*Machine Trap Value*) conté informació addicional sobre la causa de l'excepció, per ajudar la RSE en el tractament. El valor que hi escriu el maquinari depèn del tipus d'excepció:
 
 - **Accés no alineat o fallada de pàgina**: `mtval` conté l'adreça virtual que ha causat l'excepció.
 - **Instrucció il·legal**: `mtval` conté la instrucció que ha causat l'excepció.
@@ -271,7 +271,7 @@ Camps del registre `mie`.
 {{< include ../21_riscv/RV32I_csr_mip_mie_taula.qmd >}}
 : {.striped}
 
-- **`mip`**: cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. És de **sols lectura** per al programari (el hardware l'actualitza).
+- **`mip`**: cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. Els bits de mode M (`MEIP`, `MTIP`, `MSIP`) són de **sols lectura** per al programari (els actualitza el maquinari).
 - **`mie`**: cada bit és una màscara independent que habilita o deshabilita les interrupcions d'un tipus concret. És de **lectura/escriptura**.
 :::
 
@@ -293,13 +293,13 @@ Per al mode S, RISC-V defineix un conjunt de registres CSR paral·lel al de mode
 : {.striped}
 :::
 
-Quan el processador opera en mode S (per exemple, executant el nucli de Linux), les excepcions i interrupcions delegades pel mode M es gestionen amb els registres `s*`. La delegació s'especifica als registres `medeleg` (excepcions) i `mideleg` (interrupcions), que el firmware configura durant l'arrencada.
+Quan el processador opera en mode S (per exemple, executant el nucli de Linux), les excepcions i interrupcions delegades pel mode M es gestionen amb els registres `s*`. La delegació s'especifica als registres `medeleg` (excepcions) i `mideleg` (interrupcions), que el firmware configura durant l'arrencada. L'equivalent de `mret` en mode S és la instrucció **`sret`**, amb la mateixa semàntica sobre els camps `S*` de `sstatus` i sobre `sepc`.
 
-## Flux hardware en detectar una excepció o interrupció {#sec-ei-flux-hardware}
+## Flux de maquinari en detectar una excepció o interrupció {#sec-ei-flux-hardware}
 
 ### Accions automàtiques del processador {#sec-ei-flux-hardware-accions}
 
-Quan el processador detecta una excepció o una petició d'interrupció, executa automàticament, per hardware, la seqüència d'accions següent:
+Quan el processador detecta una excepció o una petició d'interrupció, executa automàticament, per maquinari, la seqüència d'accions següent:
 
 1. **Guardar el PC a `mepc`**: el processador escriu el valor actual del PC al registre `mepc`, per poder reprendre el programa interromput en acabar la RSE.
 
@@ -312,18 +312,18 @@ Quan el processador detecta una excepció o una petició d'interrupció, executa
 5. **Saltar a la RSE**: el PC s'escriu amb l'adreça continguda a `mtvec` (en mode directe, `BASE`; en mode vectoritzat, `BASE + 4 × causa` per a interrupcions).
 
 ::: {#cau-flux-hardware .callout-caution}
-Les accions 1–5 les executa el **hardware** de forma atòmica, sense intervenció del programari. La RSE no comença a executar-se fins que totes s'han completat.
+Les accions 1–5 les executa el **maquinari** de forma atòmica, sense intervenció del programari. La RSE no comença a executar-se fins que totes s'han completat.
 :::
 
 ### Diferències entre excepció i interrupció {#sec-ei-flux-hardware-diferencies}
 
-Tot i que el flux hardware és el mateix, hi ha dues diferències importants segons el tipus d'esdeveniment:
+Tot i que el flux de maquinari és el mateix, hi ha dues diferències importants segons el tipus d'esdeveniment:
 
 - **Moment de detecció**:
     - En una **excepció**, la instrucció causant s'**avorta** en mig de l'execució: no escriu cap resultat, no accedeix a memòria i el PC no s'incrementa. El valor guardat a `mepc` és l'adreça d'aquesta instrucció (vegeu @sec-ei-csr-mepc).
     - En una **interrupció**, el processador no la comprova fins que la instrucció en curs ha **finalitzat** completament i el PC ja s'ha incrementat. El valor guardat a `mepc` és l'adreça de la instrucció que *hauria* executat a continuació (vegeu @sec-ei-csr-mepc).
 
-- **Escriptura a `mtval`**: en algunes excepcions, el hardware escriu informació addicional al registre `mtval` per ajudar la RSE en el tractament (vegeu @sec-ei-csr-mtval). En les interrupcions, `mtval` s'escriu a zero.
+- **Escriptura a `mtval`**: en algunes excepcions, el maquinari escriu informació addicional al registre `mtval` per ajudar la RSE en el tractament (vegeu @sec-ei-csr-mtval). En les interrupcions, `mtval` s'escriu a zero.
 
 ::: {#wrn-flux-pipeline .callout-warning collapse=true}
 ## Aprofundiment: excepcions en un pipeline
@@ -342,9 +342,9 @@ Les interrupcions, en canvi, es comproven sempre entre instruccions (mai a mig d
 
 ### Responsabilitats {#sec-ei-rse-responsabilitats}
 
-Un cop el hardware ha completat les accions de @sec-ei-flux-hardware-accions, el processador comença a executar la RSE. Aquesta rutina, que forma part del SO, té les responsabilitats següents, en ordre:
+Un cop el maquinari ha completat les accions de @sec-ei-flux-hardware-accions, el processador comença a executar la RSE. Aquesta rutina, que forma part del SO, té les responsabilitats següents, en ordre:
 
-1. **Salvar l'estat del programa interromput**: la RSE ha de guardar en memòria tots els registres generals (`x1`–`x31`) que pugui modificar, per poder-los restaurar en acabar. A diferència d'una subrutina normal, aquí no s'apliquen les regles de l'ABI sobre registres salvats i temporals: com que la RSE no ha estat invocada voluntàriament pel programa, cal salvar-los tots sense excepció.
+1. **Salvar l'estat del programa interromput**: la RSE ha de guardar en memòria tots els registres generals (`x1`–`x31`), per poder-los restaurar en acabar. A diferència d'una subrutina normal, aquí no s'apliquen les regles de l'ABI sobre registres salvats i temporals: com que la RSE no ha estat invocada voluntàriament pel programa, cal salvar-los tots sense excepció.
 
 2. **Identificar la causa**: la RSE llegeix el registre `mcause` per determinar el tipus d'excepció o interrupció i saltar a la rutina específica (*exception handler*) corresponent.
 
@@ -365,7 +365,7 @@ A la RSE cal salvar **tots** els registres generals sense excepció, independent
 
 ### La instrucció `mret` {#sec-ei-rse-mret}
 
-La instrucció **`mret`** (*machine return*) finalitza l'execució de la RSE i restaura l'estat del processador anterior a l'excepció o interrupció. Executa les accions següents, per hardware:
+La instrucció **`mret`** (*machine return*) finalitza l'execució de la RSE i restaura l'estat del processador anterior a l'excepció o interrupció. Executa les accions següents, per maquinari:
 
 1. **Restaurar el permís d'interrupcions**: copia `MPIE` a `MIE`, i posa `MPIE=1`.
 2. **Restaurar el mode de privilegi**: copia `MPP` al mode actiu, i posa `MPP=U`.
@@ -391,12 +391,12 @@ En acabar el tractament, la RSE ha de decidir on reprèn el programa. La regla �
     - En les **interrupcions**, `mepc` ja apunta a la instrucció següent (vegeu @sec-ei-flux-hardware-diferencies), de manera que no cal cap ajust.
 
 ::: {#cau-ajust-mepc .callout-caution}
-Si la RSE retornés sense ajustar `mepc` en el cas d'una `ecall`, el processador reexecutaria la mateixa instrucció `ecall` indefinidament. L'increment de `mepc` en 4 és responsabilitat de la RSE, no del hardware.
+Si la RSE retornés sense ajustar `mepc` en el cas d'una `ecall`, el processador reexecutaria la mateixa instrucció `ecall` indefinidament. L'increment de `mepc` en 4 és responsabilitat de la RSE, no del maquinari.
 :::
 
 ### Exemple: RSE mínima en RISC-V {#sec-ei-rse-exemple}
 
-El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un *dispatcher*:
+El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un *dispatcher*. Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa directives de GNU `as` (`.section`, `.align`) fora de l'abast de RARS:
 
 ```{.s filename="RV32IZicsr"}
 .section .text.trap, "ax"
@@ -488,7 +488,7 @@ rse:
         mret
 ```
 
-El *dispatcher* (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Consulta `mcause` per cridar el *handler* específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
+El *dispatcher* (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar la RSE. El *dispatcher* consulta `mcause` per cridar el *handler* específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
 ::: {#wrn-rse-pila .callout-warning collapse=true}
 ## Aprofundiment: la pila de la RSE
@@ -522,24 +522,23 @@ Per tal que un programa d'usuari pugui sol·licitar un servei al SO, cal un meca
 
 Això garanteix que hi ha un únic punt d'entrada al SO (l'adreça de la RSE a `mtvec`) i que el programa d'usuari no pot triar on salta ni amb quins privilegis ho fa. En acabar el tractament, la RSE executa `mret`, que restaura el mode U i retorna el control al programa.
 
-### Crides al sistema {#sec-ei-ecall-abi-rars}
+### Convenció de crides al sistema a RARS {#sec-ei-ecall-abi-rars}
 
-Els SOs estableixen una convenció de crides al sistema per passar el codi de servei, els paràmetres de les crides i els registres que cal emprar. Per exemple, RARS estableix **`a7`** per codi de la crida al sistema i **`a0`** per argument principal i valor de retorn. També estableix dos codis de servei per a sortir del programa, `exit` (codi de servei 10) i `exit2` (codi de servei 93). La diferència és que `exit2` permet especificar el codi de sortida (normalment 0 per a sortida correcta) per al procés que l'ha cridat (normalment el SO).
+Els SOs estableixen una convenció de crides al sistema per passar el codi de servei, els paràmetres de les crides i els registres que cal emprar. Per exemple, RARS estableix el codi de servei al registre **`a7`** i l'argument principal i el valor de retorn al registre **`a0`**. També estableix dos codis de servei per a sortir del programa, `exit` (codi de servei 10) i `exit2` (codi de servei 93). La diferència és que `exit2` permet especificar el codi de sortida (normalment 0 per a una terminació correcta), que es retorna al procés pare (normalment el SO).
 
 ::: {#nte-ecall-convencio-rars .callout-note}
-## RARS – Registres de crida al sistema
+## RARS — Registres de crida al sistema
 
-- **`a7`**: codi de la crida al sistema.
-- **`a0`**: argument principal i valor de retorn.
+{{< include ../21_riscv/RARS_syscall_registres.qmd >}}
 :::
 
 ::: {#nte-ecall-taula-rars .callout-note}
-##  RARS – Codis de servei més rellevants
+## RARS — Codis de servei més rellevants
 
 | Codi | Nom | Arguments | Retorn |
 | :---: | :--- | :--- | :--- |
 {{< include ../21_riscv/RARS_syscall_codis.qmd >}}
-: RARS: Codis de crides al sistema de més rellevants. {#tbl-syscalls-rars .striped}
+: RARS: codis de servei més rellevants. {#tbl-syscalls-rars .striped}
 :::
 
 Els exemples següents mostren les crides al sistema més habituals a RARS:
@@ -549,7 +548,7 @@ Els exemples següents mostren les crides al sistema més habituals a RARS:
 
 **Imprimir un enter (codi 1)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 1               # codi de print_int
         li      a0, 42              # enter a imprimir
         ecall
@@ -557,14 +556,14 @@ Els exemples següents mostren les crides al sistema més habituals a RARS:
 
 **Llegir un enter de l'entrada estàndard (codi 5)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 5               # codi de read_int
         ecall                       # a0 ← enter llegit
 ```
 
 **Imprimir un string (codi 4)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 4               # codi de print_string
         la      a0, missatge        # adreça del string (acabat en '\0')
         ecall
@@ -572,16 +571,13 @@ Els exemples següents mostren les crides al sistema més habituals a RARS:
 
 **Finalitzar el programa (codi 10)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 10              # codi de exit
         ecall                       # no retorna
 ```
 :::
 
-### Convenció ABI {#sec-ei-ecall-abi-linux}
-
-::: {#wrn-ecall-abi-linux .callout-warning collapse=true}
-## RV32I Linux — ABI: Codis de crides al sistema de més rellevants
+### Convenció ABI de Linux {#sec-ei-ecall-abi-linux}
 
 Les crides al sistema segueixen una convenció estricta per passar el codi de servei i els paràmetres. A Linux/RISC-V:
 
@@ -593,14 +589,14 @@ Les crides al sistema segueixen una convenció estricta per passar el codi de se
 La convenció de crides al sistema **no és la mateixa** que la convenció de crida a subrutines de l'ABI. En particular, el codi de servei va a **`a7`**, no a `a0`, i hi pot haver fins a sis arguments en lloc de quatre.
 :::
 
-Els exemples següents mostren les crides al sistema més habituals:
+::: {#wrn-ecall-exemples-linux .callout-warning collapse=true}
+## Aprofundiment: exemples de crides al sistema Linux/RISC-V (RV32)
 
-::: {#tip-ecall-exemples-linux .callout-tip}
-## Exemples de crides al sistema Linux/RISC-V (RV32)
+Els exemples següents mostren les crides al sistema més habituals:
 
 **Escriure a la sortida estàndard (`write`, codi 64)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 64              # codi de write
         li      a0, 1               # descriptor: stdout
         la      a1, missatge        # adreça del buffer
@@ -610,7 +606,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 
 **Llegir de l'entrada estàndard (`read`, codi 63)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 63              # codi de read
         li      a0, 0               # descriptor: stdin
         la      a1, buffer          # adreça del buffer
@@ -620,7 +616,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 
 **Finalitzar el programa (`exit`, codi 93)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 93              # codi de exit
         li      a0, 0               # codi de retorn (0 = èxit)
         ecall                       # no retorna
@@ -628,7 +624,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 
 **Reservar memòria dinàmica (`brk`, codi 214)**:
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
         li      a7, 214             # codi de brk
         li      a0, 0               # 0 = consultar l'adreça actual del heap
         ecall                       # a0 ← adreça actual (o nova) del final del heap
@@ -645,11 +641,11 @@ Els exemples següents mostren les crides al sistema més habituals:
 | 25 | `fcntl` | `a0`=fd, `a1`=cmd, `a2`=arg | `a0`=resultat o error |
 | 29 | `ioctl` | `a0`=fd, `a1`=req, `a2`=arg | `a0`=0 o error |
 | 35 | `unlinkat` | `a0`=dirfd, `a1`=path, `a2`=flags | `a0`=0 o error |
-| 48 | `fadvise64` | `a0`=fd, `a1`=offset, `a2`=len, `a3`=advice | `a0`=0 o error |
+| 48 | `faccessat` | `a0`=dirfd, `a1`=path, `a2`=mode | `a0`=0 o error |
 | 56 | `openat` | `a0`=dirfd, `a1`=path, `a2`=flags, `a3`=mode | `a0`=fd o error |
 | 57 | `close` | `a0`=fd | `a0`=0 o error |
 | 61 | `getdents64` | `a0`=fd, `a1`=buf, `a2`=count | `a0`=bytes o error |
-| 62 | `lseek` | `a0`=fd, `a1`=offset, `a2`=whence | `a0`=posició o error |
+| 62 | `llseek` | `a0`=fd, `a1`=offset_hi, `a2`=offset_lo, `a3`=resultat, `a4`=whence | `a0`=0 o error |
 | 63 | `read` | `a0`=fd, `a1`=buf, `a2`=count | `a0`=bytes o error |
 | 64 | `write` | `a0`=fd, `a1`=buf, `a2`=count | `a0`=bytes o error |
 | 65 | `readv` | `a0`=fd, `a1`=iov, `a2`=iovcnt | `a0`=bytes o error |
@@ -661,7 +657,6 @@ Els exemples següents mostren les crides al sistema més habituals:
 | 94 | `exit_group` | `a0`=codi | — |
 | 96 | `set_tid_address` | `a0`=tidptr | `a0`=tid |
 | 99 | `set_robust_list` | `a0`=head, `a1`=len | `a0`=0 o error |
-| 113 | `clock_gettime` | `a0`=clkid, `a1`=tp | `a0`=0 o error |
 | 129 | `kill` | `a0`=pid, `a1`=sig | `a0`=0 o error |
 | 131 | `tgkill` | `a0`=tgid, `a1`=tid, `a2`=sig | `a0`=0 o error |
 | 160 | `uname` | `a0`=buf | `a0`=0 o error |
@@ -679,9 +674,10 @@ Els exemples següents mostren les crides al sistema més habituals:
 | 222 | `mmap` | `a0`=addr, `a1`=len, `a2`=prot, `a3`=flags, `a4`=fd, `a5`=off | `a0`=addr o error |
 | 261 | `prlimit64` | `a0`=pid, `a1`=res, `a2`=new, `a3`=old | `a0`=0 o error |
 | 278 | `getrandom` | `a0`=buf, `a1`=len, `a2`=flags | `a0`=bytes o error |
+| 403 | `clock_gettime64` | `a0`=clkid, `a1`=tp | `a0`=0 o error |
 : {#tbl-syscalls .striped}
-:::
 
+A RV32, algunes d'aquestes crides corresponen a la variant específica per a mides de 32 bits (per exemple, `fcntl64`, `fstatat64` i `fstat64` en lloc de `fcntl`, `fstatat` i `fstat`), tot i que el número i els arguments es mantenen; `mmap` rep l'*offset* en pàgines de 4 KiB (semàntica `mmap2`) enlloc de bytes.
 :::
 
 ## Interrupcions de dispositius d'E/S {#sec-ei-interrupcions}
@@ -692,10 +688,11 @@ La comunicació amb els dispositius d'E/S està dominada per la necessitat de to
 
 - **Sincronització per enquesta** (*polling*): el processador consulta repetidament l'estat del dispositiu fins que l'operació acaba. És simple d'implementar però desaprofita completament el processador durant l'espera.
 
-```{.s filename="RV32IZicsr"}
+```{.s filename="RV32I"}
 bucle:
         lw      t0, ESTAT_DISPOSITIU    # llegir l'estat del dispositiu
-        bne     t0, READY, bucle        # esperar fins que estigui llest
+        li      t1, READY               # valor que indica «llest»
+        bne     t0, t1, bucle           # esperar fins que estigui llest
     # continuar quan el dispositiu ha acabat
 ```
 
@@ -713,7 +710,7 @@ El flux complet d'una interrupció, des de la petició fins al retorn, segueix l
 
 2. **Detecció**: en acabar cada instrucció, la unitat de control comprova si hi ha algun bit actiu a `mip` amb el seu permís corresponent a `mie` habilitat i amb `MIE=1`. Si es compleixen les tres condicions, es genera una interrupció.
 
-3. **Acceptació**: el hardware executa les accions de @sec-ei-flux-hardware-accions: guarda el PC a `mepc`, escriu `mcause` amb bit 31=1 i el codi de causa, desactiva `MIE` i salta a `mtvec`.
+3. **Acceptació**: el maquinari executa les accions de @sec-ei-flux-hardware-accions: guarda el PC a `mepc`, escriu `mcause` amb bit 31=1 i el codi de causa, desactiva `MIE` i salta a `mtvec`.
 
 4. **Servei**: la RSE identifica el dispositiu (llegint `mcause` i `mip`), executa el tractament corresponent (per exemple, llegir les dades del dispositiu) i crida l'*exception handler* específic.
 
@@ -739,7 +736,7 @@ Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa 
 
 El sistema de permisos d'interrupcions té dos nivells independents:
 
-- **Permís global `MIE`** (bit 3 de `mstatus`): habilita o deshabilita totes les interrupcions alhora. El hardware el posa a 0 automàticament en acceptar qualsevol excepció o interrupció, i `mret` el restaura al valor de `MPIE`.
+- **Permís global `MIE`** (bit 3 de `mstatus`): habilita o deshabilita totes les interrupcions alhora. El maquinari el posa a 0 automàticament en acceptar qualsevol excepció o interrupció, i `mret` el restaura al valor de `MPIE`.
 
 - **Màscares individuals `mie`**: cada bit habilita o deshabilita independentment un tipus d'interrupció. El SO els configura durant la inicialització per indicar quins dispositius poden interrompre el processador.
 
@@ -765,7 +762,7 @@ Quan la RSE rep el control per una interrupció (bit 31 de `mcause` val 1), ha d
 ::: {#wrn-interrupcions-multiples .callout-warning collapse=true}
 ## Aprofundiment: múltiples peticions simultànies
 
-Pot succeir que mentre les interrupcions estaven inhibides (`MIE=0`) arribin peticions de diversos dispositius. En reprendre's el permís, tots els bits corresponents de `mip` estaran actius simultàniament. La RSE ha d'establir un ordre de prioritat per atendre'ls. RISC-V no imposa cap ordre de prioritat per hardware: és responsabilitat del SO implementar la política que consideri adequada (per exemple, prioritat fixa, *round-robin*, etc.).
+Pot succeir que mentre les interrupcions estaven inhibides (`MIE=0`) arribin peticions de diversos dispositius. En reprendre's el permís, tots els bits corresponents de `mip` estaran actius simultàniament. La RSE ha d'establir un ordre de prioritat per atendre'ls. RISC-V no imposa cap ordre de prioritat per maquinari: és responsabilitat del SO implementar la política que consideri adequada (per exemple, prioritat fixa, *round-robin*, etc.).
 
 A més, pot succeir que un dispositiu hagi desactivat el senyal de petició abans que la RSE l'atengui (per exemple, per expiració d'un temporitzador intern). En aquest cas, el bit de `mip` ja no estarà actiu quan la RSE el comprovi, i la petició es perdrà.
 :::
@@ -825,6 +822,7 @@ Camps del registre `satp` en mode SV32.
 :::
 
 - **`MODE`** (bit 31): `0` = sense traducció d'adreces (*bare*); `1` = traducció Sv32 activa.
+- **`ASID`** (bits 30:22, *Address Space Identifier*): identificador de l'espai d'adreces, que permet al TLB distingir traduccions de processos diferents sense haver-lo de buidar en cada canvi de context.
 - **`PPN`** (bits 21:0): número de pàgina física (*Physical Page Number*) de la taula de pàgines de primer nivell.
 :::
 
@@ -838,7 +836,7 @@ Quan la RSE en mode S modifica la taula de pàgines en memòria, executa la inst
 {{< include ../21_riscv/RV32I_sfence_vma.qmd >}}
 : {tbl-colwidths="[15,12,48,25]" .striped}
 
-`sfence.vma` és una instrucció de l'arquitectura **Supervisor** (privilegiada), disponible sempre que el processador implementi el mode S. No pertany ni a Zicsr ni a cap altra extensió estàndard.
+`sfence.vma` forma part de l'arquitectura privilegiada de RISC-V: està disponible sempre que el processador implementi el mode S.
 :::
 
 #### La rutina de fallada de pàgina {#sec-ei-tlb-modes-rutina}
