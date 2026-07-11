@@ -1,0 +1,28 @@
+refactors
+
+- En tots els casos
+    - Canvi de referències creuades
+    - Actualització de fitxers operacionals
+- Teoria -> Apunts
+    - Perill: Actualment Tx usat indistintament per Tx.qme com per T de "Tema (eg. T9 per Tema 9)" (benefici col·lateral: evita ús polisèmic)
+    - `01_T/` -> `01_apunts/`
+    - `Tx.qmd` -> `Ax.qmd` (e.g. `T1.qmd` -> `A1.qmd`)
+- PE -> E
+    - `02_PE/` -> `02_Exercicis/`
+    - `PE_Tx.qmd` -> `Ex.qmd` (e.g. `PE_T1.qmd` -> `E1.qmd`)
+- PE -> E
+    - `03_PS/` -> `03_Solucions/`
+    - `PS_Tx.qmd` -> `Sx.qmd` (e.g. `PS_T1.qmd` -> `S1.qmd`)
+- `04_L/` -> `04_laboratori/`
+- `mkdir 05_diapositives/`
+    - `touch placeholder.txt`
+- `21_specs/` -> `24_specs/`
+- `22_scrits/` -> `25_scrits/`
+- `11_riscv/` -> `21_riscv/`
+- `12_figs_originals/` -> `22_figs_originals`
+- `13_figs_externes/` -> `23_figs_externes`
+- `05_riscv.qmd` -> `11_riscv.qmd`
+- `06_sigles.qmd` -> `12_sigles.qmd`
+- `07_contrib.qmd` -> `13_contrib.qmd`
+- `08_LICENSE.qmd` -> `14_LICENSE.qmd`
+- `09_bibliografia.bib` -> `15_bibliografia.bib`

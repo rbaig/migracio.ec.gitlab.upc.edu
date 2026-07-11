@@ -42,7 +42,13 @@ Canvis:
 
 Nota: Les revisions internes de temes pendents estan indicades més avall. Si necessites interactuar amb algun d'aquests temes, digues-m'ho i ho resolem.
 
-Temes pendents de revisió interna: {llista de temes, p. ex. "T6-PE_T6-PS_T6, T8-PE_T8-PS_T8"}
+---
+
+Estat de la Revisió interna Tx-PE_Tx-PS_Tx
+
+- Fets pre-Fable: x = {1, 2, 4, 5}
+- Fets Fable: x = {7}
+- Pendents: x = {9}
 
 ---
 
@@ -91,3 +97,7 @@ A diferència del punt de represa de la Fase A (pas 5), un exhauriment dins la F
 2. Si no hi ha fitxer complet, **demana'm que cerqui el xat exhaurit** (`conversation_search`/`recent_chats`): encara que no pugui recuperar-ne el text literal complet, sol poder obtenir un resum estructurat del que ja s'havia analitzat o decidit, evitant repetir feina de zero.
 3. Si el xat és molt recent (del mateix dia), és possible que encara no aparegui ben indexat a la cerca; en aquest cas, la via més fiable és que hi entris tu directament des de l'ordinador i copiïs manualment el contingut rescatable cap a un xat nou.
 4. En qualsevol cas, un cop recuperat el que es pugui, **continua a partir d'aquell punt en un xat nou** amb la configuració de la fase corresponent — no cal repetir les fases ja completades.
+
+---
+Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
+Renderització HTML (pot estar desactualitzada): https://loi.ac.upc.edu/ec

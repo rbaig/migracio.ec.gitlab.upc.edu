@@ -64,46 +64,44 @@ Directori `04_L/`:
 ### Arbre de directoris
 
 ```
-EC/
-├── 01_T/                       # Teoria
-│   └── Tx.qmd                  # x = 1–9
-├── 02_PE/                      # Enunciats de problemes
-│   └── PE_Tx.qmd               # x = 1–9
-├── 03_PS/                      # Solucions seleccionades
-│   ├── PS_Tx.qmd               # x = 1–9
-│   └── PS_criteris.qmd
-├── 04_L/                       # Laboratori
-│   └── Ly.qmd                  # y = 1–6
-├── figs_auto/                    # Figures SVG (variants light i dark)
-│   └── T<N>_nom_figura_{light,dark}.svg
-├── laboratori/                 # Fitxers de suport del laboratori
-│   ├── L0/–L5/                 # Plantilles i fitxers per sessió
-│   ├── rars1_6.jar             # Simulador RARS (versió de referència)
-│   └── startup.s               # Fitxer d'inicialització RARS
-├── 11_riscv/                      # Fragments de referència RISC-V (inclosos via `include`)
-│   ├── RV32I_instruccions_*.qmd
-│   ├── RV32I_registres_*.qmd
-│   └── RARS_*.qmd
-├── 11_riscv_auto/                 # Fragments fusionats (generats; cal 22_scripts/gen_taules_auto.py)
-│   └── NOM_tot.qmd
-├── extern/                     # Figures i recursos externs (no SVG propi)
-├── 22_scripts/                    # Scripts auxiliars (p. ex. generació de SVGs)
-├── _quarto.yml
-├── _variables.yml
+.
+├── .vscode/                    # Diccionari
+├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
+├── 02_problemes/               # Problemes     (`Px.qmd`, x ∈ [1, 9])
+├── 03_solucions/               # Solucions     (`Sx.qmd`, x ∈ [1, 9])
+├── 04_laboratori/              # Laboratori    (`Ly.1md`, y ∈ [1, 6])
+│   ├── Ly/                     # Plantilles sessió y
+│   └── rars1_6.jar             # Simulador RARS (versió de referència)
+├── 21_riscv/                   # Contingut de taules de `.callout-note`
+├── 22_figs_originals/
+├── 23_figs_externes/
+├── 24_specs/
+├── 25_scripts/
+├── _book                       # Quarto: Directori de sortida
+├── auto_figs/                  # Figures generades per script (s'elimina a cada render)
+├── auto_riscv/                 # Taules generades per script (s'elimina a cada render)
+├── index_files/                # Quarto
+├── TODO/                       # Fitxers de suport a l'edició
+├── 05_riscv.qmd
+├── 06_sigles.qmd
+├── 07_contrib.qmd
+├── 08_LICENSE.qmd
 ├── 09_bibliografia.bib
 ├── CLAUDE.md
-├── 07_contrib.qmd
 ├── custom_dark.scss
 ├── custom_light.scss
 ├── custom.scss
+├── dark_exclusions.txt
+├── Estructura-de-computadors.tex
 ├── ieee.csl
 ├── index.qmd
+├── LICENSE.md
+├── Makefile
 ├── preamble.tex
-├── 05_riscv.qmd
-├── 06_sigles.qmd
+├── _quarto.yml
+├── README.md
 ├── styles.css
-├── 21_specs/svg.md
-└── TODO.md
+└── _variables.yml
 ```
 
 ## Renderitzar el projecte
