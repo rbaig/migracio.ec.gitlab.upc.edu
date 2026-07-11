@@ -166,7 +166,8 @@ En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`
 
 Plantilla per encetar un xat de revisió (omple els camps entre claudàtors):
 
-Nom d'aquest xat: `EC T9-PE_T9-PS_T9 Revisió interna`
+```
+Nom d'aquest xat: `EC T7-PE_T7-PS_T7 Revisió interna`
 
 Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 Intensitat: Profunda
@@ -181,7 +182,7 @@ Aspectes a revisar:
     - Font de veritat: tots els documents de l'autor "RISC-V International" de `09_bibliografia.bib`
     - Les versions més recents d'altres documents del repositori oficial de "RISC-V International"
     - Molta atenció en la revisió dels càlculs
-- Coherència entre Teoria, Problemes enunciats i Problemes solució
+- Coherència entre Apunts (`Tx.qmd`), Problemes enunciats (`Tx_PE.qmd`) i Problemes solució  (`Tx_PS.qmd`)
 - Eficiència pedagògica
     - Ordre de presentació de la matèria autocontingut: presentació lineal de continguts (no emprar cap concepte que no s'hagi introduït encara, dificultat creixent, etc.)
     - Coherència estilística del llenguatge, dels recursos didàctics (ús de callouts, de referències creuades, freqüència dels exemples, ús consistent de termes, etc.)
@@ -197,20 +198,22 @@ Model i effortness:
 - Quan creguis que et puc canviar a Opus o a Sonnet, digues quin model vols, quin effort i quin Thinking i atura't
 - Has d'interrompre l'execució sempre que vulguis que et canviï la configuració.
 
-Canvis:
+Política de canvis a fitxers:
 
 - Fes els canvis a tots els fitxers que creguis oportú. Al final, ofereix-me tots els fitxers que hagis modificat.
 
-Nota: Les revisions internes de T6-PE_T6-PS_T6, T7-PE_T7-PS_T7 i T8-PE_T8-PS_T8 estan pendents de fer. Prefereixo fer la de T9 (la d'aquest xat) abans. Si necessites interactuar amb algun d'aquests temes, digues-m'ho i ho resolem.
 
 Comença:
+
 0. Explora els fitxers que t'he passat
 1. Llegeix `CLAUDE.md`, `07_contrib.qmd` i `21_specs/svg.md`
-2. Llegeix els fitxers principals a revisar: `T9.qmd`, `PE_T9.qmd` i `PS_T9`
+2. Llegeix els fitxers principals a revisar: `T7.qmd`, `PE_T7.qmd` i `PS_T7`
 3. Demana'm o busca al repositori els fitxers que necessitis
 4. Fes un anàlisi profund del contingut
-5. Genera la llista d'accions a realitzar; guarda-la a fitxer `T9_P_tasques.md` i ofereix-me-la per descarregar.
+5. Genera la llista d'accions a realitzar; guarda-la a fitxer `T7_P_tasques.md` i ofereix-me-la per descarregar.
 6. Comença a realitzar les accions que no necessiten la meva aprovació. Fes una llista les tasques que requereixi decisió meva i quan hagis acabat la tasca anterior (6.) atura't i presenta'm la llista i les opcions de cada ítem que conté.
+
 ```
+
 Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
-Renderització HTML: https://loi.ac.upc.edu/ec
+Renderització HTML (pot estar desactualitzada): https://loi.ac.upc.edu/ec

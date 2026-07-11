@@ -60,18 +60,18 @@ int main() {
 
 Els elements de `A`, `B` i `C` són bytes. Tots els elements de `C` han estat prèviament inicialitzats a zero. `A` s'emmagatzema a partir de l'adreça 0 (adreces 0..1023), `B` a continuació (adreces 1024..1055) i `C` tot seguit (adreces 1056..1087). Les variables `i` i `j` estan en registres.
 
-El computador disposa d'una memòria cau de correspondència directa que emmagatzema 4 blocs de 32 bytes cadascun, amb escriptura immediata. Suposant que en iniciar-se l'execució la memòria cau és buida, calcula la taxa d'encerts.
+El computador disposa d'una memòria cau de correspondència directa amb 4 línies i blocs de 32 bytes, amb escriptura immediata. Suposant que en iniciar-se l'execució la memòria cau és buida, calculeu la taxa d'encerts.
 :::
 
 ::: {#exr-p7-cache-alternatives}
-Es vol dissenyar una nova versió d'un processador que disposa d'una memòria cau de correspondència directa amb capacitat per a 4 blocs d'una paraula (32 bits). La nova versió tindrà el doble de capacitat. Es consideren dues alternatives:
+Es vol dissenyar una nova versió d'un processador que disposa d'una memòria cau de correspondència directa amb 4 línies i blocs d'una paraula (32 bits). La nova versió tindrà el doble de capacitat. Es consideren dues alternatives:
 
-- **Alternativa 1**: doblar el nombre de blocs (8 blocs d'una paraula).
-- **Alternativa 2**: doblar la mida de les línies (4 blocs de 2 paraules).
+- **Alternativa 1**: doblar el nombre de línies (8 línies d'una paraula).
+- **Alternativa 2**: doblar la mida del bloc (4 línies de 2 paraules).
 
-a) Proposa una seqüència de referències a paraules de memòria principal tal que la taxa d'encerts de l'alternativa 1 sigui major que la de l'alternativa 2.
-b) Proposa una seqüència de referències tal que la taxa d'encerts de l'alternativa 2 sigui major que la de l'alternativa 1.
-c) Raona quina característica dels programes s'explota en major mesura en cadascuna de les dues alternatives.
+a) Proposeu una seqüència de referències a paraules de memòria principal tal que la taxa d'encerts de l'alternativa 1 sigui major que la de l'alternativa 2.
+b) Proposeu una seqüència de referències tal que la taxa d'encerts de l'alternativa 2 sigui major que la de l'alternativa 1.
+c) Raoneu quina característica dels programes s'explota en major mesura en cadascuna de les dues alternatives.
 :::
 
 ## Rendiment
@@ -99,7 +99,7 @@ Mitjançant simulació s'han obtingut les mesures següents:
 
 El temps d'accés en cas d'encert ($t_h$) és 10 ns. La lectura o escriptura d'un bloc de memòria principal ($t_{bloc}$) requereix 100 ns.
 
-a) Calculeu el temps mitjà d'accés a memòria ($t_{am}$) en ambdues alternatives.
+a) Calculeu el temps d'accés mitjà (TAM) en ambdues alternatives.
 b) Indiqueu quina alternativa seria la més ràpida per a un programa que només fes lectures.
 :::
 
@@ -114,7 +114,7 @@ Tenim una CPU amb memòria cau en què s'han observat les característiques seg�
 
 | Característica | MC Instruccions | MC Dades |
 | :--- | :---: | :---: |
-| $n_r$ per instrucció | 1 | 0,6 |
+| Accessos per instrucció | 1 | 0,6 |
 | Percentatge d'escriptures ($p_e$) | — | 40% |
 | Percentatge de blocs modificats ($p_m$) | — | 20% |
 | Taxa de fallades ($m$) | 4% | 10% |
@@ -122,7 +122,7 @@ Tenim una CPU amb memòria cau en què s'han observat les característiques seg�
 | Penalització bloc modificat ($t_p$) | — | 20 cicles |
 | Temps d'encert ($t_h$) | 1 cicle | 1 cicle |
 
-a) Quin és el temps mitjà d'accés a memòria ($t_{am}$) en cicles?
+a) Quin és el temps d'accés mitjà (TAM) en cicles?
 b) Quin és el temps mitjà d'execució d'una instrucció ($t_{exe}$) en ns?
 :::
 
@@ -141,7 +141,7 @@ Tenim una CPU amb memòria cau en què s'han observat les característiques seg�
 - Taxa d'encerts ($h$): 90%.
 
 a) Quin és el temps de penalització ($t_p$) en cas que el bloc estigui modificat? I en cas que no ho estigui?
-b) Quin és el temps mitjà d'accés a memòria en cicles ($t_{am}$)?
+b) Quin és el temps d'accés mitjà (TAM) en cicles?
 c) Quin és el temps mitjà d'execució d'una instrucció en ns?
 :::
 
@@ -151,7 +151,7 @@ A l'hora de dissenyar una memòria cau d'instruccions de 8 KiB es dubta entre du
 - 8 bytes: 16%.
 - 16 bytes: 10%.
 
-a) Calculeu el temps mitjà d'accés a memòria ($t_{am}$) sabent que:
+a) Calculeu el temps d'accés mitjà (TAM) sabent que:
     - El temps d'accés en cas d'encert ($t_h$) és 1 cicle.
     - El temps de servei de MP per a blocs de 8 bytes és 6 cicles; per a blocs de 16 bytes és 12 cicles.
 b) Quant ocuparan totes les etiquetes en cadascuna de les dues opcions, sabent que:
@@ -190,7 +190,7 @@ Ompliu la taula següent a partir de la seqüència de referències donada (R by
 :::
 
 ::: {#exr-p7-assoc-versions}
-Sobre un sistema amb una memòria cau de dades amb 64 conjunts, 4 blocs per conjunt, 32 bytes per bloc i algorisme LRU, s'executen dues versions d'una mateixa aplicació:
+Sobre un sistema amb una memòria cau de dades amb 64 conjunts, 4 vies per conjunt, 32 bytes per bloc i algorisme LRU, s'executen dues versions d'una mateixa aplicació:
 
 ```c
 int A[128][1024]; /* emmagatzemada a partir de l'adreça 0 */
@@ -212,7 +212,7 @@ Indiqueu quantes fallades hi ha a la memòria cau de dades per a cadascuna de le
 :::
 
 ::: {#exr-p7-assoc-multinivell}
-El subsistema de memòria d'un computador està organitzat en tres nivells: L1 (4 blocs de 4 bytes, correspondència directa), L2 (16 blocs de 4 bytes, associativa de 2 vies, LRU) i MP (1 MiB). En cas de fallada a L1 es comprova L2; si hi és, es copia a L1 sense accedir a MP. Si no hi és a L2, s'accedeix a MP i es copia a les dues memòries cau.
+El subsistema de memòria d'un computador està organitzat en tres nivells: L1 (4 línies amb blocs de 4 bytes, correspondència directa), L2 (16 línies amb blocs de 4 bytes, associativa de 2 vies, LRU) i MP (1 MiB). En cas de fallada a L1 es comprova L2; si hi és, es copia a L1 sense accedir a MP. Si no hi és a L2, s'accedeix a MP i es copia a les dues memòries cau.
 
 Definim la taxa d'encerts de cada nivell $i$ com $h_i = \text{encerts a } L_i / \text{peticions a } L_i$.
 
@@ -227,18 +227,18 @@ b) Calculeu de nou les taxes $h_1$ i $h_2$ suposant que l'algorisme de reemplaç
 ::: {#exr-p7-assoc-tam}
 Es vol dissenyar una memòria cau multinivell (L1 i L2). Es coneixen les dades següents:
 
-- El temps de servei d'L1 en cas d'encert és $t_{h1}$; en cas de fallada cal afegir-hi el temps de servei d'L2.
-- El temps de servei d'L2 en cas d'encert és $t_{h2}$; en cas de fallada cal afegir-hi la penalització $t_{p2}$ (temps d'accés a MP).
-- $m_1$: taxa de fallades a L1.
-- $m_2$: taxa de fallades local a L2 (fallades a L2 / accessos a L2).
+- El temps de servei d'L1 en cas d'encert és $t_{h_{L1}}$; en cas de fallada cal afegir-hi el temps de servei d'L2.
+- El temps de servei d'L2 en cas d'encert és $t_{h_{L2}}$; en cas de fallada cal afegir-hi la penalització $t_p$ (temps d'accés a MP).
+- $m_{L1}$: taxa de fallades a L1.
+- $m_{L2}$: taxa de fallades local a L2 (fallades a L2 / accessos a L2).
 
-Obteniu l'expressió del temps mitjà d'accés a memòria ($t_{am}$) en cicles, en funció de $t_{h1}$, $t_{h2}$, $t_{p2}$, $m_1$ i $m_2$.
+Obteniu l'expressió del temps d'accés mitjà (TAM) en cicles, en funció de $t_{h_{L1}}$, $t_{h_{L2}}$, $t_p$, $m_{L1}$ i $m_{L2}$.
 :::
 
 ::: {#exr-p7-assoc-completament}
 Es disposa d'un processador de 8 bits amb una memòria cau completament associativa amb les característiques següents:
 
-- Nombre de blocs: 4.
+- Nombre de línies: 4.
 - Mida del bloc: 8 bytes.
 - Algorisme de reemplaçament: LRU.
 - Política d'escriptura retardada amb assignació.
@@ -253,8 +253,8 @@ e) Suposant la memòria cau inicialment buida i la llista d'accessos (en decimal
 
 `2L, 9L, 16L, 2L, 33E, 42E, 33L, 2L, 17L, 27E, 43L, 3L, 44L, 46L, 3L, 14L, 17L, 6L, 35L`
 
-   - Indica per a cada accés si produeix encert, fallada amb reemplaçament (indicant l'índex del bloc reemplaçat) o fallada sense reemplaçament.
-   - Calcula el temps total de servei de la llista d'accessos.
+   - Indiqueu per a cada accés si produeix encert, fallada amb reemplaçament (indicant el número del bloc reemplaçat) o fallada sense reemplaçament.
+   - Calculeu el temps total de servei de la llista d'accessos.
 :::
 
 ## Tipologia de les fallades
@@ -262,19 +262,19 @@ e) Suposant la memòria cau inicialment buida i la llista d'accessos (en decimal
 *Vegeu @sec-tipologia-fallades i @cau-tres-c.*
 
 ::: {#exr-p7-fallades-tipologia}
-Una memòria cau de correspondència directa té 8 blocs de 4 bytes. Considera les seqüències d'accés a bytes següents (les adreces estan en decimal):
+Una memòria cau de correspondència directa té 8 línies amb blocs de 4 bytes. Considereu les seqüències d'accés a bytes següents (les adreces estan en decimal):
 
 - Seqüència A: 0, 4, 8, 12, 16, 20, 24, 28, 0, 4, 8, 12
 - Seqüència B: 0, 4, 8, 12, 0, 4, 8, 12, 0, 4, 8, 12
 - Seqüència C: 0, 32, 0, 32, 0, 32, 0, 32
 
-a) Per a cada seqüència, calcula el nombre de fallades i classifica-les en *cold-start*, de conflicte o de capacitat.
-b) Per a la seqüència C, quin canvi de disseny de la memòria cau eliminaria les fallades de conflicte? Justifica.
+a) Per a cada seqüència, calculeu el nombre de fallades i classifiqueu-les en *cold-start*, de conflicte o de capacitat.
+b) Per a la seqüència C, quin canvi de disseny de la memòria cau eliminaria les fallades de conflicte? Justifiqueu-ho.
 c) Una memòria cau associativa de 2 vies (mateixa capacitat total) milloraria els resultats de la seqüència C? I de la seqüència B?
 :::
 
 ::: {#exr-p7-fallades-programa}
-Considera el programa C següent, on `N = 256` i els elements de `A` i `B` són enters de 4 bytes:
+Considereu el programa C següent, on `N = 256` i els elements de `A` i `B` són enters de 4 bytes:
 
 ```c
 int A[N], B[N];
@@ -285,9 +285,9 @@ int main() {
 }
 ```
 
-`A` s'emmagatzema a partir de l'adreça `0` i `B` a partir de `0x400`. La memòria cau té correspondència directa, 16 blocs de 32 bytes i política d'escriptura immediata.
+`A` s'emmagatzema a partir de l'adreça `0` i `B` a partir de `0x400`. La memòria cau té correspondència directa, 16 línies amb blocs de 32 bytes i política d'escriptura immediata.
 
 a) Quantes fallades *cold-start* es produeixen en el primer recorregut de `A`? I en el de `B`?
-b) Es produeixen fallades de conflicte entre `A` i `B`? Raona la resposta calculant a quins blocs de la cau es mapen.
-c) Si canviem `B` per a que comenci a `0x200` en comptes de `0x400`, canvia la resposta a l'apartat b)?
+b) Es produeixen fallades de conflicte entre `A` i `B`? Raoneu la resposta calculant a quines línies de la memòria cau es mapen.
+c) Si canviem `B` perquè comenci a `0x600` en comptes de `0x400`, canvia la resposta a l'apartat b)?
 :::
