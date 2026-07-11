@@ -1,8 +1,8 @@
 # SVG specs — EC
 
 Figures de referència:
-- Mapa de memòria: `figs_auto/T3_mapa_memoria_light.svg`
-- Bloc d'activació: `figs_auto/T3_ba_general_light.svg`
+- Mapa de memòria: `auto_figs/T3_mapa_memoria_light.svg`
+- Bloc d'activació: `auto_figs/T3_ba_general_light.svg`
 
 ---
 
@@ -338,7 +338,7 @@ Paquet Debian necessari: `fonts-liberation` (`sudo apt install fonts-liberation`
 
 ### Taula de fonts
 
-El bloc següent és la **font de veritat** de la taula de fonts i de les substitucions de migració. L'script `22_scripts/norm_font.py` el llegeix directament d'aquest fitxer en temps d'execució. Per afegir o modificar fonts, editeu només aquest bloc.
+El bloc següent és la **font de veritat** de la taula de fonts i de les substitucions de migració. L'script `25_scripts/norm_font.py` el llegeix directament d'aquest fitxer en temps d'execució. Per afegir o modificar fonts, editeu només aquest bloc.
 
 ```{.python #svg-font-map}
 SANS = "'Liberation Sans', Arial, Helvetica, sans-serif"
@@ -372,7 +372,7 @@ FONT_MAP = {
     "freemono,'courier new',monospace":              MONO,
     "freemono, \"courier new\", monospace":          MONO,
     # Figures externes extretes de PDF via pymupdf (text traçat, vegeu §15)
-    # o exportades de LO Draw / draw.io (13_figs_externes/T7_*)
+    # o exportades de LO Draw / draw.io (23_figs_externes/T7_*)
     "arial embedded":                                SANS,
     "arial, sans-serif":                              SANS,
     "courier":                                        MONO,
@@ -399,9 +399,9 @@ KNOWN_NORMALIZED = {
 
 ## 13. Variant dark
 
-> **Les variants dark no es creen ni editen manualment.** Es generen automàticament com a part del procés de pre-render de Quarto mitjançant l'script `22_scripts/gen_dark.py`.
+> **Les variants dark no es creen ni editen manualment.** Es generen automàticament com a part del procés de pre-render de Quarto mitjançant l'script `25_scripts/gen_dark.py`.
 
-L'script s'executa com a darrer pas del `pre-render` a `_quarto.yml` (vegeu `_quarto.yml` per al pipeline complet). Per a cada `figs_auto/*_light.svg`, genera el fitxer `figs_auto/*_dark.svg` corresponent aplicant la taula de substitució definida al bloc `#svg-dark-replacements` d'aquest fitxer. Per modificar la paleta dark, editeu **només** aquest bloc.
+L'script s'executa com a darrer pas del `pre-render` a `_quarto.yml` (vegeu `_quarto.yml` per al pipeline complet). Per a cada `auto_figs/*_light.svg`, genera el fitxer `auto_figs/*_dark.svg` corresponent aplicant la taula de substitució definida al bloc `#svg-dark-replacements` d'aquest fitxer. Per modificar la paleta dark, editeu **només** aquest bloc.
 
 ```{.python #svg-dark-replacements}
 REPLACEMENTS = [
@@ -486,7 +486,7 @@ Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
 ## 15. Figures extretes de PDFs existents
 
-Algunes figures del projecte provenen de PDFs originals (material docent anterior) i es generen amb el script Python `22_scripts/extract_pdf_figure.py` (o equivalent), que fa servir `pymupdf` i `text_as_path=True`.
+Algunes figures del projecte provenen de PDFs originals (material docent anterior) i es generen amb el script Python `25_scripts/extract_pdf_figure.py` (o equivalent), que fa servir `pymupdf` i `text_as_path=True`.
 
 ### Característiques tècniques
 

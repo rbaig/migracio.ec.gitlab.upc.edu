@@ -2,7 +2,7 @@
 
 Generat el 2026-07-04 a partir de `log.log` (últim `quarto render`), `TODO.md` i la conversa amb Claude Code (Fable 5).
 
-Fitxer operatiu i transitori: cada tasca s'esborra quan es completa; les decisions de criteri que en surtin aterren a `07_contrib.qmd`.
+Fitxer operatiu i transitori: cada tasca s'esborra quan es completa; les decisions de criteri que en surtin aterren a `13_contrib.qmd`.
 
 **Llegenda de configuració recomanada:** Model / Effortness / Thinking.
 
@@ -14,11 +14,11 @@ Fitxer operatiu i transitori: cada tasca s'esborra quan es completa; les decisio
 
 **Config:** Sonnet 4.6 (o Fable) / Low–Medium / No
 
-Pas 1 de la seqüència de revisió de `CLAUDE.md`. Aplicar els criteris de generació d'slug documentats a `CLAUDE.md §Etiquetes {#sec-}` (referència: `T4.qmd`).
+Pas 1 de la seqüència de revisió de `CLAUDE.md`. Aplicar els criteris de generació d'slug documentats a `CLAUDE.md §Etiquetes {#sec-}` (referència: `A4.qmd`).
 
-- [ ] `01_T/T1.qmd` — afegir `{#sec-}` a totes les capçaleres `##`–`####` (⚠ hi ha canvis locals pendents i un `T1_.qmd` no versionat: aclarir primer quin és el fitxer bo).
-- [ ] `01_T/T2.qmd` — ídem.
-- [ ] `01_T/T5.qmd` — ídem.
+- [ ] `01_apunts/A1.qmd` — afegir `{#sec-}` a totes les capçaleres `##`–`####` (⚠ hi ha canvis locals pendents i un `T1_.qmd` no versionat: aclarir primer quin és el fitxer bo).
+- [ ] `01_apunts/A2.qmd` — ídem.
+- [ ] `01_apunts/A5.qmd` — ídem.
 - [ ] Excloure capçaleres dins de callouts.
 - [ ] Verificació global de col·lisions d'slugs entre temes (vegeu A2).
 
@@ -26,16 +26,16 @@ Pas 1 de la seqüència de revisió de `CLAUDE.md`. Aplicar els criteris de gene
 
 **Config:** Sonnet 4.6 (o Fable) / Low / No
 
-Definit dues vegades: `01_T/T2.qmd:2028` i `01_T/T4.qmd:450`. Referenciat des de `01_T/T2.qmd:1966`, `02_PE/PE_T4.qmd:525`, `04_L/L4.qmd:30,304`, `04_L/L6.qmd:47`.
+Definit dues vegades: `01_apunts/A2.qmd:2028` i `01_apunts/A4.qmd:450`. Referenciat des de `01_apunts/A2.qmd:1966`, `02_exercicis/E4.qmd:525`, `04_laboratori/L4.qmd:30,304`, `04_laboratori/L6.qmd:47`.
 
 - [ ] Decidir quin dels dos és el canònic (probablement T4, «Optimització #1 — Accés seqüencial») i reanomenar l'altre (p. ex. `#sec-acces-sequencial-intro` a T2).
 - [ ] Reapuntar les referències segons a quin dels dos conceptes es refereixen realment.
 
-### A3. Div sense tancar a `T7.qmd`
+### A3. Div sense tancar a `A7.qmd`
 
 **Config:** Sonnet 4.6 (o Fable) / Low / No
 
-`[WARNING] Div at line 168 column 1 unclosed at line 1981` — un `:::` desaparellat prop de la línia 168 de `01_T/T7.qmd`.
+`[WARNING] Div at line 168 column 1 unclosed at line 1981` — un `:::` desaparellat prop de la línia 168 de `01_apunts/A7.qmd`.
 
 - [ ] Localitzar el `:::` desaparellat i tancar-lo (o eliminar-lo).
 
@@ -50,20 +50,20 @@ La majoria depenen d'A1 (els destins són a T2/T5/T9 sense slug) o de decisions 
 - [ ] `@imp-ec-alineacio-pila` (L3, L4 ×2, L5 ×2) — el callout no existeix (`TODO.md` diu «si existeix»). Crear el callout `{#imp-ec-alineacio-pila}` a T3 amb la decisió presa (pila múltiple de 4 a EC) o reapuntar a `@nte-abi-alineacio-pila`.
 - [ ] `@imp-exception-handler` (T3) — destí inexistent; probablement ha d'apuntar a un callout de T9. Verificar i reparar.
 - [ ] `@sec-politica-reemplacement` (L6 ×2) — destí a T7; comprovar l'slug real (possible errada d'escriptura: *reemplacement* vs. *reemplaçament*).
-- [ ] `07_contrib.qmd`: `@sec-nom`, `@sec-llicencia-figures-externes`, `@sec-contrib-callout-aprofundiment` — refs internes trencades del propi fitxer; reparar o eliminar.
+- [ ] `13_contrib.qmd`: `@sec-nom`, `@sec-llicencia-figures-externes`, `@sec-contrib-callout-aprofundiment` — refs internes trencades del propi fitxer; reparar o eliminar.
 - [ ] **No reparables sense figura** (no tocar; ja consten a `TODO.md §T7/§T8`): `@fig-cd-diagrama`, `@fig-assoc-conjunts-diagrama`, `@fig-ca-diagrama`, `@fig-texe-diagrama`, `@fig-mv-flux-traduccio`.
 
 ---
 
 ## Bloc B — Figures: fonts i colors (prioritat 2; assumpte 3.3)
 
-### B1. Colors sense equivalent dark a `21_specs/svg.md`
+### B1. Colors sense equivalent dark a `24_specs/svg.md`
 
 **Config:** Fable / Medium / No
 
 `gen_dark.py` reporta ~30 colors no reconeguts (llista completa a `log.log:91-274`). Cal criteri de contrast per triar cada equivalent dark.
 
-- [x] Colors «legacy» de figures natives: afegits al bloc `#svg-dark-replacements` de `21_specs/svg.md`, marcats com a «Colors llegat» retirables quan les figures es migrin a la paleta §10.
+- [x] Colors «legacy» de figures natives: afegits al bloc `#svg-dark-replacements` de `24_specs/svg.md`, marcats com a «Colors llegat» retirables quan les figures es migrin a la paleta §10.
 - [x] Paleta LO Draw de les figures externes de T7: afegida al bloc de substitucions.
 - [x] `#d1d1d1` i `#0099e5` eren falsos positius (metadades d'Inkscape: `deskcolor` i graella d'edició). Resolt amb lookbehind a la regex de `gen_dark.py` + entrada identitat per a `#0099e5`.
 - [x] Pre-render re-executat: **0 colors no reconeguts**, substitucions verificades als fitxers dark generats.
@@ -72,10 +72,10 @@ La majoria depenen d'A1 (els destins són a T2/T5/T9 sense slug) o de decisions 
 
 **Config:** Sonnet 4.6 / Low / No
 
-`norm_font.py` reporta Arial/Courier/Symbol/TimesNewRoman (incrustades i CSS) a 16 fitxers `13_figs_externes/T7_*.svg`.
+`norm_font.py` reporta Arial/Courier/Symbol/TimesNewRoman (incrustades i CSS) a 16 fitxers `23_figs_externes/T7_*.svg`.
 
-- [x] Afegides al `FONT_MAP` de `21_specs/svg.md`: `Arial embedded`/`Arial, sans-serif`/`Symbol`/`Symbol embedded`/`TimesNewRoman embedded`/`TimesNewRoman, serif`/`Helvetica` → SANS; `Courier`/`Courier embedded` → MONO.
-- [x] Pipeline re-executat: `0 avisos` de fonts desconegudes (18 fitxers normalitzats a `13_figs_externes/`).
+- [x] Afegides al `FONT_MAP` de `24_specs/svg.md`: `Arial embedded`/`Arial, sans-serif`/`Symbol`/`Symbol embedded`/`TimesNewRoman embedded`/`TimesNewRoman, serif`/`Helvetica` → SANS; `Courier`/`Courier embedded` → MONO.
+- [x] Pipeline re-executat: `0 avisos` de fonts desconegudes (18 fitxers normalitzats a `23_figs_externes/`).
 
 ---
 
@@ -97,11 +97,11 @@ El LaTeX de display desborda per la dreta en pantalles petites i «embruta» les
 
 **Config:** Fable / High / **Sí**
 
-Decisió de disseny transversal, ja oberta a `TODO.md §Decisions obertes` i com a TODO a `07_contrib.qmd:480-481`. Dues fases:
+Decisió de disseny transversal, ja oberta a `TODO.md §Decisions obertes` i com a TODO a `13_contrib.qmd:480-481`. Dues fases:
 
 - [x] **Fase 1 — proposta**: auditoria feta (vegeu `D_criteri_estil.md`); el corpus ja seguia de facto un criteri semàntic coherent.
 - [x] **Aprovació de l'usuari**: les 4 recomanacions (D1–D4) acceptades el 2026-07-04.
-- [x] **Fase 2 — aplicació**: criteri integrat a `07_contrib.qmd` (nou §«Codi, matemàtiques i cursiva», §Equacions amb criteri de numeració, §Ressaltat amb negretes en callouts); 20 superíndexs Pandoc → math (T2, PE_T6); apòstrof «d'10⁶» corregit; separadors de milers anglesos de T2 → espais (nova decisió oberta a `TODO.md`); 38 etiquetes `{#eq-}` revisades (totes canòniques, cap canvi); renders de verificació nets. `D_criteri_estil.md` es pot esborrar quan es vulgui.
+- [x] **Fase 2 — aplicació**: criteri integrat a `13_contrib.qmd` (nou §«Codi, matemàtiques i cursiva», §Equacions amb criteri de numeració, §Ressaltat amb negretes en callouts); 20 superíndexs Pandoc → math (T2, E6); apòstrof «d'10⁶» corregit; separadors de milers anglesos de T2 → espais (nova decisió oberta a `TODO.md`); 38 etiquetes `{#eq-}` revisades (totes canòniques, cap canvi); renders de verificació nets. `D_criteri_estil.md` es pot esborrar quan es vulgui.
 
 ---
 
@@ -113,8 +113,8 @@ Revisió tema a tema (un xat per tema o per parells de temes) de:
 
 - [ ] Densitat: ni seccions òrfenes de referències ni paràgrafs saturats.
 - [ ] Direccionalitat: evitar referències cap endavant a conceptes no introduïts (excepte les documentades, p. ex. `fcsr` → `@nte-zicsr`, vegeu `TODO.md §T5 P8`).
-- [ ] Coherència Tx ↔ PE_Tx ↔ PS_Tx ↔ Lx: que problemes i laboratori remetin a la secció de teoria pertinent.
-- [ ] Convencions de `07_contrib.qmd §referències creuades` (ordre tema → secció → … → equació).
+- [ ] Coherència Ax ↔ Ex ↔ Sx ↔ Lx: que problemes i laboratori remetin a la secció de teoria pertinent.
+- [ ] Convencions de `13_contrib.qmd §referències creuades` (ordre tema → secció → … → equació).
 
 Recomanació: fer-ho **després** dels blocs A i D, perquè els slugs i el criteri d'estil ja estiguin estables.
 
@@ -124,10 +124,10 @@ Recomanació: fer-ho **després** dels blocs A i D, perquè els slugs i el crite
 
 **Config:** Fable / High / **Sí** (el TODO els marcava «Opus High Thinking»; Fable hi és superior)
 
-Un xat per tema, seguint `PS_criteris.qmd`:
+Un xat per tema, seguint `S_criteris.qmd`:
 
-- [ ] T2: `exr-p3-memoria-endianness`, `exr-p3-vectors-cerca`, `exr-p3-vectors-punter-aritm`, `exr-p3-strings-copia` → `PS_T2.qmd`.
-- [ ] T3: `exr-p4-compilacio-auipc`, `exr-p4-memoria-jalr`, `exr-p4-logica-rotacio` (apartat b) → `PS_T3.qmd`.
+- [ ] T2: `exr-p3-memoria-endianness`, `exr-p3-vectors-cerca`, `exr-p3-vectors-punter-aritm`, `exr-p3-strings-copia` → `S2.qmd`.
+- [ ] T3: `exr-p4-compilacio-auipc`, `exr-p4-memoria-jalr`, `exr-p4-logica-rotacio` (apartat b) → `S3.qmd`.
 
 ---
 
@@ -146,4 +146,4 @@ Notes:
 
 - Els blocs A–B són mecànics: Fable amb effort baix també serveix (no cal canviar de model si ja hi ets; simplement no cal Thinking).
 - Els blocs D, E i F són els que justifiquen Fable High + Thinking: judici d'estil transversal, judici pedagògic i càlcul pas a pas, respectivament.
-- Qüestió prèvia al bloc A: aclarir l'estat de `01_T/T1_.qmd` (no versionat) i dels canvis locals a `T1.qmd`/`T7.qmd` abans de tocar aquests fitxers.
+- Qüestió prèvia al bloc A: aclarir l'estat de `01_apunts/T1_.qmd` (no versionat) i dels canvis locals a `A1.qmd`/`A7.qmd` abans de tocar aquests fitxers.

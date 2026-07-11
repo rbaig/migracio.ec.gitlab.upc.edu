@@ -1,6 +1,6 @@
 # T7 — Revisió interna profunda: llista d'accions
 
-**Fitxer objectiu:** `01_T/T7.qmd`
+**Fitxer objectiu:** `01_apunts/A7.qmd`
 **Llegenda:** 🔴 error · 🟡 millora · 🔵 decisió · ✅ fet · ⏳ pendent · ⚪ neteja
 
 ### Figures pendents de generar ⏳
@@ -9,7 +9,7 @@ Totes requereixen LO Draw de Roger o referència externa.
 
 | ID Quarto | Descripció | Bloqueig |
 |:---|:---|:---|
-| `fig-mc-exemple-descomposicio-32bits` | Descomposició 32 bits adreça `0x100100F8` | LO Draw disponible a `13_figs_externes` (export antic) — reconstruir com a natiu |
+| `fig-mc-exemple-descomposicio-32bits` | Descomposició 32 bits adreça `0x100100F8` | LO Draw disponible a `23_figs_externes` (export antic) — reconstruir com a natiu |
 | `fig-cd-diagrama` | Diagrama blocs MC correspondència directa | LO Draw pendent |
 | `fig-assoc-conjunts-diagrama` | Diagrama blocs MC associativa per conjunts | LO Draw pendent |
 | `fig-ca-diagrama` | Diagrama blocs MC completament associativa | LO Draw pendent |

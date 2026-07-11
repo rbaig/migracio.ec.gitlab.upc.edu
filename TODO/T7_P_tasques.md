@@ -1,18 +1,18 @@
-# T7-PE_T7-PS_T7 — Revisió interna profunda: llista d'accions
+# T7-E7-S7 — Revisió interna profunda: llista d'accions
 
-**Fitxers objectiu:** `01_T/T7.qmd`, `02_PE/PE_T7.qmd`, `03_PS/PS_T7.qmd`, `12_figs_originals/T7_lru_exemple.svg`
+**Fitxers objectiu:** `01_apunts/A7.qmd`, `02_exercicis/E7.qmd`, `03_solucions/S7.qmd`, `22_figs_originals/T7_lru_exemple.svg`
 **Llegenda:** 🔴 error · 🟡 millora · 🔵 decisió · ✅ fet · ⏳ pendent
 
-Nota de context: `T7.qmd` ja va passar una revisió interna profunda (vegeu
+Nota de context: `A7.qmd` ja va passar una revisió interna profunda (vegeu
 `T7_tasques.md` antic, tasques A–E tancades). Aquest xat fa el pas combinat
-PE_T7+PS_T7 (adaptació + revisió pròpia) i una segona passada de coherència
-sobre T7. Els càlculs de PS_T7 s'han verificat íntegrament pas a pas.
+E7+S7 (adaptació + revisió pròpia) i una segona passada de coherència
+sobre T7. Els càlculs de S7 s'han verificat íntegrament pas a pas.
 
 ---
 
 ## A — Errors tècnics (execució directa) ✅ APLICATS
 
-### T7.qmd
+### A7.qmd
 
 - 🔴✅ **A1 — Exemples d'escriptura (§Exemples 1–3): índex de `@252` incorrecte al text.**
   L'adreça 252 = `0xFC` → bloc 63 (`111111`) → índex = 63 mod 2 = **1**, no 0.
@@ -40,7 +40,7 @@ sobre T7. Els càlculs de PS_T7 s'han verificat íntegrament pas a pas.
 - 🔴✅ **A6 — Català normatiu:** «varis MB» → «diversos MB» (`#tbl-disseny-l1-l2`);
   «tarda … **en** respondre» → «tarda … **a** respondre» (§Multinivell).
 
-### PS_T7.qmd
+### S7.qmd
 
 - 🔴✅ **A7 — `#sol-p7-cache-adreces`: classificació de fallades errònia.**
   El paràgraf final diu que les fallades 5, 8, 10 i 11 són «de conflicte».
@@ -51,7 +51,7 @@ sobre T7. Els càlculs de PS_T7 s'han verificat íntegrament pas a pas.
   obligatòries + 1 de conflicte, mantenint el comentari sobre la competència
   dels blocs 3/7/15 per la línia 3.
 
-### PE_T7.qmd
+### E7.qmd
 
 - 🔴✅ **A8 — Veu: 2a persona del plural.** Cinc enunciats usen el singular
   («calcula», «Proposa», «Raona», «Indica», «Considera», «Justifica»):
@@ -59,7 +59,7 @@ sobre T7. Els càlculs de PS_T7 s'han verificat íntegrament pas a pas.
   `exr-p7-assoc-completament` (e), `exr-p7-fallades-tipologia`,
   `exr-p7-fallades-programa`. S'harmonitzen al plural (convenció del projecte).
 
-### 12_figs_originals/T7_lru_exemple.svg (figura manual de Roger)
+### 22_figs_originals/T7_lru_exemple.svg (figura manual de Roger)
 
 - 🔴✅ **A9 — Tres errades de retolació:**
   1. Mapa MP, files dels bytes 52–55: etiqueta binària «1111» → «**0011**»
@@ -71,10 +71,10 @@ sobre T7. Els càlculs de PS_T7 s'han verificat íntegrament pas a pas.
 
 ## B — Millores i harmonitzacions menors (execució directa) ✅ APLICADES
 
-Extra aplicat: «un altra escriptura» → «una altra escriptura» (Exemple 3, T7.qmd).
+Extra aplicat: «un altra escriptura» → «una altra escriptura» (Exemple 3, A7.qmd).
 
 - 🟡✅ **B1 (PS)** Títol de secció «## Tipologia de fallades» → «## Tipologia de
-  les fallades» (harmonitza amb T7 i PE_T7).
+  les fallades» (harmonitza amb T7 i E7).
 - 🟡✅ **B2 (PS)** «tag» → «etiqueta» a les descomposicions matemàtiques i
   capçaleres de taula (T7 usa «etiqueta» a les descomposicions; «Tag» resta
   només com a anglicisme ja introduït a la prosa de T7).
@@ -104,12 +104,12 @@ Extra aplicat: «un altra escriptura» → «una altra escriptura» (Exemple 3, 
 
 ## C — Decisions de Roger (resoltes 2026-07-11: C1, C4–C12 aplicades amb la recomanació; C2 i C3 anotades a `TODO.md §T7`)
 
-- 🔵✅ **C1 — $t_{block}$ (T7) vs. $t_{bloc}$ (PE_T7, PS_T7).** Notació
+- 🔵✅ **C1 — $t_{block}$ (T7) vs. $t_{bloc}$ (E7, S7).** Notació
   inconsistent per al mateix paràmetre. Recomanació: **$t_{bloc}$** a tot
   arreu (política catalana del projecte); implica retocar T7 (§Model de temps,
   `@cau-model-temps`, `@cau-errata-tam`, §TAM) i registrar-ho a
-  `07_contrib.qmd` (caldria crear la subsecció `#### T7`).
-- 🔵✅ **C2 — $t_{am}$ (enunciats PE) vs. TAM (T7 i solucions PS).** Resolt (2026-07-11): «TAM» a tot arreu. 5 substitucions a PE_T7.qmd (`exr-p7-rend-taxa-traffic`, `-rend-cpi-separat`, `-rend-cpi-unica`, `-rend-mida-bloc`, `-assoc-tam`); PS_T7 ja usava TAM consistentment.
+  `13_contrib.qmd` (caldria crear la subsecció `#### T7`).
+- 🔵✅ **C2 — $t_{am}$ (enunciats PE) vs. TAM (T7 i solucions PS).** Resolt (2026-07-11): «TAM» a tot arreu. 5 substitucions a E7.qmd (`exr-p7-rend-taxa-traffic`, `-rend-cpi-separat`, `-rend-cpi-unica`, `-rend-mida-bloc`, `-assoc-tam`); S7 ja usava TAM consistentment.
 - 🔵📌→TODO **C3 — `exr-p7-assoc-multinivell`: seqüència truncada.** L'enunciat diu
   «seqüència de 28 adreces … : `0, 5, 10, 12, 34, 0, 66, ...`» — amb els tres
   punts l'exercici no és resoluble. Interpretació probable: **7 adreces
@@ -126,15 +126,15 @@ Extra aplicat: «un altra escriptura» → «una altra escriptura» (Exemple 3, 
   distància, mateix múltiple de 16 → mateixa conclusió, sense solapament;
   recomanat) i retirar la nota final de la solució; (b) mantenir `0x200` i
   només polir la redacció de la nota.
-- 🔵✅ **C6 — Unitats KB/MB (T7) vs. KiB/MiB (PE_T7).** T7 usa KB/MB/GB a
+- 🔵✅ **C6 — Unitats KB/MB (T7) vs. KiB/MiB (E7).** T7 usa KB/MB/GB a
   `#tbl-tecnologies-memoria`, `#wrn-gpu-memoria` i `#tbl-disseny-l1-l2`;
-  PE_T7 usa KiB/MiB («8 KiB», «1 MiB»). T1 no usa cap de les dues. Opcions:
+  E7 usa KiB/MiB («8 KiB», «1 MiB»). T1 no usa cap de les dues. Opcions:
   (a) binari explícit (KiB/MiB/GiB) per a capacitats de MC/MP i decimal per a
   costos ($/GB) i discs; (b) KB/MB pertot. Decisió transversal: registrar a
-  `07_contrib.qmd`.
+  `13_contrib.qmd`.
 - 🔵✅ **C7 — «ample de banda» (4×) vs. «amplada de banda» (2×) a T7.**
   El Termcat normalitza «amplada de banda». Recomanació: unificar-hi i
-  afegir-la a les substitucions obligatòries de `07_contrib.qmd`.
+  afegir-la a les substitucions obligatòries de `13_contrib.qmd`.
 - 🔵✅ **C8 — «va tocar sostre als 3–4 GHz»** (§Fi de l'escalat de Dennard): els
   processadors actuals arriben a 5,5–6 GHz en *boost*. Opcions: (a) matisar
   («la freqüència sostinguda es va estancar en els 3–5 GHz»); (b) mantenir.
@@ -183,7 +183,7 @@ Enunciats sense solució comprovats com a resolubles i ben definits
 `rend-mida-bloc`, `assoc-versions`, `assoc-completament`), amb l'excepció de
 `assoc-multinivell` (C3). Referències creuades PE/PS→T7 comprovades: totes
 existeixen. Cobertura PE↔T7 completa; selecció PS (8/16) equilibrada per
-seccions. `PS_criteris.qmd` no existeix al mirall (comentat a `_quarto.yml`).
+seccions. `S_criteris.qmd` no existeix al mirall (comentat a `_quarto.yml`).
 
 ---
 
@@ -191,11 +191,11 @@ seccions. `PS_criteris.qmd` no existeix al mirall (comentat a `_quarto.yml`).
 
 | Fitxer | Estat |
 |:---|:---|
-| `01_T/T7.qmd` | ✅ A1–A6, B7–B10, extra, C1, C6–C9 |
-| `02_PE/PE_T7.qmd` | ✅ A8, B6, C5, C10, C12 |
-| `03_PS/PS_T7.qmd` | ✅ A7, B1–B5, C4, C5, C11, C12 + 8 `tbl-colwidths` corregits a suma 100 |
-| `12_figs_originals/T7_lru_exemple.svg` | ✅ A9 |
-| `07_contrib.qmd` | ✅ nova subsecció `#### T7` (t_bloc, línia/bloc, notació multinivell, unitats) + fila «amplada de banda» a substitucions |
+| `01_apunts/A7.qmd` | ✅ A1–A6, B7–B10, extra, C1, C6–C9 |
+| `02_exercicis/E7.qmd` | ✅ A8, B6, C5, C10, C12 |
+| `03_solucions/S7.qmd` | ✅ A7, B1–B5, C4, C5, C11, C12 + 8 `tbl-colwidths` corregits a suma 100 |
+| `22_figs_originals/T7_lru_exemple.svg` | ✅ A9 |
+| `13_contrib.qmd` | ✅ nova subsecció `#### T7` (t_bloc, línia/bloc, notació multinivell, unitats) + fila «amplada de banda» a substitucions |
 | `TODO.md` | ✅ C2 i C3 a §T7; escombrades globals «amplada de banda» i KB/KiB a §Contingut global |
 
 ---
@@ -203,8 +203,8 @@ seccions. `PS_criteris.qmd` no existeix al mirall (comentat a `_quarto.yml`).
 ## Segona tanda (2026-07-11, Sonnet 5 High)
 
 Aplicades C1, C4–C12 (recomanacions acceptades per Roger); C2 i C3 anotades a
-`TODO.md §T7`. Extra: 8 taules de PS_T7 amb `tbl-colwidths` que no sumaven 100
-(convenció de `07_contrib.qmd §Taules`) corregides per escalat proporcional.
+`TODO.md §T7`. Extra: 8 taules de S7 amb `tbl-colwidths` que no sumaven 100
+(convenció de `13_contrib.qmd §Taules`) corregides per escalat proporcional.
 Detall C4: les columnes «Lect. MC» / «Escr. MC» s'han definit com a indicadors
 S/N d'accés a la matriu de dades de la MC, amb la casuística explicada als
 punts de «Comportament per tipus d'accés» de cada apartat.
@@ -213,7 +213,7 @@ punts de «Comportament per tipus d'accés» de cada apartat.
 
 ## Tercera tanda (2026-07-11)
 
-C2 resolta: «TAM» harmonitzat a tot arreu (5 substitucions a PE_T7.qmd:
+C2 resolta: «TAM» harmonitzat a tot arreu (5 substitucions a E7.qmd:
 `temps mitjà d'accés a memòria ($t_{am}$)` → `temps d'accés mitjà (TAM)`,
-nom canònic de `@sec-tam`). PS_T7 ja era consistent. Pendent a `TODO.md §T7`:
+nom canònic de `@sec-tam`). S7 ja era consistent. Pendent a `TODO.md §T7`:
 només C3 (seqüència truncada d'`exr-p7-assoc-multinivell`).

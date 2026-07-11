@@ -1,19 +1,19 @@
-# Tasca per a Claude Code: unificació notacional `=` → `\leftarrow` a `11_riscv/`
+# Tasca per a Claude Code: unificació notacional `=` → `\leftarrow` a `21_riscv/`
 
 ## Context
 
 Projecte EC (Estructura de Computadors, FIB-UPC). Llibre Quarto amb fitxers `.qmd`. Llegeix primer
-`CLAUDE.md` i `07_contrib.qmd` (arrel del projecte) per al context general de convencions.
+`CLAUDE.md` i `13_contrib.qmd` (arrel del projecte) per al context general de convencions.
 
 ## Objectiu
 
 Unificar la notació de les operacions RTL (*register transfer level*) a totes les taules
-d'instruccions de `11_riscv/`: el símbol d'**assignació** (transferència de valor a un registre o
+d'instruccions de `21_riscv/`: el símbol d'**assignació** (transferència de valor a un registre o
 posició de memòria) ha de ser sempre `\leftarrow`, mai `=`. El símbol `=` es reserva exclusivament
 per a la **comparació d'igualtat** (mai per a assignació).
 
 A més, unificar `off` → `offset` (sencer, sense abreujar) allà on aparegui com a nom de camp/operand,
-per coherència amb la resta del projecte (`07_contrib.qmd` estableix `offset` sencer com a terme
+per coherència amb la resta del projecte (`13_contrib.qmd` estableix `offset` sencer com a terme
 normatiu quan apareix com a operand o nom de camp en fórmules RTL i codi).
 
 ## Abast — fitxers i canvis exactes
@@ -56,9 +56,9 @@ més delicat: NO canviïs el `=` intern d'una comparació d'igualtat).
 
 ## Després dels canvis
 
-1. Comprova que `05_riscv.qmd` (que inclou aquests mateixos fitxers via `{{< include >}}`) es
+1. Comprova que `11_riscv.qmd` (que inclou aquests mateixos fitxers via `{{< include >}}`) es
    renderitza sense error (`quarto render --to html`).
-2. Comprova visualment que `T5.qmd` (que també inclou aquests fitxers a les seccions
+2. Comprova visualment que `A5.qmd` (que també inclou aquests fitxers a les seccions
    `#nte-instruccions-*-f`) mostra les fórmules correctament.
 3. **Actualitza `TODO.md` §T5**: elimina l'entrada "Harmonització notacional RV32I ↔ RV32F" un cop
    fet, ja que quedarà resolta pel que fa a RV32F (la unificació amb RV32I resta pendent com a nova

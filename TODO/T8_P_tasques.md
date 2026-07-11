@@ -1,10 +1,10 @@
-# T8-PE_T8-PS_T8 — Revisió interna profunda: llista d'accions
+# T8-E8-S8 — Revisió interna profunda: llista d'accions
 
-**Fitxers objectiu:** `01_T/T8.qmd`, `02_PE/PE_T8.qmd`, `03_PS/PS_T8.qmd`
-**Fitxers col·laterals:** `06_sigles.qmd`, `07_contrib.qmd`, `TODO.md`, `02_PE/PE_T7.qmd` (A9)
+**Fitxers objectiu:** `01_apunts/A8.qmd`, `02_exercicis/E8.qmd`, `03_solucions/S8.qmd`
+**Fitxers col·laterals:** `12_sigles.qmd`, `13_contrib.qmd`, `TODO.md`, `02_exercicis/E7.qmd` (A9)
 **Llegenda:** 🔴 error · 🟡 millora · 🔵 decisió · ✅ fet · ⏳ pendent
 
-Nota de context: totes les traces numèriques de PS_T8 i dels tres enunciats
+Nota de context: totes les traces numèriques de S8 i dels tres enunciats
 sense solució s'han verificat per simulació (LRU de pàgines, TLB, comptadors
 de fallades de MC/TLB). Les figures es difereixen (decisió de Roger, Fase A):
 en aquest xat només es completen les especificacions i els captions.
@@ -13,7 +13,7 @@ en aquest xat només es completen les especificacions i els captions.
 
 ## A — Errors tècnics (execució directa) ⏳
 
-### T8.qmd
+### A8.qmd
 
 - 🔴⏳ **A1 — §Fallada de pàgina: ordre de magnitud del cost d'accés al disc.**
   «un accés al disc és **desenes de milers** de vegades més lent que un accés a
@@ -39,7 +39,7 @@ en aquest xat només es completen les especificacions i els captions.
   «Flux complet de traducció d'una adreça en un sistema amb TLB i memòria
   virtual.» (ja proposat al comentari HTML).
 
-### PE_T8.qmd
+### E8.qmd
 
 - 🔴⏳ **A6 — «instruccions en negreta» impossibles.** `exr-p8-tlb-basic` i
   `exr-p8-tlb-optimitzacio` diuen «per a cadascun dels accessos a dades de
@@ -49,7 +49,7 @@ en aquest xat només es completen les especificacions i els captions.
 - 🔴⏳ **A7 — Veu: 2a persona del plural.** Els 10 enunciats usen el singular
   (18 imperatius: «Indica», «Omple», «Considera», «Calcula», «Compara»,
   «Raona», «Respon», «Repeteix», «Explica») → plural, convenció aplicada a
-  PE_T7 (A8 del xat T7). Afegir nota a `TODO.md` perquè PE_T3 (que va quedar en
+  E7 (A8 del xat T7). Afegir nota a `TODO.md` perquè E3 (que va quedar en
   singular: 35 imperatius) s'harmonitzi en un xat posterior.
 - 🔴⏳ **A8 — Blocs de codi sense atributs.** ` ```c ` (×3) i ` ```s ` (×2) →
   ` ```{.c filename="C"} ` i ` ```{.s filename="RV32I"} ` (`07_contrib §Blocs
@@ -57,10 +57,10 @@ en aquest xat només es completen les especificacions i els captions.
 
 ### Altres fitxers
 
-- 🔴⏳ **A9 — PE_T7.qmd: mateixa mancança que A8.** Els 3 blocs ` ```c ` de
-  PE_T7 van quedar sense atributs a la revisió de T7. Aplicar-hi
+- 🔴⏳ **A9 — E7.qmd: mateixa mancança que A8.** Els 3 blocs ` ```c ` de
+  E7 van quedar sense atributs a la revisió de T7. Aplicar-hi
   ` ```{.c filename="C"} `.
-- 🔴⏳ **A10 — `06_sigles.qmd`: falta MRU.** Usada als callout-tip de PS_T8
+- 🔴⏳ **A10 — `12_sigles.qmd`: falta MRU.** Usada als callout-tip de S8
   («pila LRU (MRU→LRU)») → afegir `| **MRU** | *Most Recently Used* |`
   (criteri d'inclusió: sigles en callouts tip).
 
@@ -68,15 +68,15 @@ en aquest xat només es completen les especificacions i els captions.
 
 ## B — Millores i harmonitzacions menors (execució directa) ⏳
 
-- 🟡⏳ **B1 — «la cau» → «la MC»** a PS_T8 (9×) i PE_T8 (3×), seguint la
-  pràctica de PS_T7 («la MC», 22×). Els títols de secció mantenen «memòria cau».
-- 🟡⏳ **B2 — «gambada» → «stride»** (PS_T8 ×2). El terme del projecte és
+- 🟡⏳ **B1 — «la cau» → «la MC»** a S8 (9×) i E8 (3×), seguint la
+  pràctica de S7 («la MC», 22×). Els títols de secció mantenen «memòria cau».
+- 🟡⏳ **B2 — «gambada» → «stride»** (S8 ×2). El terme del projecte és
   l'anglicisme *stride*, introduït a T2 («una quantitat fixa (*stride*)»); en
   aparicions posteriors, sense cursiva.
 - 🟡⏳ **B3 — «de sols lectura» / «en mode sols lectura» (T8 ×3) → «només de
   lectura»**. La llegenda compacta de bits de `exr-p8-mv-proteccio`
   («0 = només lectura») pot mantenir-se.
-- 🟡⏳ **B4 — Separador de milers dins de math:** `65536` (PS_T8 ×2) →
+- 🟡⏳ **B4 — Separador de milers dins de math:** `65536` (S8 ×2) →
   `65\,536` («65 536», convenció de `07_contrib`).
 - 🟡⏳ **B5 — §Multinivell (cos):** «representa 4 MiB per procés» — explicitar
   el supòsit «(amb entrades de 4 bytes)», que ara només apareix al `wrn`.
@@ -105,7 +105,7 @@ en aquest xat només es completen les especificacions i els captions.
   **de dades**» (com fa `exr-p8-mv-cache-tlb`) per excloure explícitament els
   accessos d'instruccions; a `-optimitzacio`, afegir «completament associatiu»
   (l'altre ja ho diu).
-- 🟡⏳ **B12 — Ordre de columnes de les taules d'estat (PE_T8):**
+- 🟡⏳ **B12 — Ordre de columnes de les taules d'estat (E8):**
   `exr-p8-tlb-estat` usa «V | VPN | PPN»; la teoria usa «VPN | V | D | E | PPN»
   (VPN primer, com a clau). Harmonitzar a l'ordre de la teoria.
 - 🟡⏳ **B13 — `sol-p8-mv-multinivell` c):** «… = 4 KiB + 4 MiB = 4 MiB +
@@ -134,7 +134,7 @@ en aquest xat només es completen les especificacions i els captions.
 - 🟡⏳ **B18 — `TODO.md §T8`:** actualitzar el recompte («8 figures» → 9
   comentaris de figura pendents, un amb placeholder al repositori) i anotar que
   les especificacions + captions queden completes (B17). Afegir la nota sobre
-  PE_T3 (A7).
+  E3 (A7).
 - 🟡⏳ **B19 — Lint final** dels tres fitxers: dobles espais fora de blocs de
   codi, cometes rectes fora d'atributs, punts finals de llista.
 
@@ -144,9 +144,9 @@ en aquest xat només es completen les especificacions i els captions.
 
 - 🔵⏳ **C1 — Bit de presència: P (PE/PS) vs. V (teoria).** La teoria adopta
   **V** (RISC-V Sv32, Harris & Harris) i ho documenta a `#wrn-mv-notacio-v`;
-  però PE_T8 i PS_T8 usen **P** a totes les taules i al text. El criteri de
+  però E8 i S8 usen **P** a totes les taules i al text. El criteri de
   `07_contrib §T8` per al bit E va ser «la teoria preval sobre l'enunciat».
-  - **(a) Recomanada:** reescriure P→V a PE_T8 i PS_T8 (~15 taules/mencions),
+  - **(a) Recomanada:** reescriure P→V a E8 i S8 (~15 taules/mencions),
     amb la denominació «bit V (validesa)»; el `wrn` continua explicant la
     notació P dels exàmens antics.
   - (b) Mantenir P als problemes (familiaritat amb exàmens antics) — contradiu
@@ -197,7 +197,7 @@ en aquest xat només es completen les especificacions i els captions.
   - (b) Deixar la política lliure (resposta: 5 amb reemplaçament òptim) — massa
     subtil per al nivell del tema.
 - 🔵⏳ **C6 — «aliàsing» vs. «*aliasing*».** T8 usa l'anglicisme en cursiva
-  (5×); PE_T8, PS_T8 i `PS_criteris.qmd` usen la grafia adaptada
+  (5×); E8, S8 i `S_criteris.qmd` usen la grafia adaptada
   «aliàsing»/«antialiàsing». El Termcat normalitza «aliàsing» en l'àmbit del
   senyal/imatge; per al sentit de memòria no hi ha fitxa, però l'adaptació és
   transparent i ja majoritària al projecte.
@@ -219,7 +219,7 @@ en aquest xat només es completen les especificacions i els captions.
 
 ## E — Verificacions completades sense incidència ✅
 
-- **Traces de PS_T8 verificades per simulació, correctes fins a l'últim dígit**
+- **Traces de S8 verificades per simulació, correctes fins a l'últim dígit**
   (llevat del b) de `sol-p8-tlb-estat`, C2): `paginacio-basica` (5 fallades,
   expulsions 2 i 0, pila LRU), `taula-referencies` (les 6 files, l'únic
   *writeback* a `L 6600`, estats finals de TP i memòria física),
@@ -235,7 +235,7 @@ en aquest xat només es completen les especificacions i els captions.
   amb 6 entrades LRU. `matriu-lru` → primera fallada: `MAT[0][0..255]` i
   `MAT[1][0..255]` (per files) / `MAT[0..31][0..15]` (per columnes); 16 i 512
   fallades respectivament.
-- **Cobertura del solucionari** = selecció documentada a `PS_criteris §T8`
+- **Cobertura del solucionari** = selecció documentada a `S_criteris §T8`
   (7 de 10; els 3 no resolts hi consten com a no seleccionats).
 - **Referències creuades externes:** totes existeixen (`sec-jerarquia`,
   `tbl-tecnologies-memoria`, `sec-completament-associativa`,
@@ -261,6 +261,6 @@ en aquest xat només es completen les especificacions i els captions.
 
 ## Fitxers que es preveu modificar (Fase C)
 
-`01_T/T8.qmd` · `02_PE/PE_T8.qmd` · `03_PS/PS_T8.qmd` · `06_sigles.qmd` ·
-`02_PE/PE_T7.qmd` (A9) · `TODO.md` (B18) · `07_contrib.qmd` (registre de C1,
+`01_apunts/A8.qmd` · `02_exercicis/E8.qmd` · `03_solucions/S8.qmd` · `12_sigles.qmd` ·
+`02_exercicis/E7.qmd` (A9) · `TODO.md` (B18) · `13_contrib.qmd` (registre de C1,
 C6, C7 segons decisió)

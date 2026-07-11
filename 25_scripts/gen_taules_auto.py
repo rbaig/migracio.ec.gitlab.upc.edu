@@ -1,37 +1,37 @@
 #!/usr/bin/env python3
 """
-gen_taules_auto.py — Fusiona fragments de taula de 11_riscv/ per a 05_riscv.qmd.
+gen_taules_auto.py — Fusiona fragments de taula de 21_riscv/ per a 11_riscv.qmd.
 
 Motiu: Quarto no permet encadenar dos {{< include >}} consecutius dins d'una
 mateixa taula pipe (el primer tanca la taula; la resta cau a text cru). La
 solució és fusionar físicament els fitxers font en un de sol i incloure'l amb
-un únic {{< include >}}. Vegeu 21_specs/taules_fusio.toml i 07_contrib.qmd
+un únic {{< include >}}. Vegeu 24_specs/taules_fusio.toml i 13_contrib.qmd
 §Fitxer de referència tècnica.
 
-IMPORTANT: a diferència dels altres scripts de 22_scripts/, aquest NO es crida
+IMPORTANT: a diferència dels altres scripts de 25_scripts/, aquest NO es crida
 des del `pre-render` de _quarto.yml. Quarto resol els {{< include >}} dels
 capítols en un escaneig de configuració que s'executa ABANS del pre-render, de
 manera que el fitxer fusionat ha d'existir al disc abans d'invocar `quarto`.
 Cal executar aquest script manualment (README.md):
 
-    python3 22_scripts/gen_taules_auto.py 21_specs/taules_fusio.toml 11_riscv --output-dir="11_riscv_auto/"
+    python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"
 
 - El primer cop (checkout nou) i sempre que `quarto render` avorti per manca
-  d'un fitxer a 11_riscv_auto/.
-- Sempre que editeu un fitxer de 11_riscv/ que aparegui a
-  21_specs/taules_fusio.toml (si no, 11_riscv_auto/ queda desactualitzat en
+  d'un fitxer a auto_riscv/.
+- Sempre que editeu un fitxer de 21_riscv/ que aparegui a
+  24_specs/taules_fusio.toml (si no, auto_riscv/ queda desactualitzat en
   silenci: `quarto render` no fallarà, però la taula final no reflectirà el
   canvi).
 
 Ús manual complet:
-    python3 22_scripts/gen_taules_auto.py <specs_file> <fonts_dir> [--output-dir DIR] [--force] [--verbosity N]
+    python3 25_scripts/gen_taules_auto.py <specs_file> <fonts_dir> [--output-dir DIR] [--force] [--verbosity N]
 
 Arguments posicionals:
-    specs_file      Manifest de fusions (p. ex. 21_specs/taules_fusio.toml).
-    fonts_dir       Directori on es troben els fitxers font (p. ex. 11_riscv/).
+    specs_file      Manifest de fusions (p. ex. 24_specs/taules_fusio.toml).
+    fonts_dir       Directori on es troben els fitxers font (p. ex. 21_riscv/).
 
 Arguments opcionals:
-    --output-dir    Directori on es desen els fitxers fusionats (per defecte: 11_riscv_auto/).
+    --output-dir    Directori on es desen els fitxers fusionats (per defecte: auto_riscv/).
     --force         Regenera tots els fitxers ignorant timestamps.
     --verbosity 0|1|2
                     Nivell de detall del log (per defecte: 1).
@@ -39,8 +39,8 @@ Arguments opcionals:
                       1  Errors + avisos + resum.
                       2  Tot l'anterior + una línia per fitxer processat.
 
-No editeu els fitxers generats a l'output-dir: editeu 21_specs/taules_fusio.toml
-i els fitxers font a 11_riscv/.
+No editeu els fitxers generats a l'output-dir: editeu 24_specs/taules_fusio.toml
+i els fitxers font a 21_riscv/.
 """
 
 import tomllib
@@ -93,16 +93,16 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Fusiona fragments de taula de 11_riscv/ per a 05_riscv.qmd.'
+        description='Fusiona fragments de taula de 21_riscv/ per a 11_riscv.qmd.'
     )
-    parser.add_argument('specs_file', type=Path, help='Manifest de fusions (p. ex. 21_specs/taules_fusio.toml)')
-    parser.add_argument('fonts_dir', type=Path, help='Directori dels fitxers font (p. ex. 11_riscv/)')
+    parser.add_argument('specs_file', type=Path, help='Manifest de fusions (p. ex. 24_specs/taules_fusio.toml)')
+    parser.add_argument('fonts_dir', type=Path, help='Directori dels fitxers font (p. ex. 21_riscv/)')
     parser.add_argument(
         '--output-dir',
         type=Path,
-        default=Path('11_riscv_auto'),
+        default=Path('auto_riscv'),
         metavar='DIR',
-        help='Directori de sortida (per defecte: 11_riscv_auto/).',
+        help='Directori de sortida (per defecte: auto_riscv/).',
     )
     parser.add_argument('--force', action='store_true', help='Regenera tots els fitxers ignorant timestamps.')
     parser.add_argument(

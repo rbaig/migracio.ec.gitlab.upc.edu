@@ -5,22 +5,22 @@ gen_regs.py — Generador de figures SVG de registres de bits per al projecte EC
 Ús com a pre-render de Quarto (_quarto.yml):
     project:
       pre-render:
-        - bash -c "rm -rf figs_auto && mkdir figs_auto"
-        - 22_scripts/norm_font.py 21_specs/svg.md "12_figs_originals/[^/]+[.]svg" "__original_light" --output-dir="figs_auto/"
-        - 22_scripts/norm_font.py 21_specs/svg.md "13_figs_externes/[^/]+[.]svg"  "__extern_light"   --output-dir="figs_auto/"
-        - 22_scripts/gen_regs.py  21_specs/registres.toml                         "__registre_light" --output-dir="figs_auto/"
-        - 22_scripts/gen_dark.py  21_specs/svg.md "figs_auto/[^/]+_light[.]svg"                      --output-dir="figs_auto/"
+        - bash -c "rm -rf auto_figs && mkdir auto_figs"
+        - 25_scripts/norm_font.py 24_specs/svg.md "22_figs_originals/[^/]+[.]svg" "__original_light" --output-dir="auto_figs/"
+        - 25_scripts/norm_font.py 24_specs/svg.md "23_figs_externes/[^/]+[.]svg"  "__extern_light"   --output-dir="auto_figs/"
+        - 25_scripts/gen_regs.py  24_specs/registres.toml                         "__registre_light" --output-dir="auto_figs/"
+        - 25_scripts/gen_dark.py  24_specs/svg.md "auto_figs/[^/]+_light[.]svg"                      --output-dir="auto_figs/"
 
 Ús manual:
-    python3 22_scripts/gen_regs.py <specs_file> <output_sufix> [--output-dir DIR] [--force] [--verbosity N]
+    python3 25_scripts/gen_regs.py <specs_file> <output_sufix> [--output-dir DIR] [--force] [--verbosity N]
 
 Arguments posicionals:
-    specs_file      Fitxer de definicions de registres (p. ex. 21_specs/registres.toml).
+    specs_file      Fitxer de definicions de registres (p. ex. 24_specs/registres.toml).
     output_sufix    Sufix afegit al nom base de cada fitxer de sortida.
                     Exemple: __registre_light  ⇒  T2_instruccio_tipus_R__registre_light.svg
 
 Arguments opcionals:
-    --output-dir    Directori on es desen els SVG generats (per defecte: figs_auto/).
+    --output-dir    Directori on es desen els SVG generats (per defecte: auto_figs/).
                     La sortida és plana: no es preserva l'estructura de subdirectoris.
     --force         Regenera tots els SVG ignorant timestamps.
     --verbosity 0|1|2
@@ -29,7 +29,7 @@ Arguments opcionals:
                       1  Errors + avisos + resum.
                       2  Tot l'anterior + una línia per fitxer processat.
 
-No modifiqueu les definicions de registres aquí: editeu 21_specs/registres.toml.
+No modifiqueu les definicions de registres aquí: editeu 24_specs/registres.toml.
 """
 
 import tomllib
@@ -606,7 +606,7 @@ def make_preview(registers: dict, out_dir: Path, output_suffix: str, preview_pat
 </head>
 <body>
 <h1>Preview registres EC — mode clar</h1>
-<p class="meta">22 px/bit · ticks per bit · marge 1% · figs_auto/</p>
+<p class="meta">22 px/bit · ticks per bit · marge 1% · auto_figs/</p>
 <div class="palette">
   {chips_html}
 </div>
@@ -644,9 +644,9 @@ def main() -> None:
     parser.add_argument(
         '--output-dir',
         type=Path,
-        default=Path('figs_auto'),
+        default=Path('auto_figs'),
         metavar='DIR',
-        help='Directori de sortida (per defecte: figs_auto/).',
+        help='Directori de sortida (per defecte: auto_figs/).',
     )
     parser.add_argument(
         '--force',

@@ -1,4 +1,4 @@
-# T5.qmd — Canvis aplicats (revisió interna)
+# A5.qmd — Canvis aplicats (revisió interna)
 
 ## Bloc 1 — correccions de contingut i format
 
@@ -22,7 +22,7 @@
   glossa, per coherència amb la regla d'una sola glossa. Si vols mantenir el terme anglès com a
   referència, es pot afegir «(*gradual underflow*)».
 
-## F3 — extracció de taules RV32F a includes (`11_riscv/`)
+## F3 — extracció de taules RV32F a includes (`21_riscv/`)
 
 6 fitxers nous (només files de dades; capçalera, separador i `tbl-colwidths` queden al tema):
 
@@ -35,12 +35,12 @@
 | `RV32F_instruccions_conversio.qmd` | `#nte-instruccions-conversio-f` (taula de conversions) |
 | `RV32F_instruccions_moviment_bits.qmd` | `#nte-instruccions-conversio-f` (taula de moviments de bits) |
 
-Camí d'include: `../11_riscv/…` (coherent amb T2/T3). El compendi `05_riscv.qmd` (encara *stub*)
+Camí d'include: `../21_riscv/…` (coherent amb T2/T3). El compendi `11_riscv.qmd` (encara *stub*)
 podrà reutilitzar aquests includes quan es desenvolupi.
 
 ## Pendent (no aplicat)
 
-- **F2** — Taula de registres FP: l'include `11_riscv/RV32I_registres_coma_flotant.qmd` JA existeix
+- **F2** — Taula de registres FP: l'include `21_riscv/RV32I_registres_coma_flotant.qmd` JA existeix
   però amb contingut **divergent** del de T5 (alineació, negretes, verbositat). Cal decidir versió
   canònica abans de connectar T5. La taula es manté **inline** a T5 de moment.
 - **Taules de camps de `fcsr`** (frm, fflags): són taules de camps de registre (no d'instruccions).

@@ -1,8 +1,8 @@
-# T1_P_tasques — Revisió interna: T1, PE_T1, PS_T1
+# T1_P_tasques — Revisió interna: T1, E1, S1
 
 Data: 2026-06-25
-Fitxers principals: `T1.qmd`, `PE_T1.qmd`, `PS_T1.qmd`
-Fitxers de referència llegits: `CLAUDE.md`, `07_contrib.qmd`, `_quarto.yml`, `TODO.md`, `09_bibliografia.bib`, `T2.qmd`, `PE_T2.qmd`, `PS_T2.qmd`
+Fitxers principals: `A1.qmd`, `E1.qmd`, `S1.qmd`
+Fitxers de referència llegits: `CLAUDE.md`, `13_contrib.qmd`, `_quarto.yml`, `TODO.md`, `15_bibliografia.bib`, `A2.qmd`, `E2.qmd`, `S2.qmd`
 
 ## Estat final
 
@@ -12,7 +12,7 @@ Fitxers de referència llegits: `CLAUDE.md`, `07_contrib.qmd`, `_quarto.yml`, `T
 
 ## Resum de canvis aplicats
 
-### `T1.qmd`
+### `A1.qmd`
 
 | # | Tipus | Descripció |
 | :--- | :--- | :--- |
@@ -25,7 +25,7 @@ Fitxers de referència llegits: `CLAUDE.md`, `07_contrib.qmd`, `_quarto.yml`, `T
 | 7 | Contingut nou | Secció `## Operacions aritmètiques en complement a 2 {#sec-operacions-ca2}` amb subseccions de suma, resta, multiplicació i divisió, callouts d'exemple i `#imp-multiplicacio-isa` |
 | 8 | Slugs | 30 identificadors `{#sec-}` nous afegits a totes les capçaleres `##`/`###`/`####` estructurals (total: 45 slugs únics) |
 
-### `PE_T1.qmd`
+### `E1.qmd`
 
 | # | Tipus | Descripció |
 | :--- | :--- | :--- |
@@ -36,7 +36,7 @@ Fitxers de referència llegits: `CLAUDE.md`, `07_contrib.qmd`, `_quarto.yml`, `T
 | 5 | Exercicis nous | `exr-p1-aritm-suma`, `exr-p1-aritm-resta`, `exr-p1-aritm-multiplicacio`, `exr-p1-aritm-divisio`: aritmètica Ca2 |
 | 6 | Consistència | Títol secció: «Representació de naturals i enters» → «Codificació de nombres naturals i enters» |
 
-### `PS_T1.qmd`
+### `S1.qmd`
 
 | # | Tipus | Descripció |
 | :--- | :--- | :--- |
@@ -48,10 +48,10 @@ Fitxers de referència llegits: `CLAUDE.md`, `07_contrib.qmd`, `_quarto.yml`, `T
 | 6 | Solucions noves (×6) | `sol-p1-enters-conversio8`, `sol-p1-enters-codificacio`, `sol-p1-enters-ca2-16bits`, `sol-p1-enters-implicit`, `sol-p1-enters-minim13`, `sol-p1-enters-maxim13` |
 | 7 | Solucions noves (×4) | `sol-p1-aritm-suma` (amb apartat e), `sol-p1-aritm-resta`, `sol-p1-aritm-multiplicacio`, `sol-p1-aritm-divisio` |
 | 8 | Correcció | `S\&M` → `S&M` (6 aparicions; backslash innecessari en Markdown) |
-| 9 | Consistència | Títol secció alineat amb T1 i PE_T1 |
-| 10 | Ordre | Totes les solucions alineades 1:1 amb l'ordre dels exercicis de PE_T1 (14/14) |
+| 9 | Consistència | Títol secció alineat amb T1 i E1 |
+| 10 | Ordre | Totes les solucions alineades 1:1 amb l'ordre dels exercicis de E1 (14/14) |
 
-### `PE_T2.qmd`
+### `E2.qmd`
 
 | # | Tipus | Descripció |
 | :--- | :--- | :--- |
@@ -59,7 +59,7 @@ Fitxers de referència llegits: `CLAUDE.md`, `07_contrib.qmd`, `_quarto.yml`, `T
 
 ---
 
-## Cobertura final de PE_T1 i PS_T1
+## Cobertura final de E1 i S1
 
 | # | ID exercici | Solució |
 | :---: | :--- | :---: |

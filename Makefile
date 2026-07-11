@@ -1,5 +1,5 @@
 render:
-	22_scripts/gen_taules_auto.py 21_specs/taules_fusio.toml 11_riscv --output-dir=11_riscv_auto/
+	25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir=auto_riscv/
 	quarto render
 
 clean:

@@ -11,21 +11,21 @@ Com a pre-render de Quarto (_quarto.yml):
 
     project:
       pre-render:
-        - bash -c "rm -rf figs_auto && mkdir figs_auto"
-        - scripts/gen_regs.py  specs/registres.toml "__registre_light" --output-dir="figs_auto/"
-        - scripts/norm_font.py specs/svg.md "figs_externes/[^/]+[.]svg"  "__extern_light"   --output-dir="figs_auto/"
-        - scripts/norm_font.py specs/svg.md "figs_originals/[^/]+[.]svg" "__original_light" --output-dir="figs_auto/"
-        - scripts/gen_dark.py  specs/svg.md "figs_auto/[^/]+_light[.]svg" --output-dir="figs_auto/"
+        - bash -c "rm -rf auto_figs && mkdir auto_figs"
+        - scripts/gen_regs.py  specs/registres.toml "__registre_light" --output-dir="auto_figs/"
+        - scripts/norm_font.py specs/svg.md "figs_externes/[^/]+[.]svg"  "__extern_light"   --output-dir="auto_figs/"
+        - scripts/norm_font.py specs/svg.md "figs_originals/[^/]+[.]svg" "__original_light" --output-dir="auto_figs/"
+        - scripts/gen_dark.py  specs/svg.md "auto_figs/[^/]+_light[.]svg" --output-dir="auto_figs/"
 
 Ús manual:
 
-    python3 22_scripts/gen_dark.py <specs_file> <regex_entrada> [opcions]
+    python3 25_scripts/gen_dark.py <specs_file> <regex_entrada> [opcions]
 
 Arguments posicionals
 ---------------------
-specs_file    Fitxer 21_specs/svg.md amb el bloc #svg-dark-replacements.
+specs_file    Fitxer 24_specs/svg.md amb el bloc #svg-dark-replacements.
 regex_entrada Expressió regular aplicada sobre les rutes relatives al CWD.
-              Exemple: "figs_auto/[^/]+_light[.]svg"
+              Exemple: "auto_figs/[^/]+_light[.]svg"
 
 Arguments opcionals
 -------------------
@@ -44,7 +44,7 @@ Arguments opcionals
                       2  Tot l'anterior + una línia per fitxer processat.
 
 La taula de substitució de colors és la font de veritat única definida a
-21_specs/svg.md, dins el bloc etiquetat `#svg-dark-replacements`.
+24_specs/svg.md, dins el bloc etiquetat `#svg-dark-replacements`.
 Per modificar la paleta dark, editeu només aquell bloc.
 """
 
@@ -92,13 +92,13 @@ def _invert_hsl(hex_color: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Lectura de la taula de substitució des de 21_specs/svg.md
+# Lectura de la taula de substitució des de 24_specs/svg.md
 # ---------------------------------------------------------------------------
 
 def _load_replacements(specs_file: Path) -> list[tuple[str, str]]:
     """
     Extreu la variable REPLACEMENTS del bloc `{.python #svg-dark-replacements}`
-    de 21_specs/svg.md i la retorna com a llista de tuples (light, dark).
+    de 24_specs/svg.md i la retorna com a llista de tuples (light, dark).
 
     Llança ValueError si el bloc no es troba o no es pot parsejar.
     """
@@ -306,7 +306,7 @@ def generate_dark_svgs(
             if unknown_color_policy == 'report':
                 print(
                     '\n[gen-dark] Passa la llista de colors no reconeguts a Claude perquè '
-                    "els incorpori a 21_specs/svg.md (bloc `#svg-dark-replacements`) i torna a "
+                    "els incorpori a 24_specs/svg.md (bloc `#svg-dark-replacements`) i torna a "
                     "executar l'script. Hauria de reportar 0 colors no reconeguts."
                 )
 
@@ -331,14 +331,14 @@ if __name__ == '__main__':
         'specs_file',
         type=Path,
         metavar='specs_file',
-        help="Fitxer 21_specs/svg.md amb el bloc #svg-dark-replacements.",
+        help="Fitxer 24_specs/svg.md amb el bloc #svg-dark-replacements.",
     )
     parser.add_argument(
         'regex_entrada',
         metavar='regex_entrada',
         help=(
             "Expressió regular aplicada sobre rutes relatives al CWD. "
-            "Exemple: \"figs_auto/[^/]+_light[.]svg\""
+            "Exemple: \"auto_figs/[^/]+_light[.]svg\""
         ),
     )
     parser.add_argument(

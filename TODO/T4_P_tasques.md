@@ -1,4 +1,4 @@
-# T4, PE_T4, PS_T4 — Llista d'accions de revisió interna
+# T4, E4, S4 — Llista d'accions de revisió interna
 
 ## LLEGENDA
 - ✅ Fet
@@ -12,7 +12,7 @@
 
 ## 1. ERRORS ARITMÈTICS (🔴)
 
-### 1.1 PS_T4 — `sol-p5-mul-passos`, apartat a) — TAULA COMPLETAMENT ERRÒNIA
+### 1.1 S4 — `sol-p5-mul-passos`, apartat a) — TAULA COMPLETAMENT ERRÒNIA
 ✅ **CORREGIT** (Opus High Thinking)
 
 La taula era incorrecta des de la iteració 2. Error sistemàtic: el PS havia llegit el bit 0 del MR post-shift de la iteració actual en lloc del MR pre-shift. Errors en P (iters 2–6), MR[0] (iters 2, 4, 5) i Acció (iters 2, 4, 5). El binari del resultat final (`001100 111000₂`) valia 824, no 760.
@@ -24,7 +24,7 @@ La taula era incorrecta des de la iteració 2. Error sistemàtic: el PS havia ll
 
 ---
 
-### 1.2 PS_T4 — `sol-p5-mul-passos`, apartat b) — columnes MR[0]/Acció desfasades
+### 1.2 S4 — `sol-p5-mul-passos`, apartat b) — columnes MR[0]/Acció desfasades
 ✅ **CORREGIT** (Opus High Thinking)
 
 Les columnes MR[0] i Acció estaven desfasades 1 iteració (iters 2 i 3 intercanviades). El P i el resultat final (216) eren correctes.
@@ -33,7 +33,7 @@ Les columnes MR[0] i Acció estaven desfasades 1 iteració (iters 2 i 3 intercan
 
 ---
 
-### 1.3 PS_T4 — `sol-p5-div-passos`, apartat a) — valors intermedis de R−D incorrectes
+### 1.3 S4 — `sol-p5-div-passos`, apartat a) — valors intermedis de R−D incorrectes
 ✅ **CORREGIT** (Opus High Thinking)
 
 A les iteracions 1, 2 i 3 el valor de la resta R−D era incorrecte (bit de signe correcte → decisions correctes → resultat final correcte, però els bits intermedis estaven malcalculats).
@@ -48,12 +48,12 @@ A les iteracions 1, 2 i 3 el valor de la resta R−D era incorrecte (bit de sign
 
 ## 2. ERRORS TÈCNICS
 
-### 2.1 T4.qmd — Callout `#cau-ec-no-overflow` mancat
+### 2.1 A4.qmd — Callout `#cau-ec-no-overflow` mancat
 ✅ **CORREGIT** (Fase A)
 
-Referència `@cau-ec-no-overflow` (T4.qmd, línia 92) apuntava a un callout inexistent.
+Referència `@cau-ec-no-overflow` (A4.qmd, línia 92) apuntava a un callout inexistent.
 
-**Canvi aplicat:** Callout creat a T4.qmd just abans de `### Condicions de sobreeiximent`:
+**Canvi aplicat:** Callout creat a A4.qmd just abans de `### Condicions de sobreeiximent`:
 ```markdown
 ::: {#cau-ec-no-overflow .callout-caution}
 A **RV32I**, les operacions de suma i resta **ignoren** el sobreeiximent: el resultat és
@@ -64,28 +64,28 @@ el rang dels enters representables.
 
 ---
 
-### 2.2–2.9 T4.qmd — Altres referències creuades
+### 2.2–2.9 A4.qmd — Altres referències creuades
 ⏳ **Pendent de verificació al repositori** (no disponibles en aquest xat)
 
-Les referències `@sec-multiplicacio-potencies-2`, `@sec-extensio-m-t2`, `@cau-sra-divisio`, `@imp-ec-sll-acces-vector`, `@sec-riscv`, `@eq-rang-ca2`, `@sec-enters-en-ca2`, `@eq-acces-aleatori-vector`, `@sec-extraccio-invariants` no s'han pogut verificar sense accés als fitxers T1, T2, T3, T5 i 05_riscv.qmd. Tasca per a Claude Code.
+Les referències `@sec-multiplicacio-potencies-2`, `@sec-extensio-m-t2`, `@cau-sra-divisio`, `@imp-ec-sll-acces-vector`, `@sec-riscv`, `@eq-rang-ca2`, `@sec-enters-en-ca2`, `@eq-acces-aleatori-vector`, `@sec-extraccio-invariants` no s'han pogut verificar sense accés als fitxers T1, T2, T3, T5 i 11_riscv.qmd. Tasca per a Claude Code.
 
 ---
 
 ## 3. ERRORS TIPOGRÀFICS / LINGÜÍSTICS
 
-### 3.1 T4.qmd — Paraula duplicada «la resta la resta»
+### 3.1 A4.qmd — Paraula duplicada «la resta la resta»
 ✅ **CORREGIT** (Fase A)
 
-### 3.2 T4.qmd — «sobreeiximent enters» amb minúscula inicial
+### 3.2 A4.qmd — «sobreeiximent enters» amb minúscula inicial
 ✅ **CORREGIT** (Fase A) → «Sobreeiximent en enters»
 
-### 3.3 PE_T4.qmd — «desbordament (*carry*)» → «arrossegament (*carry*)»
+### 3.3 E4.qmd — «desbordament (*carry*)» → «arrossegament (*carry*)»
 ✅ **CORREGIT** (Fase A, D2) — 2 ocurrències
 
-### 3.4 PE_T4.qmd — «desbordament (*overflow*)» → «sobreeiximent (*overflow*)»
+### 3.4 E4.qmd — «desbordament (*overflow*)» → «sobreeiximent (*overflow*)»
 ✅ **CORREGIT** (Fase A, D2) — 2 ocurrències + 3 frases addicionals
 
-### 3.5 T4.qmd — 23 `{#sec-}` dins de callouts eliminats
+### 3.5 A4.qmd — 23 `{#sec-}` dins de callouts eliminats
 ✅ **CORREGIT** (Fase A, tasca 5.1)
 
 Capçaleres `##` dins de callouts `tip-`, `wrn-`, `cau-`, `imp-`, `nte-` que no es referencien des de fora del callout no han de portar `{#sec-}`.
@@ -94,18 +94,18 @@ Capçaleres `##` dins de callouts `tip-`, `wrn-`, `cau-`, `imp-`, `nte-` que no 
 
 ## 4. COHERÈNCIA PEDAGÒGICA
 
-### 4.1 PE_T4.qmd — 12 refs creuades selectives afegides als exercicis
+### 4.1 E4.qmd — 12 refs creuades selectives afegides als exercicis
 ✅ **FET** (Fase A, tasca 4.4)
 
 Format `*Vegeu @sec-nom.*` al final dels blocs `{#exr-}` que tenen conceptes de teoria referenciables.
 
-### 4.2 PE_T4.qmd — Reordenació de seccions (D3)
+### 4.2 E4.qmd — Reordenació de seccions (D3)
 ✅ **FET** (Fase A)
 
 Ordre anterior: Suma/resta → Mul → **Divisió** → Matrius → Acc. seq.
-Ordre nou (coherent amb T4.qmd): Suma/resta → Mul → Matrius → Acc. seq. → **Divisió**
+Ordre nou (coherent amb A4.qmd): Suma/resta → Mul → Matrius → Acc. seq. → **Divisió**
 
-### 4.3 PS_T4 — Solucions noves a generar
+### 4.3 S4 — Solucions noves a generar
 ⏳ **PENDENT** — Proposta de selecció presentada a l'usuari, pendent de confirmació.
 
 Proposta (9 exercicis de 23 pendents):
@@ -126,10 +126,10 @@ Proposta (9 exercicis de 23 pendents):
 
 ## 5. FORMAT / ESTIL
 
-### 5.1 PS_T4 — «sobreeiximent» vs. «desbordament» als títols de callout
-✅ **VERIFICAT** — PS_T4 ja usa «sobreeiximent» de manera consistent.
+### 5.1 S4 — «sobreeiximent» vs. «desbordament» als títols de callout
+✅ **VERIFICAT** — S4 ja usa «sobreeiximent» de manera consistent.
 
-### 5.2 PS_T4 — Convenció de les taules de seguiment
+### 5.2 S4 — Convenció de les taules de seguiment
 ✅ **UNIFICADA** — Multiplicador i divisor ara fan servir la mateixa convenció: cada fila mostra l'estat *final* de la iteració; MR[0]/R[11] i Acció indiquen el que s'ha executat *en aquella iteració*; fila inicial amb «—».
 
 ---
@@ -140,7 +140,7 @@ Proposta (9 exercicis de 23 pendents):
 ✅ **VERIFICAT** — T4 no fa referència explícita a `lui` en el context dels modes d'adreçament; consistent amb la classificació de T3.
 
 ### 6.2 Numeració de les optimitzacions de bucle
-✅ **VERIFICAT** — T4.qmd implementa exactament la numeració establerta a `07_contrib.qmd §T4` (#1 acc. seqüencial, #2 condició al final, #3 elim. variable d'inducció).
+✅ **VERIFICAT** — A4.qmd implementa exactament la numeració establerta a `13_contrib.qmd §T4` (#1 acc. seqüencial, #2 condició al final, #3 elim. variable d'inducció).
 
 ---
 
@@ -148,9 +148,9 @@ Proposta (9 exercicis de 23 pendents):
 
 | Fitxer | Estat | Disponible per descarregar |
 |:---|:---|:---:|
-| `T4.qmd` | ✅ Modificat | ✓ |
-| `PE_T4.qmd` | ✅ Modificat | ✓ |
-| `PS_T4.qmd` | ⏳ Parcialment modificat (taules corregides; solucions noves pendents) | — |
+| `A4.qmd` | ✅ Modificat | ✓ |
+| `E4.qmd` | ✅ Modificat | ✓ |
+| `S4.qmd` | ⏳ Parcialment modificat (taules corregides; solucions noves pendents) | — |
 
 ---
 

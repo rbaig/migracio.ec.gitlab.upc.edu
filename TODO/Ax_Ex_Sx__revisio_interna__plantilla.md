@@ -1,4 +1,4 @@
-Nom d'aquest xat: `EC T{N}-PE_T{N}-PS_T{N} Revisió interna`
+Nom d'aquest xat: `EC A{N}-E{N}-S{N} Revisió interna`
 
 Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 
@@ -14,7 +14,7 @@ Fitxers a revisar:
 Aspectes a revisar:
 
 - Correcció tècnica
-    - Font de veritat: tots els documents de l'autor "RISC-V International" de `09_bibliografia.bib`
+    - Font de veritat: tots els documents de l'autor "RISC-V International" de `15_bibliografia.bib`
     - Les versions més recents d'altres documents del repositori oficial de "RISC-V International"
     - Molta atenció en la revisió dels càlculs
 - Coherència entre Teoria, Problemes enunciats i Problemes solució
@@ -44,11 +44,11 @@ Nota: Les revisions internes de temes pendents estan indicades més avall. Si ne
 
 ---
 
-Estat de la Revisió interna Tx-PE_Tx-PS_Tx
+Estat de la Revisió interna Ax-Ex-Sx
 
 - Fets pre-Fable: x = {1, 2, 4, 5}
-- Fets Fable: x = {7}
-- Pendents: x = {9}
+- Fets Fable: x = {7, 8, 9}
+- Pendents: x = {6}
 
 ---
 
@@ -61,10 +61,10 @@ Estat de la Revisió interna Tx-PE_Tx-PS_Tx
 *Configuració esperada: Fable 5 High amb Thinking.*
 
 0. Explora els fitxers que t'he passat.
-1. Llegeix `CLAUDE.md`, `07_contrib.qmd` i `21_specs/svg.md`.
-2. Llegeix els fitxers principals a revisar: `T{N}.qmd`, `PE_T{N}.qmd` i `PS_T{N}.qmd`.
+1. Llegeix `CLAUDE.md`, `13_contrib.qmd` i `24_specs/svg.md`.
+2. Llegeix els fitxers principals a revisar: `A{N}.qmd`, `E{N}.qmd` i `S{N}.qmd`.
 3. Demana'm o busca al repositori els fitxers que necessitis.
-4. Fes un primer mapa de l'estructura i el contingut: identifica seccions, detecta inconsistències evidents de coherència, pedagogia i llenguatge. **En aquesta fase no cal encara verificar exhaustivament cada càlcul** — l'objectiu és tenir el mapa global. Un cop extretes les convencions rellevants de `CLAUDE.md`, `07_contrib.qmd` i `svg.md`, no cal rellegir-los sencers a la Fase B: treballa amb el resum ja fet a menys que sorgeixi un dubte concret que ho justifiqui.
+4. Fes un primer mapa de l'estructura i el contingut: identifica seccions, detecta inconsistències evidents de coherència, pedagogia i llenguatge. **En aquesta fase no cal encara verificar exhaustivament cada càlcul** — l'objectiu és tenir el mapa global. Un cop extretes les convencions rellevants de `CLAUDE.md`, `13_contrib.qmd` i `svg.md`, no cal rellegir-los sencers a la Fase B: treballa amb el resum ja fet a menys que sorgeixi un dubte concret que ho justifiqui.
 5. Atura't. Presenta'm:
    - Un resum breu de l'estructura dels tres fitxers.
    - La llista de seccions que contenen càlculs crítics o traces d'exemples pas a pas que requeriran verificació numèrica profunda a la Fase B (p. ex. fórmules, exemples amb estat evolutiu, taules de rendiment).

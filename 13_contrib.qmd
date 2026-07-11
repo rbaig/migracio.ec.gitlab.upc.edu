@@ -27,75 +27,75 @@ Aquest document de convencions només està disponible en la versió web:
 - L'arquitectura de referència és RISC-V. No s'ha de fer cap referència a MIPS (tret d'on ja s'ha fet explícitament).
 
 
-### Fitxer de referència tècnica (`05_riscv.qmd`) i directori `11_riscv/` {#sec-contrib-reftecnica}
+### Fitxer de referència tècnica (`11_riscv.qmd`) i directori `21_riscv/` {#sec-contrib-reftecnica}
 
-El fitxer `05_riscv.qmd` és el **compendi de referència tècnica** de l'assignatura (capítol «{{< var reftecnica >}}» del llibre). Conté exclusivament callouts `#nte-rv-*` sense text narratiu entre ells. Totes les taules s'obtenen via `{{< include 11_riscv/NOM.qmd >}}` (rutes relatives a l'arrel del projecte, sense `../`).
+El fitxer `11_riscv.qmd` és el **compendi de referència tècnica** de l'assignatura (capítol «{{< var reftecnica >}}» del llibre). Conté exclusivament callouts `#nte-rv-*` sense text narratiu entre ells. Totes les taules s'obtenen via `{{< include 21_riscv/NOM.qmd >}}` (rutes relatives a l'arrel del projecte, sense `../`).
 
-El directori `11_riscv/` conté els **fragments de taula reutilitzables** (sols les files, sense header ni caption). Cada fitxer es pot incloure a múltiples llocs: als `Tx.qmd` dins el callout temàtic corresponent, i a `05_riscv.qmd` per agrupar continguts de diverses extensions o categories sota un sol header diferent.
+El directori `21_riscv/` conté els **fragments de taula reutilitzables** (sols les files, sense header ni caption). Cada fitxer es pot incloure a múltiples llocs: als `Ax.qmd` dins el callout temàtic corresponent, i a `11_riscv.qmd` per agrupar continguts de diverses extensions o categories sota un sol header diferent.
 
-**Convencions dels fitxers `11_riscv/`:**
+**Convencions dels fitxers `21_riscv/`:**
 
 - Només files de taula (sense header, sense caption, sense atributs `{}`).
 - Nom: `<extensió>_<categoria>_<descripció>.qmd`. Exemples: `RV32I_instruccions_aritmetiques.qmd`, `Zicsr_instruccions.qmd`, `RARS_syscall_codis.qmd`.
-- Excepció: els callouts que contenen **figures SVG** (`#fig-`) no s'externalitzen; es reprodueixen íntegrament a `05_riscv.qmd` amb IDs `#nte-rv-*` i `#fig-rv-*` per evitar IDs duplicats amb T2/T5/T9.
+- Excepció: els callouts que contenen **figures SVG** (`#fig-`) no s'externalitzen; es reprodueixen íntegrament a `11_riscv.qmd` amb IDs `#nte-rv-*` i `#fig-rv-*` per evitar IDs duplicats amb T2/T5/T9.
 
-**IDs dels callouts a `05_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Tx.qmd`), per evitar conflictes de ID Quarto. Les figures dins `05_riscv.qmd` usen `#fig-rv-*`.
+**IDs dels callouts a `11_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Ax.qmd`), per evitar conflictes de ID Quarto. Les figures dins `11_riscv.qmd` usen `#fig-rv-*`.
 
-**Referències creuades cap als Apunts:** cada callout de `05_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) del `Tx.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemari i solucionari (PE/PS)). Quan un mateix contingut es presenta a més d'un `Tx.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
+**Referències creuades cap als Apunts:** cada callout de `11_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) del `Ax.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemari i solucionari (PE/PS)). Quan un mateix contingut es presenta a més d'un `Ax.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
 
-**Taules amb més d'un fragment font:** Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa taula pipe — el primer tanca la taula i la resta cau a text cru (line block de Pandoc). Quan una taula de `05_riscv.qmd` combina files de més d'un fitxer de `11_riscv/` (p. ex. aritmètica + `lui` sota un sol header), els fragments es fusionen prèviament en un únic fitxer generat per `22_scripts/gen_taules_auto.py` (manifest: `21_specs/taules_fusio.toml`) i `05_riscv.qmd` hi fa un únic `{{< include 11_riscv_auto/NOM.qmd >}}`. El directori `11_riscv_auto/` és generat (gitignored); no s'edita a mà.
+**Taules amb més d'un fragment font:** Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa taula pipe — el primer tanca la taula i la resta cau a text cru (line block de Pandoc). Quan una taula de `11_riscv.qmd` combina files de més d'un fitxer de `21_riscv/` (p. ex. aritmètica + `lui` sota un sol header), els fragments es fusionen prèviament en un únic fitxer generat per `25_scripts/gen_taules_auto.py` (manifest: `24_specs/taules_fusio.toml`) i `11_riscv.qmd` hi fa un únic `{{< include auto_riscv/NOM.qmd >}}`. El directori `auto_riscv/` és generat (gitignored); no s'edita a mà.
 
-A diferència dels altres scripts de `22_scripts/`, aquest **no** es crida des del `pre-render` de `_quarto.yml`: Quarto resol els `{{< include >}}` dels capítols en un escaneig de configuració que s'executa *abans* del pre-render, de manera que el fitxer fusionat ha d'existir al disc abans d'invocar `quarto`. Cal executar-lo manualment (vegeu `README.md`) el primer cop, i sempre que s'editi un fitxer de `11_riscv/` que aparegui a `21_specs/taules_fusio.toml` (si no, `11_riscv_auto/` queda desactualitzat en silenci: `quarto render` no fallarà, però la taula final no reflectirà el canvi). Els fitxers font de `11_riscv/` continuen sent l'única font de veritat.
+A diferència dels altres scripts de `25_scripts/`, aquest **no** es crida des del `pre-render` de `_quarto.yml`: Quarto resol els `{{< include >}}` dels capítols en un escaneig de configuració que s'executa *abans* del pre-render, de manera que el fitxer fusionat ha d'existir al disc abans d'invocar `quarto`. Cal executar-lo manualment (vegeu `README.md`) el primer cop, i sempre que s'editi un fitxer de `21_riscv/` que aparegui a `24_specs/taules_fusio.toml` (si no, `auto_riscv/` queda desactualitzat en silenci: `quarto render` no fallarà, però la taula final no reflectirà el canvi). Els fitxers font de `21_riscv/` continuen sent l'única font de veritat.
 
-**Contingut d'Aprofundiment exclòs de `05_riscv.qmd`:** el compendi de referència tècnica no pot incloure contingut que provingui únicament d'un callout d'Aprofundiment d'un `Tx.qmd` (material opcional, no bàsic). Exemple: `Zicsr_pseudo_immediats.qmd` (`csrrwi`/`csrrsi`/`csrrci`) es presenta a `T9.qmd` dins un callout d'Aprofundiment; per això `05_riscv.qmd` només inclou `Zicsr_instruccions.qmd` (les instruccions base), no la taula d'immediats. El fitxer de `11_riscv/` es manté igualment, per a l'ús des del `Tx.qmd` corresponent.
+**Contingut d'Aprofundiment exclòs de `11_riscv.qmd`:** el compendi de referència tècnica no pot incloure contingut que provingui únicament d'un callout d'Aprofundiment d'un `Ax.qmd` (material opcional, no bàsic). Exemple: `Zicsr_pseudo_immediats.qmd` (`csrrwi`/`csrrsi`/`csrrci`) es presenta a `A9.qmd` dins un callout d'Aprofundiment; per això `11_riscv.qmd` només inclou `Zicsr_instruccions.qmd` (les instruccions base), no la taula d'immediats. El fitxer de `21_riscv/` es manté igualment, per a l'ús des del `Ax.qmd` corresponent.
 
-**Fitxers `11_riscv/` existents:**
+**Fitxers `21_riscv/` existents:**
 
 | Fitxer | Usat a |
 | :--- | :--- |
-| `RARS_directives.qmd` | `05_riscv.qmd` |
-| `RARS_memoria_regions.qmd` | T3, `05_riscv.qmd` |
-| `RARS_syscall_codis.qmd` | T9, `05_riscv.qmd` |
-| `RARS_syscall_registres.qmd` | T9, `05_riscv.qmd` |
-| `RV32F_instruccions_aritmetiques.qmd` | T5, `05_riscv.qmd` |
-| `RV32F_instruccions_carrega_emmagatzemament.qmd` | T5, `05_riscv.qmd` |
-| `RV32F_instruccions_comparacio.qmd` | T5, `05_riscv.qmd` |
-| `RV32F_instruccions_conversio.qmd` | T5, `05_riscv.qmd` |
-| `RV32F_instruccions_moviment.qmd` | T5, `05_riscv.qmd` |
-| `RV32F_instruccions_moviment_bits.qmd` | T5, `05_riscv.qmd` |
-| `RV32I_abi_registres_resum.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_csr_mcause_taula.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_csr_mip_mie_taula.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_csr_modes_ms_taula.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_csr_mtvec_modes.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_csr_tlb_taula.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_ecall_ebreak.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_instruccions_aritmetiques.qmd` | T2, `05_riscv.qmd` |
-| `RV32I_instruccions_comparacio.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_instruccions_desplacament_bits_aritmetics.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_instruccions_desplacament_bits_logics.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_instruccions_lectura_escriptura.qmd` | T2, `05_riscv.qmd` |
-| `RV32I_instruccions_logiques_bit_a_bit.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_instruccions_lui.qmd` | T2, `05_riscv.qmd` |
-| `RV32I_instruccions_salt_condicional_relatiu_PC.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_instruccions_salt_incondicional.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_instruccions_salt_incondicional_indirecte.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_mret.qmd` | T9, `05_riscv.qmd` |
-| `RV32I_pseudo_j.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_pseudo_li.qmd` | T2 (pendent), `05_riscv.qmd` |
-| `RV32I_pseudo_mv.qmd` | T2 (pendent), `05_riscv.qmd` |
-| `RV32I_pseudo_neg.qmd` | T4, `05_riscv.qmd` |
-| `RV32I_pseudo_not.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_pseudo_salt_condicional.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_pseudo_salt_indirecte.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_pseudo_salt_zero.qmd` | T3, `05_riscv.qmd` |
-| `RV32I_registres_coma_flotant.qmd` | T5, `05_riscv.qmd` |
-| `RV32I_registres_proposit_general.qmd` | T2, `05_riscv.qmd` |
-| `RV32I_sfence_vma.qmd` | T9, `05_riscv.qmd` |
-| `RV32M_instruccions_divisio.qmd` | T4, `05_riscv.qmd` |
-| `RV32M_instruccions_multiplicacio.qmd` | T4, `05_riscv.qmd` |
-| `Zicsr_instruccions.qmd` | T9, `05_riscv.qmd` |
-| `Zicsr_pseudo_immediats.qmd` | T9, `05_riscv.qmd` |
+| `RARS_directives.qmd` | `11_riscv.qmd` |
+| `RARS_memoria_regions.qmd` | T3, `11_riscv.qmd` |
+| `RARS_syscall_codis.qmd` | T9, `11_riscv.qmd` |
+| `RARS_syscall_registres.qmd` | T9, `11_riscv.qmd` |
+| `RV32F_instruccions_aritmetiques.qmd` | T5, `11_riscv.qmd` |
+| `RV32F_instruccions_carrega_emmagatzemament.qmd` | T5, `11_riscv.qmd` |
+| `RV32F_instruccions_comparacio.qmd` | T5, `11_riscv.qmd` |
+| `RV32F_instruccions_conversio.qmd` | T5, `11_riscv.qmd` |
+| `RV32F_instruccions_moviment.qmd` | T5, `11_riscv.qmd` |
+| `RV32F_instruccions_moviment_bits.qmd` | T5, `11_riscv.qmd` |
+| `RV32I_abi_registres_resum.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_csr_mcause_taula.qmd` | T9, `11_riscv.qmd` |
+| `RV32I_csr_mip_mie_taula.qmd` | T9, `11_riscv.qmd` |
+| `RV32I_csr_modes_ms_taula.qmd` | T9, `11_riscv.qmd` |
+| `RV32I_csr_mtvec_modes.qmd` | T9, `11_riscv.qmd` |
+| `RV32I_csr_tlb_taula.qmd` | T9, `11_riscv.qmd` |
+| `RV32I_ecall_ebreak.qmd` | T9, `11_riscv.qmd` |
+| `RV32I_instruccions_aritmetiques.qmd` | T2, `11_riscv.qmd` |
+| `RV32I_instruccions_comparacio.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_instruccions_desplacament_bits_aritmetics.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_instruccions_desplacament_bits_logics.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_instruccions_lectura_escriptura.qmd` | T2, `11_riscv.qmd` |
+| `RV32I_instruccions_logiques_bit_a_bit.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_instruccions_lui.qmd` | T2, `11_riscv.qmd` |
+| `RV32I_instruccions_salt_condicional_relatiu_PC.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_instruccions_salt_incondicional.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_instruccions_salt_incondicional_indirecte.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_mret.qmd` | T9, `11_riscv.qmd` |
+| `RV32I_pseudo_j.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_pseudo_li.qmd` | T2 (pendent), `11_riscv.qmd` |
+| `RV32I_pseudo_mv.qmd` | T2 (pendent), `11_riscv.qmd` |
+| `RV32I_pseudo_neg.qmd` | T4, `11_riscv.qmd` |
+| `RV32I_pseudo_not.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_pseudo_salt_condicional.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_pseudo_salt_indirecte.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_pseudo_salt_zero.qmd` | T3, `11_riscv.qmd` |
+| `RV32I_registres_coma_flotant.qmd` | T5, `11_riscv.qmd` |
+| `RV32I_registres_proposit_general.qmd` | T2, `11_riscv.qmd` |
+| `RV32I_sfence_vma.qmd` | T9, `11_riscv.qmd` |
+| `RV32M_instruccions_divisio.qmd` | T4, `11_riscv.qmd` |
+| `RV32M_instruccions_multiplicacio.qmd` | T4, `11_riscv.qmd` |
+| `Zicsr_instruccions.qmd` | T9, `11_riscv.qmd` |
+| `Zicsr_pseudo_immediats.qmd` | T9, `11_riscv.qmd` |
 
 ### Extensions RISC-V a EC
 
@@ -140,7 +140,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### T1 i T5
 
 - **«En excés» / «codificació en excés»**: terme correcte per al concepte general de representació d'enters (T1, `@sec-enters-en-exces`). Usat quan el valor K és arbitrari.
-- **«Esbiaixat» / «biaix»**: terme correcte per a l'exponent IEEE 754 específicament (T5, L5, PS_T5). Font: Viquipèdia cat., «Format de coma flotant de precisió simple». *No* és sinònim de «biaix estadístic» (context RNE): són homònims, no el mateix concepte.
+- **«Esbiaixat» / «biaix»**: terme correcte per a l'exponent IEEE 754 específicament (T5, L5, S5). Font: Viquipèdia cat., «Format de coma flotant de precisió simple». *No* és sinònim de «biaix estadístic» (context RNE): són homònims, no el mateix concepte.
 - **«Mantissa» (no «significand»)**: terme preferent a EC per a la part $1{,}F$ del nombre en coma flotant. L'estàndard IEEE-754 en anglès prefereix formalment *significand* perquè *mantissa* ja té un significat establert en el context de logaritmes (Knuth en critica l'ús aquí per aquest motiu), però aquesta distinció és interna a l'anglès tècnic: **cap font normativa catalana la reflecteix**. Termcat (Cercaterm) només té fitxa per a «mantissa» (àmbit Matemàtiques, logaritmes); la Viquipèdia catalana, tant a «Format de coma flotant de precisió simple» com a «Format de coma flotant Bfloat16», usa «mantissa» com a terme principal («significand» hi apareix només com a manlleu anglès puntual, no com a alternativa establerta). A EC, l'ambigüitat que criticava Knuth ja queda resolta amb la distinció pròpia del projecte entre **fracció** ($F$, els bits emmagatzemats) i **mantissa** ($1{,}F$, amb el bit ocult): vegeu més amunt. Es descarta, doncs, l'adopció de «significand».
 
 #### T5
@@ -181,7 +181,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Referències creuades cap a la teoria** (Nivell 2): als exercicis i solucions, afegir referències `@sec-nom` a la secció de teoria rellevant quan el concepte clau no és obvi o quan l'estudiant típicament s'encalla. No de forma mecànica a tots els exercicis, sinó selectivament. Nivell 3 (`@nte-`, `@tip-`...) admès quan la solució és aplicació directa d'un exemple concret de teoria.
   - Format recomanat als enunciats: nota al final del bloc `{#exr-}` o sota la capçalera de secció: «*Vegeu `@sec-nom`.*»
   - Format recomanat a les solucions: integrat al text de la solució on es fa servir el concepte.
-- **Cobertura**: aplicar als xats de revisió de cada tema. PE_T2/PS_T2 es retoquen en un xat breu un cop T2.qmd tingui els slugs complets (tasca Claude Code).
+- **Cobertura**: aplicar als xats de revisió de cada tema. E2/S2 es retoquen en un xat breu un cop A2.qmd tingui els slugs complets (tasca Claude Code).
 
 #### Convencions globals del laboratori
 
@@ -192,7 +192,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
 - **Lectura prèvia**: primera secció de cada sessió; taula amb columnes "Concepte" i "On trobar-ho".
 - **Lliurament**: última secció de cada sessió; taula amb els exercicis i el tipus de lliurament.
-- **Nom de figura SVG**: `L<N>_nom_figura.svg` (fitxer font a `12_figs_originals/`). El pre-render genera `figs_auto/L<N>_nom_figura__original_light.svg` i `_dark` automàticament.
+- **Nom de figura SVG**: `L<N>_nom_figura.svg` (fitxer font a `22_figs_originals/`). El pre-render genera `auto_figs/L<N>_nom_figura__original_light.svg` i `_dark` automàticament.
 - **Comprovació pràctica**: les verificacions a RARS (valors esperats, ús del depurador) s'inclouen com a `{.callout-tip title="Comprovació pràctica"}` dins el bloc `{#sol-...}` corresponent. No porten etiqueta `#tip-` perquè no es referencien des d'altres punts del text.
 - **Directives `.eqv`**: es defineixen **abans** de la primera directiva de segment (`.data` o `.text`), fora de qualsevol secció.
 
@@ -242,7 +242,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
     - Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres.
     - La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`.
     - **Separador de milers**: espai («65 535»), no coma anglesa («65,535», ambigua amb la coma decimal catalana) ni punt.
-- **Prefixos de mida binaris vs. decimals**: `KiB`, `MiB`, `GiB`, `TiB` (IEC, base 2) per a qualsevol mida que sigui una potència de 2 —mida de cau, de memòria, de pàgina, de bloc, rangs d'adreçament, etc.—, que és la immensa majoria de casos a EC. `KB`, `MB`, `GB`, `TB` (base 10) es reserven exclusivament per a mides genuïnament decimals (p. ex. la capacitat comercial anunciada d'un disc, o les referències de mercat aproximades de `T2.qmd §El problema de la diferència entre processador i memòria`). Explicat a `T2.qmd` (@cau-prefixos-binaris), primera aparició al llibre; en cas de dubte, per defecte `KiB`/`MiB`/`GiB`/`TiB`.
+- **Prefixos de mida binaris vs. decimals**: `KiB`, `MiB`, `GiB`, `TiB` (IEC, base 2) per a qualsevol mida que sigui una potència de 2 —mida de cau, de memòria, de pàgina, de bloc, rangs d'adreçament, etc.—, que és la immensa majoria de casos a EC. `KB`, `MB`, `GB`, `TB` (base 10) es reserven exclusivament per a mides genuïnament decimals (p. ex. la capacitat comercial anunciada d'un disc, o les referències de mercat aproximades de `A2.qmd §El problema de la diferència entre processador i memòria`). Explicat a `A2.qmd` (@cau-prefixos-binaris), primera aparició al llibre; en cas de dubte, per defecte `KiB`/`MiB`/`GiB`/`TiB`.
 - **Veu impersonal**: Sempre: "Cal verificar que no hi ha errors" (no "hem de verificar"). Excepcions:
     - **`{.callout-tip}`**: segona persona del plural (*calculeu*, *determineu*, *suposeu que...*).
     - **Instruccions operatives pas a pas**: imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*).
@@ -352,7 +352,7 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
 | Cel·les de taula | ✓ | ✓ | ✓ |
 | Captions de figura/taula | ✓ | ✓ | ✓ |
 | Comentaris de blocs de codi | (tot és codi) | ✗ (no es renderitza) | ✗ |
-| Etiquetes SVG | segons `21_specs/svg.md` (MONO per a codi); sense MathJax: notació Unicode (×, ≤, ²) | | |
+| Etiquetes SVG | segons `24_specs/svg.md` (MONO per a codi); sense MathJax: notació Unicode (×, ≤, ²) | | |
 
 **Exemples d'aplicació** (llista de referència ràpida):
 
@@ -372,7 +372,7 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
     - Camps de bits `opcode`, `funct3`.
     - Variables `i` i altres elements de codi `>>`, `i++`.
     - Comandes `quarto render --to html`.
-    - Noms de fitxers `T1.qmd`, `bibliografia.qmd`.
+    - Noms de fitxers `A1.qmd`, `bibliografia.qmd`.
     - Noms de branques `contingut/t5-vectors`.
     - Noms d'etiquetes `#nte-TODO`, `@sec-callouts`.
     - Adreces de memòria concretes `0x00400000`, `0x10100000`–`0x10100003`.
@@ -392,7 +392,7 @@ Regles generals:
 
 | Tipus | Prefix | Classe | Color | Aval. | Títol | Ús i particularitats |
 | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
-| RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/11_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## M ISA — `, `## F ISA — `, `## RV32I ABI — `, `## Pseudoinstruccions — `, `## Directives — `, `## RARS — `, `## RV32I Registres — `. |
+| RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/21_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## M ISA — `, `## F ISA — `, `## RV32I ABI — `, `## Pseudoinstruccions — `, `## Directives — `, `## RARS — `, `## RV32I Registres — `. |
 | Criteri EC | `#imp-` | `.callout-important` | Blau | Sí | No | Criteris de l'assignatura. Sense títol, curt, en **negretes**. No s'introdueix al text. |
 | Essencial | `#cau-` | `.callout-caution` | Vermell | Sí | No | Contingut indispensable o recordatori fonamental. Sense títol, curt, en **negretes**. S'ha de llegir com un ressaltat del text. |
 | Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu en 2a persona del plural. No s'introdueix al text. |
@@ -438,15 +438,15 @@ El camp `filename` indica el llenguatge o el context del bloc:
 
 #### Paleta de colors
 
-La paleta completa (colors light i dark, per zona semàntica) és a `21_specs/svg.md §10`. La taula de substitució light → dark per al pipeline automàtic és el bloc `#svg-dark-replacements` de `21_specs/svg.md §13`. Per modificar qualsevol color, editeu **només** aquells blocs.
+La paleta completa (colors light i dark, per zona semàntica) és a `24_specs/svg.md §10`. La taula de substitució light → dark per al pipeline automàtic és el bloc `#svg-dark-replacements` de `24_specs/svg.md §13`. Per modificar qualsevol color, editeu **només** aquells blocs.
 
 El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les figures SVG com a les taules amb color. Cada tema pot introduir associacions semàntiques pròpies (per exemple, a T7: blau=memòria cau, verd=memòria principal, groc=SSD, vermell=disc), però sempre dins la mateixa paleta.
 
 #### Convencions SVG
 
-Totes les convencions tècniques de les figures SVG (canvas, marges, escales, fonts, colors, ratlles indicadores, etiquetes, fletxes) són a `21_specs/svg.md`. Per crear o modificar una figura SVG, llegiu aquest fitxer com a primera referència.
+Totes les convencions tècniques de les figures SVG (canvas, marges, escales, fonts, colors, ratlles indicadores, etiquetes, fletxes) són a `24_specs/svg.md`. Per crear o modificar una figura SVG, llegiu aquest fitxer com a primera referència.
 
-Convenció de noms dels fitxers font: `T<N>_nom_figura.svg` (guió baix, no guió), desats a `12_figs_originals/`. Les figures externes s'emmagatzemen a `13_figs_externes/`. Els fitxers generats a `figs_auto/` reben el sufix `__original_light/dark`, `__extern_light/dark` o `__registre_light/dark` segons l'origen.
+Convenció de noms dels fitxers font: `T<N>_nom_figura.svg` (guió baix, no guió), desats a `22_figs_originals/`. Les figures externes s'emmagatzemen a `23_figs_externes/`. Els fitxers generats a `auto_figs/` reben el sufix `__original_light/dark`, `__extern_light/dark` o `__registre_light/dark` segons l'origen.
 
 Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`. <!-- TODO: Falta crear la taula completa de figures externes i llicències corresponents (secció `{#sec-llicencia-figures-externes}`); referència eliminada temporalment. -->
 
@@ -456,13 +456,13 @@ Els diagrames d'arbre i grafs senzills es generen amb **Graphviz** (`dot -Tsvg`)
 
 **Fitxers:**
 
-- Font: `12_figs_originals/T<N>_nom_figura.gv`
-- Sortida: `figs_auto/T<N>_nom_figura_light.svg` (generat manualment; la variant dark la genera `gen_dark.py` automàticament)
+- Font: `22_figs_originals/T<N>_nom_figura.gv`
+- Sortida: `auto_figs/T<N>_nom_figura_light.svg` (generat manualment; la variant dark la genera `gen_dark.py` automàticament)
 
 **Comanda de generació:**
 
 ```bash
-dot -Tsvg 12_figs_originals/T<N>_nom_figura.gv -o /tmp/raw.svg
+dot -Tsvg 22_figs_originals/T<N>_nom_figura.gv -o /tmp/raw.svg
 ```
 
 Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `.gv` per a un exemple complet):
@@ -477,13 +477,13 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 
 | Fitxer font | Figura generada | Contingut |
 | :--- | :--- | :--- |
-| `21_specs/T7_mc_politiques_resum__graphviz.svg` | `12_figs_originals/T7_mc_politiques_resum__graphviz.svg.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
+| `24_specs/T7_mc_politiques_resum__graphviz.svg` | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
 
 #### Generació de la versió dark
 
-> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `22_scripts/gen_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `21_specs/svg.md §13`.
+> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `25_scripts/gen_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `24_specs/svg.md §13`.
 
-Per a figures creades manualment, extretes de PDFs o de registres de bits, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `21_specs/svg.md` (pipeline, taula de colors, canvas i mapa de fonts) i `21_specs/registres.toml` (definicions de registres de bits) per als detalls tècnics.
+Per a figures creades manualment, extretes de PDFs o de registres de bits, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `24_specs/svg.md` (pipeline, taula de colors, canvas i mapa de fonts) i `24_specs/registres.toml` (definicions de registres de bits) per als detalls tècnics.
 
 #### Integració al `.qmd`
 
@@ -493,25 +493,25 @@ Per a figures creades manualment, extretes de PDFs o de registres de bits, **no 
 ::: {#fig-nom-figura}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
+![](/auto_figs/Tx_nom_figura__original_light.svg)
 :::
 ::: {.dark-content}
-![](/figs_auto/Tx_nom_figura__original_dark.svg)
+![](/auto_figs/Tx_nom_figura__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/figs_auto/Tx_nom_figura__original_light.svg)
+![](/auto_figs/Tx_nom_figura__original_light.svg)
 :::
 Caption acabat amb punt.
 :::
 ```
 
 Notes:
-- La ruta `/figs_auto/` comença amb `/`, que Quarto interpreta com a relativa a l'arrel del projecte (on és `_quarto.yml`). És el mètode més robust: no depèn de la ubicació del `.qmd` dins l'arbre de directoris.
+- La ruta `/auto_figs/` comença amb `/`, que Quarto interpreta com a relativa a l'arrel del projecte (on és `_quarto.yml`). És el mètode més robust: no depèn de la ubicació del `.qmd` dins l'arbre de directoris.
 - El bloc `content-visible when-format="html"` conté les dues variants (light/dark); el bloc `when-format="pdf"` conté només la versió light. Sense aquesta separació, el PDF renderitza totes dues variants i les figures surten duplicades.
 - Els blocs `.light-content` i `.dark-content` **no** porten `style="text-align: center;"`: les figures amb `{#fig-}` ja centren automàticament.
 - El caption (última línia abans del `:::` de tancament) és text lliure; Quarto l'associa automàticament a `{#fig-}` com a caption de la figura.
-- l'esclat es fa amb `width="40%"` (e.g. `![](/figs_auto/Tx_nom_figura__original_light.svg){width="40%"}`)
+- l'esclat es fa amb `width="40%"` (e.g. `![](/auto_figs/Tx_nom_figura__original_light.svg){width="40%"}`)
 ```
 
 ### Taules
@@ -664,7 +664,7 @@ Comproveu que el projecte renderitza correctament abans de fer push. Des de la l
 make render
 ```
 
-(equivalent a generar les taules fusionades de `05_riscv.qmd` amb `22_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `11_riscv_auto/` ja existeix i està al dia.
+(equivalent a generar les taules fusionades de `11_riscv.qmd` amb `25_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `auto_riscv/` ja existeix i està al dia.
 
 - Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
@@ -676,7 +676,7 @@ La branca `main` està **protegida**: tot canvi s'integra a través d'una **Merg
 git checkout main && git pull                   # 1. Actualitzar main
 git checkout -b contingut/t5-vectors           # 2. Branca nova (vegeu convenció de noms)
 # ... canvis ...
-git add T5.qmd
+git add A5.qmd
 git commit -m "T5: afegeix secció sobre vectors"  # missatge: en català, present, descriptiu
 git push origin contingut/t5-vectors           # 3. Pujar branca
 # 4. Obrir Merge Request a GitLab apuntant a main
@@ -737,14 +737,14 @@ quarto render             # genera les dues sortides
 Cal passar-los sempre els fitxers següents:
 
 - `CLAUDE.md`
-- `07_contrib.qmd`
+- `13_contrib.qmd`
 - `_quarto.yml`
 - `TODO.md` (per a tasques que depenguin de decisions obertes)
 
 Per a tasques que impliquin figures SVG, afegir també:
 
-- `21_specs/svg.md`
-- `21_specs/registres.toml` (si la tasca inclou figures de registres de bits)
+- `24_specs/svg.md`
+- `24_specs/registres.toml` (si la tasca inclou figures de registres de bits)
 
 `CLAUDE.md` especifica el model i l'effortness recomanats per a cada tipus de tasca.
 

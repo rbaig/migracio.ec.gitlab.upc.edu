@@ -2,11 +2,11 @@
 
 ## Decisions obertes
 
-Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
+Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
-- **`startup.s`**: mantenir o eliminar? Decisió ajornada a la fase de revisió externa. Hipòtesi de treball durant la revisió interna: **no hi ha `startup.s`** (sense SO); tot el material nou es genera sense considerar-lo, i el material existent relatiu a l'opció «amb `startup.s`» es manté comentat (no s'elimina). Blocs comentats amb les instruccions de reactivació: T2.qmd (`#imp-programa-esquelet`/`#imp-exception-handler`, ln 719-784), T3.qmd (`#tip-rars-main-multinivell`, ln 1543-1550), `index.qmd` (descàrrega i configuració de l'*Exception Handler*, ln 181-198). Afecta també PE_T9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93` quan es prengui la decisió.
+- **`startup.s`**: mantenir o eliminar? Decisió ajornada a la fase de revisió externa. Hipòtesi de treball durant la revisió interna: **no hi ha `startup.s`** (sense SO); tot el material nou es genera sense considerar-lo, i el material existent relatiu a l'opció «amb `startup.s`» es manté comentat (no s'elimina). Blocs comentats amb les instruccions de reactivació: A2.qmd (`#imp-programa-esquelet`/`#imp-exception-handler`, ln 719-784), A3.qmd (`#tip-rars-main-multinivell`, ln 1543-1550), `index.qmd` (descàrrega i configuració de l'*Exception Handler*, ln 181-198). Afecta també E9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93` quan es prengui la decisió.
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
-- **Coherència de títols en `.callout-caution`**: `07_contrib.qmd` indica sense títol. No és una excepció puntual de T5: és una deriva d'estil real entre temes. Recompte: T2/T3/T4/T9 mai en porten (0 casos); T7 (5/5) i T8 (6/6) sempre en porten; T5 és mixt (6/7 amb títol; només `#cau-cardinalitat-codificacions` no en porta). Decisió pendent (2026-07-05, deixada oberta expressament): unificar sense títol (coherent amb el criteri actual, 17 callouts a retocar a T5/T7/T8), unificar amb títol (canviar el criteri, 22 callouts a retocar a T2/T3/T4/T9), o valorar cas per cas si el títol aporta valor real.
+- **Coherència de títols en `.callout-caution`**: `13_contrib.qmd` indica sense títol. No és una excepció puntual de T5: és una deriva d'estil real entre temes. Recompte: T2/T3/T4/T9 mai en porten (0 casos); T7 (5/5) i T8 (6/6) sempre en porten; T5 és mixt (6/7 amb títol; només `#cau-cardinalitat-codificacions` no en porta). Decisió pendent (2026-07-05, deixada oberta expressament): unificar sense títol (coherent amb el criteri actual, 17 callouts a retocar a T5/T7/T8), unificar amb títol (canviar el criteri, 22 callouts a retocar a T2/T3/T4/T9), o valorar cas per cas si el títol aporta valor real.
 - **Criteris de codi C**: completar.
 - **Plantilles Markdown** (`L2.qmd` i resta): posar-ne a tots excepte `L2.qmd`, o eliminar de `L2.qmd`?
 - **Figures portades d'extern**: afegir font (dels PDF n'hi ha que són del Patterson -e.g. T7 MC).
@@ -17,12 +17,12 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
 ### T3
 
-- **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que T2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb T2.qmd i T3.qmd.
-- **Revisar referència `@imp-exception-handler` reparada** (T3.qmd, ~L. 1546, callout `#tip-rars-main-multinivell`): l'etiqueta original no tenia destí; s'ha reescrit apuntant a `@sec-ei-rse` (T9) i retocat la frase perquè tingués sentit gramatical. És una interpretació de Claude Code, no una simple correcció mecànica d'slug — verificar que el destí i la redacció són correctes.
+- **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que A2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb A2.qmd i A3.qmd.
+- **Revisar referència `@imp-exception-handler` reparada** (A3.qmd, ~L. 1546, callout `#tip-rars-main-multinivell`): l'etiqueta original no tenia destí; s'ha reescrit apuntant a `@sec-ei-rse` (T9) i retocat la frase perquè tingués sentit gramatical. És una interpretació de Claude Code, no una simple correcció mecànica d'slug — verificar que el destí i la redacció són correctes.
 - Retocs manuals pendents (Roger) a les figures:
-  - `figs_auto/T3_ba_exemple__original_light.svg`
-  - `figs_auto/T3_deps_multi__original_light.svg`
-  - `figs_auto/T3_deps_exemple__original_light.svg`
+  - `auto_figs/T3_ba_exemple__original_light.svg`
+  - `auto_figs/T3_deps_multi__original_light.svg`
+  - `auto_figs/T3_deps_exemple__original_light.svg`
 
 ### T5
 
@@ -35,7 +35,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `07_contrib.qmd`.
 
 ### T7 — Figures pendents de creació
 
-**Pendents del xat de revisió PE_T7/PS_T7 (2026-07):**
+**Pendents del xat de revisió E7/S7 (2026-07):**
 
 - **`exr-p7-assoc-multinivell`: seqüència d'adreces truncada**. L'enunciat diu «seqüència de 28 adreces … : `0, 5, 10, 12, 34, 0, 66, ...`» i amb els tres punts l'exercici no és resoluble. Interpretació probable: 7 adreces repetides 4 vegades (28 accessos). **Contrastar amb el PDF original** i reescriure: «la seqüència de 7 adreces següent, repetida 4 vegades (28 accessos en total): `0, 5, 10, 12, 34, 0, 66`».
 
@@ -43,7 +43,7 @@ Figures pendents (totes requereixen LO Draw de Roger):
 
 | Figura | Descripció | Notes |
 | :--- | :--- | :--- |
-| `fig-mc-exemple-descomposicio-32bits` | Descomposició 32 bits adreça `0x100100F8` | Export LO Draw existent a `13_figs_externes`; reconstruir com a natiu |
+| `fig-mc-exemple-descomposicio-32bits` | Descomposició 32 bits adreça `0x100100F8` | Export LO Draw existent a `23_figs_externes`; reconstruir com a natiu |
 | `fig-cd-diagrama` | Diagrama blocs MC correspondència directa | 🔴 Referència trencada · LO Draw pendent |
 | `fig-assoc-conjunts-diagrama` | Diagrama blocs MC associativa per conjunts | 🔴 Referència trencada · LO Draw pendent |
 | `fig-ca-diagrama` | Diagrama blocs MC completament associativa | 🔴 Referència trencada · LO Draw pendent |
@@ -57,7 +57,7 @@ Decisions obertes de T7:
 
 ### T8 — Figures pendents de creació
 
-8 figures de nova creació. Prioritat: `T8_mv_flux_traduccio` (resol `@fig-mv-flux-traduccio` 🔴). Rutes: `/figs_auto/T8_*__original_light.svg`.
+8 figures de nova creació. Prioritat: `T8_mv_flux_traduccio` (resol `@fig-mv-flux-traduccio` 🔴). Rutes: `/auto_figs/T8_*__original_light.svg`.
 
 ### T9
 
@@ -75,18 +75,18 @@ Decisions obertes de T7:
 
 ### SVG
 
-- **Migració de canvas a amplades estàndard**: figures de BA i mapa de memòria (`W=316 px`) → classe `estreta` (`W=340 px`). Decisió pendent: mantenir `w_rect=230` (marge dret 10→34) o ampliar `w_rect` a 254 (marges simètrics). Un cop decidit, aplicar a les 7 figures afectades i actualitzar `21_specs/svg.md §2`. Figures: `T3_mapa_memoria`, `T3_ba_general`, `T3_ba_func`, `T3_ba_multi`, `T3_ba_exemple`, `T3_func_uninivell_pila`, `T3_pila_crides_aniuades`.
+- **Migració de canvas a amplades estàndard**: figures de BA i mapa de memòria (`W=316 px`) → classe `estreta` (`W=340 px`). Decisió pendent: mantenir `w_rect=230` (marge dret 10→34) o ampliar `w_rect` a 254 (marges simètrics). Un cop decidit, aplicar a les 7 figures afectades i actualitzar `24_specs/svg.md §2`. Figures: `T3_mapa_memoria`, `T3_ba_general`, `T3_ba_func`, `T3_ba_multi`, `T3_ba_exemple`, `T3_func_uninivell_pila`, `T3_pila_crides_aniuades`.
 - **Migrar diagrames Mermaid existents a SVG**.
 
 ### Contingut global
 
-- **«ample de banda» → «amplada de banda»**: substitució global (afegida a les substitucions obligatòries de `07_contrib.qmd`; T7 ja fet, revisar la resta de temes, p. ex. amb Claude Code).
-- **Unitats KB/KiB**: revisar la resta de temes segons el criteri de `07_contrib.qmd §T7` (binàries per a registres/MC/MP; decimals per a emmagatzematge secundari, costos i amplades de banda; T7 ja fet).
+- **«ample de banda» → «amplada de banda»**: substitució global (afegida a les substitucions obligatòries de `13_contrib.qmd`; T7 ja fet, revisar la resta de temes, p. ex. amb Claude Code).
+- **Unitats KB/KiB**: revisar la resta de temes segons el criteri de `13_contrib.qmd §T7` (binàries per a registres/MC/MP; decimals per a emmagatzematge secundari, costos i amplades de banda; T7 ja fet).
 - **Cometes** `"..."` → `«...»`: substitució global.
 - **`****` sobrants**: eliminar.
 - **Equacions a MathML**: passar totes les equacions; definir criteris d'inline. **Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`)**: funciona (`underbrace`, `cases`, taules amb math correctes a Chrome), i elimina el JS de MathJax (render instantani, funciona offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), la numeració d'equacions queda inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. Recomanació: mantenir MathJax 3 (el desbordament mòbil ja està resolt via CSS); reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa).
 - **PDF**: figures dins callouts no queden centrades → investigar via `preamble.tex`.
-- **Gestió d'errades post-commit**: definir protocol (vegeu `07_contrib.qmd §Gestió d'errades`).
+- **Gestió d'errades post-commit**: definir protocol (vegeu `13_contrib.qmd §Gestió d'errades`).
 
 ### `index.qmd`
 

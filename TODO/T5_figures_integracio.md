@@ -1,11 +1,11 @@
 # Integració de les figures de coma flotant a T5
 
-Tres fitxers font (light) a `12_figs_originals/`. El pre-render (`norm_font.py` + `gen_dark.py`)
-en genera automàticament `figs_auto/T5_<nom>__original_{light,dark}.svg`. **No cal crear la variant
+Tres fitxers font (light) a `22_figs_originals/`. El pre-render (`norm_font.py` + `gen_dark.py`)
+en genera automàticament `auto_figs/T5_<nom>__original_{light,dark}.svg`. **No cal crear la variant
 dark manualment**: tots els traços/textos són `#000000`, que la taula de substitució converteix a
 `#adb5bd` en mode fosc.
 
-| Font (`12_figs_originals/`) | On va a T5 |
+| Font (`22_figs_originals/`) | On va a T5 |
 | :--- | :--- |
 | `T5_exponent.svg` | `### L'estàndard IEEE-754` (prop de `#cau-exces-comparacio` / `#### Exponent`) |
 | `T5_recta_global.svg` | `### Rang i precisió` |
@@ -19,14 +19,14 @@ dark manualment**: tots els traços/textos són `#000000`, que la taula de subst
 ::: {#fig-exponent-ieee754}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/figs_auto/T5_exponent__original_light.svg)
+![](/auto_figs/T5_exponent__original_light.svg)
 :::
 ::: {.dark-content}
-![](/figs_auto/T5_exponent__original_dark.svg)
+![](/auto_figs/T5_exponent__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/figs_auto/T5_exponent__original_light.svg)
+![](/auto_figs/T5_exponent__original_light.svg)
 :::
 Correspondència entre l'exponent emmagatzemat ($E$, 0–255) i l'exponent real ($e = E - 127$): els denormals ocupen $E=0$ i $\pm\infty$/NaN ocupen $E=255$.
 :::
@@ -40,14 +40,14 @@ Referència al text amb `@fig-exponent-ieee754`.
 ::: {#fig-recta-global}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/figs_auto/T5_recta_global__original_light.svg)
+![](/auto_figs/T5_recta_global__original_light.svg)
 :::
 ::: {.dark-content}
-![](/figs_auto/T5_recta_global__original_dark.svg)
+![](/auto_figs/T5_recta_global__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/figs_auto/T5_recta_global__original_light.svg)
+![](/auto_figs/T5_recta_global__original_light.svg)
 :::
 Recta de la coma flotant IEEE-754 (simple precisió): $\pm\infty$ i NaN als extrems ($E=255$) i les potències de 2 equiespaiades, perquè l'exponent és lineal.
 :::
@@ -59,14 +59,14 @@ Recta de la coma flotant IEEE-754 (simple precisió): $\pm\infty$ i NaN als extr
 ::: {#fig-recta-zoom-zero}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/figs_auto/T5_recta_zoom_zero__original_light.svg)
+![](/auto_figs/T5_recta_zoom_zero__original_light.svg)
 :::
 ::: {.dark-content}
-![](/figs_auto/T5_recta_zoom_zero__original_dark.svg)
+![](/auto_figs/T5_recta_zoom_zero__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/figs_auto/T5_recta_zoom_zero__original_light.svg)
+![](/auto_figs/T5_recta_zoom_zero__original_light.svg)
 :::
 Zoom al voltant del zero: $\pm 0$ i els denormals ($E=0$) omplen el buit entre el zero i el normal més petit ($2^{-126}$).
 :::

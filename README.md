@@ -10,30 +10,30 @@ Elaborat amb [Quarto](https://quarto.org/) i [Claude](https://claude.ai/) (Anthr
 
 ### Teoria (T1–T9)
 
-Directori `01_T/`:
+Directori `01_apunts/`:
 
 | Fitxer | Contingut |
 | :--- | :--- |
-| `T1.qmd`–`T9.qmd` | Teoria del Tema x (x = 1–9) |
+| `A1.qmd`–`A9.qmd` | Teoria del Tema x (x = 1–9) |
 
-Directori `02_PE/`:
-
-| Fitxer | Contingut |
-| :--- | :--- |
-| `PE_T1.qmd`–`PE_T9.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
-
-Directori `03_PS/`:
+Directori `02_exercicis/`:
 
 | Fitxer | Contingut |
 | :--- | :--- |
-| `PS_T1.qmd`–`PS_T9.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 1–9) |
-| `PS_criteris.qmd` | Criteris de selecció dels problemes resolts |
+| `E1.qmd`–`E9.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
+
+Directori `03_solucions/`:
+
+| Fitxer | Contingut |
+| :--- | :--- |
+| `S1.qmd`–`S9.qmd` | Problemes: solucions d'una selecció d'exercicis del Tema x (x = 1–9) |
+| `S_criteris.qmd` | Criteris de selecció dels problemes resolts |
 
 La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDFs T6–T8 corresponen als temes T7–T9.
 
 ### Laboratori (L1–L6)
 
-Directori `04_L/`:
+Directori `04_laboratori/`:
 
 | Fitxer | Contingut |
 | :--- | :--- |
@@ -46,19 +46,19 @@ Directori `04_L/`:
 | `_quarto.yml` | Configuració del projecte Quarto |
 | `Makefile` | `make render` (genera les taules fusionades i renderitza) i `make clean` |
 | `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
-| `09_bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
+| `15_bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
 | `CLAUDE.md` | Instruccions operatives per a Claude |
-| `07_contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
+| `13_contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
 | `custom_dark.scss` | Estils CSS addicionals per al mode fosc (HTML) |
 | `custom_light.scss` | Estils CSS addicionals per al mode clar (HTML) |
 | `custom.scss` | Estils CSS comuns a tots dos modes (HTML) |
 | `ieee.csl` | Estil de citació IEEE (CSL) |
 | `index.qmd` | Pàgina de presentació (avaluació, eines, bibliografia) |
 | `preamble.tex` | Preàmbul LaTeX addicional (PDF) |
-| `05_riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
-| `06_sigles.qmd` | Glossari de sigles |
+| `11_riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
+| `12_sigles.qmd` | Glossari de sigles |
 | `styles.css` | Estils CSS addicionals (HTML) |
-| `21_specs/svg.md` | Especificacions d'estil per a les figures SVG |
+| `24_specs/svg.md` | Especificacions d'estil per a les figures SVG |
 | `TODO.md` | Llista de tasques pendents (contingut transitori) |
 
 ### Arbre de directoris
@@ -67,7 +67,7 @@ Directori `04_L/`:
 .
 ├── .vscode/                    # Diccionari
 ├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
-├── 02_problemes/               # Problemes     (`Px.qmd`, x ∈ [1, 9])
+├── 02_exercicis/                # Problemes     (`Ex.qmd`, x ∈ [1, 9])
 ├── 03_solucions/               # Solucions     (`Sx.qmd`, x ∈ [1, 9])
 ├── 04_laboratori/              # Laboratori    (`Ly.1md`, y ∈ [1, 6])
 │   ├── Ly/                     # Plantilles sessió y
@@ -82,11 +82,11 @@ Directori `04_L/`:
 ├── auto_riscv/                 # Taules generades per script (s'elimina a cada render)
 ├── index_files/                # Quarto
 ├── TODO/                       # Fitxers de suport a l'edició
-├── 05_riscv.qmd
-├── 06_sigles.qmd
-├── 07_contrib.qmd
-├── 08_LICENSE.qmd
-├── 09_bibliografia.bib
+├── 11_riscv.qmd
+├── 12_sigles.qmd
+├── 13_contrib.qmd
+├── 14_LICENSE.qmd
+├── 15_bibliografia.bib
 ├── CLAUDE.md
 ├── custom_dark.scss
 ├── custom_light.scss
@@ -114,7 +114,7 @@ cd ~/git/EC
 
 | Comanda | Efecte |
 | :--- | :--- |
-| `make render` | Genera les taules fusionades (`11_riscv_auto/`) i tot seguit renderitza les dues sortides |
+| `make render` | Genera les taules fusionades (`auto_riscv/`) i tot seguit renderitza les dues sortides |
 | `make clean` | Elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) |
 | `quarto render --to html` | Renderitza HTML (ràpid; recomanat durant el desenvolupament) |
 | `quarto render --to pdf` | Renderitza PDF (lent; requereix LaTeX) |
@@ -122,13 +122,13 @@ cd ~/git/EC
 
 > **Nota**: `quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si cal conservar el PDF generat, feu `quarto render` complet (o `make render`) o guardeu el PDF abans.
 
-> **Taules fusionades de `05_riscv.qmd`**: `make render` ja genera `11_riscv_auto/` abans de renderitzar. Si en comptes d'això useu `quarto render` directament i obteniu un error del tipus `could not find file .../11_riscv_auto/NOM.qmd`, executeu primer:
+> **Taules fusionades de `11_riscv.qmd`**: `make render` ja genera `auto_riscv/` abans de renderitzar. Si en comptes d'això useu `quarto render` directament i obteniu un error del tipus `could not find file .../auto_riscv/NOM.qmd`, executeu primer:
 >
 > ```bash
-> python3 22_scripts/gen_taules_auto.py 21_specs/taules_fusio.toml 11_riscv --output-dir="11_riscv_auto/"
+> python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"
 > ```
 >
-> Cal repetir-ho el primer cop després de clonar el repositori, i sempre que editeu un fitxer de `11_riscv/` que aparegui a `21_specs/taules_fusio.toml`: si no, `11_riscv_auto/` queda desactualitzat en silenci (el render no fallarà, però la taula no reflectirà el canvi). Detalls tècnics a `07_contrib.qmd` §Fitxer de referència tècnica.
+> Cal repetir-ho el primer cop després de clonar el repositori, i sempre que editeu un fitxer de `21_riscv/` que aparegui a `24_specs/taules_fusio.toml`: si no, `auto_riscv/` queda desactualitzat en silenci (el render no fallarà, però la taula no reflectirà el canvi). Detalls tècnics a `13_contrib.qmd` §Fitxer de referència tècnica.
 
 Neteja:
 
@@ -177,7 +177,7 @@ Descarregueu [`rars1_6.jar`](https://github.com/TheThirdOne/rars/releases/downlo
 
 ## Contribució
 
-Vegeu el fitxer [`07_contrib.qmd`](07_contrib.qmd), que conté:
+Vegeu el fitxer [`13_contrib.qmd`](13_contrib.qmd), que conté:
 
 - El flux de treball amb Git (branques, commits, Merge Requests).
 - Les convencions d'estil (veu, puntuació, negretes, anglicismes, sigles).

@@ -7,11 +7,11 @@ regex d'entrada, desant el resultat amb el sufix especificat.
 
 Ús
 --
-    python3 22_scripts/norm_font.py <specs_file> <regex_entrada> <sufix_sortida> [opcions]
+    python3 25_scripts/norm_font.py <specs_file> <regex_entrada> <sufix_sortida> [opcions]
 
 Arguments posicionals
 ---------------------
-specs_file      Fitxer 21_specs/svg.md amb el bloc #svg-font-map.
+specs_file      Fitxer 24_specs/svg.md amb el bloc #svg-font-map.
 regex_entrada   Expressió regular aplicada sobre rutes relatives al CWD.
                 Exemple: "figs_externes/[^/]+[.]svg"
 sufix_sortida   Sufix que s'afegeix al nom base del fitxer de sortida.
@@ -21,7 +21,7 @@ Arguments opcionals
 -------------------
 --output-dir    Directori on es desen els fitxers de sortida (per defecte: .).
                 La sortida és plana: no es preserva l'estructura de subdirectoris.
-                Exemple: --output-dir="figs_auto/"
+                Exemple: --output-dir="auto_figs/"
 --on-unknown-font `report`|`normalize`
                 Comportament davant fonts no reconegudes:
                   `report`     (per defecte) Reporta i no modifica.
@@ -33,7 +33,7 @@ Arguments opcionals
                   2  Tot l'anterior + una línia per fitxer processat.
 
 La configuració de fonts és la font de veritat única definida a
-21_specs/svg.md, dins el bloc etiquetat `#svg-font-map`. Per afegir suport
+24_specs/svg.md, dins el bloc etiquetat `#svg-font-map`. Per afegir suport
 a noves fonts, editeu només aquell bloc i torneu a executar l'script.
 """
 
@@ -44,13 +44,13 @@ from pathlib import Path
 
 
 # ---------------------------------------------------------------------------
-# Càrrega del FONT_MAP i KNOWN_NORMALIZED des de 21_specs/svg.md
+# Càrrega del FONT_MAP i KNOWN_NORMALIZED des de 24_specs/svg.md
 # ---------------------------------------------------------------------------
 
 def _load_font_config(specs_file: Path) -> tuple[dict[str, str], frozenset[str], str]:
     """
     Extreu FONT_MAP, KNOWN_NORMALIZED i SANS del bloc `{.python #svg-font-map}`
-    de 21_specs/svg.md. Retorna (font_map_normalitzat, known_normalized, sans_default).
+    de 24_specs/svg.md. Retorna (font_map_normalitzat, known_normalized, sans_default).
 
     Llança ValueError si el bloc no es troba o no es pot avaluar.
     """
@@ -164,7 +164,7 @@ def migrate_fonts(
     verbosity: int = 1,
 ) -> None:
 
-    # Càrrega de la configuració des de 21_specs/svg.md
+    # Càrrega de la configuració des de 24_specs/svg.md
     try:
         font_map, known_normalized, sans_default = _load_font_config(specs_file)
     except ValueError as exc:
@@ -294,7 +294,7 @@ if __name__ == '__main__':
         'specs_file',
         type=Path,
         metavar='specs_file',
-        help="Fitxer 21_specs/svg.md amb el bloc #svg-font-map.",
+        help="Fitxer 24_specs/svg.md amb el bloc #svg-font-map.",
     )
     parser.add_argument(
         'regex_entrada',

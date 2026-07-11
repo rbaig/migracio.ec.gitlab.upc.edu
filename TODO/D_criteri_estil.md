@@ -1,14 +1,14 @@
 # Bloc D — Criteri backticks / LaTeX math / cursiva
 
-Proposta per a aprovació (fase 1). Un cop aprovada (amb les modificacions que calguin), el text de §2 s'integra a `07_contrib.qmd` i s'apliquen les substitucions de §3 (fase 2, mecànica).
+Proposta per a aprovació (fase 1). Un cop aprovada (amb les modificacions que calguin), el text de §2 s'integra a `13_contrib.qmd` i s'apliquen les substitucions de §3 (fase 2, mecànica).
 
 ---
 
-## 1. Auditoria (27 fitxers: Tx, PE_Tx, PS_Tx, Lx)
+## 1. Auditoria (27 fitxers: Ax, Ex, Sx, Lx)
 
 | Aspecte | Estat | Dades |
 | :--- | :--- | :--- |
-| Backticks per a codi (registres, instruccions, variables C, fitxers, hex) | **Consistent** ✓ | Criteri de `07_contrib.qmd §Backticks` ben aplicat; 0 registres en math |
+| Backticks per a codi (registres, instruccions, variables C, fitxers, hex) | **Consistent** ✓ | Criteri de `13_contrib.qmd §Backticks` ben aplicat; 0 registres en math |
 | Variables d'una lletra: `i` (variable C) vs $i$ (índex matemàtic) | **Consistent de facto** ✓ | 198 backtick / 124 math, repartits pel criteri semàntic correcte |
 | Unitats al cos del text («8 bits», «4 bytes») | **Consistent** ✓ | 606 casos en text pla, 0 amb el nombre en math |
 | Cursives | **Consistent** ✓ | Només anglicismes; 1 sol cas anòmal (*x*) |
@@ -18,7 +18,7 @@ Proposta per a aprovació (fase 1). Un cop aprovada (amb les modificacions que c
 | Math en títols de secció `{#sec-}` | **Consistent** ✓ | 0 casos (1 cas en títol de *callout*, acceptable) |
 | Numeració d'equacions | **Sense criteri** — | 326 display; 38 etiquetades `{#eq-}`; 23 referenciades `@eq-` |
 
-## 2. Criteri proposat (text per a `07_contrib.qmd`)
+## 2. Criteri proposat (text per a `13_contrib.qmd`)
 
 Substituiria l'actual §Backticks (que es manté com a llista d'exemples) afegint-hi la regla general, i completaria §Equacions.
 
@@ -46,7 +46,7 @@ Substituiria l'actual §Backticks (que es manté com a llista d'exemples) afegin
 | Cel·les de taula | ✓ | ✓ (vegeu D1) | ✓ |
 | Captions de figura/taula | ✓ | ✓ | ✓ |
 | Comentaris de blocs de codi | (tot és codi) | ✗ (no es renderitza) | ✗ |
-| Etiquetes SVG | segons `21_specs/svg.md` (MONO per a codi); sense MathJax: notació Unicode (×, ≤, ²) | | |
+| Etiquetes SVG | segons `24_specs/svg.md` (MONO per a codi); sense MathJax: notació Unicode (×, ≤, ²) | | |
 
 ### 2.3 Numeració d'equacions (proposta per a D2)
 
@@ -59,7 +59,7 @@ Substituiria l'actual §Backticks (que es manté com a llista d'exemples) afegin
 1. **Superíndexs**: unificar els 20 casos `2^n^` → `$2^{n}$` (vegeu D1).
 2. **Cursiva anòmala**: corregir el cas únic (*x*).
 3. **`{#eq-}` no referenciades**: llistar les 38−23=15 etiquetes sense referència i decidir cas per cas si són «canòniques» (es queden) o es desetiqueten.
-4. Integrar §2 a `07_contrib.qmd` (§Backticks + §Equacions + nou §«Codi, matemàtiques i cursiva») i esborrar els TODO corresponents (línies 302, 480-483) i les entrades de `TODO.md §Decisions obertes` (CSR, LaTeX vs backticks, numeració d'equacions).
+4. Integrar §2 a `13_contrib.qmd` (§Backticks + §Equacions + nou §«Codi, matemàtiques i cursiva») i esborrar els TODO corresponents (línies 302, 480-483) i les entrades de `TODO.md §Decisions obertes` (CSR, LaTeX vs backticks, numeració d'equacions).
 
 ## 4. Decisions que has de prendre
 

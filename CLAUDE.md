@@ -12,22 +12,22 @@ Abans de qualsevol acció, llegeix:
 
 1. `_quarto.yml` — configuració del projecte.
 2. `index.qmd` — fitxers que componen el llibre.
-3. `07_contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
+3. `13_contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
 4. `TODO.md` — tasques pendents i decisions obertes.
 
 Per a tasques que impliquin figures SVG, llegeix també:
 
-- `21_specs/svg.md` — paleta de colors, mapes de fonts i taula de substitució dark.
-- `21_specs/registres.toml` — definicions dels registres de bits (font de veritat).
+- `24_specs/svg.md` — paleta de colors, mapes de fonts i taula de substitució dark.
+- `24_specs/registres.toml` — definicions dels registres de bits (font de veritat).
 
 Repartiment de responsabilitats entre fitxers:
 
-- `07_contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
-- `CLAUDE.md` (aquest fitxer) recull **només** l'operació a claude.ai. Qualsevol altre aspecte va a `07_contrib.qmd`.
+- `13_contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
+- `CLAUDE.md` (aquest fitxer) recull **només** l'operació a claude.ai. Qualsevol altre aspecte va a `13_contrib.qmd`.
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
 - `TODO.md` només conté contingut transitori; al final ha de quedar buit.
 
-Altres fitxers transversals: `05_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `sigles.md` (glossari de sigles).
+Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `sigles.md` (glossari de sigles).
 
 ## Abast del projecte
 
@@ -35,19 +35,19 @@ Altres fitxers transversals: `05_riscv.qmd` (compendi de referència RISC-V, inc
 
 Convenció de noms (x = número de tema, 1–9; y = sessió de laboratori):
 
-- `Tx.qmd`: teoria del tema x.
-- `PE_Tx.qmd`: enunciats dels problemes del tema x.
-- `PS_Tx.qmd`: solucions d'una selecció de problemes del tema x.
-- `PS_criteris.qmd`: criteris de selecció dels problemes a solucionar.
+- `Ax.qmd`: teoria del tema x.
+- `Ex.qmd`: enunciats dels problemes del tema x.
+- `Sx.qmd`: solucions d'una selecció de problemes del tema x.
+- `S_criteris.qmd`: criteris de selecció dels problemes a solucionar.
 - `Ly.qmd`: laboratori, sessió y.
 
 ### Volum
 
 | Material | Fitxers `.qmd` |
 | :--- | :--- |
-| Teoria | `T1.qmd`–`T9.qmd` |
-| Enunciats | `PE_Tx.qmd` (x = 1–9) |
-| Solucions | `PS_Tx.qmd` (x = 2–9), `PS_criteris.qmd` |
+| Teoria | `A1.qmd`–`A9.qmd` |
+| Enunciats | `Ex.qmd` (x = 1–9) |
+| Solucions | `Sx.qmd` (x = 2–9), `S_criteris.qmd` |
 | Laboratori | `L1.qmd`–`L6.qmd` |
 
 Tots els fitxers `.qmd` de `index.qmd` formen part del projecte, encara que estiguin comentats (es comenten per escurçar el temps de renderització en proves).
@@ -56,7 +56,7 @@ Els PDFs originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas
 
 ## Revisió interna
 
-Fase actual del projecte. El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (PS_T2–PS_T8) ja està generat; ara es fa la **revisió** (tècnica i lingüística), només per l'usuari. La fase següent serà la **revisió externa**, amb altres professors de l'assignatura.
+Fase actual del projecte. El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (S2–S8) ja està generat; ara es fa la **revisió** (tècnica i lingüística), només per l'usuari. La fase següent serà la **revisió externa**, amb altres professors de l'assignatura.
 
 ### Prioritats de la revisió
 
@@ -71,12 +71,12 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Teoria (T1–T9)
 
-- Preparats per a revisió externa: `T1.qmd`–`T9.qmd`.
+- Preparats per a revisió externa: `A1.qmd`–`A9.qmd`.
 
-#### Enunciats (`PE_Tx.qmd`) i Solucionaris (`PS_Tx.qmd`)
+#### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
-- **`PE_T3.qmd` i `PS_T3.qmd`** — revisió interna completada. Pendent: afegir solucions a `PS_T3.qmd` per als exercicis sense cobertura (vegeu `TODO.md §Solucionaris pendents`); encaix T2↔T3 en terminologia caller-saved/callee-saved (vegeu `TODO.md §T3`).
-- **La resta de fitxers** (`PE_T1.qmd`–`PE_T2.qmd`, `PE_T4.qmd`–`PE_T9.qmd` i `PS_T1.qmd`–`PS_T2.qmd`, `PS_T4.qmd`–`PS_T9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Tx.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
+- **`E3.qmd` i `S3.qmd`** — revisió interna completada. Pendent: afegir solucions a `S3.qmd` per als exercicis sense cobertura (vegeu `TODO.md §Solucionaris pendents`); encaix T2↔T3 en terminologia caller-saved/callee-saved (vegeu `TODO.md §T3`).
+- **La resta de fitxers** (`E1.qmd`–`E2.qmd`, `E4.qmd`–`E9.qmd` i `S1.qmd`–`S2.qmd`, `S4.qmd`–`S9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Ax.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic.
 - Tasca prèvia opcional (Claude Code): substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web.
 
 #### Laboratori (`L1`–`L6`)
@@ -85,12 +85,12 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 ### Etiquetes `{#sec-}` a les capçaleres
 
-Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un identificador `{#sec-nom}` per ser referenciables amb `@sec-nom`.
+Totes les capçaleres `##`, `###` i `####` dels fitxers `Ax.qmd` han de tenir un identificador `{#sec-nom}` per ser referenciables amb `@sec-nom`.
 
 **Estat:**
-- Tots els fitxers `T1.qmd`–`T9.qmd` tenen les capçaleres etiquetades: **complet**.
+- Tots els fitxers `A1.qmd`–`A9.qmd` tenen les capçaleres etiquetades: **complet**.
 
-**Criteris de generació de l'slug** (aplicats a `T4.qmd`):
+**Criteris de generació de l'slug** (aplicats a `A4.qmd`):
 
 1. Parteix del text de la capçalera en minúscules.
 2. Transliteració de caràcters catalans: `à→a`, `á→a`, `è→e`, `é→e`, `í→i`, `ï→i`, `ò→o`, `ó→o`, `ú→u`, `ü→u`, `ç→c`, `l·l→ll`, `·→` (eliminat).
@@ -106,8 +106,8 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Tx.qmd` han de tenir un
 
 ### Seqüència de revisió pendent
 
-1. ~~**Slugs T1–T2, T5**~~ → ✓ Completat: totes les capçaleres de `T1.qmd`–`T9.qmd` etiquetades amb `{#sec-}`.
-2. **PE_T1–PE_T9, PS_T1–PS_T9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna. *(T3 completat.)*
+1. ~~**Slugs T1–T2, T5**~~ → ✓ Completat: totes les capçaleres de `A1.qmd`–`A9.qmd` etiquetades amb `{#sec-}`.
+2. **E1–E9, S1–S9** (1 xat per fitxer, ordre temàtic): pas combinat adaptació + revisió interna. *(T3 completat.)*
 3. **L1–L6** (2 xats: L1–L3 i L4–L6): revisió interna laboratori.
 
 ### Flux de treball
@@ -131,7 +131,7 @@ Regles operatives:
 | Tasca | Model | Effortness |
 | :--- | :--- | :--- |
 | Revisió tècnica o lingüística de teoria | Sonnet | Normal |
-| Solucionari (`PS_Tx.qmd`) | Opus | High |
+| Solucionari (`Sx.qmd`) | Opus | High |
 | Tasques operatives (reorganització, neteja de fitxers) | Sonnet | Low |
 
 - Si la tasca canvia, indica-ho explícitament.
@@ -139,20 +139,20 @@ Regles operatives:
 
 ### Figures SVG: política de generació
 
-**La prioritat és sempre generar el SVG des de zero** amb elements natius (`<rect>`, `<line>`, `<text>`, etc.), seguint `21_specs/svg.md`. El PDF original es pot usar com a referència visual, però la figura es reprodueix com a SVG natiu.
+**La prioritat és sempre generar el SVG des de zero** amb elements natius (`<rect>`, `<line>`, `<text>`, etc.), seguint `24_specs/svg.md`. El PDF original es pot usar com a referència visual, però la figura es reprodueix com a SVG natiu.
 
 **Figures de nova creació (opció per defecte, tots els temes):**
 - Construïdes des de zero amb elements SVG (`<rect>`, `<line>`, `<text>`, etc.).
-- Fonts i colors de la paleta del projecte (vegeu `21_specs/svg.md`).
-- Es desen a `12_figs_originals/`; la variant dark es genera automàticament pel pre-render (`22_scripts/gen_dark.py`).
+- Fonts i colors de la paleta del projecte (vegeu `24_specs/svg.md`).
+- Es desen a `22_figs_originals/`; la variant dark es genera automàticament pel pre-render (`25_scripts/gen_dark.py`).
 
 **Figures extretes de PDFs originals (reservat per a figures complexes):**
 
-L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que no és viable reproduir com a SVG natiu en un temps raonable (gràfics multisèrie, circuits detallats, geometria molt densa). La decisió es pren conjuntament amb l'usuari. Es desen a `13_figs_externes/`; vegeu `21_specs/svg.md §15` per als detalls tècnics i la llista de figures existents.
+L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que no és viable reproduir com a SVG natiu en un temps raonable (gràfics multisèrie, circuits detallats, geometria molt densa). La decisió es pren conjuntament amb l'usuari. Es desen a `23_figs_externes/`; vegeu `24_specs/svg.md §15` per als detalls tècnics i la llista de figures existents.
 
 **Figures de registres de bits:**
-- Definides a `21_specs/registres.toml` (font de veritat).
-- Generades automàticament pel pre-render (`22_scripts/gen_regs.py`).
+- Definides a `24_specs/registres.toml` (font de veritat).
+- Generades automàticament pel pre-render (`25_scripts/gen_regs.py`).
 - Inclou formats d'instrucció (R, I, S, B, U, J, R4) i el compendi `compendi_registres` (generat automàticament a partir de les entrades `instruccio_tipus_*` del TOML, sense entrada pròpia).
 - Figures de registres CSR: `T5_fcsr`, `T9_mstatus`, `T9_mtvec`, `T9_mepc`, `T9_mcause`, `T9_mip`, `T9_mie`, `T9_satp`.
 
@@ -160,7 +160,7 @@ L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que
 
 El pipeline de pre-render és a `_quarto.yml` (clau `project.pre-render`). La font de veritat és sempre `_quarto.yml`; no es duplica aquí.
 
-En tots els casos, la font de veritat per a fonts i colors és `21_specs/svg.md`.
+En tots els casos, la font de veritat per a fonts i colors és `24_specs/svg.md`.
 
 Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
 Renderització HTML (pot estar desactualitzada): https://loi.ac.upc.edu/ec
