@@ -199,7 +199,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### Convencions globals del laboratori
 
 - **Punt d'entrada**: `_start` (no `main`). Directiva `.global _start` al principi del fitxer.
-- **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit`). No es fa servir `startup.s`.
+- **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit`). Hipòtesi de treball durant la revisió interna: no es fa servir `startup.s` (decisió definitiva pendent de la revisió externa).
 - **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
 - **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
@@ -321,7 +321,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 ### Sigles
 
 - La **primera vegada** que apareixen s'han d'escriure les paraules completes seguides de la sigla entre parèntesis en majúscules. Exemple: `***Instruction Set Architecture*** (**ISA**)`.
-- Cada sigla **s'ha de recollir** al **compendi de sigles** `sigles.md`.
+- Cada sigla **s'ha de recollir** al **compendi de sigles** `12_sigles_simbols.qmd`.
 - Un cop definida s'ha d'usar sempre (en majúscules i sense cursiva). Pot anar en negreta.
 
 **Criteri d'inclusió a `sigles.md`**: s'inclou tota sigla que aparegui al **cos del text** o als callouts `{.callout-caution}`, `{.callout-note}`, `{.callout-tip}` o `{.callout-important}`.
@@ -385,7 +385,7 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
     - Camps de bits `opcode`, `funct3`.
     - Variables `i` i altres elements de codi `>>`, `i++`.
     - Comandes `quarto render --to html`.
-    - Noms de fitxers `A1.qmd`, `bibliografia.qmd`.
+    - Noms de fitxers `A1.qmd`, `15_bibliografia.bib`.
     - Noms de branques `contingut/t5-vectors`.
     - Noms d'etiquetes `#nte-TODO`, `@sec-callouts`.
     - Adreces de memòria concretes `0x00400000`, `0x10100000`–`0x10100003`.
@@ -401,7 +401,6 @@ Regles generals:
 - El títol `## títol` no és obligatori en callouts curts.
 - **Localització**: a continuació de la referència o explicació al text.
 - No hi ha d'haver repeticions: ús de referències creuades.
-<!-- TODO: Revisar criteris de numeració de callouts i aparença -->
 
 | Tipus | Prefix | Classe | Color | Aval. | Títol | Ús i particularitats |
 | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
@@ -449,6 +448,31 @@ El camp `filename` indica el llenguatge o el context del bloc:
 
 - Tots els diagrames nous es generen com a SVG (no Mermaid).
 
+#### Política de generació SVG
+
+**La prioritat és sempre generar el SVG des de zero** amb elements natius (`<rect>`, `<line>`, `<text>`, etc.). El PDF original es pot usar com a referència visual, però la figura es reprodueix com a SVG natiu.
+
+**Figures de nova creació (opció per defecte, tots els temes):**
+- Construïdes des de zero amb elements SVG (`<rect>`, `<line>`, `<text>`, etc.).
+- Fonts i colors de la paleta del projecte (vegeu §Paleta de colors més avall).
+- Es desen a `22_figs_originals/`; la variant dark es genera automàticament pel pre-render (`25_scripts/gen_dark.py`).
+
+**Figures extretes de PDFs originals (reservat per a figures complexes):**
+
+L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que no és viable reproduir com a SVG natiu en un temps raonable (gràfics multisèrie, circuits detallats, geometria molt densa). La decisió es pren conjuntament amb l'usuari. Es desen a `23_figs_externes/`; vegeu `24_specs/svg.md §15` per als detalls tècnics i la llista de figures existents.
+
+**Figures de registres de bits:**
+- Definides a `24_specs/registres.toml` (font de veritat).
+- Generades automàticament pel pre-render (`25_scripts/gen_regs.py`).
+- Inclou formats d'instrucció (R, I, S, B, U, J, R4) i el compendi `compendi_registres` (generat automàticament a partir de les entrades `instruccio_tipus_*` del TOML, sense entrada pròpia).
+- Figures de registres CSR: `T5_fcsr`, `T9_mstatus`, `T9_mtvec`, `T9_mepc`, `T9_mcause`, `T9_mip`, `T9_mie`, `T9_satp`.
+
+**Flux de pre-render** (`_quarto.yml`):
+
+El pipeline de pre-render és a `_quarto.yml` (clau `project.pre-render`). La font de veritat és sempre `_quarto.yml`; no es duplica aquí.
+
+En tots els casos, la font de veritat per a fonts i colors és `24_specs/svg.md`.
+
 #### Paleta de colors
 
 La paleta completa (colors light i dark, per zona semàntica) és a `24_specs/svg.md §10`. La taula de substitució light → dark per al pipeline automàtic és el bloc `#svg-dark-replacements` de `24_specs/svg.md §13`. Per modificar qualsevol color, editeu **només** aquells blocs.
@@ -461,7 +485,7 @@ Totes les convencions tècniques de les figures SVG (canvas, marges, escales, fo
 
 Convenció de noms dels fitxers font: `T<N>_nom_figura.svg` (guió baix, no guió), desats a `22_figs_originals/`. Les figures externes s'emmagatzemen a `23_figs_externes/`. Els fitxers generats a `auto_figs/` reben el sufix `__original_light/dark`, `__extern_light/dark` o `__registre_light/dark` segons l'origen.
 
-Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`. <!-- TODO: Falta crear la taula completa de figures externes i llicències corresponents (secció `{#sec-llicencia-figures-externes}`); referència eliminada temporalment. -->
+Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`.
 
 #### Figures Graphviz (diagrames d'arbre i grafs)
 
@@ -490,7 +514,7 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 
 | Fitxer font | Figura generada | Contingut |
 | :--- | :--- | :--- |
-| `24_specs/T7_mc_politiques_resum__graphviz.svg` | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
+| `22_figs_originals/T7_mc_politiques_resum.gv` | `auto_figs/T7_mc_politiques_resum_light.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
 
 #### Generació de la versió dark
 
@@ -499,8 +523,6 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 Per a figures creades manualment, extretes de PDFs o de registres de bits, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `24_specs/svg.md` (pipeline, taula de colors, canvas i mapa de fonts) i `24_specs/registres.toml` (definicions de registres de bits) per als detalls tècnics.
 
 #### Integració al `.qmd`
-
-<!-- TODO: Figures dins callouts queden centrades a l'HTML però alineades a l'esquerra al PDF. Cal investigar la solució via preamble.tex (p. ex. redefinir l'entorn de callout per afegir \centering). -->
 
 ``` code
 ::: {#fig-nom-figura}
@@ -520,12 +542,12 @@ Caption acabat amb punt.
 ```
 
 Notes:
+
 - La ruta `/auto_figs/` comença amb `/`, que Quarto interpreta com a relativa a l'arrel del projecte (on és `_quarto.yml`). És el mètode més robust: no depèn de la ubicació del `.qmd` dins l'arbre de directoris.
 - El bloc `content-visible when-format="html"` conté les dues variants (light/dark); el bloc `when-format="pdf"` conté només la versió light. Sense aquesta separació, el PDF renderitza totes dues variants i les figures surten duplicades.
 - Els blocs `.light-content` i `.dark-content` **no** porten `style="text-align: center;"`: les figures amb `{#fig-}` ja centren automàticament.
 - El caption (última línia abans del `:::` de tancament) és text lliure; Quarto l'associa automàticament a `{#fig-}` com a caption de la figura.
-- l'esclat es fa amb `width="40%"` (e.g. `![](/auto_figs/Tx_nom_figura__original_light.svg){width="40%"}`)
-```
+- L'escalat es fa amb `width="40%"` (p. ex. `![](/auto_figs/Tx_nom_figura__original_light.svg){width="40%"}`)
 
 ### Taules
 
@@ -543,6 +565,24 @@ Notes:
 
 La referència és `@tbl-TODO`.
 
+### Etiquetes `{#sec-}` a les capçaleres
+
+Totes les capçaleres `##`, `###` i `####` dels fitxers `Ax.qmd` han de tenir un identificador `{#sec-nom}` per ser referenciables amb `@sec-nom`.
+
+**Criteris de generació de l'slug** (aplicats a `A4.qmd`):
+
+1. Parteix del text de la capçalera en minúscules.
+2. Transliteració de caràcters catalans: `à→a`, `á→a`, `è→e`, `é→e`, `í→i`, `ï→i`, `ò→o`, `ó→o`, `ú→u`, `ü→u`, `ç→c`, `l·l→ll`, `·→` (eliminat).
+3. Elimina: `` ` `` (backticks), `*`, `#`, `(`, `)`, `,`, `'`, `/`.
+4. Substitueix ` — ` i `—` per ` ` o `-`.
+5. Tota seqüència de caràcters no alfanumèrics → un sol guió `-`.
+6. Elimina guions inicials i finals.
+7. Si el slug resultant ja existeix al fitxer, afegeix `-1`, `-2`… per unicitat. **Millor solució:** fer el títol de la capçalera prou descriptiu perquè el slug sigui únic sense sufix numèric (p. ex. `### Algorisme {#sec-algorisme-multiplicacio}` en lloc de `{#sec-algorisme}`).
+
+**Excepcions:**
+- Les capçaleres dins callouts (`## Títol del callout`) **no** reben `{#sec-}` (són títols visuals, no seccions del document).
+- Les capçaleres `#` de nivell superior (títol del tema) ja solen tenir el tag de tema (`{#sec-tema-x}`); revisar que sigui consistent.
+
 ### Equacions
 
 Sintaxi: `$$expressió$$ {#eq-NOM}`. La referència és `@eq-NOM`.
@@ -559,7 +599,7 @@ Per al criteri d'ús de LaTeX math vs. backticks per context, vegeu §Codi, mate
 ### Bibliografia
 
 - Ús: `[@patterson2020riscv]`
-- Definició: al fitxer `bibliografia.qmd` amb format BibTeX.
+- Definició: al fitxer `15_bibliografia.bib` amb format BibTeX.
 
 ### Referències creuades
 
@@ -598,6 +638,8 @@ A més, com a criteri d'estil de redacció:
     - T6 → T7: memòries cau (`@sec-tema-mc`, `@fig-i9-13900k-die`).
     - T8 → T9: modes de privilegi i excepcions (`@sec-ei-csr-privilegis`).
 
+- Només es permeten referencias sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
+
 ### Aniuaments
 
 Regla dels `:` addicionals:
@@ -612,7 +654,7 @@ Regla dels `:` addicionals:
 
 #### HTML: comportament en callouts encastats
 
-- Es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben. <!-- TODO: Falta l'exemple concret d'aquest comportament (secció `{#sec-contrib-callout-aprofundiment}`); referència eliminada temporalment. -->
+- Es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben.
 
 ### Presentació visual
 
@@ -646,7 +688,7 @@ h1, h2, h3, h4,
 
 ### Gestió d'errades
 
-<!-- TODO: Definir protocol de gestió d'errades detectades post-commit -->
+Pendent de definir. Vegeu `TODO.md §Tasques globals`.
 
 ## Eines
 
@@ -678,8 +720,6 @@ make render
 ```
 
 (equivalent a generar les taules fusionades de `11_riscv.qmd` amb `25_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `auto_riscv/` ja existeix i està al dia.
-
-- Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
 ### Protocol de contribució
 
@@ -747,21 +787,9 @@ quarto render             # genera les dues sortides
 
 ### IAs
 
-Cal passar-los sempre els fitxers següents:
+Fitxers obligatoris a passar a les IAs: vegeu `CLAUDE.md §Fitxers de referència obligatòria`.
 
-- `CLAUDE.md`
-- `13_contrib.qmd`
-- `_quarto.yml`
-- `TODO/TODO.md` (per a tasques que depenguin de decisions obertes)
-
-Per a tasques que impliquin figures SVG, afegir també:
-
-- `24_specs/svg.md`
-- `24_specs/registres.toml` (si la tasca inclou figures de registres de bits)
-
-`CLAUDE.md` especifica el model i l'effortness recomanats per a cada tipus de tasca.
-
-Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa.
+Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa. El model i l'effortness recomanats per a cada tipus de tasca consten a `CLAUDE.md §Model i effortness`.
 
 :::::::::
 <!-- Aquest `div` s'obre a l'inici del fitxer. No esborreu aquest comentari. -->

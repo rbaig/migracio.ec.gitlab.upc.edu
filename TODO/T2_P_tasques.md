@@ -124,4 +124,4 @@ Fonts de veritat consultades: especificació no privilegiada de RISC-V Internati
 
 ---
 
-*Fase C pendent. Bloc comentat de `startup.s` (A2, L747-795): no tocar (decisió de l'usuari pendent).*
+*Fase C: alguns ítems de la secció A executats (A.6 includes pseudoinstruccions, A.12 adreça corregida), altres pendents. Bloc comentat de `startup.s` (A2, L747-795): no tocar (decisió de l'usuari pendent).*

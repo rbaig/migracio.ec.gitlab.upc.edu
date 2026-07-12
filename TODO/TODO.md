@@ -6,7 +6,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **`startup.s`**: mantenir o eliminar? Decisió ajornada a la fase de revisió externa. Hipòtesi de treball durant la revisió interna: **no hi ha `startup.s`** (sense SO); tot el material nou es genera sense considerar-lo, i el material existent relatiu a l'opció «amb `startup.s`» es manté comentat (no s'elimina). Blocs comentats amb les instruccions de reactivació: A2.qmd (`#imp-programa-esquelet`/`#imp-exception-handler`, ln 719-784), A3.qmd (`#tip-rars-main-multinivell`, ln 1543-1550), `index.qmd` (descàrrega i configuració de l'*Exception Handler*, ln 181-198). Afecta també E9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93` quan es prengui la decisió.
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
-- ~~**Coherència de títols en `.callout-caution`**: `13_contrib.qmd` indica sense títol...~~ **RESOLTA (2026-07-12, revisió interna T2, xat A2-E2-S2):** s'ha optat per la tercera via que aquesta entrada ja deixava oberta («valorar cas per cas si el títol aporta valor real»). `13_contrib.qmd §Callouts` actualitzat: «sense títol, curt» és ara el criteri **per defecte** per a `#cau-`/`#imp-`, amb excepció explícita quan el contingut supera ~4 línies o barreja diversos criteris/aspectes (s'admet llavors un títol curt, com als `#nte-`). No calen retocs retroactius als 22 callouts de T2/T3/T4/T9 ni als de T5/T7/T8: amb el criteri relaxat, els llargs ja compleixen la norma i els curts la segueixen mantenint per defecte.
 - **Criteris de codi C**: completar.
 - **Plantilles Markdown** (`L2.qmd` i resta): posar-ne a tots excepte `L2.qmd`, o eliminar de `L2.qmd`?
 - **Figures portades d'extern**: afegir font (dels PDF n'hi ha que són del Patterson -e.g. T7 MC).
@@ -16,7 +15,18 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ## Tasques transversals
 
 - **Exercicis** -> Problemes (slugs, callout header, refs, etc.). Detall complet de l'abast (afegit a la revisió interna de T2, xat A2-E2-S2): els IDs d'`Ex.qmd`/`Sx.qmd` usen actualment el prefix `p<N>-` (`#exr-p3-...`, `#sol-p3-...`), numeració llegada de les col·leccions MIPS on `p` feia referència a «problema». Amb la migració a RISC-V, l'estructura és 1 tema = 1 fitxer `Ax.qmd`/`Ex.qmd`/`Sx.qmd`, per tant té més sentit `t<N>-` (de «tema»), coherent amb la numeració de la resta del llibre. Cal: (i) substituir `p<N>-` per `t<N>-` a tots els IDs `#exr-p<N>-*` i `#sol-p<N>-*` de tots els `Ex.qmd`/`Sx.qmd`; (ii) actualitzar totes les referències creuades (`@exr-p<N>-*`, `@sol-p<N>-*`) a tot el repositori (`Ax.qmd` també en pot contenir cap a `Ex.qmd`/`Sx.qmd`); (iii) verificar que no queda cap referència trencada després del canvi. Nota: E1/E3 tenen prefixos `p1-`/`p4-` respectivament, que no es corresponen amb el seu número de tema real (haurien de ser `t1-`/`t3-`) — cal aclarir aquest desajust abans de renumerar. Volum de canvi considerable i mecànic: candidat clar per a Claude Code.
-- "Sigles i símbols" -> Afegir secció "Símbols"
+
+#### Tasques vives migrades de fitxers esborrables
+
+- **(a) Harmonització notacional `21_riscv/` RV32I/RV32M**: estendre `=` → `\leftarrow` (i revisar `off`/`offset`) als fitxers RV32I/RV32M llistats a `prompt_claude_code_harmonitzacio_rv32f.md §Fora d'abast`; coordinar amb les revisions de T2/T3/T4/T9 que els inclouen. [de `prompt_…rv32f.md` + `T5_revisio_canvis.md`]
+
+- **(b) `RV32I_registres_coma_flotant.qmd` divergent de la taula inline de T5**: decidir versió canònica i connectar T5 via include. [de `T5_revisio_canvis.md §F2`]
+
+- **(c) Taules de camps de `fcsr` (frm, fflags)**: també a includes per al compendi, o inline? [de `T5_revisio_canvis.md`]
+
+- **(d) T5 P7**: alinear l'ordre de la taula de codificacions especials amb el de les subseccions, o frase pont. [de `T5_revisio_canvis.md`]
+
+- **(e) Criteris de numeració/aparença de callouts**. [de `13_contrib.qmd §Callouts`]
 
 ---
 
@@ -43,7 +53,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### T6
 
 - **Etiquetes de classe d'instruccions en anglès** a les taules d'E6/S6 («Load», «Store», «Branch», «L/S»…): decidir si es mantenen com a etiquetes de columna/fila (opció actual) o es tradueixen («Lectura», «Escriptura», «Salt»), coherentment amb les substitucions obligatòries de prosa. Revisió pendent 2026-07-12 (`13_contrib.qmd §T6`).
-- ~~SVGs `T6_not_cmos`, `T6_not_1_0`, `T6_not_0_1`: alçades diferents; textos solapats al PDF. Provar les versions `___tracable____original_light.svg`.~~ **Confirmat obsolet (2026-07-12):** les versions «`___tracable____`» no existeixen al repositori. Les 5 figures de T6 s'han normalitzat a `width="100%"` a la imatge SVG, amb l'amplada visual fixada uniformement per bloc Quarto (40% o 50%, sense divergència HTML/PDF); vegeu `13_contrib.qmd §T6`.
 
 ### T7 — Figures pendents de creació
 
@@ -89,6 +98,13 @@ Decisions obertes de T7:
 - **Migració de canvas a amplades estàndard**: figures de BA i mapa de memòria (`W=316 px`) → classe `estreta` (`W=340 px`). Decisió pendent: mantenir `w_rect=230` (marge dret 10→34) o ampliar `w_rect` a 254 (marges simètrics). Un cop decidit, aplicar a les 7 figures afectades i actualitzar `24_specs/svg.md §2`. Figures: `T3_mapa_memoria`, `T3_ba_general`, `T3_ba_func`, `T3_ba_multi`, `T3_ba_exemple`, `T3_func_uninivell_pila`, `T3_pila_crides_aniuades`.
 - **Migrar diagrames Mermaid existents a SVG**.
 
+### Neteja de warnings del render
+
+- **A1. Slugs `{#sec-}` a T1, T2 i T5**: afegir identificadors a totes les capçaleres `##`–`####` segons criteris de `13_contrib.qmd` (referència: `A4.qmd`). Excloure capçaleres dins callouts. Verificació global de col·lisions entre temes.
+- **A2. Identificador duplicat `sec-opt-acces-sequencial`**: definit dues vegades (T2 i T4). Decidir quin és canònic i reanomenar l'altre.
+- **A3. Div sense tancar a `A7.qmd`**: localitzar `:::` desaparellat (warning L168–1981) i reparar.
+- **A4. Referències creuades no resoltes (reparables)**: `@sec-ecall`, `@sec-operands-memoria`, `@imp-ec-alineacio-pila`, `@imp-exception-handler`, `@sec-politica-reemplacement`, i refs internes trencades de `13_contrib.qmd`.
+
 ### Contingut global
 
 - **Criteri «quatre formats nuclears d'instrucció» (RISC-V International)**: adoptat a la revisió interna de T2 (2026-07, xat A2-E2-S2). Font de veritat: `@riscv_rv32i` (docs.riscv.org, «four core instruction formats (R/I/S/U)»; B i J són variants de S i U). Revisar tots els fitxers del repositori (`Ax.qmd`, `Ex.qmd`, `Sx.qmd`, `11_riscv.qmd`, laboratoris) que esmentin el nombre total de formats d'instrucció de RV32I («sis formats», «6 formats», etc.) i ajustar-los a aquest criteri, amb el mateix matís sobre B/J com a variants de S/U. Punt de partida ja fet: A2.qmd (T2) i referències creuades puntuals a A3.qmd (T3, vegeu `§T3` més amunt).
@@ -97,7 +113,8 @@ Decisions obertes de T7:
 - **Cometes** `"..."` → `«...»`: substitució global.
 - **`****` sobrants**: eliminar.
 - **Equacions a MathML**: passar totes les equacions; definir criteris d'inline. **Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`)**: funciona (`underbrace`, `cases`, taules amb math correctes a Chrome), i elimina el JS de MathJax (render instantani, funciona offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), la numeració d'equacions queda inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. Recomanació: mantenir MathJax 3 (el desbordament mòbil ja està resolt via CSS); reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa).
-- **PDF**: figures dins callouts no queden centrades → investigar via `preamble.tex`.
+- **PDF**: figures dins callouts no queden centrades → investigar via `preamble.tex`. A més, comportament en callouts encastats: es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben (falta l'exemple concret de `13_contrib.qmd`).
+- **Figures externes (llicències)**: taula completa de figures extretes de PDFs (inclús fonts, llicències). Referència eliminada temporalment de `13_contrib.qmd`.
 - **Gestió d'errades post-commit**: definir protocol (vegeu `13_contrib.qmd §Gestió d'errades`).
 
 ### `index.qmd`
