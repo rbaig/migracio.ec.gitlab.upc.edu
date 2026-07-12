@@ -54,11 +54,17 @@ Estat de la Revisió interna Ax-Ex-Sx
         - C:     4
     - fase A i B
         - C:    3         
-        - R:   2         
+        - R:   2        8 
     - fase C
         - C: 1             9
-        - R:         6 7 8
+        - R:         6 7
 - Pendents: x = {6}
+
+1. Estàs amb Sonnet Medium sense Thinking. Si vols canvis, digues-ho i atura't.
+2. Dones la revisió pedagògica per finalitzada? O vols fer una darrera passada?
+3. El mateix per la revisió tècnica.
+4. El mateix per la revisió lingüística.
+5. Digues si amb Opus o Sonnet 5 ho pots fer totes les revisions pendents, encara que sigui en diverses passades (p. ex. una per revisió tècnica, una per didàctica i una altra per lingüística). I si ho pots fer, digues quin model i effort necessites si vols Thinking activat.
 
 ---
 
