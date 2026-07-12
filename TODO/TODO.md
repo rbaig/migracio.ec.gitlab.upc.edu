@@ -24,18 +24,16 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   - `auto_figs/T3_deps_multi__original_light.svg`
   - `auto_figs/T3_deps_exemple__original_light.svg`
 
-### T4
-
-- **Matís pendent de A1 (§Multiplicació en Ca2, revisió interna Fable de 2026-07-11, decisió P3)**: A1 presenta, com a simplificació pedagògica, que Ca2 «no pot aplicar directament l'algorisme dels naturals» per a la multiplicació. Estrictament, el producte mòdul $2^n$ (la part baixa del resultat) és correcte independentment del signe dels operands — per això `mul` de RV32M no distingeix signes; els que sí que en distingeixen són `mulh`/`mulhu` (part alta). Quan es treballi T4, valorar si cal un matís explícit (nota o `#wrn-`) que connecti aquest punt amb el mètode de signe+magnituds de A1, o si ja queda prou cobert amb el tractament natiu de `mulh`/`mulhu` a A4.
-
 ### T5
 
 - **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
+- **Veu dels enunciats (E5)**: E5 usa la 2a persona del singular («Contesta les preguntes…») en lloc de la 2a del plural («Contesteu»), convenció establerta a partir de la revisió de T7/T6. Harmonitzar en una propera passada d'E5.
 
 ### T6
 
-- SVGs `T6_not_cmos`, `T6_not_1_0`, `T6_not_0_1`: alçades diferents; textos solapats al PDF. Provar les versions `___tracable____original_light.svg`.
+- **Etiquetes de classe d'instruccions en anglès** a les taules d'E6/S6 («Load», «Store», «Branch», «L/S»…): decidir si es mantenen com a etiquetes de columna/fila (opció actual) o es tradueixen («Lectura», «Escriptura», «Salt»), coherentment amb les substitucions obligatòries de prosa. Revisió pendent 2026-07-12 (`13_contrib.qmd §T6`).
+- ~~SVGs `T6_not_cmos`, `T6_not_1_0`, `T6_not_0_1`: alçades diferents; textos solapats al PDF. Provar les versions `___tracable____original_light.svg`.~~ **Confirmat obsolet (2026-07-12):** les versions «`___tracable____`» no existeixen al repositori. Les 5 figures de T6 s'han normalitzat a `width="100%"` a la imatge SVG, amb l'amplada visual fixada uniformement per bloc Quarto (40% o 50%, sense divergència HTML/PDF); vegeu `13_contrib.qmd §T6`.
 
 ### T7 — Figures pendents de creació
 

@@ -48,11 +48,16 @@ Estat de la Revisió interna Ax-Ex-Sx
 
 - Fetes pre-Fable: x = {1, 2, 4, 5}
 - Fetes Fable (algunes només fins ): x = {2, 3, 7, 8, 9}
-    - fitxer tasques
-        - C:    3         
-        - R:   2     6 7 8
+    - Pendent
+        - C:      5
+    - Iniciat
+        - C:     4
     - fase A i B
+        - C:    3         
+        - R:   2         
+    - fase C
         - C: 1             9
+        - R:         6 7 8
 - Pendents: x = {6}
 
 ---

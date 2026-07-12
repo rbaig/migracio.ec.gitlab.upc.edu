@@ -48,15 +48,15 @@ $$N_{P2} = t_{P1} \cdot \frac{f_{P2}}{CPI_{P2}} = 312{,}5 \cdot 10^{-6} \cdot \f
 :::
 
 ::: {#sol-p2-rendiment-coma-flotant .callout-tip}
-## Solució: unitat de coma flotant hardware
+## Solució: unitat de coma flotant per maquinari
 
 **Enunciat**: @exr-p2-rendiment-coma-flotant.
 
-Prenem $N_{orig}$ com a referència: el nombre d'instruccions **sense** FPU. El 20% correspon a instruccions de subrutines CF; el 80% restant, a instruccions d'altres tipus. Totes les instruccions amb CPI = 3 i $t_c = 1$ ns:
+Prenem $N_{orig}$ com a referència: el nombre d'instruccions **sense** unitat de coma flotant. El 20% correspon a instruccions de subrutines CF; el 80% restant, a instruccions d'altres tipus. Totes les instruccions amb CPI = 3 i $t_c = 1$ ns:
 
 $$t_{orig} = N_{orig} \cdot 3 \cdot 1 \text{ ns} = 3\,N_{orig} \text{ ns}$$
 
-Amb FPU, cada subrutina de 200 instruccions CF es substitueix per 1 instrucció CF HW: el nombre d'instruccions CF es redueix 10 vegades. Les instruccions no-CF no canvien:
+Amb la unitat de coma flotant, el nombre d'instruccions de coma flotant executades es redueix 10 vegades (enunciat). Les instruccions no-CF no canvien:
 
 $$N_{nou} = 0{,}80\,N_{orig} + \frac{0{,}20\,N_{orig}}{10} = 0{,}82\,N_{orig}$$
 
@@ -68,7 +68,7 @@ $$t_{nou} = 0{,}82\,N_{orig} \cdot 4 \cdot 1{,}05 \text{ ns} = 3{,}444\,N_{orig}
 
 $$S = \frac{t_{orig}}{t_{nou}} = \frac{3}{3{,}444} \approx \mathbf{0{,}87}$$
 
-El processador amb FPU és un 13% **més lent**: no val la pena. Tot i que el nombre d'instruccions es redueix (×0,82), la reducció no compensa l'augment del CPI (de 3 a 4) ni l'allargament del cicle (×1,05).
+El processador amb unitat de coma flotant té un rendiment un 13% **inferior** (triga un 14,8% més: $3{,}444/3 \approx 1{,}148$): no val la pena. Tot i que el nombre d'instruccions es redueix (×0,82), la reducció no compensa l'augment del CPI (de 3 a 4) ni l'allargament del cicle (×1,05).
 
 **b)** Amb CF = 40%:
 
@@ -78,7 +78,7 @@ $$t_{nou} = 0{,}64\,N_{orig} \cdot 4 \cdot 1{,}05 \text{ ns} = 2{,}688\,N_{orig}
 
 $$S = \frac{3}{2{,}688} \approx \mathbf{1{,}12}$$
 
-Amb el 40% de CF **sí val la pena** afegir la FPU (millora del 12%). La reducció d'instruccions és prou gran per compensar els efectes negatius sobre el CPI i el temps de cicle.
+Amb el 40% de CF **sí val la pena** afegir la unitat de coma flotant (millora del 12%). La reducció d'instruccions és prou gran per compensar els efectes negatius sobre el CPI i el temps de cicle.
 :::
 
 ::: {#sol-p2-rendiment-distribucio .callout-tip}
@@ -94,7 +94,7 @@ Amb el 40% de CF **sí val la pena** afegir la FPU (millora del 12%). La reducci
 | Store | 50 | 5 | 250 |
 | Load | 100 | 5 | 500 |
 | Branch | 50 | 2 | 100 |
-| **Total** | **700** | | **1.350** |
+| **Total** | **700** | | **1 350** |
 
 $$t_{exe} = 1350 \text{ cicles} \cdot 1 \text{ ns/cicle} = \mathbf{1{,}35} \ \mu\text{s}$$
 
@@ -128,15 +128,15 @@ P2 és més ràpid. El *speedup*:
 
 $$S = \frac{t_{P1}}{t_{P2}} = \frac{N \cdot CPI_{P1} / f_{P1}}{N \cdot CPI_{P2} / f_{P2}} = \frac{CPI_{P1} \cdot f_{P2}}{CPI_{P2} \cdot f_{P1}} = \frac{2{,}8 \cdot 2{,}0}{2{,}0 \cdot 1{,}5} = \frac{28}{15} \approx \mathbf{1{,}87} \times$$
 
-Observació: P2 té un CPI uniforme de 2 per a totes les classes. Això reflecteix que una implementació simple (sense pipeline optimitzat per tipus) pot ser competitiva si la freqüència és prou alta.
+Observació: P2 té un CPI uniforme de 2 per a totes les classes. Això reflecteix que un disseny amb CPI uniforme pot ser competitiu si la freqüència de rellotge és prou alta.
 :::
 
 ::: {#sol-p2-rendiment-speedup-mul .callout-tip}
-## Solució: multiplicador hardware
+## Solució: multiplicador per maquinari
 
 **Enunciat**: @exr-p2-rendiment-speedup-mul.
 
-Sigui $N$ el nombre d'instruccions amb el multiplicador HW. El 0,5% de $N$ són multiplicacions (1 instrucció, CPI = 40); el 99,5% restant té CPI = 3.
+Sigui $N$ el nombre d'instruccions amb el multiplicador per maquinari. El 0,5% de $N$ són multiplicacions (1 instrucció, CPI = 40); el 99,5% restant té CPI = 3.
 
 **Sense multiplicador:** cada multiplicació s'expandeix a una subrutina de 200 instruccions. Les $0{,}005N$ multiplicacions passen a $0{,}005N \cdot 200 = N$ instruccions de subrutina, totes amb CPI = 3:
 
@@ -156,7 +156,7 @@ $$\frac{N \cdot 3{,}185}{f_{nou}} \leq \frac{1{,}995N \cdot 3}{2 \cdot 10^9}$$
 
 $$f_{nou} \geq \frac{2 \cdot 10^9 \cdot 3{,}185}{5{,}985} = \frac{1274}{1197} \cdot 10^9 \approx \mathbf{1{,}064} \text{ GHz}$$
 
-La freqüència mínima acceptable és aproximadament 1,06 GHz, força per sota dels 2 GHz originals. El multiplicador HW és clarament beneficiós fins i tot amb una degradació significativa de la freqüència de rellotge.
+La freqüència mínima acceptable és aproximadament 1,06 GHz, força per sota dels 2 GHz originals. El multiplicador per maquinari és clarament beneficiós fins i tot amb una degradació significativa de la freqüència de rellotge.
 :::
 
 ::: {#sol-p2-rendiment-temps .callout-tip}
@@ -199,98 +199,6 @@ $$S_{max} = \frac{210}{210 - 30} = \frac{210}{180} \approx 1{,}17 \times < 1{,}2
 Tampoc és possible en el cas b.
 :::
 
-## Potència i consum
-
-::: {#sol-p2-potencia-basica .callout-tip}
-## Solució: càrrega capacitiva
-
-**Enunciat**: @exr-p2-potencia-basica.
-
-La **potència dinàmica** en circuits CMOS és $P_{din} = C \cdot V^2 \cdot f$ (@eq-potencia-dinamica; suposem factor d'activitat $\alpha = 1$).
-
-**a)** Aïllem la càrrega capacitiva $C = P_{din} / (V^2 \cdot f)$:
-
-$$C_A = \frac{2 \text{ W}}{(5 \text{ V})^2 \cdot 10 \cdot 10^6 \text{ Hz}} = \frac{2}{250 \cdot 10^6} = \mathbf{8 \text{ nF}}$$
-
-$$C_B = \frac{100 \text{ W}}{(1 \text{ V})^2 \cdot 3 \cdot 10^9 \text{ Hz}} = \frac{100}{3 \cdot 10^9} \approx \mathbf{33{,}3 \text{ nF}}$$
-
-**b)** Apliquem la mateixa tensió i capacitància de A, però amb $f = f_B = 3$ GHz:
-
-$$P_A' = C_A \cdot V_A^2 \cdot f_B = 8 \cdot 10^{-9} \cdot 25 \cdot 3 \cdot 10^9 = \mathbf{600 \text{ W}}$$
-
-Aquesta potència és absolutament inassolible a la pràctica, i il·lustra per què no n'hi ha prou d'augmentar la freqüència sense reduir el voltatge: la potència creix linealment amb $f$.
-:::
-
-::: {#sol-p2-potencia-evolucio .callout-tip}
-## Solució: evolució de vuit generacions Intel
-
-**Enunciat**: @exr-p2-potencia-evolucio.
-
-**a i e)** Ràtios entre generacions consecutives i càrregues capacitives ($C = P / (V^2 \cdot f)$):
-
-| Gen | Processador | $f$ | $V$ | $P$ | $r_f$ | $r_P$ | $C$ (nF) |
-| :---: | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
-| 1 | 80286 | 12,5 MHz | 5,0 V | 3,3 W | — | — | 10,56 |
-| 2 | 80386 | 16 MHz | 5,0 V | 4,1 W | 1,28 | 1,24 | 10,25 |
-| 3 | 80486 | 25 MHz | 5,0 V | 4,9 W | 1,56 | 1,20 | 7,84 |
-| 4 | Pentium | 66 MHz | 5,0 V | 10,1 W | 2,64 | 2,06 | 6,12 |
-| 5 | Pentium Pro | 200 MHz | 3,3 V | 29,1 W | 3,03 | 2,88 | 13,36 |
-| 6 | P4 Willamette | 2 GHz | 1,75 V | 75,3 W | 10,00 | 2,59 | 12,29 |
-| 7 | P4 Prescott | 3,6 GHz | 1,25 V | 103 W | 1,80 | 1,37 | 18,31 |
-| 8 | Core 2 Kentsfield | 2,667 GHz | 1,1 V | 95 W | 0,74 | 0,92 | 29,44 |
-
-: {tbl-colwidths="[5,22,12,7,8,8,8,10]" .striped}
-
-Exemple de càlcul per a la generació 5 (Pentium Pro):
-
-$$C_5 = \frac{29{,}1 \text{ W}}{(3{,}3 \text{ V})^2 \cdot 200 \cdot 10^6 \text{ Hz}} = \frac{29{,}1}{10{,}89 \cdot 2 \cdot 10^8} \approx 13{,}36 \text{ nF}$$
-
-**b)** El ràtio màxim de freqüència es produeix entre les generacions 5 i 6 (de 200 MHz a 2 GHz): $r_f = 10$. El ràtio màxim de potència es produeix entre les generacions 4 i 5: $r_P \approx 2{,}88$.
-
-**c)** La **mitjana geomètrica** dels ràtios entre 7 generacions consecutives:
-
-$$\bar{r}_f = \left(\prod_{i=1}^{7} r_{f,i}\right)^{1/7} = \left(1{,}28 \cdot 1{,}56 \cdot 2{,}64 \cdot 3{,}03 \cdot 10 \cdot 1{,}80 \cdot 0{,}74\right)^{1/7} \approx \mathbf{2{,}15} \times$$
-
-$$\bar{r}_P = \left(\prod_{i=1}^{7} r_{P,i}\right)^{1/7} \approx \mathbf{1{,}62} \times$$
-
-**d)** Respecte de la generació 1:
-
-$$\frac{f_8}{f_1} = \frac{2{,}667 \cdot 10^9}{12{,}5 \cdot 10^6} \approx \mathbf{213} \times \qquad \frac{P_8}{P_1} = \frac{95}{3{,}3} \approx \mathbf{28{,}8} \times$$
-
-Observació: a partir de la generació 8 (Core 2), la freqüència deixa de créixer i la potència fins i tot es redueix lleugerament. Això marca el final de l'era de l'escalada de freqüència com a via principal per millorar el rendiment.
-:::
-
-::: {#sol-p2-potencia-estatica .callout-tip}
-## Solució: potència estàtica i corrent de fuita
-
-**Enunciat**: @exr-p2-potencia-estatica.
-
-**a)** Percentatge de cada component sobre la potència total:
-
-| Tecnologia | $P_{din}$ | $P_{est}$ | $P_{tot}$ | % dinàmica | % estàtica |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| 250 nm | 49 W | 1 W | 50 W | **98%** | **2%** |
-| 90 nm | 75 W | 45 W | 120 W | **62,5%** | **37,5%** |
-
-: {.striped}
-
-La fuita de corrent passa de ser negligible (2%) a representar el 37,5% de la potència total en passar de 250 nm a 90 nm. Aquesta és una de les raons principals per les quals la miniaturització porta associada una creixent importància del consum estàtic.
-
-**b)** De $P_{est} = V \cdot I_{leak}$ (@eq-potencia-estatica):
-
-$$I_{leak,250} = \frac{1 \text{ W}}{3{,}3 \text{ V}} \approx \mathbf{0{,}303 \text{ A}}$$
-
-$$I_{leak,90} = \frac{45 \text{ W}}{1{,}1 \text{ V}} \approx \mathbf{40{,}9 \text{ A}}$$
-
-Malgrat que el voltatge s'ha reduït de 3,3 V a 1,1 V (factor 3), el corrent de fuita s'ha multiplicat per gairebé 135. Això reflecteix la dificultat creixent de mantenir els transistors en tall quan les dimensions disminueixen.
-
-**c)** La reducció màxima de $P_{tot}$ eliminant tota la $P_{din}$ és, per a cada tecnologia, el percentatge de la potència dinàmica sobre la total:
-
-$$\Delta P_{tot,250} = \frac{49}{50} = \mathbf{98\%} \qquad \Delta P_{tot,90} = \frac{75}{120} = \mathbf{62{,}5\%}$$
-
-En la tecnologia de 90 nm, la reducció màxima possible de $P_{tot}$ actuant exclusivament sobre la potència dinàmica és del 62,5%; la potència estàtica restant (37,5%) no es pot eliminar per aquesta via.
-:::
-
 ## Llei d'Amdahl
 
 ::: {#sol-p2-amdahl-basic .callout-tip}
@@ -298,7 +206,7 @@ En la tecnologia de 90 nm, la reducció màxima possible de $P_{tot}$ actuant ex
 
 **Enunciat**: @exr-p2-amdahl-basic.
 
-La **Llei d'Amdahl** (@eq-guany3) dona el *speedup* global quan s'accelera una fracció $f$ del temps d'execució un factor $k$:
+La **llei d'Amdahl** (@eq-guany3) dona el *speedup* global quan s'accelera una fracció $f$ del temps d'execució un factor $k$:
 
 $$S = \frac{1}{(1 - f) + f/k}$$
 
@@ -326,11 +234,11 @@ El resultat és negatiu, cosa que és impossible. La raó és que el *speedup* m
 
 **Enunciat**: @exr-p2-amdahl-multicomponent.
 
-Quan s'apliquen múltiples millores simultànies, la Llei d'Amdahl es generalitza:
+Quan s'apliquen múltiples millores simultànies, la llei d'Amdahl es generalitza:
 
-$$S = \frac{1}{\displaystyle\sum_i \frac{f_i}{k_i}}$$
+$$S = \frac{1}{\left(1 - \displaystyle\sum_i f_i\right) + \displaystyle\sum_i \frac{f_i}{k_i}}$$
 
-on $f_i$ és la fracció del temps original que ocupa el component $i$ i $k_i$ la seva millora.
+on $f_i$ és la fracció del temps original que ocupa el component $i$ i $k_i$ la seva millora. En aquest exercici, els tres components cobreixen el 100% del temps ($\sum_i f_i = 1$), de manera que el primer terme s'anul·la i l'expressió es redueix a $S = 1/\sum_i (f_i/k_i)$.
 
 **a)** Aplicant les tres millores:
 
@@ -346,7 +254,7 @@ $$S = \frac{1}{\dfrac{0{,}50}{2} + \dfrac{0{,}30}{4} + \dfrac{0{,}20}{1{,}5}} = 
 
 : {.striped}
 
-La millora individual amb **més impacte** és la de la **unitat entera** ($S = 1{,}33\times$), tot i que la seva millora disponible ($2\times$) és la menor de les tres. La Llei d'Amdahl explica per què: el que determina l'impacte és principalment la **fracció de temps** ($f = 50\%$), no el factor de millora.
+La millora individual amb **més impacte** és la de la **unitat entera** ($S = 1{,}33\times$), tot i que la seva millora disponible ($2\times$) és la menor de les tres. La llei d'Amdahl explica per què: el que determina l'impacte és principalment la **fracció de temps** ($f = 50\%$), no el factor de millora.
 
 Si el pressupost permet una sola millora, s'ha d'escollir la **unitat entera**: maximitza el *speedup* global perquè actua sobre el component dominant en temps.
 :::
@@ -356,7 +264,7 @@ Si el pressupost permet una sola millora, s'ha d'escollir la **unitat entera**: 
 
 **Enunciat**: @exr-p2-amdahl-limit.
 
-**a)** Volem $S = 10$ amb $k = 20$. De la Llei d'Amdahl:
+**a)** Volem $S = 10$ amb $k = 20$. De la llei d'Amdahl:
 
 $$10 = \frac{1}{(1 - f) + f/20} \implies \frac{1}{10} = 1 - f + \frac{f}{20} = 1 - f\left(1 - \frac{1}{20}\right) = 1 - \frac{19f}{20}$$
 
@@ -374,7 +282,7 @@ Molt lluny del 10× anunciat.
 
 $$S_{max} = \frac{1}{1 - 0{,}35} = \frac{1}{0{,}65} \approx \mathbf{1{,}54} \times$$
 
-Ni amb instruccions CF infinitament ràpides no s'arribaria a 1,54×. Això posa de manifest el missatge fonamental de la Llei d'Amdahl: **optimitzar la part dominant és sempre més efectiu que optimitzar qualsevol altra part**, i el *speedup* màxim sempre queda limitat per la fracció no millorada.
+Amb instruccions CF infinitament ràpides, el guany tendiria a 1,54× sense poder superar-lo. Això posa de manifest el missatge fonamental de la llei d'Amdahl: el guany màxim queda sempre limitat per la fracció de temps no millorada, per gran que sigui la millora aplicada a la part optimitzada.
 :::
 
 ::: {#sol-p2-amdahl-cpi .callout-tip}
@@ -403,5 +311,98 @@ El processador A ha de funcionar a una freqüència 1,6 vegades superior a la de
 
 $$S = \frac{1800}{900} = \mathbf{2{,}0} \times$$
 
-Equivalent a aplicar la Llei d'Amdahl amb $f_{L/S} = 900/1800 = 50\%$ del temps i $k \to \infty$: $S_{max} = 1/(1 - 0{,}5) = 2\times$.
+Equivalent a aplicar la llei d'Amdahl amb $f_{L/S} = 900/1800 = 50\%$ del temps i $k \to \infty$: $S_{max} = 1/(1 - 0{,}5) = 2\times$.
 :::
+
+## Potència
+
+::: {#sol-p2-potencia-basica .callout-tip}
+## Solució: capacitat equivalent
+
+**Enunciat**: @exr-p2-potencia-basica.
+
+La **potència dinàmica** en circuits CMOS és $P_{din} = C \cdot V^2 \cdot f$ (@eq-potencia-dinamica; suposem factor d'activitat $\alpha = 1$).
+
+**a)** Aïllem la capacitat equivalent $C = P_{din} / (V^2 \cdot f)$:
+
+$$C_A = \frac{2 \text{ W}}{(5 \text{ V})^2 \cdot 10 \cdot 10^6 \text{ Hz}} = \frac{2}{250 \cdot 10^6} = \mathbf{8 \text{ nF}}$$
+
+$$C_B = \frac{100 \text{ W}}{(1 \text{ V})^2 \cdot 3 \cdot 10^9 \text{ Hz}} = \frac{100}{3 \cdot 10^9} \approx \mathbf{33{,}3 \text{ nF}}$$
+
+**b)** Apliquem la mateixa tensió i capacitància de A, però amb $f = f_B = 3$ GHz:
+
+$$P_A' = C_A \cdot V_A^2 \cdot f_B = 8 \cdot 10^{-9} \cdot 25 \cdot 3 \cdot 10^9 = \mathbf{600 \text{ W}}$$
+
+Aquesta potència és absolutament inassolible a la pràctica, i il·lustra per què no n'hi ha prou d'augmentar la freqüència sense reduir el voltatge: la potència creix linealment amb $f$.
+:::
+
+::: {#sol-p2-potencia-evolucio .callout-tip}
+## Solució: evolució de vuit generacions Intel
+
+**Enunciat**: @exr-p2-potencia-evolucio.
+
+**a i e)** Ràtios entre generacions consecutives i capacitats equivalents ($C = P / (V^2 \cdot f)$):
+
+| Gen | Processador | $f$ | $V$ | $P$ | $r_f$ | $r_P$ | $C$ (nF) |
+| :---: | :--- | :--- | ---: | ---: | :---: | :---: | :---: |
+| 1 | 80286 | 12,5 MHz | 5,0 V | 3,3 W | — | — | 10,56 |
+| 2 | 80386 | 16 MHz | 5,0 V | 4,1 W | 1,28 | 1,24 | 10,25 |
+| 3 | 80486 | 25 MHz | 5,0 V | 4,9 W | 1,56 | 1,20 | 7,84 |
+| 4 | Pentium | 66 MHz | 5,0 V | 10,1 W | 2,64 | 2,06 | 6,12 |
+| 5 | Pentium Pro | 200 MHz | 3,3 V | 29,1 W | 3,03 | 2,88 | 13,36 |
+| 6 | P4 Willamette | 2 GHz | 1,75 V | 75,3 W | 10,00 | 2,59 | 12,29 |
+| 7 | P4 Prescott | 3,6 GHz | 1,25 V | 103 W | 1,80 | 1,37 | 18,31 |
+| 8 | Core 2 Kentsfield | 2,667 GHz | 1,1 V | 95 W | 0,74 | 0,92 | 29,44 |
+
+: {tbl-colwidths="[6,28,15,9,10,10,10,12]" .striped}
+
+Exemple de càlcul per a la generació 5 (Pentium Pro):
+
+$$C_5 = \frac{29{,}1 \text{ W}}{(3{,}3 \text{ V})^2 \cdot 200 \cdot 10^6 \text{ Hz}} = \frac{29{,}1}{10{,}89 \cdot 2 \cdot 10^8} \approx 13{,}36 \text{ nF}$$
+
+**b)** La ràtio màxima de freqüència es produeix entre les generacions 5 i 6 (de 200 MHz a 2 GHz): $r_f = 10$. La ràtio màxima de potència es produeix entre les generacions 4 i 5: $r_P \approx 2{,}88$.
+
+**c)** La **mitjana geomètrica** de les ràtios entre 7 generacions consecutives:
+
+$$\bar{r}_f = \left(\prod_{i=1}^{7} r_{f,i}\right)^{1/7} = \left(1{,}28 \cdot 1{,}56 \cdot 2{,}64 \cdot 3{,}03 \cdot 10 \cdot 1{,}80 \cdot 0{,}74\right)^{1/7} \approx \mathbf{2{,}15} \times$$
+
+$$\bar{r}_P = \left(\prod_{i=1}^{7} r_{P,i}\right)^{1/7} \approx \mathbf{1{,}62} \times$$
+
+**d)** Respecte de la generació 1:
+
+$$\frac{f_8}{f_1} = \frac{2{,}667 \cdot 10^9}{12{,}5 \cdot 10^6} \approx \mathbf{213} \times \qquad \frac{P_8}{P_1} = \frac{95}{3{,}3} \approx \mathbf{28{,}8} \times$$
+
+Observació: a partir de la generació 8 (Core 2), la freqüència deixa de créixer i la potència fins i tot es redueix lleugerament. Això marca el final de l'era del creixement de la freqüència com a via principal per millorar el rendiment.
+:::
+
+::: {#sol-p2-potencia-estatica .callout-tip}
+## Solució: potència estàtica i corrent de fuita
+
+**Enunciat**: @exr-p2-potencia-estatica.
+
+**a)** Percentatge de cada component sobre la potència total:
+
+| Tecnologia | $P_{din}$ | $P_{est}$ | $P_{tot}$ | % dinàmica | % estàtica |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| 250 nm | 49 W | 1 W | 50 W | **98%** | **2%** |
+| 90 nm | 75 W | 45 W | 120 W | **62,5%** | **37,5%** |
+
+: {.striped}
+
+Els corrents de fuita passen de ser negligibles (2%) a representar el 37,5% de la potència total en passar de 250 nm a 90 nm. Aquesta és una de les raons principals per les quals la miniaturització porta associada una creixent importància del consum estàtic.
+
+**b)** De $P_{s} = V_{CC} \cdot I_{fuita}$ (@eq-potencia-estatica):
+
+$$I_{fuita,250} = \frac{1 \text{ W}}{3{,}3 \text{ V}} \approx \mathbf{0{,}303 \text{ A}}$$
+
+$$I_{fuita,90} = \frac{45 \text{ W}}{1{,}1 \text{ V}} \approx \mathbf{40{,}9 \text{ A}}$$
+
+Malgrat que el voltatge s'ha reduït de 3,3 V a 1,1 V (factor 3), el corrent de fuita s'ha multiplicat per gairebé 135. Això reflecteix la dificultat creixent de mantenir els transistors en tall quan les dimensions disminueixen.
+
+**c)** La reducció màxima de $P_{tot}$ eliminant tota la $P_{din}$ és, per a cada tecnologia, el percentatge de la potència dinàmica sobre la total:
+
+$$\Delta P_{tot,250} = \frac{49}{50} = \mathbf{98\%} \qquad \Delta P_{tot,90} = \frac{75}{120} = \mathbf{62{,}5\%}$$
+
+En la tecnologia de 90 nm, la reducció màxima possible de $P_{tot}$ actuant exclusivament sobre la potència dinàmica és del 62,5%; la potència estàtica restant (37,5%) no es pot eliminar per aquesta via.
+:::
+
