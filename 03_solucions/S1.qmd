@@ -6,7 +6,6 @@ number-sections: true
 
 ## El cicle de vida del programa: Generació vs. Execució
 
-
 ::: {#sol-p1-jerarquia-python .callout-tip}
 ## Solució: executar Python en RISC-V
 
@@ -54,7 +53,7 @@ Tots els passos s'executen en la **màquina x86-64**, ja que el traductor (eleme
 
 **b)** Per divisions successives entre 2 (residus de menor a major pes):
 
-$25 \div 2$: residus $1, 0, 0, 1, 1, 0, 0, 0$ (de LSB a MSB) $\rightarrow 0001\,1001_2$. ✓
+$25 \div 2$: residus $1, 0, 0, 1, 1, 0, 0, 0$ (de LSb a MSb) $\rightarrow 0001\,1001_2$. ✓
 
 $173 \div 2$: residus $1, 0, 1, 1, 0, 1, 0, 1$ $\rightarrow 1010\,1101_2$. ✓
 
@@ -79,9 +78,13 @@ Amb $n = 13$ bits, el rang de Ca2 és $[-2^{12},\ 2^{12}-1] = [-4096,\ +4095]$.
 
 El menor enter (el més negatiu) és $x_s = -4096 = -2^{12}$.
 
-**a) En hexadecimal**: el codi és $x_u = 2^{12} = 4096 = 1\,0000\,0000\,0000_2$. Expressat en hexadecimal (s'omple amb zeros fins a 16 bits): $\mathtt{0x1000}$.
+**a) En hexadecimal**: el patró de bits és $x_u = 2^{12} = 4096 = 1\,0000\,0000\,0000_2$ (13 bits). Completant aquest **patró** amb zeros a l'esquerra fins a 16 bits per poder-lo expressar en hexadecimal: $\mathtt{0x1000}$.
 
 **b) En decimal**: $-4096$.
+
+::: {#cau-minim13-extensio-signe .callout-caution}
+El valor $\mathtt{0x1000}$ anterior és només el patró de 13 bits escrit en hexadecimal, **no** l'extensió de signe a 16 bits. Si es vol representar $-4096$ directament amb 16 bits en Ca2, cal aplicar l'extensió de signe (@sec-extensio-de-signe): com que el bit de signe és $1$, es repliquen tres $1$ addicionals a l'esquerra, i el resultat és $\mathtt{0xF000}$ (no $\mathtt{0x1000}$, que en Ca2 de 16 bits representaria $+4096$).
+:::
 :::
 
 ::: {#sol-p1-enters-maxim13 .callout-tip}
@@ -137,7 +140,7 @@ Observacions:
 
 Per a cada valor, el procediment és:
 
-- **Ca2**: els positius coincideixen amb la representació binària natural; els negatius, $x + 2^8 = x + 256$.
+- **Ca2**: els positius coincideixen amb la representació binària natural; els negatius, $x + 2^8 = x + 256$ (@cau-ca2-drecera-natural).
 - **Ca1**: els positius coincideixen amb Ca2; els negatius s'obtenen complementant tots els bits de la representació de $|x|$.
 - **Signe i magnitud (S&M)**: bit de signe ($0$ si positiu, $1$ si negatiu) i $|x|$ als bits restants. Rang: $[-127, +127]$.
 - **Excés a 127**: codi $= x + 127$. Rang: $[-127, +128]$.
@@ -186,6 +189,8 @@ $|-1| = 1 = 0000\,0001_2$.
 ## Solució: interpretació com a natural i Ca2
 
 **Enunciat**: @exr-p1-enters-implicit.
+
+Aplicant la drecera $x_s = x_u - 2^n$ per als patrons amb bit de signe actiu (@cau-ca2-drecera-natural):
 
 **a) `0000 1111` (8 bits)**
 
@@ -267,7 +272,7 @@ $$x_s = 1{\cdot}2^8 + 1{\cdot}2^5 + 1{\cdot}2^1 + 1{\cdot}2^0 = 256 + 32 + 2 + 1
 
 $\mathtt{0xFE23} = 1111\,1110\,0010\,0011_2$. El bit de signe (bit 15) és $1$ → nombre negatiu.
 
-Aplicant @eq-ca2-interpretacio:
+Aplicant @eq-ca2-interpretacio (equivalentment, la drecera $x_s = x_u - 2^n$ de @cau-ca2-drecera-natural):
 
 $$x_s = \mathtt{0xFE23} - 2^{16} = 65059 - 65536 = -477$$
 
@@ -299,8 +304,6 @@ El rang de Ca2 amb 8 bits és $[-128, +127]$; amb 16 bits, $[-32768, +32767]$. S
 :::
 
 ## Operacions aritmètiques en complement a 2
-
-*Vegeu @sec-operacions-ca2.*
 
 ::: {#sol-p1-aritm-suma .callout-tip}
 ## Solució: sumes en Ca2 (8 bits)

@@ -24,6 +24,10 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   - `auto_figs/T3_deps_multi__original_light.svg`
   - `auto_figs/T3_deps_exemple__original_light.svg`
 
+### T4
+
+- **Matís pendent de A1 (§Multiplicació en Ca2, revisió interna Fable de 2026-07-11, decisió P3)**: A1 presenta, com a simplificació pedagògica, que Ca2 «no pot aplicar directament l'algorisme dels naturals» per a la multiplicació. Estrictament, el producte mòdul $2^n$ (la part baixa del resultat) és correcte independentment del signe dels operands — per això `mul` de RV32M no distingeix signes; els que sí que en distingeixen són `mulh`/`mulhu` (part alta). Quan es treballi T4, valorar si cal un matís explícit (nota o `#wrn-`) que connecti aquest punt amb el mètode de signe+magnituds de A1, o si ja queda prou cobert amb el tractament natiu de `mulh`/`mulhu` a A4.
+
 ### T5
 
 - **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.

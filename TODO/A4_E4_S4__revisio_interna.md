@@ -1,4 +1,4 @@
-Nom d'aquest xat: `EC A{N}-E{N}-S{N} Revisió interna`
+Nom d'aquest xat: `EC A4-E4-S4 Revisió interna`
 
 Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 
@@ -49,10 +49,8 @@ Estat de la Revisió interna Ax-Ex-Sx
 - Fetes pre-Fable: x = {1, 2, 4, 5}
 - Fetes Fable (algunes només fins ): x = {2, 3, 7, 8, 9}
     - fitxer tasques
-        - C:    3         
+        - C: 1   3         9
         - R:   2     6 7 8
-    - fase A i B
-        - C: 1             9
 - Pendents: x = {6}
 
 ---
@@ -67,7 +65,7 @@ Estat de la Revisió interna Ax-Ex-Sx
 
 0. Explora els fitxers que t'he passat.
 1. Llegeix `CLAUDE.md`, `13_contrib.qmd` i `24_specs/svg.md`.
-2. Llegeix els fitxers principals a revisar: `A{N}.qmd`, `E{N}.qmd` i `S{N}.qmd`.
+2. Llegeix els fitxers principals a revisar: `A4.qmd`, `E4.qmd` i `S4.qmd`.
 3. Demana'm o busca al repositori els fitxers que necessitis.
 4. Fes un primer mapa de l'estructura i el contingut: identifica seccions, detecta inconsistències evidents de coherència, pedagogia i llenguatge. **En aquesta fase no cal encara verificar exhaustivament cada càlcul** — l'objectiu és tenir el mapa global. Un cop extretes les convencions rellevants de `CLAUDE.md`, `13_contrib.qmd` i `svg.md`, no cal rellegir-los sencers a la Fase B: treballa amb el resum ja fet a menys que sorgeixi un dubte concret que ho justifiqui.
 5. Atura't. Presenta'm:
@@ -84,7 +82,7 @@ Estat de la Revisió interna Ax-Ex-Sx
 *Configuració esperada: Fable 5 High amb Thinking.*
 
 6. Amb el mapa validat, fes la verificació profunda **només de les seccions amb contingut numèric/verificable identificades a la Fase A** (càlculs, traces, fórmules), més la resta d'aspectes a revisar (correcció tècnica general, coherència, pedagogia, llenguatge) sobre la totalitat dels fitxers.
-7. Genera la llista completa d'accions a realitzar; guarda-la al fitxer `T{N}_P_tasques.md` i ofereix-me-la per descarregar.
+7. Genera la llista completa d'accions a realitzar; guarda-la al fitxer `T4_P_tasques.md` i ofereix-me-la per descarregar.
 
 ### Fase C — Execució
 
@@ -96,7 +94,7 @@ Estat de la Revisió interna Ax-Ex-Sx
 
 ## Si el xat s'exhaureix dins la Fase B o C (sense arribar al punt d'aturada previst)
 
-A diferència del punt de represa de la Fase A (pas 5), un exhauriment dins la Fase B (abans de completar `T{N}_P_tasques.md`) o dins la Fase C no deixa necessàriament un artefacte net i complet. Experiència real: en un cas, el xat es va exhaurir aparentment durant la generació del fitxer de tasques, però en realitat ja s'havia arribat a completar-la i lliurar-la — l'exhauriment va tallar el torn següent, no la tasca en si. Per tant:
+A diferència del punt de represa de la Fase A (pas 5), un exhauriment dins la Fase B (abans de completar `T4_P_tasques.md`) o dins la Fase C no deixa necessàriament un artefacte net i complet. Experiència real: en un cas, el xat es va exhaurir aparentment durant la generació del fitxer de tasques, però en realitat ja s'havia arribat a completar-la i lliurar-la — l'exhauriment va tallar el torn següent, no la tasca en si. Per tant:
 
 1. **Abans de donar per perduda la feina**, comprova si el darrer missatge del xat exhaurit conté ja el fitxer complet ofert per descàrrega — pot ser que la tasca s'hagi acabat igualment.
 2. Si no hi ha fitxer complet, **demana'm que cerqui el xat exhaurit** (`conversation_search`/`recent_chats`): encara que no pugui recuperar-ne el text literal complet, sol poder obtenir un resum estructurat del que ja s'havia analitzat o decidit, evitant repetir feina de zero.

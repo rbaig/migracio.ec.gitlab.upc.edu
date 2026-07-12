@@ -5,7 +5,7 @@ number-sections: true
 # {{< var tema1 >}} {#sec-tema-introduccio}
 
 ## La gestió de la complexitat: Capes i interfícies {#sec-capes-interficies}
-Un **computador** és un sistema d'una complexitat extraordinària, però que, en el seu nivell més fonamental, només és capaç d'executar **operacions** aritmètiques, lògiques i de control **elementals**. La distància conceptual que separa aquestes instruccions bàsiques de les aplicacions tan sofisticades actuals és tan gran que és impossible dissenyar qualsevol sistema operatiu (SO) o programa modern interactuant directament amb els components físics del processador.
+Un **computador** és un sistema d'una complexitat extraordinària, però que, en el seu nivell més fonamental, només és capaç d'executar **operacions** aritmètiques, lògiques i de control **elementals**. La distància conceptual que separa aquestes instruccions bàsiques de les aplicacions tan sofisticades actuals és tan gran que és impossible dissenyar qualsevol sistema operatiu (SO) o programa modern que interactuï directament amb els components físics del processador.
 
 ### Nivells d'abstracció {#sec-nivells-abstraccio}
 
@@ -23,7 +23,7 @@ Per gestionar aquesta distància conceptual tan gran i fer viable el disseny de 
 
 ### Interfícies: Els contractes del sistema {#sec-interficies}
 
-L'abstracció només és efectiva si les interfícies (fronteres) actuen com a contractes rígids que cap de les parts pot violar sense trencar la funcionalitat del sistema. En un **entorn allotjat (*hosted*)** amb **SO**, el cas *full-stack*, que és el més habitual, per exemple, el de Programació I (PRO1), n'hi ha tres:
+L'abstracció només és efectiva si les interfícies (fronteres) actuen com a contractes rígids que cap de les parts pot violar sense trencar la funcionalitat del sistema. En un **entorn allotjat** (***hosted***) amb **SO** —el cas més habitual, per exemple el de Programació I (PRO1)—, n'hi ha tres:
 
 - ***Application Programming Interface*** (**API**): Contracte a nivell de codi font. Garanteix la portabilitat del programari entre diferents sistemes si es respecten els estàndards (com **ISO C** o POSIX). **Defineix *com* s'ha d'escriure el codi**.
 
@@ -48,11 +48,11 @@ Per entendre la relació entre les interfícies (**API**, **ABI**, **ISA**), cal
 
 El procés de transformació d’una idea abstracta en un fitxer executable no és un pas directe, sinó una cadena de muntatge (***toolchain***) altament coordinada on intervenen diferents eines de sistema. Aquest flux, que va des de l'escriptura del codi fins a la generació del binari executable, es pot desglossar en quatre (més una) etapes fonamentals on les interfícies **API**, **ABI** i **ISA** (vegeu @sec-interficies) actuen com a garanties de compatibilitat:
 
-   0. **Desenvolupament**: El programador escriu el codi font (`.c`, `.h`) d'acord amb l'**API**.
-   1. **Preprocessat**: El preprocessador és el primer a actuar. Neteja el text i resol directives (com `#include` o `#define`) per generar el codi expandit (`.i`), una versió completa però encara en llenguatge d'alt nivell.
-   2. **Compilació**: El compilador tradueix la lògica de l'alt nivell a un llenguatge de baix nivell anomenat assemblador (`.s`). En aquest punt, el compilador actua com a pont: ha d'entendre l'**API** escrita pel programador i, alhora, començar a aplicar les regles de l'**ABI** per determinar com s'estructuraran les dades en memòria.
-   3. **Assemblat**: L'assemblador agafa el fitxer de text (`.s`) i el converteix en Codi Objecte (`.o`). Aquí és on l'**ISA** pren protagonisme, ja que el programari s'ha de traduir a les instruccions específiques del processador diana (x86, ARM, etc.), mantenint l'estructura binària que dicta l'**ABI**.
-   4. **Enllaçat** (*linking*): L'Enllaçador és el pas final i crític de síntesi. La seva funció és combinar el codi objecte generat pel programador amb les biblioteques del sistema, tant estàtiques (`.a`) com dinàmiques (`.so`). Per fer-ho, l'enllaçador ha de tenir un coneixement profund de l'**ISA** (per resoldre salts i adreces de memòria) i de l'**ABI** (per assegurar que totes les peces «parlen» el mateix llenguatge binari), i produeix el **binari executable** llest per ser carregat a la memòria.
+0. **Desenvolupament**: El programador escriu el codi font (`.c`, `.h`) d'acord amb l'**API**.
+1. **Preprocessat** (`cpp`): El preprocessador és el primer a actuar. Neteja el text i resol directives (com `#include` o `#define`) per generar el codi expandit (`.i`), una versió completa però encara en llenguatge d'alt nivell.
+2. **Compilació** (`cc1`): El compilador tradueix la lògica de l'alt nivell a un llenguatge de baix nivell anomenat assemblador (`.s`). En aquest punt, el compilador actua com a pont: ha d'entendre l'**API** escrita pel programador i, alhora, començar a aplicar les regles de l'**ABI** per determinar com s'estructuraran les dades en memòria.
+3. **Assemblat** (`as`): L'assemblador agafa el fitxer de text (`.s`) i el converteix en codi objecte (`.o`). Aquí és on l'**ISA** pren protagonisme, ja que el programari s'ha de traduir a les instruccions específiques del processador diana (x86, ARM, etc.), mantenint l'estructura binària que dicta l'**ABI**.
+4. **Enllaçat** (`ld`, *linking*): L'enllaçador és el pas final i crític de síntesi. La seva funció és combinar el codi objecte generat pel programador amb les biblioteques del sistema, tant estàtiques (`.a`) com dinàmiques (`.so`). Per fer-ho, l'enllaçador ha de tenir un coneixement profund de l'**ISA** (per resoldre salts i adreces de memòria) i de l'**ABI** (per assegurar que totes les peces «parlen» el mateix llenguatge binari), i produeix l'**executable final** llest per ser carregat a la memòria.
 
 ::: {#fig-flux-compilacio}
 ::: {.content-visible when-format="html"}
@@ -82,16 +82,16 @@ Un cop obtingut el binari, aquest s'ha d'executar. El camí que segueixen les da
 #### Entorn allotjat (*hosted*) {#sec-entorn-allotjat-hosted}
 És el model d'un PC convencional. El binari no és autònom:
 
-1.  El **Sistema Operatiu** carrega el binari a la memòria.
-2.  El binari s'executa i, quan necessita interactuar amb l'exterior, fa una crida al sistema (`ecall`), seguint les convencions de l'**ABI**.
-3.  L'**SO** rep la petició i utilitza la **ISA** (instruccions privilegiades) per gestionar el maquinari.
+1. El **sistema operatiu** carrega el binari a la memòria.
+2. El binari s'executa i, quan necessita interactuar amb l'exterior, fa una crida al sistema (`ecall`), seguint les convencions de l'**ABI**.
+3. L'**SO** rep la petició i utilitza la **ISA** (instruccions privilegiades) per gestionar el maquinari.
 
 #### Entorn autònom (*bare-metal*) {#sec-entorn-autonom-bare-metal}
 És el **model** dels sistemes encastats (***embedded** systems*) simples i el d'**EC**:
 
-1.  El binari es carrega directament a la memòria del processador (o via simulador).
-2.  El programa té el control total i executa les instruccions de la **ISA** sense intermediaris.
-3.  Aquí l'**ABI** no serveix per parlar amb un SO, sinó per garantir que el codi és compatible amb les biblioteques i per interactuar amb el **simulador** (per exemple, mitjançant `ecall` per imprimir per consola).
+1. El binari es carrega directament a la memòria del processador (o via simulador).
+2. El programa té el control total i executa les instruccions de la **ISA** sense intermediaris.
+3. Aquí l'**ABI** no serveix per parlar amb un SO, sinó per garantir que el codi és compatible amb les biblioteques i per interactuar amb el **simulador** (per exemple, mitjançant `ecall` per imprimir per consola).
 
 ### El rol de les interfícies {#sec-rol-de-les-interficies}
 
@@ -102,20 +102,20 @@ Des del punt de vista del programador, les interfícies actuen com a **normes de
 
 - **API**: El programador escriu `printf()`. El compilador sap què vol dir perquè l'API ho defineix.
 - **ABI**: El compilador decideix posar el primer argument a `a0` perquè l'ABI de RISC-V ho mana.
-- **ISA**: El compilador tradueix la suma a l'opcode `0x00B50533` perquè l'ISA ho especifica.
+- **ISA**: El compilador tradueix la suma al codi màquina `0x00B50533` perquè l'ISA ho especifica.
 
 #### Les interfícies en la «Visió del Processador» (Execució) {#sec-interficies-execucio}
 És al processador on les interfícies esdevenen el **protocol de funcionament real**:
 
-- **L'ABI en execució**: Quan el programa fa un `ecall`, el processador s'atura i «mira» el registre `a7`. El simulador (o l'SO) interpreta aquest número basant-se en l'**ABI**. Si l'ABI diu que el codi `1` és «imprimir», el sistema imprimeix. L'ABI és el que permet que el binari i l'entorn es basin en la mateixa «llengua» mentre el programa corre.
-- **L'ISA en execució**: És el moment de la veritat. La Unitat de Control del processador llegeix els bits del binari. Si aquests bits no coincideixen amb l'**ISA** del maquinari, el processador no sabrà quines portes lògiques obrir i el sistema fallarà (instrucció il·legal).
+- **L'ABI en execució**: Quan el programa fa un `ecall`, el processador s'atura i «mira» el registre `a7`. El simulador (o l'SO) interpreta aquest número basant-se en l'**ABI**. Si l'ABI diu que el codi `1` és «imprimir», el sistema imprimeix. L'ABI és el que permet que el binari i l'entorn es basin en la mateixa «llengua» mentre el programa s'executa.
+- **L'ISA en execució**: És el moment de la veritat. La unitat de control del processador llegeix els bits del binari. Si aquests bits no coincideixen amb l'**ISA** del maquinari, el processador no sabrà quines portes lògiques obrir i el sistema fallarà (instrucció il·legal).
 
 La @tbl-impacte-canvi-interficies resumeix l'impacte que tenen els canvis a nivell de cada una de les interfícies.
 
 ::: {#tbl-impacte-canvi-interficies tbl-colwidths="[15,25,60]" style="width: 90%;" .striped}
 | Si canvia la... | El codi s'ha de... | Perquè... |
 | :--- | :--- | :--- |
-| **API** | Modificar codi + Recompilar | Han canviat les interfícies de les funcions d'alguna biblioteca usada. |
+| **API** | Modificar el codi i recompilar | Han canviat les interfícies de les funcions d'alguna biblioteca usada. |
 | **ABI** | Recompilar | El binari ha de canviar com gestiona els registres o les crides al sistema. |
 | **ISA** | Recompilar | El processador nou no entén els «0s i 1s» de l'antic. |
 : Impacte del canvi d'interfícies
@@ -125,20 +125,20 @@ La @tbl-impacte-canvi-interficies resumeix l'impacte que tenen els canvis a nive
 
 En el desenvolupament de sistemes de baix nivell i, especialment, en els encastats, on el dispositiu que executarà el codi sol mancar dels recursos necessaris per allotjar eines de programació, cal diferenciar clarament entre dos ordinadors que juguen rols diferents:
 
-1.  **Màquina amfitriona** (***host***):
-    - **Què és**: L'ordinador que utilitza el programador per escriure el codi (per exemple, un PC de la facultat o d'un portàtil).
-    - **Arquitectura**: Habitualment **x86_64** o **ARM**.
-    - **Funció**: Executar l'editor de text i el **compilador**. El compilador és un programa «nadiu» del *Host* que s'encarrega de «fabricar» el binari.
-2.  **Màquina destí** (***target***):
+1. **Màquina amfitriona** (***host***):
+    - **Què és**: L'ordinador que utilitza el programador per escriure el codi (per exemple, un PC de la facultat o un portàtil).
+    - **Arquitectura**: Habitualment **x86-64** o **ARM**.
+    - **Funció**: Executar l'editor de text i el **compilador**. El compilador és un programa «nadiu» del host que s'encarrega de «fabricar» el binari.
+2. **Màquina destí** (***target***):
     - **Què és**: El sistema on realment s'executarà el programa final.
     - **Arquitectura**: A **EC**, la **ISA** de destí és **RISC-V**.
-    - **Funció**: Executar el binari generat pel *Host*. En aquest cas, el *Target* no és una placa física (inicialment), sinó un **simulador** (com el RARS) que reprodueix el comportament d'una CPU RISC-V sobre el *Host*.
+    - **Funció**: Executar el binari generat pel host. En aquest cas, el target no és una placa física (inicialment), sinó un **simulador** (com el RARS) que reprodueix el comportament d'una CPU RISC-V sobre el host.
 
 #### Per què és important aquesta separació? {#sec-per-que-es-important-aquesta-separacio}
 
 - **Incompatibilitat de binaris**: Un binari generat per a RISC-V és una seqüència de bits inintel·ligible per a un processador Intel/AMD. Si s'intenta executar-lo directament al terminal de Linux/Windows, el sistema operatiu advertirà que el format de l'executable és invàlid.
-- **El paper del Simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador corre en el *Host* (x86), però l'interior de la bombolla entén la **ISA** i l'**ABI** de RISC-V. 
-- **Portabilitat del codi font**: El codi en C és l'únic element que «viatja» entre ambdós mons. Es pot compilar el mateix fitxer `.c` per al *Host* (per provar la lògica) o fer **cross-compilation** per al *Target*.
+- **El paper del simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador s'executa en el host (x86), però l'interior de la bombolla entén la **ISA** i l'**ABI** de RISC-V.
+- **Portabilitat del codi font**: El codi en C és l'únic element que «viatja» entre ambdós mons. Es pot compilar el mateix fitxer `.c` per al host (per provar la lògica) o fer **cross-compilation** per al target.
 
 #### Compilació creuada (*cross-compilation*) {#sec-compilacio-creuada}
 
@@ -182,28 +182,12 @@ A diferència de llenguatges com Java o Python, el C permet accedir a capes molt
 
 Tot i que el codi C és portable, el seu comportament final depèn de l'**ABI**:
 
-- La mida d'un `int` (16, 32 o 64 bits) no la estableix el llenguatge, sinó l'ABI del sistema on s'executarà el programa.
+- La mida d'un `int` (16, 32 o 64 bits) no l'estableix el llenguatge, sinó l'ABI del sistema on s'executarà el programa.
 - El pas de paràmetres a les funcions el gestiona el compilador seguint l'ABI, però el programador de C ha de ser conscient d'aquestes regles quan interactua amb codi escrit directament en **assemblador**.
 
 ### Traducció: De C al llenguatge de màquina {#sec-traduccio-c-asm}
 
-El procés de traducció no és un pas únic, sinó una cadena de transformacions (coneguda com a *toolchain*) on cada etapa acosta el codi una mica més al maquinari (vegeu la visió general a @sec-interficies i @fig-flux-compilacio). **El compilador de referència a EC és el GCC**.
-
-#### Les quatre etapes del GCC {#sec-etapes-gcc}
-
-1.  **Preprocessat** (`cpp`):
-    - Gestiona les directives que comencen per `#` (com `#include` o `#define`).
-    - **Resultat**: Un fitxer de text amb tot el codi «expandit», però encara en C.
-2.  **Compilació** (`cc1`):
-    - És l'etapa més complexa. El compilador analitza la lògica del C i la tradueix a **llenguatge d'assemblador** específic per a una **ISA** (ex. RISC-V).
-    - Aquí és on el compilador aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable.
-    - **Resultat**: Un fitxer de text (`.s`) llegible per humans, però amb instruccions de **mnemònics** (ex. `addi`, `lw`).
-3.  **Assemblat** (`as`):
-    - Tradueix els **mnemònics** de l'assemblador a **codi màquina** (binari pur).
-    - **Resultat**: Un fitxer objecte (`.o`). Són 0s i 1s, però encara no es pot executar perquè les adreces de les funcions externes (com `printf`) encara no estan resoltes.
-4.  **Enllaçat** (`ld`):
-    - Combina el fitxer objecte amb altres biblioteques i resol les adreces de memòria definitives.
-    - **Resultat**: L'**Executable final**, llest per ser carregat a la memòria del processador o simulador.
+El procés de traducció no és un pas únic, sinó una cadena de transformacions (coneguda com a *toolchain*) on cada etapa acosta el codi una mica més al maquinari (vegeu les quatre etapes a @sec-flux-de-generacio i la visió general a @sec-interficies i @fig-flux-compilacio). **El compilador de referència a EC és el GCC**, amb les eines `cpp` (preprocessat), `cc1` (compilació), `as` (assemblat) i `ld` (enllaçat).
 
 #### El llenguatge d'assemblador: La visió de l'ISA {#sec-visio-isa}
 
@@ -229,9 +213,9 @@ En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir q
 :::
 
 :::: {#wrn-picopi .callout-warning collapse=true}
-## Treballant amb maquinari real: [Raspberry Pi Pico 2 W](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) + [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)
+## Treballant amb maquinari real: [Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) + [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)
 
-Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un PC), que només conté la Unitat Central de Processament (CPU) i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i Flash), els circuits de rellotge i una gran varietat de perifèrics d'Entrada/Sortida (com GPIO, UART o ADC).
+Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un PC), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i Flash), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (com GPIO, UART o ADC).
 
 El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en la **ISA RISC-V**. El programador pot triar quina arquitectura utilitzar en temps de compilació.
 
@@ -303,10 +287,10 @@ El pas de C++ a C és un exercici de **simplificació**. En C no existeixen les 
 
 A **arquitectura de computadors** s'usa **C** com a referència perquè dona un **accés al maquinari** molt més **transparent**:
 
-1.  **Correspondència directa amb l'ISA**: El C++ introdueix mecanismes com el polimorfisme o el manteniment d'objectes que generen molt «codi ocult» en el binari. En C, gairebé cada línia de codi té una traducció directa i previsible a **instruccions de l'ISA**. És el llenguatge perfecte per aprendre com funciona el processador per dins.
-2.  **Control de l'ABI**: L'**ABI** de C és l'estàndard universal. Gairebé tots els sistemes operatius i simuladors estan dissenyats per entendre's amb el binari que genera el C. El C++ té una ABI molt més complexa (especialment pel que fa al «mangling» de noms de funcions) que dificultaria molt les pràctiques de baix nivell.
-3.  **Determinisme**: En sistemes de baix nivell (com els **encastats** o el **bare-metal**), cal saber exactament quant de temps triga una operació i quanta memòria ocupa. El C no té «sorpreses» en temps d'execució; el C++ pot tenir sobrecàrregues ocultes que un microcontrolador petit no podria gestionar.
-4.  **Accés al maquinari**: El C permet tractar una adreça de memòria com si fos una variable. Això és el que es fa per parlar amb els perifèrics del simulador.
+1. **Correspondència directa amb l'ISA**: El C++ introdueix mecanismes com el polimorfisme o la gestió automàtica d'objectes (constructors i destructors) que generen molt «codi ocult» en el binari. En C, gairebé cada línia de codi té una traducció directa i previsible a **instruccions de l'ISA**. És el llenguatge perfecte per aprendre com funciona el processador per dins.
+2. **Control de l'ABI**: L'**ABI** de C és l'estàndard universal. Gairebé tots els sistemes operatius i simuladors estan dissenyats per entendre's amb el binari que genera el C. El C++ té una ABI molt més complexa (especialment pel que fa al «mangling» de noms de funcions) que dificultaria molt les pràctiques de baix nivell.
+3. **Determinisme**: En sistemes de baix nivell (com els **encastats** o el **bare-metal**), cal saber exactament quant de temps triga una operació i quanta memòria ocupa. El C no té «sorpreses» en temps d'execució; el C++ pot tenir sobrecàrregues ocultes que un microcontrolador petit no podria gestionar.
+4. **Accés al maquinari**: El C permet tractar una adreça de memòria com si fos una variable. Això és el que es fa per parlar amb els perifèrics del simulador.
 
 ::: {#tip-abstraccio-transparencia .callout-tip}
 ## L'abstracció vs. la transparència
@@ -347,7 +331,7 @@ printf("%d", n);
 
 ### Llenguatges interpretats {#sec-llenguatges-interpretats}
 
-Mentre que C es **compila** (es tradueix tot el codi font abans d'executar-lo), altres llenguatges com Python es **interpreten**: un programa anomenat **intèrpret** llegeix el codi font i el tradueix a instruccions de la ISA *mentre* el programa corre.
+Mentre que C es **compila** (es tradueix tot el codi font abans d'executar-lo), altres llenguatges com Python s'**interpreten**: un programa anomenat **intèrpret** llegeix el codi font i el tradueix a instruccions de la ISA *mentre* el programa s'executa.
 
 **Els llenguatges interpretats no són apropiats per EC** perquè, en general, fan molt més opacs els detalls d'arquitectura, que és precisament l'àmbit d'interès de l'assignatura.
 
@@ -359,19 +343,19 @@ La pràctica totalitat dels computadors actuals (des d'un supercomputador fins a
 
 Abans de Von Neumann, per «reprogramar» una màquina calia canviar cables i interruptors físicament. En el model de Von Neumann:
 
-- Les **instruccions** (el codi binari, @sec-visio-isa) i les **dades** (els nombres que s'operen) resideixen al mateix lloc: la **Memòria Principal**.
+- Les **instruccions** (el codi binari, @sec-visio-isa) i les **dades** (els nombres que s'operen) resideixen al mateix lloc: la **memòria principal**.
 - El processador llegeix la memòria, interpreta què és una instrucció i l'executa.
 
 ### Els components del model {#sec-components-von-neumann}
 
 L'arquitectura es divideix en quatre blocs funcionals connectats entre si:
 
-1.  **Unitat central de processament** (**CPU**): El «cervell» que es divideix en:
+1. **Unitat central de processament** (**CPU**): El «cervell» que es divideix en:
     - **Unitat aritmeticològica** (**ALU**): On es fan les operacions matemàtiques i lògiques.
     - **Unitat de control** (**CU**): L'orquestra que llegeix la memòria i diu a la resta de components què han de fer.
-2.  **Memòria principal** (**MP**): Un vector gegant de cel·les on cada posició té una **adreça** única.
-3.  **Sistema d'entrada/sortida** (**I/O**): Permet la comunicació amb el món exterior (teclat, pantalla, disc dur).
-4.  **Busos**: Les «autopistes» de dades que connecten tots els components.
+2. **Memòria principal** (**MP**): Un vector gegant de cel·les on cada posició té una **adreça** única.
+3. **Sistema d'entrada/sortida** (**E/S**): Permet la comunicació amb el món exterior (teclat, pantalla, disc dur).
+4. **Busos**: Les «autopistes» de dades que connecten tots els components.
 
 ::: {#fig-von-neumann}
 ::: {.content-visible when-format="html"}
@@ -390,14 +374,14 @@ Arquitectura de Von Neumann: CPU (ALU, CU i Registres), Memòria principal i Sis
 
 ### El cicle d'instrucció (*fetch-decode-execute*) {#sec-cicle-instruccio}
 
-La Unitat de Control repeteix indefinidament tres passos:
+La unitat de control repeteix indefinidament tres passos:
 
-1.  **Captura** (***fetch***): Es llegeix la següent instrucció de la memòria (l'adreça està guardada en un registre especial anomenat **Program Counter** o **PC**).
-2.  **Descodificació** (***decode***): La Unitat de Control analitza els bits de la instrucció per saber què cal fer (és una suma? és un salt? Cal llegir dades de la memòria?).
-3.  **Execució** (***execute***): S'activen els circuits de l'ALU o es mouen dades entre registres i memòria.
+1. **Captura** (***fetch***): Es llegeix la següent instrucció de la memòria (l'adreça està guardada en un registre especial anomenat ***Program Counter*** (**PC**)).
+2. **Descodificació** (***decode***): La unitat de control analitza els bits de la instrucció per saber què cal fer (és una suma? és un salt? Cal llegir dades de la memòria?).
+3. **Execució** (***execute***): S'activen els circuits de l'ALU o es mouen dades entre registres i memòria.
 
 ::: {#wrn-coll .callout-warning collapse=true}
-## El «Coll d'ampolla» del model de Von Neumann
+## El «coll d'ampolla» del model de Von Neumann
 
 Com que les dades i les instruccions viatgen pel mateix bus cap a la memòria, el processador sovint ha d'esperar que la memòria li doni el que demana. Aquest límit de velocitat es coneix com el **coll d'ampolla de Von Neumann**.
 :::
@@ -471,6 +455,26 @@ El natural $x_u = 25$ es representa amb 8 bits com $0001\,1001_2$.
 Amb 16 bits: $0000\,0000\,0001\,1001_2$. El valor és el mateix.
 :::
 
+### Notació hexadecimal {#sec-notacio-hexadecimal}
+
+La representació binària és poc pràctica per a nombres de mida gran: és llarga i propensa a errors de transcripció. La **notació hexadecimal** (base 16) ofereix una manera compacta d'escriure patrons de bits, amb el prefix `0x` per identificar-la.
+
+Cada dígit hexadecimal ($0$–$9$, $A$–$F$) representa exactament un **quartet** (4 bits), ja que $2^4 = 16$. Aquesta correspondència directa és el que fa que la conversió binari↔hexadecimal sigui immediata, a diferència de la conversió a decimal: només cal agrupar els bits de 4 en 4 (des del bit menys significatiu) i traduir cada quartet pel seu dígit hexadecimal equivalent.
+
+::: {#tip-notacio-hexadecimal .callout-tip}
+## Conversió entre binari i hexadecimal
+
+**Pregunta**: Expressar $X = 0001\,1001_2$ en hexadecimal.
+
+**Solució**: S'agrupa en quartets: $0001_2 = 1$, $1001_2 = 9$.
+
+**Resposta**: $X = \mathtt{0x19}$
+:::
+
+::: {#cau-hexadecimal-no-interpreta .callout-caution}
+La notació hexadecimal és només una manera d'**escriure** un patró de bits de forma compacta; no en canvia la interpretació. Un mateix patró, com `0x19`, pot representar un natural, un enter en Ca2 o qualsevol altra codificació segons el context (vegeu @sec-codificacio-enters).
+:::
+
 ## Codificació de nombres enters en base 2 {#sec-codificacio-enters}
 
 Un nombre enter $x_s$ de $n$ bits es representa com una cadena de bits $X = X_{n-1} \ldots X_1 X_0$, on el bit de més pes $X_{n-1}$ indica el signe: $0$ si positiu, $1$ si negatiu.
@@ -493,7 +497,7 @@ $$x_s = -X_{n-1} \cdot 2^{n-1} + \sum_{i=0}^{n-2} X_i \cdot 2^i$$ {#eq-ca2-inter
 ::: {#tip-ca2-interpretacio .callout-tip}
 ## Interpretació de bits com a enter en Ca2
 
-Interpretar $X = 1100\,1101_2$ (8 bits) com a enter en Ca2.
+**Pregunta**: Interpretar $X = 1100\,1101_2$ (8 bits) com a enter en Ca2.
 
 **Solució**: Aplicant @eq-ca2-interpretacio:
 
@@ -505,14 +509,14 @@ $$= -128 + 64 + 8 + 4 + 1 = -51$$
 
 #### Representació: enter → bits {#sec-representacio-enters}
 
-Per a enters **positius**, el procediment és idèntic al dels naturals (@sec-extensio-zeros).
+Per a enters **positius**, el procediment és idèntic al dels naturals (@sec-representacio-naturals).
 
 Per a enters **negatius**, s'aplica la **regla del canvi de signe**: es complementen tots els bits i se suma 1.
 
 ::: {#tip-ca2-representacio-negatiu .callout-tip}
 ## Representació d'un enter negatiu en Ca2
 
-Representar $x_s = -51$ amb 8 bits.
+**Pregunta**: Representar $x_s = -51$ amb 8 bits.
 
 **Solució**: Representem l'oposat $+51$ per divisions successives:
 
@@ -538,19 +542,25 @@ L'enter $x_s = -51$ es representa amb 8 bits com $1100\,1101_2$.
 Amb 16 bits: $1111\,1111\,1100\,1101_2$. El valor és el mateix.
 :::
 
+::: {#cau-ca2-drecera-natural .callout-caution}
+Com a drecera pràctica per interpretar directament un patró de bits, sense passar per @eq-ca2-interpretacio: si $X_{n-1} = 1$ (bit de signe actiu), el valor en Ca2 s'obté restant $2^n$ al valor llegit com a natural: $x_s = x_u - 2^n$. Recíprocament, per representar un enter negatiu en Ca2: $\text{Ca2}(x_s) = x_s + 2^n$ (com a natural de $n$ bits).
+:::
+
 ### Enters en excés {#sec-enters-en-exces}
 
-La codificació en excés assigna la representació $000\ldots0_2$ al valor més negatiu i $111\ldots1_2$ al més positiu, de manera que l'ordre de les representacions coincideix amb l'ordre numèric dels enters. Això permet **comparar enters amb el mateix circuit que compara naturals**.
+La codificació en excés (o en desplaçament) assigna la representació $000\ldots0_2$ al valor més negatiu i $111\ldots1_2$ al més positiu, de manera que l'ordre de les representacions coincideix amb l'ordre numèric dels enters. Això permet **comparar enters amb el mateix circuit que compara naturals**.
 
-Donada una constant **excés** $= 2^{n-1} - 1$:
+Donada una constant arbitrària $K$ (l'**excés**):
 
-$$x_s = x_u - \text{excés}$$ {#eq-exces-interpretacio}
-$$x_u = x_s + \text{excés}$$ {#eq-exces-representacio}
+$$x_s = x_u - K$$ {#eq-exces-interpretacio}
+$$x_u = x_s + K$$ {#eq-exces-representacio}
+
+L'elecció habitual és $K = 2^{n-1} - 1$, que centra el rang de manera simètrica amb el de Ca2:
 
 ::: {#tip-exces .callout-tip}
 ## Interpretació i representació en excés
 
-Amb $n = 8$ bits, excés $= 2^7 - 1 = 127$.
+Amb $n = 8$ bits, $K = 2^7 - 1 = 127$.
 
 **Interpretació**: $X = 1000\,0000_2 \Rightarrow x_u = 128 \Rightarrow x_s = 128 - 127 = +1$
 
@@ -561,27 +571,21 @@ Amb $n = 8$ bits, excés $= 2^7 - 1 = 127$.
 A **EC**, la codificació en excés s'utilitza per representar l'exponent dels nombres en **coma flotant** (@sec-tema-coma-flotant).
 :::
 
-### Altres codificacions {#sec-altres-codificacions}
-
-::: {#wrn-signe-magnitud .callout-warning collapse=true}
-## Enters en signe-magnitud
+### Enters en signe i magnitud {#sec-enters-signe-magnitud}
 
 El bit de més pes indica el signe ($0$ positiu, $1$ negatiu) i els $n-1$ bits restants representen el valor absolut com un natural.
 
 **Rang**: $x_s \in [-(2^{n-1}-1),\ +2^{n-1}-1]$
 
 **Inconvenients**: doble representació del zero ($+0$ i $-0$) i circuit de suma diferent al dels naturals. No s'usa en processadors moderns.
-:::
 
-::: {#wrn-codificacio-enters-ca1 .callout-warning collapse=true}
-## Enters en complement a 1 (Ca1)
+### Enters en complement a 1 (Ca1) {#sec-enters-en-ca1}
 
 L'enter negatiu oposat de $x_s$ s'obté complementant tots els bits de la seva representació.
 
 **Rang**: $x_s \in [-(2^{n-1}-1),\ +2^{n-1}-1]$
 
 **Inconvenients**: doble representació del zero i algorisme de suma diferent al dels naturals. No s'usa en processadors moderns.
-:::
 
 ## Operacions aritmètiques en complement a 2 {#sec-operacions-ca2}
 
@@ -674,7 +678,7 @@ La regla és la seva pròpia inversa: aplicar-la dues vegades retorna el valor o
 Aplicar la inversió dues vegades retorna el valor inicial.
 :::
 
-::: {#wrn-inversio-limit .callout-warning collapse="true"}
+::: {#wrn-inversio-limit .callout-warning collapse=true}
 ## Aprofundiment: el cas límit $-2^{n-1}$
 
 El valor mínim de Ca2 ($-2^{n-1}$, representat com $1000\ldots0$) **no té invers representable** en $n$ bits. Aplicant la regla:
@@ -733,14 +737,14 @@ Els mateixos exemples amb la fila de **préstec** (*borrow*) explícita:
 **Amb sobreeiximent**: $-100 - 45 = -145$
 
 ```
-  Préstec:    0 0 0 0 0 0 1 0
+  Préstec:    1 1 0 1 1 1 1 0
               1 0 0 1 1 1 0 0   (−100)
             - 0 0 1 0 1 1 0 1   (+45)
             ─────────────────
               0 1 1 0 1 1 1 1   (+111 en Ca2, no −145)
 ```
 
-Dos operands negatius i resultat positiu: **sobreeiximent**.
+El minuend és negatiu i el subtrahend positiu (signes contraris), però el resultat surt amb signe **contrari al del subtrahend** (positiu, en lloc del negatiu que li tocaria si el minuend fos prou petit): **sobreeiximent**.
 :::
 
 
