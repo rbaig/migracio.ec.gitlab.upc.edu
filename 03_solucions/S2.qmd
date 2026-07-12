@@ -15,7 +15,7 @@ Variables: `f`→`t0`, `g`→`t1`, `h`→`t2`, `i`→`t3`, `j`→`t4`.
 
 **a)** `f = g + h + i + j`
 
-Cal tres `add` encadenats; no existeix cap `add` de quatre operands:
+Calen tres `add` encadenats; no existeix cap `add` de quatre operands:
 
 ```{.s filename="RV32I"}
 add  t0, t1, t2     # t0 = g + h
@@ -59,6 +59,8 @@ Instrucció per instrucció:
 
 **Resposta**: `f = (g + h) + 2 * (i + j)`
 
+**Nota**: el codi també modifica `g` (`t1`), que queda amb el valor `2 * (i + j)`. La resposta anterior dona `f` en funció dels valors **inicials** de `g`, `h`, `i`, `j`.
+
 **b)**
 
 ```{.s filename="RV32I"}
@@ -78,6 +80,8 @@ Instrucció per instrucció:
 5. `add t0, t0, t0` → `f = 2 * ((g + h) + (i + j) + 2)`
 
 **Resposta**: `f = 2 * (g + h + i + j + 2)`
+
+**Nota**: el codi també modifica `g` (`t1`, que queda amb `g + h`) i `i` (`t3`, que queda amb `i + j`). La resposta dona `f` en funció dels valors **inicials** de `g`, `h`, `i`, `j`.
 :::
 
 ## Constants i immediats
@@ -214,7 +218,7 @@ En *big-endian*, l'adreça més baixa (`0x10010000`) contindria el byte de **mé
 :::
 
 ::: {#sol-p3-memoria-lb-lh .callout-tip}
-## Solució: instruccions de càrrega i emmagatzematge de byte i mig paraula
+## Solució: instruccions de càrrega i emmagatzematge de byte i mitja paraula
 
 **Enunciat**: @exr-p3-memoria-lb-lh.
 
@@ -279,7 +283,7 @@ Estat final de la memòria:
 
 ## Representació de naturals i enters
 
-::: {.callout-note}
+::: {#nte-p3-remissio-enters-solucions .callout-note}
 Les solucions dels exercicis de representació de naturals i enters es troben a @sec-tema-introduccio-solucions.
 :::
 
@@ -558,17 +562,15 @@ bucle_c:
         bge     t0, t4, fibucle_c
         slli    t6, t0, 2       # t6 = i * 4
         add     t6, t6, t2      # t6 = @v[i]
-        lw      a0, 0(t6)       # a0 = v[i]  (t0–t6 exhaurits; a0/a1 com a temporals addicionals)
-        sub     a1, t5, t0      # a1 = 9 - i
-        slli    a1, a1, 2       # a1 = (9 - i) * 4
-        add     a1, a1, t3      # a1 = @w[9 - i]
-        sw      a0, 0(a1)       # w[9 - i] = v[i]
+        lw      t6, 0(t6)       # t6 = v[i]  (l'adreça ja no cal, es reutilitza t6 per al valor)
+        sub     t1, t5, t0      # t1 = 9 - i
+        slli    t1, t1, 2       # t1 = (9 - i) * 4
+        add     t1, t1, t3      # t1 = @w[9 - i]
+        sw      t6, 0(t1)       # w[9 - i] = v[i]
         addi    t0, t0, 1       # i++
         j       bucle_c
 fibucle_c:
 ```
-
-**Nota**: `a0` i `a1` s'usen aquí com a registres temporals addicionals perquè `t0`–`t6` ja estan ocupats. En un context sense subrutines (com és el cas a T2), és acceptable. En un context de subrutines (T3 en endavant), `a0`/`a1` són registres caller-saved reservats per a paràmetres i retorn, i caldria tenir-ho en compte.
 
 A la declaració cal afegir `w` a continuació de `v`:
 
@@ -648,7 +650,7 @@ fibucle:
 Com que els elements són `short`, l'accés a memòria es fa amb `lh`/`sh` i l'increment del punter (`p++`) és de 2 bytes per element, a diferència dels 4 bytes dels vectors d'`int` vistos fins ara.
 :::
 
-## Strings
+## Cadenes de caràcters
 
 ::: {#sol-p3-strings-longitud .callout-tip}
 ## Solució: funció `longitud`
@@ -699,5 +701,5 @@ bucle:
 fibucle:
 ```
 
-Si la comprovació del `'\0'` es fes abans de l'`sb` (com al bucle de @exr-p3-strings-longitud), el bucle acabaria sense copiar el terminador i caldria un `sb` addicional després de l'etiqueta de sortida.
+Si la comprovació del `'\0'` es fes abans de l'`sb` (com al bucle de @sol-p3-strings-longitud), el bucle acabaria sense copiar el terminador i caldria un `sb` addicional després de l'etiqueta de sortida.
 :::

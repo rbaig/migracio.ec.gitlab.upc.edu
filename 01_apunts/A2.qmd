@@ -69,7 +69,7 @@ La **paraula nativa** (***word***) és la mida en bits de dada que el processado
 La modularitat de RISC-V s'expressa mitjançant sufixos.
 
 ::: {#nte-riscv-extensions .callout-note}
-## G - Extensions més comunes
+## G — Extensions més comunes
 
 La lletra **G** (**RV32G**) és l'abreviatura de **propòsit general** (***General-purpose***). Indica que el processador inclou el conjunt estàndard d'extensions **IMAFD + Zicsr + Zifencei**, que són les més habituals i suficients per executar sistemes operatius i aplicacions modernes.
 
@@ -148,7 +148,7 @@ Característiques bàsiques:
 - **Espai d'adreces** de **32 bits**: $2^{32}$ adreces (**0x00000000**--**0xFFFFFFFF**); una adreça per **byte**; 4 GiB ($2^{32}$ bytes).
 - L'espai de memòria és **unificat** (instruccions i dades comparteixen el mateix espai d'adreces).
 - **Model lectura/escriptura** (*load/store*): accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
-- Nombre d'instruccions: **41**
+- Nombre d'instruccions: **40**
 
 Totes les instruccions:
 
@@ -159,7 +159,7 @@ Totes les instruccions:
 - **Càrrega/emmagatzematge**: `lw`, `lh`, `lb`, `lhu`, `lbu`, `sw`, `sh`, `sb`.
 - **Salts condicionals**: `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu`.
 - **Salts incondicionals**: `jal`, `jalr`.
-- **Sistema**: `ecall`, `ebreak`, `fence`, `fence.tso`
+- **Sistema**: `ecall`, `ebreak`, `fence` (`fence.tso` és una variant codificada dins `fence`)
 
 A **EC**, s'estudien totes excepte les de sistema, de les quals només es tracta `ecall` (@sec-ei-ecall).
 :::
@@ -192,7 +192,7 @@ A **EC**, els paràmetres més rellevants del compilador creuat `riscv32-unknown
 | `-S` | | Atura la compilació després de generar el fitxer assemblador (`.s`); no assembla ni enllaça |
 | `-O0` | | Desactiva totes les optimitzacions del compilador |
 | `-fno-omit-frame-pointer` | | Preserva el punter de marc (*frame pointer*) per facilitar la lectura del codi assemblador generat |
-: GCC, paràmetres per la generació de codi d'assemblador sense optimitzacions {#tbl-gcc-rvimf tbl-colwidths="[15,5,55]" style="width: 90%;"}
+: GCC, paràmetres per la generació de codi d'assemblador sense optimitzacions {#tbl-gcc-rvimf tbl-colwidths="[20,7,73]" style="width: 90%;"}
 
 Per obtenir el fitxer d'assemblador el més comprensible possible, cal deshabilitar qualsevol optimització:
 
@@ -253,16 +253,16 @@ En qualsevol arquitectura, les **instruccions** es representen amb **cadenes de 
 
 Un **format d'instrucció** especifica la subdivisió de la instrucció (en aquest cas de **32 bits**) en una sèrie de **camps** (***fields***) de bits corresponents al **codi d'operació** (`opcode`) i als **operands**.
 
-Idealment, per satisfer els **principis de disseny** de **regularitat** i **simplicitat**, hi hauria un únic format d'instrucció, però hi ha casos que no ho permeten. Per altra banda, hi ha un conflicte entre el desig de mantenir totes les instruccions de la mateixa mida i el desig de tenir un únic format d'instrucció. El **Principi de Disseny 4** estableix que un **bon disseny requereix compromisos** (***good design demands good compromises***). El compromís escollit a **RISC-V** és mantenir totes les instruccions de la mateixa mida, un **word**[^-extensicompressed] (32 bits, 4 bytes, a RISC-V 32 bits), i definir **sis formats d'instrucció**.
+Idealment, per satisfer els **principis de disseny** de **regularitat** i **simplicitat**, hi hauria un únic format d'instrucció, però hi ha casos que no ho permeten. Per altra banda, hi ha un conflicte entre el desig de mantenir totes les instruccions de la mateixa mida i el desig de tenir un únic format d'instrucció. El **Principi de Disseny 4** estableix que un **bon disseny requereix compromisos** (***good design demands good compromises***). El compromís escollit a **RISC-V** és mantenir totes les instruccions de la mateixa mida, un **word**[^-extensicompressed] (a **RV32I**, 32 bits, 4 bytes), i definir **quatre formats nuclears d'instrucció** [@riscv_rv32i].
 
 [^-extensicompressed]: Amb l'extensió C (Compressed), les instruccions poden ser de 16 bits. L'extensió C defineix versions comprimides de les instruccions més comunes, codificades en 16 bits en lloc de 32, per reduir la mida del codi.
 
-L'arquitectura **RV32I** defineix sis formats bàsics d'instrucció, anomenats **R** (Register), **I** (Immediate), **S** (Store), **B** (Branch), **U** (Upper) i **J** (Jump). @nte-instruccions-tipus mostra els **camps de bits** de cada format i el seu significat.
+L'arquitectura **RV32I** defineix quatre formats nuclears d'instrucció [@riscv_rv32i]: **R** (Register), **I** (Immediate), **S** (Store) i **U** (Upper). Dos formats addicionals, **B** (Branch) i **J** (Jump), són variants de S i U respectivament: reorganitzen els mateixos bits d'immediat per codificar desplaçaments sempre parells (el bit 0 és implícit), i s'introdueixen a [Tema 3](#sec-tema-traduccio) amb les instruccions de salt (@nte-format-b, @nte-format-j). @nte-instruccions-tipus mostra els **camps de bits** dels tres formats que s'usen en aquest tema (R, I, S); el format U s'introdueix més endavant en aquest mateix tema (@nte-instruccio-lui). El [compendi de referència tècnica](#sec-reftecnica-rv32i-format) (@nte-rv-instruccions-formats-detall) recull tots els formats en una única figura, a mesura que es vagin presentant al llarg del curs.
 
 ::: {#nte-instruccions-tipus .callout-note}
-## RV32I ISA — Tipus de format de les instruccions RV32I.
+## RV32I ISA — Tipus de format de les instruccions
 
-::: {#fig-rv-compendi-registres}
+::: {#fig-compendi-registres}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
 ![](/auto_figs/compendi_registres__registre_light.svg)
@@ -276,6 +276,8 @@ L'arquitectura **RV32I** defineix sis formats bàsics d'instrucció, anomenats *
 :::
 Formats d'instrucció RV32I (tipus R, I i S).
 :::
+
+*Vegeu `@nte-rv-instruccions-formats-detall` per al compendi complet, amb tots els formats (R, I, S, B, U, J i R4).*
 :::
 
 Els camps `funct3` i `funct7` s'utilitzen per estendre l'`opcode`, especificant l'operació concreta dins d'una mateixa categoria. Els camps `rs1`, `rs2` (registres font, *source registers*) i `rd` (registre destinació, *destination register*) codifiquen operands en **mode registre**. El camp `imm` codifica operands en **mode immediat**; en **RV32I** els bits dels immediats estan distribuïts de manera que els registres font i destinació sempre ocupen posicions fixes, la qual cosa simplifica la descodificació en el **maquinari**.
@@ -305,7 +307,7 @@ Associació als camps de bits de la codificació de les instruccions:
 | `lw` | `rd, offset(rs1)` | I | `0x03` | `rd` | `0x2` | `rs1` | - | `offset[11:0]` |
 | `sw` | `rs2, offset(rs1)` | S | `0x23` | - | `0x2` | `rs1` | `rs2` | `offset` |
 | `jal` | `rd, label` | J | `0x6F` | `rd` | - | - | - | `offset` |
-: {tbl-colwidths="[5,15,5,5,5,5,5,5,7]"}
+: {tbl-colwidths="[9,26,9,9,9,9,9,8,12]"}
 
 Abocament de memòria de les instruccions a RARS:
 
@@ -391,14 +393,14 @@ Les directives `.text` i `.data` són **estàndard** de l'assemblador RISC-V (GN
 | :--- | :--- | :--- | :--- |
 | Codi | `.text` | `0x00400000` | Instruccions executables |
 | Dades | `.data` | `0x10010000` | Variables globals |
-: {tbl-colwidths="[10,10,15,20]" style="width: 60%; margin: auto;"}
+: {tbl-colwidths="[18,18,27,37]" style="width: 60%; margin: auto;"}
 
 :::: {#wrn-segments-elf .callout-warning collapse=true}
 ## Segments addicionals a l'ABI ELF
 
 En sistemes Linux reals, l'ABI ELF defineix segments addicionals que RARS no suporta explícitament:
 
-::: {tbl-colwidths="[10,5,40]" style="width: 90%; margin: auto;"}
+::: {tbl-colwidths="[18,9,73]" style="width: 90%; margin: auto;"}
 | Segment | Directiva | Contingut |
 | :--- | :--- | :--- |
 | Dades de només lectura | `.rodata` | Constants globals; protegides d'escriptura en temps d'execució |
@@ -461,7 +463,7 @@ Les instruccions són les operacions que el processador executa directament. Cad
 : {tbl-colwidths="[5,20,35,35,5]" .striped}
 :::
 
-En aquestes instruccions tots els enters són en **Ca2**. A `add` i `sub`, en ser de Tipus-R, tant els operands (`rs1` i `rs2`) com el resultat (`rd`) són registres i, per tant, tots tres són de 32 bits. A `addi`, el primer operand (`rs1`) és un registre, però el segon és un **immediat de 12 bits** (`imm12$`) que s'estén amb signe a 32 bits ($SignExt(imm12)$) abans de ser sumat al registre font. El resultat també és un registre (`rd`).
+En aquestes instruccions tots els enters són en **Ca2**. A `add` i `sub`, en ser de Tipus-R, tant els operands (`rs1` i `rs2`) com el resultat (`rd`) són registres i, per tant, tots tres són de 32 bits. A `addi`, el primer operand (`rs1`) és un registre, però el segon és un **immediat de 12 bits** (`imm12`) que s'estén amb signe a 32 bits ($SignExt(imm12)$) abans de ser sumat al registre font. El resultat també és un registre (`rd`).
 
 ::: {#imp-zeroext-signext .callout-important}
 L'**extensió de rang** és l'operació de pas de la representació d'un nombre a una altra de més bits. Per exemple, a RV32I és freqüent l'extensió de rang de 12 bits a 32.
@@ -522,7 +524,7 @@ La pseudoinstrucció `mv` (***move***) copia el valor d'un registre a un altre:
 
 | Pseudoinstrucció | Operació | Expansió (ISA) |
 | :--- | :--- | :--- |
-| `mv rd, rs` | $rd = rs$ | `addi rd, rs, 0` |
+{{< include ../21_riscv/RV32I_pseudo_mv.qmd >}}
 
 ```{.s filename="RV32I"}
         mv      t1, t2
@@ -538,9 +540,7 @@ La pseudoinstrucció `li` (***load immediate***) inicialitza un registre amb un 
 
 | Pseudoinstrucció | Condició | Expansió |
 | :--- | :--- | :--- |
-| `li rd, imm12` | imm12 ∈ [-2048, 2047] | `addi rd, zero, imm12` |
-| `li rd, imm32` | $lo_{12}(\texttt{imm32}) = 0$ | `lui rd, hi_20(imm32)` |
-| `li rd, imm32` | $lo_{12}(\texttt{imm32}) \neq 0$ | `lui rd, hi_20(imm32)`<br/>`addi rd, rd, lo_12(imm32)` |
+{{< include ../21_riscv/RV32I_pseudo_li.qmd >}}
 
 On $hi_{20}(\texttt{imm32})$ són els 20 bits superiors i $lo_{12}(\texttt{imm32})$ els 12 bits inferiors de l'immediat. Si $lo_{12}[11] = 1$, l'assemblador incrementa $hi_{20}$ en 1 per compensar l'extensió de signe de `addi`.
 
@@ -632,7 +632,7 @@ A **RARS**, les macros es defineixen amb les directives `.macro` i `.end_macro`:
 
 ```{.s filename="RV32I"}
 .macro zero_elem (%base, %idx)
-        sll     t6, %idx, 2         # offset = idx * 4
+        slli    t6, %idx, 2         # offset = idx * 4
         add     t6, %base, t6       # adreça de l'element
         sw      zero, 0(t6)         # mem[base + idx*4] = 0
 .end_macro
@@ -783,7 +783,7 @@ Quan RARS carrega el programa amb `startup.s`, les tres primeres instruccions (`
 | `0x00400000` | `0x00c000ef` | `jal x1, 0x0000000c` | `jal main` |
 | `0x00400004` | `0x00a00893` | `addi x17, x0, 10` | `li a7, 10` |
 | `0x00400008` | `0x00000073` | `ecall` | `ecall` |
-: {tbl-colwidths="[15,15,25,55]" style="width: 95%; margin: auto;"}
+: {tbl-colwidths="[14,14,23,49]" style="width: 95%; margin: auto;"}
 
 El PC comença a `0x00400000`, on `__start` crida `main`. En retornar, `a7 = 10` activa la **syscall** `exit` (número 10), que allibera els recursos del programa.
 
@@ -811,13 +811,9 @@ En C i en RV32I, les variables es classifiquen en dos grans grups segons la seva
 
 En **C**, tota variable s'ha de **declarar** abans d'usar-la. La declaració especifica el **tipus** i el **nom** de la variable, i opcionalment un **valor inicial**:
 
-- ```{.default filename="C"}
-  <tipus> <nom> [= valor_inicial];
-  ```
-
-- ```{.default filename="C"}
-  <tipus> <nom> [= valor_inicial];
-  ```
+```{.default filename="C"}
+<tipus> <nom> [= valor_inicial];
+```
 
 El **tipus** determina la mida en memòria (@imp-variables-mida-naturals, @imp-variables-mida-enters) i les operacions vàlides sobre la variable. El **nom** és l'identificador simbòlic que el compilador substitueix per una adreça de memòria o un registre.
 
@@ -836,7 +832,7 @@ Els tipus bàsics d'**EC** es presenten a les taules @imp-variables-mida-natural
 
 En **C**, **no existeix** un mecanisme en temps d'execució (com el `typeof` de JavaScript o el `type()` de Python) per imprimir el nom d'un tipus, ja que C és un llenguatge de tipus estàtics on la informació de tipus desapareix després de la compilació.
 
-Un *dirty hack* cometre errades al codi deliberadament (conflicte de tipus en aquest cas) perquè el compilador (que sí que sap el tipus) emeti avisos (*warnings*) o errors durant la compilació.
+Un *dirty hack* és cometre errades al codi deliberadament (conflicte de tipus en aquest cas) perquè el compilador (que sí que sap el tipus) emeti avisos (*warnings*) o errors durant la compilació.
 
 ::: {#tip-forcar-error-tipus .callout-tip}
 ## C — ⚠️forçar un error per esbrinar un tipus⚠️
@@ -899,7 +895,7 @@ En **C**, la **mida** en bytes d'una variable **depèn** del seu **tipus** i de 
 
 :::: {#imp-variables-mida-naturals .callout-important}
 ## Mida dels tipus naturals
-::: {tbl-colwidths="[25,10,18,23]" style="width: 80%; margin: auto;"}
+::: {tbl-colwidths="[33,13,24,30]" style="width: 80%; margin: auto;"}
 | Tipus C | Mida | Rang | Rang |
 | :--- | :--- | :--- | :--- |
 | `unsigned char` | 1 byte | $[0, 2^{8}-1]$ | [0, 255] |
@@ -911,7 +907,7 @@ En **C**, la **mida** en bytes d'una variable **depèn** del seu **tipus** i de 
 
 :::: {#imp-variables-mida-enters .callout-important}
 ## Mida dels tipus enters
-::: {tbl-colwidths="[25,10,18,23]" style="width: 80%; margin: auto;"}
+::: {tbl-colwidths="[33,13,24,30]" style="width: 80%; margin: auto;"}
 | Tipus C | Mida | Rang | Rang |
 | :--- | :--- | :--- | :--- |
 | `char` | 1 byte | $[-2^{7}, 2^{7}-1]$ | [-128, 127] |
@@ -927,7 +923,7 @@ Com que els registres són de 32 bits, per allotjar-hi un `long long` en calen d
 
 ::: {#wrn-c-tuples .callout-warning collapse=true}
 ## C tuples
-En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (representades en C pel tipus `struct`) són agrupacions d’elements (“camps”) de tipus heterogenis, on la mida de la tupla depèn dels tipus dels camps que la formen. Cada camp de la tupla ha d’estar alineat en memòria segons el seu tipus, i per tant poden aparèixer no solament espais de memòria no usats entre els camps, sinó també entre elements consecutius d’un vector de tuples. A EC, no es tracten les tuples.
+En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (representades en C pel tipus `struct`) són agrupacions d'elements (“camps”) de tipus heterogenis, on la mida de la tupla depèn dels tipus dels camps que la formen. Cada camp de la tupla ha d'estar alineat en memòria segons el seu tipus, i per tant poden aparèixer no solament espais de memòria no usats entre els camps, sinó també entre elements consecutius d'un vector de tuples. A EC, no es tracten les tuples.
 :::
 
 ## La memòria {#sec-memoria-t2}
@@ -935,8 +931,8 @@ En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (
 :::: {#nte-rv32i-model-memoria .callout-note}
 ## RV32I ISA — Model de memòria — Característiques bàsiques
 
-- És **unificat**: Instruccions i dades comparteixen el mateix espai d’adreces (Model Von Neumann, @sec-von-neumann).
-- L'**espai d’adreces** (quantitat de línies del bus d'adreces) és de **32** bits (/línies). Per tant, el rang adreçable és [**0x00000000**--**0xFFFFFFFF**].
+- És **unificat**: Instruccions i dades comparteixen el mateix espai d'adreces (Model Von Neumann, @sec-von-neumann).
+- L'**espai d'adreces** (quantitat de línies del bus d'adreces) és de **32** bits. Per tant, el rang adreçable és [**0x00000000**--**0xFFFFFFFF**].
 - Adreçament a nivell de **byte**: Cada adreça identifica **una posició** de memòria que conté **1 byte** (8 bits).
 - És **load/store**: Accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
 - És **little-endian**: El byte de menys pes ocupa l'adreça més baixa.
@@ -997,7 +993,7 @@ Les **adreces** només poden ser **nombres naturals**.
 L'***endianness***, o *byte ordering*, estableix l'ordre d'emmagatzematge dels bytes d'una dada de més d'un byte. En **Little-endian**, el byte de menys pes (LSB) s'emmagatzema a l'adreça més baixa, mentre que el de més pes (MSB) s'emmagatzema a l'adreça més alta. En **Big-endian**, és al revés: el MSB ocupa l'adreça més baixa i el LSB l'adreça més alta.
 
 :::: {#cau-LSb-LSB .callout-caution}
-::: {#tbl-LSb-LSB tbl-colwidths="[25,25,10]" style="width: 60%;"}
+::: {#tbl-LSb-LSB tbl-colwidths="[42,42,16]" style="width: 60%;"}
 | Terme | Abreviatura | Àmbit |
 | --- | --- | --- |
 | Least Significant Bit | **LSb** (b minúscula) | Bit |
@@ -1123,7 +1119,7 @@ No respectar l'alineació:
 
 ### Directives d'alineació de memòria {#sec-directives-alineacio-memoria}
 
-RARS té les **directives** de @nte-directives-alineacio-inicialitzacio per gestionar les restriccions d'alineació de memòria. Aquestes directives apliquen automàticament la restricció d’alineació, descartant tantes posicions de memòria com sigui necessari. Opcionalment, la directiva pot anar **precedida** d’una **etiqueta** amb el **nom de la variable**, la qual representa de forma simbòlica l’adreça inicial de la dada definida.[^etiqueta]
+RARS té les **directives** de @nte-directives-alineacio-inicialitzacio per gestionar les restriccions d'alineació de memòria. Aquestes directives apliquen automàticament la restricció d'alineació, descartant tantes posicions de memòria com sigui necessari. Opcionalment, la directiva pot anar **precedida** d'una **etiqueta** amb el **nom de la variable**, la qual representa de forma simbòlica l'adreça inicial de la dada definida.[^etiqueta]
 
 [^etiqueta]: L'assemblador, quan pot (@sec-compilacio), substitueix totes les etiquetes (variables, funcions, destinacions de salts, etc.) per adreces de memòria. 
 
@@ -1231,7 +1227,7 @@ La **ISA** de **RV32I** és **ortogonal** pel que fa als registres: tret de `x0`
 ::: {#nte-registres-proposit-general .callout-note}
 ## RV32I ISA i ABI — Registres de propòsit general
 | ISA | ABI | Propòsit | Qui el guarda (*Saver*) |
-| :---: | :---: | :--- | :--- | :--- |
+| :---: | :---: | :--- | :--- |
 {{< include ../21_riscv/RV32I_registres_proposit_general.qmd >}}
 : {tbl-colwidths="[15,15,55,15]" .striped}
 :::
@@ -1347,7 +1343,7 @@ Aquesta nomenclatura es manté a totes les variants d'instruccions de RV32I.
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
 {{< include ../21_riscv/RV32I_instruccions_lectura_escriptura.qmd >}}
-: {tbl-colwidths="[5,20,40,15,5]" .striped}
+: {tbl-colwidths="[6,24,47,17,6]" .striped}
 :::
 
 ::: {#imp-memoria-mw-mh-mb .callout-important}
@@ -1377,7 +1373,7 @@ La instrucció `lw` (*load word*) copia **quatre bytes** consecutius de la **mem
 No existeix la instrucció ~~`lwu`~~.
 :::
 
-#### Accés a enters de mig paraula o byte: `lh`, `lb`, `sh`, `sb` {#sec-acces-mig-paraula-byte}
+#### Accés a enters de mitja paraula o byte: `lh`, `lb`, `sh`, `sb` {#sec-acces-mig-paraula-byte}
 
 Les instruccions `lh` (*load half*) i `lb` (*load byte*) carreguen de la memòria, a partir de l'adreça efectiva, a un registre **dos bytes** o **un byte**, respectivament. Com que el registre destinació és de 32 bits, es fa una **extensió de signe** del bit més significatiu del valor carregat (el bit de signe en el cas dels enters) per omplir els bits més significatius del registre destinació.
 
@@ -1388,7 +1384,7 @@ Les instruccions `sh` i `sb` no realitzen **cap tipus d'extensió**. Simplement 
 :::
 
 ::: {#tip-load-store-half-byte .callout-tip}
-## Operands en mode base + desplaçament, accés a enters de mig paraula o byte
+## Operands en mode base + desplaçament, accés a enters de mitja paraula o byte
 
 Suposant que `t2` conté l'adreça `0x10010000`, i que en aquesta adreça i les següents el contingut inicial de la memòria és el que es mostra a la taula que hi ha a continuació.
 
@@ -1405,8 +1401,8 @@ Suposant que `t2` conté l'adreça `0x10010000`, i que en aquesta adreça i les 
 | :--- | :--- | :--- |
 | `lb t1, 1(t2)` | Càrrega del byte `0x22` | `t1 = 0x00000022` |
 | `lb t1, 2(t2)` | Càrrega del byte `0xCC` | `t1 = 0xFFFFFFCC` |
-| `lh t1, 0(t2)` | Càrrega del mig paraula `0x2211` | `t1 = 0x00002211` |
-| `lh t1, 2(t2)` | Càrrega del mig paraula `0xDDCC` | `t1 = 0xFFFFDDCC` |
+| `lh t1, 0(t2)` | Càrrega de la mitja paraula `0x2211` | `t1 = 0x00002211` |
+| `lh t1, 2(t2)` | Càrrega de la mitja paraula `0xDDCC` | `t1 = 0xFFFFDDCC` |
 | `sb t1, 1(t2)` | Guarda el byte `0xCC` a l'adreça `0x10010001` | (Estat final de memòria) |
 
 2. Determina l'**estat final de memòria** resultant de l'execució anterior:
@@ -1424,7 +1420,7 @@ Suposant que `t2` conté l'adreça `0x10010000`, i que en aquesta adreça i les 
 Les instruccions `lhu` (*load half unsigned*) i `lbu` (*load byte unsigned*) copien a un registre destí els **dos bytes** o el **byte** de memòria, respectivament, a partir de l'adreça efectiva. Com que el registre destinació és de 32 bits, es fa una **extensió per zero** afegint zeros als bits més significatius del registre destinació. Aquestes instruccions s'utilitzen per carregar valors que es consideren naturals (sense signe), com ara caràcters o valors de mida menor a 32 bits que no s'han d'interpretar com a enters amb signe.
 
 ::: {#tip-load-half-byte-unsigned .callout-tip}
-## Operands en mode base + desplaçament, càrrega de naturals de mig paraula o byte
+## Operands en mode base + desplaçament, càrrega de naturals de mitja paraula o byte
 Considerant el mateix contingut inicial de la memòria de l'exemple anterior, determina el **resultat** de l'execució de cada instrucció:
 
 | Instrucció | Operació | Resultat al registre |
@@ -1455,7 +1451,8 @@ x:    .word 0xDDCCAABB
 Un punter és una **variable escalar** que conté una **adreça de memòria**.
 
 ::: {#nte-punters-32-bits .callout-note}
-A **RV32I**, com que l'espai d’adreces és de 32 bits (@nte-rv32i-model-memoria), els punters ocupen sempre **32 bits** (**4 bytes**, un word).
+## RV32I — Mida dels punters
+A **RV32I**, com que l'espai d'adreces és de 32 bits (@nte-rv32i-model-memoria), els punters ocupen sempre **32 bits** (**4 bytes**, un word).
 :::
 
 ::: {#cau-punters-naturals .callout-caution}
@@ -1597,11 +1594,11 @@ La distinció entre tipus base i declarador és important: en `int *p1, p2;`, el
 
 ### C — `*`: l'operador "desreferència" o "indirecció" {#sec-punters-desreferencia}
 
-L’operació "**desreferència**" o d'"**indirecció**" d'un punter és l'operació d'accés a la posició de memòria apuntada pel punter, sigui per lectura o escriptura.
+L'operació «**desreferència**» o d'«**indirecció**» d'un punter és l'operació d'accés a la posició de memòria apuntada pel punter, sigui per lectura o escriptura.
 
-En **C**, s’expressa precedint el nom del punter amb el caràcter `*`.
+En **C**, s'expressa precedint el nom del punter amb el caràcter `*`.
 
-Així doncs, l’expressió `*p` significa “**contingut de la posició de memòria** apuntada pel punter `p`”.
+Així doncs, l'expressió `*p` significa «**contingut de la posició de memòria** apuntada pel punter `p`».
 
 ::: {#cau-asterisc-sentencia-vs-declaracio .callout-caution}
 No s'ha de confondre l'ús de `*` en les **sentències** amb l'ús en les **declaracions**, on és el declarador "variable de tipus punter al \<tipus\>" (@sec-punters-c-declaracio).
@@ -1639,7 +1636,7 @@ g:
         ...
 ```
 
-La primera sentència carrega a la variable local `tmp` el contingut de la posició de memòria apuntada per `ploc`. Com que `ploc` està en un registre, n’hi ha prou d’executar una instrucció `lb` on el registre-base sigui el que conté el punter. La segona sentència és similar, però com que `pglob` és global, està emmagatzemada en memòria. Cal prèviament carregar la variable global `pglob` en el registre `t3` (es copia l’etiqueta en `t2` amb la macro `la`, i a continuació s'accedeix al punter en memòria amb `lw`). Un cop carregat el punter `pglob` en un registre, es fa la desreferència de la mateixa manera que en el cas de `ploc`, amb `lb`.
+La primera sentència carrega a la variable local `tmp` el contingut de la posició de memòria apuntada per `ploc`. Com que `ploc` està en un registre, n'hi ha prou d'executar una instrucció `lb` on el registre-base sigui el que conté el punter. La segona sentència és similar, però com que `pglob` és global, està emmagatzemada en memòria. Cal prèviament carregar la variable global `pglob` en el registre `t3` (es copia l'etiqueta en `t2` amb la pseudoinstrucció `la`, i a continuació s'accedeix al punter en memòria amb `lw`). Un cop carregat el punter `pglob` en un registre, es fa la desreferència de la mateixa manera que en el cas de `ploc`, amb `lb`.
 :::
 
 ### Aritmètica de punters {#sec-aritmetica-punters}
@@ -1768,14 +1765,14 @@ mat:    .word 11, 12, 13
 ```
 :::
 
-Per a vectors llargs no inicialitzats (valor **zero** per defecte a **RV32I**, però **indeterminat** en **C**), s'usa la directiva `.space n`, que reserva `n` **bytes**. Per assegurar l'alineació correcta al tipus del vector, cal precedir `.space` de la directiva `.align n`, que alinea la següent adreça a una múltiple de 2^n.
+Per a vectors llargs no inicialitzats (valor **zero** per defecte a **RV32I**, però **indeterminat** en **C**), s'usa la directiva `.space n`, que reserva `n` **bytes**. Per assegurar l'alineació correcta al tipus del vector, cal precedir `.space` de la directiva `.align n`, que alinea la següent adreça a un múltiple de $2^n$.
 
 ::: {#nte-directives-align-space .callout-note}
-## Directives — Reserva de memòria: `.space`, `.align`, `.balign`
+## Directives — Reserva de memòria: `.space`, `.align`
 
 | Directiva | Operands | Descripció |
 | :--- | :--- | :--- |
-| `.align` | `n` | Alinea el següent element a la frontera 2ⁿ bytes |
+| `.align` | `n` | Alinea el següent element a la frontera de $2^n$ bytes |
 | `.space` | `n` | Reserva `n` bytes al segment de dades |
 :::
 
@@ -1864,7 +1861,7 @@ l'índex.
 
 En canvi, en **RV32I** cal gestionar manualment l'accés a un element d'un vector mitjançant les instruccions de **càrrega** i **emmagatzematge**. En aquestes instruccions, el registre base conté l'adreça base i l'immediat el desplaçament, tots dos en bytes. Per tant, cal calcular el desplaçament com el producte de l'índex per la mida del tipus dels elements:
 
-$$@\texttt{vec[i]} = @ \texttt{vec}[0] + i \cdot \texttt{T}$$ {#eq-acces-aleatori-vector} 
+$$@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot T$$ {#eq-acces-aleatori-vector}
 
 on $T$ és la mida en bytes de cada element (`T` = `sizeof(tipus_element)`).
 
@@ -1981,8 +1978,8 @@ Per tant, és una forma compacta de realitzar aritmètica de punters i desrefer�
 
 Hi ha dues maneres bàsiques per recórrer els elements d'un vector amb un bucle:
 
-- L'**accés aleatori** (@sec-matrius-acces-aleatori), que consisteix en calcular l'adreça de cada accés a cada iteració (@eq-acces-aleatori-vector, @eq-acces-aleatori-matriu).
-- L'**accés seqüencial**(@sec-opt-acces-sequencial), que manté un punter que avança una quantitat fixa (*stride*) a cada iteració.
+- L'**accés aleatori** (@sec-vectors-acces-aleatori; per a matrius, @sec-matrius-acces-aleatori), que consisteix en calcular l'adreça de cada accés a cada iteració (@eq-acces-aleatori-vector, @eq-acces-aleatori-matriu).
+- L'**accés seqüencial** (@sec-acces-sequencial-exemple; optimització definida a @sec-opt-acces-sequencial), que manté un punter que avança una quantitat fixa (*stride*) a cada iteració.
 
 #### Extracció d'invariants {#sec-extraccio-invariants}
 
@@ -1998,7 +1995,7 @@ A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevo
 L'accés aleatori **no implica atzar**[^comram], sinó la capacitat d'accedir directament a qualsevol element d'un vector o matriu (vegeu @sec-matrius-acces-aleatori) en temps constant $\mathcal{O}(1)$, independentment de la seva posició.
 :::
 
-[^comram]: És el mateix cas d'us que en la sigla RAM (*Random Access Memory*), que no significa memòria a l'atzar, sinó memòria que permet accés directe a qualsevol adreça.
+[^comram]: És el mateix cas d'ús que en la sigla RAM (*Random Access Memory*), que no significa memòria a l'atzar, sinó memòria que permet accés directe a qualsevol adreça.
 
 ::: {#tip-vector-acces-aleatori .callout-tip}
 ## Recorregut d'un vector per accés aleatori
@@ -2098,7 +2095,7 @@ Aplicant l'**accés seqüencial** (Optimització #1, @sec-optimitzacions-bucle),
 
 ### Codificació de caràcters {#sec-codificacio-caracters}
 
-Els **caràcters** es representen mitjançant codis numèrics. El sistema de codificació més utilitzat ha estat el **codi ASCII** (*American Standard Code for Information Interchange*). En ASCII, els caràcters imprimibles (com les lletres, dígits i símbols) es representen amb números entre 32 i 126 ([0x20–0x7E]), mentre que els caràcters de control (com el salt de línia) es representen amb números entre 0 i 31 ([0x00–0x1F]). Els caràcters s’emmagatzemen usant 1 byte (8 bits), però el bit de més pes val sempre zero. La @tbl-codi-ascii mostra els rangs de codis ASCII.
+Els **caràcters** es representen mitjançant codis numèrics. El sistema de codificació més utilitzat ha estat el **codi ASCII** (*American Standard Code for Information Interchange*). En ASCII, els caràcters imprimibles (com les lletres, dígits i símbols) es representen amb números entre 32 i 126 ([0x20–0x7E]), mentre que els caràcters de control (com el salt de línia) es representen amb números entre 0 i 31 ([0x00–0x1F]). Els caràcters s'emmagatzemen usant 1 byte (8 bits), però el bit de més pes val sempre zero. La @tbl-codi-ascii mostra els rangs de codis ASCII.
 
 | Hex | Caràcter |
 | :--- | :--- |
@@ -2111,7 +2108,7 @@ Els **caràcters** es representen mitjançant codis numèrics. El sistema de cod
 
 ### Representació de caràcters en C i RV32I {#sec-representacio-caracters-c-rv32i}
 
-En C i RV32I, un literal de tipus caràcter imprimible s’escriu usant el caràcter (entre cometes simples), el seu codi ASCII en decimal, en hexadecimal precedit per `0x` o octal precedit per `0`. Per exemple, la A majúscula es pot escriure: `'A'`, `65`, `0x41` o `0101`. Els caràcters de control s’escriuen mitjançant **seqüències d’escapament** (*escape sequences*), que comencen amb una barra invertida (`\`) seguida d’un caràcter que indica el tipus de control. Per exemple, el salt de línia es pot escriure com `'\n'` o `0x0A`.
+En C i RV32I, un literal de tipus caràcter imprimible s'escriu usant el caràcter (entre cometes simples), el seu codi ASCII en decimal, en hexadecimal precedit per `0x` o octal precedit per `0`. Per exemple, la A majúscula es pot escriure: `'A'`, `65`, `0x41` o `0101`. Els caràcters de control s'escriuen mitjançant **seqüències d'escapament** (*escape sequences*), que comencen amb una barra invertida (`\`) seguida d'un caràcter que indica el tipus de control. Per exemple, el salt de línia es pot escriure com `'\n'` o `0x0A`.
 
 ::: {#tip-sequencies-escapament .callout-tip}
 ## Seqüències d'escapament per a caràcters de control i caràcters especials

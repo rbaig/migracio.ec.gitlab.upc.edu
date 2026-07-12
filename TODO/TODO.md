@@ -17,6 +17,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ### T3
 
+- **Criteri «quatre formats nuclears» (RISC-V International)**: la revisió interna de T2 (A2.qmd) ha adoptat el criteri de la font de veritat `@riscv_rv32i` (docs.riscv.org, citada a `15_bibliografia.bib`): RV32I té «quatre formats nuclears d'instrucció» (R/I/S/U), amb B i J com a variants de S i U respectivament. A3.qmd ja s'hi ha ajustat parcialment (referències creuades afegides cap a T2 als callouts `#nte-format-b`, `#nte-format-j`, `#nte-format-u`), però cal revisar-lo sencer per aplicar aquest mateix criteri de manera estricta i coherent a tot el tema (redactat, introducció dels formats, qualsevol menció al nombre total de formats). Fer en un xat de revisió interna dedicat a A3.qmd.
 - **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que A2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb A2.qmd i A3.qmd.
 - **Revisar referència `@imp-exception-handler` reparada** (A3.qmd, ~L. 1546, callout `#tip-rars-main-multinivell`): l'etiqueta original no tenia destí; s'ha reescrit apuntant a `@sec-ei-rse` (T9) i retocat la frase perquè tingués sentit gramatical. És una interpretació de Claude Code, no una simple correcció mecànica d'slug — verificar que el destí i la redacció són correctes.
 - Retocs manuals pendents (Roger) a les figures:
@@ -81,6 +82,7 @@ Decisions obertes de T7:
 
 ### Contingut global
 
+- **Criteri «quatre formats nuclears d'instrucció» (RISC-V International)**: adoptat a la revisió interna de T2 (2026-07, xat A2-E2-S2). Font de veritat: `@riscv_rv32i` (docs.riscv.org, «four core instruction formats (R/I/S/U)»; B i J són variants de S i U). Revisar tots els fitxers del repositori (`Ax.qmd`, `Ex.qmd`, `Sx.qmd`, `11_riscv.qmd`, laboratoris) que esmentin el nombre total de formats d'instrucció de RV32I («sis formats», «6 formats», etc.) i ajustar-los a aquest criteri, amb el mateix matís sobre B/J com a variants de S/U. Punt de partida ja fet: A2.qmd (T2) i referències creuades puntuals a A3.qmd (T3, vegeu `§T3` més amunt).
 - **«ample de banda» → «amplada de banda»**: substitució global (afegida a les substitucions obligatòries de `13_contrib.qmd`; T7 ja fet, revisar la resta de temes, p. ex. amb Claude Code).
 - **Unitats KB/KiB**: revisar la resta de temes segons el criteri de `13_contrib.qmd §T7` (binàries per a registres/MC/MP; decimals per a emmagatzematge secundari, costos i amplades de banda; T7 ja fet).
 - **Cometes** `"..."` → `«...»`: substitució global.

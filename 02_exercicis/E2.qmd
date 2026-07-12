@@ -51,13 +51,6 @@ C: .word 4, 0x0FFFF, 0x4180
 D: .word 0x10010008, 0
 ```
 
-amb els continguts inicials de memòria:
-
-| Adreça | Contingut (byte a byte, hex) |
-| :--- | :--- |
-| `0x10010000` | `00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F` |
-| `0x10010010` | `00 00 00 00 EC FD 0E 0F 00 00 00 00 00 00 00 00` |
-
 Tots els apartats parteixen del mateix estat inicial.
 
 a) Quin és el valor final de la variable `B` després d'executar el codi següent?
@@ -103,7 +96,7 @@ G:      .dword 0x10010008
 ::: {#exr-p3-immediats-luiaddi}
 En RISC-V, la pseudoinstrucció `li rd, imm` s'expandeix en instruccions reals quan l'immediat no cap en 12 bits amb extensió de signe.
 
-a) Quina seqüència d'instruccions genera el compilador per carregar el valor `0xDEADBEEF` al registre `t0`? Calcula els valors exactes dels operands de cada instrucció.
+a) Quina seqüència d'instruccions genera l'assemblador per carregar el valor `0xDEADBEEF` al registre `t0`? Calcula els valors exactes dels operands de cada instrucció.
 b) Per què cal ajustar el camp immediat d'`addi` quan el bit 11 del valor original és 1? Il·lustra-ho amb el valor `0xDEADBEEF`.
 c) Quin és el rang de valors immediats que accepta `addi` (és a dir, el rang de constants que es pot carregar a un registre amb `addi rd, zero, imm`)? I quin és el rang de constants que es pot carregar a un registre amb la seqüència `lui` + `addi`?
 :::
@@ -126,7 +119,7 @@ Indica quin és el valor en hexadecimal del **byte** emmagatzemat a cada una de 
 :::
 
 ::: {#exr-p3-memoria-lw-sw}
-Les variables enteres `A`, `B` i `C` estan ubicades a les adreces `0x10010000`, `0x10010004` i `0x10010008` de memòria. Donats els continguts inicials de registres i memòria següents (en hexadecimal):
+Donats els continguts inicials de registres i memòria següents (en hexadecimal):
 
 `t0 = 0x10010000`, `t2 = 0x10010008`
 
@@ -222,6 +215,7 @@ sb   t1, 1(t0)
 ## Representació de naturals i enters
 
 ::: {#nte-p3-remissio-enters .callout-note}
+## Remissió — Representació de naturals i enters
 Els exercicis de representació de naturals i enters (complement a 2, complement a 1, signe i magnitud, excés) es troben als problemes del [{{< var tema1 >}}](#sec-tema-introduccio-enunciats).
 :::
 
@@ -264,7 +258,7 @@ Fes servir el format següent:
 :::
 
 ::: {#exr-p3-ascii-align}
-Escriu en hexadecimal el contingut de memòria ocupat per les declaracions següents, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`. Recorda que la directiva `.align 0` desactiva l'alineació automàtica:
+Escriu en hexadecimal el contingut de memòria ocupat per les declaracions següents, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`. Recorda que la directiva `.align 0` desactiva l'alineació automàtica fins al final del segment `.data` actual (cap `.align n` amb $n>0$ posterior no la reactiva):
 
 ```{.s filename="RV32I"}
 .data
@@ -593,7 +587,7 @@ a) Escriu en assemblador RISC-V la sentència `p = v + 3;` i explica de quants b
 b) Escriu el bucle que, usant el punter `p`, dobla el valor de cada element del vector.
 :::
 
-## Strings
+## Cadenes de caràcters
 
 *Vegeu @sec-cadenes-de-caracters.*
 

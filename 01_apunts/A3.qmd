@@ -390,7 +390,7 @@ No existeix cap salt condicional indirecte a RV32I.
 
 Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
 
-Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** (@cau-prefixos-binaris) respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
+Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b), variant del format **Tipus-S** ja presentat a [Tema 2](#sec-format-instruccions) (@nte-instruccions-Tipus-S). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** (@cau-prefixos-binaris) respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*Compressed*).
 
 :::: {#nte-format-b .callout-note}
 ## RV32I ISA — Format Tipus-B
@@ -510,7 +510,7 @@ Les instruccions de salt condicional són la base per implementar les sentèncie
 
 La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
 
-La instrucció `jal` és de format **Tipus-J** (@nte-format-j). Com en el format B (@nte-format-b), el bit 0 de l'immediat és implícit (val `0`), de manera que la instrucció codifica 20 bits i obté un rang efectiu de **±1 MiB** respecte al PC.
+La instrucció `jal` és de format **Tipus-J** (@nte-format-j), variant del format **Tipus-U** (@nte-format-u), presentat més avall en aquest mateix tema a partir de la pseudoinstrucció `la` (i introduït a [Tema 2](#sec-format-instruccions) amb `lui`, @nte-instruccio-lui). Com en el format B (@nte-format-b), el bit 0 de l'immediat és implícit (val `0`), de manera que la instrucció codifica 20 bits i obté un rang efectiu de **±1 MiB** respecte al PC.
 
 :::: {#nte-format-j .callout-note}
 ## RV32I ISA — Format Tipus-J
@@ -1071,7 +1071,7 @@ En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que car
 
 Si s'accedeix diverses vegades a la mateixa variable dins una mateixa funció, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
 
-Les dues instruccions en què s'expandeix `la` pertanyen al format **Tipus-U**: `lui` (ja presentada a T2) i `auipc`.
+Les dues instruccions en què s'expandeix `la` pertanyen al format **Tipus-U** (@nte-format-u): `lui` (ja presentada a [Tema 2](#sec-format-instruccions), @nte-instruccio-lui) i `auipc`.
 
 :::: {#nte-format-u .callout-note}
 ## RV32I ISA — Format Tipus-U
