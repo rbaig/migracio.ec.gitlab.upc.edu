@@ -632,7 +632,7 @@ A **RARS**, les macros es defineixen amb les directives `.macro` i `.end_macro`:
 
 ```{.s filename="RV32I"}
 .macro zero_elem (%base, %idx)
-        slli    t6, %idx, 2         # offset = idx * 4
+        slli    t6, %idx, 2         # offset = idx * 4 (desplaçament de bits, @sec-desplacaments-de-bits a T3)
         add     t6, %base, t6       # adreça de l'element
         sw      zero, 0(t6)         # mem[base + idx*4] = 0
 .end_macro
@@ -936,7 +936,7 @@ En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (
 - Adreçament a nivell de **byte**: Cada adreça identifica **una posició** de memòria que conté **1 byte** (8 bits).
 - És **load/store**: Accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
 - És **little-endian**: El byte de menys pes ocupa l'adreça més baixa.
-- És **virtual**: Les adreces que utilitza el programa són **adreces virtuals** que el processador tradueix a **adreces físiques** mitjançant la MMU (***Memory Management Unit***, @sec-mv-espais).
+- Les adreces del programa **poden ser virtuals**: en un sistema amb sistema operatiu, la **MMU** (***Memory Management Unit***) les tradueix a adreces físiques (@sec-mv-espais, [Tema 8](#sec-tema-mv)). A **RARS** no hi ha traducció: les adreces del programa **són** directament les adreces físiques.
 
 ::: {#wrn-model-memoria-relaxat .callout-warning collapse=true}
 ## Model de memòria relaxat i instruccions `FENCE`
@@ -1106,7 +1106,7 @@ _start:
 En executar aquest codi a RARS (`F7`: execució línia a línia), en arribar a la **L14** salta una excepció d'alineació i s'atura l'execució:
 
 ```{.default filename="RARS → Execute → Messages"}
-Error in /.../codi.s line 14: Runtime exception at 0x00400020: Load address not aligned on halfword boundary 0x10010005
+Error in /.../codi.s line 14: Runtime exception at 0x00400014: Load address not aligned on halfword boundary 0x10010005
 ```
 :::
 
@@ -1996,6 +1996,10 @@ L'accés aleatori **no implica atzar**[^comram], sinó la capacitat d'accedir di
 :::
 
 [^comram]: És el mateix cas d'ús que en la sigla RAM (*Random Access Memory*), que no significa memòria a l'atzar, sinó memòria que permet accés directe a qualsevol adreça.
+
+::: {#cau-avancament-instruccions-bucles .callout-caution}
+Els exemples de bucle d'aquesta secció usen instruccions de salt condicional (`beq`) i incondicional (`j`), i de desplaçament de bits (`slli`), que es presenten formalment al [Tema 3](#sec-tema-traduccio) (@sec-desplacaments-de-bits, @sec-salts). De moment n'hi ha prou d'entendre-les intuïtivament pel comentari: `beq rs1, rs2, etq` salta a `etq` si `rs1 = rs2`; `j etq` salta sempre a `etq`; `slli rd, rs1, n` desplaça `rs1` `n` bits cap a l'esquerra (equivalent a multiplicar per $2^n$).
+:::
 
 ::: {#tip-vector-acces-aleatori .callout-tip}
 ## Recorregut d'un vector per accés aleatori
