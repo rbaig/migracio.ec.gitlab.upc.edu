@@ -82,7 +82,7 @@ width="100%"   viewBox="0 0 {W} {H}"
 4 bytes =  80 px   (registre, p. ex. `ra`, `s0`...)
 ```
 
-Quan el contingut és gran (vectors llargs, moltes zones), cal reduir l'escala per mantenir la figura en una mida razonable. Factors admesos, en ordre decreixent:
+Quan el contingut és gran (vectors llargs, moltes zones), cal reduir l'escala per mantenir la figura en una mida raonable. Factors admesos, en ordre decreixent:
 
 - ×1  = 20 px/byte (defecte; per a BAs petits o figures de referència)
 - ×½  = 10 px/byte (recomanat per a la majoria de BAs amb vectors)

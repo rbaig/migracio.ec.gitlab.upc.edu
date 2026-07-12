@@ -34,7 +34,7 @@ Codificació: $-25 =$ `1110 0111`, $+34 =$ `0010 0010`.
   1110 0111   (-25)
 + 0010 0010   (+34)
 -----------
-  0000 1001   (0x09)
+1 0000 1001   (descartant el carry de sortida: 0x09)
 ```
 
 Resultat: `0000 1001` = $+9_{10}$. Els operands tenen signes oposats: **no hi ha sobreeiximent**. Correcte: $-25 + 34 = +9$.
@@ -111,80 +111,35 @@ El circuit treballa amb naturals. Per a operands de 6 bits, els registres `P` i 
 2. `MD = MD << 1`.
 3. `MR = MR >> 1`.
 
+*Convenció de la taula*: cada fila mostra l'estat **final** de la iteració; les columnes MR[0] i Acció indiquen el que s'ha **executat en aquella iteració** (decidit amb el valor de `MR[0]` **abans** del desplaçament); la fila inicial porta «—».
+
 **a) $X =$ `101000` ($40_{10}$), $Y =$ `010011` ($19_{10}$). Resultat esperat: $760_{10}$.**
 
 | Iter. | P (12 bits) | MD (12 bits) | MR (6 bits) | MR[0] | Acció |
 | :---: | :---: | :---: | :---: | :---: | :--- |
-| inicial | `000000 000000` | `000000 101000` | `010011` | 1 | suma |
+| inicial | `000000 000000` | `000000 101000` | `010011` | — | — |
 | 1 | `000000 101000` | `000001 010000` | `001001` | 1 | suma |
-| 2 | `000010 111000` | `000010 100000` | `000100` | 0 | no suma |
-| 3 | `000010 111000` | `000101 000000` | `000010` | 0 | no suma |
-| 4 | `000010 111000` | `001010 000000` | `000001` | 1 | suma |
-| 5 | `001100 111000` | `010100 000000` | `000000` | 0 | no suma |
-| 6 | `001100 111000` | `101000 000000` | `000000` | 0 | no suma |
+| 2 | `000001 111000` | `000010 100000` | `000100` | 1 | suma |
+| 3 | `000001 111000` | `000101 000000` | `000010` | 0 | no suma |
+| 4 | `000001 111000` | `001010 000000` | `000001` | 0 | no suma |
+| 5 | `001011 111000` | `010100 000000` | `000000` | 1 | suma |
+| 6 | `001011 111000` | `101000 000000` | `000000` | 0 | no suma |
 
-Resultat: $P =$ `001100 111000`$_2 = 760_{10}$ ✓
+Resultat: $P =$ `001011 111000`$_2 = 760_{10}$ ✓
 
 **b) $X =$ `110110` ($54_{10}$), $Y =$ `000100` ($4_{10}$). Resultat esperat: $216_{10}$.**
 
 | Iter. | P (12 bits) | MD (12 bits) | MR (6 bits) | MR[0] | Acció |
 | :---: | :---: | :---: | :---: | :---: | :--- |
-| inicial | `000000 000000` | `000000 110110` | `000100` | 0 | no suma |
+| inicial | `000000 000000` | `000000 110110` | `000100` | — | — |
 | 1 | `000000 000000` | `000001 101100` | `000010` | 0 | no suma |
-| 2 | `000000 000000` | `000011 011000` | `000001` | 1 | suma |
-| 3 | `000011 011000` | `000110 110000` | `000000` | 0 | no suma |
+| 2 | `000000 000000` | `000011 011000` | `000001` | 0 | no suma |
+| 3 | `000011 011000` | `000110 110000` | `000000` | 1 | suma |
 | 4 | `000011 011000` | `001101 100000` | `000000` | 0 | no suma |
 | 5 | `000011 011000` | `011011 000000` | `000000` | 0 | no suma |
-| 6 | `000011 011000` | `110110 000000` | `000000` | — | — |
+| 6 | `000011 011000` | `110110 000000` | `000000` | 0 | no suma |
 
 Resultat: $P =$ `000011 011000`$_2 = 216_{10}$ ✓
-:::
-
-## Divisió
-
-::: {#sol-p5-div-passos .callout-tip}
-## Solució: seguiment del circuit divisor seqüencial amb restauració
-
-**Enunciat**: @exr-p5-div-passos.
-
-El circuit treballa amb naturals. Per a operands de 6 bits, els registres `R` i `D` tenen 12 bits i `Q` té 6 bits. L'algorisme amb restauració a cada iteració:
-
-1. `D = D >> 1`.
-2. `R = R - D`.
-3. Si `R[11] == 0` (resultat no negatiu): `Q = (Q << 1) | 1`.
-4. Altrament (resultat negatiu): `R = R + D` (restauració); `Q = Q << 1`.
-
-**a) $X =$ `101000` ($40_{10}$), $Y =$ `010011` ($19_{10}$). Resultat esperat: $q = 2$, $r = 2$.**
-
-| Iter. | R (12 bits) | D (12 bits) | Q (6 bits) | R[11] | Acció |
-| :---: | :---: | :---: | :---: | :---: | :--- |
-| inicial | `000000 101000` | `010011 000000` | `000000` | — | — |
-| 1 | `000000 101000 − 001001 100000 = 111111 001000` (neg.) | `001001 100000` | `000000` | 1 | restaura: `R+D`; `Q<<1` |
-| — | `000000 101000` restaurat | `001001 100000` | `000000` | — | — |
-| 2 | `000000 101000 − 000100 110000 = 111100 000000` (neg.) | `000100 110000` | `000000` | 1 | restaura; `Q<<1` |
-| — | `000000 101000` restaurat | `000100 110000` | `000000` | — | — |
-| 3 | `000000 101000 − 000010 011000 = 111110 110000` (neg.) | `000010 011000` | `000000` | 1 | restaura; `Q<<1` |
-| — | `000000 101000` restaurat | `000010 011000` | `000000` | — | — |
-| 4 | `000000 101000 − 000001 001100 = 111111 011100` (neg.) | `000001 001100` | `000000` | 1 | restaura; `Q<<1` |
-| — | `000000 101000` restaurat | `000001 001100` | `000000` | — | — |
-| 5 | `000000 101000 − 000000 100110 = 000000 000010` (pos.) | `000000 100110` | `000001` | 0 | `Q = (Q<<1)|1` |
-| 6 | `000000 000010 − 000000 010011 = 111111 101111` (neg.) | `000000 010011` | `000010` | 1 | restaura; `Q<<1` |
-| — | `000000 000010` restaurat | `000000 010011` | `000010` | — | — |
-
-Quocient: $Q = 000010_2 = 2_{10}$, residu: $R[5:0] = 000010_2 = 2_{10}$ ✓
-
-Verificació: $19 \times 2 + 2 = 40$ ✓
-
-**b) $X =$ `010101` ($21_{10}$), $Y =$ `100100` ($36_{10}$). Resultat esperat: $q = 0$, $r = 21$.**
-
-Com que $X < Y$, el quocient és 0 i el residu és $X$ en totes les iteracions: el divisor desplaçat sempre és més gran que el dividend parcial i cal restaurar en cada pas.
-
-| Iter. | R (12 bits) | D (12 bits) | Q (6 bits) | R[11] | Acció |
-| :---: | :---: | :---: | :---: | :---: | :--- |
-| inicial | `000000 010101` | `100100 000000` | `000000` | — | — |
-| 1–6 | sempre negatiu | desplaçat | `000000` | 1 | restaura; `Q<<1` |
-
-Quocient: $Q = 000000_2 = 0_{10}$, residu: $R[5:0] = 010101_2 = 21_{10}$ ✓
 :::
 
 ## Matrius
@@ -253,7 +208,7 @@ Equivalent a `mat[i'][j']` amb `i' = i+5` i `j' = j-1`. Incorporant les constant
 
 **f) `mat[i*10+4][6]`**
 
-La fila és `i*10+4`, la columna és la constant `6`. La fila ja conté una multiplicació per 10 que no és potència de 2, de manera que cal `mul` tant per calcular la fila com per escalar-la per `NC`.
+La fila és `i*10+4`, la columna és la constant `6`. La fila ja conté una multiplicació per 10 que no és potència de 2; les dues multiplicacions es fusionen en una: l'invariant `10*NC*4` permet resoldre-ho amb un únic `mul`.
 
 ```{.s filename="RV32IM"}
         la      a0, mat + 4*NC*4 + 6*4  # @mat + (4*NC + 6)*4 (invariant)
@@ -277,7 +232,7 @@ void func(int veci[4]) {
         veci[j] = j;
 }
 
-void main() {
+int main() {
     int *p = &mati[0][0];
     int *fi = &mati[5][0];
     while (p != fi) {
@@ -299,7 +254,7 @@ func:
         mv      t1, a0              # t1 = p = @veci[0]
         addi    t2, a0, 4*4         # t2 = sentinella = @veci[4]
         li      t0, 0               # j = 0
-        bgeu    t1, t2, fifunc      # comprovació inicial (NC=4 > 0, no s'executa mai)
+        bgeu    t1, t2, fifunc      # comprovació inicial (longitud 4 > 0: mai no s'executa)
 bucle:
         sw      t0, 0(t1)           # veci[j] = j
         addi    t1, t1, 4           # p += stride (4 bytes)
@@ -311,24 +266,28 @@ fifunc:
 
 **b) Traducció de `main` amb accés seqüencial a `mati`**
 
-`main` és **multinivell** (crida `func`). Cal desar `ra`. El codi C ja usa punters explícits (`p` i `fi`), de manera que la traducció és directa: `p` → `t0`, `fi` → `t1`.
+`main` és **multinivell** (crida `func`). Com que `p` i `fi` han de sobreviure a la crida i `func` (apartat a) utilitza `t0`–`t2`, cal desar-los en **registres segurs** (`s0`, `s1`) en lloc de `t0`/`t1`: `p` → `s0`, `fi` → `s1`. Cal desar `ra`, `s0` i `s1` al bloc d'activació.
 
 ```{.s filename="RV32I"}
 main:
-        addi    sp, sp, -4
-        sw      ra, 0(sp)
+        addi    sp, sp, -12
+        sw      ra, 8(sp)
+        sw      s1, 4(sp)
+        sw      s0, 0(sp)
 
-        la      t0, mati            # t0 = p = @mati[0][0]
-        addi    t1, t0, 5*4*4       # t1 = fi = @mati[5][0]
-        bgeu    t0, t1, fimain      # comprovació inicial (5 > 0, mai s'executa)
+        la      s0, mati            # s0 = p = @mati[0][0]  (segur: sobreviu a la crida)
+        addi    s1, s0, 5*4*4       # s1 = fi = @mati[5][0]
+        bgeu    s0, s1, fimain      # comprovació inicial (5 > 0, mai s'executa)
 bucle:
-        mv      a0, t0              # a0 = p
+        mv      a0, s0              # a0 = p
         jal     ra, func
-        addi    t0, t0, 4*4         # p += 4  (4 ints = 16 bytes)
-        bltu    t0, t1, bucle
+        addi    s0, s0, 4*4         # p += 4  (4 ints = 16 bytes)
+        bltu    s0, s1, bucle
 fimain:
-        lw      ra, 0(sp)
-        addi    sp, sp, 4
+        lw      s0, 0(sp)
+        lw      s1, 4(sp)
+        lw      ra, 8(sp)
+        addi    sp, sp, 12
         ret
 ```
 :::
@@ -359,7 +318,8 @@ L'adreça del primer element és `@A[3][0] = @A + 3*N*4`.
         # a0 = @A, t1 = suma (inicialitzada prèviament a 0)
         li      t2, 3*N*4
         add     t3, a0, t2          # t3 = p = @A[3][0]
-        addi    t4, t3, N*4         # t4 = sentinella = @A[3][N]
+        li      t4, N*4
+        add     t4, t3, t4          # t4 = sentinella = @A[3][N]
         bgeu    t3, t4, fifor       # comprovació inicial
 bucle:
         lw      t5, 0(t3)           # A[3][i]
@@ -460,7 +420,7 @@ bucle:
 fi:
 ```
 
-S'han extret `li t1, N` i `la t2, v` com a invariants fora del bucle.
+S'han extret `li t1, N` i `la t2, v` com a invariants fora del bucle (extracció d'invariants, @sec-extraccio-invariants, prerequisit de tota optimització).
 
 Instruccions per iteració:
 
@@ -499,15 +459,15 @@ int v[N], w[N];
 /* for (i = 0; i < N; i++) w[i] = v[i] * 2; */
 ```
 
-**a) Versió sense optimitzar (usant `i` explícitament)**
+**a) Versió sense cap optimització (usant `i` explícitament, condició a l'inici)**
 
 ```{.s filename="RV32I"}
         li      t0, 0               # i = 0
         li      t1, N               # N (invariant)
         la      t2, v               # @v (invariant)
         la      t3, w               # @w (invariant)
-        bge     t0, t1, fifor       # comprovació inicial
 bucle:
+        bge     t0, t1, fifor       # [ctrl]
         slli    t4, t0, 2           # i*4
         add     t5, t2, t4          # @v[i]
         lw      t5, 0(t5)           # v[i]
@@ -515,15 +475,37 @@ bucle:
         add     t6, t3, t4          # @w[i]
         sw      t5, 0(t6)           # w[i] = v[i] * 2
         addi    t0, t0, 1           # i++
-        blt     t0, t1, bucle
+        j       bucle
 fifor:
 ```
 
-Instruccions per iteració: `slli` + `add` + `lw`(4) + `slli` + `add` + `sw`(4) + `addi` + `blt`(2) = **15 cicles** (llevat de la darrera: 14).
+Instruccions per iteració: `bge`(1) + `slli` + `add` + `lw`(4) + `slli` + `add` + `sw`(4) + `addi` + `j`(2) = **16 cicles**.
 
-**b) Versió amb eliminació de la variable d'inducció (punters directes)**
+**b) Eliminació de la variable d'inducció (punters directes), mantenint la condició a l'inici**
 
-Es mantenen dos punters `pv` i `pw` que avancen en paral·lel amb stride 4. La condició de parada es basa en la sentinella de `pv`.
+Es mantenen dos punters `pv` i `pw` que avancen en paral·lel amb stride 4, controlats amb la sentinella de `pv`. La condició es continua avaluant a l'inici de cada iteració (amb el salt incondicional `j` corresponent), sense aplicar encara l'optimització #2.
+
+```{.s filename="RV32I"}
+        la      t0, v               # t0 = pv = @v[0]
+        la      t1, w               # t1 = pw = @w[0]
+        li      t2, N*4
+        add     t2, t0, t2          # t2 = sentinella = @v[N]
+bucle:
+        bgeu    t0, t2, fifor       # [ctrl]
+        lw      t3, 0(t0)           # *pv = v[i]
+        slli    t3, t3, 1           # v[i] * 2
+        sw      t3, 0(t1)           # *pw = v[i] * 2
+        addi    t0, t0, 4           # pv++
+        addi    t1, t1, 4           # pw++
+        j       bucle
+fifor:
+```
+
+Instruccions per iteració: `bgeu`(1) + `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `j`(2) = **14 cicles**.
+
+**c) Combinació amb l'avaluació de la condició al final**
+
+Partint de b), s'aplica l'optimització #2: la comprovació es fa una única vegada abans d'entrar al bucle (cas de zero iteracions) i el salt incondicional `j` se substitueix pel salt condicional `bltu` al final:
 
 ```{.s filename="RV32I"}
         la      t0, v               # t0 = pv = @v[0]
@@ -541,11 +523,7 @@ bucle:
 fifor:
 ```
 
-Instruccions per iteració: `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `bltu`(2) = **13 cicles** (llevat de la darrera: 12).
-
-**c) Combinació de les dues optimitzacions (condició al final + eliminació IV)**
-
-La versió de l'apartat b) ja aplica les optimitzacions #1 (accés seqüencial, que elimina la variable d'inducció) i #2 (condició al final). El cos del bucle conté:
+El cos del bucle conté:
 
 | Instrucció | Nombre |
 | :--- | :---: |
@@ -556,4 +534,55 @@ La versió de l'apartat b) ja aplica les optimitzacions #1 (accés seqüencial, 
 | `addi` (pw++) | 1 |
 | `bltu` (control) | 1 |
 | **Total** | **6** |
+
+Instruccions per iteració: `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `bltu`(2) = **13 cicles** (llevat de la darrera, on `bltu` no és pres: 12 cicles).
+:::
+
+## Divisió
+
+::: {#sol-p5-div-passos .callout-tip}
+## Solució: seguiment del circuit divisor seqüencial amb restauració
+
+**Enunciat**: @exr-p5-div-passos.
+
+El circuit treballa amb naturals. Per a operands de 6 bits, els registres `R` i `D` tenen 12 bits i `Q` té 6 bits. L'algorisme amb restauració a cada iteració:
+
+1. `D = D >> 1`.
+2. `R = R - D`.
+3. Si `R[11] == 0` (resultat no negatiu): `Q = (Q << 1) | 1`.
+4. Altrament (resultat negatiu): `R = R + D` (restauració); `Q = Q << 1`.
+
+*Convenció de la taula*: la columna «R − D» mostra el valor intermedi de la resta (abans de decidir si cal restaurar); la columna «R (final)» mostra l'estat ja restaurat si ha calgut; la fila inicial porta «—».
+
+**a) $X =$ `101000` ($40_{10}$), $Y =$ `010011` ($19_{10}$). Resultat esperat: $q = 2$, $r = 2$.**
+
+| Iter. | D (12 bits) | R − D | Signe | Acció | R (final) | Q |
+| :---: | :---: | :---: | :---: | :--- | :---: | :---: |
+| inicial | `010011 000000` | — | — | — | `000000 101000` | `000000` |
+| 1 | `001001 100000` | `110111 001000` | neg. | restaura; `Q<<1` | `000000 101000` | `000000` |
+| 2 | `000100 110000` | `111011 111000` | neg. | restaura; `Q<<1` | `000000 101000` | `000000` |
+| 3 | `000010 011000` | `111110 010000` | neg. | restaura; `Q<<1` | `000000 101000` | `000000` |
+| 4 | `000001 001100` | `111111 011100` | neg. | restaura; `Q<<1` | `000000 101000` | `000000` |
+| 5 | `000000 100110` | `000000 000010` | pos. | `Q = (Q<<1)\|1` | `000000 000010` | `000001` |
+| 6 | `000000 010011` | `111111 101111` | neg. | restaura; `Q<<1` | `000000 000010` | `000010` |
+
+Quocient: $Q = 000010_2 = 2_{10}$, residu: $R[5:0] = 000010_2 = 2_{10}$ ✓
+
+Verificació: $19 \times 2 + 2 = 40$ ✓
+
+**b) $X =$ `010101` ($21_{10}$), $Y =$ `100100` ($36_{10}$). Resultat esperat: $q = 0$, $r = 21$.**
+
+Com que $X < Y$, el quocient és 0 i el residu és $X$ en totes les iteracions: el divisor desplaçat sempre és més gran que el dividend parcial i cal restaurar en cada pas.
+
+| Iter. | D (12 bits) | R − D | Signe | Acció | R (final) | Q |
+| :---: | :---: | :---: | :---: | :--- | :---: | :---: |
+| inicial | `100100 000000` | — | — | — | `000000 010101` | `000000` |
+| 1 | `010010 000000` | `101110 010101` | neg. | restaura; `Q<<1` | `000000 010101` | `000000` |
+| 2 | `001001 000000` | `110111 010101` | neg. | restaura; `Q<<1` | `000000 010101` | `000000` |
+| 3 | `000100 100000` | `111011 110101` | neg. | restaura; `Q<<1` | `000000 010101` | `000000` |
+| 4 | `000010 010000` | `111110 000101` | neg. | restaura; `Q<<1` | `000000 010101` | `000000` |
+| 5 | `000001 001000` | `111111 001101` | neg. | restaura; `Q<<1` | `000000 010101` | `000000` |
+| 6 | `000000 100100` | `111111 110001` | neg. | restaura; `Q<<1` | `000000 010101` | `000000` |
+
+Quocient: $Q = 000000_2 = 0_{10}$, residu: $R[5:0] = 010101_2 = 21_{10}$ ✓
 :::

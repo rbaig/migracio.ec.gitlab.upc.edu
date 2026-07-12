@@ -200,7 +200,7 @@ $$Z = X \cdot y_0 + (X \cdot y_1) \ll 1 + \ldots + (X \cdot y_{31}) \ll 31$$
 
 Això requereix 31 sumadors disposats en sèrie (de 33 a 63 bits). El retard total és aproximadament la suma dels retards dels 31 sumadors, cosa que no representa una millora substancial respecte del circuit seqüencial.
 
-No obstant, si es reestructuren les sumes en forma d'**arbre**, es pot reduir el retard a l'equivalent de 5 sumadors (aproximadament 6 vegades més ràpid que la versió en sèrie), ja que moltes sumes es fan en paral·lel.
+No obstant això, si es reestructuren les sumes en forma d'**arbre**, es pot reduir el retard a l'equivalent de 5 sumadors (aproximadament 6 vegades més ràpid que la versió en sèrie), ja que moltes sumes es fan en paral·lel.
 
 ::: {#fig-multiplicador-arbre}
 ::: {.content-visible when-format="html"}
@@ -449,7 +449,7 @@ Les tres optimitzacions que es presenten a continuació s'apliquen de manera pro
 
 ### Optimització #1 — Accés seqüencial {#sec-opt-acces-sequencial}
 
-Quan un bucle recorre els elements d'un vector o matriu i la distància en bytes entre les adreces de dos elements consecutius del recorregut és constant, es pot aplicar l'**accés seqüencial**. Aquesta distància constant s'anomena **stride**:
+Quan un bucle recorre els elements d'un vector o matriu i la distància en bytes entre les adreces de dos elements consecutius del recorregut és constant, es pot aplicar l'**accés seqüencial**. Aquesta distància constant s'anomena ***stride***:
 
 $$\text{stride} = @X_{i+1} - @X_i = \text{constant}$$ {#eq-stride}
 
@@ -461,9 +461,9 @@ Això elimina el producte `i*T` del càlcul d'adreça i el substitueix per una s
 
 **Mètode**:
 
-1. Calcular l'adreça del primer element del recorregut i inicialitzar un    punter `p` amb aquesta adreça.
+1. Calcular l'adreça del primer element del recorregut i inicialitzar un punter `p` amb aquesta adreça.
 2. Calcular l'stride restant les adreces de dos elements consecutius.
-3. A cada iteració: accedir a l'element desreferenciant `p`, i sumar-li    l'stride per avançar al següent.
+3. A cada iteració: accedir a l'element desreferenciant `p`, i sumar-li l'stride per avançar al següent.
 
 ::: {#tip-opt1-sequencial .callout-tip}
 ## Optimització #1 — Accés seqüencial aplicat a una fila de matriu
@@ -528,7 +528,7 @@ La infraestructura de control queda en **4 instruccions** per iteració. Aplican
 
 En un bucle `while`, la condició s'avalua **abans** de cada iteració, cosa que implica un salt incondicional al final del cos per tornar a avaluar-la. Si es transforma en un `do-while`, la condició s'avalua **al final**, i s'elimina el salt incondicional.
 
-No obstant, cal garantir la semàntica del `while` original en el cas de **zero iteracions**: si el bucle pot no executar-se cap vegada, cal afegir una comprovació inicial abans d'entrar al `do-while`.
+No obstant això, cal garantir la semàntica del `while` original en el cas de **zero iteracions**: si el bucle pot no executar-se cap vegada, cal afegir una comprovació inicial abans d'entrar al `do-while`.
 
 
 ```{.default filename="Pseudocodi"}
@@ -663,7 +663,7 @@ fifor:
 
 L'stride per recórrer una columna és $\texttt{NC} \cdot T = \texttt{NC} \cdot 2$.
 
-Com que `NC` no és potència de 2, l'stride `NC*2` tampoc ho és: el desplaçament fins a la sentinella (`nfiles·NC*2`) s'ha de calcular amb `mul`, ja que no es pot obtenir amb `slli`.
+Com que, en general, `NC` no té per què ser potència de 2, l'stride `NC*2` tampoc ho és: el desplaçament fins a la sentinella (`nfiles·NC*2`) s'ha de calcular amb `mul`, ja que no es pot obtenir amb `slli`.
 
 ```{.s filename="RV32IM"}
         # a0 = @mat, a1 = col, a2 = nfiles
