@@ -15,10 +15,10 @@ Memòria virtual de 16 MiB ($2^{24}$ B → 24 bits d'adreça lògica), memòria 
 
 La descomposició VPN/desplaçament segueix @cau-mv-traduccio:
 
-- VPN: $24 - 8 = 16$ bits → $2^{16} = 65536$ pàgines virtuals.
+- VPN: $24 - 8 = 16$ bits → $2^{16} = 65\,536$ pàgines virtuals.
 - PPN: $14 - 8 = 6$ bits → $2^6 = 64$ marcs de pàgina.
 
-**a)** La taula de pàgines té una entrada per pàgina virtual: $2^{16} = 65536$ entrades. Cada entrada conté el PPN (6 bits) més el bit P i el bit D:
+**a)** La taula de pàgines té una entrada per pàgina virtual: $2^{16} = 65\,536$ entrades. Cada entrada conté el PPN (6 bits) més el bit V i el bit D:
 
 $$6 + 1 + 1 = 8 \text{ bits} = 1 \text{ byte/entrada}$$
 
@@ -61,7 +61,7 @@ Tant la taula de primer nivell com cada taula de segon nivell ocupen **4 KiB** (
 
 **c)** Cada entrada del primer nivell pot apuntar a una taula de segon nivell: com a màxim $2^{10} = 1024$ taules de segon nivell. Mida total en el **pitjor cas** (totes assignades):
 
-$$\underbrace{4 \text{ KiB}}_{\text{N1}} + 1024 \times \underbrace{4 \text{ KiB}}_{\text{N2}} = 4 \text{ KiB} + 4 \text{ MiB} = 4 \text{ MiB} + 4 \text{ KiB}$$
+$$\underbrace{4 \text{ KiB}}_{\text{N1}} + 1024 \times \underbrace{4 \text{ KiB}}_{\text{N2}} = 4 \text{ KiB} + 4 \text{ MiB}$$
 
 **d)** Una taula de **nivell únic** tindria $2^{20}$ entrades de 4 B $= 4$ MiB. La jerarquia de dos nivells, en el pitjor cas, ocupa lleugerament **més** (4 MiB + 4 KiB: el sobrecost del directori de primer nivell).
 
@@ -96,7 +96,7 @@ Punts clau:
 
 Estat final de la taula de pàgines:
 
-| VPN | P | D | PPN |
+| VPN | V | D | PPN |
 | :---: | :---: | :---: | :---: |
 | 0 | 1 | 0 | 0 |
 | 1 | 0 | 0 | — |
@@ -131,11 +131,11 @@ Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/4096 \rfloor$. TLB de
 | 8912 | 2 | **Sí** | **Sí** | 14 |
 : {.striped}
 
-- 4095 (VPN 0): fallada de TLB; la PTE té $P = 1$ (PPN 5) → s'omple l'entrada lliure, sense fallada de pàgina.
-- 7193 (VPN 1): fallada de TLB i $P = 0$ → **fallada de pàgina**; s'assigna PPN 13. Es reemplaça la VPN 11 (l'única entrada no reutilitzada des de l'inici → la més antiga).
-- 8912 (VPN 2): fallada de TLB i $P = 0$ → fallada de pàgina (PPN 14); es reemplaça la VPN 0 (la més antiga de la pila en aquest punt).
+- 4095 (VPN 0): fallada de TLB; la PTE té $V = 1$ (PPN 5) → s'omple l'entrada lliure, sense fallada de pàgina.
+- 7193 (VPN 1): fallada de TLB i $V = 0$ → **fallada de pàgina**; s'assigna PPN 13. Es reemplaça la VPN 11 (l'única entrada no reutilitzada des de l'inici → la més antiga).
+- 8912 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça la VPN 0 (la més antiga de la pila en aquest punt).
 
-TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP: VPN 1 → P 1/PPN 13, VPN 2 → P 1/PPN 14.
+TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP: VPN 1 → V 1/PPN 13, VPN 2 → V 1/PPN 14.
 
 **Llista 2** (des de l'estat inicial). VPN: 2, 7, 4, 11, 9, 4, 11.
 
@@ -150,17 +150,19 @@ TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP:
 | 47480 | 11 | No | No | 12 |
 : {.striped}
 
-- 9452 (VPN 2): fallada de TLB i $P = 0$ → fallada de pàgina (PPN 13); s'omple l'entrada lliure.
-- 19136 (VPN 4): fallada de TLB però $P = 1$ (PPN 9) → sense fallada de pàgina. Es reemplaça la VPN 3 (la més antiga segons l'ordre inicial 11 > 7 > 3).
-- 38110 (VPN 9): fallada de TLB i $P = 0$ → fallada de pàgina (PPN 14); es reemplaça la VPN 2 (entrada menys recentment usada).
+- 9452 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 13); s'omple l'entrada lliure.
+- 19136 (VPN 4): fallada de TLB però $V = 1$ (PPN 9) → sense fallada de pàgina. Es reemplaça la VPN 3 (la més antiga segons l'ordre inicial 11 > 7 > 3).
+- 38110 (VPN 9): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça la VPN 2 (entrada menys recentment usada).
 - 46502 i 47480 (VPN 11): encerts, perquè la VPN 11 era la més recent inicialment i no s'ha expulsat.
 
-TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). TP: VPN 2 → P 1/PPN 13, VPN 9 → P 1/PPN 14.
+TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). TP: VPN 2 → V 1/PPN 13, VPN 9 → V 1/PPN 14.
 
-**b)** Amb pàgines de 16 KiB, $\text{VPN} = \lfloor \text{adreça}/16384 \rfloor$ i moltes adreces que abans queien en pàgines diferents passen a compartir pàgina:
+**b)** Amb pàgines de 16 KiB, $\text{VPN} = \lfloor \text{adreça}/16\,384 \rfloor$ i moltes adreces que abans queien en pàgines diferents passen a compartir pàgina:
 
-- Llista 1: pàgines 0, 1, 0, 0, 0, 0, 0 → només **2 pàgines diferents** (abans 5). Les fallades de TLB baixen de 3 a **2**.
-- Llista 2: pàgines 0, 1, 1, 2, 2, 1, 2 → **3 pàgines diferents** (abans 5). El TLB de 32 entrades les reté totes; hi ha **3 fallades** (la primera referència a cada pàgina nova), menys que les 4 originals.
+- Llista 1: pàgines 0, 1, 0, 0, 0, 0, 0 → només **2 pàgines diferents** (abans 5).
+- Llista 2: pàgines 0, 1, 1, 2, 2, 1, 2 → només **3 pàgines diferents** (abans 5).
+
+En els dos casos el nombre de pàgines diferents accedides baixa, cosa que **redueix el nombre potencial de fallades de TLB de tipus *cold*** (una fallada per pàgina nova referenciada). No es pot donar, però, un nombre exacte de fallades comparable al de l'apartat a): l'estat inicial del TLB (VPN 11, 7, 3 vàlides) es va definir per a pàgines de 4 KiB i deixa de tenir sentit en reinterpretar-lo amb una mida de pàgina diferent — les VPN ja no identifiquen les mateixes pàgines físiques, de manera que no hi ha una manera coherent de «traduir» aquell estat inicial concret al nou context (vegeu `13_contrib.qmd §T8`, criteri sobre canvis de mida de pàgina amb estat fix).
 
 En general, augmentar la mida de pàgina **redueix el nombre de pàgines diferents** accedides i, per tant, les fallades de TLB (de tipus *cold*), a canvi de més fragmentació interna i transferències a disc més grans en cada fallada de pàgina.
 
@@ -181,13 +183,13 @@ El segon resultat (8 PiB **per procés**) és inviable i justifica les taules de
 
 **Enunciat**: @exr-p8-mv-proteccio.
 
-Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/\texttt{0x1000} \rfloor$. Criteri: una **lectura** té èxit sempre que $P = 1$ (el bit E només restringeix escriptures); una **escriptura** requereix $P = 1$ **i** $E = 1$. Si $P = 0$ → fallada de pàgina; si l'escriptura troba $E = 0$ → excepció de protecció.
+Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/\texttt{0x1000} \rfloor$. Criteri: una **lectura** té èxit sempre que $V = 1$ (el bit E només restringeix escriptures); una **escriptura** requereix $V = 1$ **i** $E = 1$. Si $V = 0$ → fallada de pàgina; si l'escriptura troba $E = 0$ → excepció de protecció.
 
-| Accés | Adreça | VPN | P | E | Resultat |
+| Accés | Adreça | VPN | V | E | Resultat |
 | :---: | :---: | :---: | :---: | :---: | :--- |
 | a | L `0x0FF0` | 0 | 1 | 0 | **Èxit** (la lectura no mira E); PPN 3 |
 | b | E `0x1234` | 1 | 1 | 1 | **Èxit**; PPN 7 |
-| c | L `0x2000` | 2 | 0 | — | **Fallada de pàgina** ($P = 0$) |
+| c | L `0x2000` | 2 | 0 | — | **Fallada de pàgina** ($V = 0$) |
 | d | E `0x3100` | 3 | 1 | 0 | **Excepció de protecció** (escriptura amb $E = 0$) |
 | e | E `0x0010` | 0 | 1 | 0 | **Excepció de protecció** (escriptura amb $E = 0$) |
 : {tbl-colwidths="[8,14,8,8,8,54]" .striped}
@@ -228,7 +230,7 @@ Com que la traducció i la indexació es fan alhora, el temps d'accés és pràc
 **c) Fallada de TLB però pàgina present a memòria:**
 
 1. El VPN no és al TLB → **fallada de TLB**. Es llegeix la PTE de la taula de pàgines a memòria (registre de taula de pàgines + VPN).
-2. La PTE té $P = 1$ (pàgina present) → **no hi ha fallada de pàgina**. Es copia la PTE al TLB (entrada lliure o reemplaçament LRU).
+2. La PTE té $V = 1$ (pàgina present) → **no hi ha fallada de pàgina**. Es copia la PTE al TLB (entrada lliure o reemplaçament LRU).
 3. Es reintenta l'accés: ara el TLB encerta, s'obté el PPN, es compara amb l'etiqueta de la cau → encert de cau → dada.
 
 El cost addicional respecte de b) és **un accés a memòria** per llegir la PTE.
@@ -249,28 +251,28 @@ es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaç
 
 **Enunciat**: @exr-p8-mv-cache-tlb.
 
-Enters de 4 B. Cau: 4 vies × 64 conjunts × 32 B/bloc $= 8$ KiB; un bloc conté $32/4 = 8$ enters. TLB de 32 entrades, pàgines de 8 KiB (2048 enters per pàgina; cada fila de `A` ocupa 1024 enters $= 4$ KiB, és a dir, mitja pàgina). La matriu `A[128][1024]` ocupa $512$ KiB $= 64$ pàgines $= 16384$ blocs.
+Enters de 4 B. MC: 4 vies × 64 conjunts × 32 B/bloc $= 8$ KiB; un bloc conté $32/4 = 8$ enters. TLB de 32 entrades, pàgines de 8 KiB (2048 enters per pàgina; cada fila de `A` ocupa 1024 enters $= 4$ KiB, és a dir, mitja pàgina). La matriu `A[128][1024]` ocupa $512$ KiB $= 64$ pàgines $= 16\,384$ blocs.
 
 Adreça de l'element `A[i][j]`: byte $= (i \cdot 1024 + j) \cdot 4 = i \cdot 4096 + j \cdot 4$.
 
-- Conjunt de cau: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{32} \right\rfloor \bmod 64 = \left(i \cdot 128 + \lfloor j/8 \rfloor\right) \bmod 64 = \lfloor j/8 \rfloor \bmod 64$ → **depèn només de $j$**.
+- Conjunt de MC: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{32} \right\rfloor \bmod 64 = \left(i \cdot 128 + \lfloor j/8 \rfloor\right) \bmod 64 = \lfloor j/8 \rfloor \bmod 64$ → **depèn només de $j$**.
 - Pàgina: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{8192} \right\rfloor = \lfloor i/2 \rfloor$ → **depèn només de $i$**.
 
 **Versió A** (recorregut per files, accés seqüencial en memòria):
 
-- *Cau*: cada bloc de 8 enters es carrega un cop i s'aprofita 8 vegades. Fallades $= 16384$ blocs $= \mathbf{16384}$ (1 de cada 8 accessos).
+- *MC*: cada bloc de 8 enters es carrega un cop i s'aprofita 8 vegades. Fallades $= 16\,384$ blocs $= \mathbf{16\,384}$ (1 de cada 8 accessos).
 - *TLB*: es recorren les 64 pàgines en ordre, una fallada per pàgina $= \mathbf{64}$.
 
-**Versió B** (recorregut per columnes, gambada de 4096 B):
+**Versió B** (recorregut per columnes, *stride* de 4096 B):
 
-- *Cau*: per a un $j$ fix, els 128 elements `A[0..127][j]` són blocs diferents que mapen **tots al mateix conjunt** ($\lfloor j/8 \rfloor \bmod 64$, independent de $i$). Amb només 4 vies, els 128 blocs s'expulsen entre ells abans de poder-se reutilitzar a la iteració següent de $j$. **Cap reutilització**: totes les referències fallen $= 128 \times 1024 = \mathbf{131072}$.
-- *TLB*: per a cada $j$, el bucle intern recorre `A[0..127][j]`, que toca les pàgines $\lfloor i/2 \rfloor = 0, 0, 1, 1, \ldots, 63, 63$: **64 pàgines diferents**, una fallada cadascuna (la segona visita, $i$ senar, encerta). Són 64 fallades per cada valor de $j$: $64 \times 1024 = \mathbf{65536}$.
+- *MC*: per a un $j$ fix, els 128 elements `A[0..127][j]` són blocs diferents que mapen **tots al mateix conjunt** ($\lfloor j/8 \rfloor \bmod 64$, independent de $i$). Amb només 4 vies, els 128 blocs s'expulsen entre ells abans de poder-se reutilitzar a la iteració següent de $j$. **Cap reutilització**: totes les referències fallen $= 128 \times 1024 = \mathbf{131\,072}$.
+- *TLB*: per a cada $j$, el bucle intern recorre `A[0..127][j]`, que toca les pàgines $\lfloor i/2 \rfloor = 0, 0, 1, 1, \ldots, 63, 63$: **64 pàgines diferents**, una fallada cadascuna (la segona visita, $i$ senar, encerta). Són 64 fallades per cada valor de $j$: $64 \times 1024 = \mathbf{65\,536}$.
 
-| | Fallades de cau | Fallades de TLB |
+| | Fallades de MC | Fallades de TLB |
 | :--- | :---: | :---: |
 | Versió A (per files) | 16 384 | 64 |
 | Versió B (per columnes) | 131 072 | 65 536 |
 : {tbl-colwidths="[40,30,30]" .striped}
 
-La versió B multiplica per 8 les fallades de cau i per 1024 les de TLB. El recorregut per columnes no només destrueix la localitat espacial (cada accés toca un bloc i una pàgina nous), sinó que a més pateix un **conflicte de conjunt** sistemàtic: com que la gambada entre files (4096 B) és múltiple del nombre de conjunts per la mida de bloc, totes les files competeixen pel mateix conjunt de la cau.
+La versió B multiplica per 8 les fallades de MC i per 1024 les de TLB. El recorregut per columnes no només destrueix la localitat espacial (cada accés toca un bloc i una pàgina nous), sinó que a més pateix un **conflicte de conjunt** sistemàtic: com que el *stride* entre files (4096 B) és múltiple del nombre de conjunts per la mida de bloc, totes les files competeixen pel mateix conjunt de la MC.
 :::
