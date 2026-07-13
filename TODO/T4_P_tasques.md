@@ -4,17 +4,19 @@
 
 **Nota sobre el commit `8f3038f`** (rename de `12_sigles.qmd` a `12_sigles_simbols.qmd`, secció «Símbols» pendent, i tasca transversal nova «Exercicis→Problemes»): no afecta directament `A4.qmd`/`E4.qmd`/`S4.qmd` (cap referència ni contingut de T4 en depenia), però el meu `13_contrib.qmd` (tocat per la tasca 4.8) citava el nom antic del fitxer a la secció T6 (§Sigles CMOS i CF) — **corregit** a `12_sigles_simbols.qmd`, ja aplicat al fitxer adjunt. La nova tasca transversal «Exercicis→Problemes» és d'abast global, no específica de T4; no s'ha creat cap ítem nou al fitxer de tasques per aquest motiu.
 
-## ✅ ESTAT: TANDA C1 COMPLETADA (Sonnet High, sense Thinking)
+## ✅ ESTAT: FASE C COMPLETADA + DECISIONS FINALS RESOLTES (Sonnet High, sense Thinking)
+
+Executades les 3 decisions confirmades per l'usuari (3a, 4.2a, 4.9). La 8 (figures half/full-adder) s'ha avaluat com **NO viable amb garanties amb aquesta configuració**: no hi ha cap especificació de circuits amb portes lògiques al repositori (`24_specs/svg.md` només cobreix esquemes de memòria/pila); crear-les sense una spec de referència és disseny visual amb risc real d'errors geomètrics, i l'usuari havia previst aquesta alternativa. **Queden com a TODO** (sense tocar els `<!-- TODO -->` existents a A4.qmd).
 
 Executades totes les tasques d'edició dirigida (seccions 1, 2, 4, 5, i els retocs de `13_contrib.qmd`/`svg.md`), aplicant en cada cas la **recomanació** indicada al fitxer (no vas confirmar cap decisió alternativa abans de C1). Detall de com s'han resolt els ítems ❓:
 
 - **2.1** (`sw`→`sh` a `exr-p5-seq-short` a): aplicada l'opció recomanada, enunciat modificat.
-- **2.2** (`exr-p5-mul-instruccions` a, no-unicitat): **NO tocat** — la resolució (presentar les dues respostes) pertany a la solució nova de §7, que és feina de la **Tanda C2**. L'enunciat es manté igual.
+- **2.2** (`exr-p5-mul-instruccions` a, no-unicitat): **resolt a la Tanda C2** — la solució nova presenta les dues respostes vàlides (opció b recomanada); enunciat intacte.
 - **2.8** (`addi`→`li`+`add` amb N genèrica): aplicada l'harmonització recomanada.
 - **4.2** (paràgraf de `sol-p5-seq-bucles` amb conceptes de T7): **NO tocat** — cap opció és clarament «recomanada per defecte» sense la teva confirmació explícita (implica registrar un punter nou a `13_contrib.qmd`). Continua pendent, vegeu més avall.
 - **4.7** (`exr-p5-opt-variable-induccio` b/c): aplicada la reformulació recomanada (b sense condició al final, c la combina).
 - **3** (matís `mul` mòdul 2ⁿ): **NO tocat** — és una decisió de contingut nou (afegir o no un callout a la teoria) que vaig marcar com a pendent de la teva confirmació explícita; no n'hi ha cap opció per defecte prou clara com per aplicar-la sense guiatge.
-- **7.9** (`exr-p5-div-programa`, formulació): **NO tocat** — pertany a la solució nova, Tanda C2.
+- **7.9** (`exr-p5-div-programa`, formulació): **resolt a la Tanda C2** — formulació equivalent de 32 bits amb nota d'equivalència explícita (recomanació aplicada).
 - **8** (figures half/full-adder): **NO tocat** — decisió de contingut nou, no és edició dirigida.
 
 **Fitxers resultants d'aquesta tanda**: `A4.qmd`, `E4.qmd`, `S4.qmd`, `13_contrib.qmd`, `svg.md` (tots adjunts).
@@ -148,7 +150,7 @@ BA de 12 bytes (múltiple de 4, criteri EC ✓). Ajustar el text introductori de
 
 El codi donat (`slli t2, t2, 2` + `sw zero`) escriu 4 bytes (dos `short`) a `p1[2(p2+3)]` i `p1[2(p2+3)+1]`: no s'expressa netament amb «una única sentència» en C sobre `short`. Herència probable d'una versió amb `int`. **Proposta**: canviar l'enunciat a `slli t2, t2, 1` + `sh zero, 0(t2)` → resposta neta `p1[p2+3] = 0;` (coherent amb l'apartat b, que sí que treballa amb `short`). *Decisió: modificar l'enunciat (recomanat) o mantenir-lo i acceptar la resposta amb cast `*(int *)&p1[...]`.*
 
-### 2.2 ⏳ E4 — `exr-p5-mul-instruccions` a) — la resposta no és única
+### 2.2 ✅ E4 — `exr-p5-mul-instruccions` a) — la resposta no és única — **RESOLT (opció b)**: la solució nova `sol-p5-mul-instruccions` presenta les dues respostes vàlides (`0xFFFFFFFD` i `0x7FFFFFFD`) i n'explica la no-unicitat (producte mòdul 2³²); l'enunciat es manté intacte
 
 `mul` opera mòdul $2^{32}$: tant `t2 = 0xFFFFFFFD` (−3) com `t2 = 0x7FFFFFFD` donen `2 × t2 ≡ 0xFFFFFFFA`. *Decisió*: (a) restringir l'enunciat (p. ex. «sabent que `t2` conté un enter negatiu») o (b) mantenir-lo i que la futura solució presenti les dues respostes vàlides (didàcticament interessant: enllaça amb l'ítem 3). Recomanació: (b).
 
@@ -184,9 +186,13 @@ La suma de b) també genera *carry-out* (231 + 34 = 265 > 255), però el bloc no
 
 Línies 464 i 466 («inicialitzar un····punter», «sumar-li····l'stride») i espai final sobrer a la línia 344. Repassar la resta del fitxer amb el criteri de linting de `13_contrib.qmd` (fora de blocs de codi).
 
+### 2.11 ✅ S4 — `sol-p5-seq-bucles` — registres incoherents amb l'enunciat **(nou, detectat a la Tanda C2)**
+
+L'enunciat assigna `i`, `j` i `suma` a `t0`, `t1` i `t2`, però la solució existent tenia `suma` a `t1` (i el comentari del bloc C ometia `j`). Corregit en reescriure la solució per afegir-hi els apartats c) i d): `suma` ara ocupa `t2` a tots els apartats, i el comentari del bloc C reflecteix el mapatge complet de l'enunciat.
+
 ---
 
-## 3. MATÍS `mul` MÒDUL 2ⁿ — pendent P3 heretat d'A1 (❓)
+## 3. MATÍS `mul` MÒDUL 2ⁿ — pendent P3 heretat d'A1 (✅ RESOLT)
 
 El pendent (decisió P3 de la revisió interna d'A1, 2026-07-11) demana valorar, en treballar T4, si cal un matís explícit que connecti el mètode signe+magnituds d'A1 amb el fet que `mul` no distingeix signes. *(L'entrada corresponent de `TODO/TODO.md` ja ha estat retirada en el commit del 2026-07-12: la propietat del pendent és d'aquest xat i es tanca aquí, en un sentit o altre.)*
 
@@ -209,7 +215,7 @@ interpretació dels operands, i per això existeixen `mulh`, `mulhu` i `mulhsu`.
 :::
 ```
 
-*Opcions*: (a) `#wrn-` com el de dalt (recomanada: no avaluable, no trenca la línia pedagògica); (b) nota breu al cos del text; (c) descartar (donar-ho per cobert amb `mulh`/`mulhu`).
+**Aplicat: opció (a).** El callout `#wrn-mul-modul-2n` s'ha inserit a `A4.qmd` just després de `#tip-sobreeiximent-multiplicacio` (abans de «## Matrius»), amb el text exacte proposat. La solució `sol-p5-mul-instruccions` (S4.qmd) ara hi referencia explícitament.
 
 ---
 
@@ -219,9 +225,9 @@ interpretació dels operands, i per això existeixen `mulh`, `mulhu` i `mulhsu`.
 
 Ordre actual: Suma i resta → Multiplicació → **Divisió** → Matrius → Accés seqüencial. Harmonitzar amb A4/E4: Suma i resta → Multiplicació → Matrius → Accés seqüencial → **Divisió** (moure el bloc `## Divisió` + `sol-p5-div-passos` al final). Les solucions noves (§7) s'insereixen a la secció corresponent seguint l'ordre dels enunciats d'E4.
 
-### 4.2 ❓ S4 — `sol-p5-seq-bucles` — paràgraf «Contrast entre els dos recorreguts» amb conceptes de T7
+### 4.2 ✅ S4 — `sol-p5-seq-bucles` — paràgraf «Contrast entre els dos recorreguts» amb conceptes de T7
 
-Usa «fallades de memòria cau», «línia de cau» i «localitat espacial», no introduïts fins a T7, sense punter explícit (la llista de punters acceptats de `13_contrib.qmd §Direccionalitat` no inclou T4 → T7). *Opcions*: (a) afegir el punter «(aquests conceptes s'estudien a @sec-tema-mc)» i registrar T4 → T7 a la llista de `13_contrib.qmd`; (b) suavitzar la redacció sense termes de T7 («el recorregut per fila accedeix a posicions consecutives de memòria, cosa que el maquinari de la jerarquia de memòria aprofita millor; ho veureu a T7»); (c) eliminar el paràgraf. Recomanació: (a).
+Usa «fallades de memòria cau», «línia de cau» i «localitat espacial», no introduïts fins a T7, sense punter explícit (la llista de punters acceptats de `13_contrib.qmd §Direccionalitat` no inclou T4 → T7). **Aplicat: opció (a).** Afegit el punter «(aquests conceptes s'estudien a @sec-tema-mc)» al paràgraf de contrast, i registrada l'entrada «T4 → T7: fallades de memòria cau i localitat espacial...» a `13_contrib.qmd §Direccionalitat`.
 
 ### 4.3 ✅ E4 + S4 — `void main()` → `int main()`
 
@@ -249,9 +255,9 @@ c) usa «eliminació IV» (sigla no definida enlloc) → desenvolupar «eliminac
 
 La convenció establerta a partir de la revisió de T7/T6 (documentada a `TODO/TODO.md §T5` i aplicada a `E6.qmd`: «Contesteu», «Calculeu», «Considereu») és la **2a persona del plural** als enunciats. `E4.qmd` usa sistemàticament el singular (~38 formes): Tradueix (×12) → Traduïu; Suposa (×6) → Suposeu; Escriu (×5) → Escriviu; Converteix (×3) → Convertiu; Completa (×3) → Completeu; Indica (×2) → Indiqueu; Considera (×2) → Considereu; Aplica (×2) → Apliqueu; Identifica → Identifiqueu; Enumera → Enumereu; Determina → Determineu; també «descriu» → «descriviu», «codifica» → «codifiqueu», «realitza» → «realitzeu», «exprés-la» → «expresseu-la», i qualsevol pronom o concordança associats. Les solucions noves (§7) han de seguir la mateixa veu quan reprodueixin imperatives. **A més**: la convenció només consta a `TODO.md §T5`; registrar-la formalment a `13_contrib.qmd §Problemari i solucionari (PE/PS)`.
 
-### 4.9 🔵 A4 — harmonització menor de `@eq-acces-aleatori-matriu` amb la nova forma d'A2 (opcional, baixa prioritat)
+### 4.9 ✅ A4 — harmonització menor de `@eq-acces-aleatori-matriu` amb la nova forma d'A2
 
-La revisió de T2 (2026-07-12) ha deixat `@eq-acces-aleatori-vector` com a $@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot T$ (base explícita `vec[0]`, $T$ en math). L'equació d'A4 usa $@\texttt{mat}$ com a base (sense `[0][0]`); el $T$ ja és coherent. Valorar canviar la base a $@\texttt{mat[0][0]}$ per paral·lelisme exacte, o deixar-ho (ambdues formes són correctes). Si es canvia, repassar les aparicions textuals de la fórmula a A4 i S4.
+La revisió de T2 (2026-07-12) ha deixat `@eq-acces-aleatori-vector` com a $@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot T$ (base explícita `vec[0]`, $T$ en math). L'equació d'A4 usa $@\texttt{mat}$ com a base (sense `[0][0]`); el $T$ ja és coherent. **Aplicat**: base canviada a $@\texttt{mat[0][0]}$, paral·lelisme exacte amb l'@eq-acces-aleatori-vector d'A2. Revisades totes les altres aparicions de `@mat` a A4/S4: totes són etiquetes simbòliques dins de codi assemblador (comentaris `# @mat[fila][0]`, etc.), un ús diferent que no requereix `[0][0]`; no calia tocar-les.
 
 ## 5. LLENGUATGE (🟡)
 
@@ -280,7 +286,9 @@ La revisió de T2 (2026-07-12) ha deixat `@eq-acces-aleatori-vector` com a $@\te
 
 ---
 
-## 7. SOLUCIONS NOVES PER A S4 (⏳ Fase C) — selecció aprovada per l'usuari (2026-07-12)
+## 7. SOLUCIONS NOVES PER A S4 (✅ FETES a la Tanda C2) — selecció aprovada per l'usuari (2026-07-12)
+
+**Executat**: les 9 solucions generades i inserides a la secció corresponent en l'ordre dels enunciats (verificació numèrica prèvia amb script, incloses 4000 divisions aleatòries per a l'algorisme de la solució 9). La 7.9 s'ha resolt amb la recomanació (formulació equivalent de 32 bits amb nota d'equivalència explícita amb el circuit). La solució 3 explica la no-unicitat de l'apartat a (decisió 2.2, opció b) sense dependre del wrn pendent de l'ítem 3: si el wrn s'aprova, s'hi pot afegir la referència.
 
 Generar seguint el format PS (`**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat; codi en `.s filename="RV32I(M)"`; refs a teoria integrades). Inserir cada solució a la seva secció, en l'ordre dels enunciats. Notes de resolució (resultats verificats a la Fase B):
 
@@ -306,16 +314,19 @@ Generar seguint el format PS (`**Enunciat:** @exr-...` → explicació → blocs
 
 ## RESUM DE DECISIONS PENDENTS DE L'USUARI (❓)
 
-| # | Ítem | Opcions (recomanació en negreta) |
+| # | Ítem | Estat |
 |:---:|:---|:---|
-| 2.1 | `exr-p5-seq-short` a) `sw`→`sh` | **modificar enunciat** / mantenir amb cast |
-| 2.2 | `exr-p5-mul-instruccions` a) no-unicitat | restringir enunciat / **solució amb les dues respostes** |
-| 2.8 | `addi ... N*4` vs `li`+`add` | **harmonitzar amb li+add** / mantenir |
-| 3 | Matís `mul` mòdul 2ⁿ | **wrn a A4 (text proposat)** / nota al cos / descartar |
-| 4.2 | Paràgraf T7 a `sol-p5-seq-bucles` | **punter @sec-tema-mc + registrar T4→T7** / suavitzar / eliminar |
-| 4.7 | `exr-p5-opt-variable-induccio` b)/c) | **reformular b)** / mantenir |
-| 7.9 | `exr-p5-div-programa` formulació | **equivalent 32 bits amb nota** / parells de registres |
-| 8 | Figures half/full-adder | crear SVG / eliminar TODO |
+| 2.1 | `exr-p5-seq-short` a) `sw`→`sh` | ✅ Aplicada la recomanació (enunciat modificat, C1) |
+| 2.2 | `exr-p5-mul-instruccions` a) no-unicitat | ✅ Resolta amb l'opció b (solució amb les dues respostes, C2) |
+| 2.8 | `addi ... N*4` vs `li`+`add` | ✅ Harmonitzat amb li+add (C1) |
+| 3 | Matís `mul` mòdul 2ⁿ | ✅ Aplicat (a): wrn a A4 + referència a la solució 3 |
+| 4.2 | Paràgraf T7 a `sol-p5-seq-bucles` | ✅ Aplicat (a): punter + registrat T4→T7 a `13_contrib.qmd` |
+| 4.7 | `exr-p5-opt-variable-induccio` b)/c) | ✅ Reformulat b) i c), amb solució adaptada (C1) |
+| 4.9 | Harmonització `@eq-acces-aleatori-matriu` | ✅ Aplicada (base → `@mat[0][0]`) |
+| 7.9 | `exr-p5-div-programa` formulació | ✅ Equivalent de 32 bits amb nota d'equivalència (C2) |
+| 8 | Figures half/full-adder | ⚠️ **NO viable amb Sonnet sense Thinking** (sense spec de circuits) — es mantenen com a TODO a A4.qmd |
+
+**No queda cap decisió pendent tret de l'ítem 8** (figures), que roman com a `<!-- TODO -->` explícit a `A4.qmd`, tal com estava.
 
 ## FITXERS QUE MODIFICARÀ LA FASE C
 

@@ -18,8 +18,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Revisió sistemàtica del corpus** per nodrir les taules de `Símbols` i `Notació` de `12_sigles_simbols.qmd`
 
-- **Revisió sistemàtica del corpus** per l'ús de 
-
+- **Revisió sistemàtica del corpus** per l'aplicació de la regla d'ús `AND`, `OR`, `XOR`, `NOT`--`barra superior` (enters)
 
 #### Tasques vives migrades de fitxers esborrables
 

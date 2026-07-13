@@ -6,6 +6,40 @@ number-sections: true
 
 ## Suma i resta
 
+::: {#sol-p5-sr-conversio .callout-tip}
+## Solució: conversió a decimal en tres representacions
+
+**Enunciat**: @exr-p5-sr-conversio.
+
+Codificació en binari dels dos números de 16 bits:
+
+```{.default filename="Codificació"}
+0x0D34 = 0000 1101 0011 0100
+0xBA1D = 1011 1010 0001 1101
+```
+
+El bit de més pes (bit 15) és `0` per a `0x0D34` i `1` per a `0xBA1D`: les tres interpretacions coincideixen per al primer número i divergeixen per al segon.
+
+**`0x0D34`**: com que el bit 15 és `0`, el valor és el mateix en les tres representacions:
+
+$$0 \cdot 16^3 + 13 \cdot 16^2 + 3 \cdot 16 + 4 = 3380$$
+
+**`0xBA1D`**:
+
+a) Natural: $11 \cdot 16^3 + 10 \cdot 16^2 + 1 \cdot 16 + 13 = 47\,645$.
+
+b) Enter en Ca2 (@sec-enters-en-ca2): el bit 15 val `1`, per tant el número és negatiu. El valor absolut s'obté fent el complement a 2: `0xBA1D` → invertir bits → `0x45E2` → sumar 1 → `0x45E3` $= 17\,891$. Resultat: $-17\,891$. Comprovació: $47\,645 - 2^{16} = -17\,891$ ✓
+
+c) Enter en signe-magnitud (@sec-enters-signe-magnitud): bit de signe `1` (negatiu) i magnitud als 15 bits restants: `0x3A1D` $= 14\,877$. Resultat: $-14\,877$.
+
+Resum:
+
+| | a) Natural | b) Ca2 | c) Signe-magnitud |
+| :---: | :---: | :---: | :---: |
+| `0x0D34` | $3380$ | $+3380$ | $+3380$ |
+| `0xBA1D` | $47\,645$ | $-17\,891$ | $-14\,877$ |
+:::
+
 ::: {#sol-p5-sr-overflow-enters-8bits .callout-tip}
 ## Solució: sobreeiximent en enters Ca2 de 8 bits
 
@@ -64,6 +98,25 @@ Codificació: $-128 =$ `1000 0000`, $+20 =$ `0001 0100`.
 ```
 
 Resultat: `1001 0100` = $-108_{10}$ en Ca2. Els operands tenien signes oposats: **no hi ha sobreeiximent**. Correcte: $-128 + 20 = -108$.
+:::
+
+::: {#sol-p5-sr-overflow-deteccio-natural .callout-tip}
+## Solució: detecció d'arrossegament sense salts
+
+**Enunciat**: @exr-p5-sr-overflow-deteccio-natural.
+
+En sumar dos naturals de 32 bits, el resultat es trunca mòdul $2^{32}$. Si hi ha arrossegament ($c = 1$), el valor retornat és $S = A + B - 2^{32}$ i, com que $B < 2^{32}$, es compleix $S < A$ (i, simètricament, $S < B$). Si no n'hi ha, $S = A + B \geq A$. Per tant:
+
+$$c = 1 \iff S <_u A$$
+
+que és exactament la indicació de l'enunciat. La comparació sense signe es fa amb `sltu` (@sec-instruccions-comparacio-slt), que deixa el resultat booleà (0 o 1) directament en un registre, sense cap salt:
+
+```{.s filename="RV32I"}
+        add     t0, t1, t2      # t0 = t1 + t2  (truncat a 32 bits)
+        sltu    t3, t0, t1      # t3 = 1 si t0 < t1 (sense signe): hi ha carry
+```
+
+Dues instruccions en total. Comparar el resultat amb qualsevol dels dos sumands és equivalent; s'ha triat `t1`.
 :::
 
 ::: {#sol-p5-sr-overflow-deteccio-enter .callout-tip}
@@ -142,6 +195,39 @@ Resultat: $P =$ `001011 111000`$_2 = 760_{10}$ ✓
 Resultat: $P =$ `000011 011000`$_2 = 216_{10}$ ✓
 :::
 
+::: {#sol-p5-mul-instruccions .callout-tip}
+## Solució: coherència d'operands de `mul` i `div`
+
+**Enunciat**: @exr-p5-mul-instruccions.
+
+**a) `mul t3, t1, t2` amb resultat baix `0xFFFFFFFA` i `t1 = 0x00000002`**
+
+`mul` calcula els 32 bits de menys pes del producte, és a dir, el producte **mòdul $2^{32}$** (@nte-rv32im-instruccions-multiplicacio). Cal trobar un `t2` tal que:
+
+$$2 \cdot \mathtt{t2} \equiv \mathtt{0xFFFFFFFA} \pmod{2^{32}}$$
+
+Com que el multiplicador ($2$) i el mòdul ($2^{32}$) no són coprimers, la solució **no és única**: n'hi ha exactament dues, separades per $2^{31}$:
+
+- `t2 = 0xFFFFFFFD`: interpretant els valors com a enters, $2 \times (-3) = -6 =$ `0xFFFFFFFA` ✓
+- `t2 = 0x7FFFFFFD`: interpretant-los com a naturals, $2 \times 2\,147\,483\,645 = 4\,294\,967\,290 =$ `0xFFFFFFFA` ✓
+
+Totes dues són coherents amb l'enunciat: els 32 bits de menys pes del producte són idèntics tant si els operands s'interpreten com a enters com si s'interpreten com a naturals — per això hi ha una única instrucció `mul`, mentre que per a la part alta cal distingir la interpretació amb `mulh`/`mulhu`/`mulhsu` (@sec-sobreeiximent-en-la-multiplicacio i @wrn-mul-modul-2n).
+
+**b) `div t3, t1, t2` amb `t1 = 0x00000005` i `t2 = 0xFFFFFFFE`**
+
+$\mathtt{t2} =$ `0xFFFFFFFE` $= -2$. La divisió entera signada trunca cap a zero (@cau-divisio-enters-semantica):
+
+$$q = \operatorname{trunc}\!\left(\frac{5}{-2}\right) = \operatorname{trunc}(-2{,}5) = -2 \qquad \Rightarrow \qquad \mathtt{t3} = \mathtt{0xFFFFFFFE}$$
+
+El residu té el signe del dividend i satisfà la identitat $x = q \cdot y + r$:
+
+$$r = 5 - (-2) \times (-2) = 5 - 4 = +1$$
+
+**c) Casos de sobreeiximent en la divisió entera signada**
+
+Un únic cas: $-2^{31} \div (-1)$, el resultat matemàtic del qual ($+2^{31}$) no és representable en Ca2 de 32 bits. RISC-V no genera cap excepció: `div` retorna $-2^{31}$ i `rem` retorna $0$ (@sec-casos-especials). La divisió per zero **no** és un cas de sobreeiximent, sinó un cas especial amb resultat definit (`div` → $-1$, `rem` → dividend).
+:::
+
 ## Matrius
 
 ::: {#sol-p5-matrius-adreces .callout-tip}
@@ -216,6 +302,36 @@ La fila és `i*10+4`, la columna és la constant `6`. La fila ja conté una mult
         mul     t3, t0, t2              # i*10*NC*4
         add     a0, a0, t3              # @mat + (i*10*NC + 4*NC + 6)*4
 ```
+:::
+
+::: {#sol-p5-matrius-diagonal .callout-tip}
+## Solució: elements veïns de la diagonal amb un sol `mul`
+
+**Enunciat**: @exr-p5-matrius-diagonal.
+
+Adreces dels dos elements segons l'@eq-acces-aleatori-matriu (amb `NC = N` i $T = 4$), reagrupant els termes:
+
+$$@\mathtt{M[i][i+1]} = @\mathtt{M} + (i \cdot N + i + 1) \cdot 4 = @\mathtt{M} + 1 \cdot 4 + i \cdot (N+1) \cdot 4$$
+
+$$@\mathtt{M[i+1][i]} = @\mathtt{M} + ((i+1) \cdot N + i) \cdot 4 = @\mathtt{M} + N \cdot 4 + i \cdot (N+1) \cdot 4$$
+
+Les dues adreces comparteixen el terme variable $i \cdot (N+1) \cdot 4$: amb **un únic `mul`** n'hi ha prou. La part restant de cada adreça és un invariant que s'integra a la `la` corresponent:
+
+```{.s filename="RV32IM"}
+        # t0 = i, t1 = suma
+        li      t4, (N+1)*4
+        mul     t4, t0, t4          # d = i*(N+1)*4  (comú a les dues adreces)
+        la      t2, M + 1*4         # invariant: @M[0][1]
+        add     t2, t2, t4          # @M[i][i+1]
+        lw      t2, 0(t2)           # M[i][i+1]
+        la      t3, M + N*4         # invariant: @M[1][0]
+        add     t3, t3, t4          # @M[i+1][i]
+        lw      t3, 0(t3)           # M[i+1][i]
+        sub     t2, t2, t3          # M[i][i+1] - M[i+1][i]
+        add     t1, t1, t2          # suma += M[i][i+1] - M[i+1][i]
+```
+
+Deu instruccions i una sola multiplicació. La traducció directa (calcular cada adreça per separat amb l'@eq-acces-aleatori-matriu) necessitaria dues multiplicacions i més instruccions.
 :::
 
 ::: {#sol-p5-matrius-func-veci .callout-tip}
@@ -295,18 +411,18 @@ fimain:
 ## Accés seqüencial
 
 ::: {#sol-p5-seq-bucles .callout-tip}
-## Solució: recorreguts per fila i per columna
+## Solució: recorreguts per fila, columna i diagonal
 
-**Enunciat**: @exr-p5-seq-bucles (apartats a i b).
+**Enunciat**: @exr-p5-seq-bucles.
 
 ```{.c filename="C"}
 void func(int A[N][N]) {
-    int i, suma = 0;  /* i a t0, suma a t1 */
+    int i, j, suma = 0;  /* i a t0, j a t1, suma a t2 */
     ...
 }
 ```
 
-`A` arriba per `a0`. `N` és una constant. Es demana accés seqüencial.
+`A` arriba per `a0`. `N` és una constant. Es demana accés seqüencial: les variables d'índex desapareixen de la traducció (el control es fa amb el punter i la sentinella), tret de l'apartat d, on `i` es conserva com a comptador. `suma` ocupa `t2`.
 
 **a) Suma de la fila 3: `for (i = 0; i < N; i++) suma += A[3][i]`**
 
@@ -315,15 +431,15 @@ L'stride del recorregut per fila és 4 bytes.
 L'adreça del primer element és `@A[3][0] = @A + 3*N*4`.
 
 ```{.s filename="RV32IM"}
-        # a0 = @A, t1 = suma (inicialitzada prèviament a 0)
-        li      t2, 3*N*4
-        add     t3, a0, t2          # t3 = p = @A[3][0]
+        # a0 = @A, t2 = suma (inicialitzada prèviament a 0)
+        li      t3, 3*N*4
+        add     t3, a0, t3          # t3 = p = @A[3][0]
         li      t4, N*4
         add     t4, t3, t4          # t4 = sentinella = @A[3][N]
         bgeu    t3, t4, fifor       # comprovació inicial
 bucle:
         lw      t5, 0(t3)           # A[3][i]
-        add     t1, t1, t5          # suma += A[3][i]
+        add     t2, t2, t5          # suma += A[3][i]
         addi    t3, t3, 4           # p += stride (4 bytes)
         bltu    t3, t4, bucle
 fifor:
@@ -338,22 +454,147 @@ L'adreça del primer element és `@A[0][4] = @A + 4*4`.
 La sentinella és `@A[N][4] = @A[0][4] + N*(N*4)`. Com que `N` no és necessàriament una potència de 2, cal `mul` per calcular `N*N*4` a partir de `N` i `N*4`.
 
 ```{.s filename="RV32IM"}
-        # a0 = @A, t1 = suma (inicialitzada prèviament a 0)
+        # a0 = @A, t2 = suma (inicialitzada prèviament a 0)
         addi    t3, a0, 4*4         # t3 = p = @A[0][4]
-        li      t2, N*4             # stride = N*4
+        li      t5, N*4             # stride = N*4
         li      t4, N
-        mul     t4, t4, t2          # N * N*4 = N²*4
+        mul     t4, t4, t5          # N * N*4 = N²*4
         add     t4, t3, t4          # t4 = sentinella = @A[N][4]
         bgeu    t3, t4, fifor       # comprovació inicial
 bucle:
-        lw      t5, 0(t3)           # A[i][4]
-        add     t1, t1, t5          # suma += A[i][4]
-        add     t3, t3, t2          # p += stride (N*4 bytes)
+        lw      t6, 0(t3)           # A[i][4]
+        add     t2, t2, t6          # suma += A[i][4]
+        add     t3, t3, t5          # p += stride (N*4 bytes)
         bltu    t3, t4, bucle
 fifor:
 ```
 
-**Contrast entre els dos recorreguts**: el recorregut per fila (apartat a) té stride 4, el recorregut per columna (apartat b) té stride `N*4`. Per a valors grans de `N`, el recorregut per columna genera moltes fallades de memòria cau, ja que cada accés aterra en una línia de cau diferent. El recorregut per fila aprofita molt millor la localitat espacial.
+**c) Suma de la diagonal principal: `for (i = 0; i < N; i++) suma += A[i][i]`**
+
+D'un element `A[i][i]` al següent `A[i+1][i+1]` hi ha $N + 1$ elements de distància: l'stride és `(N+1)*4` bytes (fila «diagonal principal» de la taula d'strides de @sec-matrius-recorreguts).
+
+El primer element és `@A[0][0] = @A`, i la sentinella, `@A + N*((N+1)*4)`: com a l'apartat b, cal `mul`.
+
+```{.s filename="RV32IM"}
+        # a0 = @A, t2 = suma (inicialitzada prèviament a 0)
+        mv      t3, a0              # t3 = p = @A[0][0]
+        li      t5, (N+1)*4         # stride = (N+1)*4
+        li      t4, N
+        mul     t4, t4, t5          # N * (N+1)*4
+        add     t4, t3, t4          # t4 = sentinella
+        bgeu    t3, t4, fifor       # comprovació inicial
+bucle:
+        lw      t6, 0(t3)           # A[i][i]
+        add     t2, t2, t6          # suma += A[i][i]
+        add     t3, t3, t5          # p += stride ((N+1)*4 bytes)
+        bltu    t3, t4, bucle
+fifor:
+```
+
+**d) Diagonal secundària saltant de 3 en 3: `for (i = 0; i < N; i += 3) suma += A[i][N-1-i]`**
+
+Entre dos elements accedits consecutivament, `A[i][N-1-i]` i `A[i+3][N-1-(i+3)]`, la distància en elements és $3N - 3 = 3(N-1)$: l'stride és constant, `3*(N-1)*4` bytes, i l'accés seqüencial és aplicable al càlcul d'adreces.
+
+Ara bé, el nombre d'iteracions és $\lceil N/3 \rceil$ i l'adreça de la sentinella no té una expressió senzilla. En aquest cas és més net **conservar `i` com a comptador** del bucle (la variable d'inducció sobreviu per al control) i avançar el punter només per a l'accés a `A`:
+
+```{.s filename="RV32IM"}
+        # a0 = @A, t0 = i, t2 = suma (inicialitzada prèviament a 0)
+        li      t0, 0               # i = 0
+        li      t3, (N-1)*4
+        add     t3, a0, t3          # t3 = p = @A[0][N-1]
+        li      t5, 3*(N-1)*4       # stride = 3*(N-1)*4
+        li      t4, N               # invariant
+        bge     t0, t4, fifor       # comprovació inicial
+bucle:
+        lw      t6, 0(t3)           # A[i][N-1-i]
+        add     t2, t2, t6          # suma += A[i][N-1-i]
+        add     t3, t3, t5          # p += stride
+        addi    t0, t0, 3           # i += 3
+        blt     t0, t4, bucle
+fifor:
+```
+
+**Contrast entre els recorreguts per fila i per columna (apartats a i b)**: el recorregut per fila (apartat a) té stride 4, el recorregut per columna (apartat b) té stride `N*4`. Per a valors grans de `N`, el recorregut per columna genera moltes fallades de memòria cau, ja que cada accés aterra en una línia de cau diferent. El recorregut per fila aprofita molt millor la localitat espacial (aquests conceptes s'estudien a @sec-tema-mc).
+:::
+
+::: {#sol-p5-seq-mixed .callout-tip}
+## Solució: accessos mixtos a matriu i vector
+
+**Enunciat**: @exr-p5-seq-mixed.
+
+**a) `vector[i] = z[4][j]`**
+
+Els paràmetres arriben per `a0` (`i`) i `a1` (`j`). La fila de `z[4][j]` és constant: l'invariant `@z[4][0] = @z + 4*3*4` s'integra a la `la` (com a @tip-matriu-acces-fila-cte) i només cal escalar `j`. L'adreça de `vector[i]` s'obté escalant `i`:
+
+```{.s filename="RV32I"}
+        la      t0, z + 4*3*4       # invariant: @z[4][0]
+        slli    t1, a1, 2           # j*4
+        add     t0, t0, t1          # @z[4][j]
+        lw      t0, 0(t0)           # z[4][j]
+        la      t1, vector          # invariant: @vector
+        slli    t2, a0, 2           # i*4
+        add     t1, t1, t2          # @vector[i]
+        sw      t0, 0(t1)           # vector[i] = z[4][j]
+```
+
+**b) Constants del recorregut seqüencial**
+
+El bucle accedeix sempre a `vector[2]` (posició fixa) i recorre la columna 2 de `z` (`int z[5][3]`):
+
+- `offset_vector`: distància de `@vector` a `@vector[2]` → `2*4` = 8.
+- `offset_z`: distància de `@z` al primer element del recorregut, `z[0][2]` → `2*4` = 8.
+- `stride`: d'un element `z[k][2]` al següent, `z[k+1][2]`, hi ha una fila sencera (3 `int`) → `3*4` = 12.
+- `max_dist`: la sentinella `t6` s'assoleix (`beq`) després de les 5 iteracions → 5 vegades l'stride → `5*3*4` = 60.
+
+```{.s filename="RV32I"}
+.set offset_vector, 2*4     # 8
+.set offset_z,      2*4     # 8
+.set max_dist,      5*3*4   # 60
+.set stride,        3*4     # 12
+```
+:::
+
+::: {#sol-p5-seq-short .callout-tip}
+## Solució: vector de `short` — traducció i inicialització
+
+**Enunciat**: @exr-p5-seq-short.
+
+**a) Traducció a C del fragment**
+
+Els paràmetres arriben per `a0` (`@p1`) i `a1` (`p2`). El fragment calcula `t2 = p2 + 3`, l'escala per la mida d'un `short` ($T = 2$; per això `slli t2, t2, 1`), el suma a la base `@p1` i hi escriu un zero de 16 bits (`sh`):
+
+```{.c filename="C"}
+p1[p2 + 3] = 0;
+```
+
+**b) Inicialització de `p1` amb accés seqüencial**
+
+Sentències que falten (`i` a `t0`, `p` a `t1`):
+
+```{.c filename="C"}
+p = p1;
+for (i = 0; i < 100; i++) {
+    *p = 0;
+    p++;
+}
+```
+
+Al fragment d'assemblador, els dos buits del cos del bucle són l'escriptura i l'avanç del punter. L'stride és $T = 2$ bytes (mida d'un `short`): `p++` es tradueix per `addi t1, t1, 2`, i l'escriptura de 16 bits, per `sh`:
+
+```{.s filename="RV32I"}
+        mv    t1, a0                # p = p1  (prèvia al fragment mostrat)
+        li    t0, 0
+        li    t2, 100
+bucle:
+        bge   t0, t2, fibucle
+        sh    zero, 0(t1)           # *p = 0
+        addi  t1, t1, 2             # p++  (2 bytes)
+        addi  t0, t0, 1
+        j     bucle
+fibucle:
+```
+
+*Nota*: la inicialització `p = p1` (`mv t1, a0`) no apareix al fragment de l'enunciat, que comença a `li t0, 0`; s'ha inclòs aquí per completesa.
 :::
 
 ::: {#sol-p5-opt-condicio-final .callout-tip}
@@ -540,6 +781,41 @@ Instruccions per iteració: `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `bltu
 
 ## Divisió
 
+::: {#sol-p5-div-algorisme .callout-tip}
+## Solució: algorisme del divisor seqüencial amb restauració
+
+**Enunciat**: @exr-p5-div-algorisme.
+
+El circuit (@sec-circuit-divisio) prova de restar el divisor alineat a cada posició de pes, de la més significativa a la menys significativa. Paper dels registres, per a $n = 32$:
+
+- **R** ($2n$ bits): comença amb el dividend $x$ a la part baixa i zeros a la part alta; en acabar, la part baixa conté el residu.
+- **D** ($2n$ bits): comença amb el divisor $y$ a la part **alta** (equival a $y \cdot 2^n$) i es desplaça una posició a la dreta a cada iteració: a la iteració $i$-èsima queda alineat amb el pes $2^{n-i}$.
+- **Q** ($n$ bits): acumula els bits del quocient, del més significatiu al menys significatiu.
+
+Algorisme iteratiu complet:
+
+```{.default filename="Pseudocodi"}
+// Inicialització
+R[n-1:0] = x;  R[2n-1:n] = 0
+D[2n-1:n] = y;  D[n-1:0] = 0
+Q = 0
+
+per i = 1 fins a n:
+    D = D >> 1
+    R = R − D
+    si R[2n-1] == 0:        // resultat no negatiu: el divisor "hi cap"
+        Q = (Q << 1) | 1
+    sino:                   // resultat negatiu: restaurar
+        R = R + D
+        Q = Q << 1
+
+z = Q           // quocient
+w = R[n-1:0]    // residu
+```
+
+A cada iteració es fa la resta de prova $R - D$: si el resultat no és negatiu (bit $R[2n-1]$ a 0), el divisor desplaçat «hi cap» i s'anota un 1 al quocient; si és negatiu, es **restaura** el valor de $R$ sumant-hi $D$ de nou, i s'anota un 0. Després de les $n$ iteracions, $Q$ conté el quocient i la part baixa de $R$, el residu (@thm-divisio-sequencial-restauracio; per a un seguiment numèric complet, @tip-seguiment-divisio i @sol-p5-div-passos).
+:::
+
 ::: {#sol-p5-div-passos .callout-tip}
 ## Solució: seguiment del circuit divisor seqüencial amb restauració
 
@@ -585,4 +861,35 @@ Com que $X < Y$, el quocient és 0 i el residu és $X$ en totes les iteracions: 
 | 6 | `000000 100100` | `111111 110001` | neg. | restaura; `Q<<1` | `000000 010101` | `000000` |
 
 Quocient: $Q = 000000_2 = 0_{10}$, residu: $R[5:0] = 010101_2 = 21_{10}$ ✓
+:::
+
+::: {#sol-p5-div-programa .callout-tip}
+## Solució: divisió per restauració en programari
+
+**Enunciat**: @exr-p5-div-programa.
+
+El circuit (@thm-divisio-sequencial-restauracio) treballa amb registres R i D de $2n = 64$ bits, que no caben en un registre de RV32I. En lloc de simular-los amb parells de registres, s'usa una **formulació equivalent**: mantenir el divisor fix i desplaçar R a l'**esquerra** (desplaçar D a la dreta respecte de R equival a desplaçar R a l'esquerra respecte del divisor), injectant a cada pas el bit següent del dividend. Així tots els valors caben en registres de 32 bits. A més, en lloc de restar i restaurar, és més senzill **comparar abans de restar** (`bltu`), que és equivalent: només es fa la resta quan el resultat no seria negatiu.
+
+Registres: `t3` = dividend $X$ (es va desplaçant; al final es reutilitza per al residu, com demana l'enunciat), `t1` = divisor $y$, `t2` = quocient $Q$, `t4` = residu parcial $R$, `t5` = comptador, `t6` = bit extret.
+
+```{.s filename="RV32I"}
+        li      t2, 0               # Q = 0
+        li      t4, 0               # R = 0
+        li      t5, 32              # 32 iteracions (una per bit)
+bucle:
+        slli    t4, t4, 1           # R = R << 1
+        srli    t6, t3, 31          # bit més significatiu de X
+        or      t4, t4, t6          # R = (R << 1) | X[31]
+        slli    t3, t3, 1           # X = X << 1 (consumeix el bit)
+        slli    t2, t2, 1           # Q = Q << 1
+        bltu    t4, t1, seguent     # si R < y: bit de quocient = 0
+        sub     t4, t4, t1          # R = R − y
+        ori     t2, t2, 1           # Q = (Q << 1) | 1
+seguent:
+        addi    t5, t5, -1
+        bnez    t5, bucle
+        mv      t3, t4              # residu a t3
+```
+
+El bucle s'executa exactament 32 vegades: el nombre d'iteracions és conegut i positiu, de manera que no cal comprovació inicial i el salt condicional va al final (@sec-opt-condicio-final). En acabar, `t2` conté el quocient i `t3` el residu.
 :::

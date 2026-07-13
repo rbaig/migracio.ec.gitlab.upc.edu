@@ -280,6 +280,19 @@ En RV32IM, per obtenir el producte exacte de 64 bits i detectar sobreeiximent, s
 ```
 :::
 
+::: {#wrn-mul-modul-2n .callout-warning collapse=true}
+## Per què `mul` no distingeix el signe dels operands
+
+A @sec-algorisme-multiplicacio s'ha presentat l'algorisme general per a enters:
+treballar amb els valors absoluts i ajustar el signe al final. Estrictament, però,
+per a la part **baixa** del resultat aquest ajust no és necessari: el producte
+mòdul $2^n$ (els $n$ bits de menys pes) és **idèntic** tant si els operands
+s'interpreten com a naturals com si s'interpreten com a enters en Ca2. Per això
+RV32M té una única instrucció `mul` per als bits $[31{:}0]$, vàlida per a tots
+dos casos. En canvi, la part **alta** ($[63{:}32]$) sí que depèn de la
+interpretació dels operands, i per això existeixen `mulh`, `mulhu` i `mulhsu`.
+:::
+
 ## Matrius {#sec-matrius}
 
 Amb `mul` disponible, ja és possible calcular adreces arbitràries dins d'estructures de dades multidimensionals. Una **matriu** és una agrupació multidimensional d'elements del mateix tipus, identificats per un índex per cada dimensió. Les matrius de dues dimensions es representen habitualment com una taula de **NF** files i **NC** columnes:
@@ -339,7 +352,7 @@ Presenten aquesta propietat les estructures de dades que s'emmagatzemen com a bl
 
 Per accedir a l'element `mat[i][j]` d'una matriu d'elements de mida $T$, cal tenir en compte que la matriu s'emmagatzema per files: per arribar a la fila `i` cal saltar `i` files senceres de `NC` elements, i dins la fila cal avançar `j` elements més:
 
-$$@\texttt{mat[i][j]} = @\texttt{mat} + (i \cdot \texttt{NC} + j) \cdot T$$ {#eq-acces-aleatori-matriu}
+$$@\texttt{mat[i][j]} = @\texttt{mat[0][0]} + (i \cdot \texttt{NC} + j) \cdot T$$ {#eq-acces-aleatori-matriu}
 
 L'@eq-acces-aleatori-matriu és la generalització de l'@eq-acces-aleatori-vector (`NC > 1` vs. `NC = 1`). 
 
