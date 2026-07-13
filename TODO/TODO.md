@@ -38,7 +38,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ### T3
 
-- `WARN: 01_apunts/A3.html: Unable to resolve crossref @wrn-codificacio-enters-ca1`
+- `WARN: 01_apunts/A3.html: Unable to resolve crossref @wrn-codificacio-enters-ca1` — **Origen identificat**: la revisió interna Fable de T1 (2026-07-11/12, decisió D2) ha promogut aquest callout del cos de `A1.qmd` a una subsecció ordinària, amb l'ID nou `{#sec-enters-en-ca1}`. **Solució**: a `A3.qmd` L. 48, substituir `@wrn-codificacio-enters-ca1` per `@sec-enters-en-ca1`.
 
 - **Criteri «quatre formats nuclears» (RISC-V International)**: la revisió interna de T2 (A2.qmd) ha adoptat el criteri de la font de veritat `@riscv_rv32i` (docs.riscv.org, citada a `15_bibliografia.bib`): RV32I té «quatre formats nuclears d'instrucció» (R/I/S/U), amb B i J com a variants de S i U respectivament. A3.qmd ja s'hi ha ajustat parcialment (referències creuades afegides cap a T2 als callouts `#nte-format-b`, `#nte-format-j`, `#nte-format-u`), però cal revisar-lo sencer per aplicar aquest mateix criteri de manera estricta i coherent a tot el tema (redactat, introducció dels formats, qualsevol menció al nombre total de formats). Fer en un xat de revisió interna dedicat a A3.qmd.
 - **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que A2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb A2.qmd i A3.qmd.
@@ -47,6 +47,10 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   - `auto_figs/T3_ba_exemple__original_light.svg`
   - `auto_figs/T3_deps_multi__original_light.svg`
   - `auto_figs/T3_deps_exemple__original_light.svg`
+
+### T4
+
+- **Matís pendent de A1 (§Multiplicació en Ca2, revisió interna Fable de 2026-07-11, decisió P3)**: A1 presenta, com a simplificació pedagògica, que Ca2 «no pot aplicar directament l'algorisme dels naturals» per a la multiplicació. Estrictament, el producte mòdul $2^n$ (la part baixa del resultat) és correcte independentment del signe dels operands — per això `mul` de RV32M no distingeix signes; els que sí que en distingeixen són `mulh`/`mulhu` (part alta). Quan es treballi T4, valorar si cal un matís explícit (nota o `#wrn-`) que connecti aquest punt amb el mètode de signe+magnituds de A1, o si ja queda prou cobert amb el tractament natiu de `mulh`/`mulhu` a A4.
 
 ### T5
 
