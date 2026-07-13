@@ -124,4 +124,22 @@ Fonts de veritat consultades: especificació no privilegiada de RISC-V Internati
 
 ---
 
-*Fase C: verificat exhaustivament el 2026-07-13 (revisió interna T5, xat A5-E5-S5) que **els 35 ítems de la secció A estan tots aplicats**. Bloc comentat de `startup.s` (A2, L747-795): no tocar (decisió de l'usuari pendent).*
+---
+
+## C. Actualitzacions post-tancament (2026-07-13, canvis externs i tasques transversals)
+
+Amb A2/E2/S2 ja tancats (seccions A i B completes), sessions posteriors del repositori (xats de T3, T5, T6, T8) han anat evolucionant `13_contrib.qmd`, `CLAUDE.md` i `TODO/TODO.md`. Cap d'aquests canvis externs ha entrat en conflicte amb la feina d'A2/E2/S2; totes les meves entrades pròpies (B.7, B.9, B.10, B.12) es mantenen preservades i, en el cas de B.9, ampliades per un altre xat (T8) sense contradir-la.
+
+**Correcció adoptada del remot**: `A2.qmd` L.723, «syscall 93: exit» → «syscall 93: exit2» (verificat amb la font oficial `Syscall.properties` de RARS: el servei 93 es diu `Exit2`, no `Exit`; `Exit` sense el 2 és el servei 10, amb un bug documentat).
+
+**7 tasques del `TODO/TODO.md` resoltes amb els fitxers disponibles en aquest xat** (Sonnet High, sense Thinking — verificacions mecàniques i una remissió textual, sense necessitat de verificació numèrica):
+
+1. **Identificador duplicat `sec-opt-acces-sequencial`**: confirmat que A2.qmd sencer no en conté cap definició pròpia (només la referència `@`), descartant T2 com a origen de la col·lisió.
+2. **«ample de banda» → «amplada de banda»**: E2.qmd i S2.qmd nets, cap ocurrència.
+3. **Unitats KB/KiB**: E2.qmd i S2.qmd nets, cap ocurrència.
+4. **Cometes `"..."` → `«...»`**: E2.qmd i S2.qmd nets (69 ocurrències, totes `filename="..."` de blocs de codi, cap cas de prosa).
+5. **`****` sobrants**: E2.qmd i S2.qmd nets.
+6. **Referències creuades `@sec-ecall`/`@sec-operands-memoria`/`@imp-ec-alineacio-pila`**: confirmat que cap de les tres es cita des d'A2/E2/S2, descartant T2 com a origen.
+7. **Encaix T2↔T3 — caller-saved/callee-saved**: confirmat que l'encaix ja era correcte per construcció; afegida una remissió puntual a A2.qmd (dins `#nte-registres-proposit-general`) cap a `@nte-caller-saved-vs-callee-saved` de T3, coherent amb el patró ja aplicat a B.3.
+
+Totes aquestes verificacions/resolucions han quedat registrades directament al `TODO/TODO.md` real del repositori, no només aquí.
