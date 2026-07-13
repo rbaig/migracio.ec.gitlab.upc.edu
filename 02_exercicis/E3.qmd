@@ -74,14 +74,14 @@ a) Escriu les instruccions necessàries perquè el bit de més pes passi a ser e
 b) Seguint la mateixa notació, escriu el contingut del registre `t4` després d'executar les instruccions següents:
 
 ```{.s filename="RV32I"}
-li    t1, 16
-mv    t2, t4
+        li      t1, 16
+        mv      t2, t4
 bucle:
-    srli  t4, t4, 1
-    add   t2, t2, t2
-    addi  t1, t1, -1
-    bne   t1, zero, bucle
-or    t4, t4, t2
+        srli    t4, t4, 1
+        add     t2, t2, t2
+        addi    t1, t1, -1
+        bne     t1, zero, bucle
+        or      t4, t4, t2
 ```
 :::
 
@@ -159,12 +159,12 @@ int main() {
 
 a) Tradueix-lo a assemblador RISC-V.
 b) Quin és el nombre total d'instruccions que s'executen?
-c) Suposant un processador a 2 GHz on totes les instruccions tenen CPI = 2, si el nombre d'instruccions executades fossin 10, quants segons trigaria a executar-se el programa?
+c) Suposant un processador a 2 GHz on totes les instruccions tenen CPI = 2, si el nombre d'instruccions executades fos 10, quants segons trigaria a executar-se el programa?
 d) En un processador a 2 GHz, sabent que el programa triga $5 \times 10^{-9}$ s, quin és el CPI del programa?
 :::
 
 ::: {#exr-p4-bucles-multiplicacio}
-Donades dues variables enteres `a` i `b`, ja inicialitzades als registres `t1` i `t2`:
+Donades dues variables enteres `a` i `b` (amb `b ≥ 0`), ja inicialitzades als registres `t1` i `t2`:
 
 a) Programa en C una seqüència d'instruccions que multipliqui `a * b` usant un bucle `while` i operacions de suma. El resultat s'ha de deixar a `c`, ubicada al registre `t3`.
 b) Tradueix-lo a assemblador RISC-V.
@@ -330,7 +330,7 @@ Cada vector conté caràcters ASCII que representen dígits numèrics. En conjun
 :::
 
 ::: {#exr-p4-bucles-ordenacio}
-El vector d'enters `Array` està ubicat a l'adreça `0x10000000` de memòria i ha estat declarat així:
+El vector d'enters `Array` està ubicat a l'adreça `0x10010000` de memòria i ha estat declarat així:
 
 ```{.s filename="RV32I"}
 .data
@@ -351,7 +351,7 @@ Escriu en C i en assemblador RISC-V una funció que, donats dos enters de 32 bit
 ::: {#exr-p4-subrutines-strlen}
 Tradueix a assemblador RISC-V la subrutina en C següent:
 
-```c
+```{.c filename="C"}
 int strlen(char s[]) {
     int i = 0;
     while (s[i] != '\0')
@@ -364,7 +364,7 @@ int strlen(char s[]) {
 ::: {#exr-p4-subrutines-examen}
 Donat el fragment de programa en C:
 
-```c
+```{.c filename="C"}
 void examen(char vi[], char vo[]) {
     int i = 0;
     while (vi[i] != '\0') {
@@ -390,7 +390,7 @@ b) Tradueix a assemblador RISC-V la subrutina `examen`.
 ::: {#exr-p4-subrutines-exam}
 Donades les declaracions en C:
 
-```c
+```{.c filename="C"}
 int proc(int vector[], int *x1);
 
 char exam(int v[], int a, int b) {
@@ -401,14 +401,14 @@ char exam(int v[], int a, int b) {
 
 a) Tradueix a assemblador RISC-V el fragment de codi següent, pertanyent a `exam`, suposant que `i` i `p` ocupen `t0` i `t1`:
 
-```c
+```{.c filename="C"}
 p = &v[a + 5];
 i = proc(v, p);
 ```
 
 b) Tradueix a RISC-V la sentència condicional següent, pertanyent a `exam`, suposant que `i` ocupa `t0`:
 
-```c
+```{.c filename="C"}
 if ((i > 0) && (i < 10))
     i = 10;
 else
@@ -417,7 +417,7 @@ else
 
 c) Tradueix a assemblador RISC-V el fragment de codi següent, pertanyent a `exam`, suposant que `i` i `p` ocupen `t0` i `t1`:
 
-```c
+```{.c filename="C"}
 p = v + b;
 for (i = 0; i < 10; i++) {
     *p = 0;
@@ -429,7 +429,7 @@ for (i = 0; i < 10; i++) {
 ::: {#exr-p4-subrutines-swap}
 Donades les funcions en C:
 
-```c
+```{.c filename="C"}
 void swap(int *a, int *b) {
     int temp;
     temp = *a;
@@ -449,13 +449,13 @@ b) Tradueix a assemblador RISC-V la subrutina `examen`.
 ::: {#exr-p4-subrutines-inversa}
 Sabent que la funció `f` té la capçalera en C:
 
-```c
+```{.c filename="C"}
 int f(int n);
 ```
 
 i la traducció a assemblador RISC-V següent:
 
-```s
+```{.s filename="RV32I"}
 f:
         mv    t0, a0       # t0 = n
         li    a0, 0        # a0 = acumulador
@@ -476,7 +476,7 @@ b) Explica textualment què calcula la funció `f`.
 ::: {#exr-p4-subrutines-recursiva-pell}
 Tradueix a assemblador RISC-V la funció recursiva següent:
 
-```c
+```{.c filename="C"}
 int pellnumber(int n) {
     if (n < 2)
         return n;
@@ -489,7 +489,7 @@ int pellnumber(int n) {
 ::: {#exr-p4-subrutines-maxv}
 Tradueix a assemblador RISC-V la subrutina en C següent:
 
-```c
+```{.c filename="C"}
 int maxv(int vector[], int length) {
     int temp;
     if (length == 1)
@@ -507,7 +507,7 @@ int maxv(int vector[], int length) {
 ::: {#exr-p4-subrutines-func1}
 Tradueix a assemblador RISC-V la funció `func1`:
 
-```c
+```{.c filename="C"}
 unsigned int func1(unsigned int v, unsigned int *p) {
     if (v == 0)
         *p = 0;
@@ -521,10 +521,10 @@ unsigned int func1(unsigned int v, unsigned int *p) {
 ::: {#exr-p4-memoria-jalr}
 El repertori de RISC-V inclou la instrucció `jalr` per cridar subrutines i per a salts indirectes. Suposem que s'executa el fragment de codi RISC-V següent:
 
-```s
+```{.s filename="RV32I"}
         la    ra, etiq
         addi  ra, ra, -4
-etiq:   jalr  ra, 0(ra)
+etiq:   jalr  ra, ra, 0
 ```
 
 Quina és la resposta correcta?
@@ -539,7 +539,7 @@ e) Sense saber el contingut d'altres posicions de memòria no es pot saber quant
 ::: {#exr-p4-subrutines-s1}
 Donades les declaracions en C:
 
-```c
+```{.c filename="C"}
 int s2(int c, long long *d, long long w[]);
 
 int s1(int x, long long v[], int *p) {
@@ -552,6 +552,7 @@ int s1(int x, long long v[], int *p) {
 
 Tradueix a assemblador RISC-V la funció `s1`.
 :::
+
 ## Subrutines: context i bloc d'activació
 
 *Vegeu @sec-variables-locals i @sec-multinivell-pila.*
@@ -636,7 +637,7 @@ void sub(int p1[10], int p2, int p3) {
 ```
 :::
 
-## Compilació, muntatge i càrrega
+## Compilació, assemblatge, enllaçat i càrrega
 
 *Vegeu @sec-compilacio.*
 

@@ -40,7 +40,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ### T3
 
-- `WARN: 01_apunts/A3.html: Unable to resolve crossref @wrn-codificacio-enters-ca1` — **Origen identificat**: la revisió interna Fable de T1 (2026-07-11/12, decisió D2) ha promogut aquest callout del cos de `A1.qmd` a una subsecció ordinària, amb l'ID nou `{#sec-enters-en-ca1}`. **Solució**: a `A3.qmd` L. 48, substituir `@wrn-codificacio-enters-ca1` per `@sec-enters-en-ca1`.
+- ~~`WARN: 01_apunts/A3.html: Unable to resolve crossref @wrn-codificacio-enters-ca1`~~ **RESOLTA (verificat 2026-07-13):** `A3.qmd` L. 48 ja usa `@sec-enters-en-ca1` (no `@wrn-codificacio-enters-ca1`). Sense acció.
 
 - **Criteri «quatre formats nuclears» (RISC-V International)**: la revisió interna de T2 (A2.qmd) ha adoptat el criteri de la font de veritat `@riscv_rv32i` (docs.riscv.org, citada a `15_bibliografia.bib`): RV32I té «quatre formats nuclears d'instrucció» (R/I/S/U), amb B i J com a variants de S i U respectivament. A3.qmd ja s'hi ha ajustat parcialment (referències creuades afegides cap a T2 als callouts `#nte-format-b`, `#nte-format-j`, `#nte-format-u`), però cal revisar-lo sencer per aplicar aquest mateix criteri de manera estricta i coherent a tot el tema (redactat, introducció dels formats, qualsevol menció al nombre total de formats). Fer en un xat de revisió interna dedicat a A3.qmd.
 - **Encaix T2↔T3 — caller-saved/callee-saved**: verificar que A2.qmd introdueix els conceptes de registres temporals/segurs de manera consistent amb la terminologia i les referències creuades establertes a T3 en la revisió interna (títol `## RV32I ABI —`, connexió «temporals = *caller-saved*», «segurs = *callee-saved*», refs `@nte-caller-saved-vs-callee-saved`). Fer en un xat nou amb A2.qmd i A3.qmd.
@@ -107,17 +107,17 @@ Decisions obertes de T7:
 ### Neteja de warnings del render
 
 - **A1. Slugs `{#sec-}` a T1, T2 i T5**: afegir identificadors a totes les capçaleres `##`–`####` segons criteris de `13_contrib.qmd` (referència: `A4.qmd`). Excloure capçaleres dins callouts. Verificació global de col·lisions entre temes.
-- **A2. Identificador duplicat `sec-opt-acces-sequencial`**: definit dues vegades (T2 i T4). Decidir quin és canònic i reanomenar l'altre.
+- **A2. Identificador duplicat `sec-opt-acces-sequencial`**: definit dues vegades (T2 i T4). *(Verificat 2026-07-13, amb A2.qmd i A4.qmd disponibles: a `A2.qmd` L. 1982 només hi ha una **referència** `@sec-opt-acces-sequencial`, no una segona definició `{#sec-opt-acces-sequencial}`; la definició real és a `A4.qmd` L. 463. No s'ha trobat la col·lisió amb aquests dos fitxers — probablement la segona definició és en un tercer fitxer no revisat (T2 sencer, laboratori). Cal aportar més fitxers per localitzar-la.)*
 - **A3. Div sense tancar a `A7.qmd`**: localitzar `:::` desaparellat (warning L168–1981) i reparar.
-- **A4. Referències creuades no resoltes (reparables)**: `@sec-ecall`, `@sec-operands-memoria`, `@imp-ec-alineacio-pila`, `@imp-exception-handler`, `@sec-politica-reemplacement`, i refs internes trencades de `13_contrib.qmd`.
+- **A4. Referències creuades no resoltes (reparables)**: `@sec-ecall`, `@sec-operands-memoria`, `@imp-ec-alineacio-pila`, `@imp-exception-handler`. *(Verificat 2026-07-13: `@sec-politica-reemplacement` **ja no aplica** — l'slug real `sec-politica-reemplacament` ja s'usa consistentment a `A7.qmd` L. 321, 433, 643; probablement error tipogràfic en aquesta mateixa entrada del TODO. Amb A1–A9 disponibles, `@sec-ecall`, `@sec-operands-memoria` i `@imp-ec-alineacio-pila` no apareixen citats enlloc — la citació trencada deu ser a E9/S9/laboratoris o a `13_contrib.qmd`, no revisats. `A9.qmd` L. 499 defineix `{#sec-ei-ecall}` — probablement l'slug correcte al qual hauria d'apuntar `@sec-ecall`.)* i refs internes trencades de `13_contrib.qmd`.
 
 ### Contingut global
 
 - **Criteri «quatre formats nuclears d'instrucció» (RISC-V International)**: adoptat a la revisió interna de T2 (2026-07, xat A2-E2-S2). Font de veritat: `@riscv_rv32i` (docs.riscv.org, «four core instruction formats (R/I/S/U)»; B i J són variants de S i U). Revisar tots els fitxers del repositori (`Ax.qmd`, `Ex.qmd`, `Sx.qmd`, `11_riscv.qmd`, laboratoris) que esmentin el nombre total de formats d'instrucció de RV32I («sis formats», «6 formats», etc.) i ajustar-los a aquest criteri, amb el mateix matís sobre B/J com a variants de S/U. Punt de partida ja fet: A2.qmd (T2) i referències creuades puntuals a A3.qmd (T3, vegeu `§T3` més amunt).
-- **«ample de banda» → «amplada de banda»**: substitució global (afegida a les substitucions obligatòries de `13_contrib.qmd`; T7 ja fet, revisar la resta de temes, p. ex. amb Claude Code).
-- **Unitats KB/KiB**: revisar la resta de temes segons el criteri de `13_contrib.qmd §T7` (binàries per a registres/MC/MP; decimals per a emmagatzematge secundari, costos i amplades de banda; T7 ja fet).
-- **Cometes** `"..."` → `«...»`: substitució global.
-- **`****` sobrants**: eliminar.
+- **«ample de banda» → «amplada de banda»**: substitució global (afegida a les substitucions obligatòries de `13_contrib.qmd`; T7 ja fet. *Verificat 2026-07-13: cap ocurrència de «ample de banda» a A1–A6, A8, A9 — nets. No revisats: E/S de T1–T6/T8/T9, laboratoris.*).
+- **Unitats KB/KiB**: revisar la resta de temes segons el criteri de `13_contrib.qmd §T7` (binàries per a registres/MC/MP; decimals per a emmagatzematge secundari, costos i amplades de banda; T7 ja fet. *Verificat 2026-07-13: única ocurrència de KB a A1–A9 és A2.qmd L. 178, dins la taula que **defineix** el criteri KiB vs. KB — correcta, no cal cap canvi. No revisats: E/S, laboratoris.*).
+- **Cometes** `"..."` → `«...»`: substitució global. *(Verificat 2026-07-13 a A7/E7/S7: totes les cometes trobades són atributs YAML de Quarto (`tbl-colwidths="..."`, `collapse="true"`), no prosa — cap cas real en aquests tres fitxers. No revisats: la resta.)*
+- **`****` sobrants**: eliminar. *(Verificat 2026-07-13: cap ocurrència a A1–A9, E7, S7, `13_contrib.qmd`.)*
 - **Equacions a MathML**: passar totes les equacions; definir criteris d'inline. **Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`)**: funciona (`underbrace`, `cases`, taules amb math correctes a Chrome), i elimina el JS de MathJax (render instantani, funciona offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), la numeració d'equacions queda inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. Recomanació: mantenir MathJax 3 (el desbordament mòbil ja està resolt via CSS); reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa).
 - **PDF**: figures dins callouts no queden centrades → investigar via `preamble.tex`. A més, comportament en callouts encastats: es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben (falta l'exemple concret de `13_contrib.qmd`).
 - **Figures externes (llicències)**: taula completa de figures extretes de PDFs (inclús fonts, llicències). Referència eliminada temporalment de `13_contrib.qmd`.
@@ -125,6 +125,6 @@ Decisions obertes de T7:
 
 ### `index.qmd`
 
-- Eliminar `[Plantilles](laboratori/L0/TODO.s)` si no es fan servir.
-- Consolidar taula de referències tècniques (`#imp-llenguatges-de-referencia`): versió ISO de C, versió GCC, toolchain (entrada duplicada).
-- Afegir URL de la còpia local de RARS.
+- ~~Eliminar `[Plantilles](laboratori/L0/TODO.s)` si no es fan servir.~~ **RESOLTA (verificat 2026-07-13):** ja no hi ha cap enllaç a `laboratori/L0/TODO.s` a `index.qmd`.
+- ~~Consolidar taula de referències tècniques (`#imp-llenguatges-de-referencia`): versió ISO de C, versió GCC, toolchain (entrada duplicada).~~ **RESOLTA parcialment (verificat 2026-07-13):** la fila duplicada de Toolchain ja no hi és; la taula (L. 247-254) té una sola fila per ítem. Pendent encara: versió ISO de C i versió GCC (marcades amb `<!-- TODO -->` a les línies anteriors a la taula), fora de l'abast d'aquest xat (calen decisions de contingut, no una neteja mecànica).
+- ~~Afegir URL de la còpia local de RARS.~~ **RESOLTA (verificat 2026-07-13):** ja hi és, L. 179 (`<a href="04_laboratori/rars1_6.jar" download>Còpia local</a>`).

@@ -201,57 +201,6 @@ El codi fa una **rotació de 16 posicions**: les dues meitats de 16 bits del reg
 
 ## Sentències condicionals i bucles
 
-::: {#sol-p4-bucles-for .callout-tip}
-## Solució: bucle `for` simple
-
-**Enunciat**: @exr-p4-bucles-for.
-
-**a) Traducció a assemblador RISC-V**
-
-```{.c filename="C"}
-int main() {
-    int a = 23;  /* guardat a t0 */
-    int b = 12;  /* guardat a t1 */
-    int i;       /* guardat a t2 */
-    for (i = 0; i < 10; i++)
-        a += b;
-}
-```
-
-```{.s filename="RV32I"}
-        li      t0, 23          # a = 23
-        li      t1, 12          # b = 12
-        li      t2, 0           # i = 0
-bucle:
-        li      t3, 10
-        bge     t2, t3, fibucle # salta si i >= 10
-        add     t0, t0, t1      # a += b
-        addi    t2, t2, 1       # i++
-        j       bucle
-fibucle:
-```
-
-**b) Nombre total d'instruccions executades**
-
-Inicialització (3 instruccions): `li t0`, `li t1`, `li t2`.
-
-Per a cada iteració $i = 0, 1, \ldots, 9$ (10 iteracions, el salt **no** es pren): `li t3` + `bge` + `add` + `addi` + `j` = **5 instruccions**.
-
-Darrera comprovació ($i = 10$, el salt **es pren**): `li t3` + `bge` = **2 instruccions**.
-
-Total: $3 + 10 \times 5 + 2 = \mathbf{55}$ instruccions.
-
-**c) Temps d'execució si hi hagués 10 instruccions, CPI = 2, freqüència = 2 GHz**
-
-$$t = \frac{\text{CI} \times \text{CPI}}{f} = \frac{10 \times 2}{2 \times 10^9} = 10^{-8}\ \text{s} = 10\ \text{ns}$$
-
-**d) CPI si el programa triga $5 \times 10^{-9}$ s a 2 GHz**
-
-$$\text{CPI} = \frac{t \times f}{\text{CI}} = \frac{5 \times 10^{-9} \times 2 \times 10^9}{55} = \frac{10}{55} \approx 0{,}18$$
-
-Un CPI inferior a 1 indica que el model de cost no és uniforme (algunes instruccions costen menys d'1 cicle en mitjana) o que el processador és superescalar (executa més d'una instrucció per cicle).
-:::
-
 ::: {#sol-p4-bucles-switch .callout-tip}
 ## Solució: sentència `switch`
 
@@ -328,6 +277,57 @@ fiswitch:
 **Quan és preferible cada enfocament?**
 
 La cadena de `if-then-else` és preferible quan el nombre de casos és petit (fins a 3–4) o quan les constants no formen un rang dens (per exemple, `case 0`, `case 100`, `case 1000`). La *jump table* és preferible quan les constants formen un rang dens i el nombre de casos és gran: l'accés és $\mathcal{O}(1)$ independentment del nombre de casos, mentre que la cadena té cost $\mathcal{O}(n)$ en el pitjor cas.
+:::
+
+::: {#sol-p4-bucles-for .callout-tip}
+## Solució: bucle `for` simple
+
+**Enunciat**: @exr-p4-bucles-for.
+
+**a) Traducció a assemblador RISC-V**
+
+```{.c filename="C"}
+int main() {
+    int a = 23;  /* guardat a t0 */
+    int b = 12;  /* guardat a t1 */
+    int i;       /* guardat a t2 */
+    for (i = 0; i < 10; i++)
+        a += b;
+}
+```
+
+```{.s filename="RV32I"}
+        li      t0, 23          # a = 23
+        li      t1, 12          # b = 12
+        li      t2, 0           # i = 0
+bucle:
+        li      t3, 10
+        bge     t2, t3, fibucle # salta si i >= 10
+        add     t0, t0, t1      # a += b
+        addi    t2, t2, 1       # i++
+        j       bucle
+fibucle:
+```
+
+**b) Nombre total d'instruccions executades**
+
+Inicialització (3 instruccions): `li t0`, `li t1`, `li t2`.
+
+Per a cada iteració $i = 0, 1, \ldots, 9$ (10 iteracions, el salt **no** es pren): `li t3` + `bge` + `add` + `addi` + `j` = **5 instruccions**.
+
+Darrera comprovació ($i = 10$, el salt **es pren**): `li t3` + `bge` = **2 instruccions**.
+
+Total: $3 + 10 \times 5 + 2 = \mathbf{55}$ instruccions.
+
+**c) Temps d'execució si hi hagués 10 instruccions, CPI = 2, freqüència = 2 GHz**
+
+$$t = \frac{\text{CI} \times \text{CPI}}{f} = \frac{10 \times 2}{2 \times 10^9} = 10^{-8}\ \text{s} = 10\ \text{ns}$$
+
+**d) CPI si el programa triga $5 \times 10^{-9}$ s a 2 GHz**
+
+$$\text{CPI} = \frac{t \times f}{\text{CI}} = \frac{5 \times 10^{-9} \times 2 \times 10^9}{55} = \frac{10}{55} \approx 0{,}18$$
+
+Un CPI inferior a 1 indica que el model de cost no és uniforme (algunes instruccions costen menys d'1 cicle en mitjana) o que el processador és superescalar (executa més d'una instrucció per cicle).
 :::
 
 ::: {#sol-p4-bucles-suma-vector .callout-tip}
@@ -408,7 +408,7 @@ Per iteració (condició al final; salt `bne` pres $N-1$ vegades):
 
 **f) Nova versió que millora l'apartat e)**
 
-L'apartat e) ja elimina la variable d'inducció i avalua la condició al final (optimitzacions #2 i #3). La millora restant és treure la càrrega del `li t1, N` fora del bucle, i usar directament la sentinella:
+L'apartat e) ja avalua la condició al final i fa accés seqüencial amb un punter, però encara manté el comptador `t1` per detectar el final del bucle. La millora d'aquesta versió és eliminar la variable d'inducció, comparant directament el punter amb una sentinella que marca el final del vector:
 
 ```{.s filename="RV32I"}
         li      t0, 0           # suma = 0
@@ -431,7 +431,7 @@ Per iteració: `lw` (4) + `add` (1) + `addi` (1) + `bltu` pres (2) = **8 cicles*
 
 **Total**: $5 + 8(N-1) + 7 = 8N + 4$ cicles.
 
-Respecte a l'apartat e) ($9N + 2$), s'estalvia 1 cicle per iteració a cost d'1 instrucció d'inicialització addicional. Per a $N$ gran, la versió f) és millor.
+Respecte a l'apartat e) ($9N + 2$), s'estalvia 1 cicle per iteració a cost de 2 instruccions d'inicialització addicionals (+2 cicles). Totes dues versions costen el mateix per a $N = 2$; a partir de $N = 3$, la versió f) és millor.
 :::
 
 ## Subrutines: introducció
@@ -554,11 +554,11 @@ Primer cal fixar les adreces de les instruccions. La pseudoinstrucció `la` s'ex
 | $A$ | `auipc ra, ...` | expansió de `la ra, etiq` |
 | $A + 4$ | `addi ra, ra, ...` | expansió de `la ra, etiq` |
 | $A + 8$ | `addi ra, ra, -4` | |
-| $A + 12$ | `jalr ra, 0(ra)` | `etiq` |
+| $A + 12$ | `jalr ra, ra, 0` | `etiq` |
 
 Per tant, `etiq` $= A + 12$.
 
-Per fer el seguiment cal recordar la semàntica de `jalr rd, offset(rs1)`: l'adreça de destinació es calcula amb el valor **actual** de `rs1`, i **després** s'escriu `rd` ← PC + 4. Quan `rd` i `rs1` són el mateix registre (com aquí, `ra`), la lectura es fa abans de l'escriptura.
+Per fer el seguiment cal recordar la semàntica de `jalr rd, rs1, imm12`: l'adreça de destinació es calcula amb el valor **actual** de `rs1`, i **després** s'escriu `rd` ← PC + 4. Quan `rd` i `rs1` són el mateix registre (com aquí, `ra`), la lectura es fa abans de l'escriptura.
 
 Seguiment pas a pas:
 
@@ -648,7 +648,7 @@ A:
 ```
 :::
 
-## Compilació, muntatge i càrrega
+## Compilació, assemblatge, enllaçat i càrrega
 
 ::: {#sol-p4-compilacio-auipc .callout-tip}
 ## Solució: expansió de `la` i rang del desplaçament

@@ -108,14 +108,14 @@ Recull dels símbols i variables usats a les fórmules, amb el tema on s'introdu
 
 | Símbol | Significat | Tema | Observacions |
 | :--- | :--- | :--- | :--- |
-| $a$ | Nombre de bits d'adreça | T8 | |
-| $A$ | Grau d'associativitat | T7 | |
-| $b$ | Nombre de bits del desplaçament (*offset*) dins un bloc/pàgina | T7, T8 | |
+| $a$ | Associativitat | T7, T8 | Introduït a T7; reutilitzat a T8 en la condició d'equivalència VIPT-PIPT |
+| $A$ | Adreça (de la dada a la memòria principal) | T7 | |
+| $b$ | Nombre de bits del desplaçament (*offset*) dins un bloc | T7 | Vegeu $t$ per al desplaçament dins una pàgina (T8) |
 | $B$ | Mida del bloc (en mots o bytes) | T7 | |
-| $C$ | Capacitat (de la memòria cau) | T6, T7 | Introduït a T6 com a capacitat equivalent en el model de potència; reutilitzat a T7 com a capacitat de la MC |
+| $C$ | Capacitat (de la memòria cau) | T6, T7, T8 | Introduït a T6 com a capacitat equivalent en el model de potència; reutilitzat a T7 com a capacitat de la MC; reutilitzat a T8 en la condició d'equivalència VIPT-PIPT |
 | $CPI$ | Cicles per instrucció | T6 | Vegeu «CPI» a Sigles per a la definició completa |
 | $CPI_i$, $C_i$ | CPI/cicles de la instrucció $i$ | T6 | |
-| $D$ | Nombre de conjunts (*directori*) de la memòria cau | T7 | |
+| $D$ | Bit de modificació (*dirty bit*) | T7, T8 | Introduït a T7 (línia de MC); reutilitzat a T8 (PTE i TLB) amb el mateix significat |
 | $e$ | Exponent (representació IEEE 754) | T5 | |
 | $E$ | Exponent esbiaixat | T5 | |
 | $f_B$, $f_{clock}$ | Freqüència (de bus, de rellotge) | T6 | |
@@ -126,20 +126,22 @@ Recull dels símbols i variables usats a les fórmules, amb el tema on s'introdu
 | $m$ | Mantissa (T5); Taxa de fallades (*miss rate*) (T7) | T5, T7 | **Significats diferents segons el tema**: a T5 és la mantissa; a T7 és la taxa de fallades |
 | $m_d$, $m_i$ | Taxa de fallades de dades / d'instruccions | T7 | |
 | $m_{L1}$, $m_{L2}$ | Taxa de fallades de L1 / L2 | T7 | Notació multinivell |
-| $n$ | Nombre de bits (T1, transversal); Nombre de blocs/línies (T7); Nombre de bits d'índex de pàgina (T8) | T1, T5, T7, T8 | Ús molt transversal; el significat concret depèn del context immediat |
+| $n$ | Nombre de bits (T1, transversal); Número de bloc (instància concreta, T7); Nombre de bits d'una adreça lògica (T8) | T1, T5, T7, T8 | Ús molt transversal; el significat concret depèn del context immediat |
 | $n_A$ | Nombre d'accessos | T6 | |
-| $n_c$ | Nombre de cicles | T6, T7 | |
+| $n_c$ | Nombre de cicles (T6, T7, contextos de rendiment); Nombre de bits d'índex de conjunt, $N_C = 2^{n_c}$ (T7, contextos d'organització de la MC) | T6, T7 | **Significats diferents dins del mateix tema (T7)**: cal distingir pel context (fórmules de rendiment vs. descomposició de bits de l'adreça) |
+| $n_l$ | Nombre de bits d'índex de línia, $N_L = 2^{n_l}$ (correspondència directa) | T7 | |
 | $n_{cicles}$ | Nombre de cicles (forma explícita) | T6 | |
 | $n_{dat}$, $n_{ins}$ | Nombre d'accessos a dades / a instruccions | T7 | |
-| $N$ | Nombre de conjunts | T7 | |
-| $N_C$, $N_L$ | Nombre de conjunts / de línies | T7 | |
-| $p$ | Precisió (nombre de bits de la mantissa) (T5); Nombre de bits de pàgina (T8) | T5, T8 | Significats diferents segons el tema |
+| $N$ | Grau d'associativitat (nombre de vies) | T7 | |
+| $N_C$ | Nombre de conjunts | T7 | |
+| $N_L$ | Nombre de línies (blocs) de la memòria cau | T7 | |
+| $p$ | Precisió (nombre de bits de la mantissa) (T5); Nombre de bits del PPN (*physical page number*) (T8) | T5, T8 | Significats diferents segons el tema |
 | $p_e$, $p_m$ | Probabilitat d'encert / de fallada | T7 | |
 | $P$ | Potència | T6 | |
 | $P_d$, $P_s$, $P_x$ | Potència dinàmica / estàtica / d'un component $x$ | T6 | |
 | $s$ | Signe (representació IEEE 754) | T5 | |
 | $s_{max}$, $s_x$ | Speedup màxim / d'un component $x$ (llei d'Amdahl) | T6 | |
-| $t$ | Temps (genèric) | T6, T7, T8 | Base dels símbols compostos $t_{xxx}$ |
+| $t$ | Temps genèric, base dels símbols compostos $t_{xxx}$ (T6, T7); Nombre de bits del desplaçament dins una pàgina (T8) | T6, T7, T8 | **Significats diferents segons el tema**: a T6/T7 és la base temporal ($t_h$, $t_p$…); a T8 és un nombre de bits ($T = 2^t$), anàleg a $b$ per als blocs a T7 |
 | $t_{acc}$ | Temps d'accés | T7 | Vegeu TAM a Sigles per a la mitjana ponderada |
 | $t_{bloc}$ | Temps de transferència d'un bloc | T7 | |
 | $t_{clock}$ | Període de rellotge | T6 | |
@@ -148,10 +150,11 @@ Recull dels símbols i variables usats a les fórmules, amb el tema on s'introdu
 | $t_p$ | Temps de penalització per fallada | T7 | |
 | $t_{pd}$, $t_{pi}$ | Temps de processament de dades / d'instruccions | T7 | |
 | $t_{proc}$ | Temps de la resta d'operacions d'una instrucció (sense accés a memòria) | T7 | |
+| $T$ | Mida de la pàgina (en bytes) | T8 | |
 | $v$ | Valor representat (IEEE 754) | T5 | |
 | $V$ | Bit de validesa (*valid bit*) | T7, T8 | |
 | $V_{CC}$, $V_{in}$, $V_t$ | Tensió d'alimentació / d'entrada / llindar | T6 | |
-| $w$ | Nombre de bits de l'etiqueta (*tag*) | T7 | |
+| $w$ | Nombre de bits d'una adreça | T7 | El nombre de bits de l'etiqueta ($w - n_c - b$) no té símbol propi |
 | $\alpha$ | Factor d'activitat (model de potència dinàmica) | T6 | |
 : {tbl-colwidths="[12,38,15,35]" .borderless}
 
@@ -165,4 +168,5 @@ Operadors i convencions de representació transversals a tot el llibre, estables
 | $>>$ | Desplaçament a la dreta, **lògic o aritmètic segons el context** (vegeu observació) |
 | $>>>$ | Desplaçament aritmètic a la dreta (`sra`/`srai`), a les taules ISA d'instruccions (@sec-desplacament-aritmetic-dreta) |
 | $\lfloor x \rfloor$ | Part entera (truncament cap avall) |
+| $\bmod$ | Operador mòdul (resta de la divisió entera) |
 : {tbl-colwidths="[20,80]" .borderless}
