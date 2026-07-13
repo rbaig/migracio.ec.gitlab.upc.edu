@@ -141,7 +141,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 
 - **«En excés» / «codificació en excés»**: terme correcte per al concepte general de representació d'enters (T1, `@sec-enters-en-exces`). Usat quan el valor K és arbitrari.
 - **«Esbiaixat» / «biaix»**: terme correcte per a l'exponent IEEE 754 específicament (T5, L5, S5). Font: Viquipèdia cat., «Format de coma flotant de precisió simple». *No* és sinònim de «biaix estadístic» (context RNE): són homònims, no el mateix concepte.
-- **«Mantissa» (no «significand»)**: terme preferent a EC per a la part $1{,}F$ del nombre en coma flotant. L'estàndard IEEE-754 en anglès prefereix formalment *significand* perquè *mantissa* ja té un significat establert en el context de logaritmes (Knuth en critica l'ús aquí per aquest motiu), però aquesta distinció és interna a l'anglès tècnic: **cap font normativa catalana la reflecteix**. Termcat (Cercaterm) només té fitxa per a «mantissa» (àmbit Matemàtiques, logaritmes); la Viquipèdia catalana, tant a «Format de coma flotant de precisió simple» com a «Format de coma flotant Bfloat16», usa «mantissa» com a terme principal («significand» hi apareix només com a manlleu anglès puntual, no com a alternativa establerta). A EC, l'ambigüitat que criticava Knuth ja queda resolta amb la distinció pròpia del projecte entre **fracció** ($F$, els bits emmagatzemats) i **mantissa** ($1{,}F$, amb el bit ocult): vegeu més amunt. Es descarta, doncs, l'adopció de «significand».
+- **«Mantissa» (no «significand»)**: terme preferent a EC per a la part $1{,}F$ del nombre en coma flotant. L'estàndard IEEE 754 en anglès prefereix formalment *significand* perquè *mantissa* ja té un significat establert en el context de logaritmes (Knuth en critica l'ús aquí per aquest motiu), però aquesta distinció és interna a l'anglès tècnic: **cap font normativa catalana la reflecteix**. Termcat (Cercaterm) només té fitxa per a «mantissa» (àmbit Matemàtiques, logaritmes); la Viquipèdia catalana, tant a «Format de coma flotant de precisió simple» com a «Format de coma flotant Bfloat16», usa «mantissa» com a terme principal («significand» hi apareix només com a manlleu anglès puntual, no com a alternativa establerta). A EC, l'ambigüitat que criticava Knuth ja queda resolta amb la distinció pròpia del projecte entre **fracció** ($F$, els bits emmagatzemats) i **mantissa** ($1{,}F$, amb el bit ocult): vegeu més amunt. Es descarta, doncs, l'adopció de «significand».
 
 #### T5
 
@@ -150,7 +150,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des del LSB.
 - **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`).
 - **Solucionari (PS)**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
-- **`fcvt.w.s` trunca cap a zero** (mode RTZ) independentment del `fcsr`. Per arrodonir al més pròxim cal afegir 0,5 abans de la conversió.
+- **`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el camp `rm`** de la instrucció, no trunquen sempre. Sense operand de mode (`fcvt.w.s rd, rs1`), l'assemblador RISC-V hi assigna `dyn` (mode dinàmic: el del registre `frm`, RNE per defecte a RARS). Per traduir el *cast* `(int)` de C (que trunca cap a zero) cal escriure explícitament `fcvt.w.s rd, rs1, rtz`.
 - **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
 - **No associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$.
 
@@ -409,11 +409,14 @@ Regles generals:
 - El títol `## títol` no és obligatori en callouts curts.
 - **Localització**: a continuació de la referència o explicació al text.
 - No hi ha d'haver repeticions: ús de referències creuades.
-<!-- TODO: Revisar criteris de numeració de callouts i aparença -->
+
+**Numeració**: tot callout amb etiqueta (`#nte-`, `#imp-`, `#cau-`, `#tip-`, `#wrn-`) queda numerat **automàticament** per Quarto (mecanisme natiu de `crossref`, el mateix que numera figures i taules), amb el prefix propi de cada tipus definit a `_quarto.yml §language` (`crossref-nte-prefix: "RISC-V"`, `crossref-tip-prefix: "Exemple"`, `crossref-cau-prefix: "Essencial"`, `crossref-wrn-prefix: "Aprofundiment"`, `crossref-imp-prefix: "EC"`; les claus `callout-*-title` fixen el mateix text com a títol visible dins el bloc). No cal, doncs, cap acció addicional per numerar-los ni cap etiquetatge especial més enllà del prefix habitual: la numeració ("RISC-V 5.3", "Exemple 5.2"...) ja és conseqüència directa de tenir `{#prefix-nom}`.
+
+**Icones**: es couen a `custom.scss`, que sobreescriu la icona per defecte de Quarto per a `.callout-note` (CPU, verd), `.callout-warning` (porta oberta, lila) i `.callout-caution` (check, vermell). `.callout-tip` i `.callout-important` **no** tenen icona personalitzada i mantenen la de Quarto per defecte (bombeta i cercle d'exclamació, respectivament); és una omissió no deliberada, no un criteri establert. Els colors de tots cinc tipus (incloent-hi `tip` i `important`) es defineixen a `custom_light.scss`/`custom_dark.scss` (`$callout-color-*`).
 
 | Tipus | Prefix | Classe | Color | Aval. | Títol | Ús i particularitats |
 | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
-| RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/21_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## M ISA — `, `## F ISA — `, `## RV32I ABI — `, `## Pseudoinstruccions — `, `## Directives — `, `## RARS — `, `## RV32I Registres — `, `## Supervisor ISA — ` (instruccions de l'arquitectura privilegiada disponibles en mode S, com `sfence.vma`; els CSR de mode M s'agrupen sota `RV32I ISA —` per coherència amb la resta de CSR de la variant RV32). |
+| RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/21_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## RV32IM ISA — `, `## RV32F ISA — `, `## RV32I ABI — `, `## RV32F ABI — `, `## Pseudoinstruccions — `, `## Directives — `, `## RARS — `, `## RV32I Registres — `, `## Supervisor ISA — ` (instruccions de l'arquitectura privilegiada disponibles en mode S, com `sfence.vma`; els CSR de mode M s'agrupen sota `RV32I ISA —` per coherència amb la resta de CSR de la variant RV32). |
 | Criteri EC | `#imp-` | `.callout-important` | Blau | Sí | No | Criteris de l'assignatura. Per defecte, sense títol, curt, en **negretes**. Si el contingut supera ~4 línies o barreja diversos criteris, s'admet un títol curt (com als `#nte-`) en lloc de forçar la brevetat. No s'introdueix al text. |
 | Essencial | `#cau-` | `.callout-caution` | Vermell | Sí | No | Contingut indispensable o recordatori fonamental. Per defecte, sense títol, curt, en **negretes**, i s'ha de llegir com un ressaltat del text. Si el contingut supera ~4 línies o barreja diversos aspectes, s'admet un títol curt en lloc de forçar la brevetat. |
 | Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu en 2a persona del singular (distinta de la dels enunciats `#exr-`, en plural). No s'introdueix al text. |
@@ -499,6 +502,26 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 | Fitxer font | Figura generada | Contingut |
 | :--- | :--- | :--- |
 | `24_specs/T7_mc_politiques_resum__graphviz.svg` | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
+
+#### Retalls (crops) d'una figura font única
+
+Quan una figura "detall" o "zoom" ha de mostrar literalment un **subconjunt geomètric** d'una figura més gran ja existent (mateixes coordenades, mateix contingut, sense redibuixar ni afegir informació), es defineix com a **retall** a `24_specs/retalls.toml` en lloc de duplicar-lo com a SVG independent, evitant mantenir dues fonts sincronitzades manualment.
+
+**Condició d'aplicabilitat**: el retall només és vàlid si és un subconjunt net del `viewBox` de la figura font — cap element ha de quedar tallat a mig camí (connectors, fletxes o etiquetes "penjant" sense l'element que assenyalaven). Si el detall necessita mostrar contingut que no hi és a la figura font (més etiquetes, més precisió, redisseny), continua calent un SVG independent a `22_figs_originals/`.
+
+**Format de `24_specs/retalls.toml`:**
+
+```toml
+[crops.T5_exemple_detall]
+source = "T5_exemple__original_light"   # sense extensió; ha d'existir a auto_figs/
+title  = "Descripció del detall"         # opcional
+x = 54    # min-x del retall, en coordenades del viewBox de la font
+y = 60    # min-y
+w = 300   # amplada
+h = 250   # alçada
+```
+
+L'script `25_scripts/gen_crops.py` només reescriu `viewBox`/`width`/`height` de l'element arrel; no toca cap altre contingut. S'executa com a pas de `pre-render` **després** de `norm_font.py` (necessita la font ja normalitzada a `auto_figs/`) i **abans** de `gen_dark.py` (perquè el retall també rebi automàticament la seva variant dark).
 
 #### Generació de la versió dark
 

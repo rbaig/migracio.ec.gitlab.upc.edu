@@ -20,17 +20,19 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Revisió sistemàtica del corpus** per l'aplicació de la regla d'ús `AND`, `OR`, `XOR`, `NOT`--`barra superior` (enters)
 
+- **Nova eina disponible: retalls (crops) SVG a partir d'una figura font única** (afegida 2026-07-13, revisió interna T5, xat A5-E5-S5): `25_scripts/gen_crops.py` + `24_specs/retalls.toml` (encara buit), integrat al `pre-render` de `_quarto.yml` entre `gen_regs.py` i `gen_dark.py`. Permet definir una figura "detall"/"zoom" com una simple finestra `(x, y, w, h)` sobre el `viewBox` d'una figura font ja existent, sense duplicar-ne el contingut. Documentat a `13_contrib.qmd §Retalls`. Aplicable només quan el detall és un subconjunt geomètric net de la font (cap connector/etiqueta tallat a mig camí); si el detall necessita contingut addicional, continua calent un SVG independent. **Cap ús real encara**, tot i haver-se valorat dues vegades per a les figures de T5: (1) `T5_recta_zoom_zero` com a retall de `T5_recta_global` — descartat perquè `T5_recta_zoom_zero` mostra informació pròpia dels denormals (hexadecimals concrets) que `T5_recta_global` no té espai per representar; (2) `T5_recta_global`/`T5_recta_zoom_zero` com a retalls de `T5_coma_flotant_racionals__drawio.svg` (figura orfe a `22_figs_originals/`, no referenciada per cap `.qmd`, que sembla l'esborrany original del qual es van redibuixar les altres dues) — descartat en l'estat **actual** perquè el drawio (7465 línies, estil amb fletxes/icones pròpies) no comparteix coordenades ni disseny amb les figures actuals en estil pla; són una reconstrucció completa, no un retall.
+
+    **TODO futur**: investigar l'ús de `gen_crops.py` directament sobre una figura global com la primigènia (`T5_coma_flotant_racionals__drawio.svg` o equivalent), és a dir, com a **font única des de zero** en lloc d'intentar-lo a posteriori sobre figures ja redibuixades per separat. Requeriria: (i) redibuixar aquesta figura en estil pla natiu (coherent amb `svg.md`, no drawio) com a única font de veritat amb tot el contingut (rang global + zoom de zero + denormals); (ii) definir a `retalls.toml` les finestres `(x, y, w, h)` corresponents a cada vista actual (`T5_recta_global`, `T5_recta_zoom_zero`) com a retalls d'aquesta font; (iii) verificar que cada retall és net (cap element tallat a mig camí). Si viable, eliminaria la duplicació de manteniment entre les dues figures actuals. No s'ha fet en aquesta revisió perquè implica redibuixar una figura complexa des de zero, fora de l'abast d'una revisió textual.
+
 #### Tasques vives migrades de fitxers esborrables
 
-- **(a) Harmonització notacional `21_riscv/` RV32I/RV32M**: estendre `=` → `\leftarrow` (i revisar `off`/`offset`) als fitxers RV32I/RV32M llistats a `prompt_claude_code_harmonitzacio_rv32f.md §Fora d'abast`; coordinar amb les revisions de T2/T3/T4/T9 que els inclouen. [de `prompt_…rv32f.md` + `T5_revisio_canvis.md`]
+- ~~**(a) Harmonització notacional `21_riscv/` RV32I/RV32M**: estendre `=` → `\leftarrow` (i revisar `off`/`offset`)…~~ **RESOLTA (2026-07-13, verificat en revisió interna T5, xat A5-E5-S5):** comprovat que tots els fitxers de `21_riscv/` (RV32I, RV32M i RV32F) ja usen `\leftarrow` per a assignació i `offset` sencer arreu; cap ocurrència residual de `=` d'assignació ni d'`off` abreujat a tot el directori. No calia cap canvi.
 
-- **(b) `RV32I_registres_coma_flotant.qmd` divergent de la taula inline de T5**: decidir versió canònica i connectar T5 via include. [de `T5_revisio_canvis.md §F2`]
+- **(b) `RV32I_registres_coma_flotant.qmd` divergent de la taula inline de T5**: decidir versió canònica i connectar T5 via include. [de `T5_revisio_canvis.md §F2`] *(Revisat 2026-07-13: es manté sense canvis; la taula inline d'A5 és un resum de 3 categories i l'include reflecteix el desglossament ABI complet de 6 trams — es considera acceptable mantenir totes dues.)*
 
-- **(c) Taules de camps de `fcsr` (frm, fflags)**: també a includes per al compendi, o inline? [de `T5_revisio_canvis.md`]
+- **(c) Taules de camps de `fcsr` (frm, fflags)**: també a includes per al compendi, o inline? [de `T5_revisio_canvis.md`] *(Decidit 2026-07-13: es mantenen inline. Sense canvis.)*
 
-- **(d) T5 P7**: alinear l'ordre de la taula de codificacions especials amb el de les subseccions, o frase pont. [de `T5_revisio_canvis.md`]
-
-- **(e) Criteris de numeració/aparença de callouts**. [de `13_contrib.qmd §Callouts`]
+- ~~**(e) Criteris de numeració/aparença de callouts**.~~ **RESOLTA (2026-07-13, revisió interna T5, xat A5-E5-S5):** documentat a `13_contrib.qmd §Callouts` que tot callout etiquetat (`#nte-`/`#imp-`/`#cau-`/`#tip-`/`#wrn-`) ja queda numerat automàticament per Quarto via els prefixos `crossref-*-prefix` de `_quarto.yml` (mecanisme natiu, ja actiu; no calia cap canvi). Icones: `custom.scss` personalitza `note`/`warning`/`caution`; `tip`/`important` es deixen deliberadament amb la icona per defecte de Quarto (bombeta i cercle d'exclamació) — decidit, sense homogeneïtzar.
 
 ---
 
@@ -54,9 +56,9 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ### T5
 
-- **F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.
+- ~~**F1 — figures** addicionals: (1) disposició S\|E\|F (32 bits), (2) recta numèrica rang/precisió amb denormals, (3) esquema d'arrodoniment GRS.~~ **RESOLTA (2026-07-13, revisió interna T5, xat A5-E5-S5):** (1) creada — `T5_ieee754_format` afegit a `24_specs/registres.toml` (generada per `gen_regs.py`, mateix pipeline que `T5_fcsr`/`T5_instruccio_tipus_R4`), inserida a A5.qmd després de la fórmula S·E·F (`#fig-ieee754-format`). (3) creada — `22_figs_originals/T5_grs_esquema.svg` (SVG natiu, estil pla coherent amb `T5_recta_global.svg`), inserida després de la llista G/R/S (`#fig-grs-esquema`). (2) **ja existia**: coberta conjuntament per `T5_recta_global.svg` (rang complet, ja inserida a §Rang i precisió) i `T5_recta_zoom_zero.svg` (detall de denormals al voltant de zero, ja inserida a §Denormals) — l'entrada del TODO estava desactualitzada.
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present.
-- **Veu dels enunciats (E5)**: E5 usa la 2a persona del singular («Contesta les preguntes…») en lloc de la 2a del plural («Contesteu»), convenció establerta a partir de la revisió de T7/T6. Harmonitzar en una propera passada d'E5.
+- ~~**Veu dels enunciats (E5)**: E5 usa la 2a persona del singular…~~ **RESOLTA (2026-07-13, revisió interna T5, xat A5-E5-S5):** E5 harmonitzat a 2a plural; `#tip-` d'A5 harmonitzats a 2a singular (criteri revisat 2026-07); S5 harmonitzat a veu impersonal (referència: S3). Fase C executada: vegeu `T5_P_tasques.md` per al detall complet (correcció crítica del mode d'arrodoniment de `fcvt.w.s`/`fcvt.wu.s`, reordenació de S5 segons E5, grafia «IEEE 754», etc.).
 
 ### T6
 
