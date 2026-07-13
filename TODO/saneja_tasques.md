@@ -11,7 +11,7 @@
 - ✅ Decisions [D] (1.4–1.7, 2.9, 4.5, §5) aplicades segons les ordres de l'usuari
 - ✅ 7 fitxers esborrats, `pla_tasques.md` migrat a `TODO.md` i esborrat
 - ✅ Fitxers modificats: `CLAUDE.md`, `13_contrib.qmd`, `TODO.md`, `T2_P_tasques.md`
-- ⏳ Verificacions [V] pendents: 2.8 (render), 4.4 (log.log recent)
+- ✅ Verificacions [V] completades (2026-07-13): 2.8 (placeholder `@sec-nom` confirmat inofensiu, dins backtick d'exemple, no genera warning real) i 4.4 (render verificat per l'usuari; `pla_tasques.md` ja esborrat, contingut migrat)
 
 ---
 
@@ -54,11 +54,7 @@
 
 ## 4. `TODO/pla_tasques.md`
 
-- [C] **4.1** Blocs B, C i D: completats (tots els ítems [x] llevat de dos opcionals del C) — purgar-los segons la pròpia norma del fitxer («cada tasca s'esborra quan es completa»), migrant abans a `TODO.md` els dos residus del Bloc C: (i) opcional `aligned/split` per a equacions llargues; (ii) avís d'adaptació de selectors CSS si mai es migra a MathML (ja parcialment cobert a `TODO.md §Equacions a MathML` — fusionar).
-- [C] **4.2** Bloc E: contradicció amb `E_tasques.md`, que declara l'anàlisi de tot el corpus **feta i aplicada** (2026-07-05, decisions resoltes). Marcar el Bloc E com a completat i purgar-lo (la feina viva que en queda ja està repartida als registres T* i a `TODO.md`).
-- [C] **4.3** Bloc F: completat (verificat al repo, vegeu 1.2). Purgar.
-- [V] **4.4** Bloc A (warnings del render): estat **no verificable des d'aquí** sense un `log.log` recent. Demanar a l'usuari un render actual o marcar-ho per verificar en el proper `make render`. Nota: la taula «Ordre d'execució recomanat» quedarà obsoleta si s'adopta 1.4 (font única de configuracions a `CLAUDE.md`).
-- [D] **4.5** Si després de 4.1–4.4 només queda el Bloc A viu: valorar fusionar-lo dins `TODO.md §Tasques globals` i **esborrar `pla_tasques.md`** (un fitxer de planificació menys a mantenir).
+**RESOLTA ÍNTEGRAMENT (verificat 2026-07-13, render confirmat per l'usuari):** `pla_tasques.md` ja no existeix al repositori. El seu contingut viu (Bloc A, warnings del render) ja s'ha migrat a `TODO.md §Tasques globals §Neteja de warnings del render` (A1–A4). 4.1–4.3 (purga de blocs completats) i 4.5 (esborrament del fitxer) ja executats.
 
 ## 5. Fitxers candidats a esborrar [D — decisió de l'usuari, cap ja aplicat conté informació única no migrada un cop fets 3.3 i 4.x]
 
@@ -74,9 +70,9 @@
 
 ## 6. Registres `T*_P_tasques.md` (només duplicitats; no es tanquen)
 
-- **Es mantenen tots** (`T1`–`T8`): T1 tancat de facto però la declaració de tancament és de l'usuari; T3/T8 amb Fase C pendent; T4/T6/T7 amb ítems ⏳/🔵; T2 vegeu 6.2.
+- **Es mantenen tots** (`T1`–`T8`): T1 tancat de facto però la declaració de tancament és de l'usuari; T2 **completat i verificat** (vegeu 6.2, resolta); T3/T8 amb Fase C pendent; T4/T6/T7 amb ítems ⏳/🔵.
 - **6.1 Verificació dirigida feta (2026-07-12)**: totes les afirmacions «aplicat a `13_contrib.qmd`» / «anotat a `TODO.md`» dels 7 registres s'han contrastat contra els fitxers reals i són **certes** (subseccions §T6/§T7 de contrib, veu plural dels enunciats, «amplada de banda», entrades TODO §T5/§T6/§T7, retirada de P3, `12_sigles_simbols` a §T6). Cap forat silenciós. Cap incompatibilitat de criteris entre registres (singular `#tip-` vs plural `#exr-`, unitats, numeració d'optimitzacions: tot coherent i ben distingit a contrib).
-- [C] **6.2 ⚠ Estat estantís a `T2_P_tasques.md`**: la cua diu «*Fase C pendent*», però al repositori la secció A està (totalment o parcial) **executada**: includes `RV32I_pseudo_mv/li` a `A2.qmd` L527/L543 (A.6), referència A2→A7 corregida a contrib L258 (A.22), adreça `0x00400014` aplicada (B.12). Corregir la nota d'estat del registre (o verificar ítem a ítem la secció A abans de declarar-lo) per evitar una reexecució o confusió.
+- ~~[C] **6.2 ⚠ Estat estantís a `T2_P_tasques.md`**~~ **RESOLTA (2026-07-13, verificació exhaustiva en revisió interna T5, xat A5-E5-S5):** els 35 ítems de la secció A s'han contrastat un per un contra `A2.qmd`/`E2.qmd`/`S2.qmd` reals — **tots 35 estan aplicats**. L'únic ítem que semblava pendent (A.16, apòstrofs tipogràfics) resulta ser sortida literal d'un missatge de GCC dins un bloc de codi (no s'ha de normalitzar). La nota d'estat de `T2_P_tasques.md` s'ha corregit en conseqüència: la secció A és 100% completa.
 - [D] **6.3** Criteri **LSb/MSb (bits) vs LSB/MSB (bytes)** (aplicat a T1 segons el seu registre): només consta a `12_sigles_simbols.qmd` i al registre T1 — no està registrat a `13_contrib.qmd`. Si és convenció de tot el llibre, registrar-la (p. ex. a §Sigles o a una subsecció §T1).
 - [V] **6.4** (Fora d'abast del sanejament, per a les properes sessions de revisió): confirmar l'estat real dels 🔵 de T6 (14) i T7 (15) — molts semblen resolts dins dels xats respectius però el recompte de marques no ho distingeix.
 

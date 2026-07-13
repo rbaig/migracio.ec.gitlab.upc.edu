@@ -48,17 +48,15 @@ Estat de la Revisió interna Ax-Ex-Sx
 
 - Fetes pre-Fable: x = {1, 2, 4, 5}
 - Fetes Fable (algunes només fins ): x = {2, 3, 7, 8, 9}
-    - Pendent
-        - C:      5
-    - Iniciat
-        - C:     4
     - fase A i B
         - C:    3         
         - R:   2        8 
-    - fase C
-        - C: 1             9
+    - fase C acabada
+        - C: 1     4 5       9
         - R:         6 7
-- Pendents: x = {6}
+- `12_sigles_simbols`: `## Símbols` i `##Notació`
+   - Fent-se: 7
+   - Fet: 
 
 1. Estàs amb Sonnet Medium sense Thinking. Si vols canvis, digues-ho i atura't.
 2. Dones la revisió pedagògica per finalitzada? O vols fer una darrera passada?
