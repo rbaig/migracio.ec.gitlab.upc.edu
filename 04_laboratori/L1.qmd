@@ -27,7 +27,7 @@ Cal lliurar les respostes als exercicis següents al campus virtual abans de l'i
 
 ### Lectura prèvia {.unnumbered}
 
-Per fer la sessió, cal haver instal·lat i configurat RARS tal com s'indica a la [Presentació del curs](#sec-presentacio-eines-rars).
+Per fer la sessió, cal haver instal·lat RARS tal com s'indica a la [Presentació del curs](../index.qmd#sec-presentacio-eines-rars).
 
 També cal haver llegit i entès els continguts següents:
 
@@ -35,6 +35,7 @@ També cal haver llegit i entès els continguts següents:
 | :--- | :--- |
 | Format del codi assemblador | @imp-codi-format-criteris |
 | Esquelet d'un programa | @nte-programa-esquelet |
+| Accessos a memòria (`lw`), desplaçaments (`slli`) i salts condicionals (`bge`, `blt`) | @sec-acces-paraula-lw-sw, @sec-desplacaments-logics, @sec-salts-condicionals |
 : {.striped .hover}
 
 ::: {#cau-format-codi-esquelet .callout-caution}
@@ -43,9 +44,9 @@ També cal haver llegit i entès els continguts següents:
 El **format del codi** (@imp-codi-format-criteris) i l'**esquelet** (@nte-programa-esquelet) s'han de respectar en **tots** els programes lliurats al laboratori i a l'examen de laboratori.
 :::
 
-## El primer programa
+## El primer programa {#sec-rars-primer-programa}
 
-El programa següent és el mínim executable a RARS: imprimeix un missatge per consola i en finalitza l'execució.
+El programa següent és el programa mínim executable a RARS: imprimeix un missatge per consola i en finalitza l'execució.
 
 ```{.s filename="hola.s"}
 .globl  _start
@@ -73,9 +74,9 @@ Per executar-lo a RARS:
 ::: {#cau-syscalls-rars .callout-caution}
 ## Syscalls de RARS
 
-Una **syscall** és una petició de servei al sistema operatiu (o, en el cas de RARS, al simulador). Es fa carregant el número de servei a `a7` i els paràmetres a `a0`–`a5`, i executant `ecall`. Les syscall s'estudien en detall a @sec-ei-ecall; per ara n'hi ha prou amb usar-les com a patró:
+Una **syscall** és una petició de servei al sistema operatiu (o, en el cas de RARS, al simulador). Es fa carregant el codi de servei a `a7` i els paràmetres a `a0`–`a2`, i executant `ecall`. Les syscalls s'estudien en detall a @sec-ei-ecall; per ara n'hi ha prou amb usar-les com a patró:
 
-| Número de servei (`a7`) | Servei | Paràmetre (`a0`) | Retorn (`a0`) |
+| Codi de servei (`a7`) | Servei | Paràmetre (`a0`) | Retorn (`a0`) |
 | :---: | :--- | :--- | :--- |
 | 1 | `print_int` | enter a imprimir | — |
 | 4 | `print_string` | adreça de la cadena | — |
@@ -117,10 +118,10 @@ fi:
 
 Un cop assemblat el programa (F3), la pestanya *Execute* mostra els panells que s'usaran durant la simulació:
 
-- **Panell de codi desassemblat** (esquerra): mostra les instruccions en memòria, una per fila, amb l'adreça, la codificació en hexadecimal i el mnemònic. La instrucció que s'executarà a continuació apareix ressaltada.
-- **Panell de registres** (dreta): mostra el contingut dels 32 registres de propòsit general i el PC. Els registres modificats a l'últim pas apareixen ressaltats.
-- **Panell de memòria de dades** (centre-baix): mostra el contingut del segment `.data` en format de words hexadecimals.
-- **Panell de consola** (baix): mostra la sortida de les syscall i permet introduir dades.
+- **Panell de codi desassemblat** (*Text Segment*, esquerra): mostra les instruccions en memòria, una per fila, amb l'adreça, la codificació en hexadecimal i el mnemònic. La instrucció que s'executarà a continuació apareix ressaltada.
+- **Panell de registres** (*Registers*, dreta): mostra el contingut dels 32 registres de propòsit general i el PC. Els registres modificats a l'últim pas apareixen ressaltats.
+- **Panell de memòria de dades** (*Data Segment*, centre-baix): mostra el contingut del segment `.data` en format de words hexadecimals.
+- **Panell de consola** (*Run I/O*, baix): mostra la sortida de les syscalls i permet introduir dades.
 
 ---
 
@@ -130,8 +131,16 @@ Un cop assemblat el programa (F3), la pestanya *Execute* mostra els panells que 
 Assembleu `suma.s` i responeu les preguntes següents:
 
 a) On es mostra el valor del comptador de programa (PC)?
-b) On es mostra el nombre d'instruccions executades un cop finalitzada l'execució del programa? Indiqueu el camí de menús o la ubicació exacta a la interfície.
-c) El panell de codi mostra, per a cada instrucció, tres columnes de valors. Quina informació conté cadascuna?
+b) RARS no mostra el nombre d'instruccions executades als panells principals. Quina eina de RARS permet comptar-les? Indiqueu el camí de menús per obrir-la i el pas necessari perquè comenci a comptar.
+c) El panell de codi mostra, per a cada instrucció, tres columnes de valors (a més de la casella d'activació de punt d'aturada i la columna de codi font). Quina informació conté cadascuna?
+:::
+
+---
+
+::: {#sol-rars-panells}
+a) Al panell de registres (*Registers*), a la fila `pc`.
+b) *Tools → Instruction Counter*. Cal obrir-la **abans** d'executar el programa i prémer *Connect to Program* perquè comenci a comptar; si s'executa el programa abans de connectar l'eina, el recompte no es registrarà.
+c) *Address* (adreça de memòria de la instrucció), *Code* (codificació de la instrucció en hexadecimal) i *Basic* (la instrucció real, amb els registres identificats amb `x0`–`x31`).
 :::
 
 ---
@@ -146,6 +155,12 @@ b) Per quina raó `la` necessita dues instruccions reals en lloc d'una?
 c) La pseudoinstrucció `li t2, 10` en canvi genera una sola instrucció. Per quina raó en aquest cas n'hi ha prou amb una? Hauria passat el mateix amb `li t2, 100000`?
 
 **Indicació**: els immediats de les instruccions tipus I tenen 12 bits amb signe (rang −2048..2047).
+:::
+
+::: {#sol-rars-pseudoinstruccio}
+a) `auipc t3, 0xfc10` seguida de `addi t3, t3, -12` (els valors exactes depenen de l'adreça de `V` i de la posició de `la` al programa; l'estructura auipc+addi és sempre la mateixa).
+b) Perquè una adreça de memòria ocupa 32 bits, i cap instrucció tipus I té un immediat de 32 bits: `auipc` aporta els 20 bits alts (relatius al PC) i `addi` hi suma els 12 bits baixos amb signe.
+c) `10` cap dins el rang [−2048, 2047] d'un immediat de 12 bits amb signe, per tant una sola `addi` n'hi ha prou. Amb `li t2, 100000` **no** passaria el mateix: 100000 no cap en 12 bits, de manera que RARS generaria `lui t2, 0x18` seguida de `addi t2, t2, 1696` (dues instruccions), igual que amb `la`.
 :::
 
 ---
@@ -167,11 +182,17 @@ El programa `hola.s` de la secció anterior no té bucles: el nombre d'instrucci
 
 Treballeu sobre el programa `hola.s`.
 
-a) Executeu el programa amb F5. Quin nombre d'instruccions executades reporta RARS?
+a) Obriu *Tools → Instruction Counter*, connecteu-la al programa (*Connect to Program*) i executeu amb F5. Quin nombre d'instruccions executades reporta l'eina?
 b) Feu el recompte manual: llisteu totes les instruccions que s'executen, en ordre, indicant per a cada una si és una instrucció real o l'expansió d'una pseudoinstrucció. Quantes instruccions reals s'executen en total?
-c) El valor del recompte manual coincideix amb el que reporta RARS? Si hi ha diferència, expliqueu-ne la causa.
+c) El valor del recompte manual coincideix amb el que reporta l'Instruction Counter? Si hi ha diferència, expliqueu-ne la causa.
 
 **Indicació**: la pseudoinstrucció `la` s'expandeix en dues instruccions reals. Useu el panell de codi desassemblat per veure exactament quines instruccions s'executen.
+:::
+
+::: {#sol-recompte-instruccions}
+a) 7 instruccions.
+b) `la a0, msg` (auipc + addi, 2 instruccions reals), `li a7, 4` (addi, 1), `ecall` (1), `li a7, 93` (addi, 1), `li a0, 0` (addi, 1), `ecall` (1). Total: **7 instruccions reals**.
+c) Sí, coincideixen (7 = 7). Tot i que el codi font té 6 línies, el recompte manual dona 7 perquè `la` s'expandeix en dues instruccions reals.
 :::
 
 ---
@@ -184,14 +205,21 @@ Assembleu `suma.s` i observeu el panell de memòria de dades.
 a) En quina adreça de memòria comença el vector `V`?
 b) En quina adreça exacta es troba `V[3]`? Quin és el seu contingut en hexadecimal?
 c) `V[0]` conté el valor `-1`. Quin valor hexadecimal té al panell de memòria? Expliqueu com s'obté aquesta representació.
-d) El panell mostra els bytes d'un word en ordre de major a menor adreça (d'esquerra a dreta). Quin ordre d'emmagatzematge real usa RV32I?
+d) El panell mostra cada word com un valor hexadecimal de 32 bits. Quin ordre d'emmagatzematge dels bytes (endianness) usa RV32I?
+:::
+
+::: {#sol-rars-memoria}
+a) `0x10010000` (adreça per defecte del segment `.data` a RARS).
+b) `0x1001000C` (= 0x10010000 + 3·4); conté `0xFFFFFFFC`.
+c) `0xFFFFFFFF`. S'obté calculant el complement a 2 de −1 en 32 bits: es complementen tots els bits d'1 (0x00000000 → 0xFFFFFFFF) i se suma 1, o de manera equivalent 2³² − 1 = 0xFFFFFFFF.
+d) RV32I és **little-endian**: el byte de menys pes s'emmagatzema a l'adreça més baixa.
 :::
 
 ---
 
 ## Punts d'aturada {#sec-rars-breakpoints}
 
-Un **punt d'aturada** (*breakpoint*) és una marca sobre una instrucció que fa que l'execució contínua (F5) s'aturi just abans d'executar-la. S'activa i es desactiva fent clic a la columna de l'esquerra del panell de codi desassemblat, a la fila de la instrucció triada.
+Un **punt d'aturada** (*breakpoint*) és una marca sobre una instrucció que fa que l'execució contínua (F5) s'aturi just abans d'executar-la. S'activa i es desactiva fent clic a la casella de l'esquerra del panell de codi desassemblat, a la fila de la instrucció triada.
 
 Els punts d'aturada permeten inspeccionar l'estat del programa en un punt clau sense haver d'executar-lo pas a pas des del principi. Quan el programa s'atura, es pot continuar amb F5 (fins al següent punt d'aturada) o amb F7 (pas a pas).
 
@@ -202,9 +230,19 @@ Els punts d'aturada permeten inspeccionar l'estat del programa en un punt clau s
 
 Treballeu sobre `suma.s`.
 
-a) Afegiu un punt d'aturada a la instrucció `add t0, t0, t4` (la que acumula la suma). Executeu el programa amb F5. En quina iteració s'atura? Quin és el valor de `t0` i `t4` en aquest moment? Tingueu en compte que el punt d'aturada s'atura just **abans** d'executar la instrucció marcada.
+a) Afegiu un punt d'aturada a la instrucció `add t0, t0, t4` (la que acumula la suma). Executeu el programa amb F5. En quina iteració s'atura? Quins són els valors de `t0` i `t4` en aquest moment? Tingueu en compte que l'execució s'atura just **abans** d'executar la instrucció marcada.
 b) Premeu F5 repetidament fins al final. Anoteu el valor de `t4` en cada aturada. Verifiqueu que els valors corresponen als elements del vector `V` en ordre.
 c) Quin és el valor final de `t0` un cop ha acabat l'execució? Era el resultat esperat? Justifiqueu-lo.
+:::
+
+::: {#sol-rars-breakpoints}
+a) S'atura a la primera iteració, amb `t0 = 0` i `t4 = -1`.
+b) Els valors de `t4` en cada aturada successiva són −1, −2, −3, −4, −5, −6, −7, −8, −9, −10: coincideixen exactament amb els elements de `V` en ordre.
+c) `t0 = -55`. És el resultat esperat: −1−2−3−4−5−6−7−8−9−10 = −55.
+
+::: {.callout-tip title="Comprovació pràctica"}
+Reproduïu la traça a RARS: 10 aturades en total, amb `t4` recorrent `V` en ordre i `t0` acumulant fins a −55.
+:::
 :::
 
 ---
@@ -218,7 +256,7 @@ El procediment general és:
 1. Determineu el resultat esperat abans d'executar el programa.
 2. Identifiqueu un punt de control (per exemple, la instrucció d'acumulació d'un bucle) i afegiu-hi un punt d'aturada.
 3. En cada aturada, comproveu que els valors dels registres rellevants coincideixen amb el que s'esperava.
-4. Quan trobeu una discrepància, retrocediu un pas per identificar la instrucció causant.
+4. Quan trobeu una discrepància, retrocediu un pas per identificar la instrucció causant. RARS ofereix *Run → Backstep* (F8) per desfer l'última instrucció executada sense haver de reiniciar.
 
 ---
 
@@ -259,6 +297,13 @@ a) Sense executar el programa, analitzeu el codi i preveieu quin serà el result
 b) Executeu el programa pas a pas per confirmar la vostra predicció. En quina iteració s'observa per primera vegada un comportament incorrecte?
 c) Corregiu l'error (canvieu una única línia) i verifiqueu que el resultat és `-55`. Lliureu la versió corregida com `s1_5_1.s`.
 d) Al fitxer `s1_5_1.md`, descriviu: quina és la instrucció errònia, quin valor incorrecte produïa i com ho heu detectat.
+:::
+
+::: {#sol-depuracio-pas-a-pas}
+a) L'error és `li t1, 9` (hauria de ser `li t1, 0`): l'índex `i` comença a 9 en lloc de 0, per tant el bucle només suma `V[9] = -10`. El resultat incorrecte previst és `t0 = -10`.
+b) El comportament incorrecte s'observa ja a la **primera** iteració: `t1` val 9 des de l'inici i `t4` carrega `V[9] = -10` en lloc de `V[0] = -1`.
+c) Cal canviar `li t1, 9` per `li t1, 0`. Amb la correcció, `t0` acaba valent `-55`.
+d) La instrucció errònia és `li t1, 9`; produïa `t0 = -10` perquè només s'acumulava l'últim element del vector; es detecta comparant l'índex inicial esperat (0) amb el valor carregat a `t1` a l'inici de l'execució pas a pas.
 :::
 
 ---
@@ -308,9 +353,17 @@ fi2:
         ecall
 ```
 
-a) Sense executar el programa, llegiu el codi del segon bucle (`bucle2`) i identifiqueu l'error. Quin hauria de fer la instrucció errònia?
+a) Sense executar el programa, llegiu el codi del segon bucle (`bucle2`) i identifiqueu l'error. Què hauria de fer la instrucció errònia?
 b) Afegiu un punt d'aturada a la primera instrucció de `bucle2`. Executeu fins al punt d'aturada amb F5 i comproveu que `t0` és `55` i `t6` és `10`.
-c) Continueu amb F7 pas a pas. Observeu el valor de `t0` després de la instrucció `sub`. Confirma el vostre diagnòstic del punt a)?
+c) Continueu amb F7 pas a pas. Observeu el valor de `t0` després de la instrucció `sub`. Es confirma el diagnòstic del punt a)?
 d) Corregiu l'error i verifiqueu que `t5` val `5`. Lliureu la versió corregida com `s1_5_2.s`.
-e) Al fitxer `s1_5_2.md`, descriviu: on heu col·locat el punt d'aturada i per quina raó, quina és la instrucció errònia i com la heu corregit.
+e) Al fitxer `s1_5_2.md`, descriviu: on heu col·locat el punt d'aturada i per quina raó, quina és la instrucció errònia i com l'heu corregit.
+:::
+
+::: {#sol-depuracio-breakpoints}
+a) L'error és `sub t0, t6, t0` (els operands estan invertits: hauria de ser `sub t0, t0, t6`). La instrucció hauria de calcular `t0 = t0 - t6` (suma restant el divisor), no `t6 - t0`.
+b) A l'aturada, `t0 = 55` (suma de `V = {1, ..., 10}`) i `t6 = 10` (còpia de `N`).
+c) Després del `sub` erroni, `t0 = 10 - 55 = -45`. Això confirma el diagnòstic: en comptes de restar el divisor de la suma (55 − 10 = 45), es resta la suma del divisor, produint un valor negatiu que fa sortir del bucle massa aviat (amb `t5 = 1` en lloc de 5).
+d) Amb `sub t0, t0, t6`, el bucle itera 5 vegades (55→45→35→25→15→5) i `t5` acaba valent `5`.
+e) Exemple de resposta: el punt d'aturada es col·loca a `blt t0, t6, fi2` (primera instrucció de `bucle2`) perquè és el punt on es pot comprovar l'estat inicial de `t0` i `t6` abans de cap iteració; la instrucció errònia és `sub t0, t6, t0`, amb els operands invertits; es corregeix escrivint `sub t0, t0, t6`.
 :::

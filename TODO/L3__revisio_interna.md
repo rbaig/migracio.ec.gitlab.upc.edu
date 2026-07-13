@@ -1,4 +1,4 @@
-Nom d'aquest xat: `EC A{N}-E{N}-S{N} Revisió interna`
+Nom d'aquest xat: `EC L3 Revisió interna`
 
 Objectiu d'aquest xat: revisió profunda des de diversos punts de vista
 
@@ -78,9 +78,9 @@ Estat de la Revisió interna Ax-Ex-Sx
 
 0. Explora els fitxers que t'he passat.
 1. Llegeix `CLAUDE.md`, `13_contrib.qmd` i `24_specs/svg.md`.
-2. Llegeix els fitxers principals a revisar: `A{N}.qmd`, `E{N}.qmd` i `S{N}.qmd`.
-3. Demana'm o busca al repositori els fitxers que necessitis.
-4. Fes un primer mapa de l'estructura i el contingut: identifica seccions, detecta inconsistències evidents de coherència, pedagogia i llenguatge. **En aquesta fase no cal encara verificar exhaustivament cada càlcul** — l'objectiu és tenir el mapa global. Un cop extretes les convencions rellevants de `CLAUDE.md`, `13_contrib.qmd` i `svg.md`, no cal rellegir-los sencers a la Fase B: treballa amb el resum ja fet a menys que sorgeixi un dubte concret que ho justifiqui.
+2. Llegeix el fitxer principal a revisar (`L3.qmd`) i els fitxers dels apunts les seves referències creuades (`Ax.qmd`, amb x ∈ [1, 9]).
+3. `raw.githubusercontent.com/rbaig/migracio.ec.gitlab.upc.edu/main/...` al repositori els fitxers que necessitis.
+4. Fes un primer mapa de l'estructura i el contingut: identifica seccions, detecta inconsistències evidents de coherència, pedagogia i llenguatge. **En aquesta fase no cal encara verificar exhaustivament cada càlcul** — l'objectiu és tenir el mapa global. Un cop extretes les convencions rellevants de `CLAUDE.md`, `13_contrib.qmd`, no cal rellegir-los sencers a la Fase B: treballa amb el resum ja fet a menys que sorgeixi un dubte concret que ho justifiqui.
 5. Atura't. Presenta'm:
    - Un resum breu de l'estructura dels tres fitxers.
    - La llista de seccions que contenen càlculs crítics o traces d'exemples pas a pas que requeriran verificació numèrica profunda a la Fase B (p. ex. fórmules, exemples amb estat evolutiu, taules de rendiment).
@@ -95,7 +95,7 @@ Estat de la Revisió interna Ax-Ex-Sx
 *Configuració esperada: Fable 5 High amb Thinking.*
 
 6. Amb el mapa validat, fes la verificació profunda **només de les seccions amb contingut numèric/verificable identificades a la Fase A** (càlculs, traces, fórmules), més la resta d'aspectes a revisar (correcció tècnica general, coherència, pedagogia, llenguatge) sobre la totalitat dels fitxers.
-7. Genera la llista completa d'accions a realitzar; guarda-la al fitxer `T{N}_P_tasques.md` i ofereix-me-la per descarregar.
+7. Genera la llista completa d'accions a realitzar; guarda-la al fitxer `L3_tasques.md` i ofereix-me-la per descarregar.
 
 ### Fase C — Execució
 
@@ -107,7 +107,7 @@ Estat de la Revisió interna Ax-Ex-Sx
 
 ## Si el xat s'exhaureix dins la Fase B o C (sense arribar al punt d'aturada previst)
 
-A diferència del punt de represa de la Fase A (pas 5), un exhauriment dins la Fase B (abans de completar `T{N}_P_tasques.md`) o dins la Fase C no deixa necessàriament un artefacte net i complet. Experiència real: en un cas, el xat es va exhaurir aparentment durant la generació del fitxer de tasques, però en realitat ja s'havia arribat a completar-la i lliurar-la — l'exhauriment va tallar el torn següent, no la tasca en si. Per tant:
+A diferència del punt de represa de la Fase A (pas 5), un exhauriment dins la Fase B (abans de completar `L3_tasques.md`) o dins la Fase C no deixa necessàriament un artefacte net i complet. Experiència real: en un cas, el xat es va exhaurir aparentment durant la generació del fitxer de tasques, però en realitat ja s'havia arribat a completar-la i lliurar-la — l'exhauriment va tallar el torn següent, no la tasca en si. Per tant:
 
 1. **Abans de donar per perduda la feina**, comprova si el darrer missatge del xat exhaurit conté ja el fitxer complet ofert per descàrrega — pot ser que la tasca s'hagi acabat igualment.
 2. Si no hi ha fitxer complet, **demana'm que cerqui el xat exhaurit** (`conversation_search`/`recent_chats`): encara que no pugui recuperar-ne el text literal complet, sol poder obtenir un resum estructurat del que ja s'havia analitzat o decidit, evitant repetir feina de zero.

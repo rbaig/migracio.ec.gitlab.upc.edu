@@ -16,6 +16,11 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Exercicis** -> Problemes (slugs, callout header, refs, etc.). Detall complet de l'abast (afegit a la revisió interna de T2, xat A2-E2-S2): els IDs d'`Ex.qmd`/`Sx.qmd` usen actualment el prefix `p<N>-` (`#exr-p3-...`, `#sol-p3-...`), numeració llegada de les col·leccions MIPS on `p` feia referència a «problema». Amb la migració a RISC-V, l'estructura és 1 tema = 1 fitxer `Ax.qmd`/`Ex.qmd`/`Sx.qmd`, per tant té més sentit `t<N>-` (de «tema»), coherent amb la numeració de la resta del llibre. Cal: (i) substituir `p<N>-` per `t<N>-` a tots els IDs `#exr-p<N>-*` i `#sol-p<N>-*` de tots els `Ex.qmd`/`Sx.qmd`; (ii) actualitzar totes les referències creuades (`@exr-p<N>-*`, `@sol-p<N>-*`) a tot el repositori (`Ax.qmd` també en pot contenir cap a `Ex.qmd`/`Sx.qmd`); (iii) verificar que no queda cap referència trencada després del canvi. Nota: E1/E3 tenen prefixos `p1-`/`p4-` respectivament, que no es corresponen amb el seu número de tema real (haurien de ser `t1-`/`t3-`) — cal aclarir aquest desajust abans de renumerar. Volum de canvi considerable i mecànic: candidat clar per a Claude Code.
 
+- **Revisió sistemàtica del corpus** per nodrir les taules de `Símbols` i `Notació` de `12_sigles_simbols.qmd`
+
+- **Revisió sistemàtica del corpus** per l'ús de 
+
+
 #### Tasques vives migrades de fitxers esborrables
 
 - **(a) Harmonització notacional `21_riscv/` RV32I/RV32M**: estendre `=` → `\leftarrow` (i revisar `off`/`offset`) als fitxers RV32I/RV32M llistats a `prompt_claude_code_harmonitzacio_rv32f.md §Fora d'abast`; coordinar amb les revisions de T2/T3/T4/T9 que els inclouen. [de `prompt_…rv32f.md` + `T5_revisio_canvis.md`]
