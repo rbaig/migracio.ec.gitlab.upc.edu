@@ -46,14 +46,12 @@ Nota: Les revisions internes de temes pendents estan indicades més avall. Si ne
 
 Estat de la Revisió interna Ax-Ex-Sx
 
-- Fetes pre-Fable: x = {1, 2, 4, 5}
-- Fetes Fable (algunes només fins ): x = {2, 3, 7, 8, 9}
+- Revisió interna
     - fase A i B
-        - C:    3         
-        - R:   2        8 
+        - R:           8 
     - fase C acabada
-        - C: 1     4 5       9
-        - R:         6 7
+        - C: 1   3 4 5       9
+        - R:   2       6 7
 - `12_sigles_simbols`: `## Símbols` i `##Notació`
    - Fent-se: 7
    - Fet: 
