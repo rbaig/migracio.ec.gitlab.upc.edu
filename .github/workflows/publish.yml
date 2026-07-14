@@ -1,0 +1,48 @@
+name: Publica a GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # permet llançar-ho manualment des de la pestanya Actions
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clona el repositori
+        uses: actions/checkout@v4
+
+      - name: Instal·la Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        # Els scripts de pre-render (25_scripts/*.py) només usen la llibreria
+        # estàndard de Python (ast, re, sys, pathlib, colorsys, tomllib);
+        # el runner ubuntu-latest ja porta Python 3.12+ preinstal·lat,
+        # per tant no cal cap pas addicional d'instal·lació de dependències.
+
+      - name: Renderitza el llibre a HTML
+        run: quarto render --to html
+
+      - name: Puja l'artefacte de Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _book
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplega a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
