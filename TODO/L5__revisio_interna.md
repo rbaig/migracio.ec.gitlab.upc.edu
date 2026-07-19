@@ -48,15 +48,8 @@ Estat de la Revisió interna Lx
 
 - Fetes Fable:
     - Pendents: x = {2, 3, 4, 5, 6}
+    - Fase B `Lx_tasques.md` 4 
     - Fase C feta 1
-
----
-
-1. Estàs amb Sonnet Medium sense Thinking. Si vols canvis, digues-ho i atura't.
-2. Dones la revisió pedagògica per finalitzada? O vols fer una darrera passada?
-3. El mateix per la revisió tècnica.
-4. El mateix per la revisió lingüística.
-5. Digues si amb Opus o Sonnet 5 ho pots fer totes les revisions pendents, encara que sigui en diverses passades (p. ex. una per revisió tècnica, una per didàctica i una altra per lingüística). I si ho pots fer, digues quin model i effort necessites si vols Thinking activat.
 
 ---
 
@@ -109,3 +102,13 @@ A diferència del punt de represa de la Fase A (pas 5), un exhauriment dins la F
 ---
 Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
 Renderització HTML (pot estar desactualitzada): https://loi.ac.upc.edu/ec
+
+---
+
+## Finalització
+
+1. Estàs amb Sonnet Medium sense Thinking. Si vols canvis, digues-ho i atura't.
+2. Dones la revisió pedagògica per finalitzada? O vols fer una darrera passada?
+3. El mateix per la revisió tècnica.
+4. El mateix per la revisió lingüística.
+5. Digues si amb Opus o Sonnet 5 ho pots fer totes les revisions pendents, encara que sigui en diverses passades (p. ex. una per revisió tècnica, una per didàctica i una altra per lingüística). I si ho pots fer, digues quin model i effort necessites si vols Thinking activat.
