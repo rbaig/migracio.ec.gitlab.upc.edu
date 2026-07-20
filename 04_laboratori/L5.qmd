@@ -20,12 +20,12 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 | Concepte | On trobar-ho |
 | :--- | :--- |
-| Format IEEE-754 de simple precisió: signe, exponent esbiaixat, fracció | @sec-ieee754, @nte-ieee754-formats |
+| Format IEEE 754 de simple precisió: signe, exponent esbiaixat, fracció | @sec-ieee754, @nte-ieee754-formats |
 | El bit ocult | @cau-bit-ocult |
 | Codificació i decodificació de nombres en coma flotant | @tip-ieee754-codificacio, @tip-ieee754-decodificacio |
 | Modes d'arrodoniment | @sec-arrodoniment |
 | Desplaçaments lògics i aritmètics (`sll`, `srl`, `sra`, `slli`, `srli`, `srai`) | @nte-instruccions-desplacament-logic, @nte-instruccions-desplacament-arithmetic |
-| Operacions lògiques bit a bit (`and`, `or`, `slt`) | @nte-instruccions-logiques, @nte-instruccions-comparacio |
+| Operacions lògiques bit a bit i de comparació (`and`, `or`, `slt`) | @nte-instruccions-logiques, @nte-instruccions-comparacio |
 | Subrutines: pas de paràmetres i retorn de resultats | @sec-pas-parametres-retorn, @nte-abi-pas-parametres |
 | Subrutines multinivell: registres segurs i bloc d'activació | @sec-multinivell-pila, @nte-abi-registres-temporals-segurs |
 | Compilació separada i directiva `.globl` | @sec-compilacio, @nte-globl |
@@ -35,7 +35,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 En un projecte real, el codi es divideix en **mòduls** independents que es compilen i assemblen per separat (@sec-compilacio). Cadascun viu en el seu propi fitxer font, declara com a globals les etiquetes que han de ser visibles des d'altres mòduls, i referencia les etiquetes externes sense necessitat de conèixer-ne els detalls interns.
 
-RARS reprodueix aquest flux de manera directa: amb l'opció **Settings → Assemble all files currently open** activada, l'assemblador processa tots els fitxers oberts alhora i resol automàticament les referències entre ells, fent el rol combinat d'assemblador i enllaçador.
+RARS reprodueix aquest flux de manera directa: amb l'opció *Settings → Assemble all files currently open* activada, l'assemblador processa tots els fitxers oberts alhora i resol automàticament les referències entre ells, fent el rol combinat d'assemblador i enllaçador.
 
 ::: {#cau-global-compilacio-separada .callout-caution}
 ## Compilació separada — directiva `.globl`
@@ -44,7 +44,7 @@ Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.gl
 :::
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Un cop oberts tots els fitxers i activada l'opció **Assemble all files currently open**, assembleu el projecte. Al panell **Labels** (o **Symbol Table**) de RARS hi apareixeran totes les etiquetes globals dels mòduls. Comproveu que les etiquetes esperades hi són i que les seves adreces s'han resolt correctament.
+Un cop oberts tots els fitxers i activada l'opció *Assemble all files currently open*, assembleu el projecte. Al panell *Labels* (o *Symbol Table*) de RARS hi apareixeran totes les etiquetes globals dels mòduls. Comproveu que les etiquetes esperades hi són i que les seves adreces s'han resolt correctament.
 :::
 
 ---
@@ -76,7 +76,7 @@ Tingueu en compte:
 
 - `abs` és **uninivell**: determineu si cal algun registre segur.
 - `_start` és **multinivell**: determineu quins valors, si n'hi ha, travessen la crida i cal preservar.
-- Obriu els dos fitxers a RARS, activeu **Settings → Assemble all files currently open** i assembleu. Comproveu que `abs` apareix al panell **Labels**.
+- Obriu els dos fitxers a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Comproveu que `abs` apareix al panell *Labels*.
 :::
 
 ---
@@ -84,7 +84,7 @@ Tingueu en compte:
 ::: {#sol-compilacio-separada}
 **Anàlisi de registres segurs.**
 
-`abs` és uninivell: no fa cap crida. No hi ha cap crida que destrueixi cap registre; tots els temporals van a registres `t`. BA buit.
+`abs` és uninivell: no fa cap crida, de manera que no hi ha cap registre en risc de ser destruït; tots els temporals van a registres `t`. BA buit.
 
 `_start` és multinivell (crida `abs`). L'únic valor que cal preservar és `ra`; no hi ha cap altre valor generat abans de la crida que s'usi després.
 
@@ -136,7 +136,7 @@ _start:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu **Settings → Assemble all files currently open** i assembleu. Al panell **Labels** han d'aparèixer les etiquetes `abs`, `_start` i `resultat` amb les seves adreces.
+Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Al panell *Labels* han d'aparèixer les etiquetes `abs`, `_start` i `resultat` amb les seves adreces.
 
 Executeu el programa i comproveu que la variable global `resultat` conté el valor `7`.
 
@@ -146,13 +146,13 @@ Proveu també amb el valor `0`: el resultat ha de ser `0` (el camí `bge` és ce
 
 ## Subrutina `descompon`
 
-En aquesta sessió es desenvolupa un programa que converteix un nombre real codificat en **coma fixa** al format de **coma flotant IEEE-754 de simple precisió** (@sec-ieee754). El programa s'estructura en dues subrutines (`descompon` i `compon`) i un `_start` repartits en dos fitxers, aplicant la compilació separada de la secció anterior.
+En aquesta sessió es desenvolupa un programa que converteix un nombre real codificat en **coma fixa** al format de **coma flotant IEEE 754 de simple precisió** (@sec-ieee754). El programa s'estructura en dues subrutines (`descompon` i `compon`) i un `_start` repartits en dos fitxers, aplicant la compilació separada de la secció anterior.
 
 El **format de coma fixa** que s'usa en aquesta sessió té 32 bits: el bit 31 conté el signe (0 per als positius) i els bits 30–0 representen la magnitud en base 2, amb 19 bits de part entera (bits 30–12) i 12 bits de part fraccionària (bits 11–0):
 
 $$\text{valor}(A) = (-1)^{A_{31}} \times \sum_{i=0}^{30} A_i \cdot 2^{i-12}$$
 
-El **format de coma flotant IEEE-754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent esbiaixat (biaix 127) (bits 30–23) i 23 bits de fracció amb bit ocult (@cau-bit-ocult) (bits 22–0).
+El **format de coma flotant IEEE 754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent esbiaixat amb biaix 127 (bits 30–23) i 23 bits de fracció amb bit ocult (@cau-bit-ocult) (bits 22–0).
 
 El programa de conversió s'organitza en dos passos:
 
@@ -161,7 +161,7 @@ int signe;
 int exponent;
 int mantissa;
 int cfixa    = 0x87D18A00;
-float cflotant;
+int cflotant;
 
 void main() {
     descompon(cfixa, &signe, &exponent, &mantissa);
@@ -169,7 +169,9 @@ void main() {
 }
 ```
 
-La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE-754: el signe, la mantissa normalitzada sense bit ocult (23 bits) i l'exponent esbiaixat (biaix 127) (8 bits):
+`cflotant` es declara com a `int`, no `float`: el valor que es construeix és el **patró de bits** de la representació IEEE 754, no un nombre que el compilador hagi de convertir. Si es declarés `float`, l'assignació convertiria el valor enter a coma flotant en lloc de reinterpretar-ne els bits.
+
+La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE 754: el signe, la mantissa normalitzada sense bit ocult (23 bits) i l'exponent esbiaixat amb biaix 127 (8 bits):
 
 ```{.c filename="descompon.c"}
 void descompon(int cf, int *s, int *e, int *m) {
@@ -192,7 +194,7 @@ void descompon(int cf, int *s, int *e, int *m) {
 }
 ```
 
-L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 13 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menor pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
+L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 12 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menor pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
 
 ---
 
@@ -204,7 +206,7 @@ Traduïu a RV32I la subrutina `descompon`. El fitxer `s5_2_1.s` ha de contenir *
 Abans d'escriure cap instrucció, responeu al fitxer `s5_2_1.md`:
 
 1. Determineu si `descompon` és uninivell o multinivell i justifiqueu-ho.
-2. Assigneu cada variable local (`cf`, `exp`) i cada paràmetre (`cf`, `*s`, `*e`, `*m`) a un registre i justifiqueu l'elecció.
+2. Assigneu cada paràmetre (`cf`, `*s`, `*e`, `*m`) i la variable local (`exp`) a un registre i justifiqueu l'elecció.
 3. Dibuixeu el bloc d'activació amb els offsets de cada element.
 :::
 
@@ -223,12 +225,12 @@ Els paràmetres arriben per convenció ABI: `a0 = cf`, `a1 = @s`, `a2 = @e`, `a3
 | :--- | :--- |
 | `cf` (es modifica al llarg de la subrutina) | `t0` |
 | `exp` | `t1` |
-| `@s`, `@e`, `@m` (adreces dels paràmetres) | `a1`, `a2`, `a3` |
+| `@s`, `@e`, `@m` (paràmetres: adreces de destinació dels resultats) | `a1`, `a2`, `a3` |
 : {.striped .hover}
 
 **Pas 3. Bloc d'activació.**
 
-`descompon` és uninivell sense variables locals: BA buit.
+`descompon` és uninivell i totes les variables s'assignen a registres: BA buit.
 
 ```{.s filename="s5_2_1.s"}
 .globl descompon
@@ -312,7 +314,7 @@ _start:
         ecall
 ```
 
-Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
+Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb *Assemble all files currently open* i executeu. En acabar, comproveu:
 
 - `signe` = `0x00000001`
 - `exponent` = `0x0000008D` (141 en decimal)
@@ -322,10 +324,10 @@ Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb **Assemble all files currently open** i
 
 ## Subrutina `compon` i programa complet
 
-La subrutina `compon` fa el pas invers: rep els tres camps separats i els combina en un únic valor de 32 bits en format IEEE-754 de simple precisió. El signe s'ha de desplaçar al bit 31, l'exponent als bits 30–23, i la mantissa ja ocupa els bits 22–0:
+La subrutina `compon` fa el pas invers: rep els tres camps separats i els combina en un únic valor de 32 bits en format IEEE 754 de simple precisió. El signe s'ha de desplaçar al bit 31, l'exponent als bits 30–23, i la mantissa ja ocupa els bits 22–0:
 
 ```{.c filename="compon.c"}
-float compon(int signe, int exponent, int mantissa) {
+int compon(int signe, int exponent, int mantissa) {
     return (signe << 31) | (exponent << 23) | mantissa;
 }
 ```
@@ -392,7 +394,7 @@ cflotant: .word 0
 
 # compon(int signe, int exponent, int mantissa)
 # a0 = signe, a1 = exponent, a2 = mantissa
-# retorna el valor IEEE-754 SP a a0
+# retorna el valor IEEE 754 de simple precisió a a0
 compon:
         slli t0, a0, 31         # t0 = signe << 31
         slli t1, a1, 23         # t1 = exponent << 23
@@ -442,7 +444,7 @@ _start:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb **Assemble all files currently open** i executeu. En acabar, comproveu:
+Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb *Assemble all files currently open* i executeu. En acabar, comproveu:
 
 - `cflotant` = `0xC6FA3140`
 
@@ -452,7 +454,7 @@ Per verificar els casos límit, substituïu el valor inicial de `cfixa` i compro
 | :--- | :--- | :--- |
 | `0x00000000` | $0{,}0$ | `0x00000000` |
 | `0x80000000` | $-0{,}0$ | `0x80000000` |
-| `0x0000C800` | $12{,}75$ | `0x414C0000` |
+| `0x0000CC00` | $12{,}75$ | `0x414C0000` |
 : {.striped .hover}
 :::
 :::
@@ -476,7 +478,7 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 
 4. Quin dels quatre modes d'arrodoniment (@sec-arrodoniment) aplica aquest programa de conversió? Justifiqueu-ho.
 
-5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE-754 de simple precisió però fora del rang del format de coma fixa. Indiqueu també quin és el menor nombre potència de 2 que compleix aquesta condició.
+5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE 754 de simple precisió però fora del rang del format de coma fixa. Indiqueu també quin és el menor nombre potència de 2 que compleix aquesta condició.
 :::
 
 ---
@@ -484,11 +486,13 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 ::: {#sol-precisio}
 **Pregunta 1.**
 
-El format de coma fixa té 31 bits de magnitud; el format IEEE-754 SP té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menor pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes com per caure en aquest rang un cop normalitzada.
+El format de coma fixa té 31 bits de magnitud; el format IEEE 754 de simple precisió té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menor pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes com per caure en aquest rang un cop normalitzada.
+
+De manera equivalent i exacta: sigui $b_{\text{alt}}$ la posició del bit `1` de més pes de la magnitud i $b_{\text{baix}}$ la posició del bit `1` de menys pes. Es produeix pèrdua de precisió si i només si $b_{\text{alt}} - b_{\text{baix}} + 1 \geq 25$, és a dir, si la magnitud «ocupa» 25 bits o més entre el seu bit significatiu més alt i el més baix (només 24 d'aquests bits caben al format IEEE 754: el bit ocult més els 23 de fracció).
 
 **Pregunta 2.**
 
-Un exemple clar és `cfixa = 0x7FFFFFFF` (magnitud màxima: tots els bits 30–0 a `1`, valor $\approx 2^{19}$). Després de `cf << 1`, `t0 = 0xFFFFFFFE`; el bit 31 ja és `1`, de manera que el bucle de normalització no itera i `exp = 18`. El desplaçament `srli t0, t0, 8` produeix `t0 = 0x00FFFFFE`; la màscara `0x7FFFFF` deixa `mantissa = 0x007FFFFE`. L'exponent codificat és $18 + 127 = 145 = \texttt{0x91}$. El valor `cflotant` resultant és `0x48FFFFFE`: els 8 bits de menor pes de la mantissa normalitzada (tots amb valor `1`) s'han descartat i el nombre representat és lleugerament inferior al valor original.
+Un exemple clar és `cfixa = 0x7FFFFFFF` (magnitud màxima: tots els bits 30–0 a `1`, valor $\approx 2^{19}$). Després de `cf << 1`, `t0 = 0xFFFFFFFE`; el bit 31 ja és `1`, de manera que el bucle de normalització no itera i `exp = 18`. El desplaçament `srli t0, t0, 8` produeix `t0 = 0x00FFFFFF`; la màscara `0x7FFFFF` deixa `mantissa = 0x007FFFFF`. L'exponent codificat és $18 + 127 = 145 = \texttt{0x91}$. El valor `cflotant` resultant és `0x48FFFFFF`: els 7 bits significatius de menor pes de la magnitud original (tots amb valor `1`), més el `0` introduït pel desplaçament inicial `cf << 1`, s'han descartat, i el nombre representat és lleugerament inferior al valor original.
 
 **Pregunta 3.**
 
@@ -502,11 +506,11 @@ El desplaçament a la dreta de 8 posicions descarta els 8 bits de menor pes de l
 
 **Pregunta 4.**
 
-El programa aplica el mode d'**arrodoniment cap a zero** (*round toward zero*, truncament): el desplaçament `>> 8`  descarta els bits de menor pes sense cap ajust (truncament).
+El programa aplica el mode d'**arrodoniment a zero** (*round toward zero*): el desplaçament `>> 8` descarta els bits de menor pes sense cap ajust (truncament).
 
 **Pregunta 5.**
 
-El rang del format de coma fixa d'aquesta sessió és aproximadament $[-(2^{19}-2^{-12}),\ +(2^{19}-2^{-12})]$, és a dir, el valor positiu màxim és lleugerament inferior a $2^{19} = 524288$. Qualsevol nombre positiu $\geq 2^{19}$ és dins del rang IEEE-754 SP però fora del rang de coma fixa. El menor nombre potència de 2 que compleix aquesta condició és:
+El rang del format de coma fixa d'aquesta sessió és aproximadament $[-(2^{19}-2^{-12}),\ +(2^{19}-2^{-12})]$, és a dir, el valor positiu màxim és lleugerament inferior a $2^{19} = 524288$. Qualsevol nombre positiu $\geq 2^{19}$ és dins del rang IEEE 754 de simple precisió però fora del rang de coma fixa. El menor nombre potència de 2 que compleix aquesta condició és:
 
 $$2^{19} = 524288$$
 :::
