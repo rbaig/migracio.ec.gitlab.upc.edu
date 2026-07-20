@@ -24,6 +24,21 @@ Gràcies a l'equivalència entre la resta i la suma amb el negatiu del subtrahen
 
 El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$ (@eq-rang-ca2). Es produeix **sobreeiximent** (***overflow***) en una operació quan el resultat exacte no pertany a aquest rang; en aquest cas, el resultat calculat amb $n$ bits no és correcte.
 
+::: {#wrn-sobreeiximent-llenguatges .callout-warning collapse=true}
+## Sobreeiximent i llenguatges de programació
+
+La necessitat de detectar el sobreeiximent depèn del llenguatge d'alt nivell. En
+llenguatges com Fortran o Ada, quan la suma o resta d'enters produeix overflow
+el programa ha de llançar una excepció, mentre que els overflows de naturals han
+de ser ignorats. En canvi, llenguatges com C estipulen que tots els overflows siguin
+ignorats (per als naturals el resultat es trunca a mòdul $2^n$, i per als enters el
+resultat és indefinit).
+
+Pel que fa al maquinari, alguns processadors ofereixen suport per detectar el
+sobreeiximent (mitjançant indicadors o instruccions específiques). D'altres no, i
+en aquest cas la detecció és responsabilitat del programari (com en el cas de RV32I).
+:::
+
 ::: {#cau-ec-no-overflow .callout-caution}
 A **RV32I**, les operacions de suma i resta **ignoren** el sobreeiximent: el resultat és simplement els 32 bits de menys pes de l'operació, independentment de si és correcte en el rang dels enters representables.
 :::
@@ -94,6 +109,19 @@ executat `add t2, t0, t1`:
 
 ::: {#cau-sobreeiximent-extensio-m .callout-caution}
 El criteri vist per a la suma i la resta (@cau-ec-no-overflow) s'aplica a **tota** l'aritmètica entera de RISC-V, **inclosa l'extensió M**: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció, si cal, és responsabilitat del programari (@sec-sobreeiximent-programari).
+:::
+
+::: {#wrn-sobreeiximent-naturals .callout-warning collapse=true}
+## Sobreeiximent en naturals
+
+Per als naturals, el rang de representació amb $n$ bits és $[0,\ 2^n-1]$,
+i es produeix sobreeiximent quan el resultat exacte supera aquest rang. La condició
+és més simple que en el cas dels enters: en un sumador amb propagació d'arrossegament,
+n'hi ha prou d'observar l'arrossegament de sortida del bit de més pes ($c_n = 1$). Per detectar-lo per programari, n'hi ha prou de comparar el resultat amb qualsevol dels dos operands: si la suma ha produït sobreeiximent, el resultat serà
+necessàriament menor que cadascun dels operands (ja que s'ha "donat la volta"
+al rang).
+
+En llenguatges com C, l'estàndard especifica que el sobreeiximent de naturals produeix un truncament a mòdul $2^n$ (*wrapping around*). Per a tipus de dades de menys de 32 bits, el compilador ha de generar instruccions addicionals per truncar el resultat al rang corresponent.
 :::
 
 ## Multiplicació entera {#sec-multiplicacio-entera}
@@ -249,6 +277,17 @@ Suposant que `a`, `b` i `c` ocupen `t0`, `t1` i `t2`:
 ```
 :::
 
+::: {#wrn-mul-mulh-fusio .callout-warning collapse=true}
+## Fusió de `mul` i `mulh`
+
+`mul` i `mulh` (o `mulhu`) són instruccions independents: cadascuna calcula
+internament la multiplicació completa de 64 bits i en retorna una meitat. Per
+evitar fer el càlcul dues vegades, l'especificació de RISC-V recomana als
+compiladors que, quan calguin les dues meitats del resultat, posin les dues
+instruccions consecutivament amb els mateixos operands; això permet al maquinari
+detectar el patró i fusionar-les en una sola multiplicació de 64 bits.
+:::
+
 ### Sobreeiximent en la multiplicació {#sec-sobreeiximent-en-la-multiplicacio}
 
 El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte. `mul` retorna només els **32 bits de menys pes**, que corresponen al resultat truncat; si el resultat exacte no és representable amb 32 bits, es produeix **sobreeiximent** i el valor retornat per `mul` no és correcte.
@@ -292,6 +331,157 @@ RV32M té una única instrucció `mul` per als bits $[31{:}0]$, vàlida per a to
 dos casos. En canvi, la part **alta** ($[63{:}32]$) sí que depèn de la
 interpretació dels operands, i per això existeixen `mulh`, `mulhu` i `mulhsu`.
 :::
+
+## Divisió entera {#sec-divisio-entera}
+
+### Algorisme {#sec-algorisme-divisio}
+
+L'algorisme de divisió entera es basa en la divisió de naturals. Per a enters amb signe, es treballa amb els valors absoluts i s'ajusta el signe dels resultats al final.
+
+L'algorisme per calcular el quocient $q = x \div y$ i el residu $r = x \bmod y$ és:
+
+1. Calcular els valors absoluts $|x|$ i $|y|$.
+2. Dividir els valors absoluts (divisió de naturals), obtenint $q$ i $r$.
+3. Si els operands tenen signes **diferents**, canviar el signe del quocient.
+4. Si el dividend és **negatiu**, canviar el signe del residu.
+
+La divisió del dividend $D$ entre el divisor $d$ consisteix a trobar el quocient $q$ i el residu $r$ naturals tals que $D = d \cdot q + r$, amb
+$0 \leq r < d$.
+
+L'algorisme treballa els bits del quocient de més pes a menys pes. A cada pas $i$ (de $n-1$ a $0$), es compara el dividend parcial amb el divisor
+desplaçat $i$ posicions a l'esquerra: si el dividend parcial és major o igual, el bit $q_i = 1$ i el divisor desplaçat es resta del dividend
+parcial; si no, $q_i = 0$ i el dividend parcial no canvia.
+
+::: {#tip-divisio-naturals .callout-tip}
+## Algorisme de divisió de naturals en base 2
+
+Dividir $D = 1011_2$ ($11_{10}$) entre $d = 0010_2$ ($2_{10}$):
+
+| Pas | Divisor desplaçat | Comparació | $q_i$ | Residu parcial |
+| :---: | :---: | :--- | :---: | :---: |
+| inicial | — | — | — | `1011` |
+| 1 ($i=3$) | `0010000` | `1011 ≥ 0010000`? No | 0 | `1011` |
+| 2 ($i=2$) | `001000` | `1011 ≥ 001000`? Sí | 1 | `0011` |
+| 3 ($i=1$) | `00100` | `0011 ≥ 00100`? No | 0 | `0011` |
+| 4 ($i=0$) | `0010` | `0011 ≥ 0010`? Sí | 1 | `0001` |
+
+Quocient: $q = 0101_2 = 5_{10}$, residu: $r = 0001_2 = 1_{10}$ ✓
+:::
+
+### Circuit seqüencial de divisió {#sec-circuit-divisio}
+
+El circuit implementa l'algorisme anterior amb tres registres:
+
+- **R** ($2n$ bits): dividend/residu. S'inicialitza amb $x$ a la part baixa i zeros a la part alta.
+- **D** ($2n$ bits): divisor. S'inicialitza amb $y$ a la part alta i zeros a la part baixa. Es desplaça una posició a la dreta a cada iteració.
+- **Q** ($n$ bits): quocient. S'inicialitza a zero.
+
+Per evitar guardar el dividend original quan la comparació falla, s'utilitza l'**algorisme amb restauració**: es resta sempre el divisor del dividend
+parcial (la comparació es fa com una resta); si el resultat és negatiu (bit de signe $R_{2n-1} = 1$), el bit de quocient és 0 i es **restaura** el dividend sumant-hi de nou el divisor; si és positiu o zero, el bit és 1.
+
+::: {#fig-divisor-sequencial}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T4_divisor_sequencial__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T4_divisor_sequencial__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T4_divisor_sequencial__original_light.svg)
+:::
+Circuit divisor seqüencial amb restauració.
+:::
+
+::: {#thm-divisio-sequencial-restauracio}
+Divisió seqüencial de naturals de $n$ bits amb algorisme de restauració, on $x$ dividend, $y$ divisor, $z$ el quocient i $w$ el residu.
+
+```{.default filename="Pseudocodi"}
+// Inicialització
+R[n-1:0] = x;  R[2n-1:n] = 0
+D[2n-1:n] = y;  D[n-1:0] = 0
+Q = 0
+
+per i = 1 fins a n:
+    D = D >> 1
+    R = R − D
+    si R[2n-1] == 0:        // resultat positiu
+        Q = (Q << 1) | 1
+    sino:                   // resultat negatiu: restaurar
+        R = R + D
+        Q = Q << 1
+
+z = Q           // quocient
+w = R[n-1:0]    // residu
+```
+:::
+
+::: {#tip-seguiment-divisio .callout-tip}
+## Seguiment del circuit divisor (4 bits)
+
+Dividir $x = 1011_2$ entre $y = 0010_2$:
+
+| Iteració | R (dividend/residu) | D (divisor) | Q (quocient) |
+| :---: | :---: | :---: | :---: |
+| inicial | `0000 1011` | `0010 0000` | `0000` |
+| 1 | `0000 1011` | `0001 0000` | `0000` |
+| 2 | `0000 0011` | `0000 1000` | `0001` |
+| 3 | `0000 0011` | `0000 0100` | `0010` |
+| 4 | `0000 0001` | `0000 0010` | `0101` |
+
+Quocient: $Q = 0101_2 = 5_{10}$, residu: $R[3:0] = 0001_2 = 1_{10}$ ✓
+:::
+
+### Instruccions de divisió entera a RV32IM {#sec-instruccions-divisio}
+
+L'extensió **M** proporciona quatre instruccions de divisió entera:
+
+::: {#nte-rv32im-instruccions-divisio .callout-note}
+## RV32IM ISA — Instruccions de divisió entera
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include ../21_riscv/RV32M_instruccions_divisio.qmd >}}
+: {tbl-colwidths="[10,20,35,30,5]"}
+:::
+
+`div` i `rem` operen amb enters amb signe; `divu` i `remu` operen amb
+naturals. `div` i `divu` escriuen el **quocient** a `rd`; `rem` i `remu`
+escriuen el **residu**.
+
+::: {#cau-divisio-enters-semantica .callout-caution}
+Les instruccions `div` i `rem` segueixen la **semàntica de C**: el residu té el mateix signe que el **dividend**, i $|r| < |d|$. Aquesta és la mateixa semàntica que s'obté dividint els valors absoluts i ajustant el signe (algorisme de la @sec-divisio-entera).
+
+Això **difereix** de la divisió euclidiana, on el residu és sempre no negatiu. Vegeu la diferència amb `sra` a @cau-sra-divisio.
+:::
+
+#### Casos especials {#sec-casos-especials}
+
+- **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
+- **Sobreeiximent en enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
+
+::: {#tip-divisio-exemple .callout-tip}
+## Traducció de divisió i mòdul enters
+
+```{.c filename="C"}
+int a, b, q, r;
+q = a / b;
+r = a % b;
+```
+
+```{.s filename="RV32IM"}
+        div     t2, t0, t1      # q = a / b
+        rem     t3, t0, t1      # r = a % b
+```
+:::
+
+### Divisió per potències de 2 {#sec-divisio-per-potencies-de-2}
+
+Com s'ha vist a @cau-sra-divisio, la instrucció `sra` calcula el quocient de la divisió d'un enter per una potència de 2, però amb la semàntica de la **divisió euclidiana** (residu sempre no negatiu), que difereix de `div` quan el dividend és negatiu i la divisió no és exacta.
+
+En C, l'operador `/` entre enters es tradueix amb `div` (no amb `sra`), llevat que el compilador pugui garantir que el dividend és no negatiu.
+
 
 ## Matrius {#sec-matrius}
 
@@ -697,153 +887,3 @@ fifor:
         ret
 ```
 :::
-
-## Divisió entera {#sec-divisio-entera}
-
-### Algorisme {#sec-algorisme-divisio}
-
-L'algorisme de divisió entera es basa en la divisió de naturals. Per a enters amb signe, es treballa amb els valors absoluts i s'ajusta el signe dels resultats al final.
-
-L'algorisme per calcular el quocient $q = x \div y$ i el residu $r = x \bmod y$ és:
-
-1. Calcular els valors absoluts $|x|$ i $|y|$.
-2. Dividir els valors absoluts (divisió de naturals), obtenint $q$ i $r$.
-3. Si els operands tenen signes **diferents**, canviar el signe del quocient.
-4. Si el dividend és **negatiu**, canviar el signe del residu.
-
-La divisió del dividend $D$ entre el divisor $d$ consisteix a trobar el quocient $q$ i el residu $r$ naturals tals que $D = d \cdot q + r$, amb
-$0 \leq r < d$.
-
-L'algorisme treballa els bits del quocient de més pes a menys pes. A cada pas $i$ (de $n-1$ a $0$), es compara el dividend parcial amb el divisor
-desplaçat $i$ posicions a l'esquerra: si el dividend parcial és major o igual, el bit $q_i = 1$ i el divisor desplaçat es resta del dividend
-parcial; si no, $q_i = 0$ i el dividend parcial no canvia.
-
-::: {#tip-divisio-naturals .callout-tip}
-## Algorisme de divisió de naturals en base 2
-
-Dividir $D = 1011_2$ ($11_{10}$) entre $d = 0010_2$ ($2_{10}$):
-
-| Pas | Divisor desplaçat | Comparació | $q_i$ | Residu parcial |
-| :---: | :---: | :--- | :---: | :---: |
-| inicial | — | — | — | `1011` |
-| 1 ($i=3$) | `0010000` | `1011 ≥ 0010000`? No | 0 | `1011` |
-| 2 ($i=2$) | `001000` | `1011 ≥ 001000`? Sí | 1 | `0011` |
-| 3 ($i=1$) | `00100` | `0011 ≥ 00100`? No | 0 | `0011` |
-| 4 ($i=0$) | `0010` | `0011 ≥ 0010`? Sí | 1 | `0001` |
-
-Quocient: $q = 0101_2 = 5_{10}$, residu: $r = 0001_2 = 1_{10}$ ✓
-:::
-
-### Circuit seqüencial de divisió {#sec-circuit-divisio}
-
-El circuit implementa l'algorisme anterior amb tres registres:
-
-- **R** ($2n$ bits): dividend/residu. S'inicialitza amb $x$ a la part baixa i zeros a la part alta.
-- **D** ($2n$ bits): divisor. S'inicialitza amb $y$ a la part alta i zeros a la part baixa. Es desplaça una posició a la dreta a cada iteració.
-- **Q** ($n$ bits): quocient. S'inicialitza a zero.
-
-Per evitar guardar el dividend original quan la comparació falla, s'utilitza l'**algorisme amb restauració**: es resta sempre el divisor del dividend
-parcial (la comparació es fa com una resta); si el resultat és negatiu (bit de signe $R_{2n-1} = 1$), el bit de quocient és 0 i es **restaura** el dividend sumant-hi de nou el divisor; si és positiu o zero, el bit és 1.
-
-::: {#fig-divisor-sequencial}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/auto_figs/T4_divisor_sequencial__original_light.svg)
-:::
-::: {.dark-content}
-![](/auto_figs/T4_divisor_sequencial__original_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/auto_figs/T4_divisor_sequencial__original_light.svg)
-:::
-Circuit divisor seqüencial amb restauració.
-:::
-
-::: {#thm-divisio-sequencial-restauracio}
-Divisió seqüencial de naturals de $n$ bits amb algorisme de restauració, on $x$ dividend, $y$ divisor, $z$ el quocient i $w$ el residu.
-
-```{.default filename="Pseudocodi"}
-// Inicialització
-R[n-1:0] = x;  R[2n-1:n] = 0
-D[2n-1:n] = y;  D[n-1:0] = 0
-Q = 0
-
-per i = 1 fins a n:
-    D = D >> 1
-    R = R − D
-    si R[2n-1] == 0:        // resultat positiu
-        Q = (Q << 1) | 1
-    sino:                   // resultat negatiu: restaurar
-        R = R + D
-        Q = Q << 1
-
-z = Q           // quocient
-w = R[n-1:0]    // residu
-```
-:::
-
-::: {#tip-seguiment-divisio .callout-tip}
-## Seguiment del circuit divisor (4 bits)
-
-Dividir $x = 1011_2$ entre $y = 0010_2$:
-
-| Iteració | R (dividend/residu) | D (divisor) | Q (quocient) |
-| :---: | :---: | :---: | :---: |
-| inicial | `0000 1011` | `0010 0000` | `0000` |
-| 1 | `0000 1011` | `0001 0000` | `0000` |
-| 2 | `0000 0011` | `0000 1000` | `0001` |
-| 3 | `0000 0011` | `0000 0100` | `0010` |
-| 4 | `0000 0001` | `0000 0010` | `0101` |
-
-Quocient: $Q = 0101_2 = 5_{10}$, residu: $R[3:0] = 0001_2 = 1_{10}$ ✓
-:::
-
-### Instruccions de divisió entera a RV32IM {#sec-instruccions-divisio}
-
-L'extensió **M** proporciona quatre instruccions de divisió entera:
-
-::: {#nte-rv32im-instruccions-divisio .callout-note}
-## RV32IM ISA — Instruccions de divisió entera
-
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{< include ../21_riscv/RV32M_instruccions_divisio.qmd >}}
-: {tbl-colwidths="[10,20,35,30,5]"}
-:::
-
-`div` i `rem` operen amb enters amb signe; `divu` i `remu` operen amb
-naturals. `div` i `divu` escriuen el **quocient** a `rd`; `rem` i `remu`
-escriuen el **residu**.
-
-::: {#cau-divisio-enters-semantica .callout-caution}
-Les instruccions `div` i `rem` segueixen la **semàntica de C**: el residu té el mateix signe que el **dividend**, i $|r| < |d|$. Aquesta és la mateixa semàntica que s'obté dividint els valors absoluts i ajustant el signe (algorisme de la @sec-divisio-entera).
-
-Això **difereix** de la divisió euclidiana, on el residu és sempre no negatiu. Vegeu la diferència amb `sra` a @cau-sra-divisio.
-:::
-
-#### Casos especials {#sec-casos-especials}
-
-- **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
-- **Sobreeiximent en enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
-
-::: {#tip-divisio-exemple .callout-tip}
-## Traducció de divisió i mòdul enters
-
-```{.c filename="C"}
-int a, b, q, r;
-q = a / b;
-r = a % b;
-```
-
-```{.s filename="RV32IM"}
-        div     t2, t0, t1      # q = a / b
-        rem     t3, t0, t1      # r = a % b
-```
-:::
-
-### Divisió per potències de 2 {#sec-divisio-per-potencies-de-2}
-
-Com s'ha vist a @cau-sra-divisio, la instrucció `sra` calcula el quocient de la divisió d'un enter per una potència de 2, però amb la semàntica de la **divisió euclidiana** (residu sempre no negatiu), que difereix de `div` quan el dividend és negatiu i la divisió no és exacta.
-
-En C, l'operador `/` entre enters es tradueix amb `div` (no amb `sra`), llevat que el compilador pugui garantir que el dividend és no negatiu.
