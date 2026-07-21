@@ -6,6 +6,8 @@ number-sections: true
 
 ### Lliuraments {.unnumbered}
 
+Cal lliurar les respostes als exercicis següents al campus virtual abans de l'inici de la sessió de laboratori:
+
 | Exercici | Nom i format del fitxer |
 | :--- | :--- |
 | @exr-compilacio-separada | `s5_1_1.s` i `s5_1_2.s` |
@@ -35,16 +37,29 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 En un projecte real, el codi es divideix en **mòduls** independents que es compilen i assemblen per separat (@sec-compilacio). Cadascun viu en el seu propi fitxer font, declara com a globals les etiquetes que han de ser visibles des d'altres mòduls, i referencia les etiquetes externes sense necessitat de conèixer-ne els detalls interns.
 
-RARS reprodueix aquest flux de manera directa: amb l'opció *Settings → Assemble all files currently open* activada, l'assemblador processa tots els fitxers oberts alhora i resol automàticament les referències entre ells, fent el rol combinat d'assemblador i enllaçador.
+RARS reprodueix aquest flux de manera directa: amb l'opció *Settings → Assemble all files currently open* activada, l'assemblador processa tots els fitxers oberts alhora i resol automàticament les referències entre ells, assumint la funció combinada d'assemblador i enllaçador.
 
 ::: {#cau-global-compilacio-separada .callout-caution}
 ## Compilació separada — directiva `.globl`
 
-Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.globl` al fitxer on es defineix, inclòs `_start`. Sense aquesta declaració, l'etiqueta és invisible per als altres mòduls i RARS finalitza amb un error de símbol no resolt.
+Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.globl` al fitxer on es defineix. Sense aquesta declaració, l'etiqueta és invisible per als altres mòduls i RARS finalitza amb un error de símbol no resolt. Per convenció es declara global també `_start`, encara que RARS no ho exigeixi (cap altre fitxer hi fa referència): reflecteix el paper del símbol d'entrada en un enllaçador real (@sec-compilacio), que sí que necessita localitzar-lo com a punt d'inici del programa.
 :::
 
 ::: {.callout-tip title="Comprovació pràctica"}
 Un cop oberts tots els fitxers i activada l'opció *Assemble all files currently open*, assembleu el projecte. Al panell *Labels* (o *Symbol Table*) de RARS hi apareixeran totes les etiquetes globals dels mòduls. Comproveu que les etiquetes esperades hi són i que les seves adreces s'han resolt correctament.
+:::
+
+::: {#wrn-arrencada-rars .callout-warning collapse="true"}
+## Ordre d'arrencada en assemblar diversos fitxers
+
+RARS no cerca l'etiqueta `_start`: comença sempre a executar la **primera instrucció del segment `.text` combinat**, en l'ordre en què l'assemblador ha processat els fitxers. Amb *Assemble all files currently open*, aquest ordre depèn de quin fitxer té la pestanya activa en el moment d'assemblar: el `.text` d'aquell fitxer s'assembla primer.
+
+Per tant, cal:
+
+- Assegurar-se que el fitxer que conté `_start` és el que té la pestanya activa en assemblar (o, si no n'esteu segurs, comprovar al panell *Text Segment* quina és la primera instrucció carregada).
+- Dins d'un mateix fitxer, situar `_start` al principi del segment `.text`, abans de qualsevol altra subrutina.
+
+Si el programa s'atura amb un error d'accés a instrucció just en començar, sense haver executat cap instrucció esperada, la causa més probable és aquesta.
 :::
 
 ---
@@ -86,14 +101,7 @@ Tingueu en compte:
 
 `abs` és uninivell: no fa cap crida, de manera que no hi ha cap registre en risc de ser destruït; tots els temporals van a registres `t`. BA buit.
 
-`_start` és multinivell (crida `abs`). L'únic valor que cal preservar és `ra`; no hi ha cap altre valor generat abans de la crida que s'usi després.
-
-| Offset des de `sp` | Contingut |
-| :--- | :--- |
-| `+0` | `ra` desat |
-: {.striped .hover}
-
-Mida del BA: 4 bytes (@nte-abi-alineacio-pila).
+`_start` és multinivell (crida `abs`), però no necessita cap registre segur ni bloc d'activació: no hi ha cap valor generat abans de la crida que s'usi després (el resultat de `abs` s'usa immediatament en tornar), i com que `_start` és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), tampoc cal preservar `ra`. BA buit.
 
 ```{.s filename="s5_1_1.s"}
 .globl abs
@@ -118,17 +126,11 @@ resultat: .word 0
 .text
 
 _start:
-        addi sp, sp, -4
-        sw   ra, 0(sp)
-
         li   a0, -7
         jal  ra, abs            # a0 = abs(-7) = 7
 
         la   t0, resultat
         sw   a0, 0(t0)          # resultat = 7
-
-        lw   ra, 0(sp)
-        addi sp, sp, 4
 
         li   a7, 93
         li   a0, 0
@@ -140,7 +142,7 @@ Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu *Settings → Assemble all files c
 
 Executeu el programa i comproveu que la variable global `resultat` conté el valor `7`.
 
-Proveu també amb el valor `0`: el resultat ha de ser `0` (el camí `bge` és cert per a zero).
+Proveu també amb el valor `0`: el resultat ha de ser `0` (per a `0`, el salt `bge` es pren i es retorna el valor directament).
 :::
 :::
 
@@ -152,7 +154,7 @@ El **format de coma fixa** que s'usa en aquesta sessió té 32 bits: el bit 31 c
 
 $$\text{valor}(A) = (-1)^{A_{31}} \times \sum_{i=0}^{30} A_i \cdot 2^{i-12}$$
 
-El **format de coma flotant IEEE 754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent esbiaixat amb biaix 127 (bits 30–23) i 23 bits de fracció amb bit ocult (@cau-bit-ocult) (bits 22–0).
+El **format de coma flotant IEEE 754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent esbiaixat amb biaix 127 (bits 30–23) i 23 bits de fracció (bits 22–0), amb bit ocult implícit (@cau-bit-ocult).
 
 El programa de conversió s'organitza en dos passos:
 
@@ -171,7 +173,7 @@ void main() {
 
 `cflotant` es declara com a `int`, no `float`: el valor que es construeix és el **patró de bits** de la representació IEEE 754, no un nombre que el compilador hagi de convertir. Si es declarés `float`, l'assignació convertiria el valor enter a coma flotant en lloc de reinterpretar-ne els bits.
 
-La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE 754: el signe, la mantissa normalitzada sense bit ocult (23 bits) i l'exponent esbiaixat amb biaix 127 (8 bits):
+La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE 754: el signe, la fracció (la mantissa normalitzada sense el bit ocult, 23 bits) i l'exponent esbiaixat amb biaix 127 (8 bits):
 
 ```{.c filename="descompon.c"}
 void descompon(int cf, int *s, int *e, int *m) {
@@ -193,6 +195,8 @@ void descompon(int cf, int *s, int *e, int *m) {
     *m = cf;
 }
 ```
+
+Aquest codi és descriptiu de l'algorisme a nivell de bits: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, cosa que reforça per què en assemblador cal triar explícitament `srli` (i no `srai`) per obtenir el comportament desitjat.
 
 L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 12 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menor pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
 
@@ -296,18 +300,12 @@ cfixa:    .word 0x87D18A00
 
 .text
 _start:
-        addi sp, sp, -4
-        sw   ra, 0(sp)
-
         la   a0, cfixa
         lw   a0, 0(a0)
         la   a1, signe
         la   a2, exponent
         la   a3, mantissa
         jal  ra, descompon
-
-        lw   ra, 0(sp)
-        addi sp, sp, 4
 
         li   a7, 93
         li   a0, 0
@@ -324,7 +322,7 @@ Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb *Assemble all files currently open* i e
 
 ## Subrutina `compon` i programa complet
 
-La subrutina `compon` fa el pas invers: rep els tres camps separats i els combina en un únic valor de 32 bits en format IEEE 754 de simple precisió. El signe s'ha de desplaçar al bit 31, l'exponent als bits 30–23, i la mantissa ja ocupa els bits 22–0:
+La subrutina `compon` fa el pas invers: rep els tres camps separats i els combina en un únic valor de 32 bits en format IEEE 754 de simple precisió. El signe s'ha de desplaçar al bit 31, l'exponent als bits 30–23, i la fracció (paràmetre `mantissa`) ja ocupa els bits 22–0:
 
 ```{.c filename="compon.c"}
 int compon(int signe, int exponent, int mantissa) {
@@ -357,11 +355,10 @@ Abans d'escriure cap instrucció:
 
 **Pas 2. `_start`: registres segurs.**
 
-`_start` és **multinivell**: crida `descompon` i després `compon`. Els valors generats abans de la primera crida que s'usen després són les adreces de `signe`, `exponent` i `mantissa`, necessàries per carregar els resultats de `descompon` abans de cridar `compon`. Cal preservar també `ra`.
+`_start` és **multinivell**: crida `descompon` i després `compon`. Els valors generats abans de la primera crida que s'usen després són les adreces de `signe`, `exponent` i `mantissa`, necessàries per carregar els resultats de `descompon` abans de cridar `compon`: cal registres segurs per a elles. `ra`, en canvi, no necessita preservar-se: `_start` és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), de manera que el valor que hi deixa cada `jal ra, ...` es pot sobreescriure lliurement en la crida següent.
 
 | Dada | Registre |
 | :--- | :--- |
-| `ra` | `ra` (desat al BA) |
 | `@signe` | `s0` |
 | `@exponent` | `s1` |
 | `@mantissa` | `s2` |
@@ -369,15 +366,7 @@ Abans d'escriure cap instrucció:
 
 **Pas 3. Bloc d'activació de `_start`.**
 
-| Offset des de `sp` | Contingut |
-| :--- | :--- |
-| `+0` | `s0` desat |
-| `+4` | `s1` desat |
-| `+8` | `s2` desat |
-| `+12` | `ra` desat |
-: {.striped .hover}
-
-Mida del BA: 16 bytes (@nte-abi-alineacio-pila).
+`_start` no necessita bloc d'activació, tot i usar registres segurs: com que és el punt d'entrada i no torna mai a cap invocant, no hi ha cap valor previ de `s0`–`s2` (ni de `ra`) que calgui preservar i restaurar. BA buit.
 
 ```{.s filename="s5_3_1.s"}
 .globl _start
@@ -392,24 +381,7 @@ cflotant: .word 0
 
 .text
 
-# compon(int signe, int exponent, int mantissa)
-# a0 = signe, a1 = exponent, a2 = mantissa
-# retorna el valor IEEE 754 de simple precisió a a0
-compon:
-        slli t0, a0, 31         # t0 = signe << 31
-        slli t1, a1, 23         # t1 = exponent << 23
-        or   t0, t0, t1         # t0 = (signe << 31) | (exponent << 23)
-        or   a0, t0, a2         # a0 = t0 | mantissa
-        ret
-
 _start:
-        # pròleg
-        addi sp, sp, -16
-        sw   s0,  0(sp)
-        sw   s1,  4(sp)
-        sw   s2,  8(sp)
-        sw   ra, 12(sp)
-
         la   s0, signe
         la   s1, exponent
         la   s2, mantissa
@@ -431,16 +403,19 @@ _start:
         la   t0, cflotant
         sw   a0, 0(t0)          # cflotant = a0
 
-        # epíleg
-        lw   s0,  0(sp)
-        lw   s1,  4(sp)
-        lw   s2,  8(sp)
-        lw   ra, 12(sp)
-        addi sp, sp, 16
-
         li   a7, 93
         li   a0, 0
         ecall
+
+# compon(int signe, int exponent, int mantissa)
+# a0 = signe, a1 = exponent, a2 = mantissa
+# retorna el valor IEEE 754 de simple precisió a a0
+compon:
+        slli t0, a0, 31         # t0 = signe << 31
+        slli t1, a1, 23         # t1 = exponent << 23
+        or   t0, t0, t1         # t0 = (signe << 31) | (exponent << 23)
+        or   a0, t0, a2         # a0 = t0 | mantissa
+        ret
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
@@ -486,13 +461,13 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 ::: {#sol-precisio}
 **Pregunta 1.**
 
-El format de coma fixa té 31 bits de magnitud; el format IEEE 754 de simple precisió té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menor pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes com per caure en aquest rang un cop normalitzada.
+El format de coma fixa té 31 bits de magnitud; el format IEEE 754 de simple precisió té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menor pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes per caure en aquest rang un cop normalitzada.
 
 De manera equivalent i exacta: sigui $b_{\text{alt}}$ la posició del bit `1` de més pes de la magnitud i $b_{\text{baix}}$ la posició del bit `1` de menys pes. Es produeix pèrdua de precisió si i només si $b_{\text{alt}} - b_{\text{baix}} + 1 \geq 25$, és a dir, si la magnitud «ocupa» 25 bits o més entre el seu bit significatiu més alt i el més baix (només 24 d'aquests bits caben al format IEEE 754: el bit ocult més els 23 de fracció).
 
 **Pregunta 2.**
 
-Un exemple clar és `cfixa = 0x7FFFFFFF` (magnitud màxima: tots els bits 30–0 a `1`, valor $\approx 2^{19}$). Després de `cf << 1`, `t0 = 0xFFFFFFFE`; el bit 31 ja és `1`, de manera que el bucle de normalització no itera i `exp = 18`. El desplaçament `srli t0, t0, 8` produeix `t0 = 0x00FFFFFF`; la màscara `0x7FFFFF` deixa `mantissa = 0x007FFFFF`. L'exponent codificat és $18 + 127 = 145 = \texttt{0x91}$. El valor `cflotant` resultant és `0x48FFFFFF`: els 7 bits significatius de menor pes de la magnitud original (tots amb valor `1`), més el `0` introduït pel desplaçament inicial `cf << 1`, s'han descartat, i el nombre representat és lleugerament inferior al valor original.
+Un exemple clar és `cfixa = 0x7FFFFFFF` (magnitud màxima: tots els bits 30–0 a `1`, valor $\approx 2^{19}$). Després de `cf = cf << 1`, `cf = 0xFFFFFFFE`; el bit 31 ja és `1`, de manera que el bucle de normalització no itera i `exp` es manté a `18`. El desplaçament `cf = (cf >> 8) & 0x7FFFFF` dona `cf = 0x007FFFFF` (la fracció resultant). L'exponent codificat és `exp = 18 + 127 = 145 = 0x91`. El valor `cflotant` resultant és `0x48FFFFFF`: els 7 bits significatius de menor pes de la magnitud original (tots amb valor `1`), més el `0` introduït pel desplaçament inicial `cf << 1`, s'han descartat, i el nombre representat és lleugerament inferior al valor original.
 
 **Pregunta 3.**
 
