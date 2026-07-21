@@ -3,6 +3,8 @@
 Revisió profunda de `04_laboratori/L2.qmd` (Sessió 2: Assemblador RISC-V i tipus bàsics de dades).
 Fitxers de context llegits: `CLAUDE.md`, `13_contrib.qmd`, `TODO/TODO.md`, `A2.qmd` (destí de les 19 referències creuades), `L1.qmd` (estil establert).
 
+> **Reconciliació 2026-07-20** (repo re-baixat, després de la Fase C de L5 i el sanejament del 2026-07-12): `L2.qmd` **no l'ha modificat cap xat** — la secció `la`/`li` segueix en «TODO», les adreces amb espai i l'errata `restricicons` persisteixen. Tota la llista B1–B11 continua vàlida. L2 només depèn d'`A2.qmd`, també intacte, de manera que la feina d'altres xats (A5/E5/S5 de L5) no hi té cap efecte. Les solucions s'havien verificat executant-les a **RARS 1.6 real**; re-executades i confirmades.
+
 ---
 
 ## A. Verificació tècnica — resultats
@@ -159,5 +161,5 @@ L2 és l'únic laboratori amb blocs plantilla `{.markdown filename="…"}`; la d
 - **«menys pes» vs. «menor pes»**: conviuen al corpus (A2/A4/A7/L1: «menys»; A3/A5/A8: «menor»). Candidata a decisió de `13_contrib.qmd §Substitucions` i substitució global posterior.
 - **`void main()` (laboratoris, A2, A3) vs. `int main()` (E2/E3/E4/E7, S3/S4)**: inconsistència transversal de criteri de codi C; encaixa amb el TODO obert «Criteris de codi C: completar».
 - **L4 §Accés a elements**: la fórmula reproduïda diverge de la canònica d'A4 (`\texttt{@mat}` vs. `@\texttt{mat[0][0]}`; `NB` vs. `T`) — mateix patró que s'ha corregit aquí (B7); per al xat L4–L6.
-- **L5**: usa la grafia «IEEE-754» amb guionet, contrària a la decisió «IEEE 754» de la revisió de T5 — per al xat L5.
+- **L5**: usa la grafia «IEEE-754» amb guionet (9 ocurrències, confirmades al repo del 2026-07-20), contra la decisió «IEEE 754» de la revisió de T5. **Ja encaminat**: L5 té Fase A/B/C completa amb una revisió final dedicada pendent en xat separat (`EC L5 Revisió final (3 passades)`), que inclou una passada lingüística — L2 no hi ha de fer res.
 - **«words»**: revisat i **mantingut** a L2 (i L1): terminologia RARS sancionada per `@imp-terminologia-c-vs-rars` («.word o word»).

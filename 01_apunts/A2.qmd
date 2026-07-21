@@ -448,6 +448,22 @@ Un cop definida, es pot usar en qualsevol context on s'usaria el literal equival
 ```
 :::
 
+::: {#nte-rars-operands-literals .callout-note}
+## RARS — Operands sense expressions aritmètiques
+
+A **RARS**, una constant simbòlica (`.eqv`) només és vàlida com a substitució d'un **literal únic**; l'assemblador **no avalua expressions aritmètiques** en cap operand, ni de directives ni d'instruccions. Així, `.space N*4`, `li t0, N*4` o `la t0, vec + 4` produeixen un error d'assemblatge, encara que `N` estigui definida amb `.eqv`.
+
+Per tant, quan una mida o un valor és el resultat d'un càlcul (p. ex. el nombre de bytes d'un vector o d'una matriu), cal escriure el **literal ja calculat** a l'operand i deixar l'**expressió aritmètica al comentari**, com a documentació:
+
+```{.s filename="RV32I"}
+.eqv    NF, 5
+.eqv    NC, 6
+.data
+        .align  2
+mat:    .space  120      # int mat[NF][NC]: NF*NC*4 = 120 bytes
+```
+:::
+
 ### Instruccions, pseudoinstruccions i macros {#sec-instruccions-pseudoinstruccions-macros}
 
 #### Instruccions {#sec-instruccions-assemblador}
