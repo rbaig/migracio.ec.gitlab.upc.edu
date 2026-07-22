@@ -11,20 +11,18 @@ number-sections: true
 
 ### Notació científica normalitzada {#sec-notacio-cientifica}
 
-La **notació científica normalitzada** és un sistema de representació de nombres reals que separa clarament la **magnitud** del nombre (els seus dígits significatius) de la seva **escala** (la posició de la coma). Un nombre $v$ s'escriu en la forma:
+La notació científica normalitzada és un sistema de representació de nombres reals que separa clarament la **magnitud** del nombre (els seus dígits significatius) de la seva **escala** (la posició de la coma). Un nombre $v$ s'escriu en la forma:
 
 $$v = m \times 10^n$$
 
-on $n$ (l'**exponent**) és un enter i $m$ (la **mantissa**) satisfà $1 \leq |m| < 10$, amb almenys un dígit fraccionari. Aquesta restricció s'anomena **condició de normalització** i garanteix una representació única per a cada nombre.
+on l'**exponent** $n$ és un enter i la **mantissa** $m$ satisfà $1 \leq |m| < 10$, amb almenys un dígit fraccionari. Aquesta restricció s'anomena **condició de normalització** i garanteix una representació única per a cada nombre.
 
-La notació científica normalitzada presenta dos avantatges respecte de la representació decimal ordinària. D'una banda, és més **compacta**: $2{,}34 \times 10^8$ és més llegible que $234\,000\,000$. D'altra banda, fa **explícit el nombre de dígits significatius**: $2{,}34 \times 10^8$ indica clarament tres dígits significatius, mentre que $234\,000\,000$ és ambigu (poden ser tres, o pot ser que el nombre sigui exacte fins a les unitats). El terme **coma flotant** fa referència precisament a aquest mecanisme: la coma «es desplaça» cap a l'esquerra o cap a la dreta en funció del valor de l'exponent.
+La notació científica normalitzada presenta dos avantatges respecte de la representació decimal ordinària. D'una banda, és més compacta: $2{,}34 \times 10^8$ és més llegible que $234\,000\,000$. D'altra banda, fa explícit el nombre de dígits significatius: $2{,}34 \times 10^8$ indica clarament tres dígits significatius, mentre que $234\,000\,000$ és ambigu (poden ser tres o bé pot ser que el nombre sigui exacte fins a les unitats). El terme **coma flotant** fa referència precisament a aquest mecanisme: la coma «es desplaça» cap a l'esquerra o cap a la dreta en funció del valor de l'exponent.
 
 En dispositius electrònics, els tres caràcters `×10` es substitueixen habitualment per la lletra `E`, que separa mantissa i exponent: $2{,}34\text{E}8$.
 
 ::: {#tip-notacio-cientifica .callout-tip}
 ## Conversió a notació científica normalitzada
-
-Expressa els nombres següents en notació científica normalitzada:
 
 | Nombre | Notació científica normalitzada |
 | ---: | :--- |
@@ -39,23 +37,23 @@ Els nombres en coma flotant en base 2 segueixen el mateix principi que la notaci
 
 $$v = \pm 1{,}\underbrace{b_{-1}b_{-2}\ldots b_{-p}}_{\text{fracció }F} \times 2^e$$
 
-on $e$ (l'**exponent**) és un enter i $F$ és la part fraccionària de la mantissa.
+on l'exponent $e$ és un enter i $F$ és la part fraccionària de la mantissa.
 
 ::: {#cau-bit-ocult .callout-caution}
 ## El bit ocult
 
-Com que la condició de normalització garanteix que el bit a l'esquerra de la coma és sempre `1`, aquest bit **no s'emmagatzema** a la codificació: és el **bit ocult** (***hidden bit***). El maquinari el torna a afegir implícitament en qualsevol operació.
+Com que la condició de normalització garanteix que el bit a l'esquerra de la coma és sempre `1`, **aquest bit no s'emmagatzema** a la codificació: és el **bit ocult** (***hidden bit***). El maquinari el torna a afegir implícitament en qualsevol operació.
 
-Cal tenir-lo en compte en tots els càlculs: si el camp de fracció $F$ té $p-1$ bits emmagatzemats, la mantissa completa té $p$ bits significatius (els $p-1$ bits de $F$ més el bit ocult).
+Cal tenir-lo en compte en tots els càlculs: si el camp de fracció $F$ té $p-1$ bits emmagatzemats, la mantissa completa té $p$ bits significatius: els $p-1$ bits de $F$ més el bit ocult.
 
-Els únics casos en què el bit ocult **no s'aplica** són els nombres denormals i el zero (@sec-codificacions-especials).
+Els únics casos en què el bit ocult no s'aplica són els nombres denormals i el zero (@sec-codificacions-especials).
 :::
 
 ### L'estàndard IEEE 754 {#sec-ieee754}
 
-Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de coma flotant, amb decisions diverses sobre el nombre de bits de mantissa i exponent, i fins i tot sobre la base de la potència. La incompatibilitat entre sistemes dificultava l'intercanvi de dades i la portabilitat del programari. El 1985, l'Institut d'Enginyers Elèctrics i Electrònics (***Institute of Electrical and Electronics Engineers***, **IEEE**) va publicar l'estàndard **IEEE 754**, que no sols defineix el format de representació sinó també les operacions aritmètiques, l'arrodoniment i el tractament de les excepcions. L'estàndard s'ha revisat i ampliat posteriorment (la darrera revisió és de 2019).
+Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de coma flotant, amb decisions diverses sobre el nombre de bits de mantissa i exponent, i fins i tot sobre la base de la potència. La incompatibilitat entre sistemes dificultava l'intercanvi de dades i la portabilitat del programari. El 1985, l'Institut d'Enginyers Elèctrics i Electrònics (*Institute of Electrical and Electronics Engineers* o IEEE) va publicar l'**estàndard IEEE 754**, que no sols defineix el format de representació sinó també les operacions aritmètiques, l'arrodoniment i el tractament de les excepcions. L'estàndard s'ha revisat i ampliat posteriorment (la darrera revisió és de 2019).
 
-A **EC** s'estudia el format de **simple precisió** (32 bits), que correspon al tipus `float` de C.
+<!-- TODO: PM: Error a la caption de la Taula 5.1 -->
 
 ::: {#nte-ieee754-formats .callout-note}
 ## IEEE 754 — Formats de simple i doble precisió
@@ -74,7 +72,7 @@ A **EC** s'estudia el format de **simple precisió** (32 bits), que correspon al
 :::
 
 ::: {#imp-ec-simple-precisio .callout-important}
-A **EC**, s'usa exclusivament el format de **simple precisió**. Totes les operacions, exemples i problemes fan referència a aquest format llevat que s'indiqui explícitament el contrari.
+A EC, s'usa exclusivament el **format de simple precisió**. Totes les operacions, exemples i problemes fan referència a aquest format llevat que s'indiqui explícitament el contrari.
 :::
 
 Els tres camps de bits del format de simple precisió s'organitzen de la manera següent:
@@ -106,14 +104,14 @@ El camp de fracció $F$ emmagatzema els $p-1 = 23$ bits de la part fraccionària
 
 #### Exponent (E) {#sec-exponent-exces}
 
-L'exponent és un enter amb signe, però no es codifica en Ca2. S'emmagatzema en representació **esbiaixada** (***biased exponent***), amb **biaix 127**, és a dir, en excés a 127 en el sentit de la @sec-enters-en-exces: el valor emmagatzemat $E_u$ és el natural que satisfà
+L'exponent és un enter amb signe, però no es codifica en Ca2. S'emmagatzema en representació esbiaixada (*biased exponent*), amb **biaix 127**, és a dir, en excés a 127 en el sentit de la @sec-enters-en-exces: el valor emmagatzemat $E_u$ és el natural que satisfà
 
 $$e = E_u - 127 \qquad \Longleftrightarrow \qquad E_u = e + 127$$ {#eq-exponent-exces}
 
 on $e$ és el valor enter de l'exponent. Per exemple, $e = 0 \Rightarrow E_u = 127 = 0111\,1111_2$; $e = 1 \Rightarrow E_u = 128 = 1000\,0000_2$.
 
 ::: {#cau-exces-comparacio .callout-caution}
-## Per què l'exponent es codifica esbiaixat
+## Per què l'exponent es codifica esbiaixat?
 
 La representació esbiaixada (@sec-enters-en-exces i @imp-exces-coma-flotant) garanteix que l'ordre numèric dels valors explícits $E_u$ (interpretats com a naturals) coincideix amb l'ordre dels exponents enters $e$. Això permet **comparar nombres en coma flotant amb el mateix circuit que compara naturals** quan els dos operands tenen el mateix signe (en particular, quan tots dos són positius), amb dues condicions:
 
@@ -259,8 +257,10 @@ La **precisió** d'una representació és el seu nombre de bits significatius. E
 ::: {#cau-compromis-rang-precisio .callout-caution}
 ## Compromís rang–precisió
 
-Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redueix el rang (menys bits d'exponent) i viceversa. El format de simple precisió (8 bits d'exponent, 23 de fracció) és el compromís adoptat per l'estàndard IEEE 754 per a aplicacions de propòsit general.
+Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redueix el rang (menys bits d'exponent) i viceversa. El format de simple precisió (8 bits d'exponent i 23 de fracció) és el compromís adoptat per l'estàndard IEEE 754 per a aplicacions de propòsit general.
 :::
+
+<!-- TODO: PM: la paraula denormals de la figura a baix no s'aprecia del tot bé -->
 
 ::: {#fig-recta-global}
 ::: {.content-visible when-format="html"}
@@ -279,7 +279,7 @@ Recta de la coma flotant IEEE 754 (simple precisió): $\pm\infty$ i NaN als extr
 
 ### Error de representació i subdesbordament {#sec-error-representacio}
 
-El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut de representació** es defineix com $\varepsilon = |v - v_0|$ i l'**error relatiu** com $\eta = \varepsilon\,/\,|v|$.
+El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut** de representació es defineix com $\varepsilon = |v - v_0|$ i l'**error relatiu** com $\eta = \varepsilon\,/\,|v|$.
 
 Per a un nombre normalitzat qualsevol de la forma $v_0 = m \times 2^e$, el valor representable següent és $v_1 = (m + 2^{-23}) \times 2^e$, de manera que l'error absolut màxim és:
 
@@ -289,14 +289,14 @@ Dividint per $v_0$ i tenint en compte que $m \geq 1{,}0$, l'error relatiu queda 
 
 $$\eta_{\max} < 2^{-23} = 1\ \text{ULP}$$
 
-La quantitat $1\ \text{ULP}$ (***Unit in the Last Place***) és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menor pes de la mantissa. La fita $\eta_{\max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
+La quantitat $1\ \text{ULP}$ (*Unit in the Last Place*) és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menor pes de la mantissa. La fita $\eta_{\max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
 
 ::: {#cau-underflow .callout-caution}
 ## Subdesbordament
 
 Hi ha una excepció important a la fita d'error relatiu. Quan el valor absolut del resultat és inferior al mínim positiu normalitzat representable $2^{E_{\min}} = 2^{-126}$, si s'aproxima simplement per zero l'error relatiu és $\eta = 1$, és a dir, de l'ordre del 100%. Això pot invalidar completament el significat del resultat.
 
-Quan el maquinari detecta aquesta situació genera una excepció de **subdesbordament** (*underflow*), que permet al programari tractar-la adequadament. Els nombres **denormals** (@sec-codificacions-especials) són el mecanisme que defineix l'IEEE 754 per reduir aquest error de forma gradual.
+Quan el maquinari detecta aquesta situació genera una **excepció de subdesbordament** (*underflow*), que permet al programari tractar-la adequadament. Els nombres **denormals** (@sec-codificacions-especials) són el mecanisme que defineix l'IEEE 754 per reduir aquest error de forma gradual.
 :::
 
 ::: {#wrn-error-relatiu-formal .callout-warning collapse=true}
@@ -319,7 +319,9 @@ Aquesta fita és independent de $e$ i de $m$: l'error relatiu de representació 
 
 ### Codificacions especials {#sec-codificacions-especials}
 
-L'estàndard IEEE 754 reserva dos valors del camp d'exponent per a codificacions especials: $E = 0000\,0000_2$ (tot zeros) i $E = 1111\,1111_2$ (tot uns). El rang efectiu de l'exponent queda reduït a $[-126,\ +127]$ en simple precisió.
+L'estàndard IEEE 754 reserva dos valors del camp d'exponent per a codificacions especials: $E = 0000\,0000_2$ (tot zeros) i $E = 1111\,1111_2$ (tot uns). Per tant, el **rang efectiu** de l'exponent queda reduït a $[-126,\ +127]$ en simple precisió.
+
+<!-- TODO: PM: Error a la caption de la taula -->
 
 ::: {#imp-ieee754-codificacions-especials .callout-important}
 ## IEEE 754 — Taula de codificacions
@@ -355,24 +357,24 @@ Els formats normalitzats no poden representar el zero, ja que el bit ocult impos
 
 #### Denormals {#sec-denormals}
 
-Com s'ha vist a @sec-error-representacio, quan $|v| < 2^{-126}$ l'error relatiu pot arribar al 100% si s'arrodoneix a zero. Els **nombres denormals** (o subnormals) cobreixen l'interval $(0,\ 2^{-126})$ amb nombres de la forma:
+Com s'ha vist a la @sec-error-representacio, quan $|v| < 2^{-126}$ l'error relatiu pot arribar al 100% si s'arrodoneix a zero. Els nombres **denormals** (*subnormals*) cobreixen l'interval $(0,\ 2^{-126})$ amb nombres de la forma:
 
 $$v = \pm 0{,}F \times 2^{-126} \qquad (F \neq 0)$$
 
-A diferència dels nombres normalitzats, **no hi ha bit ocult**: la part entera de la mantissa és $0$, no $1$. L'exponent implícit dels denormals és sempre $e = -126$: **no** s'obté aplicant la fórmula $e = E_u - 127$ (que amb $E_u = 0$ donaria $-127$), sinó que és, per definició, el mateix exponent que el del normal més petit ($2^{-126}$).
+A diferència dels nombres normalitzats, **no hi ha bit ocult per als denormals**: la part entera de la mantissa és $0$ (en comptes de $1$). L'exponent implícit dels denormals és sempre $e = -126$; és a dir, no s'obté aplicant la fórmula $e = E_u - 127$ (que amb $E_u = 0$ donaria $-127$), sinó que és, per definició, el mateix exponent que el del normal més petit ($2^{-126}$).
 
 Amb denormals, la fita d'error absolut dins l'interval $(0,\ 2^{-126})$ és la mateixa que a l'interval normalitzat adjacent $(2^{-126},\ 2^{-125})$:
 
 $$\varepsilon_{\max} < 2^{-149}$$
 
-L'error relatiu ja no està uniformement acotat, però **creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com a **subdesbordament gradual** (*gradual underflow*).
+L'**error relatiu creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com a **subdesbordament gradual** (*gradual underflow*).
 
 En simple precisió, la fita d'error relatiu és $2^{-23}$ a l'extrem superior de l'interval $(0,\ 2^{-126})$ i creix progressivament fins a $2^0 = 1$ a mesura que $v$ s'acosta a zero i la mantissa no-normalitzada perd dígits significatius.
 
 ::: {#cau-cardinalitat-codificacions .callout-caution}
-Per a cada exponent normalitzat $E \in [1, 254]$, la fracció $F$ pren els $2^{23}$ valors possibles $\{0, 1, \ldots, 2^{23}-1\}$: $F = 0$ correspon a la potència de 2 exacta $(\pm 1{,}0 \times 2^e)$, un nombre normalitzat vàlid.
+Per a cada exponent normalitzat $E \in [1, 254]$, la fracció $F$ pren els $2^{23}$ valors possibles $\{0, 1, \ldots, 2^{23}-1\}$. Per exemple, $F = 0$ correspon a la potència de 2 exacta $(\pm 1{,}0 \times 2^e)$, un nombre normalitzat vàlid.
 
-Per als denormals ($E = 0$), el rang de $F$ és el mateix, però $F = 0$ codifica $\pm 0$, que **no** és un denormal. Per tant, hi ha $2^{23} - 1$ denormals per signe, enfront dels $2^{23}$ valors per exponent dels normals. Aquesta asimetria és visible comparant @fig-recta-zoom-zero amb @fig-recta-global.
+Tanmateix, per als denormals ($E = 0$), el rang de $F$ és el mateix, però l'exemple $F = 0$ codifica $\pm 0$, que no és un denormal. Per tant, hi ha $2^{23} - 1$ denormals per signe, enfront dels $2^{23}$ valors per exponent dels normals. Aquesta **asimetria** és visible comparant @fig-recta-zoom-zero amb @fig-recta-global.
 :::
 
 ::: {#fig-recta-zoom-zero}
@@ -392,38 +394,38 @@ Zoom al voltant del zero: $\pm 0$ i els denormals ($E=0$) omplen el buit entre e
 
 #### Infinit {#sec-codificacio-infinit}
 
-L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expressió $1\,/\,(1 + 100/x)$ per a valors de $x$ pròxims a zero: sense infinit, el càlcul $100/x$ produiria una excepció de sobreeiximent que avortaria el programa, tot i que el resultat final de l'expressió convergeix a zero. Amb infinit, la seqüència d'operacions és $100/x = \pm\infty$, $1 + \infty = \infty$, $1/\infty = 0$, i el programa continua sense excepcions.
+L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expressió $1\,/\,(1 + 100/x)$ per a valors de $x$ pròxims a zero resulta que, sense infinit, el càlcul $100/x$ produiria una excepció de sobreeiximent que avortaria el programa, tot i que el resultat final de l'expressió convergeix a zero. Amb infinit, la seqüència d'operacions és $100/x = \pm\infty$, $1 + \infty = \infty$, $1/\infty = 0$, i el programa continua sense excepcions.
 
 L'infinit es codifica amb tots els bits d'exponent a 1 i tots els de fracció a zero. S'apliquen regles aritmètiques senzilles: $1/0 = \infty$, $1/\infty = 0$, $x + \infty = \infty$, etc.
 
 #### NaN {#sec-codificacio-nan}
 
-Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN** (***Not a Number***), i l'execució continua. Qualsevol operació posterior amb un operand NaN produeix un altre NaN, de manera que l'error es **propaga** fins al resultat final, on el programa pot fer un únic test.
+Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial NaN (*Not a Number*), i l'execució continua. Qualsevol operació posterior amb un operand NaN produeix un altre NaN, de manera que l'error es propaga fins al resultat final, on el programa pot fer un únic test.
 
 Un NaN es codifica amb tots els bits d'exponent a 1 i almenys un bit de fracció no nul (per distingir-lo de l'infinit). El valor concret de la fracció no està fixat per l'estàndard.
 
 ### Arrodoniment {#sec-arrodoniment}
 
-Quan el resultat exacte $v$ d'una operació no és representable, cal triar entre els dos valors representables $v_0 < v < v_1$ més pròxims. Aquesta aproximació s'anomena **arrodoniment**. L'IEEE 754 (revisió de 2008) defineix cinc modes; els quatre d'ús més habitual són:
+Quan el resultat exacte $v$ d'una operació no és representable, cal triar entre els dos valors representables $v_0 < v < v_1$ més pròxims. Aquesta aproximació s'anomena arrodoniment. L'IEEE 754 (revisió de 2008) defineix cinc modes; els quatre d'ús més habitual són:
 
 | Mode | Criteri |
 | :--- | :--- |
-| **Al més pròxim** (per defecte) | El valor representable més proper a $v$; en cas d'empat, el parell |
-| **A zero** | El valor de menor magnitud (truncament) |
-| **A $+\infty$** | El valor representable major |
-| **A $-\infty$** | El valor representable menor |
+| Al més pròxim (per defecte) | El valor representable més proper a $v$; en cas d'empat, el parell |
+| A zero | El valor de menor magnitud (truncament) |
+| A $+\infty$ | El valor representable major |
+| A $-\infty$ | El valor representable menor |
 
-El mode per defecte és l'**arrodoniment al més pròxim** (***Round to Nearest Even***, **RNE**). Proporciona l'error mínim possible i, en el cas equidistant, tria el valor parell (el que té el bit de menor pes a 0) per evitar biaixos sistemàtics en cadenes llargues de càlculs.
+El mode per defecte és l'**arrodoniment al més pròxim** (*Round to Nearest Even*, RNE). Proporciona l'error mínim possible i, en el cas equidistant, tria el valor parell (el que té el bit de menor pes a 0) per evitar biaixos sistemàtics en cadenes llargues de càlculs.
 
-Els modes d'arrodoniment a $+\infty$ i a $-\infty$ s'usen conjuntament en **aritmètica d'intervals**, una tècnica que acota els errors d'arrodoniment per garantir la fiabilitat dels resultats numèrics. L'estàndard inclou encara un cinquè mode, *al més pròxim amb empat cap a la magnitud major* (RMM), poc emprat; RISC-V implementa els cinc modes al registre `fcsr` (@nte-fcsr).
+Els modes d'arrodoniment a $+\infty$ i a $-\infty$ s'usen conjuntament en aritmètica d'intervals, una tècnica que acota els errors d'arrodoniment per garantir la fiabilitat dels resultats numèrics. L'estàndard inclou encara un cinquè mode pot emprat: «al més pròxim amb empat cap a la magnitud major» (RMM). RISC-V implementa els cinc modes al registre `fcsr` (@nte-fcsr).
 
 #### Bits de guarda {#sec-bits-de-guarda}
 
-Quan el resultat exacte d'una operació té més bits que la mantissa, els bits sobrants (els **bits de guarda**) determinen com s'arrodoneix. N'hi ha prou amb tres:
+Quan el resultat exacte d'una operació té més bits que la mantissa, els bits de guarda (els bits sobrants) determinen com s'arrodoneix. N'hi ha prou amb tres:
 
-- **G** (*Guard*): el primer bit descartat.
-- **R** (*Round*): el segon bit descartat.
-- **S** (*Sticky*): l'OR lògic de la resta de bits descartats.
+- $G$ (*Guard*): el primer bit descartat.
+- $R$ (*Round*): el segon bit descartat.
+- $S$ (*Sticky*): l'OR lògic de la resta de bits descartats.
 
 ::: {#fig-grs-esquema}
 ::: {.content-visible when-format="html"}
@@ -464,9 +466,9 @@ Arrodoneix les mantisses de 6 bits següents a 3 bits (els 3 bits descartats só
 :::
 
 ::: {#wrn-bits-guarda .callout-warning collapse=true}
-## Per què 3 bits de guarda són suficients
+## Per què 3 bits de guarda són suficients?
 
-Durant una suma o resta, la mantissa del sumand de menor magnitud es desplaça a la dreta per igualar els exponents, i alguns bits queden fora de la mantissa de $p$ bits. Descartar-los introdueix error; conservar-los tots requeriria un sumador de mida arbitrària. Es demostra que els tres bits $G$, $R$ i $S$ (@sec-bits-de-guarda) basten per obtenir **exactament** el mateix resultat arrodonit que amb tots els bits: $G$ pot incorporar-se a la mantissa en normalitzar, $R$ decideix l'arrodoniment i $S$ (l'OR de la resta) distingeix el cas equidistant.
+Durant una suma o resta, la mantissa del sumand de menor magnitud es desplaça a la dreta per igualar els exponents, i alguns bits queden fora de la mantissa de $p$ bits. Descartar-los introdueix error mentre que conservar-los tots requeriria un sumador de mida arbitrària. Es demostra que els tres bits $G$, $R$ i $S$ (@sec-bits-de-guarda) basten per obtenir **exactament** el mateix resultat arrodonit que amb tots els bits: $G$ pot incorporar-se a la mantissa en normalitzar, $R$ decideix l'arrodoniment i $S$ (l'OR de la resta) distingeix el cas equidistant.
 
 **Exemple** (precisió $p = 6$ bits):
 
@@ -486,11 +488,13 @@ Amb tots els bits, el resultat arrodonit és idèntic: $1{,}11101$.
 
 ### Suma i resta {#sec-suma-resta-cf}
 
+<!-- TODO: PM: "algorisme" o "algoritme"? -->
+
 L'algorisme de suma i resta en coma flotant segueix cinc passos:
 
 1. **Igualar els exponents** al major dels dos operands, desplaçant a la dreta la mantissa del de menor magnitud.
 2. **Sumar o restar les mantisses** segons els signes dels operands.
-3. **Normalitzar** el resultat (desplaçar la mantissa fins que la part entera sigui 1, ajustant l'exponent en conseqüència). Cal comprovar sobreeiximent/subdesbordament.
+3. **Normalitzar** el resultat, desplaçant la mantissa fins que la part entera sigui 1, ajustant l'exponent en conseqüència; cal comprovar sobreeiximent/subdesbordament.
 4. **Arrodonir** la mantissa a $p$ bits.
 5. **Codificar** signe, exponent i fracció.
 
@@ -519,14 +523,16 @@ $$z \approx 1{,}002 \times 10^2$$
 ::: {#tip-suma-ieee754 .callout-tip}
 ## Suma en coma flotant, simple precisió
 
-Calcula $z = x + y$ amb $x = $ `0x3F40000D` i $y = $ `0xC0800004`.
+<!-- TODO: PM: Check that this formula is well displayed under LaTeX -->
+
+Calcula $z = x + y$ amb $x=$ `0x3F40000D` i $y=$ `0xC0800004`.
 
 **Descomposició dels operands**:
 
 $$x = 0\;|\;0111\,1110\;|\;100\,0000\,0000\,0000\,0000\,1101_2$$
 $$y = 1\;|\;1000\,0001\;|\;000\,0000\,0000\,0000\,0000\,0100_2$$
 
-**Descodificació**:
+**Descodificació dels operands**:
 
 - $x$: $S=0$, $E_u = 126 \Rightarrow e = -1$, mantissa $= +1{,}1000\,0000\,0000\,0000\,0001\,101_2 \times 2^{-1}$
 - $y$: $S=1$, $E_u = 129 \Rightarrow e = +2$, mantissa $= -1{,}0000\,0000\,0000\,0000\,0000\,100_2 \times 2^{2}$
@@ -576,7 +582,7 @@ L'algorisme de multiplicació i divisió és més simple que el de suma i resta 
 1. **Sumar els exponents** (multiplicació) o **restar-los** (divisió).
 2. **Multiplicar o dividir les mantisses**.
 3. **Determinar el signe**: negatiu si els operands tenen signes diferents.
-4. **Normalitzar** el resultat. Cal comprovar sobreeiximent/subdesbordament.
+4. **Normalitzar** el resultat: cal comprovar sobreeiximent/subdesbordament.
 5. **Arrodonir** la mantissa a $p$ bits.
 6. **Codificar** signe, exponent i fracció.
 
@@ -605,7 +611,7 @@ $$z \approx -1{,}942 \times 10^6$$
 ::: {#tip-multiplicacio-ieee754 .callout-tip}
 ## Multiplicació en coma flotant, simple precisió
 
-Calcula $z = x \times y$ amb $x = $ `0x3F600000` i $y = $ `0xBED00002`.
+Calcula $z = x \times y$ amb $x=$ `0x3F600000` i $y=$ `0xBED00002`.
 
 **Descomposició dels operands**:
 
@@ -653,7 +659,7 @@ $$z = 1\;|\;0111\,1101\;|\;011\,0110\,0000\,0000\,0000\,0010_2 = \texttt{0xBEB60
 ::: {#tip-divisio-ieee754 .callout-tip}
 ## Divisió en coma flotant, simple precisió
 
-Calcula $z = x / y$ amb $x = $ `0x41000000` i $y = $ `0x40400000`.
+Calcula $z = x / y$ amb $x=$ `0x41000000` i $y=$ `0x40400000`.
 
 **Descodificació**:
 
@@ -692,7 +698,7 @@ $$z = 0\;|\;1000\,0000\;|\;010\,1010\,1010\,1010\,1010\,1011_2 = \texttt{0x402AA
 
 ### No-associativitat {#sec-no-associativitat}
 
-La suma d'enters en Ca2 és associativa: $(a + b) + c = a + (b + c)$ sempre. En coma flotant, aquesta propietat **no es compleix** a causa dels arrodoniments intermedis.
+La suma d'enters en Ca2 és associativa: $(a + b) + c = a + (b + c)$ sempre. En coma flotant, aquesta propietat simplement no es compleix a causa dels arrodoniments intermedis.
 
 ::: {#tip-no-associativitat .callout-tip}
 ## Contraexemple de l'associativitat
@@ -726,8 +732,7 @@ La no-associativitat de la suma en coma flotant té conseqüències pràctiques 
 
 ### Registres i ABI {#sec-registres-abi-f}
 
-L'extensió **F** afegeix 32 registres de coma flotant de 32 bits, **`f0`–`f31`**, independents dels registres enters de RV32I. L'ABI `ilp32f` assigna noms i rols a cadascun, seguint el mateix esquema de temporals, segurs i paràmetres que els registres enters (@nte-registres-proposit-general).
-
+L'**extensió F** de RISC-V afegeix 32 registres de coma flotant de 32 bits, **`f0`–`f31`**, independents dels registres enters de RV32I. L'ABI `ilp32f` assigna noms i rols a cadascun, seguint el mateix esquema de temporals, segurs i paràmetres que els registres enters (@nte-registres-proposit-general).
 ::: {#nte-registres-coma-flotant .callout-note}
 ## RV32F ABI — Registres de coma flotant
 
@@ -738,6 +743,8 @@ L'extensió **F** afegeix 32 registres de coma flotant de 32 bits, **`f0`–`f31
 :::
 
 A més dels registres `f0`–`f31`, l'extensió F afegeix el registre de control i estat de coma flotant **`fcsr`** (*Floating-Point Control and Status Register*), que controla el mode d'arrodoniment i registra les excepcions produïdes per les operacions de coma flotant (cosa que fa que l'extensió Zicsr (@nte-zicsr) esdevingui obligatòria).
+
+<!-- TODO: PM: figures amb descripcions en anglès o català? -->
 
 ::: {#nte-fcsr .callout-note}
 ## RV32F — Registre de control `fcsr`
@@ -761,7 +768,7 @@ Camps del registre `fcsr` (RV32F).
 | :---: | :---: | :--- |
 | `31:8` | — | Reservats (llegeixen com a 0) |
 | `7:5` | `frm` | Mode d'arrodoniment |
-| `4:0` | `fflags` | Indicadors d'excepció (sticky) |
+| `4:0` | `fflags` | Indicadors d'excepció (*sticky*) |
 : {tbl-colwidths="[15,15,70]" .striped}
 
 **Modes d'arrodoniment** (`frm`):
@@ -786,7 +793,7 @@ Camps del registre `fcsr` (RV32F).
 | `0` | `NX` | Resultat inexacte (arrodoniment) |
 : {tbl-colwidths="[15,15,70]" .striped}
 
-Els indicadors són sticky: un cop activats pel maquinari, romanen actius
+Els indicadors són *sticky*: un cop activats pel maquinari, romanen actius
 fins que el programari els esborra explícitament.
 :::
 
@@ -794,6 +801,8 @@ fins que el programari els esborra explícitament.
 ## Paral·lelisme entre registres enters i de coma flotant
 
 Els noms ABI dels registres de coma flotant segueixen exactament el mateix esquema que els dels registres enters:
+
+<!-- TODO: PM: missing caption -->
 
 | Categoria | Enters | Coma flotant |
 | :--- | :--- | :--- |
@@ -808,8 +817,8 @@ Els noms ABI dels registres de coma flotant segueixen exactament el mateix esque
 
 Les convencions de preservació s'apliquen als registres de coma flotant exactament igual que als enters:
 
-- Els registres **temporals** (`ft0`–`ft11`, `fa0`–`fa7`) poden ser modificats lliurement per qualsevol subrutina. Si el caller en necessita el valor després d'una crida, els ha de desar ell mateix.
-- Els registres **segurs** (`fs0`–`fs11`) han de ser restaurats al seu valor original per la subrutina que els modifica. Si una subrutina usa `fs0`, ha de desar-lo al pròleg i restaurar-lo a l'epíleg, exactament igual que faria amb `s0`.
+- Els **registres temporals** (`ft0`–`ft11`, `fa0`–`fa7`) poden ser modificats lliurement per qualsevol subrutina. Si el *caller* en necessita el valor després d'una crida, els ha de desar ell mateix.
+- Els **registres segurs** (`fs0`–`fs11`) han de ser restaurats al seu valor original per la subrutina que els modifica. Si una subrutina usa `fs0`, ha de desar-lo al pròleg i restaurar-lo a l'epíleg, exactament igual que faria amb `s0`.
 
 El pròleg i l'epíleg d'una subrutina que usa registres segurs de coma flotant segueixen el mateix patró que per als enters (@sec-multinivell-pila):
 
@@ -830,7 +839,7 @@ sub:
 
 ### Instruccions {#sec-instruccions-rvf}
 
-Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s`**. Tots els operands han de ser en registres de coma flotant, sense cap excepció: **no hi ha operands immediats flotants** ni instruccions que combinin registres enters i flotants en una mateixa operació aritmètica. Les instruccions de càrrega i emmagatzemament usen un registre enter com a base d'adreça.
+Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s`**. Tots els operands han de ser en registres de coma flotant, sense cap excepció. **No hi ha operands immediats flotants** ni instruccions que combinin registres enters i flotants en una mateixa operació aritmètica. Les instruccions de càrrega i emmagatzemament usen un registre enter com a base d'adreça.
 
 ::: {#nte-instruccions-flw-fsw .callout-note}
 ## RV32F ISA — Càrrega i emmagatzemament
@@ -840,7 +849,7 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 {{< include ../21_riscv/RV32F_instruccions_carrega_emmagatzemament.qmd >}}
 : {tbl-colwidths="[8,18,35,30,9]" .striped}
 
-`rs1` és sempre un registre **enter**. L'adreça efectiva ha de ser múltiple de 4 (alineació de paraula).
+`rs1` és sempre un **registre enter**. L'adreça efectiva ha de ser múltiple de 4 (alineació de paraula).
 :::
 
 ::: {#nte-instruccions-aritmetiques-f .callout-note}
@@ -869,7 +878,7 @@ Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s
 {{< include ../21_riscv/RV32F_instruccions_comparacio.qmd >}}
 : {tbl-colwidths="[8,18,35,30,9]" .striped}
 
-El resultat s'escriu en un registre **enter** `rd` (0 o 1). Per implementar un salt condicional, cal combinar la comparació amb `beq` o `bne`:
+El resultat s'escriu en un **registre enter** `rd` (0 o 1). Per implementar un salt condicional, cal combinar la comparació amb `beq` o `bne`:
 
 ```{.s filename="RV32IF"}
 flt.s   t0, fa0, fa1    # t0 = 1 si fa0 < fa1, si no 0
@@ -912,7 +921,7 @@ int truncar(float x) {
 }
 ```
 
-El *cast* `(int)` de C sempre **trunca cap a zero**, independentment del valor de `x`. Per traduir-ho cal indicar explícitament el mode d'arrodoniment `rtz` a `fcvt.w.s`:
+El *cast* `(int)` de C sempre trunca cap a zero, independentment del valor de `x`. Per traduir-ho cal indicar explícitament el mode d'arrodoniment `rtz` a `fcvt.w.s`:
 
 ```{.s filename="RV32IF"}
 truncar:
@@ -920,14 +929,14 @@ truncar:
         ret
 ```
 
-Si s'escriu `fcvt.w.s a0, fa0` **sense** operand de mode, l'assemblador hi assigna `dyn` (mode dinàmic): la conversió s'arrodoneix segons el mode vigent al camp `frm` del `fcsr` (@nte-fcsr), que per defecte és RNE (al més pròxim, empat al parell). Per a $x = 2{,}5$, això dona resultats diferents:
+Si s'escriu `fcvt.w.s a0, fa0` (sense operand de mode) l'assemblador hi assigna `dyn` (mode dinàmic): la conversió s'arrodoneix segons el mode vigent al camp `frm` del `fcsr` (@nte-fcsr), que per defecte és RNE (al més pròxim, empat al parell). Per a $x = 2{,}5$, això dona resultats diferents:
 
 | Instrucció | Mode | Resultat |
 | :--- | :--- | :---: |
 | `fcvt.w.s a0, fa0, rtz` | Truncament (cast de C) | $2$ |
 | `fcvt.w.s a0, fa0` | `dyn` → RNE per defecte | $2$ (empat, al parell) |
 
-Per a $x = 3{,}5$, en canvi, la diferència és explícita: `rtz` dona $3$; `dyn`/RNE dona $4$ (empat, al parell). **La instrucció `fcvt.w.s` no trunca per si mateixa: trunca només quan se n'indica el mode `rtz`.**
+Per a $x = 3{,}5$, en canvi, la diferència és explícita: `rtz` dona $3$; `dyn`/RNE dona $4$ (empat, al parell). La instrucció `fcvt.w.s` trunca només quan se n'indica el mode `rtz`.
 :::
 
 ::: {#imp-no-immediats-flotants .callout-important}
@@ -981,14 +990,14 @@ func:
         la      t1, const_2
         flw     ft1, 0(t1)      # ft1 <- 2.0
 
-        flt.s   t2, fa0, ft0   # t2 = (x < 1.0) ? 1 : 0
+        flt.s   t2, fa0, ft0    # t2 = (x < 1.0) ? 1 : 0
         beq     t2, zero, sino  # si no (x >= 1.0), salta
 
-        fmul.s  fa0, fa0, fa0  # return x * x
+        fmul.s  fa0, fa0, fa0   # return x * x
         ret
 
 sino:
-        fsub.s  fa0, ft1, fa0  # return 2.0 - x
+        fsub.s  fa0, ft1, fa0   # return 2.0 - x
         ret
 ```
 :::
