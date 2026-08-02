@@ -6,7 +6,7 @@ number-sections: true
 
 ## Suma, resta i canvi de signe {#sec-suma-resta-i-canvi-de-signe}
 
-Les instruccions de **suma** (`add`) i **resta** (`sub`) d'enters ja s'han introduït a @nte-instruccions-aritmetica-entera-rv32i; aquí se'n reprèn l'ús per estudiar-ne el **sobreeiximent** i per definir el **canvi de signe**.
+Les instruccions de suma (`add`) i resta (`sub`) d'enters ja s'han introduït a @nte-instruccions-aritmetica-entera-rv32i; aquí se'n reprèn l'ús per estudiar-ne el **sobreeiximent** i per definir el **canvi de signe**.
 
 ::: {#nte-pseudoinstruccio-neg .callout-note}
 ## Pseudoinstrucció — `neg` (canvi de signe)
@@ -18,11 +18,11 @@ El **canvi de signe** d'un registre s'obté amb la pseudoinstrucció `neg`:
 {{< include ../21_riscv/RV32I_pseudo_neg.qmd >}}
 :::
 
-Gràcies a l'equivalència entre la resta i la suma amb el negatiu del subtrahend, el maquinari necessita **un sol circuit** per a la suma i la resta (@sec-resta-ca2).
+Gràcies a l'equivalència entre la resta i la suma amb el negatiu del subtrahend, el maquinari necessita un sol circuit per a la suma i la resta (@sec-resta-ca2).
 
 ## Sobreeiximent en suma i resta d'enters {#sec-suma-resta-enters}
 
-El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$ (@eq-rang-ca2). Es produeix **sobreeiximent** (***overflow***) en una operació quan el resultat exacte no pertany a aquest rang; en aquest cas, el resultat calculat amb $n$ bits no és correcte.
+El **rang** de representació dels enters en Ca2 (@sec-enters-en-ca2) amb $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$ (@eq-rang-ca2). Es produeix **sobreeiximent** (*overflow*) en una operació quan el resultat exacte no pertany a aquest rang; en aquest cas, el resultat calculat amb $n$ bits no és correcte.
 
 ::: {#wrn-sobreeiximent-llenguatges .callout-warning collapse=true}
 ## Sobreeiximent i llenguatges de programació
@@ -40,22 +40,21 @@ en aquest cas la detecció és responsabilitat del programari (com en el cas de 
 :::
 
 ::: {#cau-ec-no-overflow .callout-caution}
-A **RV32I**, les operacions de suma i resta **ignoren** el sobreeiximent: el resultat és simplement els 32 bits de menys pes de l'operació, independentment de si és correcte en el rang dels enters representables.
+A **RV32I**, les operacions de suma i resta **ignoren el sobreeiximent**: el resultat és simplement els 32 bits de menys pes de l'operació, independentment de si és correcte en el rang dels enters representables.
 :::
 
 ### Condicions de sobreeiximent {#sec-condicions-de-sobreeiximent}
 
-Per a la **suma** $s = a + b$, es produeix sobreeiximent **si i només si els dos operands són del mateix signe i el resultat és de signe diferent**.
+Per a la suma $s = a + b$, es produeix sobreeiximent si i només si **els dos operands són del mateix signe i el resultat és de signe diferent**.
 
-Per a la **diferència** $d = a - b$, es produeix sobreeiximent **si i només si la diferència és del mateix signe que el subtrahend $b$ però de signe diferent que el minuend $a$**.
+Per a la diferència $d = a - b$, es produeix sobreeiximent si i només si **la diferència és del mateix signe que el subtrahend $b$ però de signe diferent que el minuend $a$**.
 
 ::: {#wrn-sobreeiximent-demostracio .callout-warning collapse=true}
 ## Demostració de les condicions de sobreeiximent en Ca2
 
 Considerem la suma exacta $s = a + b$, on $a$ i $b$ estan representats per les cadenes de bits $A = A_{n-1}\ldots A_0$ i $B = B_{n-1}\ldots B_0$. La suma exacta sempre es pot representar amb $n+1$ bits com $S = S_n\,S_{n-1}\ldots S_0$.
 
-**Cas 1 — Signes oposats**: si $a < 0$ i $b \geq 0$, llavors $a \leq a+b < b$, de manera que $s$ sempre és representable amb $n$ bits.
-No hi ha sobreeiximent.
+**Cas 1 — Signes oposats**: si $a < 0$ i $b \geq 0$, llavors $a \leq a+b < b$, de manera que $s$ sempre és representable amb $n$ bits: no hi ha sobreeiximent.
 
 **Cas 2 — Mateix signe**: la suma exacta ha de ser del mateix signe que els operands, de manera que $S_n = A_{n-1} = B_{n-1}$. La cadena truncada $S' = S_{n-1}\ldots S_0$ és la representació correcta de $s$ si i només si $S_{n-1} = S_n$, és a dir, si $S_{n-1} = A_{n-1} = B_{n-1}$. Si $S_{n-1} \neq A_{n-1}$, el resultat truncat és incorrecte: hi ha sobreeiximent.
 
@@ -71,7 +70,7 @@ v = c_{n-1} \oplus c_n
 $$ {#eq-sobreeiximent-hardware}
 
 ::: {#wrn-sobreeiximent-maquinari .callout-warning collapse=true}
-## Detecció de sobreeiximent per maquinari: el sumador amb propagació de l'arrossegament
+## Detecció de sobreeiximent per maquinari — el sumador amb propagació de l'arrossegament
 
 Un sumador de $n$ bits es construeix amb una cadena de $n$ **sumadors complets** (*full-adders*). Cada sumador complet rep el bit $a_i$, el bit $b_i$ i el bit d'arrossegament d'entrada (*carry-in*) $c_i$, i produeix el bit de suma $s_i = a_i \oplus b_i \oplus c_i$ i el bit d'arrossegament de sortida (*carry-out*) $c_{i+1} = (a_i \oplus b_i) \land c_i \lor a_i \land b_i$.
 
@@ -89,7 +88,7 @@ $$
 v = \overline{(A_{31} \oplus B_{31})} \land (A_{31} \oplus S_{31})
 $$ {#eq-sobreeiximent-software}
 
-és a dir, sobreeiximent si els operands **tenen el mateix signe** i el resultat **té signe diferent**.
+és a dir, hi ha sobreeiximent si els operands tenen el mateix signe i el resultat té signe diferent.
 
 ::: {#tip-sobreeiximent-programari .callout-tip}
 ## Càlcul de la condició de sobreeiximent per programari
@@ -107,19 +106,16 @@ executat `add t2, t0, t1`:
 ```
 :::
 
+<!-- TODO: Aquest "caution" hauria d'estar més endavant, quan es parla de l'extensió M i no pas al principi d'introducció de les multiplicacions -->
+
 ::: {#cau-sobreeiximent-extensio-m .callout-caution}
-El criteri vist per a la suma i la resta (@cau-ec-no-overflow) s'aplica a **tota** l'aritmètica entera de RISC-V, **inclosa l'extensió M**: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció, si cal, és responsabilitat del programari (@sec-sobreeiximent-programari).
+El criteri vist per a la suma i la resta (@cau-ec-no-overflow) s'aplica a tota l'aritmètica entera de RISC-V, inclosa l'extensió M: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció, si cal, és responsabilitat del programari (@sec-sobreeiximent-programari).
 :::
 
 ::: {#wrn-sobreeiximent-naturals .callout-warning collapse=true}
 ## Sobreeiximent en naturals
 
-Per als naturals, el rang de representació amb $n$ bits és $[0,\ 2^n-1]$,
-i es produeix sobreeiximent quan el resultat exacte supera aquest rang. La condició
-és més simple que en el cas dels enters: en un sumador amb propagació d'arrossegament,
-n'hi ha prou d'observar l'arrossegament de sortida del bit de més pes ($c_n = 1$). Per detectar-lo per programari, n'hi ha prou de comparar el resultat amb qualsevol dels dos operands: si la suma ha produït sobreeiximent, el resultat serà
-necessàriament menor que cadascun dels operands (ja que s'ha "donat la volta"
-al rang).
+Per als naturals, el rang de representació amb $n$ bits és $[0,\ 2^n-1]$, i es produeix sobreeiximent quan el resultat exacte supera aquest rang. La condició és més simple que en el cas dels enters: en un sumador amb propagació d'arrossegament, n'hi ha prou d'observar l'arrossegament de sortida del bit de més pes ($c_n = 1$). Per detectar-lo per programari, n'hi ha prou de comparar el resultat amb qualsevol dels dos operands: si la suma ha produït sobreeiximent, el resultat serà necessàriament menor que cadascun dels operands (ja que s'ha "donat la volta" al rang).
 
 En llenguatges com C, l'estàndard especifica que el sobreeiximent de naturals produeix un truncament a mòdul $2^n$ (*wrapping around*). Per a tipus de dades de menys de 32 bits, el compilador ha de generar instruccions addicionals per truncar el resultat al rang corresponent.
 :::
@@ -134,7 +130,7 @@ L'algorisme per calcular el producte $z = x \times y$ d'enters és:
 
 1. Calcular els valors absoluts $|x|$ i $|y|$.
 2. Multiplicar els valors absoluts (producte de naturals).
-3. Si els operands tenen signes **diferents**, canviar el signe del resultat.
+3. Si els operands tenen signes diferents, canviar el signe del resultat.
 
 Per multiplicar dos naturals en base 2, s'obtenen tants **productes parcials** com bits té el multiplicador: el producte parcial $i$ és el multiplicand desplaçat $i$ posicions a l'esquerra si el bit $i$ del multiplicador és 1, o zero si és 0. La suma de tots els productes parcials és el resultat.
 
@@ -158,13 +154,11 @@ Multiplicar $x = 1010_2$ ($10_{10}$) per $y = 1101_2$ ($13_{10}$):
 
 ### Circuit seqüencial de multiplicació {#sec-circuit-multiplicacio}
 
-Per evitar guardar tots els productes parcials simultàniament, el circuit els va acumulant a mesura que es calculen en un registre acumulador **P** de $2n$ bits, inicialitzat a zero.
-
-El circuit disposa de tres registres:
+Per evitar guardar tots els productes parcials simultàniament, el circuit els va acumulant a mesura que es calculen en un registre acumulador de $2n$ bits, inicialitzat a zero. En total, el circuit disposa de **tres registres**:
 
 - **MD** ($2n$ bits): conté el multiplicand, inicialitzat amb $x$ a la part baixa i zeros a la part alta. Es desplaça una posició a l'esquerra
   a cada iteració.
-- **MR** ($n$ bits): conté el multiplicador $y$. Es desplaça una posició a la dreta a cada iteració; el bit de menys pes s'usa per decidir si
+- **MR** ($n$ bits): conté el multiplicador $y$. Es desplaça una posició a la dreta a cada iteració. El bit de menys pes s'usa per decidir si
   sumar o no.
 - **P** ($2n$ bits): acumulador del producte. S'inicialitza a zero i s'hi suma MD si el bit de menys pes de MR és 1.
 
@@ -182,6 +176,8 @@ El circuit disposa de tres registres:
 :::
 Circuit multiplicador seqüencial.
 :::
+
+<!-- TODO: La descripció de l'algorisme no hauria de ser tota en cursives. Els titols del codis no haurien de ser simplemement "pseudocodi". -->
 
 ::: {#thm-multiplicacio-sequencial}
 Multiplicació seqüencial de naturals de $n$ bits, on $x$ multiplicand, $y$ multiplicador i $z$ el resultat.
@@ -267,30 +263,25 @@ Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv
 
 ```{.c filename="C"}
 int a = 5, b = 6, c;
-c = a * b;              /* c = 30 */
+c = a * b;                    /* c = 30 */
 ```
 
 Suposant que `a`, `b` i `c` ocupen `t0`, `t1` i `t2`:
 
 ```{.s filename="RV32IM"}
-        mul     t2, t0, t1      # c <- a * b (32 bits de menys pes)
+        mul     t2, t0, t1    # c <- a * b (32 bits de menys pes)
 ```
 :::
 
 ::: {#wrn-mul-mulh-fusio .callout-warning collapse=true}
 ## Fusió de `mul` i `mulh`
 
-`mul` i `mulh` (o `mulhu`/`mulhsu`) són instruccions independents: cadascuna calcula
-internament la multiplicació completa de 64 bits i en retorna una meitat. Per
-evitar fer el càlcul dues vegades, l'especificació de RISC-V recomana als
-compiladors que, quan calguin les dues meitats del resultat, posin les dues
-instruccions consecutivament amb els mateixos operands; això permet al maquinari
-detectar el patró i fusionar-les en una sola multiplicació de 64 bits.
+`mul` i `mulh` (o `mulhu`/`mulhsu`) són instruccions independents: cadascuna calcula internament la multiplicació completa de 64 bits i en retorna una meitat. Per evitar fer el càlcul dues vegades, l'especificació de RISC-V recomana als compiladors que, quan calguin les dues meitats del resultat, posin les dues instruccions consecutivament amb els mateixos operands; això permet al maquinari detectar el patró i fusionar-les en una sola multiplicació de 64 bits.
 :::
 
 ### Sobreeiximent en la multiplicació {#sec-sobreeiximent-en-la-multiplicacio}
 
-El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte. `mul` retorna només els **32 bits de menys pes**, que corresponen al resultat truncat; si el resultat exacte no és representable amb 32 bits, es produeix **sobreeiximent** i el valor retornat per `mul` no és correcte.
+El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte. `mul` retorna només els **32 bits de menys pes**, que corresponen al resultat truncat. Si el resultat exacte no és representable amb 32 bits, **es produeix sobreeiximent i el valor retornat per `mul` no és correcte**.
 
 Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters amb signe) o `mulhu` (naturals sense signe), que retornen els **32 bits de més pes**. A partir d'aquests es pot detectar el sobreeiximent:
 
@@ -311,25 +302,19 @@ En RV32IM, per obtenir el producte exacte de 64 bits i detectar sobreeiximent, s
 
 ```{.s filename="RV32IM"}
         # a, b als registres t0, t1
-        mul     t2, t0, t1      # t2 <- bits [31:0] del producte
-        mulh    t3, t0, t1      # t3 <- bits [63:32] del producte (enters)
-        # sobreeiximent si t3 != extensió de signe de t2
-        srai    t4, t2, 31      # t4 <- extensió de signe de t2
-        bne     t3, t4, sobreeiximent
+        mul     t2, t0, t1             # t2 <- bits [31:0] del producte
+        mulh    t3, t0, t1             # t3 <- bits [63:32] del producte (enters)
+        srai    t4, t2, 31             # t4 <- extensió de signe de t2
+        bne     t3, t4, sobreeiximent  # sobreeiximent si t3 != ext.ensió de signe de t2
 ```
 :::
 
 ::: {#wrn-mul-modul-2n .callout-warning collapse=true}
-## Per què `mul` no distingeix el signe dels operands
+## Per què `mul` no distingeix el signe dels operands?
 
-A @sec-algorisme-multiplicacio s'ha presentat l'algorisme general per a enters:
-treballar amb els valors absoluts i ajustar el signe al final. Estrictament, però,
-per a la part **baixa** del resultat aquest ajust no és necessari: el producte
-mòdul $2^n$ (els $n$ bits de menys pes) és **idèntic** tant si els operands
-s'interpreten com a naturals com si s'interpreten com a enters en Ca2. Per això
-RV32M té una única instrucció `mul` per als bits $[31{:}0]$, vàlida per a tots
-dos casos. En canvi, la part **alta** ($[63{:}32]$) sí que depèn de la
-interpretació dels operands, i per això existeixen `mulh`, `mulhu` i `mulhsu`.
+A la @sec-algorisme-multiplicacio s'ha presentat l'algorisme general per a enters: treballar amb els valors absoluts i ajustar el signe al final. 
+
+Estrictament, però, per a la **part baixa** del resultat aquest ajust no és necessari: el producte mòdul $2^n$ (els $n$ bits de menys pes) **és idèntic** tant si els operands s'interpreten com a naturals com si s'interpreten com a enters en Ca2. Per això RV32M té una única instrucció `mul` per als bits $[31{:}0]$, vàlida per a tots dos casos. En canvi, la **part alta** ($[63{:}32]$) sí que depèn de la interpretació dels operands, i per això existeixen `mulh`, `mulhu` i `mulhsu`.
 :::
 
 ## Divisió entera {#sec-divisio-entera}
@@ -342,8 +327,8 @@ L'algorisme per calcular el quocient $q = x \div y$ i el residu $r = x \bmod y$ 
 
 1. Calcular els valors absoluts $|x|$ i $|y|$.
 2. Dividir els valors absoluts (divisió de naturals), obtenint $q$ i $r$.
-3. Si els operands tenen signes **diferents**, canviar el signe del quocient.
-4. Si el dividend és **negatiu**, canviar el signe del residu.
+3. Si els operands tenen signes diferents, canviar el signe del quocient.
+4. Si el dividend és negatiu, canviar el signe del residu.
 
 La divisió del dividend $D$ entre el divisor $d$ consisteix a trobar el quocient $q$ i el residu $r$ naturals tals que $D = d \cdot q + r$, amb
 $0 \leq r < d$.
@@ -370,14 +355,14 @@ Quocient: $q = 0101_2 = 5_{10}$, residu: $r = 0001_2 = 1_{10}$ ✓
 
 ### Circuit seqüencial de divisió {#sec-circuit-divisio}
 
-El circuit implementa l'algorisme anterior amb tres registres:
+El circuit implementa l'algorisme anterior amb **tres registres**:
 
 - **R** ($2n$ bits): dividend/residu. S'inicialitza amb $x$ a la part baixa i zeros a la part alta.
 - **D** ($2n$ bits): divisor. S'inicialitza amb $y$ a la part alta i zeros a la part baixa. Es desplaça una posició a la dreta a cada iteració.
 - **Q** ($n$ bits): quocient. S'inicialitza a zero.
 
 Per evitar guardar el dividend original quan la comparació falla, s'utilitza l'**algorisme amb restauració**: es resta sempre el divisor del dividend
-parcial (la comparació es fa com una resta); si el resultat és negatiu (bit de signe $R_{2n-1} = 1$), el bit de quocient és 0 i es **restaura** el dividend sumant-hi de nou el divisor; si és positiu o zero, el bit és 1.
+parcial (la comparació es fa com una resta). Si el resultat és negatiu (bit de signe $R_{2n-1} = 1$), el bit de quocient és 0 i es restaura el dividend sumant-hi de nou el divisor; si el resultat és positiu o zero, el bit és 1.
 
 ::: {#fig-divisor-sequencial}
 ::: {.content-visible when-format="html"}
@@ -395,7 +380,7 @@ Circuit divisor seqüencial amb restauració.
 :::
 
 ::: {#thm-divisio-sequencial-restauracio}
-Divisió seqüencial de naturals de $n$ bits amb algorisme de restauració, on $x$ dividend, $y$ divisor, $z$ el quocient i $w$ el residu.
+Divisió seqüencial de naturals de $n$ bits amb algorisme de restauració, on $x$ és el dividend, $y$ el divisor, $z$ el quocient i $w$ el residu.
 
 ```{.default filename="Pseudocodi"}
 // Inicialització
@@ -435,7 +420,7 @@ Quocient: $Q = 0101_2 = 5_{10}$, residu: $R[3:0] = 0001_2 = 1_{10}$ ✓
 
 ### Instruccions de divisió entera a RV32IM {#sec-instruccions-divisio}
 
-L'extensió **M** proporciona quatre instruccions de divisió entera:
+L'extensió M proporciona quatre instruccions de divisió entera:
 
 ::: {#nte-rv32im-instruccions-divisio .callout-note}
 ## RV32IM ISA — Instruccions de divisió entera
@@ -446,23 +431,22 @@ L'extensió **M** proporciona quatre instruccions de divisió entera:
 : {tbl-colwidths="[10,20,35,30,5]"}
 :::
 
-`div` i `rem` operen amb enters amb signe; `divu` i `remu` operen amb
-naturals. `div` i `divu` escriuen el **quocient** a `rd`; `rem` i `remu`
-escriuen el **residu**.
+`div` i `rem` operen amb enters amb signe. `divu` i `remu` operen amb naturals. `div` i `divu` escriuen el quocient a `rd`; `rem` i `remu`
+escriuen el residu.
 
 ::: {#cau-divisio-enters-semantica .callout-caution}
-Les instruccions `div` i `rem` segueixen la **semàntica de C**: el residu té el mateix signe que el **dividend**, i $|r| < |d|$. Aquesta és la mateixa semàntica que s'obté dividint els valors absoluts i ajustant el signe (algorisme de la @sec-divisio-entera).
+Les instruccions `div` i `rem` segueixen la **semàntica de C**: el residu té el mateix signe que el dividend, i $|r| < |d|$. Aquesta és la mateixa semàntica que s'obté dividint els valors absoluts i ajustant el signe (algorisme de la @sec-divisio-entera).
 
-Això **difereix** de la divisió euclidiana, on el residu és sempre no negatiu. Vegeu la diferència amb `sra` a @cau-sra-divisio.
+Això **difereix de la divisió euclidiana**, on el residu és sempre no negatiu. Vegeu la diferència amb `sra` a @cau-sra-divisio.
 :::
 
 #### Casos especials {#sec-casos-especials}
 
-- **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció; per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
+- **Divisor zero**: el resultat és indefinit. RISC-V no genera excepció. Per convenció, `div` retorna $-1$ i `rem` retorna el dividend.
 - **Sobreeiximent en enters**: l'únic cas possible és $x = -2^{31}$, $y = -1$, ja que el resultat exacte $2^{31}$ no és representable en Ca2 amb 32 bits. Per convenció, `div` retorna $-2^{31}$ i `rem` retorna 0.
 
 ::: {#tip-divisio-exemple .callout-tip}
-## Traducció de divisió i mòdul enters
+## Traducció de divisió i mòdul d'enters
 
 ```{.c filename="C"}
 int a, b, q, r;
@@ -478,14 +462,14 @@ r = a % b;
 
 ### Divisió per potències de 2 {#sec-divisio-per-potencies-de-2}
 
-Com s'ha vist a @cau-sra-divisio, la instrucció `sra` calcula el quocient de la divisió d'un enter per una potència de 2, però amb la semàntica de la **divisió euclidiana** (residu sempre no negatiu), que difereix de `div` quan el dividend és negatiu i la divisió no és exacta.
+Com s'ha vist a @cau-sra-divisio, la instrucció `sra` calcula el quocient de la divisió d'un enter per una potència de 2, però amb la **semàntica de la divisió euclidiana** (residu sempre no negatiu), que difereix de `div` quan el dividend és negatiu i la divisió no és exacta.
 
 En C, l'operador `/` entre enters es tradueix amb `div` (no amb `sra`), llevat que el compilador pugui garantir que el dividend és no negatiu.
 
 
 ## Matrius {#sec-matrius}
 
-Amb `mul` disponible, ja és possible calcular adreces arbitràries dins d'estructures de dades multidimensionals. Una **matriu** és una agrupació multidimensional d'elements del mateix tipus, identificats per un índex per cada dimensió. Les matrius de dues dimensions es representen habitualment com una taula de **NF** files i **NC** columnes:
+Amb `mul` disponible, ja és possible calcular adreces arbitràries dins d'estructures de dades multidimensionals. Una **matriu** és una agrupació multidimensional d'elements del mateix tipus, identificats per un índex per cada dimensió. Les matrius de dues dimensions es representen habitualment com una **taula de NF files i NC columnes**:
 
 $$
 \begin{pmatrix}
@@ -505,7 +489,7 @@ int mat1[NF][NC];
 int mat2[2][3] = {{-1, 2, 0}, {1, -12, 4}};
 ```
 
-Els elements s'emmagatzemen en posicions **consecutives de memòria per files**: primer tots els de la fila 0, després els de la fila 1, etc. Aquest és un conveni arbitrari de C (en Fortran, les matrius s'emmagatzemen per columnes).
+**Els elements s'emmagatzemen en posicions consecutives de memòria per files**: primer tots els de la fila 0, després els de la fila 1, etc. Aquest és un conveni arbitrari de C (en Fortran, les matrius s'emmagatzemen per columnes).
 
 ::: {#fig-matriu-emmagatzematge}
 ::: {.content-visible when-format="html"}
@@ -531,12 +515,12 @@ mat2:   .word   -1, 2, 0, 1, -12, 4
 ```
 
 ::: {#imp-eqv-dimensions .callout-important}
-**A EC**, es recomana definir les dimensions de la matriu (`NF`, `NC`) com a **constants** (`#define` en C, `.eqv` en assemblador) per facilitar la lectura del codi, el càlcul d'adreces i l'aplicació d'optimitzacions.
+A EC es recomana definir les dimensions de la matriu (`NF`, `NC`) com a constants (`#define` en C, `.eqv` en assemblador) per facilitar la lectura del codi, el càlcul d'adreces i l'aplicació d'optimitzacions.
 :::
 
 ### Accés aleatori {#sec-matrius-acces-aleatori}
 
-L'**accés aleatori** és la capacitat d'accedir directament a qualsevol element d'una estructura de dades en temps constant $\mathcal{O}(1)$, independentment de la seva posició. Això és possible perquè tots els elements tenen una mida fixa $T$ i estan disposats de forma contigua a la memòria; per tant, l'adreça de qualsevol d'aquests es pot calcular explícitament mitjançant una fórmula aritmètica.
+L'accés aleatori és la capacitat d'accedir directament a qualsevol element d'una estructura de dades en temps constant $\mathcal{O}(1)$, independentment de la seva posició. Això és possible perquè tots els elements tenen una mida fixa $T$ i estan disposats de forma contigua a la memòria; per tant, l'adreça de qualsevol element es pot calcular explícitament mitjançant una fórmula aritmètica.
 
 Presenten aquesta propietat les estructures de dades que s'emmagatzemen com a blocs compactes d'elements, com ara els vectors, les matrius i les estructures de dades complexes (`struct` en C). En canvi, les estructures de dades dinàmiques on els elements estan dispersos, com les llistes enllaçades, els arbres o els grafs, no permeten l'accés aleatori i requereixen un accés seqüencial.
 
@@ -562,7 +546,7 @@ Càlcul de l'adreça de `mat[i][j]`.
 :::
 
 ::: {#imp-ec-mul-adreces .callout-important}
-A **EC**, en els càlculs d'adreces amb multiplicacions per constants que no són potències de 2, s'usa `mul`. Els 32 bits de més pes s'ignoren perquè qualsevol adreça vàlida en RV32I cap en 32 bits.
+A EC s'usa `mul` en els càlculs d'adreces amb multiplicacions per constants que no són potències de 2. Els 32 bits de més pes s'ignoren perquè qualsevol adreça vàlida en RV32I cap en 32 bits.
 :::
 
 ::: {#tip-matriu-acces-ij .callout-tip}
@@ -593,7 +577,7 @@ Suposant que `i`, `j`, `k` ocupen `t0`, `t1`, `t2`:
 ::: {#tip-matriu-acces-col-cte .callout-tip}
 ## Accés a `mat[i][j]` — columna constant
 
-Si la columna `j` és una constant (aquí `j = 5`):
+Si la columna `j` és una constant (per exemple `j = 5`):
 
 ```{.c filename="C"}
 k = mat[i][5];
@@ -613,7 +597,7 @@ El terme `5*T` és un invariant que el compilador pot incorporar directament a l
 ::: {#tip-matriu-acces-fila-cte .callout-tip}
 ## Accés a `mat[i][j]` — fila constant
 
-Si la fila `i` és una constant (aquí `i = 3`):
+Si la fila `i` és una constant (per exemple `i = 3`):
 
 ```{.c filename="C"}
 k = mat[3][j];
@@ -646,13 +630,13 @@ k = mat[3][5];
 
 ## Optimitzacions de bucle {#sec-optimitzacions-bucle}
 
-Els bucles que recorren vectors i matrius sovint admeten optimitzacions que redueixen el nombre d'instruccions executades per iteració. Com s'ha vist a @sec-extraccio-invariants, l'extracció d'invariants és un prerequisit implícit que cal aplicar sempre abans de qualsevol altra optimització.
+Els bucles que recorren vectors i matrius sovint admeten optimitzacions que redueixen el nombre d'instruccions executades per iteració. Com s'ha vist a la @sec-extraccio-invariants, l'extracció d'invariants és un prerequisit implícit que cal aplicar sempre abans de qualsevol altra optimització.
 
 Les tres optimitzacions que es presenten a continuació s'apliquen de manera progressiva sobre el mateix bucle: cada una parteix del resultat de l'anterior.
 
 ### Optimització #1 — Accés seqüencial {#sec-opt-acces-sequencial}
 
-Quan un bucle recorre els elements d'un vector o matriu i la distància en bytes entre les adreces de dos elements consecutius del recorregut és constant, es pot aplicar l'**accés seqüencial**. Aquesta distància constant s'anomena ***stride***:
+Quan un bucle recorre els elements d'un vector o matriu i la **distància en bytes** entre les adreces de dos elements consecutius del recorregut **és constant**, es pot aplicar l'**accés seqüencial**. Aquesta distància constant s'anomena *stride*:
 
 $$\text{stride} = @X_{i+1} - @X_i = \text{constant}$$ {#eq-stride}
 
@@ -662,11 +646,11 @@ $$@X_{i+1} = @X_i + \text{stride}$$ {#eq-acces-sequencial}
 
 Això elimina el producte `i*T` del càlcul d'adreça i el substitueix per una suma constant.
 
-**Mètode**:
+Passos per aplicar l'accés seqüencial:
 
 1. Calcular l'adreça del primer element del recorregut i inicialitzar un punter `p` amb aquesta adreça.
 2. Calcular l'stride restant les adreces de dos elements consecutius.
-3. A cada iteració: accedir a l'element desreferenciant `p`, i sumar-li l'stride per avançar al següent.
+3. A cada iteració, accedir a l'element desreferenciant `p`, i sumar-li l'stride per avançar al següent.
 
 ::: {#tip-opt1-sequencial .callout-tip}
 ## Optimització #1 — Accés seqüencial aplicat a una fila de matriu
@@ -681,7 +665,7 @@ void zero_fila(int mat[][NC], int fila) {
 }
 ```
 
-**Versió sense optimitzar** (accés aleatori):
+Versió d'accés aleatori sense optimitzar:
 
 ```{.s filename="RV32IM"}
         # a0 = @mat, a1 = fila
@@ -701,9 +685,9 @@ fifor:
         ret
 ```
 
-La infraestructura de control ocupa **5 instruccions** per iteració.
+La infraestructura de control ocupa **5 instruccions per iteració**.
 
-**Versió optimitzada** (accés seqüencial):
+Versió d'accés seqüencial optimitzada:
 
 L'stride és: $@\texttt{mat[fila][j+1]} - @\texttt{mat[fila][j]} = 4$
 
@@ -724,27 +708,27 @@ fifor:
         ret
 ```
 
-La infraestructura de control queda en **4 instruccions** per iteració. Aplicant les optimitzacions #2 i #3 es reduirà fins a **2**.
+La infraestructura de control queda en **4 instruccions per iteració**. Aplicant les optimitzacions #2 i #3 podrem reduir aquest número fins a 2.
 :::
 
 ### Optimització #2 — Avaluació de la condició al final {#sec-opt-condicio-final}
 
-En un bucle `while`, la condició s'avalua **abans** de cada iteració, cosa que implica un salt incondicional al final del cos per tornar a avaluar-la. Si es transforma en un `do-while`, la condició s'avalua **al final**, i s'elimina el salt incondicional.
+En un bucle `while`, **la condició s'avalua abans** de cada iteració, cosa que implica un salt incondicional al final del cos per tornar a avaluar-la. Si es transforma en un `do-while`, **la condició s'avalua al final**, i s'elimina el salt incondicional.
 
-No obstant això, cal garantir la semàntica del `while` original en el cas de **zero iteracions**: si el bucle pot no executar-se cap vegada, cal afegir una comprovació inicial abans d'entrar al `do-while`.
+No obstant això, cal garantir la semàntica del `while` original en el **cas de zero iteracions**: si el bucle pot no executar-se cap vegada, cal afegir una comprovació inicial abans d'entrar al `do-while`.
 
 
 ```{.default filename="Pseudocodi"}
-while (condició) {          if (condició)
-    cos                  →      do {
-}                                   cos
-                                } while (condició);
+while (condició) {     →     if (condició)
+    cos                →        do {
+}                      →             cos
+                       →        } while (condició);            →
 ```
 
 ::: {#tip-opt2-condicio-final .callout-tip}
 ## Optimització #2 — Avaluació de la condició al final
 
-Partint de la versió amb accés seqüencial (#1):
+Partint de la versió #1 amb accés seqüencial:
 
 ```{.s filename="RV32IM"}
         # a0 = @mat, a1 = fila
@@ -763,21 +747,21 @@ fifor:
         ret
 ```
 
-La infraestructura de control queda en **3 instruccions** per iteració. El salt incondicional `j` ha desaparegut, substituït pel salt condicional al final `blt`.
+La infraestructura de control queda en **3 instruccions per iteració**. El salt incondicional `j` ha desaparegut, substituït pel salt condicional al final `blt`.
 :::
 
 ### Optimització #3 — Eliminació de la variable d'inducció {#sec-opt-eliminacio-induccio}
 
-Després d'aplicar l'accés seqüencial (#1), el punter `p` recorre tots els elements del bucle. Si la variable d'inducció `j` ja no s'usa per a res més que controlar el bucle, es pot eliminar: en lloc de comparar `j` amb `NC`, es compara `p` directament amb l'adreça de l'element posterior al darrer.
+Després d'aplicar la versió #1 amb accés seqüencial, el punter `p` recorre tots els elements del bucle. Si la variable d'inducció `j` ja no s'usa per a res més que controlar el bucle, es pot eliminar: en lloc de comparar `j` amb `NC`, es compara `p` directament amb l'adreça de l'element posterior al darrer.
 
 ::: {#cau-opt3-eliminacio-induccio .callout-caution}
-Com que es comparen **adreces** (naturals sense signe), cal usar `bgeu` / `bltu` en lloc de `bge` / `blt`.
+Com que es comparen adreces (naturals sense signe), cal usar `bgeu` / `bltu` en lloc de `bge` / `blt`.
 :::
 
 ::: {#tip-opt3-eliminacio-induccio .callout-tip}
 ## Optimització #3 — Eliminació de la variable d'inducció
 
-Partint de la versió amb #1 i #2:
+Partint de la versió amb les optimitzacions #1 i #2:
 
 ```{.s filename="RV32IM"}
         # a0 = @mat, a1 = fila
@@ -794,7 +778,7 @@ fifor:
         ret
 ```
 
-La infraestructura de control queda en **2 instruccions** per iteració. La variable `j` ha desaparegut completament: el bucle es controla únicament amb el punter `t3` i la sentinella `t4`.
+La infraestructura de control queda en **2 instruccions per iteració**. La variable `j` ha desaparegut completament: el bucle es controla únicament amb el punter `t3` i la sentinella `t4`.
 :::
 
 ### Recorreguts de matrius amb accés seqüencial {#sec-matrius-recorreguts}
