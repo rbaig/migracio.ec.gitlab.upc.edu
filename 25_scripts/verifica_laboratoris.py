@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Arnès de verificació empírica dels programes d'assemblador dels laboratoris.
 
-Extreu els blocs ```{.s filename="*.s"} de 04_laboratori/L1.qmd-L6.qmd, els
-escriu a fitxers i els assembla/executa amb RARS 1.6 en mode línia de
-comandes. Genera un informe amb el resultat (assembla/executa) i, per als
-programes que executen, el bolcat de .data i dels registres finals.
+Extreu els blocs ```{.s ...} (amb o sense filename="*.s") de
+04_laboratori/L1.qmd-L6.qmd, els escriu a fitxers i els assembla/executa amb
+RARS 1.6 en mode línia de comandes. Genera un informe amb el resultat
+(assembla/executa), una passada de comprovacions ESTÀTIQUES (text, sense
+assemblar ni executar) i, per als programes que executen, el bolcat de
+.data i dels registres finals.
 
 Ús:
     python3 25_scripts/verifica_laboratoris.py [--rars /ruta/a/rars1_6.jar]
@@ -25,7 +27,12 @@ DEFAULT_RARS = Path("/home/roger/backup/uni/UPC/EC/RISC_V/RARS/rars1_6.jar")
 
 MAX_STEPS = 200000
 
-BLOCK_RE = re.compile(r'```\{\.s filename="([^"]+)"\}\n(.*?)\n```', re.S)
+# Accepta qualsevol bloc de classe .s, amb o sense filename="..." (i amb
+# altres atributs en qualsevol ordre): captura la línia d'atributs sencera i
+# el filename s'extreu per separat (grup 2, pot ser None).
+BLOCK_RE = re.compile(
+    r'```\{([^}]*\.s[^}]*)\}\n(.*?)\n```', re.S)
+FILENAME_ATTR_RE = re.compile(r'filename="([^"]+)"')
 
 # Registres a bolcar sempre (arguments/retorn + temporals + segurs habituals).
 REGS = ["a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7",
@@ -62,95 +69,67 @@ SUPERSEDED = {
 
 # Blocs "incomplets per disseny": depenen d'una subrutina que l'enunciat
 # demana escriure a l'alumne i que no és present al bloc. Es couen soles:
-# no compten com a fallada.
+# no compten com a fallada dinàmica (assemblatge/execució). NOMÉS s'usa per
+# a la classificació dinàmica: la comprovació estàtica E1 (ordre de _start)
+# es deriva únicament del contingut del bloc (vegeu Block.is_subroutine_fragment
+# i check_e1_start_order), no d'aquesta taula.
 INCOMPLETE_BY_DESIGN = {
     ("L3", "s3_4_2.s", 1): "conté el comentari `# update: vegeu @sol-update "
                             "(inseriu el codi aquí)` — la subrutina update "
                             "l'ha d'enganxar l'alumne.",
-    ("L3", "s3_5_1.s", 1): "és només la subrutina `codifica` corregida "
-                            "(extracte de la solució de depuració, exr-depuracio); "
-                            "no inclou `g`, `.data` ni `_start` i per tant no "
-                            "és un programa autònom.",
 }
-
-# Verificació empírica addicional, només per contrastar la predicció que
-# _start col·locat després de subrutines a .text fa que RARS comenci a
-# executar a la primera instrucció del fitxer (no a _start). S'omple el
-# placeholder d'un bloc "incomplet per disseny" amb una subrutina ja
-# verificada independentment, NOMÉS per comprovar aquest efecte d'arrencada;
-# no valida la resta del contingut del bloc.
-STARTUP_ORDER_CHECKS = {
-    ("L3", "s3_4_2.s", 1): {
-        "placeholder": "# update: vegeu @sol-update (inseriu el codi aquí)",
-        "source_block": ("L3", "s3_4_1.s", 1),
-        "note": "update (de s3_4_1.s, ja verificada) enganxada al placeholder "
-                "només per comprovar l'ordre d'arrencada; _start és després "
-                "de moda/update a .text.",
-    },
-}
-
-# s3_5_1.s (exr-depuracio) només conté la subrutina `codifica` corregida.
-# El programa complet (g + .data + _start) és al bloc sense filename= de
-# l'enunciat (L3.qmd:490-553, versió amb els 3 errors originals). Es
-# reconstrueix aquí, amb els 3 errors ja esmenats, únicament per contrastar
-# la predicció d'ordre d'arrencada (_start és després de codifica a .text).
-S3_5_1_FULL_PROGRAM_TEMPLATE = """\
-.globl _start
-
-.data
-alfabet: .asciz "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-w1:      .asciz "ARQUITECTURA"
-w2:      .space 16
-
-.text
-
-g:
-        lb   t0, 0(a1)          # t0 = *pfrase
-        li   t1, 'A'
-        sub  t0, t0, t1         # t0 = *pfrase - 'A'
-        li   t1, 25
-        sub  t0, t1, t0         # t0 = 25 - (*pfrase - 'A')
-        add  t0, a0, t0         # t0 = &alfa[25 - ...]
-        lb   a0, 0(t0)          # a0 = alfa[25 - ...]
-        ret
-
-{codifica}
-
-_start:
-        la   a0, w1
-        la   a1, w2
-        jal  ra, codifica
-
-        li   a7, 93
-        li   a0, 0
-        ecall
-"""
 
 
 class Block:
     def __init__(self, lab, filename, order, body, line):
+        # `filename` és None quan el bloc ```{.s} no porta filename="..."
+        # (p. ex. L3.qmd:490). `real_filename` el conserva per a la lògica
+        # que en depèn (taules cablejades, filtres); `filename` esdevé un
+        # nom sintètic d'ús intern (escriure a disc, clau de diccionari) i
+        # `label` és la identificació que es mostra a l'informe.
         self.lab = lab
-        self.filename = filename
+        self.real_filename = filename
         self.order = order
         self.body = body
         self.line = line
-        self.key = f"{filename}#{order}"
+        if filename is None:
+            self.filename = f"{lab}_{line}.s"
+            self.label = f"{lab}:{line}"
+        else:
+            self.filename = filename
+            self.label = filename
+        self.key = f"{filename or f'_L{line}'}#{order}"
 
     @property
     def is_fragment(self):
-        return self.filename in FRAGMENT_NAMES
+        return self.real_filename in FRAGMENT_NAMES
+
+    @property
+    def has_text_segment(self):
+        return bool(TEXT_DIRECTIVE_RE.search(self.body))
+
+    @property
+    def has_start_label(self):
+        return bool(re.search(r'^_start\s*:', self.body, re.M))
 
     @property
     def is_complete_program(self):
         return "_start:" in self.body
 
     @property
+    def is_subroutine_fragment(self):
+        """Bloc que no té .text ni _start: un fragment de subrutina solt,
+        no un programa autònom. No és error (vegeu E1): és classificació,
+        no incompliment."""
+        return not self.has_text_segment and not self.has_start_label
+
+    @property
     def superseded(self):
-        return (self.lab, self.filename, self.order) in SUPERSEDED
+        return (self.lab, self.real_filename, self.order) in SUPERSEDED
 
     @property
     def incomplete_reason(self):
-        return INCOMPLETE_BY_DESIGN.get((self.lab, self.filename, self.order))
+        return INCOMPLETE_BY_DESIGN.get((self.lab, self.real_filename, self.order))
 
 
 # ---------------------------------------------------------------------------
@@ -186,36 +165,38 @@ def line_at(body, pos):
 
 def check_e1_start_order(block):
     """E1 — quan el bloc conté una etiqueta `_start:`, ha de ser la primera
-    etiqueta després de `.text` (o, si el bloc és incomplet per disseny i no
-    en conté cap, ERROR pel mateix motiu: RARS no pot determinar el punt
-    d'entrada). Un fitxer amb `.text` però sense cap `_start:` (subrutines
-    de compilació separada, p. ex. L5 §1/§3) no és, per si sol, un error E1:
-    la comprovació d'ordre d'arrencada s'aplica al fitxer que sí conté
-    `_start`."""
-    findings = []
-    m = TEXT_DIRECTIVE_RE.search(block.body)
-    if m and "_start:" in block.body:
-        after = block.body[m.end():]
-        lm = LABEL_RE.search(after)
-        if lm and lm.group(1) != "_start":
-            findings.append((
-                "ERROR", "E1",
-                line_at(block.body, m.end() + lm.start()),
-                f"primera etiqueta després de `.text` és `{lm.group(1)}:`, "
-                f"no `_start:` — RARS inicia el PC a la primera instrucció "
-                f"de `.text` i el programa no s'executarà com l'enunciat diu.",
-            ))
-        return findings
+    etiqueta després de `.text`: RARS inicia el PC a la primera instrucció
+    de `.text`, no a `_start`.
 
-    if block.incomplete_reason and "_start:" not in block.body:
-        findings.append((
+    Derivada únicament del contingut del bloc (cap taula cablejada):
+      - Sense `.text` ni `_start:`: fragment de subrutina solt
+        (`Block.is_subroutine_fragment`). No és error.
+      - Amb `.text` però sense `_start:` (subrutines de compilació separada,
+        p. ex. L5 §1/§3): no és, per si sol, un error E1; la comprovació
+        d'ordre s'aplica al fitxer que sí conté `_start`.
+      - Amb `_start:` (amb o sense `.text` explícit, p. ex. un bloc sense
+        `.text` que comença directament amb `_start:`): ha de ser la
+        primera etiqueta després de `.text` (o la primera etiqueta de
+        tot el bloc, si no hi ha `.text` explícit)."""
+    if not block.has_start_label:
+        return []
+
+    search_from = 0
+    m = TEXT_DIRECTIVE_RE.search(block.body)
+    if m:
+        search_from = m.end()
+
+    after = block.body[search_from:]
+    lm = LABEL_RE.search(after)
+    if lm and lm.group(1) != "_start":
+        return [(
             "ERROR", "E1",
-            1,
-            "el bloc no conté cap `.text` ni `_start:` — és incomplet per "
-            "disseny, però pel mateix motiu (RARS no pot determinar el punt "
-            "d'entrada) es reporta com a E1.",
-        ))
-    return findings
+            line_at(block.body, search_from + lm.start()),
+            f"primera etiqueta després de `.text` és `{lm.group(1)}:`, "
+            f"no `_start:` — RARS inicia el PC a la primera instrucció "
+            f"de `.text` i el programa no s'executarà com l'enunciat diu.",
+        )]
+    return []
 
 
 def check_e2_arith_operands(block):
@@ -275,7 +256,9 @@ def extract_blocks():
         text = path.read_text(encoding="utf-8")
         counts = {}
         for m in BLOCK_RE.finditer(text):
-            filename, body = m.group(1), m.group(2)
+            attrs, body = m.group(1), m.group(2)
+            fm = FILENAME_ATTR_RE.search(attrs)
+            filename = fm.group(1) if fm else None
             counts[filename] = counts.get(filename, 0) + 1
             order = counts[filename]
             line = text[:m.start()].count("\n") + 1
@@ -354,13 +337,13 @@ def main():
 
     rows = []
     details = []
-    static_findings = []  # (lab, filename, order, línia_absoluta, nivell, regla, missatge)
+    static_findings = []  # (lab, label, línia_absoluta, nivell, regla, missatge)
     handled = set()
 
     def static_summary(b):
         findings = static_checks(b)
         for nivell, regla, rel_line, msg in findings:
-            static_findings.append((b.lab, b.filename, b.order, b.line + rel_line - 1,
+            static_findings.append((b.lab, b.label, b.line + rel_line,
                                      nivell, regla, msg))
         n_err = sum(1 for f in findings if f[0] == "ERROR")
         n_avis = sum(1 for f in findings if f[0] == "AVÍS")
@@ -381,47 +364,25 @@ def main():
         estatic = static_summary(b)
 
         if b.is_fragment:
-            rows.append((b.lab, b.filename, b.order, b.line, "—", "FRAGMENT (no assemblable)", "", estatic))
+            rows.append((b.lab, b.label, b.order, b.line, "—", "FRAGMENT (no assemblable)", "", estatic))
             handled.add(rowkey)
             continue
 
         if b.superseded:
-            rows.append((b.lab, b.filename, b.order, b.line, "—", "SUBSTITUÏT (vegeu bloc posterior)", "", estatic))
+            rows.append((b.lab, b.label, b.order, b.line, "—", "SUBSTITUÏT (vegeu bloc posterior)", "", estatic))
+            handled.add(rowkey)
+            continue
+
+        if b.is_subroutine_fragment:
+            rows.append((b.lab, b.label, b.order, b.line, "—",
+                         "FRAGMENT DE SUBRUTINA (sense .text ni _start, no verificable sol)", "", estatic))
             handled.add(rowkey)
             continue
 
         reason = b.incomplete_reason
         if reason:
-            rows.append((b.lab, b.filename, b.order, b.line, "—", "INCOMPLET PER DISSENY", reason, estatic))
+            rows.append((b.lab, b.label, b.order, b.line, "—", "INCOMPLET PER DISSENY", reason, estatic))
             handled.add(rowkey)
-            check = STARTUP_ORDER_CHECKS.get((b.lab, b.filename, b.order))
-            if check:
-                src = by_key.get((check["source_block"][0], f"{check['source_block'][1]}#{check['source_block'][2]}"))
-                spliced = b.body.replace(check["placeholder"], src.body)
-                dest_dir = src_dir / b.lab / f"{b.filename}_{b.order}_ordre_arrencada"
-                dest_dir.mkdir(parents=True, exist_ok=True)
-                path = dest_dir / b.filename
-                path.write_text(spliced + "\n", encoding="utf-8")
-                dump_path = dest_dir / "dump_data.txt"
-                result = run_rars(args.rars, [path], dump_path)
-                assembla, estat, raw = classify(result)
-                details.append((b.lab, f"{b.filename} [comprovació ordre d'arrencada, {check['note']}]",
-                                 assembla, estat, raw, trim_data_dump(dump_path)))
-            if (b.lab, b.filename, b.order) == ("L3", "s3_5_1.s", 1):
-                spliced = S3_5_1_FULL_PROGRAM_TEMPLATE.format(codifica=b.body)
-                dest_dir = src_dir / b.lab / f"{b.filename}_{b.order}_ordre_arrencada"
-                dest_dir.mkdir(parents=True, exist_ok=True)
-                path = dest_dir / b.filename
-                path.write_text(spliced, encoding="utf-8")
-                dump_path = dest_dir / "dump_data.txt"
-                result = run_rars(args.rars, [path], dump_path)
-                assembla, estat, raw = classify(result)
-                note = ("codifica corregida reconstruïda amb g/.data/_start del "
-                        "bloc enunciat (exr-depuracio, L3.qmd:490-553), només per "
-                        "comprovar l'ordre d'arrencada; _start és després de "
-                        "codifica a .text.")
-                details.append((b.lab, f"{b.filename} [comprovació ordre d'arrencada, {note}]",
-                                 assembla, estat, raw, trim_data_dump(dump_path)))
             continue
 
         # Compilació conjunta?
@@ -436,7 +397,7 @@ def main():
             dump_path = dest_dir / "dump_data.txt"
             result = run_rars(args.rars, paths, dump_path)
             assembla, estat, raw = classify(result)
-            label = " + ".join(g.filename for g in group_blocks)
+            label = " + ".join(g.label for g in group_blocks)
             estatic_joint = "OK" if all(e == "OK" for e in estatics) else " / ".join(estatics)
             rows.append((b.lab, label, "-", "/".join(str(g.line) for g in group_blocks),
                          assembla, estat, "", estatic_joint))
@@ -444,7 +405,7 @@ def main():
             continue
 
         if not b.is_complete_program:
-            rows.append((b.lab, b.filename, b.order, b.line, "—",
+            rows.append((b.lab, b.label, b.order, b.line, "—",
                          "SENSE _start (no verificable sol)", "", estatic))
             handled.add(rowkey)
             continue
@@ -454,8 +415,8 @@ def main():
         dump_path = dest_dir / "dump_data.txt"
         result = run_rars(args.rars, [path], dump_path)
         assembla, estat, raw = classify(result)
-        rows.append((b.lab, b.filename, b.order, b.line, assembla, estat, "", estatic))
-        details.append((b.lab, b.filename, assembla, estat, raw, trim_data_dump(dump_path)))
+        rows.append((b.lab, b.label, b.order, b.line, assembla, estat, "", estatic))
+        details.append((b.lab, b.label, assembla, estat, raw, trim_data_dump(dump_path)))
         handled.add(rowkey)
 
     write_report(rows, details, static_findings)
@@ -491,9 +452,8 @@ def write_report(rows, details, static_findings):
     else:
         lines.append("| Laboratori | Fitxer | Línia .qmd | Nivell | Regla | Missatge |")
         lines.append("| :--- | :--- | :---: | :---: | :---: | :--- |")
-        for lab, filename, order, line, nivell, regla, msg in static_findings:
-            fitxer = f"{filename}" if order == 1 else f"{filename} (#{order})"
-            lines.append(f"| {lab} | `{fitxer}` | {line} | {nivell} | {regla} | {msg} |")
+        for lab, label, line, nivell, regla, msg in static_findings:
+            lines.append(f"| {lab} | `{label}` | {line} | {nivell} | {regla} | {msg} |")
 
     report_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"Informe escrit a {report_path}")
