@@ -153,6 +153,121 @@ class Block:
         return INCOMPLETE_BY_DESIGN.get((self.lab, self.filename, self.order))
 
 
+# ---------------------------------------------------------------------------
+# Comprovacions ESTÀTIQUES (text, no depenen d'assemblar ni executar).
+# S'apliquen a TOTS els blocs .s, inclosos els que RARS no pot processar sol
+# (incomplets per disseny, sense _start, substituïts).
+# ---------------------------------------------------------------------------
+
+LABEL_RE = re.compile(r'^([A-Za-z_.][\w.]*)\s*:', re.M)
+TEXT_DIRECTIVE_RE = re.compile(r'^\s*\.text\b', re.M)
+
+# Directives/instruccions l'operand de les quals no admet cap expressió
+# aritmètica a RARS: cal el literal ja calculat.
+ARITH_OPERAND_RE = re.compile(
+    r'^\s*(?:\.space|li|la)\s+(?:[A-Za-z_][\w]*\s*,\s*)?'
+    r'([A-Za-z_][\w]*|\d+)\s*([+\-*])\s*([A-Za-z0-9_]+(?:\s*[+\-*]\s*[A-Za-z0-9_]+)*)',
+    re.M,
+)
+
+RA_SPILL_RE = re.compile(r'^\s*(?:sw|lw)\s+ra\s*,', re.M)
+
+
+def strip_comment(line):
+    """Retorna la línia sense el comentari `#` final (no toca strings)."""
+    idx = line.find('#')
+    return line if idx == -1 else line[:idx]
+
+
+def line_at(body, pos):
+    """Número de línia (1-indexat, relatiu al bloc) del caràcter a `pos`."""
+    return body.count("\n", 0, pos) + 1
+
+
+def check_e1_start_order(block):
+    """E1 — quan el bloc conté una etiqueta `_start:`, ha de ser la primera
+    etiqueta després de `.text` (o, si el bloc és incomplet per disseny i no
+    en conté cap, ERROR pel mateix motiu: RARS no pot determinar el punt
+    d'entrada). Un fitxer amb `.text` però sense cap `_start:` (subrutines
+    de compilació separada, p. ex. L5 §1/§3) no és, per si sol, un error E1:
+    la comprovació d'ordre d'arrencada s'aplica al fitxer que sí conté
+    `_start`."""
+    findings = []
+    m = TEXT_DIRECTIVE_RE.search(block.body)
+    if m and "_start:" in block.body:
+        after = block.body[m.end():]
+        lm = LABEL_RE.search(after)
+        if lm and lm.group(1) != "_start":
+            findings.append((
+                "ERROR", "E1",
+                line_at(block.body, m.end() + lm.start()),
+                f"primera etiqueta després de `.text` és `{lm.group(1)}:`, "
+                f"no `_start:` — RARS inicia el PC a la primera instrucció "
+                f"de `.text` i el programa no s'executarà com l'enunciat diu.",
+            ))
+        return findings
+
+    if block.incomplete_reason and "_start:" not in block.body:
+        findings.append((
+            "ERROR", "E1",
+            1,
+            "el bloc no conté cap `.text` ni `_start:` — és incomplet per "
+            "disseny, però pel mateix motiu (RARS no pot determinar el punt "
+            "d'entrada) es reporta com a E1.",
+        ))
+    return findings
+
+
+def check_e2_arith_operands(block):
+    """E2 — cap operand de .space/li/la amb expressió aritmètica; cal el
+    literal ja calculat (l'expressió va al comentari)."""
+    findings = []
+    for lineno, raw_line in enumerate(block.body.splitlines(), start=1):
+        code = strip_comment(raw_line)
+        m = ARITH_OPERAND_RE.search(code)
+        if m:
+            findings.append((
+                "ERROR", "E2", lineno,
+                f"operand amb expressió aritmètica (`{m.group(0).strip()}`) "
+                f"— RARS no avalua expressions als operands; cal el literal "
+                f"ja calculat, amb l'expressió al comentari.",
+            ))
+    return findings
+
+
+def check_e3_start_prolog(block):
+    """E3 — _start no és callee de ningú: cap desat/restauració de ra."""
+    findings = []
+    m = re.search(r'^_start\s*:', block.body, re.M)
+    if not m:
+        return findings
+    after = block.body[m.end():]
+    # Talla a la següent etiqueta de primer nivell (fi de _start), si n'hi ha.
+    nm = LABEL_RE.search(after)
+    scope = after[:nm.start()] if nm else after
+    base_line = line_at(block.body, m.end())
+    for rel_line, raw_line in enumerate(scope.splitlines(), start=0):
+        code = strip_comment(raw_line)
+        if RA_SPILL_RE.search(code):
+            findings.append((
+                "AVÍS", "E3", base_line + rel_line,
+                "desat/restauració de `ra` dins `_start` — `_start` no és "
+                "callee de ningú i acaba amb `li a7, 93` + `ecall`; no ha de "
+                "tenir pròleg ni epíleg.",
+            ))
+    return findings
+
+
+def static_checks(block):
+    """Totes les comprovacions estàtiques per a un bloc. Retorna una llista
+    de (nivell, regla, línia_relativa_al_bloc, missatge)."""
+    findings = []
+    findings += check_e1_start_order(block)
+    findings += check_e2_arith_operands(block)
+    findings += check_e3_start_prolog(block)
+    return findings
+
+
 def extract_blocks():
     blocks = []
     for path in sorted(LAB_DIR.glob("L*.qmd")):
@@ -239,26 +354,45 @@ def main():
 
     rows = []
     details = []
+    static_findings = []  # (lab, filename, order, línia_absoluta, nivell, regla, missatge)
     handled = set()
+
+    def static_summary(b):
+        findings = static_checks(b)
+        for nivell, regla, rel_line, msg in findings:
+            static_findings.append((b.lab, b.filename, b.order, b.line + rel_line - 1,
+                                     nivell, regla, msg))
+        n_err = sum(1 for f in findings if f[0] == "ERROR")
+        n_avis = sum(1 for f in findings if f[0] == "AVÍS")
+        if n_err == 0 and n_avis == 0:
+            return "OK"
+        parts = []
+        if n_err:
+            parts.append(f"{n_err} error{'s' if n_err != 1 else ''}")
+        if n_avis:
+            parts.append(f"{n_avis} avís{'os' if n_avis != 1 else ''}")
+        return ", ".join(parts)
 
     for b in blocks:
         rowkey = (b.lab, b.key)
         if rowkey in handled:
             continue
 
+        estatic = static_summary(b)
+
         if b.is_fragment:
-            rows.append((b.lab, b.filename, b.order, b.line, "—", "FRAGMENT (no assemblable)", ""))
+            rows.append((b.lab, b.filename, b.order, b.line, "—", "FRAGMENT (no assemblable)", "", estatic))
             handled.add(rowkey)
             continue
 
         if b.superseded:
-            rows.append((b.lab, b.filename, b.order, b.line, "—", "SUBSTITUÏT (vegeu bloc posterior)", ""))
+            rows.append((b.lab, b.filename, b.order, b.line, "—", "SUBSTITUÏT (vegeu bloc posterior)", "", estatic))
             handled.add(rowkey)
             continue
 
         reason = b.incomplete_reason
         if reason:
-            rows.append((b.lab, b.filename, b.order, b.line, "—", "INCOMPLET PER DISSENY", reason))
+            rows.append((b.lab, b.filename, b.order, b.line, "—", "INCOMPLET PER DISSENY", reason, estatic))
             handled.add(rowkey)
             check = STARTUP_ORDER_CHECKS.get((b.lab, b.filename, b.order))
             if check:
@@ -296,20 +430,22 @@ def main():
             group_blocks = [by_key[(b.lab, k)] for k in joint if (b.lab, k) in by_key]
             for gb in group_blocks:
                 handled.add((gb.lab, gb.key))
+            estatics = [estatic] + [static_summary(gb) for gb in group_blocks if gb is not b]
             dest_dir = src_dir / b.lab / f"conjunt_{'_'.join(g.filename for g in group_blocks)}"
             paths = [write_block_file(gb, dest_dir) for gb in group_blocks]
             dump_path = dest_dir / "dump_data.txt"
             result = run_rars(args.rars, paths, dump_path)
             assembla, estat, raw = classify(result)
             label = " + ".join(g.filename for g in group_blocks)
+            estatic_joint = "OK" if all(e == "OK" for e in estatics) else " / ".join(estatics)
             rows.append((b.lab, label, "-", "/".join(str(g.line) for g in group_blocks),
-                         assembla, estat, ""))
+                         assembla, estat, "", estatic_joint))
             details.append((b.lab, label, assembla, estat, raw, trim_data_dump(dump_path)))
             continue
 
         if not b.is_complete_program:
             rows.append((b.lab, b.filename, b.order, b.line, "—",
-                         "SENSE _start (no verificable sol)", ""))
+                         "SENSE _start (no verificable sol)", "", estatic))
             handled.add(rowkey)
             continue
 
@@ -318,21 +454,21 @@ def main():
         dump_path = dest_dir / "dump_data.txt"
         result = run_rars(args.rars, [path], dump_path)
         assembla, estat, raw = classify(result)
-        rows.append((b.lab, b.filename, b.order, b.line, assembla, estat, ""))
+        rows.append((b.lab, b.filename, b.order, b.line, assembla, estat, "", estatic))
         details.append((b.lab, b.filename, assembla, estat, raw, trim_data_dump(dump_path)))
         handled.add(rowkey)
 
-    write_report(rows, details)
+    write_report(rows, details, static_findings)
 
 
-def write_report(rows, details):
+def write_report(rows, details, static_findings):
     report_path = OUT_DIR / "informe.md"
     lines = []
     lines.append("# Informe de verificació empírica dels laboratoris (RARS 1.6)\n")
-    lines.append("| Laboratori | Fitxer | Ordre | Línia .qmd | Assembla | Executa |")
-    lines.append("| :--- | :--- | :---: | :---: | :--- | :--- |")
-    for lab, filename, order, line, assembla, estat, _ in rows:
-        lines.append(f"| {lab} | `{filename}` | {order} | {line} | {assembla} | {estat} |")
+    lines.append("| Laboratori | Fitxer | Ordre | Línia .qmd | Assembla | Executa | Estàtic |")
+    lines.append("| :--- | :--- | :---: | :---: | :--- | :--- | :--- |")
+    for lab, filename, order, line, assembla, estat, _, estatic in rows:
+        lines.append(f"| {lab} | `{filename}` | {order} | {line} | {assembla} | {estat} | {estatic} |")
 
     lines.append("\n---\n\n## Detall\n")
     for lab, filename, assembla, estat, raw, data_dump in details:
@@ -348,6 +484,16 @@ def write_report(rows, details):
             lines.append("```")
             lines.extend(data_dump)
             lines.append("```\n")
+
+    lines.append("\n---\n\n## Comprovacions estàtiques — detall\n")
+    if not static_findings:
+        lines.append("Cap troballa.\n")
+    else:
+        lines.append("| Laboratori | Fitxer | Línia .qmd | Nivell | Regla | Missatge |")
+        lines.append("| :--- | :--- | :---: | :---: | :---: | :--- |")
+        for lab, filename, order, line, nivell, regla, msg in static_findings:
+            fitxer = f"{filename}" if order == 1 else f"{filename} (#{order})"
+            lines.append(f"| {lab} | `{fitxer}` | {line} | {nivell} | {regla} | {msg} |")
 
     report_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"Informe escrit a {report_path}")
