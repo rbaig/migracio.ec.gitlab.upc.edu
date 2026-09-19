@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>26&nbsp; Tema 8: Memòria virtual – Estructura de computadors</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_solucions/S9.html" rel="next">
+<link href="../03_solucions/S7.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-eaeb381c6b7494c50009502241a4985c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3a86d90b797903817cf2addb73264634.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_solucions/S1.html">Solucions</a></li><li class="breadcrumb-item"><a href="../03_solucions/S8.html"><span class="chapter-title">T8 Memòria virtual</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Cerca" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Estructura de computadors</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Estructura-de-computadors.pdf" title="Descarrega PDF" class="quarto-navigation-tool px-1" aria-label="Descarrega PDF"><i class="bi bi-filetype-pdf"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Cerca"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👋 Presentació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Apunts</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Problemes</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Solucions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S8.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Laboratori</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S1 RARS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S2 RISC-V</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S4 Matrius i subrutines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S6 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/Lcalendari.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Calendari</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_riscv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌️ RISC-V</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_sigles_simbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⚙️ Sigles, símbols i notació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_contrib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👥 Contribueix-hi</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_LICENSE.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">©️ Llicència i reconeixements</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Taula de continguts</h2>
+   
+  <ul>
+  <li><a href="#traducció-dadreces-i-fallada-de-pàgina" id="toc-traducció-dadreces-i-fallada-de-pàgina" class="nav-link active" data-scroll-target="#traducció-dadreces-i-fallada-de-pàgina"><span class="header-section-number">26.1</span> Traducció d’adreces i fallada de pàgina</a></li>
+  <li><a href="#tlb" id="toc-tlb" class="nav-link" data-scroll-target="#tlb"><span class="header-section-number">26.2</span> TLB</a></li>
+  <li><a href="#protecció" id="toc-protecció" class="nav-link" data-scroll-target="#protecció"><span class="header-section-number">26.3</span> Protecció</a></li>
+  <li><a href="#integració-del-tlb-i-la-memòria-cau" id="toc-integració-del-tlb-i-la-memòria-cau" class="nav-link" data-scroll-target="#integració-del-tlb-i-la-memòria-cau"><span class="header-section-number">26.4</span> Integració del TLB i la memòria cau</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content column-page-right" id="quarto-document-content">
+
+<div class="sidebar-institucional">
+  <a href="https://dac.upc.edu" target="_blank">Departament d'Arquitectura de Computadors (DAC)</a><br>
+  <a href="https://www.upc.edu" target="_blank">Universitat Politècnica de Catalunya (UPC)</a>
+</div>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_solucions/S1.html">Solucions</a></li><li class="breadcrumb-item"><a href="../03_solucions/S8.html"><span class="chapter-title">T8 Memòria virtual</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Tema 8: Memòria virtual</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Codi</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="traducció-dadreces-i-fallada-de-pàgina" class="level2" data-number="26.1">
+<h2 data-number="26.1" class="anchored" data-anchor-id="traducció-dadreces-i-fallada-de-pàgina"><span class="header-section-number">26.1</span> Traducció d’adreces i fallada de pàgina</h2>
+<div id="sol-p8-mv-paginacio-basica" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;26.1: Solució: paginació bàsica i traça LRU
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E8.html#exr-p8-mv-paginacio-basica" class="quarto-xref">Exercici&nbsp;<span>17.1</span></a>.</p>
+<p>Memòria virtual de 16 MiB (<span class="math inline">\(2^{24}\)</span> B → 24 bits d’adreça lògica), memòria física de 16 KiB (<span class="math inline">\(2^{14}\)</span> B → 14 bits d’adreça física) i pàgines de 256 B (<span class="math inline">\(2^8\)</span> B → desplaçament de 8 bits).</p>
+<p>La descomposició VPN/desplaçament segueix <a href="../01_apunts/A8.html#cau-mv-traduccio" class="quarto-xref">Essencial&nbsp;<span>8.1</span></a>:</p>
+<ul>
+<li>VPN: <span class="math inline">\(24 - 8 = 16\)</span> bits → <span class="math inline">\(2^{16} = 65\,536\)</span> pàgines virtuals.</li>
+<li>PPN: <span class="math inline">\(14 - 8 = 6\)</span> bits → <span class="math inline">\(2^6 = 64\)</span> marcs de pàgina.</li>
+</ul>
+<p><strong>a)</strong> La taula de pàgines té una entrada per pàgina virtual: <span class="math inline">\(2^{16} = 65\,536\)</span> entrades. Cada entrada conté el PPN (6 bits) més el bit V i el bit D:</p>
+<p><span class="math display">\[6 + 1 + 1 = 8 \text{ bits} = 1 \text{ byte/entrada}\]</span></p>
+<p><span class="math display">\[\text{Mida TP} = 2^{16} \times 1 \text{ B} = 64 \text{ KiB}\]</span></p>
+<p><strong>b)</strong> El VPN és <span class="math inline">\(\lfloor \text{adreça} / \texttt{0x100} \rfloor\)</span> (els dos dígits hexadecimals inferiors són el desplaçament de 8 bits). Hi caben 3 pàgines a memòria física, amb reemplaçament LRU. Seqüència de VPN: 0, 1, 1, 2, 0, 1, 4, 5, 1.</p>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 14%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Adreça</th>
+<th style="text-align: center;">A — Pàg.</th>
+<th style="text-align: center;">B — Fallada</th>
+<th style="text-align: center;">C — Reempl.</th>
+<th style="text-align: center;">Pila LRU (MRU→LRU)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>000023</code></td>
+<td style="text-align: center;"><code>0</code></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>000101</code></td>
+<td style="text-align: center;"><code>1</code></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">1, 0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>000102</code></td>
+<td style="text-align: center;"><code>1</code></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">1, 0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>000200</code></td>
+<td style="text-align: center;"><code>2</code></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">2, 1, 0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>000010</code></td>
+<td style="text-align: center;"><code>0</code></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">0, 2, 1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>000111</code></td>
+<td style="text-align: center;"><code>1</code></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">1, 0, 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>000416</code></td>
+<td style="text-align: center;"><code>4</code></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;"><code>2</code></td>
+<td style="text-align: center;">4, 1, 0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>000520</code></td>
+<td style="text-align: center;"><code>5</code></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;"><code>0</code></td>
+<td style="text-align: center;">5, 4, 1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>000101</code></td>
+<td style="text-align: center;"><code>1</code></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">1, 5, 4</td>
+</tr>
+</tbody>
+</table>
+<p>Hi ha <strong>5 fallades</strong> i 4 encerts. A <code>000416</code> s’expulsa la pàgina 2 (la menys recentment usada, desplaçada pels encerts a 0 i 1); a <code>000520</code> s’expulsa la pàgina 0.</p>
+</div>
+</div>
+<div id="sol-p8-mv-multinivell" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;26.2: Solució: taula de pàgines de dos nivells
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E8.html#exr-p8-mv-multinivell" class="quarto-xref">Exercici&nbsp;<span>17.2</span></a>.</p>
+<p>Adreces de 32 bits, pàgines de 4 KiB (<span class="math inline">\(2^{12}\)</span> B), entrades de 4 B, dos nivells amb repartiment simètric.</p>
+<p><strong>a)</strong> Desplaçament: <span class="math inline">\(\log_2(4\text{ KiB}) = 12\)</span> bits. Resten <span class="math inline">\(32 - 12 = 20\)</span> bits d’índex, repartits simètricament:</p>
+<p><span class="math display">\[\underbrace{10 \text{ bits}}_{\text{índex N1}} \; \underbrace{10 \text{ bits}}_{\text{índex N2}} \; \underbrace{12 \text{ bits}}_{\text{desplaçament}}\]</span></p>
+<p><strong>b)</strong> Cada taula (de qualsevol nivell) té <span class="math inline">\(2^{10} = 1024\)</span> entrades de 4 B:</p>
+<p><span class="math display">\[2^{10} \times 4 \text{ B} = 4 \text{ KiB}\]</span></p>
+<p>Tant la taula de primer nivell com cada taula de segon nivell ocupen <strong>4 KiB</strong> (exactament una pàgina).</p>
+<p><strong>c)</strong> Cada entrada del primer nivell pot apuntar a una taula de segon nivell: com a màxim <span class="math inline">\(2^{10} = 1024\)</span> taules de segon nivell. Mida total en el <strong>pitjor cas</strong> (totes assignades):</p>
+<p><span class="math display">\[\underbrace{4 \text{ KiB}}_{\text{N1}} + 1024 \times \underbrace{4 \text{ KiB}}_{\text{N2}} = 4 \text{ KiB} + 4 \text{ MiB}\]</span></p>
+<p><strong>d)</strong> Una taula de <strong>nivell únic</strong> tindria <span class="math inline">\(2^{20}\)</span> entrades de 4 B <span class="math inline">\(= 4\)</span> MiB. La jerarquia de dos nivells, en el pitjor cas, ocupa lleugerament <strong>més</strong> (4 MiB + 4 KiB: el sobrecost del directori de primer nivell).</p>
+<p>L’avantatge apareix en el <strong>cas típic</strong>, en què el procés només usa una fracció de l’espai lògic: només cal assignar les taules de segon nivell de les regions realment utilitzades. Per exemple, un procés que toqui codi, dades i pila en 3 regions disjuntes necessita la taula de primer nivell (4 KiB) i unes poques de segon nivell, de l’ordre de <strong>desenes de KiB</strong> en lloc de 4 MiB. Amb un nivell únic, en canvi, sempre cal reservar els 4 MiB sencers encara que la majoria d’entrades siguin invàlides.</p>
+</div>
+</div>
+<div id="sol-p8-mv-taula-referencies" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;26.3: Solució: traça de la taula de pàgines amb accés a disc
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E8.html#exr-p8-mv-taula-referencies" class="quarto-xref">Exercici&nbsp;<span>17.3</span></a>.</p>
+<p>Adreça lògica de 16 bits, física de 15 bits, pàgines de 8 KiB (<span class="math inline">\(2^{13}\)</span> → desplaçament de 13 bits). VPN: <span class="math inline">\(16 - 13 = 3\)</span> bits (8 pàgines); PPN: <span class="math inline">\(15 - 13 = 2\)</span> bits (4 marcs). El VPN és <span class="math inline">\(\lfloor \text{adreça}/\texttt{0x2000} \rfloor\)</span> (els 3 bits de més pes de l’adreça).</p>
+<p>Estat inicial: PPN 0 = VPN 2, PPN 1 = VPN 3, PPN 2 = VPN 4, PPN 3 lliure. Ordre LRU (MRU→LRU): VPN 3, VPN 2, VPN 4. Cap pàgina està modificada (<span class="math inline">\(D = 0\)</span>).</p>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Adreça</th>
+<th style="text-align: center;">VPN</th>
+<th style="text-align: center;">PPN</th>
+<th style="text-align: center;">Fallada</th>
+<th style="text-align: center;">Lect. disc</th>
+<th style="text-align: center;">Escr. disc</th>
+<th style="text-align: center;">Reempl. VPN</th>
+<th style="text-align: center;">Reempl. PPN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">E <code>F458</code></td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">Sí</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">E <code>8666</code></td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">L <code>1BBF</code></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">Sí</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">E <code>5C44</code></td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">Sí</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">L <code>6600</code></td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">Sí</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">L <code>4000</code></td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p>Punts clau:</p>
+<ul>
+<li><code>E F458</code> (VPN 7): fallada amb el marc lliure PPN 3; com que és escriptura, queda <span class="math inline">\(D = 1\)</span>.</li>
+<li><code>L 1BBF</code> (VPN 0) i <code>E 5C44</code> (VPN 2): cap marc lliure; s’expulsen les pàgines més antigues (VPN 2 i VPN 3), totes dues amb <span class="math inline">\(D = 0\)</span>, de manera que no cal escriure-les a disc.</li>
+<li><code>L 6600</code> (VPN 3): s’expulsa la VPN 7, que té <span class="math inline">\(D = 1\)</span> → <strong>cal escriure-la primer a disc</strong> (únic <em>writeback</em> de la traça).</li>
+<li><code>L 4000</code> (VPN 2): encert, la pàgina segueix a PPN 1.</li>
+</ul>
+<p>Estat final de la taula de pàgines:</p>
+<table class="table-striped caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">VPN</th>
+<th style="text-align: center;">V</th>
+<th style="text-align: center;">D</th>
+<th style="text-align: center;">PPN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5–7</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p>Estat final de la memòria física: PPN 0 = VPN 0, PPN 1 = VPN 2, PPN 2 = VPN 4, PPN 3 = VPN 3.</p>
+</div>
+</div>
+</section>
+<section id="tlb" class="level2" data-number="26.2">
+<h2 data-number="26.2" class="anchored" data-anchor-id="tlb"><span class="header-section-number">26.2</span> TLB</h2>
+<div id="sol-p8-tlb-estat" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;26.4: Solució: traça del TLB i de la taula de pàgines
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E8.html#exr-p8-tlb-estat" class="quarto-xref">Exercici&nbsp;<span>17.5</span></a>.</p>
+<p>Pàgines de 4 KiB → <span class="math inline">\(\text{VPN} = \lfloor \text{adreça}/4096 \rfloor\)</span>. TLB de 4 entrades completament associatiu, LRU (vegeu <a href="../01_apunts/A8.html#sec-mv-tlb" class="quarto-xref"><span>Secció 8.5</span></a>). L’entrada amb <span class="math inline">\(V = 0\)</span> (VPN 9) és lliure i s’omple en la primera fallada. Ordre LRU inicial de les vàlides (MRU→LRU): VPN 11, VPN 7, VPN 3.</p>
+<p><strong>a) Llista 1.</strong> VPN: 0, 7, 3, 3, 1, 1, 2.</p>
+<table class="table-striped caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Ref.</th>
+<th style="text-align: center;">VPN</th>
+<th style="text-align: center;">Fallada TLB</th>
+<th style="text-align: center;">Fallada pàgina</th>
+<th style="text-align: center;">PPN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">4095</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">31272</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">15789</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">15000</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">7193</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">13</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4096</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">8912</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">14</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>4095 (VPN 0): fallada de TLB; la PTE té <span class="math inline">\(V = 1\)</span> (PPN 5) → s’omple l’entrada lliure, sense fallada de pàgina.</li>
+<li>7193 (VPN 1): fallada de TLB i <span class="math inline">\(V = 0\)</span> → <strong>fallada de pàgina</strong>; s’assigna PPN 13. Es reemplaça la VPN 11 (l’única entrada no reutilitzada des de l’inici → la més antiga).</li>
+<li>8912 (VPN 2): fallada de TLB i <span class="math inline">\(V = 0\)</span> → fallada de pàgina (PPN 14); es reemplaça la VPN 0 (la més antiga de la pila en aquest punt).</li>
+</ul>
+<p>TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP: VPN 1 → V 1/PPN 13, VPN 2 → V 1/PPN 14.</p>
+<p><strong>Llista 2</strong> (des de l’estat inicial). VPN: 2, 7, 4, 11, 9, 4, 11.</p>
+<table class="table-striped caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Ref.</th>
+<th style="text-align: center;">VPN</th>
+<th style="text-align: center;">Fallada TLB</th>
+<th style="text-align: center;">Fallada pàgina</th>
+<th style="text-align: center;">PPN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">9452</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">13</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">30964</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">19136</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">46502</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">38110</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;"><strong>Sí</strong></td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">17653</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">47480</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">12</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>9452 (VPN 2): fallada de TLB i <span class="math inline">\(V = 0\)</span> → fallada de pàgina (PPN 13); s’omple l’entrada lliure.</li>
+<li>19136 (VPN 4): fallada de TLB però <span class="math inline">\(V = 1\)</span> (PPN 9) → sense fallada de pàgina. Es reemplaça la VPN 3 (la més antiga segons l’ordre inicial 11 &gt; 7 &gt; 3).</li>
+<li>38110 (VPN 9): fallada de TLB i <span class="math inline">\(V = 0\)</span> → fallada de pàgina (PPN 14); es reemplaça la VPN 2 (entrada menys recentment usada).</li>
+<li>46502 i 47480 (VPN 11): encerts, perquè la VPN 11 era la més recent inicialment i no s’ha expulsat.</li>
+</ul>
+<p>TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). TP: VPN 2 → V 1/PPN 13, VPN 9 → V 1/PPN 14.</p>
+<p><strong>b)</strong> Amb pàgines de 16 KiB, <span class="math inline">\(\text{VPN} = \lfloor \text{adreça}/16\,384 \rfloor\)</span> i moltes adreces que abans queien en pàgines diferents passen a compartir pàgina:</p>
+<ul>
+<li>Llista 1: pàgines 0, 1, 0, 0, 0, 0, 0 → només <strong>2 pàgines diferents</strong> (abans 5).</li>
+<li>Llista 2: pàgines 0, 1, 1, 2, 2, 1, 2 → només <strong>3 pàgines diferents</strong> (abans 5).</li>
+</ul>
+<p>En els dos casos el nombre de pàgines diferents accedides baixa, cosa que <strong>redueix el nombre potencial de fallades de TLB de tipus <em>cold</em></strong> (una fallada per pàgina nova referenciada). No es pot donar, però, un nombre exacte de fallades comparable al de l’apartat a): l’estat inicial del TLB (VPN 11, 7, 3 vàlides) es va definir per a pàgines de 4 KiB i deixa de tenir sentit en reinterpretar-lo amb una mida de pàgina diferent — les VPN ja no identifiquen les mateixes pàgines físiques, de manera que no hi ha una manera coherent de «traduir» aquell estat inicial concret al nou context (vegeu <code>13_contrib.qmd §T8</code>, criteri sobre canvis de mida de pàgina amb estat fix).</p>
+<p>En general, augmentar la mida de pàgina <strong>redueix el nombre de pàgines diferents</strong> accedides i, per tant, les fallades de TLB (de tipus <em>cold</em>), a canvi de més fragmentació interna i transferències a disc més grans en cada fallada de pàgina.</p>
+<p><strong>c)</strong> Mida de la taula de pàgines (nivell únic):</p>
+<p><span class="math display">\[\text{Nre. entrades} = \frac{2^{\text{bits adreça}}}{\text{mida pàgina}}, \qquad \text{Mida TP} = \text{Nre. entrades} \times \text{mida entrada}\]</span></p>
+<ul>
+<li>32 bits, pàgines de 4 KiB, entrades de 4 B: <span class="math inline">\(\dfrac{2^{32}}{2^{12}} \times 4 = 2^{20} \times 4 = \mathbf{4 \text{ MiB}}\)</span>.</li>
+<li>64 bits, pàgines de 16 KiB, entrades de 8 B: <span class="math inline">\(\dfrac{2^{64}}{2^{14}} \times 8 = 2^{50} \times 2^3 = 2^{53} \text{ B} = \mathbf{8 \text{ PiB}}\)</span>.</li>
+</ul>
+<p>El segon resultat (8 PiB <strong>per procés</strong>) és inviable i justifica les taules de pàgines multinivell de <a href="#sol-p8-mv-multinivell" class="quarto-xref">Solution&nbsp;<span>26.2</span></a>.</p>
+</div>
+</div>
+</section>
+<section id="protecció" class="level2" data-number="26.3">
+<h2 data-number="26.3" class="anchored" data-anchor-id="protecció"><span class="header-section-number">26.3</span> Protecció</h2>
+<div id="sol-p8-mv-proteccio" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;26.5: Solució: bit de permís d’escriptura i excepcions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E8.html#exr-p8-mv-proteccio" class="quarto-xref">Exercici&nbsp;<span>17.8</span></a>.</p>
+<p>Pàgines de 4 KiB → <span class="math inline">\(\text{VPN} = \lfloor \text{adreça}/\texttt{0x1000} \rfloor\)</span>. Criteri: una <strong>lectura</strong> té èxit sempre que <span class="math inline">\(V = 1\)</span> (el bit E només restringeix escriptures); una <strong>escriptura</strong> requereix <span class="math inline">\(V = 1\)</span> <strong>i</strong> <span class="math inline">\(E = 1\)</span>. Si <span class="math inline">\(V = 0\)</span> → fallada de pàgina; si l’escriptura troba <span class="math inline">\(E = 0\)</span> → excepció de protecció.</p>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 54%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Accés</th>
+<th style="text-align: center;">Adreça</th>
+<th style="text-align: center;">VPN</th>
+<th style="text-align: center;">V</th>
+<th style="text-align: center;">E</th>
+<th style="text-align: left;">Resultat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">a</td>
+<td style="text-align: center;">L <code>0x0FF0</code></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><strong>Èxit</strong> (la lectura no mira E); PPN 3</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">b</td>
+<td style="text-align: center;">E <code>0x1234</code></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;"><strong>Èxit</strong>; PPN 7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">c</td>
+<td style="text-align: center;">L <code>0x2000</code></td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;"><strong>Fallada de pàgina</strong> (<span class="math inline">\(V = 0\)</span>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">d</td>
+<td style="text-align: center;">E <code>0x3100</code></td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><strong>Excepció de protecció</strong> (escriptura amb <span class="math inline">\(E = 0\)</span>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">e</td>
+<td style="text-align: center;">E <code>0x0010</code></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><strong>Excepció de protecció</strong> (escriptura amb <span class="math inline">\(E = 0\)</span>)</td>
+</tr>
+</tbody>
+</table>
+<p>Observació: els casos a) i e) accedeixen a la <strong>mateixa pàgina</strong> (VPN 0, només lectura). La lectura té èxit i l’escriptura provoca excepció: és el patró típic d’una pàgina de codi o de dades constants, protegida contra modificacions accidentals.</p>
+</div>
+</div>
+</section>
+<section id="integració-del-tlb-i-la-memòria-cau" class="level2" data-number="26.4">
+<h2 data-number="26.4" class="anchored" data-anchor-id="integració-del-tlb-i-la-memòria-cau"><span class="header-section-number">26.4</span> Integració del TLB i la memòria cau</h2>
+<div id="sol-p8-mv-tlb-cau" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;26.6: Solució: flux VIPT i condició antialiàsing
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E8.html#exr-p8-mv-tlb-cau" class="quarto-xref">Exercici&nbsp;<span>17.9</span></a>.</p>
+<p>Pàgines de 4 KiB, cau de dades de correspondència directa amb 64 blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces virtuals de 32 bits.</p>
+<p><strong>a)</strong> Descomposició de l’adreça virtual:</p>
+<ul>
+<li>Desplaçament dins la pàgina: <span class="math inline">\(\log_2(4\text{ KiB}) = 12\)</span> bits.</li>
+<li>VPN: <span class="math inline">\(32 - 12 = 20\)</span> bits.</li>
+<li>Desplaçament dins el bloc: <span class="math inline">\(\log_2(32) = 5\)</span> bits.</li>
+<li>Índex de la cau: <span class="math inline">\(\log_2(64) = 6\)</span> bits.</li>
+</ul>
+<p><span class="math display">\[\underbrace{b_{31} \cdots b_{12}}_{\text{VPN (20)}} \; \underbrace{b_{11} \cdots b_0}_{\text{desplaçament pàgina (12)}}, \qquad \underbrace{\text{tag}}_{\;} \; \underbrace{b_{10} \cdots b_5}_{\text{índex cau (6)}} \; \underbrace{b_4 \cdots b_0}_{\text{despl. bloc (5)}}\]</span></p>
+<p>Cal notar que índex + desplaçament de bloc <span class="math inline">\(= 6 + 5 = 11\)</span> bits, tots dins dels 12 bits del desplaçament de pàgina.</p>
+<p><strong>b) Lectura amb encert de TLB i encert de cau</strong> (esquema VIPT):</p>
+<ol type="1">
+<li>La CPU genera l’adreça lògica. <strong>En paral·lel</strong>: els bits d’índex (b10–b5, part del desplaçament) seleccionen el conjunt de la cau, i el VPN (b31–b12) s’envia al TLB.</li>
+<li>El TLB troba el VPN (encert) i retorna el PPN.</li>
+<li>La cau llegeix l’etiqueta i les dades del bloc indexat.</li>
+<li>Es compara el PPN (etiqueta física) amb l’etiqueta llegida de la cau → coincideixen → <strong>encert de cau</strong>.</li>
+<li>Es lliura la dada (el desplaçament de bloc, b4–b0, selecciona el byte/paraula).</li>
+</ol>
+<p>Com que la traducció i la indexació es fan alhora, el temps d’accés és pràcticament el d’accedir a la cau.</p>
+<p><strong>c) Fallada de TLB però pàgina present a memòria:</strong></p>
+<ol type="1">
+<li>El VPN no és al TLB → <strong>fallada de TLB</strong>. Es llegeix la PTE de la taula de pàgines a memòria (registre de taula de pàgines + VPN).</li>
+<li>La PTE té <span class="math inline">\(V = 1\)</span> (pàgina present) → <strong>no hi ha fallada de pàgina</strong>. Es copia la PTE al TLB (entrada lliure o reemplaçament LRU).</li>
+<li>Es reintenta l’accés: ara el TLB encerta, s’obté el PPN, es compara amb l’etiqueta de la cau → encert de cau → dada.</li>
+</ol>
+<p>El cost addicional respecte de b) és <strong>un accés a memòria</strong> per llegir la PTE.</p>
+<p><strong>d)</strong> Com s’explica a <a href="../01_apunts/A8.html#sec-mv-vipt" class="quarto-xref"><span>Secció 8.7.3</span></a>, perquè una cau <strong>VIPT</strong> sigui equivalent a una <strong>PIPT</strong> sense aliàsing, l’índex de la cau ha d’usar <strong>només bits del desplaçament de pàgina</strong> (bits que no canvien en la traducció). Això equival a:</p>
+<p><span class="math display">\[C \leq a \cdot T\]</span></p>
+<p>on <span class="math inline">\(C\)</span> és la mida de la cau, <span class="math inline">\(a\)</span> l’associativitat i <span class="math inline">\(T\)</span> la mida de pàgina. Aquí: <span class="math inline">\(C = 64 \times 32 = 2 \text{ KiB}\)</span>, <span class="math inline">\(a = 1\)</span>, <span class="math inline">\(T = 4 \text{ KiB}\)</span>:</p>
+<p><span class="math display">\[2 \text{ KiB} \leq 1 \times 4 \text{ KiB} \quad \checkmark\]</span></p>
+<p>es compleix (índex + desplaçament de bloc = 11 bits <span class="math inline">\(\leq\)</span> 12 bits de desplaçament de pàgina), de manera que la cau es comporta com una PIPT i no pateix aliàsing.</p>
+</div>
+</div>
+<div id="sol-p8-mv-cache-tlb" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;26.7: Solució: fallades de cau i TLB per files vs.&nbsp;columnes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E8.html#exr-p8-mv-cache-tlb" class="quarto-xref">Exercici&nbsp;<span>17.10</span></a>.</p>
+<p>Enters de 4 B. MC: 4 vies × 64 conjunts × 32 B/bloc <span class="math inline">\(= 8\)</span> KiB; un bloc conté <span class="math inline">\(32/4 = 8\)</span> enters. TLB de 32 entrades, pàgines de 8 KiB (2048 enters per pàgina; cada fila de <code>A</code> ocupa 1024 enters <span class="math inline">\(= 4\)</span> KiB, és a dir, mitja pàgina). La matriu <code>A[128][1024]</code> ocupa <span class="math inline">\(512\)</span> KiB <span class="math inline">\(= 64\)</span> pàgines <span class="math inline">\(= 16\,384\)</span> blocs.</p>
+<p>Adreça de l’element <code>A[i][j]</code>: byte <span class="math inline">\(= (i \cdot 1024 + j) \cdot 4 = i \cdot 4096 + j \cdot 4\)</span>.</p>
+<ul>
+<li>Conjunt de MC: <span class="math inline">\(\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{32} \right\rfloor \bmod 64 = \left(i \cdot 128 + \lfloor j/8 \rfloor\right) \bmod 64 = \lfloor j/8 \rfloor \bmod 64\)</span> → <strong>depèn només de <span class="math inline">\(j\)</span></strong>.</li>
+<li>Pàgina: <span class="math inline">\(\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{8192} \right\rfloor = \lfloor i/2 \rfloor\)</span> → <strong>depèn només de <span class="math inline">\(i\)</span></strong>.</li>
+</ul>
+<p><strong>Versió A</strong> (recorregut per files, accés seqüencial en memòria):</p>
+<ul>
+<li><em>MC</em>: cada bloc de 8 enters es carrega un cop i s’aprofita 8 vegades. Fallades <span class="math inline">\(= 16\,384\)</span> blocs <span class="math inline">\(= \mathbf{16\,384}\)</span> (1 de cada 8 accessos).</li>
+<li><em>TLB</em>: es recorren les 64 pàgines en ordre, una fallada per pàgina <span class="math inline">\(= \mathbf{64}\)</span>.</li>
+</ul>
+<p><strong>Versió B</strong> (recorregut per columnes, <em>stride</em> de 4096 B):</p>
+<ul>
+<li><em>MC</em>: per a un <span class="math inline">\(j\)</span> fix, els 128 elements <code>A[0..127][j]</code> són blocs diferents que mapen <strong>tots al mateix conjunt</strong> (<span class="math inline">\(\lfloor j/8 \rfloor \bmod 64\)</span>, independent de <span class="math inline">\(i\)</span>). Amb només 4 vies, els 128 blocs s’expulsen entre ells abans de poder-se reutilitzar a la iteració següent de <span class="math inline">\(j\)</span>. <strong>Cap reutilització</strong>: totes les referències fallen <span class="math inline">\(= 128 \times 1024 = \mathbf{131\,072}\)</span>.</li>
+<li><em>TLB</em>: per a cada <span class="math inline">\(j\)</span>, el bucle intern recorre <code>A[0..127][j]</code>, que toca les pàgines <span class="math inline">\(\lfloor i/2 \rfloor = 0, 0, 1, 1, \ldots, 63, 63\)</span>: <strong>64 pàgines diferents</strong>, una fallada cadascuna (la segona visita, <span class="math inline">\(i\)</span> senar, encerta). Són 64 fallades per cada valor de <span class="math inline">\(j\)</span>: <span class="math inline">\(64 \times 1024 = \mathbf{65\,536}\)</span>.</li>
+</ul>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Fallades de MC</th>
+<th style="text-align: center;">Fallades de TLB</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Versió A (per files)</td>
+<td style="text-align: center;">16 384</td>
+<td style="text-align: center;">64</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Versió B (per columnes)</td>
+<td style="text-align: center;">131 072</td>
+<td style="text-align: center;">65 536</td>
+</tr>
+</tbody>
+</table>
+<p>La versió B multiplica per 8 les fallades de MC i per 1024 les de TLB. El recorregut per columnes no només destrueix la localitat espacial (cada accés toca un bloc i una pàgina nous), sinó que a més pateix un <strong>conflicte de conjunt</strong> sistemàtic: com que el <em>stride</em> entre files (4096 B) és múltiple del nombre de conjunts per la mida de bloc, totes les files competeixen pel mateix conjunt de la MC.</p>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiat!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiat!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="../03_solucions/S7.html" class="pagination-link" aria-label="T7 Memòria cau">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">T7 Memòria cau</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_solucions/S9.html" class="pagination-link" aria-label="T9 Excepcions i interrupcions">
+        <span class="nav-page-text"><span class="chapter-title">T9 Excepcions i interrupcions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Codi font</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="an">number-sections:</span><span class="co"> true</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co">---</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a><span class="fu"># {{&lt; var tema8 &gt;}} {#sec-tema-mv-solucions}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="fu">## Traducció d'adreces i fallada de pàgina</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a>::: {#sol-p8-mv-paginacio-basica .callout-tip}</span>
+<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a><span class="fu">## Solució: paginació bàsica i traça LRU</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a>**Enunciat**: @exr-p8-mv-paginacio-basica.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a>Memòria virtual de 16 MiB ($2^{24}$ B → 24 bits d'adreça lògica), memòria física de 16 KiB ($2^{14}$ B → 14 bits d'adreça física) i pàgines de 256 B ($2^8$ B → desplaçament de 8 bits).</span>
+<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a>La descomposició VPN/desplaçament segueix @cau-mv-traduccio:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a><span class="ss">- </span>VPN: $24 - 8 = 16$ bits → $2^{16} = 65\,536$ pàgines virtuals.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a><span class="ss">- </span>PPN: $14 - 8 = 6$ bits → $2^6 = 64$ marcs de pàgina.</span>
+<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a>**a)** La taula de pàgines té una entrada per pàgina virtual: $2^{16} = 65\,536$ entrades. Cada entrada conté el PPN (6 bits) més el bit V i el bit D:</span>
+<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a>$$6 + 1 + 1 = 8 \text{ bits} = 1 \text{ byte/entrada}$$</span>
+<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a>$$\text{Mida TP} = 2^{16} \times 1 \text{ B} = 64 \text{ KiB}$$</span>
+<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a>**b)** El VPN és $\lfloor \text{adreça} / \texttt{0x100} \rfloor$ (els dos dígits hexadecimals inferiors són el desplaçament de 8 bits). Hi caben 3 pàgines a memòria física, amb reemplaçament LRU. Seqüència de VPN: 0, 1, 1, 2, 0, 1, 4, 5, 1.</span>
+<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a><span class="pp">|</span> Adreça <span class="pp">|</span> A — Pàg. <span class="pp">|</span> B — Fallada <span class="pp">|</span> C — Reempl. <span class="pp">|</span> Pila LRU (MRU→LRU) <span class="pp">|</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a><span class="pp">|</span> <span class="in">`000023`</span> <span class="pp">|</span> <span class="in">`0`</span> <span class="pp">|</span> **Sí** <span class="pp">|</span> — <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a><span class="pp">|</span> <span class="in">`000101`</span> <span class="pp">|</span> <span class="in">`1`</span> <span class="pp">|</span> **Sí** <span class="pp">|</span> — <span class="pp">|</span> 1, 0 <span class="pp">|</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a><span class="pp">|</span> <span class="in">`000102`</span> <span class="pp">|</span> <span class="in">`1`</span> <span class="pp">|</span> No <span class="pp">|</span> — <span class="pp">|</span> 1, 0 <span class="pp">|</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a><span class="pp">|</span> <span class="in">`000200`</span> <span class="pp">|</span> <span class="in">`2`</span> <span class="pp">|</span> **Sí** <span class="pp">|</span> — <span class="pp">|</span> 2, 1, 0 <span class="pp">|</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a><span class="pp">|</span> <span class="in">`000010`</span> <span class="pp">|</span> <span class="in">`0`</span> <span class="pp">|</span> No <span class="pp">|</span> — <span class="pp">|</span> 0, 2, 1 <span class="pp">|</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a><span class="pp">|</span> <span class="in">`000111`</span> <span class="pp">|</span> <span class="in">`1`</span> <span class="pp">|</span> No <span class="pp">|</span> — <span class="pp">|</span> 1, 0, 2 <span class="pp">|</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a><span class="pp">|</span> <span class="in">`000416`</span> <span class="pp">|</span> <span class="in">`4`</span> <span class="pp">|</span> **Sí** <span class="pp">|</span> <span class="in">`2`</span> <span class="pp">|</span> 4, 1, 0 <span class="pp">|</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a><span class="pp">|</span> <span class="in">`000520`</span> <span class="pp">|</span> <span class="in">`5`</span> <span class="pp">|</span> **Sí** <span class="pp">|</span> <span class="in">`0`</span> <span class="pp">|</span> 5, 4, 1 <span class="pp">|</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-label="39"></a><span class="pp">|</span> <span class="in">`000101`</span> <span class="pp">|</span> <span class="in">`1`</span> <span class="pp">|</span> No <span class="pp">|</span> — <span class="pp">|</span> 1, 5, 4 <span class="pp">|</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-label="40"></a>: {tbl-colwidths="<span class="co">[</span><span class="ot">18,14,16,16,36</span><span class="co">]</span>" .striped}</span>
+<span id="cb1-41"><a href="#cb1-41" aria-label="41"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-label="42"></a>Hi ha **5 fallades** i 4 encerts. A <span class="in">`000416`</span> s'expulsa la pàgina 2 (la menys recentment usada, desplaçada pels encerts a 0 i 1); a <span class="in">`000520`</span> s'expulsa la pàgina 0.</span>
+<span id="cb1-43"><a href="#cb1-43" aria-label="43"></a>:::</span>
+<span id="cb1-44"><a href="#cb1-44" aria-label="44"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-label="45"></a>::: {#sol-p8-mv-multinivell .callout-tip}</span>
+<span id="cb1-46"><a href="#cb1-46" aria-label="46"></a><span class="fu">## Solució: taula de pàgines de dos nivells</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-label="47"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-label="48"></a>**Enunciat**: @exr-p8-mv-multinivell.</span>
+<span id="cb1-49"><a href="#cb1-49" aria-label="49"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-label="50"></a>Adreces de 32 bits, pàgines de 4 KiB ($2^{12}$ B), entrades de 4 B, dos nivells amb repartiment simètric.</span>
+<span id="cb1-51"><a href="#cb1-51" aria-label="51"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-label="52"></a>**a)** Desplaçament: $\log_2(4\text{ KiB}) = 12$ bits. Resten $32 - 12 = 20$ bits d'índex, repartits simètricament:</span>
+<span id="cb1-53"><a href="#cb1-53" aria-label="53"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-label="54"></a>$$\underbrace{10 \text{ bits}}_{\text{índex N1}} \; \underbrace{10 \text{ bits}}_{\text{índex N2}} \; \underbrace{12 \text{ bits}}_{\text{desplaçament}}$$</span>
+<span id="cb1-55"><a href="#cb1-55" aria-label="55"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-label="56"></a>**b)** Cada taula (de qualsevol nivell) té $2^{10} = 1024$ entrades de 4 B:</span>
+<span id="cb1-57"><a href="#cb1-57" aria-label="57"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-label="58"></a>$$2^{10} \times 4 \text{ B} = 4 \text{ KiB}$$</span>
+<span id="cb1-59"><a href="#cb1-59" aria-label="59"></a></span>
+<span id="cb1-60"><a href="#cb1-60" aria-label="60"></a>Tant la taula de primer nivell com cada taula de segon nivell ocupen **4 KiB** (exactament una pàgina).</span>
+<span id="cb1-61"><a href="#cb1-61" aria-label="61"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-label="62"></a>**c)** Cada entrada del primer nivell pot apuntar a una taula de segon nivell: com a màxim $2^{10} = 1024$ taules de segon nivell. Mida total en el **pitjor cas** (totes assignades):</span>
+<span id="cb1-63"><a href="#cb1-63" aria-label="63"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-label="64"></a>$$\underbrace{4 \text{ KiB}}_{\text{N1}} + 1024 \times \underbrace{4 \text{ KiB}}_{\text{N2}} = 4 \text{ KiB} + 4 \text{ MiB}$$</span>
+<span id="cb1-65"><a href="#cb1-65" aria-label="65"></a></span>
+<span id="cb1-66"><a href="#cb1-66" aria-label="66"></a>**d)** Una taula de **nivell únic** tindria $2^{20}$ entrades de 4 B $= 4$ MiB. La jerarquia de dos nivells, en el pitjor cas, ocupa lleugerament **més** (4 MiB + 4 KiB: el sobrecost del directori de primer nivell).</span>
+<span id="cb1-67"><a href="#cb1-67" aria-label="67"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-label="68"></a>L'avantatge apareix en el **cas típic**, en què el procés només usa una fracció de l'espai lògic: només cal assignar les taules de segon nivell de les regions realment utilitzades. Per exemple, un procés que toqui codi, dades i pila en 3 regions disjuntes necessita la taula de primer nivell (4 KiB) i unes poques de segon nivell, de l'ordre de **desenes de KiB** en lloc de 4 MiB. Amb un nivell únic, en canvi, sempre cal reservar els 4 MiB sencers encara que la majoria d'entrades siguin invàlides.</span>
+<span id="cb1-69"><a href="#cb1-69" aria-label="69"></a>:::</span>
+<span id="cb1-70"><a href="#cb1-70" aria-label="70"></a></span>
+<span id="cb1-71"><a href="#cb1-71" aria-label="71"></a>::: {#sol-p8-mv-taula-referencies .callout-tip}</span>
+<span id="cb1-72"><a href="#cb1-72" aria-label="72"></a><span class="fu">## Solució: traça de la taula de pàgines amb accés a disc</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-label="73"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-label="74"></a>**Enunciat**: @exr-p8-mv-taula-referencies.</span>
+<span id="cb1-75"><a href="#cb1-75" aria-label="75"></a></span>
+<span id="cb1-76"><a href="#cb1-76" aria-label="76"></a>Adreça lògica de 16 bits, física de 15 bits, pàgines de 8 KiB ($2^{13}$ → desplaçament de 13 bits). VPN: $16 - 13 = 3$ bits (8 pàgines); PPN: $15 - 13 = 2$ bits (4 marcs). El VPN és $\lfloor \text{adreça}/\texttt{0x2000} \rfloor$ (els 3 bits de més pes de l'adreça).</span>
+<span id="cb1-77"><a href="#cb1-77" aria-label="77"></a></span>
+<span id="cb1-78"><a href="#cb1-78" aria-label="78"></a>Estat inicial: PPN 0 = VPN 2, PPN 1 = VPN 3, PPN 2 = VPN 4, PPN 3 lliure. Ordre LRU (MRU→LRU): VPN 3, VPN 2, VPN 4. Cap pàgina està modificada ($D = 0$).</span>
+<span id="cb1-79"><a href="#cb1-79" aria-label="79"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-label="80"></a><span class="pp">|</span> Adreça <span class="pp">|</span> VPN <span class="pp">|</span> PPN <span class="pp">|</span> Fallada <span class="pp">|</span> Lect. disc <span class="pp">|</span> Escr. disc <span class="pp">|</span> Reempl. VPN <span class="pp">|</span> Reempl. PPN <span class="pp">|</span></span>
+<span id="cb1-81"><a href="#cb1-81" aria-label="81"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-label="82"></a><span class="pp">|</span> E <span class="in">`F458`</span> <span class="pp">|</span> 7 <span class="pp">|</span> 3 <span class="pp">|</span> **Sí** <span class="pp">|</span> Sí <span class="pp">|</span> No <span class="pp">|</span> — <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-label="83"></a><span class="pp">|</span> E <span class="in">`8666`</span> <span class="pp">|</span> 4 <span class="pp">|</span> 2 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> — <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-label="84"></a><span class="pp">|</span> L <span class="in">`1BBF`</span> <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span> **Sí** <span class="pp">|</span> Sí <span class="pp">|</span> No <span class="pp">|</span> 2 <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-label="85"></a><span class="pp">|</span> E <span class="in">`5C44`</span> <span class="pp">|</span> 2 <span class="pp">|</span> 1 <span class="pp">|</span> **Sí** <span class="pp">|</span> Sí <span class="pp">|</span> No <span class="pp">|</span> 3 <span class="pp">|</span> 1 <span class="pp">|</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-label="86"></a><span class="pp">|</span> L <span class="in">`6600`</span> <span class="pp">|</span> 3 <span class="pp">|</span> 3 <span class="pp">|</span> **Sí** | Sí | **Sí** <span class="pp">|</span> 7 <span class="pp">|</span> 3 <span class="pp">|</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-label="87"></a><span class="pp">|</span> L <span class="in">`4000`</span> <span class="pp">|</span> 2 <span class="pp">|</span> 1 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> — <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-label="88"></a>: {tbl-colwidths="<span class="co">[</span><span class="ot">12,8,8,12,13,13,17,17</span><span class="co">]</span>" .striped}</span>
+<span id="cb1-89"><a href="#cb1-89" aria-label="89"></a></span>
+<span id="cb1-90"><a href="#cb1-90" aria-label="90"></a>Punts clau:</span>
+<span id="cb1-91"><a href="#cb1-91" aria-label="91"></a></span>
+<span id="cb1-92"><a href="#cb1-92" aria-label="92"></a><span class="ss">- </span><span class="in">`E F458`</span> (VPN 7): fallada amb el marc lliure PPN 3; com que és escriptura, queda $D = 1$.</span>
+<span id="cb1-93"><a href="#cb1-93" aria-label="93"></a><span class="ss">- </span><span class="in">`L 1BBF`</span> (VPN 0) i <span class="in">`E 5C44`</span> (VPN 2): cap marc lliure; s'expulsen les pàgines més antigues (VPN 2 i VPN 3), totes dues amb $D = 0$, de manera que no cal escriure-les a disc.</span>
+<span id="cb1-94"><a href="#cb1-94" aria-label="94"></a><span class="ss">- </span><span class="in">`L 6600`</span> (VPN 3): s'expulsa la VPN 7, que té $D = 1$ → **cal escriure-la primer a disc** (únic *writeback* de la traça).</span>
+<span id="cb1-95"><a href="#cb1-95" aria-label="95"></a><span class="ss">- </span><span class="in">`L 4000`</span> (VPN 2): encert, la pàgina segueix a PPN 1.</span>
+<span id="cb1-96"><a href="#cb1-96" aria-label="96"></a></span>
+<span id="cb1-97"><a href="#cb1-97" aria-label="97"></a>Estat final de la taula de pàgines:</span>
+<span id="cb1-98"><a href="#cb1-98" aria-label="98"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-label="99"></a><span class="pp">|</span> VPN <span class="pp">|</span> V <span class="pp">|</span> D <span class="pp">|</span> PPN <span class="pp">|</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-label="100"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-101"><a href="#cb1-101" aria-label="101"></a><span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-label="102"></a><span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-label="103"></a><span class="pp">|</span> 2 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span></span>
+<span id="cb1-104"><a href="#cb1-104" aria-label="104"></a><span class="pp">|</span> 3 <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 3 <span class="pp">|</span></span>
+<span id="cb1-105"><a href="#cb1-105" aria-label="105"></a><span class="pp">|</span> 4 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span></span>
+<span id="cb1-106"><a href="#cb1-106" aria-label="106"></a><span class="pp">|</span> 5–7 <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-107"><a href="#cb1-107" aria-label="107"></a>: {.striped}</span>
+<span id="cb1-108"><a href="#cb1-108" aria-label="108"></a></span>
+<span id="cb1-109"><a href="#cb1-109" aria-label="109"></a>Estat final de la memòria física: PPN 0 = VPN 0, PPN 1 = VPN 2, PPN 2 = VPN 4, PPN 3 = VPN 3.</span>
+<span id="cb1-110"><a href="#cb1-110" aria-label="110"></a>:::</span>
+<span id="cb1-111"><a href="#cb1-111" aria-label="111"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-label="112"></a><span class="fu">## TLB</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-label="113"></a></span>
+<span id="cb1-114"><a href="#cb1-114" aria-label="114"></a>::: {#sol-p8-tlb-estat .callout-tip}</span>
+<span id="cb1-115"><a href="#cb1-115" aria-label="115"></a><span class="fu">## Solució: traça del TLB i de la taula de pàgines</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-label="116"></a></span>
+<span id="cb1-117"><a href="#cb1-117" aria-label="117"></a>**Enunciat**: @exr-p8-tlb-estat.</span>
+<span id="cb1-118"><a href="#cb1-118" aria-label="118"></a></span>
+<span id="cb1-119"><a href="#cb1-119" aria-label="119"></a>Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/4096 \rfloor$. TLB de 4 entrades completament associatiu, LRU (vegeu @sec-mv-tlb). L'entrada amb $V = 0$ (VPN 9) és lliure i s'omple en la primera fallada. Ordre LRU inicial de les vàlides (MRU→LRU): VPN 11, VPN 7, VPN 3.</span>
+<span id="cb1-120"><a href="#cb1-120" aria-label="120"></a></span>
+<span id="cb1-121"><a href="#cb1-121" aria-label="121"></a>**a) Llista 1.** VPN: 0, 7, 3, 3, 1, 1, 2.</span>
+<span id="cb1-122"><a href="#cb1-122" aria-label="122"></a></span>
+<span id="cb1-123"><a href="#cb1-123" aria-label="123"></a><span class="pp">|</span> Ref. <span class="pp">|</span> VPN <span class="pp">|</span> Fallada TLB <span class="pp">|</span> Fallada pàgina <span class="pp">|</span> PPN <span class="pp">|</span></span>
+<span id="cb1-124"><a href="#cb1-124" aria-label="124"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-125"><a href="#cb1-125" aria-label="125"></a><span class="pp">|</span> 4095 <span class="pp">|</span> 0 <span class="pp">|</span> **Sí** <span class="pp">|</span> No <span class="pp">|</span> 5 <span class="pp">|</span></span>
+<span id="cb1-126"><a href="#cb1-126" aria-label="126"></a><span class="pp">|</span> 31272 <span class="pp">|</span> 7 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 4 <span class="pp">|</span></span>
+<span id="cb1-127"><a href="#cb1-127" aria-label="127"></a><span class="pp">|</span> 15789 <span class="pp">|</span> 3 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 6 <span class="pp">|</span></span>
+<span id="cb1-128"><a href="#cb1-128" aria-label="128"></a><span class="pp">|</span> 15000 <span class="pp">|</span> 3 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 6 <span class="pp">|</span></span>
+<span id="cb1-129"><a href="#cb1-129" aria-label="129"></a><span class="pp">|</span> 7193 <span class="pp">|</span> 1 <span class="pp">|</span> **Sí** | **Sí** <span class="pp">|</span> 13 <span class="pp">|</span></span>
+<span id="cb1-130"><a href="#cb1-130" aria-label="130"></a><span class="pp">|</span> 4096 <span class="pp">|</span> 1 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 13 <span class="pp">|</span></span>
+<span id="cb1-131"><a href="#cb1-131" aria-label="131"></a><span class="pp">|</span> 8912 <span class="pp">|</span> 2 <span class="pp">|</span> **Sí** | **Sí** <span class="pp">|</span> 14 <span class="pp">|</span></span>
+<span id="cb1-132"><a href="#cb1-132" aria-label="132"></a>: {.striped}</span>
+<span id="cb1-133"><a href="#cb1-133" aria-label="133"></a></span>
+<span id="cb1-134"><a href="#cb1-134" aria-label="134"></a><span class="ss">- </span>4095 (VPN 0): fallada de TLB; la PTE té $V = 1$ (PPN 5) → s'omple l'entrada lliure, sense fallada de pàgina.</span>
+<span id="cb1-135"><a href="#cb1-135" aria-label="135"></a><span class="ss">- </span>7193 (VPN 1): fallada de TLB i $V = 0$ → **fallada de pàgina**; s'assigna PPN 13. Es reemplaça la VPN 11 (l'única entrada no reutilitzada des de l'inici → la més antiga).</span>
+<span id="cb1-136"><a href="#cb1-136" aria-label="136"></a><span class="ss">- </span>8912 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça la VPN 0 (la més antiga de la pila en aquest punt).</span>
+<span id="cb1-137"><a href="#cb1-137" aria-label="137"></a></span>
+<span id="cb1-138"><a href="#cb1-138" aria-label="138"></a>TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP: VPN 1 → V 1/PPN 13, VPN 2 → V 1/PPN 14.</span>
+<span id="cb1-139"><a href="#cb1-139" aria-label="139"></a></span>
+<span id="cb1-140"><a href="#cb1-140" aria-label="140"></a>**Llista 2** (des de l'estat inicial). VPN: 2, 7, 4, 11, 9, 4, 11.</span>
+<span id="cb1-141"><a href="#cb1-141" aria-label="141"></a></span>
+<span id="cb1-142"><a href="#cb1-142" aria-label="142"></a><span class="pp">|</span> Ref. <span class="pp">|</span> VPN <span class="pp">|</span> Fallada TLB <span class="pp">|</span> Fallada pàgina <span class="pp">|</span> PPN <span class="pp">|</span></span>
+<span id="cb1-143"><a href="#cb1-143" aria-label="143"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-144"><a href="#cb1-144" aria-label="144"></a><span class="pp">|</span> 9452 <span class="pp">|</span> 2 <span class="pp">|</span> **Sí** | **Sí** <span class="pp">|</span> 13 <span class="pp">|</span></span>
+<span id="cb1-145"><a href="#cb1-145" aria-label="145"></a><span class="pp">|</span> 30964 <span class="pp">|</span> 7 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 4 <span class="pp">|</span></span>
+<span id="cb1-146"><a href="#cb1-146" aria-label="146"></a><span class="pp">|</span> 19136 <span class="pp">|</span> 4 <span class="pp">|</span> **Sí** <span class="pp">|</span> No <span class="pp">|</span> 9 <span class="pp">|</span></span>
+<span id="cb1-147"><a href="#cb1-147" aria-label="147"></a><span class="pp">|</span> 46502 <span class="pp">|</span> 11 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 12 <span class="pp">|</span></span>
+<span id="cb1-148"><a href="#cb1-148" aria-label="148"></a><span class="pp">|</span> 38110 <span class="pp">|</span> 9 <span class="pp">|</span> **Sí** | **Sí** <span class="pp">|</span> 14 <span class="pp">|</span></span>
+<span id="cb1-149"><a href="#cb1-149" aria-label="149"></a><span class="pp">|</span> 17653 <span class="pp">|</span> 4 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 9 <span class="pp">|</span></span>
+<span id="cb1-150"><a href="#cb1-150" aria-label="150"></a><span class="pp">|</span> 47480 <span class="pp">|</span> 11 <span class="pp">|</span> No <span class="pp">|</span> No <span class="pp">|</span> 12 <span class="pp">|</span></span>
+<span id="cb1-151"><a href="#cb1-151" aria-label="151"></a>: {.striped}</span>
+<span id="cb1-152"><a href="#cb1-152" aria-label="152"></a></span>
+<span id="cb1-153"><a href="#cb1-153" aria-label="153"></a><span class="ss">- </span>9452 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 13); s'omple l'entrada lliure.</span>
+<span id="cb1-154"><a href="#cb1-154" aria-label="154"></a><span class="ss">- </span>19136 (VPN 4): fallada de TLB però $V = 1$ (PPN 9) → sense fallada de pàgina. Es reemplaça la VPN 3 (la més antiga segons l'ordre inicial 11 &gt; 7 &gt; 3).</span>
+<span id="cb1-155"><a href="#cb1-155" aria-label="155"></a><span class="ss">- </span>38110 (VPN 9): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça la VPN 2 (entrada menys recentment usada).</span>
+<span id="cb1-156"><a href="#cb1-156" aria-label="156"></a><span class="ss">- </span>46502 i 47480 (VPN 11): encerts, perquè la VPN 11 era la més recent inicialment i no s'ha expulsat.</span>
+<span id="cb1-157"><a href="#cb1-157" aria-label="157"></a></span>
+<span id="cb1-158"><a href="#cb1-158" aria-label="158"></a>TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). TP: VPN 2 → V 1/PPN 13, VPN 9 → V 1/PPN 14.</span>
+<span id="cb1-159"><a href="#cb1-159" aria-label="159"></a></span>
+<span id="cb1-160"><a href="#cb1-160" aria-label="160"></a>**b)** Amb pàgines de 16 KiB, $\text{VPN} = \lfloor \text{adreça}/16\,384 \rfloor$ i moltes adreces que abans queien en pàgines diferents passen a compartir pàgina:</span>
+<span id="cb1-161"><a href="#cb1-161" aria-label="161"></a></span>
+<span id="cb1-162"><a href="#cb1-162" aria-label="162"></a><span class="ss">- </span>Llista 1: pàgines 0, 1, 0, 0, 0, 0, 0 → només **2 pàgines diferents** (abans 5).</span>
+<span id="cb1-163"><a href="#cb1-163" aria-label="163"></a><span class="ss">- </span>Llista 2: pàgines 0, 1, 1, 2, 2, 1, 2 → només **3 pàgines diferents** (abans 5).</span>
+<span id="cb1-164"><a href="#cb1-164" aria-label="164"></a></span>
+<span id="cb1-165"><a href="#cb1-165" aria-label="165"></a>En els dos casos el nombre de pàgines diferents accedides baixa, cosa que **redueix el nombre potencial de fallades de TLB de tipus *cold*** (una fallada per pàgina nova referenciada). No es pot donar, però, un nombre exacte de fallades comparable al de l'apartat a): l'estat inicial del TLB (VPN 11, 7, 3 vàlides) es va definir per a pàgines de 4 KiB i deixa de tenir sentit en reinterpretar-lo amb una mida de pàgina diferent — les VPN ja no identifiquen les mateixes pàgines físiques, de manera que no hi ha una manera coherent de «traduir» aquell estat inicial concret al nou context (vegeu <span class="in">`13_contrib.qmd §T8`</span>, criteri sobre canvis de mida de pàgina amb estat fix).</span>
+<span id="cb1-166"><a href="#cb1-166" aria-label="166"></a></span>
+<span id="cb1-167"><a href="#cb1-167" aria-label="167"></a>En general, augmentar la mida de pàgina **redueix el nombre de pàgines diferents** accedides i, per tant, les fallades de TLB (de tipus *cold*), a canvi de més fragmentació interna i transferències a disc més grans en cada fallada de pàgina.</span>
+<span id="cb1-168"><a href="#cb1-168" aria-label="168"></a></span>
+<span id="cb1-169"><a href="#cb1-169" aria-label="169"></a>**c)** Mida de la taula de pàgines (nivell únic):</span>
+<span id="cb1-170"><a href="#cb1-170" aria-label="170"></a></span>
+<span id="cb1-171"><a href="#cb1-171" aria-label="171"></a>$$\text{Nre. entrades} = \frac{2^{\text{bits adreça}}}{\text{mida pàgina}}, \qquad \text{Mida TP} = \text{Nre. entrades} \times \text{mida entrada}$$</span>
+<span id="cb1-172"><a href="#cb1-172" aria-label="172"></a></span>
+<span id="cb1-173"><a href="#cb1-173" aria-label="173"></a><span class="ss">- </span>32 bits, pàgines de 4 KiB, entrades de 4 B: $\dfrac{2^{32}}{2^{12}} \times 4 = 2^{20} \times 4 = \mathbf{4 \text{ MiB}}$.</span>
+<span id="cb1-174"><a href="#cb1-174" aria-label="174"></a><span class="ss">- </span>64 bits, pàgines de 16 KiB, entrades de 8 B: $\dfrac{2^{64}}{2^{14}} \times 8 = 2^{50} \times 2^3 = 2^{53} \text{ B} = \mathbf{8 \text{ PiB}}$.</span>
+<span id="cb1-175"><a href="#cb1-175" aria-label="175"></a></span>
+<span id="cb1-176"><a href="#cb1-176" aria-label="176"></a>El segon resultat (8 PiB **per procés**) és inviable i justifica les taules de pàgines multinivell de @sol-p8-mv-multinivell.</span>
+<span id="cb1-177"><a href="#cb1-177" aria-label="177"></a>:::</span>
+<span id="cb1-178"><a href="#cb1-178" aria-label="178"></a></span>
+<span id="cb1-179"><a href="#cb1-179" aria-label="179"></a><span class="fu">## Protecció</span></span>
+<span id="cb1-180"><a href="#cb1-180" aria-label="180"></a></span>
+<span id="cb1-181"><a href="#cb1-181" aria-label="181"></a>::: {#sol-p8-mv-proteccio .callout-tip}</span>
+<span id="cb1-182"><a href="#cb1-182" aria-label="182"></a><span class="fu">## Solució: bit de permís d'escriptura i excepcions</span></span>
+<span id="cb1-183"><a href="#cb1-183" aria-label="183"></a></span>
+<span id="cb1-184"><a href="#cb1-184" aria-label="184"></a>**Enunciat**: @exr-p8-mv-proteccio.</span>
+<span id="cb1-185"><a href="#cb1-185" aria-label="185"></a></span>
+<span id="cb1-186"><a href="#cb1-186" aria-label="186"></a>Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/\texttt{0x1000} \rfloor$. Criteri: una **lectura** té èxit sempre que $V = 1$ (el bit E només restringeix escriptures); una **escriptura** requereix $V = 1$ **i** $E = 1$. Si $V = 0$ → fallada de pàgina; si l'escriptura troba $E = 0$ → excepció de protecció.</span>
+<span id="cb1-187"><a href="#cb1-187" aria-label="187"></a></span>
+<span id="cb1-188"><a href="#cb1-188" aria-label="188"></a><span class="pp">|</span> Accés <span class="pp">|</span> Adreça <span class="pp">|</span> VPN <span class="pp">|</span> V <span class="pp">|</span> E <span class="pp">|</span> Resultat <span class="pp">|</span></span>
+<span id="cb1-189"><a href="#cb1-189" aria-label="189"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb1-190"><a href="#cb1-190" aria-label="190"></a><span class="pp">|</span> a <span class="pp">|</span> L <span class="in">`0x0FF0`</span> <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> **Èxit** (la lectura no mira E); PPN 3 <span class="pp">|</span></span>
+<span id="cb1-191"><a href="#cb1-191" aria-label="191"></a><span class="pp">|</span> b <span class="pp">|</span> E <span class="in">`0x1234`</span> <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> **Èxit**; PPN 7 <span class="pp">|</span></span>
+<span id="cb1-192"><a href="#cb1-192" aria-label="192"></a><span class="pp">|</span> c <span class="pp">|</span> L <span class="in">`0x2000`</span> <span class="pp">|</span> 2 <span class="pp">|</span> 0 <span class="pp">|</span> — <span class="pp">|</span> **Fallada de pàgina** ($V = 0$) <span class="pp">|</span></span>
+<span id="cb1-193"><a href="#cb1-193" aria-label="193"></a><span class="pp">|</span> d <span class="pp">|</span> E <span class="in">`0x3100`</span> <span class="pp">|</span> 3 <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> **Excepció de protecció** (escriptura amb $E = 0$) <span class="pp">|</span></span>
+<span id="cb1-194"><a href="#cb1-194" aria-label="194"></a><span class="pp">|</span> e <span class="pp">|</span> E <span class="in">`0x0010`</span> <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> **Excepció de protecció** (escriptura amb $E = 0$) <span class="pp">|</span></span>
+<span id="cb1-195"><a href="#cb1-195" aria-label="195"></a>: {tbl-colwidths="<span class="co">[</span><span class="ot">8,14,8,8,8,54</span><span class="co">]</span>" .striped}</span>
+<span id="cb1-196"><a href="#cb1-196" aria-label="196"></a></span>
+<span id="cb1-197"><a href="#cb1-197" aria-label="197"></a>Observació: els casos a) i e) accedeixen a la **mateixa pàgina** (VPN 0, només lectura). La lectura té èxit i l'escriptura provoca excepció: és el patró típic d'una pàgina de codi o de dades constants, protegida contra modificacions accidentals.</span>
+<span id="cb1-198"><a href="#cb1-198" aria-label="198"></a>:::</span>
+<span id="cb1-199"><a href="#cb1-199" aria-label="199"></a></span>
+<span id="cb1-200"><a href="#cb1-200" aria-label="200"></a><span class="fu">## Integració del TLB i la memòria cau</span></span>
+<span id="cb1-201"><a href="#cb1-201" aria-label="201"></a></span>
+<span id="cb1-202"><a href="#cb1-202" aria-label="202"></a>::: {#sol-p8-mv-tlb-cau .callout-tip}</span>
+<span id="cb1-203"><a href="#cb1-203" aria-label="203"></a><span class="fu">## Solució: flux VIPT i condició antialiàsing</span></span>
+<span id="cb1-204"><a href="#cb1-204" aria-label="204"></a></span>
+<span id="cb1-205"><a href="#cb1-205" aria-label="205"></a>**Enunciat**: @exr-p8-mv-tlb-cau.</span>
+<span id="cb1-206"><a href="#cb1-206" aria-label="206"></a></span>
+<span id="cb1-207"><a href="#cb1-207" aria-label="207"></a>Pàgines de 4 KiB, cau de dades de correspondència directa amb 64 blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces virtuals de 32 bits.</span>
+<span id="cb1-208"><a href="#cb1-208" aria-label="208"></a></span>
+<span id="cb1-209"><a href="#cb1-209" aria-label="209"></a>**a)** Descomposició de l'adreça virtual:</span>
+<span id="cb1-210"><a href="#cb1-210" aria-label="210"></a></span>
+<span id="cb1-211"><a href="#cb1-211" aria-label="211"></a><span class="ss">- </span>Desplaçament dins la pàgina: $\log_2(4\text{ KiB}) = 12$ bits.</span>
+<span id="cb1-212"><a href="#cb1-212" aria-label="212"></a><span class="ss">- </span>VPN: $32 - 12 = 20$ bits.</span>
+<span id="cb1-213"><a href="#cb1-213" aria-label="213"></a><span class="ss">- </span>Desplaçament dins el bloc: $\log_2(32) = 5$ bits.</span>
+<span id="cb1-214"><a href="#cb1-214" aria-label="214"></a><span class="ss">- </span>Índex de la cau: $\log_2(64) = 6$ bits.</span>
+<span id="cb1-215"><a href="#cb1-215" aria-label="215"></a></span>
+<span id="cb1-216"><a href="#cb1-216" aria-label="216"></a>$$\underbrace{b_{31} \cdots b_{12}}_{\text{VPN (20)}} \; \underbrace{b_{11} \cdots b_0}_{\text{desplaçament pàgina (12)}}, \qquad \underbrace{\text{tag}}_{\;} \; \underbrace{b_{10} \cdots b_5}_{\text{índex cau (6)}} \; \underbrace{b_4 \cdots b_0}_{\text{despl. bloc (5)}}$$</span>
+<span id="cb1-217"><a href="#cb1-217" aria-label="217"></a></span>
+<span id="cb1-218"><a href="#cb1-218" aria-label="218"></a>Cal notar que índex + desplaçament de bloc $= 6 + 5 = 11$ bits, tots dins dels 12 bits del desplaçament de pàgina.</span>
+<span id="cb1-219"><a href="#cb1-219" aria-label="219"></a></span>
+<span id="cb1-220"><a href="#cb1-220" aria-label="220"></a>**b) Lectura amb encert de TLB i encert de cau** (esquema VIPT):</span>
+<span id="cb1-221"><a href="#cb1-221" aria-label="221"></a></span>
+<span id="cb1-222"><a href="#cb1-222" aria-label="222"></a><span class="ss">1. </span>La CPU genera l'adreça lògica. **En paral·lel**: els bits d'índex (b10–b5, part del desplaçament) seleccionen el conjunt de la cau, i el VPN (b31–b12) s'envia al TLB.</span>
+<span id="cb1-223"><a href="#cb1-223" aria-label="223"></a><span class="ss">2. </span>El TLB troba el VPN (encert) i retorna el PPN.</span>
+<span id="cb1-224"><a href="#cb1-224" aria-label="224"></a><span class="ss">3. </span>La cau llegeix l'etiqueta i les dades del bloc indexat.</span>
+<span id="cb1-225"><a href="#cb1-225" aria-label="225"></a><span class="ss">4. </span>Es compara el PPN (etiqueta física) amb l'etiqueta llegida de la cau → coincideixen → **encert de cau**.</span>
+<span id="cb1-226"><a href="#cb1-226" aria-label="226"></a><span class="ss">5. </span>Es lliura la dada (el desplaçament de bloc, b4–b0, selecciona el byte/paraula).</span>
+<span id="cb1-227"><a href="#cb1-227" aria-label="227"></a></span>
+<span id="cb1-228"><a href="#cb1-228" aria-label="228"></a>Com que la traducció i la indexació es fan alhora, el temps d'accés és pràcticament el d'accedir a la cau.</span>
+<span id="cb1-229"><a href="#cb1-229" aria-label="229"></a></span>
+<span id="cb1-230"><a href="#cb1-230" aria-label="230"></a>**c) Fallada de TLB però pàgina present a memòria:**</span>
+<span id="cb1-231"><a href="#cb1-231" aria-label="231"></a></span>
+<span id="cb1-232"><a href="#cb1-232" aria-label="232"></a><span class="ss">1. </span>El VPN no és al TLB → **fallada de TLB**. Es llegeix la PTE de la taula de pàgines a memòria (registre de taula de pàgines + VPN).</span>
+<span id="cb1-233"><a href="#cb1-233" aria-label="233"></a><span class="ss">2. </span>La PTE té $V = 1$ (pàgina present) → **no hi ha fallada de pàgina**. Es copia la PTE al TLB (entrada lliure o reemplaçament LRU).</span>
+<span id="cb1-234"><a href="#cb1-234" aria-label="234"></a><span class="ss">3. </span>Es reintenta l'accés: ara el TLB encerta, s'obté el PPN, es compara amb l'etiqueta de la cau → encert de cau → dada.</span>
+<span id="cb1-235"><a href="#cb1-235" aria-label="235"></a></span>
+<span id="cb1-236"><a href="#cb1-236" aria-label="236"></a>El cost addicional respecte de b) és **un accés a memòria** per llegir la PTE.</span>
+<span id="cb1-237"><a href="#cb1-237" aria-label="237"></a></span>
+<span id="cb1-238"><a href="#cb1-238" aria-label="238"></a>**d)** Com s'explica a @sec-mv-vipt, perquè una cau **VIPT** sigui equivalent a una **PIPT** sense aliàsing, l'índex de la cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:</span>
+<span id="cb1-239"><a href="#cb1-239" aria-label="239"></a></span>
+<span id="cb1-240"><a href="#cb1-240" aria-label="240"></a>$$C \leq a \cdot T$$</span>
+<span id="cb1-241"><a href="#cb1-241" aria-label="241"></a></span>
+<span id="cb1-242"><a href="#cb1-242" aria-label="242"></a>on $C$ és la mida de la cau, $a$ l'associativitat i $T$ la mida de pàgina. Aquí: $C = 64 \times 32 = 2 \text{ KiB}$, $a = 1$, $T = 4 \text{ KiB}$:</span>
+<span id="cb1-243"><a href="#cb1-243" aria-label="243"></a></span>
+<span id="cb1-244"><a href="#cb1-244" aria-label="244"></a>$$2 \text{ KiB} \leq 1 \times 4 \text{ KiB} \quad \checkmark$$</span>
+<span id="cb1-245"><a href="#cb1-245" aria-label="245"></a></span>
+<span id="cb1-246"><a href="#cb1-246" aria-label="246"></a>es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaçament de pàgina), de manera que la cau es comporta com una PIPT i no pateix aliàsing.</span>
+<span id="cb1-247"><a href="#cb1-247" aria-label="247"></a>:::</span>
+<span id="cb1-248"><a href="#cb1-248" aria-label="248"></a></span>
+<span id="cb1-249"><a href="#cb1-249" aria-label="249"></a>::: {#sol-p8-mv-cache-tlb .callout-tip}</span>
+<span id="cb1-250"><a href="#cb1-250" aria-label="250"></a><span class="fu">## Solució: fallades de cau i TLB per files vs. columnes</span></span>
+<span id="cb1-251"><a href="#cb1-251" aria-label="251"></a></span>
+<span id="cb1-252"><a href="#cb1-252" aria-label="252"></a>**Enunciat**: @exr-p8-mv-cache-tlb.</span>
+<span id="cb1-253"><a href="#cb1-253" aria-label="253"></a></span>
+<span id="cb1-254"><a href="#cb1-254" aria-label="254"></a>Enters de 4 B. MC: 4 vies × 64 conjunts × 32 B/bloc $= 8$ KiB; un bloc conté $32/4 = 8$ enters. TLB de 32 entrades, pàgines de 8 KiB (2048 enters per pàgina; cada fila de <span class="in">`A`</span> ocupa 1024 enters $= 4$ KiB, és a dir, mitja pàgina). La matriu <span class="in">`A[128][1024]`</span> ocupa $512$ KiB $= 64$ pàgines $= 16\,384$ blocs.</span>
+<span id="cb1-255"><a href="#cb1-255" aria-label="255"></a></span>
+<span id="cb1-256"><a href="#cb1-256" aria-label="256"></a>Adreça de l'element <span class="in">`A[i][j]`</span>: byte $= (i \cdot 1024 + j) \cdot 4 = i \cdot 4096 + j \cdot 4$.</span>
+<span id="cb1-257"><a href="#cb1-257" aria-label="257"></a></span>
+<span id="cb1-258"><a href="#cb1-258" aria-label="258"></a><span class="ss">- </span>Conjunt de MC: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{32} \right\rfloor \bmod 64 = \left(i \cdot 128 + \lfloor j/8 \rfloor\right) \bmod 64 = \lfloor j/8 \rfloor \bmod 64$ → **depèn només de $j$**.</span>
+<span id="cb1-259"><a href="#cb1-259" aria-label="259"></a><span class="ss">- </span>Pàgina: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{8192} \right\rfloor = \lfloor i/2 \rfloor$ → **depèn només de $i$**.</span>
+<span id="cb1-260"><a href="#cb1-260" aria-label="260"></a></span>
+<span id="cb1-261"><a href="#cb1-261" aria-label="261"></a>**Versió A** (recorregut per files, accés seqüencial en memòria):</span>
+<span id="cb1-262"><a href="#cb1-262" aria-label="262"></a></span>
+<span id="cb1-263"><a href="#cb1-263" aria-label="263"></a><span class="ss">- </span>*MC*: cada bloc de 8 enters es carrega un cop i s'aprofita 8 vegades. Fallades $= 16\,384$ blocs $= \mathbf{16\,384}$ (1 de cada 8 accessos).</span>
+<span id="cb1-264"><a href="#cb1-264" aria-label="264"></a><span class="ss">- </span>*TLB*: es recorren les 64 pàgines en ordre, una fallada per pàgina $= \mathbf{64}$.</span>
+<span id="cb1-265"><a href="#cb1-265" aria-label="265"></a></span>
+<span id="cb1-266"><a href="#cb1-266" aria-label="266"></a>**Versió B** (recorregut per columnes, *stride* de 4096 B):</span>
+<span id="cb1-267"><a href="#cb1-267" aria-label="267"></a></span>
+<span id="cb1-268"><a href="#cb1-268" aria-label="268"></a><span class="ss">- </span>*MC*: per a un $j$ fix, els 128 elements `A[0..127][j]` són blocs diferents que mapen **tots al mateix conjunt** ($\lfloor j/8 \rfloor \bmod 64$, independent de $i$). Amb només 4 vies, els 128 blocs s'expulsen entre ells abans de poder-se reutilitzar a la iteració següent de $j$. **Cap reutilització**: totes les referències fallen $= 128 \times 1024 = \mathbf{131\,072}$.</span>
+<span id="cb1-269"><a href="#cb1-269" aria-label="269"></a><span class="ss">- </span>*TLB*: per a cada $j$, el bucle intern recorre `A[0..127][j]`, que toca les pàgines $\lfloor i/2 \rfloor = 0, 0, 1, 1, \ldots, 63, 63$: **64 pàgines diferents**, una fallada cadascuna (la segona visita, $i$ senar, encerta). Són 64 fallades per cada valor de $j$: $64 \times 1024 = \mathbf{65\,536}$.</span>
+<span id="cb1-270"><a href="#cb1-270" aria-label="270"></a></span>
+<span id="cb1-271"><a href="#cb1-271" aria-label="271"></a><span class="pp">|</span> <span class="pp">|</span> Fallades de MC <span class="pp">|</span> Fallades de TLB <span class="pp">|</span></span>
+<span id="cb1-272"><a href="#cb1-272" aria-label="272"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-273"><a href="#cb1-273" aria-label="273"></a><span class="pp">|</span> Versió A (per files) <span class="pp">|</span> 16 384 <span class="pp">|</span> 64 <span class="pp">|</span></span>
+<span id="cb1-274"><a href="#cb1-274" aria-label="274"></a><span class="pp">|</span> Versió B (per columnes) <span class="pp">|</span> 131 072 <span class="pp">|</span> 65 536 <span class="pp">|</span></span>
+<span id="cb1-275"><a href="#cb1-275" aria-label="275"></a>: {tbl-colwidths="<span class="co">[</span><span class="ot">40,30,30</span><span class="co">]</span>" .striped}</span>
+<span id="cb1-276"><a href="#cb1-276" aria-label="276"></a></span>
+<span id="cb1-277"><a href="#cb1-277" aria-label="277"></a>La versió B multiplica per 8 les fallades de MC i per 1024 les de TLB. El recorregut per columnes no només destrueix la localitat espacial (cada accés toca un bloc i una pàgina nous), sinó que a més pateix un **conflicte de conjunt** sistemàtic: com que el *stride* entre files (4096 B) és múltiple del nombre de conjunts per la mida de bloc, totes les files competeixen pel mateix conjunt de la MC.</span>
+<span id="cb1-278"><a href="#cb1-278" aria-label="278"></a>:::</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

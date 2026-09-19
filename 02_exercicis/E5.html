@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>14&nbsp; Tema 5: Coma flotant – Estructura de computadors</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../02_exercicis/E6.html" rel="next">
+<link href="../02_exercicis/E4.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-eaeb381c6b7494c50009502241a4985c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3a86d90b797903817cf2addb73264634.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../02_exercicis/E1.html">Problemes</a></li><li class="breadcrumb-item"><a href="../02_exercicis/E5.html"><span class="chapter-title">T5 Coma flotant</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Cerca" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Estructura de computadors</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Estructura-de-computadors.pdf" title="Descarrega PDF" class="quarto-navigation-tool px-1" aria-label="Descarrega PDF"><i class="bi bi-filetype-pdf"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Cerca"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👋 Presentació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Apunts</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Problemes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E5.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Solucions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Laboratori</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S1 RARS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S2 RISC-V</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S4 Matrius i subrutines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S6 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/Lcalendari.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Calendari</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_riscv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌️ RISC-V</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_sigles_simbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⚙️ Sigles, símbols i notació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_contrib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👥 Contribueix-hi</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_LICENSE.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">©️ Llicència i reconeixements</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Taula de continguts</h2>
+   
+  <ul>
+  <li><a href="#representació-ieee-754" id="toc-representació-ieee-754" class="nav-link active" data-scroll-target="#representació-ieee-754"><span class="header-section-number">14.1</span> Representació IEEE 754</a></li>
+  <li><a href="#suma-i-multiplicació" id="toc-suma-i-multiplicació" class="nav-link" data-scroll-target="#suma-i-multiplicació"><span class="header-section-number">14.2</span> Suma i multiplicació</a></li>
+  <li><a href="#no-associativitat" id="toc-no-associativitat" class="nav-link" data-scroll-target="#no-associativitat"><span class="header-section-number">14.3</span> No-associativitat</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content column-page-right" id="quarto-document-content">
+
+<div class="sidebar-institucional">
+  <a href="https://dac.upc.edu" target="_blank">Departament d'Arquitectura de Computadors (DAC)</a><br>
+  <a href="https://www.upc.edu" target="_blank">Universitat Politècnica de Catalunya (UPC)</a>
+</div>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../02_exercicis/E1.html">Problemes</a></li><li class="breadcrumb-item"><a href="../02_exercicis/E5.html"><span class="chapter-title">T5 Coma flotant</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Tema 5: Coma flotant</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Codi</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="representació-ieee-754" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="representació-ieee-754"><span class="header-section-number">14.1</span> Representació IEEE 754</h2>
+<p><em>Vegeu <a href="../01_apunts/A5.html#sec-representacio-coma-flotant" class="quarto-xref"><span>Secció 5.1</span></a>.</em></p>
+<div id="exr-p6-ieee-interpretacio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.1</strong></span> En una arquitectura de Von Neumann, els grups de bits no tenen un significat específic per si mateixos: el seu significat depèn totalment de com es facin servir. Suposeu els valors <code>A = 0x407302B3</code> i <code>B = 0xF9C40513</code>. Contesteu les preguntes següents fent diverses suposicions sobre <code>A</code> i <code>B</code>:</p>
+<ol type="a">
+<li>Si són naturals, quin és el seu valor en decimal?</li>
+<li>Si són enters en complement a 2, quin és el seu valor en decimal?</li>
+<li>Si són nombres en coma flotant de simple precisió, quin és el seu valor en decimal?</li>
+<li>Si són instruccions RISC-V, quina instrucció representen en assemblador?</li>
+</ol>
+</div>
+<div id="exr-p6-ieee-hex-a-decimal" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.2</strong></span> Convertiu a decimal els valors següents suposant que codifiquen nombres en format IEEE 754 de simple precisió:</p>
+<ol type="a">
+<li><code>0x3FB08000</code></li>
+<li><code>0x80000000</code></li>
+<li><code>0xB0FC0000</code></li>
+<li><code>0xC2968000</code></li>
+</ol>
+</div>
+<div id="exr-p6-ieee-tipus" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.3</strong></span> La taula següent conté una llista de nombres binaris en format IEEE 754 de simple precisió. Marqueu amb una X la casella corresponent al tipus de valor de cada un, d’acord amb la notació: NRM = normalitzat; DNRM = denormal; 0 = zero; INF = infinit; NAN = <em>Not a Number</em>.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Signe</th>
+<th style="text-align: left;">Exponent</th>
+<th style="text-align: left;">Fracció</th>
+<th style="text-align: center;">NRM</th>
+<th style="text-align: center;">DNRM</th>
+<th style="text-align: center;">0</th>
+<th style="text-align: center;">INF</th>
+<th style="text-align: center;">NAN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><code>0000 0000</code></td>
+<td style="text-align: left;"><code>110 0010 0000 1110 1110 1011</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><code>0000 0000</code></td>
+<td style="text-align: left;"><code>000 0000 0000 0000 0000 0000</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><code>0010 0100</code></td>
+<td style="text-align: left;"><code>000 0000 0000 0000 0000 0000</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;"><code>1111 1111</code></td>
+<td style="text-align: left;"><code>000 0000 0000 0000 0000 0000</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><code>0010 0100</code></td>
+<td style="text-align: left;"><code>110 0010 0000 1110 1110 1011</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;"><code>0000 0000</code></td>
+<td style="text-align: left;"><code>000 0000 0000 0000 0000 0000</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: left;"><code>1111 1111</code></td>
+<td style="text-align: left;"><code>101 0001 0001 0000 1001 0100</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="exr-p6-ieee-rang" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.4</strong></span> En el format de coma flotant IEEE 754 de simple precisió:</p>
+<ol type="a">
+<li>Quin és el major nombre positiu representable? Expresseu el resultat en notació exponencial i en hexadecimal.</li>
+<li>Quin és el menor nombre positiu no nul representable en format normalitzat? Expresseu el resultat en notació exponencial i en hexadecimal.</li>
+<li>Quin és el menor nombre positiu no nul representable en format denormal? Expresseu el resultat en notació exponencial i en hexadecimal.</li>
+</ol>
+</div>
+<div id="exr-p6-ieee-decimal-a-hex" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.5</strong></span> Convertiu els nombres decimals següents al format de coma flotant IEEE 754 de simple precisió, expressant el resultat en hexadecimal. Determineu en cada cas si es comet error per pèrdua de precisió i, en cas afirmatiu, calculeu-ne el valor en decimal:</p>
+<ol type="a">
+<li>340</li>
+<li>44,4</li>
+<li>−255,125</li>
+<li>−10,75</li>
+<li>6,5</li>
+</ol>
+</div>
+<div id="exr-p6-ieee-doble-precisio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.6</strong></span> Donats els nombres decimals <span class="math inline">\(A = -1609{,}5\)</span> i <span class="math inline">\(B = -938{,}8125\)</span>:</p>
+<ol type="a">
+<li>Convertiu-los al format IEEE 754 de simple precisió, expressant el resultat en hexadecimal, i calculeu l’error comès per pèrdua de precisió expressat en decimal.</li>
+<li>Convertiu-los al format IEEE 754 de doble precisió, expressant el resultat en hexadecimal, i calculeu l’error comès per pèrdua de precisió expressat en decimal.</li>
+</ol>
+</div>
+<div id="exr-p6-ieee-half-a" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.7</strong></span> Els processadors gràfics usen un format de coma flotant de 16 bits anomenat <em>half</em>, similar al de simple precisió, excepte que l’exponent té 5 bits (esbiaixat, biaix 15) i la mantissa té 10 bits (amb bit ocult). Convertiu els nombres decimals següents a la representació <em>half</em> en hexadecimal:</p>
+<ol type="a">
+<li><span class="math inline">\(A = -1{,}278 \times 10^3\)</span>, <span class="math inline">\(B = -3{,}90625 \times 10^{-1}\)</span></li>
+<li><span class="math inline">\(A = 2{,}3109375 \times 10^1\)</span>, <span class="math inline">\(B = 6{,}3916015625 \times 10^{-1}\)</span></li>
+<li><span class="math inline">\(A = 6{,}18 \times 10^2\)</span>, <span class="math inline">\(B = 5{,}79375 \times 10^1\)</span></li>
+<li><span class="math inline">\(A = -1{,}6360 \times 10^4\)</span>, <span class="math inline">\(B = 1{,}6360 \times 10^4\)</span>, <span class="math inline">\(C = 1{,}0\)</span></li>
+</ol>
+</div>
+<div id="exr-p6-ieee-half-b" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.8</strong></span> Convertiu els nombres decimals següents al format <em>half</em> de 16 bits (vegeu <a href="#exr-p6-ieee-half-a" class="quarto-xref">Exercici&nbsp;<span>14.7</span></a>) i expresseu el resultat en hexadecimal:</p>
+<ol type="a">
+<li><span class="math inline">\(A = 2{,}865625 \times 10^1\)</span>, <span class="math inline">\(B = 4{,}140625 \times 10^{-1}\)</span>, <span class="math inline">\(C = 1{,}2140625 \times 10^1\)</span></li>
+<li><span class="math inline">\(A = 1{,}5234375 \times 10^{-1}\)</span>, <span class="math inline">\(B = 2{,}0703125 \times 10^{-1}\)</span>, <span class="math inline">\(C = 9{,}96875 \times 10^1\)</span></li>
+<li><span class="math inline">\(A = -2{,}7890625 \times 10^1\)</span>, <span class="math inline">\(B = -8{,}088 \times 10^3\)</span>, <span class="math inline">\(C = 1{,}0216 \times 10^4\)</span></li>
+</ol>
+</div>
+</section>
+<section id="suma-i-multiplicació" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="suma-i-multiplicació"><span class="header-section-number">14.2</span> Suma i multiplicació</h2>
+<p><em>Vegeu <a href="../01_apunts/A5.html#sec-operacions-coma-flotant" class="quarto-xref"><span>Secció 5.2</span></a> i <a href="../01_apunts/A5.html#sec-coma-flotant-riscv" class="quarto-xref"><span>Secció 5.3</span></a>.</em></p>
+<div id="exr-p6-ops-suma-simple" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.9</strong></span> Suposeu que els registres de coma flotant <code>ft2 = 0x417AC000</code> i <code>ft4 = 0x3F140000</code>, i que s’executa la instrucció RISC-V <code>fadd.s ft6, ft2, ft4</code>. Suposant arrodoniment al més pròxim (al parell en cas equidistant):</p>
+<ol type="a">
+<li>Calculeu a mà, seguint l’algorisme de suma de nombres en coma flotant, el valor final de <code>ft6</code> en hexadecimal.</li>
+<li>Es produeix algun error de precisió en el resultat?</li>
+<li>Convertiu a decimal el valor final de <code>ft6</code>.</li>
+</ol>
+</div>
+<div id="exr-p6-ops-suma-simple2" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.10</strong></span> Suposeu que <code>ft2 = 0xC076C000</code> i <code>ft4 = 0x3ECA8000</code>, i que s’executa <code>fadd.s ft6, ft2, ft4</code>. Suposant arrodoniment al més pròxim (al parell en cas equidistant):</p>
+<ol type="a">
+<li>Calculeu a mà el valor final de <code>ft6</code> en hexadecimal.</li>
+<li>Es produeix algun error de precisió?</li>
+<li>Convertiu a decimal el valor final de <code>ft6</code>.</li>
+</ol>
+</div>
+<div id="exr-p6-ops-multiplicacio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.11</strong></span> Suposeu que <code>ft2 = 0x42000000</code> i <code>ft4 = 0x3D800000</code>, i que s’executa <code>fmul.s ft6, ft2, ft4</code>. Suposant arrodoniment al més pròxim (al parell en cas equidistant), quin és el valor final de <code>ft6</code> en hexadecimal?</p>
+</div>
+<div id="exr-p6-ops-half-suma" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.12</strong></span> Suposeu els nombres <span class="math inline">\(A\)</span> i <span class="math inline">\(B\)</span> en format <em>half</em> de 16 bits (vegeu <a href="#exr-p6-ieee-half-a" class="quarto-xref">Exercici&nbsp;<span>14.7</span></a>). Amb un sumador amb bit de guarda, d’arrodoniment i <em>sticky</em>, i arrodoniment al més pròxim (al parell en cas equidistant):</p>
+<ol type="a">
+<li>Calculeu a mà <span class="math inline">\(A + B\)</span> suposant <code>A = 0xE4FE</code> i <code>B = 0xB640</code>. Doneu el resultat en hexadecimal i en decimal. Quina és la precisió del resultat?</li>
+<li>Ídem amb <code>A = 0x4DC7</code> i <code>B = 0x391D</code>.</li>
+</ol>
+</div>
+<div id="exr-p6-ops-half-multiplicacio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.13</strong></span> Suposeu els nombres <span class="math inline">\(A\)</span> i <span class="math inline">\(B\)</span> en format <em>half</em> de 16 bits. Amb arrodoniment al més pròxim (al parell en cas equidistant):</p>
+<ol type="a">
+<li>Calculeu a mà <span class="math inline">\(A \times B\)</span> suposant <code>A = 0x45A9</code> i <code>B = 0x484C</code>. Doneu el resultat en hexadecimal i en decimal. Quina és la precisió del resultat?</li>
+<li>Ídem amb <code>A = 0x60D4</code> i <code>B = 0x533E</code>.</li>
+</ol>
+</div>
+<div id="exr-p6-ops-half-divisio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.14</strong></span> Suposeu els nombres <span class="math inline">\(A\)</span> i <span class="math inline">\(B\)</span> en format <em>half</em> de 16 bits. Amb arrodoniment al més pròxim (al parell en cas equidistant):</p>
+<ol type="a">
+<li>Calculeu a mà <span class="math inline">\(A / B\)</span> suposant <code>A = 0xEA60</code> i <code>B = 0xE000</code>. Doneu el resultat en hexadecimal i en decimal.</li>
+<li>Ídem amb <code>A = 0xCD98</code> i <code>B = 0x6400</code>.</li>
+</ol>
+</div>
+<div id="exr-p6-ops-assemblador-cf" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.15</strong></span> Suposant que <code>f</code> i <code>g</code> són variables de tipus <code>float</code> emmagatzemades als registres de coma flotant <code>fa2</code> i <code>fa4</code>, traduïu a assemblador RISC-V les sentències en C següents. Tingueu en compte que l’assemblador només admet literals fraccionaris a les directives de dades (<code>.float</code>), mai com a operands d’instrucció:</p>
+<ol type="a">
+<li><code>f = 3.14;</code></li>
+<li><code>f = g;</code></li>
+<li><code>f = g + 3.14;</code></li>
+</ol>
+</div>
+<div id="exr-p6-ops-absdif" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.16</strong></span> Traduïu a assemblador RISC-V la subrutina <code>absdif</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="dt">float</span> absdif<span class="op">(</span><span class="dt">float</span> a<span class="op">,</span> <span class="dt">float</span> b<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a>    <span class="cf">if</span> <span class="op">(</span>a <span class="op">&gt;</span> b<span class="op">)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a>        <span class="cf">return</span> a <span class="op">-</span> b<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a>    <span class="cf">else</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a>        <span class="cf">return</span> b <span class="op">-</span> a<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p6-ops-variancia" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.17</strong></span> Donades les declaracions de funcions:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="dt">float</span> mitjana<span class="op">(</span><span class="dt">float</span> p<span class="op">[]);</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-label="3"></a><span class="dt">float</span> variancia<span class="op">(</span><span class="dt">float</span> vec<span class="op">[])</span> <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-label="4"></a>    <span class="dt">int</span>   i<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-label="5"></a>    <span class="dt">float</span> m<span class="op">,</span> q<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-label="6"></a>    <span class="dt">float</span> vquadrats<span class="op">[</span><span class="dv">100</span><span class="op">];</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-label="7"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">100</span><span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-label="8"></a>        vquadrats<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> vec<span class="op">[</span>i<span class="op">]</span> <span class="op">*</span> vec<span class="op">[</span>i<span class="op">];</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-label="9"></a>    q <span class="op">=</span> mitjana<span class="op">(</span>vquadrats<span class="op">);</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-label="10"></a>    m <span class="op">=</span> mitjana<span class="op">(</span>vec<span class="op">);</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-label="11"></a>    <span class="cf">return</span> q <span class="op">-</span> m <span class="op">*</span> m<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-label="12"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Quines variables locals és convenient guardar al bloc d’activació i quines és més convenient guardar en registres? Quins registres caldrà preservar a la pila abans de cada crida a <code>mitjana</code>?</li>
+<li>Traduïu a assemblador RISC-V la funció <code>variancia</code>.</li>
+</ol>
+</div>
+<div id="exr-p6-ops-half-assemblador" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.18</strong></span> Suposeu els nombres <span class="math inline">\(A\)</span> i <span class="math inline">\(B\)</span> en format <em>half</em> de 16 bits emmagatzemats a <code>t1</code> i <code>t2</code>. Escriviu programes en assemblador RISC-V que:</p>
+<ol type="a">
+<li>Calculin la suma <span class="math inline">\(A = A + B\)</span>.</li>
+<li>Calculin el producte <span class="math inline">\(A = A \times B\)</span> i indiquin si s’ha produït <em>overflow</em> o <em>underflow</em>.</li>
+</ol>
+</div>
+<div id="exr-p6-ops-rv32f-memoria" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.19</strong></span> Donades les declaracions en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="dt">float</span> v<span class="op">[</span><span class="dv">4</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="fl">1.5</span><span class="op">,</span> <span class="op">-</span><span class="fl">2.0</span><span class="op">,</span> <span class="fl">3.25</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">};</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a><span class="dt">float</span> resultat<span class="op">;</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Escriviu en assemblador RISC-V (extensió F) el fragment de codi que:</p>
+<ol type="a">
+<li>Carregui els elements <code>v[0]</code> i <code>v[2]</code> als registres de coma flotant <code>fa0</code> i <code>fa1</code> respectivament.</li>
+<li>Calculi la suma <code>fa0 + fa1</code> i l’emmagatzemi a <code>resultat</code>.</li>
+<li>Compari <code>v[0]</code> i <code>v[2]</code> i deixi a <code>t0</code> el valor 1 si <code>v[0] &gt; v[2]</code>, o 0 altrament (useu <code>flt.s</code>).</li>
+</ol>
+</div>
+<div id="exr-p6-ops-rv32f-conversio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.20</strong></span> Escriviu en assemblador RISC-V les sentències equivalents a les conversions en C següents. Useu les instruccions <code>fcvt.w.s</code>, <code>fcvt.wu.s</code>, <code>fcvt.s.w</code> i <code>fcvt.s.wu</code> segons convingui.</p>
+<ol type="a">
+<li><code>int i = (int) f;</code> — on <code>f</code> és un <code>float</code> a <code>fa0</code> i <code>i</code> és un <code>int</code> a <code>a0</code>.</li>
+<li><code>float f = (float) i;</code> — on <code>i</code> és a <code>a0</code> i <code>f</code> ha d’anar a <code>fa0</code>.</li>
+<li><code>unsigned int u = (unsigned int) f;</code> — on <code>f</code> és a <code>fa0</code> i <code>u</code> ha d’anar a <code>a0</code>.</li>
+<li>Per a <code>f = 3.9</code>, calculeu a mà el resultat de l’apartat a) i expliqueu si es produeix truncament o arrodoniment.</li>
+</ol>
+</div>
+</section>
+<section id="no-associativitat" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="no-associativitat"><span class="header-section-number">14.3</span> No-associativitat</h2>
+<p><em>Vegeu <a href="../01_apunts/A5.html#sec-no-associativitat" class="quarto-xref"><span>Secció 5.2.3</span></a>.</em></p>
+<div id="exr-p6-assoc-suma" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.21</strong></span> Suposeu els nombres <span class="math inline">\(A\)</span>, <span class="math inline">\(B\)</span> i <span class="math inline">\(C\)</span> en format <em>half</em> de 16 bits. Amb un sumador amb bit de guarda, d’arrodoniment i <em>sticky</em>, i arrodoniment al més pròxim (al parell en cas equidistant):</p>
+<ol type="a">
+<li>Suposant <code>A = 0xF3FD</code>, <code>B = 0x73FD</code> i <code>C = 0x3C00</code>, calculeu a mà <span class="math inline">\((A + B) + C\)</span> i <span class="math inline">\(A + (B + C)\)</span>. Doneu els resultats en hexadecimal i en decimal. Es pot afirmar que <span class="math inline">\((A + B) + C = A + (B + C)\)</span>?</li>
+<li>Feu la mateixa comprovació amb <code>A = 0x4F2A</code>, <code>B = 0x36A0</code> i <code>C = 0x4A12</code>.</li>
+</ol>
+</div>
+<div id="exr-p6-assoc-distributiva" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 14.22</strong></span> Suposeu els nombres <span class="math inline">\(A\)</span>, <span class="math inline">\(B\)</span> i <span class="math inline">\(C\)</span> en format <em>half</em> de 16 bits. Amb arrodoniment al més pròxim (al parell en cas equidistant):</p>
+<ol type="a">
+<li>Suposant <code>A = 0x30E0</code>, <code>B = 0x32A0</code> i <code>C = 0x563B</code>, calculeu a mà <span class="math inline">\(A \times (B + C)\)</span> i <span class="math inline">\((A \times B) + (A \times C)\)</span>. Doneu els resultats en hexadecimal i en decimal. Es pot afirmar que <span class="math inline">\(A \times (B + C) = (A \times B) + (A \times C)\)</span>?</li>
+<li>Feu la mateixa comprovació amb <code>A = 0xCEF9</code>, <code>B = 0xEFE6</code> i <code>C = 0x70FD</code>.</li>
+</ol>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiat!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiat!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="../02_exercicis/E4.html" class="pagination-link" aria-label="T4 Enters i matrius">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">T4 Enters i matrius</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../02_exercicis/E6.html" class="pagination-link" aria-label="T6 Rendiment">
+        <span class="nav-page-text"><span class="chapter-title">T6 Rendiment</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Codi font</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a><span class="an">number-sections:</span><span class="co"> true</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a><span class="co">---</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a><span class="fu"># {{&lt; var tema5 &gt;}} {#sec-tema-coma-flotant-enunciats}</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-label="6"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-label="7"></a><span class="fu">## Representació IEEE 754</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-label="8"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-label="9"></a>*Vegeu @sec-representacio-coma-flotant.*</span>
+<span id="cb4-10"><a href="#cb4-10" aria-label="10"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-label="11"></a>::: {#exr-p6-ieee-interpretacio}</span>
+<span id="cb4-12"><a href="#cb4-12" aria-label="12"></a>En una arquitectura de Von Neumann, els grups de bits no tenen un significat específic per si mateixos: el seu significat depèn totalment de com es facin servir. Suposeu els valors <span class="in">`A = 0x407302B3`</span> i <span class="in">`B = 0xF9C40513`</span>. Contesteu les preguntes següents fent diverses suposicions sobre <span class="in">`A`</span> i <span class="in">`B`</span>:</span>
+<span id="cb4-13"><a href="#cb4-13" aria-label="13"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-label="14"></a>a) Si són naturals, quin és el seu valor en decimal?</span>
+<span id="cb4-15"><a href="#cb4-15" aria-label="15"></a>b) Si són enters en complement a 2, quin és el seu valor en decimal?</span>
+<span id="cb4-16"><a href="#cb4-16" aria-label="16"></a>c) Si són nombres en coma flotant de simple precisió, quin és el seu valor en decimal?</span>
+<span id="cb4-17"><a href="#cb4-17" aria-label="17"></a>d) Si són instruccions RISC-V, quina instrucció representen en assemblador?</span>
+<span id="cb4-18"><a href="#cb4-18" aria-label="18"></a>:::</span>
+<span id="cb4-19"><a href="#cb4-19" aria-label="19"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-label="20"></a>::: {#exr-p6-ieee-hex-a-decimal}</span>
+<span id="cb4-21"><a href="#cb4-21" aria-label="21"></a>Convertiu a decimal els valors següents suposant que codifiquen nombres en format IEEE 754 de simple precisió:</span>
+<span id="cb4-22"><a href="#cb4-22" aria-label="22"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-label="23"></a>a) <span class="in">`0x3FB08000`</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-label="24"></a>b) <span class="in">`0x80000000`</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-label="25"></a>c) <span class="in">`0xB0FC0000`</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-label="26"></a>d) <span class="in">`0xC2968000`</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-label="27"></a>:::</span>
+<span id="cb4-28"><a href="#cb4-28" aria-label="28"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-label="29"></a>::: {#exr-p6-ieee-tipus}</span>
+<span id="cb4-30"><a href="#cb4-30" aria-label="30"></a>La taula següent conté una llista de nombres binaris en format IEEE 754 de simple precisió. Marqueu amb una X la casella corresponent al tipus de valor de cada un, d'acord amb la notació: NRM = normalitzat; DNRM = denormal; 0 = zero; INF = infinit; NAN = *Not a Number*.</span>
+<span id="cb4-31"><a href="#cb4-31" aria-label="31"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-label="32"></a><span class="pp">|</span> Signe <span class="pp">|</span> Exponent <span class="pp">|</span> Fracció <span class="pp">|</span> NRM <span class="pp">|</span> DNRM <span class="pp">|</span> 0 <span class="pp">|</span> INF <span class="pp">|</span> NAN <span class="pp">|</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-label="33"></a><span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-label="34"></a><span class="pp">|</span> 0 <span class="pp">|</span> <span class="in">`0000 0000`</span> <span class="pp">|</span> <span class="in">`110 0010 0000 1110 1110 1011`</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-label="35"></a><span class="pp">|</span> 0 <span class="pp">|</span> <span class="in">`0000 0000`</span> <span class="pp">|</span> <span class="in">`000 0000 0000 0000 0000 0000`</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-label="36"></a><span class="pp">|</span> 0 <span class="pp">|</span> <span class="in">`0010 0100`</span> <span class="pp">|</span> <span class="in">`000 0000 0000 0000 0000 0000`</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-label="37"></a><span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`1111 1111`</span> <span class="pp">|</span> <span class="in">`000 0000 0000 0000 0000 0000`</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-label="38"></a><span class="pp">|</span> 0 <span class="pp">|</span> <span class="in">`0010 0100`</span> <span class="pp">|</span> <span class="in">`110 0010 0000 1110 1110 1011`</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-label="39"></a><span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`0000 0000`</span> <span class="pp">|</span> <span class="in">`000 0000 0000 0000 0000 0000`</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-label="40"></a><span class="pp">|</span> 0 <span class="pp">|</span> <span class="in">`1111 1111`</span> <span class="pp">|</span> <span class="in">`101 0001 0001 0000 1001 0100`</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span> <span class="pp">|</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-label="41"></a>:::</span>
+<span id="cb4-42"><a href="#cb4-42" aria-label="42"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-label="43"></a>::: {#exr-p6-ieee-rang}</span>
+<span id="cb4-44"><a href="#cb4-44" aria-label="44"></a>En el format de coma flotant IEEE 754 de simple precisió:</span>
+<span id="cb4-45"><a href="#cb4-45" aria-label="45"></a></span>
+<span id="cb4-46"><a href="#cb4-46" aria-label="46"></a>a) Quin és el major nombre positiu representable? Expresseu el resultat en notació exponencial i en hexadecimal.</span>
+<span id="cb4-47"><a href="#cb4-47" aria-label="47"></a>b) Quin és el menor nombre positiu no nul representable en format normalitzat? Expresseu el resultat en notació exponencial i en hexadecimal.</span>
+<span id="cb4-48"><a href="#cb4-48" aria-label="48"></a>c) Quin és el menor nombre positiu no nul representable en format denormal? Expresseu el resultat en notació exponencial i en hexadecimal.</span>
+<span id="cb4-49"><a href="#cb4-49" aria-label="49"></a>:::</span>
+<span id="cb4-50"><a href="#cb4-50" aria-label="50"></a></span>
+<span id="cb4-51"><a href="#cb4-51" aria-label="51"></a>::: {#exr-p6-ieee-decimal-a-hex}</span>
+<span id="cb4-52"><a href="#cb4-52" aria-label="52"></a>Convertiu els nombres decimals següents al format de coma flotant IEEE 754 de simple precisió, expressant el resultat en hexadecimal. Determineu en cada cas si es comet error per pèrdua de precisió i, en cas afirmatiu, calculeu-ne el valor en decimal:</span>
+<span id="cb4-53"><a href="#cb4-53" aria-label="53"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-label="54"></a>a) 340</span>
+<span id="cb4-55"><a href="#cb4-55" aria-label="55"></a>b) 44,4</span>
+<span id="cb4-56"><a href="#cb4-56" aria-label="56"></a>c) −255,125</span>
+<span id="cb4-57"><a href="#cb4-57" aria-label="57"></a>d) −10,75</span>
+<span id="cb4-58"><a href="#cb4-58" aria-label="58"></a>e) 6,5</span>
+<span id="cb4-59"><a href="#cb4-59" aria-label="59"></a>:::</span>
+<span id="cb4-60"><a href="#cb4-60" aria-label="60"></a></span>
+<span id="cb4-61"><a href="#cb4-61" aria-label="61"></a>::: {#exr-p6-ieee-doble-precisio}</span>
+<span id="cb4-62"><a href="#cb4-62" aria-label="62"></a>Donats els nombres decimals $A = -1609{,}5$ i $B = -938{,}8125$:</span>
+<span id="cb4-63"><a href="#cb4-63" aria-label="63"></a></span>
+<span id="cb4-64"><a href="#cb4-64" aria-label="64"></a>a) Convertiu-los al format IEEE 754 de simple precisió, expressant el resultat en hexadecimal, i calculeu l'error comès per pèrdua de precisió expressat en decimal.</span>
+<span id="cb4-65"><a href="#cb4-65" aria-label="65"></a>b) Convertiu-los al format IEEE 754 de doble precisió, expressant el resultat en hexadecimal, i calculeu l'error comès per pèrdua de precisió expressat en decimal.</span>
+<span id="cb4-66"><a href="#cb4-66" aria-label="66"></a>:::</span>
+<span id="cb4-67"><a href="#cb4-67" aria-label="67"></a></span>
+<span id="cb4-68"><a href="#cb4-68" aria-label="68"></a>::: {#exr-p6-ieee-half-a}</span>
+<span id="cb4-69"><a href="#cb4-69" aria-label="69"></a>Els processadors gràfics usen un format de coma flotant de 16 bits anomenat *half*, similar al de simple precisió, excepte que l'exponent té 5 bits (esbiaixat, biaix 15) i la mantissa té 10 bits (amb bit ocult). Convertiu els nombres decimals següents a la representació *half* en hexadecimal:</span>
+<span id="cb4-70"><a href="#cb4-70" aria-label="70"></a></span>
+<span id="cb4-71"><a href="#cb4-71" aria-label="71"></a>a) $A = -1{,}278 \times 10^3$, $B = -3{,}90625 \times 10^{-1}$</span>
+<span id="cb4-72"><a href="#cb4-72" aria-label="72"></a>b) $A = 2{,}3109375 \times 10^1$, $B = 6{,}3916015625 \times 10^{-1}$</span>
+<span id="cb4-73"><a href="#cb4-73" aria-label="73"></a>c) $A = 6{,}18 \times 10^2$, $B = 5{,}79375 \times 10^1$</span>
+<span id="cb4-74"><a href="#cb4-74" aria-label="74"></a>d) $A = -1{,}6360 \times 10^4$, $B = 1{,}6360 \times 10^4$, $C = 1{,}0$</span>
+<span id="cb4-75"><a href="#cb4-75" aria-label="75"></a>:::</span>
+<span id="cb4-76"><a href="#cb4-76" aria-label="76"></a></span>
+<span id="cb4-77"><a href="#cb4-77" aria-label="77"></a>::: {#exr-p6-ieee-half-b}</span>
+<span id="cb4-78"><a href="#cb4-78" aria-label="78"></a>Convertiu els nombres decimals següents al format *half* de 16 bits (vegeu @exr-p6-ieee-half-a) i expresseu el resultat en hexadecimal:</span>
+<span id="cb4-79"><a href="#cb4-79" aria-label="79"></a></span>
+<span id="cb4-80"><a href="#cb4-80" aria-label="80"></a>a) $A = 2{,}865625 \times 10^1$, $B = 4{,}140625 \times 10^{-1}$, $C = 1{,}2140625 \times 10^1$</span>
+<span id="cb4-81"><a href="#cb4-81" aria-label="81"></a>b) $A = 1{,}5234375 \times 10^{-1}$, $B = 2{,}0703125 \times 10^{-1}$, $C = 9{,}96875 \times 10^1$</span>
+<span id="cb4-82"><a href="#cb4-82" aria-label="82"></a>c) $A = -2{,}7890625 \times 10^1$, $B = -8{,}088 \times 10^3$, $C = 1{,}0216 \times 10^4$</span>
+<span id="cb4-83"><a href="#cb4-83" aria-label="83"></a>:::</span>
+<span id="cb4-84"><a href="#cb4-84" aria-label="84"></a></span>
+<span id="cb4-85"><a href="#cb4-85" aria-label="85"></a><span class="fu">## Suma i multiplicació</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-label="86"></a></span>
+<span id="cb4-87"><a href="#cb4-87" aria-label="87"></a>*Vegeu @sec-operacions-coma-flotant i @sec-coma-flotant-riscv.*</span>
+<span id="cb4-88"><a href="#cb4-88" aria-label="88"></a></span>
+<span id="cb4-89"><a href="#cb4-89" aria-label="89"></a>::: {#exr-p6-ops-suma-simple}</span>
+<span id="cb4-90"><a href="#cb4-90" aria-label="90"></a>Suposeu que els registres de coma flotant <span class="in">`ft2 = 0x417AC000`</span> i <span class="in">`ft4 = 0x3F140000`</span>, i que s'executa la instrucció RISC-V <span class="in">`fadd.s ft6, ft2, ft4`</span>. Suposant arrodoniment al més pròxim (al parell en cas equidistant):</span>
+<span id="cb4-91"><a href="#cb4-91" aria-label="91"></a></span>
+<span id="cb4-92"><a href="#cb4-92" aria-label="92"></a>a) Calculeu a mà, seguint l'algorisme de suma de nombres en coma flotant, el valor final de <span class="in">`ft6`</span> en hexadecimal.</span>
+<span id="cb4-93"><a href="#cb4-93" aria-label="93"></a>b) Es produeix algun error de precisió en el resultat?</span>
+<span id="cb4-94"><a href="#cb4-94" aria-label="94"></a>c) Convertiu a decimal el valor final de <span class="in">`ft6`</span>.</span>
+<span id="cb4-95"><a href="#cb4-95" aria-label="95"></a>:::</span>
+<span id="cb4-96"><a href="#cb4-96" aria-label="96"></a></span>
+<span id="cb4-97"><a href="#cb4-97" aria-label="97"></a>::: {#exr-p6-ops-suma-simple2}</span>
+<span id="cb4-98"><a href="#cb4-98" aria-label="98"></a>Suposeu que <span class="in">`ft2 = 0xC076C000`</span> i <span class="in">`ft4 = 0x3ECA8000`</span>, i que s'executa <span class="in">`fadd.s ft6, ft2, ft4`</span>. Suposant arrodoniment al més pròxim (al parell en cas equidistant):</span>
+<span id="cb4-99"><a href="#cb4-99" aria-label="99"></a></span>
+<span id="cb4-100"><a href="#cb4-100" aria-label="100"></a>a) Calculeu a mà el valor final de <span class="in">`ft6`</span> en hexadecimal.</span>
+<span id="cb4-101"><a href="#cb4-101" aria-label="101"></a>b) Es produeix algun error de precisió?</span>
+<span id="cb4-102"><a href="#cb4-102" aria-label="102"></a>c) Convertiu a decimal el valor final de <span class="in">`ft6`</span>.</span>
+<span id="cb4-103"><a href="#cb4-103" aria-label="103"></a>:::</span>
+<span id="cb4-104"><a href="#cb4-104" aria-label="104"></a></span>
+<span id="cb4-105"><a href="#cb4-105" aria-label="105"></a>::: {#exr-p6-ops-multiplicacio}</span>
+<span id="cb4-106"><a href="#cb4-106" aria-label="106"></a>Suposeu que <span class="in">`ft2 = 0x42000000`</span> i <span class="in">`ft4 = 0x3D800000`</span>, i que s'executa <span class="in">`fmul.s ft6, ft2, ft4`</span>. Suposant arrodoniment al més pròxim (al parell en cas equidistant), quin és el valor final de <span class="in">`ft6`</span> en hexadecimal?</span>
+<span id="cb4-107"><a href="#cb4-107" aria-label="107"></a>:::</span>
+<span id="cb4-108"><a href="#cb4-108" aria-label="108"></a></span>
+<span id="cb4-109"><a href="#cb4-109" aria-label="109"></a>::: {#exr-p6-ops-half-suma}</span>
+<span id="cb4-110"><a href="#cb4-110" aria-label="110"></a>Suposeu els nombres $A$ i $B$ en format *half* de 16 bits (vegeu @exr-p6-ieee-half-a). Amb un sumador amb bit de guarda, d'arrodoniment i *sticky*, i arrodoniment al més pròxim (al parell en cas equidistant):</span>
+<span id="cb4-111"><a href="#cb4-111" aria-label="111"></a></span>
+<span id="cb4-112"><a href="#cb4-112" aria-label="112"></a>a) Calculeu a mà $A + B$ suposant <span class="in">`A = 0xE4FE`</span> i <span class="in">`B = 0xB640`</span>. Doneu el resultat en hexadecimal i en decimal. Quina és la precisió del resultat?</span>
+<span id="cb4-113"><a href="#cb4-113" aria-label="113"></a>b) Ídem amb <span class="in">`A = 0x4DC7`</span> i <span class="in">`B = 0x391D`</span>.</span>
+<span id="cb4-114"><a href="#cb4-114" aria-label="114"></a>:::</span>
+<span id="cb4-115"><a href="#cb4-115" aria-label="115"></a></span>
+<span id="cb4-116"><a href="#cb4-116" aria-label="116"></a>::: {#exr-p6-ops-half-multiplicacio}</span>
+<span id="cb4-117"><a href="#cb4-117" aria-label="117"></a>Suposeu els nombres $A$ i $B$ en format *half* de 16 bits. Amb arrodoniment al més pròxim (al parell en cas equidistant):</span>
+<span id="cb4-118"><a href="#cb4-118" aria-label="118"></a></span>
+<span id="cb4-119"><a href="#cb4-119" aria-label="119"></a>a) Calculeu a mà $A \times B$ suposant <span class="in">`A = 0x45A9`</span> i <span class="in">`B = 0x484C`</span>. Doneu el resultat en hexadecimal i en decimal. Quina és la precisió del resultat?</span>
+<span id="cb4-120"><a href="#cb4-120" aria-label="120"></a>b) Ídem amb <span class="in">`A = 0x60D4`</span> i <span class="in">`B = 0x533E`</span>.</span>
+<span id="cb4-121"><a href="#cb4-121" aria-label="121"></a>:::</span>
+<span id="cb4-122"><a href="#cb4-122" aria-label="122"></a></span>
+<span id="cb4-123"><a href="#cb4-123" aria-label="123"></a>::: {#exr-p6-ops-half-divisio}</span>
+<span id="cb4-124"><a href="#cb4-124" aria-label="124"></a>Suposeu els nombres $A$ i $B$ en format *half* de 16 bits. Amb arrodoniment al més pròxim (al parell en cas equidistant):</span>
+<span id="cb4-125"><a href="#cb4-125" aria-label="125"></a></span>
+<span id="cb4-126"><a href="#cb4-126" aria-label="126"></a>a) Calculeu a mà $A / B$ suposant <span class="in">`A = 0xEA60`</span> i <span class="in">`B = 0xE000`</span>. Doneu el resultat en hexadecimal i en decimal.</span>
+<span id="cb4-127"><a href="#cb4-127" aria-label="127"></a>b) Ídem amb <span class="in">`A = 0xCD98`</span> i <span class="in">`B = 0x6400`</span>.</span>
+<span id="cb4-128"><a href="#cb4-128" aria-label="128"></a>:::</span>
+<span id="cb4-129"><a href="#cb4-129" aria-label="129"></a></span>
+<span id="cb4-130"><a href="#cb4-130" aria-label="130"></a>::: {#exr-p6-ops-assemblador-cf}</span>
+<span id="cb4-131"><a href="#cb4-131" aria-label="131"></a>Suposant que <span class="in">`f`</span> i <span class="in">`g`</span> són variables de tipus <span class="in">`float`</span> emmagatzemades als registres de coma flotant <span class="in">`fa2`</span> i <span class="in">`fa4`</span>, traduïu a assemblador RISC-V les sentències en C següents. Tingueu en compte que l'assemblador només admet literals fraccionaris a les directives de dades (<span class="in">`.float`</span>), mai com a operands d'instrucció:</span>
+<span id="cb4-132"><a href="#cb4-132" aria-label="132"></a></span>
+<span id="cb4-133"><a href="#cb4-133" aria-label="133"></a>a) <span class="in">`f = 3.14;`</span></span>
+<span id="cb4-134"><a href="#cb4-134" aria-label="134"></a>b) <span class="in">`f = g;`</span></span>
+<span id="cb4-135"><a href="#cb4-135" aria-label="135"></a>c) <span class="in">`f = g + 3.14;`</span></span>
+<span id="cb4-136"><a href="#cb4-136" aria-label="136"></a>:::</span>
+<span id="cb4-137"><a href="#cb4-137" aria-label="137"></a></span>
+<span id="cb4-138"><a href="#cb4-138" aria-label="138"></a>::: {#exr-p6-ops-absdif}</span>
+<span id="cb4-139"><a href="#cb4-139" aria-label="139"></a>Traduïu a assemblador RISC-V la subrutina <span class="in">`absdif`</span>:</span>
+<span id="cb4-140"><a href="#cb4-140" aria-label="140"></a></span>
+<span id="cb4-141"><a href="#cb4-141" aria-label="141"></a><span class="in">```c</span></span>
+<span id="cb4-142"><a href="#cb4-142" aria-label="142"></a><span class="dt">float</span> absdif<span class="op">(</span><span class="dt">float</span> a<span class="op">,</span> <span class="dt">float</span> b<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-143"><a href="#cb4-143" aria-label="143"></a>    <span class="cf">if</span> <span class="op">(</span>a <span class="op">&gt;</span> b<span class="op">)</span></span>
+<span id="cb4-144"><a href="#cb4-144" aria-label="144"></a>        <span class="cf">return</span> a <span class="op">-</span> b<span class="op">;</span></span>
+<span id="cb4-145"><a href="#cb4-145" aria-label="145"></a>    <span class="cf">else</span></span>
+<span id="cb4-146"><a href="#cb4-146" aria-label="146"></a>        <span class="cf">return</span> b <span class="op">-</span> a<span class="op">;</span></span>
+<span id="cb4-147"><a href="#cb4-147" aria-label="147"></a><span class="op">}</span></span>
+<span id="cb4-148"><a href="#cb4-148" aria-label="148"></a><span class="in">```</span></span>
+<span id="cb4-149"><a href="#cb4-149" aria-label="149"></a>:::</span>
+<span id="cb4-150"><a href="#cb4-150" aria-label="150"></a></span>
+<span id="cb4-151"><a href="#cb4-151" aria-label="151"></a>::: {#exr-p6-ops-variancia}</span>
+<span id="cb4-152"><a href="#cb4-152" aria-label="152"></a>Donades les declaracions de funcions:</span>
+<span id="cb4-153"><a href="#cb4-153" aria-label="153"></a></span>
+<span id="cb4-154"><a href="#cb4-154" aria-label="154"></a><span class="in">```c</span></span>
+<span id="cb4-155"><a href="#cb4-155" aria-label="155"></a><span class="dt">float</span> mitjana<span class="op">(</span><span class="dt">float</span> p<span class="op">[]);</span></span>
+<span id="cb4-156"><a href="#cb4-156" aria-label="156"></a></span>
+<span id="cb4-157"><a href="#cb4-157" aria-label="157"></a><span class="dt">float</span> variancia<span class="op">(</span><span class="dt">float</span> vec<span class="op">[])</span> <span class="op">{</span></span>
+<span id="cb4-158"><a href="#cb4-158" aria-label="158"></a>    <span class="dt">int</span>   i<span class="op">;</span></span>
+<span id="cb4-159"><a href="#cb4-159" aria-label="159"></a>    <span class="dt">float</span> m<span class="op">,</span> q<span class="op">;</span></span>
+<span id="cb4-160"><a href="#cb4-160" aria-label="160"></a>    <span class="dt">float</span> vquadrats<span class="op">[</span><span class="dv">100</span><span class="op">];</span></span>
+<span id="cb4-161"><a href="#cb4-161" aria-label="161"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">100</span><span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb4-162"><a href="#cb4-162" aria-label="162"></a>        vquadrats<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> vec<span class="op">[</span>i<span class="op">]</span> <span class="op">*</span> vec<span class="op">[</span>i<span class="op">];</span></span>
+<span id="cb4-163"><a href="#cb4-163" aria-label="163"></a>    q <span class="op">=</span> mitjana<span class="op">(</span>vquadrats<span class="op">);</span></span>
+<span id="cb4-164"><a href="#cb4-164" aria-label="164"></a>    m <span class="op">=</span> mitjana<span class="op">(</span>vec<span class="op">);</span></span>
+<span id="cb4-165"><a href="#cb4-165" aria-label="165"></a>    <span class="cf">return</span> q <span class="op">-</span> m <span class="op">*</span> m<span class="op">;</span></span>
+<span id="cb4-166"><a href="#cb4-166" aria-label="166"></a><span class="op">}</span></span>
+<span id="cb4-167"><a href="#cb4-167" aria-label="167"></a><span class="in">```</span></span>
+<span id="cb4-168"><a href="#cb4-168" aria-label="168"></a></span>
+<span id="cb4-169"><a href="#cb4-169" aria-label="169"></a>a) Quines variables locals és convenient guardar al bloc d'activació i quines és més convenient guardar en registres? Quins registres caldrà preservar a la pila abans de cada crida a <span class="in">`mitjana`</span>?</span>
+<span id="cb4-170"><a href="#cb4-170" aria-label="170"></a>b) Traduïu a assemblador RISC-V la funció <span class="in">`variancia`</span>.</span>
+<span id="cb4-171"><a href="#cb4-171" aria-label="171"></a>:::</span>
+<span id="cb4-172"><a href="#cb4-172" aria-label="172"></a></span>
+<span id="cb4-173"><a href="#cb4-173" aria-label="173"></a>::: {#exr-p6-ops-half-assemblador}</span>
+<span id="cb4-174"><a href="#cb4-174" aria-label="174"></a>Suposeu els nombres $A$ i $B$ en format *half* de 16 bits emmagatzemats a <span class="in">`t1`</span> i <span class="in">`t2`</span>. Escriviu programes en assemblador RISC-V que:</span>
+<span id="cb4-175"><a href="#cb4-175" aria-label="175"></a></span>
+<span id="cb4-176"><a href="#cb4-176" aria-label="176"></a>a) Calculin la suma $A = A + B$.</span>
+<span id="cb4-177"><a href="#cb4-177" aria-label="177"></a>b) Calculin el producte $A = A \times B$ i indiquin si s'ha produït *overflow* o *underflow*.</span>
+<span id="cb4-178"><a href="#cb4-178" aria-label="178"></a>:::</span>
+<span id="cb4-179"><a href="#cb4-179" aria-label="179"></a></span>
+<span id="cb4-180"><a href="#cb4-180" aria-label="180"></a>::: {#exr-p6-ops-rv32f-memoria}</span>
+<span id="cb4-181"><a href="#cb4-181" aria-label="181"></a>Donades les declaracions en C:</span>
+<span id="cb4-182"><a href="#cb4-182" aria-label="182"></a></span>
+<span id="cb4-183"><a href="#cb4-183" aria-label="183"></a><span class="in">```c</span></span>
+<span id="cb4-184"><a href="#cb4-184" aria-label="184"></a><span class="dt">float</span> v<span class="op">[</span><span class="dv">4</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="fl">1.5</span><span class="op">,</span> <span class="op">-</span><span class="fl">2.0</span><span class="op">,</span> <span class="fl">3.25</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">};</span></span>
+<span id="cb4-185"><a href="#cb4-185" aria-label="185"></a><span class="dt">float</span> resultat<span class="op">;</span></span>
+<span id="cb4-186"><a href="#cb4-186" aria-label="186"></a><span class="in">```</span></span>
+<span id="cb4-187"><a href="#cb4-187" aria-label="187"></a></span>
+<span id="cb4-188"><a href="#cb4-188" aria-label="188"></a>Escriviu en assemblador RISC-V (extensió F) el fragment de codi que:</span>
+<span id="cb4-189"><a href="#cb4-189" aria-label="189"></a></span>
+<span id="cb4-190"><a href="#cb4-190" aria-label="190"></a>a) Carregui els elements <span class="in">`v[0]`</span> i <span class="in">`v[2]`</span> als registres de coma flotant <span class="in">`fa0`</span> i <span class="in">`fa1`</span> respectivament.</span>
+<span id="cb4-191"><a href="#cb4-191" aria-label="191"></a>b) Calculi la suma <span class="in">`fa0 + fa1`</span> i l'emmagatzemi a <span class="in">`resultat`</span>.</span>
+<span id="cb4-192"><a href="#cb4-192" aria-label="192"></a>c) Compari <span class="in">`v[0]`</span> i <span class="in">`v[2]`</span> i deixi a <span class="in">`t0`</span> el valor 1 si <span class="in">`v[0] &gt; v[2]`</span>, o 0 altrament (useu <span class="in">`flt.s`</span>).</span>
+<span id="cb4-193"><a href="#cb4-193" aria-label="193"></a>:::</span>
+<span id="cb4-194"><a href="#cb4-194" aria-label="194"></a></span>
+<span id="cb4-195"><a href="#cb4-195" aria-label="195"></a>::: {#exr-p6-ops-rv32f-conversio}</span>
+<span id="cb4-196"><a href="#cb4-196" aria-label="196"></a>Escriviu en assemblador RISC-V les sentències equivalents a les conversions en C següents. Useu les instruccions <span class="in">`fcvt.w.s`</span>, <span class="in">`fcvt.wu.s`</span>, <span class="in">`fcvt.s.w`</span> i <span class="in">`fcvt.s.wu`</span> segons convingui.</span>
+<span id="cb4-197"><a href="#cb4-197" aria-label="197"></a></span>
+<span id="cb4-198"><a href="#cb4-198" aria-label="198"></a>a) <span class="in">`int i = (int) f;`</span> — on <span class="in">`f`</span> és un <span class="in">`float`</span> a <span class="in">`fa0`</span> i <span class="in">`i`</span> és un <span class="in">`int`</span> a <span class="in">`a0`</span>.</span>
+<span id="cb4-199"><a href="#cb4-199" aria-label="199"></a>b) <span class="in">`float f = (float) i;`</span> — on <span class="in">`i`</span> és a <span class="in">`a0`</span> i <span class="in">`f`</span> ha d'anar a <span class="in">`fa0`</span>.</span>
+<span id="cb4-200"><a href="#cb4-200" aria-label="200"></a>c) <span class="in">`unsigned int u = (unsigned int) f;`</span> — on <span class="in">`f`</span> és a <span class="in">`fa0`</span> i <span class="in">`u`</span> ha d'anar a <span class="in">`a0`</span>.</span>
+<span id="cb4-201"><a href="#cb4-201" aria-label="201"></a>d) Per a <span class="in">`f = 3.9`</span>, calculeu a mà el resultat de l'apartat a) i expliqueu si es produeix truncament o arrodoniment.</span>
+<span id="cb4-202"><a href="#cb4-202" aria-label="202"></a>:::</span>
+<span id="cb4-203"><a href="#cb4-203" aria-label="203"></a></span>
+<span id="cb4-204"><a href="#cb4-204" aria-label="204"></a><span class="fu">## No-associativitat</span></span>
+<span id="cb4-205"><a href="#cb4-205" aria-label="205"></a></span>
+<span id="cb4-206"><a href="#cb4-206" aria-label="206"></a>*Vegeu @sec-no-associativitat.*</span>
+<span id="cb4-207"><a href="#cb4-207" aria-label="207"></a></span>
+<span id="cb4-208"><a href="#cb4-208" aria-label="208"></a>::: {#exr-p6-assoc-suma}</span>
+<span id="cb4-209"><a href="#cb4-209" aria-label="209"></a>Suposeu els nombres $A$, $B$ i $C$ en format *half* de 16 bits. Amb un sumador amb bit de guarda, d'arrodoniment i *sticky*, i arrodoniment al més pròxim (al parell en cas equidistant):</span>
+<span id="cb4-210"><a href="#cb4-210" aria-label="210"></a></span>
+<span id="cb4-211"><a href="#cb4-211" aria-label="211"></a>a) Suposant <span class="in">`A = 0xF3FD`</span>, <span class="in">`B = 0x73FD`</span> i <span class="in">`C = 0x3C00`</span>, calculeu a mà $(A + B) + C$ i $A + (B + C)$. Doneu els resultats en hexadecimal i en decimal. Es pot afirmar que $(A + B) + C = A + (B + C)$?</span>
+<span id="cb4-212"><a href="#cb4-212" aria-label="212"></a>b) Feu la mateixa comprovació amb <span class="in">`A = 0x4F2A`</span>, <span class="in">`B = 0x36A0`</span> i <span class="in">`C = 0x4A12`</span>.</span>
+<span id="cb4-213"><a href="#cb4-213" aria-label="213"></a>:::</span>
+<span id="cb4-214"><a href="#cb4-214" aria-label="214"></a></span>
+<span id="cb4-215"><a href="#cb4-215" aria-label="215"></a>::: {#exr-p6-assoc-distributiva}</span>
+<span id="cb4-216"><a href="#cb4-216" aria-label="216"></a>Suposeu els nombres $A$, $B$ i $C$ en format *half* de 16 bits. Amb arrodoniment al més pròxim (al parell en cas equidistant):</span>
+<span id="cb4-217"><a href="#cb4-217" aria-label="217"></a></span>
+<span id="cb4-218"><a href="#cb4-218" aria-label="218"></a>a) Suposant <span class="in">`A = 0x30E0`</span>, <span class="in">`B = 0x32A0`</span> i <span class="in">`C = 0x563B`</span>, calculeu a mà $A \times (B + C)$ i $(A \times B) + (A \times C)$. Doneu els resultats en hexadecimal i en decimal. Es pot afirmar que $A \times (B + C) = (A \times B) + (A \times C)$?</span>
+<span id="cb4-219"><a href="#cb4-219" aria-label="219"></a>b) Feu la mateixa comprovació amb <span class="in">`A = 0xCEF9`</span>, <span class="in">`B = 0xEFE6`</span> i <span class="in">`C = 0x70FD`</span>.</span>
+<span id="cb4-220"><a href="#cb4-220" aria-label="220"></a>:::</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

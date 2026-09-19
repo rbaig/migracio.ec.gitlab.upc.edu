@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>24&nbsp; Tema 6: Rendiment i potència – Estructura de computadors</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_solucions/S7.html" rel="next">
+<link href="../03_solucions/S5.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-eaeb381c6b7494c50009502241a4985c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3a86d90b797903817cf2addb73264634.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_solucions/S1.html">Solucions</a></li><li class="breadcrumb-item"><a href="../03_solucions/S6.html"><span class="chapter-title">T6 Rendiment</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Cerca" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Estructura de computadors</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Estructura-de-computadors.pdf" title="Descarrega PDF" class="quarto-navigation-tool px-1" aria-label="Descarrega PDF"><i class="bi bi-filetype-pdf"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Cerca"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👋 Presentació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Apunts</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Problemes</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Solucions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S6.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Laboratori</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S1 RARS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S2 RISC-V</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S4 Matrius i subrutines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S6 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/Lcalendari.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Calendari</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_riscv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌️ RISC-V</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_sigles_simbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⚙️ Sigles, símbols i notació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_contrib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👥 Contribueix-hi</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_LICENSE.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">©️ Llicència i reconeixements</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Taula de continguts</h2>
+   
+  <ul>
+  <li><a href="#rendiment" id="toc-rendiment" class="nav-link active" data-scroll-target="#rendiment"><span class="header-section-number">24.1</span> Rendiment</a></li>
+  <li><a href="#llei-damdahl" id="toc-llei-damdahl" class="nav-link" data-scroll-target="#llei-damdahl"><span class="header-section-number">24.2</span> Llei d’Amdahl</a></li>
+  <li><a href="#potència" id="toc-potència" class="nav-link" data-scroll-target="#potència"><span class="header-section-number">24.3</span> Potència</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content column-page-right" id="quarto-document-content">
+
+<div class="sidebar-institucional">
+  <a href="https://dac.upc.edu" target="_blank">Departament d'Arquitectura de Computadors (DAC)</a><br>
+  <a href="https://www.upc.edu" target="_blank">Universitat Politècnica de Catalunya (UPC)</a>
+</div>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_solucions/S1.html">Solucions</a></li><li class="breadcrumb-item"><a href="../03_solucions/S6.html"><span class="chapter-title">T6 Rendiment</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Tema 6: Rendiment i potència</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Codi</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="rendiment" class="level2" data-number="24.1">
+<h2 data-number="24.1" class="anchored" data-anchor-id="rendiment"><span class="header-section-number">24.1</span> Rendiment</h2>
+<div id="sol-p2-rendiment-compiladors" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.1: Solució: comparació de processadors
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-rendiment-compiladors" class="quarto-xref">Exercici&nbsp;<span>15.1</span></a>.</p>
+<p>El <strong>temps d’execució</strong> d’un programa és <span class="math inline">\(t_{exe} = N \cdot CPI \cdot t_c = N \cdot CPI / f\)</span> (<a href="../01_apunts/A6.html#eq-texe2" class="quarto-xref">Equació&nbsp;<span>6.3</span></a>):</p>
+<p><span class="math display">\[t_{P1} = \frac{2 \cdot 10^6 \cdot 1{,}5}{2 \cdot 10^9} = 1{,}5 \text{ ms} \qquad t_{P2} = \frac{2 \cdot 10^6 \cdot 1}{2{,}5 \cdot 10^9} = 0{,}8 \text{ ms} \qquad t_{P3} = \frac{10^6 \cdot 0{,}75}{3 \cdot 10^9} = 0{,}25 \text{ ms}\]</span></p>
+<p><strong>a)</strong> El processador més ràpid és P3. Les diferències:</p>
+<p><span class="math display">\[\frac{t_{P1}}{t_{P3}} = \frac{1{,}5}{0{,}25} = 6 \times \qquad \frac{t_{P2}}{t_{P3}} = \frac{0{,}8}{0{,}25} = 3{,}2 \times\]</span></p>
+<p>P3 és 6 vegades més ràpid que P1 i 3,2 vegades més ràpid que P2.</p>
+<p><strong>b)</strong> P1 i P2 executen el <strong>mateix programa amb el mateix ISA</strong> i, per tant, el mateix nombre d’instruccions (<span class="math inline">\(N\)</span>). El <em>speedup</em> <span class="math inline">\(t_{P1}/t_{P2} = CPI_1 \cdot f_2 / (CPI_2 \cdot f_1)\)</span> no depèn de <span class="math inline">\(N\)</span>: podem comparar P1 i P2 directament.</p>
+<p>En canvi, P1 i P3 usen <strong>ISA diferent</strong> (RISC-V vs.&nbsp;x86-64): el mateix programa font compila a un nombre d’instruccions diferent. Sense conèixer <span class="math inline">\(N\)</span>, no podem comparar P1 i P3.</p>
+<p><strong>c)</strong> El CPI és una propietat del <strong>parell processador–programa</strong>. Per comparar dos processadors en general caldria el CPI mitjà sobre <strong>tots</strong> els programes. Si el CPI donat fos la mitjana sobre tots els programes:</p>
+<ul>
+<li>P1 i P2 usen el mateix ISA i el mateix compilador: el nombre d’instruccions és el mateix per a qualsevol programa, i la comparació és vàlida.</li>
+<li>P1 i P3 usen ISA diferent: el nombre d’instruccions varia per a cada programa, i la comparació general continua sense ser vàlida.</li>
+</ul>
+</div>
+</div>
+<div id="sol-p2-rendiment-dos-processadors" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.2: Solució: dos processadors, temps i instruccions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-rendiment-dos-processadors" class="quarto-xref">Exercici&nbsp;<span>15.2</span></a>.</p>
+<p><span class="math display">\[t_{P1} = \frac{10^6 \cdot 1{,}25}{4 \cdot 10^9} = 312{,}5 \ \mu\text{s} \qquad t_{P2} = \frac{10^6 \cdot 0{,}75}{3 \cdot 10^9} = 250 \ \mu\text{s}\]</span></p>
+<p><strong>a)</strong> P2 és més ràpid. El <em>speedup</em> de P2 respecte de P1:</p>
+<p><span class="math display">\[S = \frac{t_{P1}}{t_{P2}} = \frac{312{,}5}{250} = 1{,}25 \times\]</span></p>
+<p><strong>b)</strong> En el temps <span class="math inline">\(t_{P1} = 312{,}5 \ \mu\text{s}\)</span>, P2 pot executar:</p>
+<p><span class="math display">\[N_{P2} = t_{P1} \cdot \frac{f_{P2}}{CPI_{P2}} = 312{,}5 \cdot 10^{-6} \cdot \frac{3 \cdot 10^9}{0{,}75} = 1{,}25 \cdot 10^6 \text{ instruccions}\]</span></p>
+</div>
+</div>
+<div id="sol-p2-rendiment-coma-flotant" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.3: Solució: unitat de coma flotant per maquinari
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-rendiment-coma-flotant" class="quarto-xref">Exercici&nbsp;<span>15.3</span></a>.</p>
+<p>Prenem <span class="math inline">\(N_{orig}\)</span> com a referència: el nombre d’instruccions <strong>sense</strong> unitat de coma flotant. El 20% correspon a instruccions de subrutines CF; el 80% restant, a instruccions d’altres tipus. Totes les instruccions amb CPI = 3 i <span class="math inline">\(t_c = 1\)</span> ns:</p>
+<p><span class="math display">\[t_{orig} = N_{orig} \cdot 3 \cdot 1 \text{ ns} = 3\,N_{orig} \text{ ns}\]</span></p>
+<p>Amb la unitat de coma flotant, el nombre d’instruccions de coma flotant executades es redueix 10 vegades (enunciat). Les instruccions no-CF no canvien:</p>
+<p><span class="math display">\[N_{nou} = 0{,}80\,N_{orig} + \frac{0{,}20\,N_{orig}}{10} = 0{,}82\,N_{orig}\]</span></p>
+<p>Amb <span class="math inline">\(t_c = 1{,}05\)</span> ns i CPI = 4 per a totes les instruccions:</p>
+<p><span class="math display">\[t_{nou} = 0{,}82\,N_{orig} \cdot 4 \cdot 1{,}05 \text{ ns} = 3{,}444\,N_{orig} \text{ ns}\]</span></p>
+<p><strong>a)</strong></p>
+<p><span class="math display">\[S = \frac{t_{orig}}{t_{nou}} = \frac{3}{3{,}444} \approx \mathbf{0{,}87}\]</span></p>
+<p>El processador amb unitat de coma flotant té un rendiment un 13% <strong>inferior</strong> (triga un 14,8% més: <span class="math inline">\(3{,}444/3 \approx 1{,}148\)</span>): no val la pena. Tot i que el nombre d’instruccions es redueix (×0,82), la reducció no compensa l’augment del CPI (de 3 a 4) ni l’allargament del cicle (×1,05).</p>
+<p><strong>b)</strong> Amb CF = 40%:</p>
+<p><span class="math display">\[N_{nou} = 0{,}60\,N_{orig} + \frac{0{,}40\,N_{orig}}{10} = 0{,}64\,N_{orig}\]</span></p>
+<p><span class="math display">\[t_{nou} = 0{,}64\,N_{orig} \cdot 4 \cdot 1{,}05 \text{ ns} = 2{,}688\,N_{orig} \text{ ns}\]</span></p>
+<p><span class="math display">\[S = \frac{3}{2{,}688} \approx \mathbf{1{,}12}\]</span></p>
+<p>Amb el 40% de CF <strong>sí val la pena</strong> afegir la unitat de coma flotant (millora del 12%). La reducció d’instruccions és prou gran per compensar els efectes negatius sobre el CPI i el temps de cicle.</p>
+</div>
+</div>
+<div id="sol-p2-rendiment-distribucio" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.4: Solució: distribució per tipus d’instruccions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-rendiment-distribucio" class="quarto-xref">Exercici&nbsp;<span>15.4</span></a>.</p>
+<p><strong>a)</strong> El nombre de cicles totals és la suma de cicles per tipus:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tipus</th>
+<th style="text-align: center;">Instruccions</th>
+<th style="text-align: center;">CPI</th>
+<th style="text-align: center;">Cicles</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Aritmètiques</td>
+<td style="text-align: center;">500</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">500</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Store</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">250</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Load</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">500</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Branch</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Total</strong></td>
+<td style="text-align: center;"><strong>700</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>1 350</strong></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[t_{exe} = 1350 \text{ cicles} \cdot 1 \text{ ns/cicle} = \mathbf{1{,}35} \ \mu\text{s}\]</span></p>
+<p><strong>b)</strong></p>
+<p><span class="math display">\[CPI = \frac{1350 \text{ cicles}}{700 \text{ instruccions}} \approx 1{,}93\]</span></p>
+<p><strong>c)</strong> Amb 50 instruccions load (en comptes de 100):</p>
+<p><span class="math display">\[\text{Cicles}_{opt} = 500 + 250 + 50 \cdot 5 + 100 = 1100\]</span></p>
+<p><span class="math display">\[S = \frac{1350}{1100} \approx \mathbf{1{,}23} \times \qquad CPI_{opt} = \frac{1100}{650} \approx 1{,}69\]</span></p>
+</div>
+</div>
+<div id="sol-p2-rendiment-classes" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.5: Solució: quatre classes d’instruccions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-rendiment-classes" class="quarto-xref">Exercici&nbsp;<span>15.5</span></a>.</p>
+<p><strong>a)</strong> El CPI mitjà es calcula com la mitjana ponderada per la freqüència de cada classe:</p>
+<p><span class="math display">\[CPI_{P1} = 0{,}10 \cdot 1 + 0{,}20 \cdot 2 + 0{,}50 \cdot 3 + 0{,}20 \cdot 4 = 0{,}1 + 0{,}4 + 1{,}5 + 0{,}8 = \mathbf{2{,}8}\]</span></p>
+<p><span class="math display">\[CPI_{P2} = 0{,}10 \cdot 2 + 0{,}20 \cdot 2 + 0{,}50 \cdot 2 + 0{,}20 \cdot 2 = \mathbf{2{,}0}\]</span></p>
+<p><strong>b)</strong> Per a <span class="math inline">\(N = 10^6\)</span> instruccions:</p>
+<p><span class="math display">\[t_{P1} = \frac{10^6 \cdot 2{,}8}{1{,}5 \cdot 10^9} \approx 1{,}867 \text{ ms} \qquad t_{P2} = \frac{10^6 \cdot 2{,}0}{2{,}0 \cdot 10^9} = 1{,}000 \text{ ms}\]</span></p>
+<p>P2 és més ràpid. El <em>speedup</em>:</p>
+<p><span class="math display">\[S = \frac{t_{P1}}{t_{P2}} = \frac{N \cdot CPI_{P1} / f_{P1}}{N \cdot CPI_{P2} / f_{P2}} = \frac{CPI_{P1} \cdot f_{P2}}{CPI_{P2} \cdot f_{P1}} = \frac{2{,}8 \cdot 2{,}0}{2{,}0 \cdot 1{,}5} = \frac{28}{15} \approx \mathbf{1{,}87} \times\]</span></p>
+<p>Observació: P2 té un CPI uniforme de 2 per a totes les classes. Això reflecteix que un disseny amb CPI uniforme pot ser competitiu si la freqüència de rellotge és prou alta.</p>
+</div>
+</div>
+<div id="sol-p2-rendiment-speedup-mul" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.6: Solució: multiplicador per maquinari
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-rendiment-speedup-mul" class="quarto-xref">Exercici&nbsp;<span>15.6</span></a>.</p>
+<p>Sigui <span class="math inline">\(N\)</span> el nombre d’instruccions amb el multiplicador per maquinari. El 0,5% de <span class="math inline">\(N\)</span> són multiplicacions (1 instrucció, CPI = 40); el 99,5% restant té CPI = 3.</p>
+<p><strong>Sense multiplicador:</strong> cada multiplicació s’expandeix a una subrutina de 200 instruccions. Les <span class="math inline">\(0{,}005N\)</span> multiplicacions passen a <span class="math inline">\(0{,}005N \cdot 200 = N\)</span> instruccions de subrutina, totes amb CPI = 3:</p>
+<p><span class="math display">\[N_{orig} = 0{,}995N + 0{,}005N \cdot 200 = 1{,}995N\]</span></p>
+<p><strong>a)</strong> Comparació a freqüència idèntica (<span class="math inline">\(f = 2\)</span> GHz):</p>
+<p><span class="math display">\[t_{orig} = 1{,}995N \cdot 3 \cdot t_c = 5{,}985N \cdot t_c\]</span></p>
+<p><span class="math display">\[t_{nou}  = N \cdot (0{,}005 \cdot 40 + 0{,}995 \cdot 3) \cdot t_c = N \cdot 3{,}185 \cdot t_c\]</span></p>
+<p><span class="math display">\[S = \frac{5{,}985}{3{,}185} = \frac{1197}{637} \approx \mathbf{1{,}88} \times\]</span></p>
+<p><strong>b)</strong> Per no empitjorar el rendiment cal <span class="math inline">\(t_{nou}(f_{nou}) \leq t_{orig}(2 \text{ GHz})\)</span>:</p>
+<p><span class="math display">\[\frac{N \cdot 3{,}185}{f_{nou}} \leq \frac{1{,}995N \cdot 3}{2 \cdot 10^9}\]</span></p>
+<p><span class="math display">\[f_{nou} \geq \frac{2 \cdot 10^9 \cdot 3{,}185}{5{,}985} = \frac{1274}{1197} \cdot 10^9 \approx \mathbf{1{,}064} \text{ GHz}\]</span></p>
+<p>La freqüència mínima acceptable és aproximadament 1,06 GHz, força per sota dels 2 GHz originals. El multiplicador per maquinari és clarament beneficiós fins i tot amb una degradació significativa de la freqüència de rellotge.</p>
+</div>
+</div>
+<div id="sol-p2-rendiment-temps" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.7: Solució: millores per component
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-rendiment-temps" class="quarto-xref">Exercici&nbsp;<span>15.7</span></a>.</p>
+<p><strong>Cas a</strong> (<span class="math inline">\(T = 200\)</span> s: CF = 35 s, Enters = 85 s, L/S = 50 s, Branch = 30 s)</p>
+<p><strong>a)</strong> Reduïm el temps de CF un 20% (<span class="math inline">\(35 \text{ s} \to 28 \text{ s}\)</span>):</p>
+<p><span class="math display">\[T_{nou} = 200 - 35 + 28 = 193 \text{ s} \qquad S = \frac{200}{193} \approx 1{,}036 \times\]</span></p>
+<p><strong>b)</strong> Objectiu: <span class="math inline">\(S = 1{,}20\)</span>, és a dir, <span class="math inline">\(T_{nou} = 200/1{,}20 \approx 166{,}7\)</span> s. El temps restant sense enters és <span class="math inline">\(200 - 85 = 115\)</span> s. Cal que el nou temps d’enters sigui:</p>
+<p><span class="math display">\[t_{Enters,nou} = 166{,}7 - 115 = 51{,}7 \text{ s} \quad \Rightarrow \quad \text{reducció} = \frac{85 - 51{,}7}{85} \approx \mathbf{39{,}2\%}\]</span></p>
+<p><strong>c)</strong> El <em>speedup</em> màxim possible millorant únicament branch (fins a branch = 0) és:</p>
+<p><span class="math display">\[S_{max} = \frac{200}{200 - 30} = \frac{200}{170} \approx 1{,}18 \times\]</span></p>
+<p>Com que <span class="math inline">\(1{,}18 &lt; 1{,}25\)</span> (reduir un 20% equival a <span class="math inline">\(S = 1{,}25\)</span>), <strong>no és possible</strong>.</p>
+<hr>
+<p><strong>Cas b</strong> (<span class="math inline">\(T = 210\)</span> s: CF = 50 s, Enters = 80 s, L/S = 50 s, Branch = 30 s)</p>
+<p><strong>a)</strong> CF un 20% més ràpid (<span class="math inline">\(50 \text{ s} \to 40 \text{ s}\)</span>):</p>
+<p><span class="math display">\[T_{nou} = 210 - 50 + 40 = 200 \text{ s} \qquad S = \frac{210}{200} = 1{,}05 \times\]</span></p>
+<p><strong>b)</strong> <span class="math inline">\(T_{nou} = 210/1{,}20 = 175\)</span> s; temps sense enters = <span class="math inline">\(210 - 80 = 130\)</span> s:</p>
+<p><span class="math display">\[t_{Enters,nou} = 175 - 130 = 45 \text{ s} \quad \Rightarrow \quad \text{reducció} = \frac{80 - 45}{80} = \mathbf{43{,}75\%}\]</span></p>
+<p><strong>c)</strong> <span class="math inline">\(S_{max}\)</span> per branch:</p>
+<p><span class="math display">\[S_{max} = \frac{210}{210 - 30} = \frac{210}{180} \approx 1{,}17 \times &lt; 1{,}25\]</span></p>
+<p>Tampoc és possible en el cas b.</p>
+</div>
+</div>
+</section>
+<section id="llei-damdahl" class="level2" data-number="24.2">
+<h2 data-number="24.2" class="anchored" data-anchor-id="llei-damdahl"><span class="header-section-number">24.2</span> Llei d’Amdahl</h2>
+<div id="sol-p2-amdahl-basic" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.8: Solució: Amdahl bàsic
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-amdahl-basic" class="quarto-xref">Exercici&nbsp;<span>15.8</span></a>.</p>
+<p>La <strong>llei d’Amdahl</strong> (<a href="../01_apunts/A6.html#eq-guany3" class="quarto-xref">Equació&nbsp;<span>6.6</span></a>) dona el <em>speedup</em> global quan s’accelera una fracció <span class="math inline">\(f\)</span> del temps d’execució un factor <span class="math inline">\(k\)</span>:</p>
+<p><span class="math display">\[S = \frac{1}{(1 - f) + f/k}\]</span></p>
+<p>Aquí <span class="math inline">\(f = 0{,}60\)</span> (CF), fracció no millorada <span class="math inline">\(= 0{,}40\)</span>.</p>
+<p><strong>a)</strong> Amb <span class="math inline">\(k = 5\)</span>:</p>
+<p><span class="math display">\[S = \frac{1}{0{,}40 + 0{,}60/5} = \frac{1}{0{,}40 + 0{,}12} = \frac{1}{0{,}52} = \frac{25}{13} \approx \mathbf{1{,}92} \times\]</span></p>
+<p><strong>b)</strong> Quan <span class="math inline">\(k \to \infty\)</span>, el terme <span class="math inline">\(f/k \to 0\)</span> (<a href="../01_apunts/A6.html#eq-amdahl" class="quarto-xref">Equació&nbsp;<span>6.7</span></a>):</p>
+<p><span class="math display">\[S_{max} = \frac{1}{1 - f} = \frac{1}{0{,}40} = \mathbf{2{,}5} \times\]</span></p>
+<p>Independentment de com s’accelerin les instruccions CF, el <em>speedup</em> global no pot superar 2,5, perquè el 40% restant és un <strong>coll d’ampolla</strong> irreductible.</p>
+<p><strong>c)</strong> Imposem <span class="math inline">\(S = 3\)</span>:</p>
+<p><span class="math display">\[3 = \frac{1}{0{,}40 + 0{,}60/k} \implies 0{,}40 + \frac{0{,}60}{k} = \frac{1}{3} \implies \frac{0{,}60}{k} = \frac{1}{3} - 0{,}40 = -\frac{1}{15}\]</span></p>
+<p>El resultat és negatiu, cosa que és impossible. La raó és que el <em>speedup</em> màxim teòric és 2,5, estrictament inferior a 3: <strong>no existeix cap valor de <span class="math inline">\(k\)</span> que permeti assolir un <em>speedup</em> global de 3</strong> amb aquesta distribució del temps.</p>
+</div>
+</div>
+<div id="sol-p2-amdahl-multicomponent" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.9: Solució: tres components simultanis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-amdahl-multicomponent" class="quarto-xref">Exercici&nbsp;<span>15.9</span></a>.</p>
+<p>Quan s’apliquen múltiples millores simultànies, la llei d’Amdahl es generalitza:</p>
+<p><span class="math display">\[S = \frac{1}{\left(1 - \displaystyle\sum_i f_i\right) + \displaystyle\sum_i \frac{f_i}{k_i}}\]</span></p>
+<p>on <span class="math inline">\(f_i\)</span> és la fracció del temps original que ocupa el component <span class="math inline">\(i\)</span> i <span class="math inline">\(k_i\)</span> la seva millora. En aquest exercici, els tres components cobreixen el 100% del temps (<span class="math inline">\(\sum_i f_i = 1\)</span>), de manera que el primer terme s’anul·la i l’expressió es redueix a <span class="math inline">\(S = 1/\sum_i (f_i/k_i)\)</span>.</p>
+<p><strong>a)</strong> Aplicant les tres millores:</p>
+<p><span class="math display">\[S = \frac{1}{\dfrac{0{,}50}{2} + \dfrac{0{,}30}{4} + \dfrac{0{,}20}{1{,}5}} = \frac{1}{0{,}250 + 0{,}075 + 0{,}1\overline{3}} = \frac{1}{11/24} = \frac{24}{11} \approx \mathbf{2{,}18} \times\]</span></p>
+<p><strong>b i c)</strong> <em>Speedup</em> aplicant cada millora individualment:</p>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 26%">
+<col style="width: 26%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Component</th>
+<th style="text-align: center;"><span class="math inline">\(f\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(S_{individual}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Unitat entera</td>
+<td style="text-align: center;">50%</td>
+<td style="text-align: center;">2×</td>
+<td style="text-align: center;"><span class="math inline">\(1/(0{,}50 + 0{,}50/2) = 1{,}33\times\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Unitat CF</td>
+<td style="text-align: center;">30%</td>
+<td style="text-align: center;">4×</td>
+<td style="text-align: center;"><span class="math inline">\(1/(0{,}70 + 0{,}30/4) = 1{,}29\times\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Accés a memòria</td>
+<td style="text-align: center;">20%</td>
+<td style="text-align: center;">1,5×</td>
+<td style="text-align: center;"><span class="math inline">\(1/(0{,}80 + 0{,}20/1{,}5) = 1{,}07\times\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>La millora individual amb <strong>més impacte</strong> és la de la <strong>unitat entera</strong> (<span class="math inline">\(S = 1{,}33\times\)</span>), tot i que la seva millora disponible (<span class="math inline">\(2\times\)</span>) és la menor de les tres. La llei d’Amdahl explica per què: el que determina l’impacte és principalment la <strong>fracció de temps</strong> (<span class="math inline">\(f = 50\%\)</span>), no el factor de millora.</p>
+<p>Si el pressupost permet una sola millora, s’ha d’escollir la <strong>unitat entera</strong>: maximitza el <em>speedup</em> global perquè actua sobre el component dominant en temps.</p>
+</div>
+</div>
+<div id="sol-p2-amdahl-limit" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.10: Solució: Amdahl invers i límit teòric
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-amdahl-limit" class="quarto-xref">Exercici&nbsp;<span>15.10</span></a>.</p>
+<p><strong>a)</strong> Volem <span class="math inline">\(S = 10\)</span> amb <span class="math inline">\(k = 20\)</span>. De la llei d’Amdahl:</p>
+<p><span class="math display">\[10 = \frac{1}{(1 - f) + f/20} \implies \frac{1}{10} = 1 - f + \frac{f}{20} = 1 - f\left(1 - \frac{1}{20}\right) = 1 - \frac{19f}{20}\]</span></p>
+<p><span class="math display">\[\frac{19f}{20} = 1 - \frac{1}{10} = \frac{9}{10} \implies f = \frac{9}{10} \cdot \frac{20}{19} = \frac{18}{19} \approx \mathbf{94{,}7\%}\]</span></p>
+<p>Per anunciar un <em>speedup</em> de 10 basant-se exclusivament en les instruccions CF, caldria que el 94,7% del temps d’execució fos de coma flotant — una condició molt restrictiva que pocs programes reals compleixen.</p>
+<p><strong>b)</strong> En un programa típic amb <span class="math inline">\(f = 0{,}35\)</span>:</p>
+<p><span class="math display">\[S = \frac{1}{0{,}65 + 0{,}35/20} = \frac{1}{0{,}65 + 0{,}0175} = \frac{1}{0{,}6675} \approx \mathbf{1{,}50} \times\]</span></p>
+<p>Molt lluny del 10× anunciat.</p>
+<p><strong>c)</strong> El <em>speedup</em> màxim assolible amb <span class="math inline">\(f = 0{,}35\)</span>, independentment de <span class="math inline">\(k\)</span>:</p>
+<p><span class="math display">\[S_{max} = \frac{1}{1 - 0{,}35} = \frac{1}{0{,}65} \approx \mathbf{1{,}54} \times\]</span></p>
+<p>Amb instruccions CF infinitament ràpides, el guany tendiria a 1,54× sense poder superar-lo. Això posa de manifest el missatge fonamental de la llei d’Amdahl: el guany màxim queda sempre limitat per la fracció de temps no millorada, per gran que sigui la millora aplicada a la part optimitzada.</p>
+</div>
+</div>
+<div id="sol-p2-amdahl-cpi" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.11: Solució: CPI per components i speedup
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-amdahl-cpi" class="quarto-xref">Exercici&nbsp;<span>15.11</span></a>.</p>
+<p><strong>a)</strong> El nombre de cicles totals és la suma per tipus d’instruccions:</p>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">CF</th>
+<th style="text-align: center;">Enters</th>
+<th style="text-align: center;">L/S</th>
+<th style="text-align: center;">Branch</th>
+<th style="text-align: center;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Proc. A</td>
+<td style="text-align: center;">90·2 = 180</td>
+<td style="text-align: center;">240·1,5 = 360</td>
+<td style="text-align: center;">150·6 = 900</td>
+<td style="text-align: center;">120·3 = 360</td>
+<td style="text-align: center;"><strong>1800</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Proc. B</td>
+<td style="text-align: center;">45·3 = 135</td>
+<td style="text-align: center;">225·1 = 225</td>
+<td style="text-align: center;">135·5 = 675</td>
+<td style="text-align: center;">45·2 = 90</td>
+<td style="text-align: center;"><strong>1125</strong></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[CPI_A = \frac{1800}{600} = \mathbf{3{,}0} \qquad CPI_B = \frac{1125}{450} = \mathbf{2{,}5}\]</span></p>
+<p><strong>b)</strong> Perquè tots dos processin el programa en el mateix temps:</p>
+<p><span class="math display">\[\frac{N_A \cdot CPI_A}{F_A} = \frac{N_B \cdot CPI_B}{F_B} \implies \frac{F_A}{F_B} = \frac{N_A \cdot CPI_A}{N_B \cdot CPI_B} = \frac{\text{cicles}_A}{\text{cicles}_B} = \frac{1800}{1125} = \mathbf{1{,}6}\]</span></p>
+<p>El processador A ha de funcionar a una freqüència 1,6 vegades superior a la de B per igualar el seu temps d’execució.</p>
+<p><strong>c)</strong> Si les instruccions L/S del processador A s’executessin en 0 cicles, els cicles totals serien <span class="math inline">\(1800 - 900 = 900\)</span>:</p>
+<p><span class="math display">\[S = \frac{1800}{900} = \mathbf{2{,}0} \times\]</span></p>
+<p>Equivalent a aplicar la llei d’Amdahl amb <span class="math inline">\(f_{L/S} = 900/1800 = 50\%\)</span> del temps i <span class="math inline">\(k \to \infty\)</span>: <span class="math inline">\(S_{max} = 1/(1 - 0{,}5) = 2\times\)</span>.</p>
+</div>
+</div>
+</section>
+<section id="potència" class="level2" data-number="24.3">
+<h2 data-number="24.3" class="anchored" data-anchor-id="potència"><span class="header-section-number">24.3</span> Potència</h2>
+<div id="sol-p2-potencia-basica" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.12: Solució: capacitat equivalent
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-potencia-basica" class="quarto-xref">Exercici&nbsp;<span>15.12</span></a>.</p>
+<p>La <strong>potència dinàmica</strong> en circuits CMOS és <span class="math inline">\(P_{din} = C \cdot V^2 \cdot f\)</span> (<a href="../01_apunts/A6.html#eq-potencia-dinamica" class="quarto-xref">Equació&nbsp;<span>6.9</span></a>; suposem factor d’activitat <span class="math inline">\(\alpha = 1\)</span>).</p>
+<p><strong>a)</strong> Aïllem la capacitat equivalent <span class="math inline">\(C = P_{din} / (V^2 \cdot f)\)</span>:</p>
+<p><span class="math display">\[C_A = \frac{2 \text{ W}}{(5 \text{ V})^2 \cdot 10 \cdot 10^6 \text{ Hz}} = \frac{2}{250 \cdot 10^6} = \mathbf{8 \text{ nF}}\]</span></p>
+<p><span class="math display">\[C_B = \frac{100 \text{ W}}{(1 \text{ V})^2 \cdot 3 \cdot 10^9 \text{ Hz}} = \frac{100}{3 \cdot 10^9} \approx \mathbf{33{,}3 \text{ nF}}\]</span></p>
+<p><strong>b)</strong> Apliquem la mateixa tensió i capacitància de A, però amb <span class="math inline">\(f = f_B = 3\)</span> GHz:</p>
+<p><span class="math display">\[P_A' = C_A \cdot V_A^2 \cdot f_B = 8 \cdot 10^{-9} \cdot 25 \cdot 3 \cdot 10^9 = \mathbf{600 \text{ W}}\]</span></p>
+<p>Aquesta potència és absolutament inassolible a la pràctica, i il·lustra per què no n’hi ha prou d’augmentar la freqüència sense reduir el voltatge: la potència creix linealment amb <span class="math inline">\(f\)</span>.</p>
+</div>
+</div>
+<div id="sol-p2-potencia-evolucio" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.13: Solució: evolució de vuit generacions Intel
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-potencia-evolucio" class="quarto-xref">Exercici&nbsp;<span>15.13</span></a>.</p>
+<p><strong>a i e)</strong> Ràtios entre generacions consecutives i capacitats equivalents (<span class="math inline">\(C = P / (V^2 \cdot f)\)</span>):</p>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 28%">
+<col style="width: 15%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Gen</th>
+<th style="text-align: left;">Processador</th>
+<th style="text-align: left;"><span class="math inline">\(f\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(V\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(P\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(r_f\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(r_P\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(C\)</span> (nF)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">80286</td>
+<td style="text-align: left;">12,5 MHz</td>
+<td style="text-align: right;">5,0 V</td>
+<td style="text-align: right;">3,3 W</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">10,56</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">80386</td>
+<td style="text-align: left;">16 MHz</td>
+<td style="text-align: right;">5,0 V</td>
+<td style="text-align: right;">4,1 W</td>
+<td style="text-align: center;">1,28</td>
+<td style="text-align: center;">1,24</td>
+<td style="text-align: center;">10,25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">80486</td>
+<td style="text-align: left;">25 MHz</td>
+<td style="text-align: right;">5,0 V</td>
+<td style="text-align: right;">4,9 W</td>
+<td style="text-align: center;">1,56</td>
+<td style="text-align: center;">1,20</td>
+<td style="text-align: center;">7,84</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">Pentium</td>
+<td style="text-align: left;">66 MHz</td>
+<td style="text-align: right;">5,0 V</td>
+<td style="text-align: right;">10,1 W</td>
+<td style="text-align: center;">2,64</td>
+<td style="text-align: center;">2,06</td>
+<td style="text-align: center;">6,12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">Pentium Pro</td>
+<td style="text-align: left;">200 MHz</td>
+<td style="text-align: right;">3,3 V</td>
+<td style="text-align: right;">29,1 W</td>
+<td style="text-align: center;">3,03</td>
+<td style="text-align: center;">2,88</td>
+<td style="text-align: center;">13,36</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">P4 Willamette</td>
+<td style="text-align: left;">2 GHz</td>
+<td style="text-align: right;">1,75 V</td>
+<td style="text-align: right;">75,3 W</td>
+<td style="text-align: center;">10,00</td>
+<td style="text-align: center;">2,59</td>
+<td style="text-align: center;">12,29</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">7</td>
+<td style="text-align: left;">P4 Prescott</td>
+<td style="text-align: left;">3,6 GHz</td>
+<td style="text-align: right;">1,25 V</td>
+<td style="text-align: right;">103 W</td>
+<td style="text-align: center;">1,80</td>
+<td style="text-align: center;">1,37</td>
+<td style="text-align: center;">18,31</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">8</td>
+<td style="text-align: left;">Core 2 Kentsfield</td>
+<td style="text-align: left;">2,667 GHz</td>
+<td style="text-align: right;">1,1 V</td>
+<td style="text-align: right;">95 W</td>
+<td style="text-align: center;">0,74</td>
+<td style="text-align: center;">0,92</td>
+<td style="text-align: center;">29,44</td>
+</tr>
+</tbody>
+</table>
+<p>Exemple de càlcul per a la generació 5 (Pentium Pro):</p>
+<p><span class="math display">\[C_5 = \frac{29{,}1 \text{ W}}{(3{,}3 \text{ V})^2 \cdot 200 \cdot 10^6 \text{ Hz}} = \frac{29{,}1}{10{,}89 \cdot 2 \cdot 10^8} \approx 13{,}36 \text{ nF}\]</span></p>
+<p><strong>b)</strong> La ràtio màxima de freqüència es produeix entre les generacions 5 i 6 (de 200 MHz a 2 GHz): <span class="math inline">\(r_f = 10\)</span>. La ràtio màxima de potència es produeix entre les generacions 4 i 5: <span class="math inline">\(r_P \approx 2{,}88\)</span>.</p>
+<p><strong>c)</strong> La <strong>mitjana geomètrica</strong> de les ràtios entre 7 generacions consecutives:</p>
+<p><span class="math display">\[\bar{r}_f = \left(\prod_{i=1}^{7} r_{f,i}\right)^{1/7} = \left(1{,}28 \cdot 1{,}56 \cdot 2{,}64 \cdot 3{,}03 \cdot 10 \cdot 1{,}80 \cdot 0{,}74\right)^{1/7} \approx \mathbf{2{,}15} \times\]</span></p>
+<p><span class="math display">\[\bar{r}_P = \left(\prod_{i=1}^{7} r_{P,i}\right)^{1/7} \approx \mathbf{1{,}62} \times\]</span></p>
+<p><strong>d)</strong> Respecte de la generació 1:</p>
+<p><span class="math display">\[\frac{f_8}{f_1} = \frac{2{,}667 \cdot 10^9}{12{,}5 \cdot 10^6} \approx \mathbf{213} \times \qquad \frac{P_8}{P_1} = \frac{95}{3{,}3} \approx \mathbf{28{,}8} \times\]</span></p>
+<p>Observació: a partir de la generació 8 (Core 2), la freqüència deixa de créixer i la potència fins i tot es redueix lleugerament. Això marca el final de l’era del creixement de la freqüència com a via principal per millorar el rendiment.</p>
+</div>
+</div>
+<div id="sol-p2-potencia-estatica" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;24.14: Solució: potència estàtica i corrent de fuita
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Enunciat</strong>: <a href="../02_exercicis/E6.html#exr-p2-potencia-estatica" class="quarto-xref">Exercici&nbsp;<span>15.14</span></a>.</p>
+<p><strong>a)</strong> Percentatge de cada component sobre la potència total:</p>
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tecnologia</th>
+<th style="text-align: center;"><span class="math inline">\(P_{din}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(P_{est}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(P_{tot}\)</span></th>
+<th style="text-align: center;">% dinàmica</th>
+<th style="text-align: center;">% estàtica</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">250 nm</td>
+<td style="text-align: center;">49 W</td>
+<td style="text-align: center;">1 W</td>
+<td style="text-align: center;">50 W</td>
+<td style="text-align: center;"><strong>98%</strong></td>
+<td style="text-align: center;"><strong>2%</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">90 nm</td>
+<td style="text-align: center;">75 W</td>
+<td style="text-align: center;">45 W</td>
+<td style="text-align: center;">120 W</td>
+<td style="text-align: center;"><strong>62,5%</strong></td>
+<td style="text-align: center;"><strong>37,5%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Els corrents de fuita passen de ser negligibles (2%) a representar el 37,5% de la potència total en passar de 250 nm a 90 nm. Aquesta és una de les raons principals per les quals la miniaturització porta associada una creixent importància del consum estàtic.</p>
+<p><strong>b)</strong> De <span class="math inline">\(P_{s} = V_{CC} \cdot I_{fuita}\)</span> (<a href="../01_apunts/A6.html#eq-potencia-estatica" class="quarto-xref">Equació&nbsp;<span>6.11</span></a>):</p>
+<p><span class="math display">\[I_{fuita,250} = \frac{1 \text{ W}}{3{,}3 \text{ V}} \approx \mathbf{0{,}303 \text{ A}}\]</span></p>
+<p><span class="math display">\[I_{fuita,90} = \frac{45 \text{ W}}{1{,}1 \text{ V}} \approx \mathbf{40{,}9 \text{ A}}\]</span></p>
+<p>Malgrat que el voltatge s’ha reduït de 3,3 V a 1,1 V (factor 3), el corrent de fuita s’ha multiplicat per gairebé 135. Això reflecteix la dificultat creixent de mantenir els transistors en tall quan les dimensions disminueixen.</p>
+<p><strong>c)</strong> La reducció màxima de <span class="math inline">\(P_{tot}\)</span> eliminant tota la <span class="math inline">\(P_{din}\)</span> és, per a cada tecnologia, el percentatge de la potència dinàmica sobre la total:</p>
+<p><span class="math display">\[\Delta P_{tot,250} = \frac{49}{50} = \mathbf{98\%} \qquad \Delta P_{tot,90} = \frac{75}{120} = \mathbf{62{,}5\%}\]</span></p>
+<p>En la tecnologia de 90 nm, la reducció màxima possible de <span class="math inline">\(P_{tot}\)</span> actuant exclusivament sobre la potència dinàmica és del 62,5%; la potència estàtica restant (37,5%) no es pot eliminar per aquesta via.</p>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiat!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiat!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="../03_solucions/S5.html" class="pagination-link" aria-label="T5 Coma flotant">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">T5 Coma flotant</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_solucions/S7.html" class="pagination-link" aria-label="T7 Memòria cau">
+        <span class="nav-page-text"><span class="chapter-title">T7 Memòria cau</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Codi font</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="an">number-sections:</span><span class="co"> true</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co">---</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a><span class="fu"># {{&lt; var tema6 &gt;}} {#sec-tema-rendiment-potencia-solucions}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="fu">## Rendiment</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a>::: {#sol-p2-rendiment-compiladors .callout-tip}</span>
+<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a><span class="fu">## Solució: comparació de processadors</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a>**Enunciat**: @exr-p2-rendiment-compiladors.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a>El **temps d'execució** d'un programa és $t_{exe} = N \cdot CPI \cdot t_c = N \cdot CPI / f$ (@eq-texe2):</span>
+<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a>$$t_{P1} = \frac{2 \cdot 10^6 \cdot 1{,}5}{2 \cdot 10^9} = 1{,}5 \text{ ms} \qquad t_{P2} = \frac{2 \cdot 10^6 \cdot 1}{2{,}5 \cdot 10^9} = 0{,}8 \text{ ms} \qquad t_{P3} = \frac{10^6 \cdot 0{,}75}{3 \cdot 10^9} = 0{,}25 \text{ ms}$$</span>
+<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a>**a)** El processador més ràpid és P3. Les diferències:</span>
+<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a>$$\frac{t_{P1}}{t_{P3}} = \frac{1{,}5}{0{,}25} = 6 \times \qquad \frac{t_{P2}}{t_{P3}} = \frac{0{,}8}{0{,}25} = 3{,}2 \times$$</span>
+<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a>P3 és 6 vegades més ràpid que P1 i 3,2 vegades més ràpid que P2.</span>
+<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a>**b)** P1 i P2 executen el **mateix programa amb el mateix ISA** i, per tant, el mateix nombre d'instruccions ($N$). El *speedup* $t_{P1}/t_{P2} = CPI_1 \cdot f_2 / (CPI_2 \cdot f_1)$ no depèn de $N$: podem comparar P1 i P2 directament.</span>
+<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a>En canvi, P1 i P3 usen **ISA diferent** (RISC-V vs. x86-64): el mateix programa font compila a un nombre d'instruccions diferent. Sense conèixer $N$, no podem comparar P1 i P3.</span>
+<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a>**c)** El CPI és una propietat del **parell processador–programa**. Per comparar dos processadors en general caldria el CPI mitjà sobre **tots** els programes. Si el CPI donat fos la mitjana sobre tots els programes:</span>
+<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a><span class="ss">- </span>P1 i P2 usen el mateix ISA i el mateix compilador: el nombre d'instruccions és el mateix per a qualsevol programa, i la comparació és vàlida.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a><span class="ss">- </span>P1 i P3 usen ISA diferent: el nombre d'instruccions varia per a cada programa, i la comparació general continua sense ser vàlida.</span>
+<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a>:::</span>
+<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a>::: {#sol-p2-rendiment-dos-processadors .callout-tip}</span>
+<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a><span class="fu">## Solució: dos processadors, temps i instruccions</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a>**Enunciat**: @exr-p2-rendiment-dos-processadors.</span>
+<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-label="39"></a>$$t_{P1} = \frac{10^6 \cdot 1{,}25}{4 \cdot 10^9} = 312{,}5 \ \mu\text{s} \qquad t_{P2} = \frac{10^6 \cdot 0{,}75}{3 \cdot 10^9} = 250 \ \mu\text{s}$$</span>
+<span id="cb1-40"><a href="#cb1-40" aria-label="40"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-label="41"></a>**a)** P2 és més ràpid. El *speedup* de P2 respecte de P1:</span>
+<span id="cb1-42"><a href="#cb1-42" aria-label="42"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-label="43"></a>$$S = \frac{t_{P1}}{t_{P2}} = \frac{312{,}5}{250} = 1{,}25 \times$$</span>
+<span id="cb1-44"><a href="#cb1-44" aria-label="44"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-label="45"></a>**b)** En el temps $t_{P1} = 312{,}5 \ \mu\text{s}$, P2 pot executar:</span>
+<span id="cb1-46"><a href="#cb1-46" aria-label="46"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-label="47"></a>$$N_{P2} = t_{P1} \cdot \frac{f_{P2}}{CPI_{P2}} = 312{,}5 \cdot 10^{-6} \cdot \frac{3 \cdot 10^9}{0{,}75} = 1{,}25 \cdot 10^6 \text{ instruccions}$$</span>
+<span id="cb1-48"><a href="#cb1-48" aria-label="48"></a>:::</span>
+<span id="cb1-49"><a href="#cb1-49" aria-label="49"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-label="50"></a>::: {#sol-p2-rendiment-coma-flotant .callout-tip}</span>
+<span id="cb1-51"><a href="#cb1-51" aria-label="51"></a><span class="fu">## Solució: unitat de coma flotant per maquinari</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-label="52"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-label="53"></a>**Enunciat**: @exr-p2-rendiment-coma-flotant.</span>
+<span id="cb1-54"><a href="#cb1-54" aria-label="54"></a></span>
+<span id="cb1-55"><a href="#cb1-55" aria-label="55"></a>Prenem $N_{orig}$ com a referència: el nombre d'instruccions **sense** unitat de coma flotant. El 20% correspon a instruccions de subrutines CF; el 80% restant, a instruccions d'altres tipus. Totes les instruccions amb CPI = 3 i $t_c = 1$ ns:</span>
+<span id="cb1-56"><a href="#cb1-56" aria-label="56"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-label="57"></a>$$t_{orig} = N_{orig} \cdot 3 \cdot 1 \text{ ns} = 3\,N_{orig} \text{ ns}$$</span>
+<span id="cb1-58"><a href="#cb1-58" aria-label="58"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-label="59"></a>Amb la unitat de coma flotant, el nombre d'instruccions de coma flotant executades es redueix 10 vegades (enunciat). Les instruccions no-CF no canvien:</span>
+<span id="cb1-60"><a href="#cb1-60" aria-label="60"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-label="61"></a>$$N_{nou} = 0{,}80\,N_{orig} + \frac{0{,}20\,N_{orig}}{10} = 0{,}82\,N_{orig}$$</span>
+<span id="cb1-62"><a href="#cb1-62" aria-label="62"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-label="63"></a>Amb $t_c = 1{,}05$ ns i CPI = 4 per a totes les instruccions:</span>
+<span id="cb1-64"><a href="#cb1-64" aria-label="64"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-label="65"></a>$$t_{nou} = 0{,}82\,N_{orig} \cdot 4 \cdot 1{,}05 \text{ ns} = 3{,}444\,N_{orig} \text{ ns}$$</span>
+<span id="cb1-66"><a href="#cb1-66" aria-label="66"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-label="67"></a>**a)**</span>
+<span id="cb1-68"><a href="#cb1-68" aria-label="68"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-label="69"></a>$$S = \frac{t_{orig}}{t_{nou}} = \frac{3}{3{,}444} \approx \mathbf{0{,}87}$$</span>
+<span id="cb1-70"><a href="#cb1-70" aria-label="70"></a></span>
+<span id="cb1-71"><a href="#cb1-71" aria-label="71"></a>El processador amb unitat de coma flotant té un rendiment un 13% **inferior** (triga un 14,8% més: $3{,}444/3 \approx 1{,}148$): no val la pena. Tot i que el nombre d'instruccions es redueix (×0,82), la reducció no compensa l'augment del CPI (de 3 a 4) ni l'allargament del cicle (×1,05).</span>
+<span id="cb1-72"><a href="#cb1-72" aria-label="72"></a></span>
+<span id="cb1-73"><a href="#cb1-73" aria-label="73"></a>**b)** Amb CF = 40%:</span>
+<span id="cb1-74"><a href="#cb1-74" aria-label="74"></a></span>
+<span id="cb1-75"><a href="#cb1-75" aria-label="75"></a>$$N_{nou} = 0{,}60\,N_{orig} + \frac{0{,}40\,N_{orig}}{10} = 0{,}64\,N_{orig}$$</span>
+<span id="cb1-76"><a href="#cb1-76" aria-label="76"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-label="77"></a>$$t_{nou} = 0{,}64\,N_{orig} \cdot 4 \cdot 1{,}05 \text{ ns} = 2{,}688\,N_{orig} \text{ ns}$$</span>
+<span id="cb1-78"><a href="#cb1-78" aria-label="78"></a></span>
+<span id="cb1-79"><a href="#cb1-79" aria-label="79"></a>$$S = \frac{3}{2{,}688} \approx \mathbf{1{,}12}$$</span>
+<span id="cb1-80"><a href="#cb1-80" aria-label="80"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-label="81"></a>Amb el 40% de CF **sí val la pena** afegir la unitat de coma flotant (millora del 12%). La reducció d'instruccions és prou gran per compensar els efectes negatius sobre el CPI i el temps de cicle.</span>
+<span id="cb1-82"><a href="#cb1-82" aria-label="82"></a>:::</span>
+<span id="cb1-83"><a href="#cb1-83" aria-label="83"></a></span>
+<span id="cb1-84"><a href="#cb1-84" aria-label="84"></a>::: {#sol-p2-rendiment-distribucio .callout-tip}</span>
+<span id="cb1-85"><a href="#cb1-85" aria-label="85"></a><span class="fu">## Solució: distribució per tipus d'instruccions</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-label="86"></a></span>
+<span id="cb1-87"><a href="#cb1-87" aria-label="87"></a>**Enunciat**: @exr-p2-rendiment-distribucio.</span>
+<span id="cb1-88"><a href="#cb1-88" aria-label="88"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-label="89"></a>**a)** El nombre de cicles totals és la suma de cicles per tipus:</span>
+<span id="cb1-90"><a href="#cb1-90" aria-label="90"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-label="91"></a><span class="pp">|</span> Tipus <span class="pp">|</span> Instruccions <span class="pp">|</span> CPI <span class="pp">|</span> Cicles <span class="pp">|</span></span>
+<span id="cb1-92"><a href="#cb1-92" aria-label="92"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-93"><a href="#cb1-93" aria-label="93"></a><span class="pp">|</span> Aritmètiques <span class="pp">|</span> 500 <span class="pp">|</span> 1 <span class="pp">|</span> 500 <span class="pp">|</span></span>
+<span id="cb1-94"><a href="#cb1-94" aria-label="94"></a><span class="pp">|</span> Store <span class="pp">|</span> 50 <span class="pp">|</span> 5 <span class="pp">|</span> 250 <span class="pp">|</span></span>
+<span id="cb1-95"><a href="#cb1-95" aria-label="95"></a><span class="pp">|</span> Load <span class="pp">|</span> 100 <span class="pp">|</span> 5 <span class="pp">|</span> 500 <span class="pp">|</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-label="96"></a><span class="pp">|</span> Branch <span class="pp">|</span> 50 <span class="pp">|</span> 2 <span class="pp">|</span> 100 <span class="pp">|</span></span>
+<span id="cb1-97"><a href="#cb1-97" aria-label="97"></a><span class="pp">|</span> **Total** | **700** | | **1 350** <span class="pp">|</span></span>
+<span id="cb1-98"><a href="#cb1-98" aria-label="98"></a></span>
+<span id="cb1-99"><a href="#cb1-99" aria-label="99"></a>$$t_{exe} = 1350 \text{ cicles} \cdot 1 \text{ ns/cicle} = \mathbf{1{,}35} \ \mu\text{s}$$</span>
+<span id="cb1-100"><a href="#cb1-100" aria-label="100"></a></span>
+<span id="cb1-101"><a href="#cb1-101" aria-label="101"></a>**b)**</span>
+<span id="cb1-102"><a href="#cb1-102" aria-label="102"></a></span>
+<span id="cb1-103"><a href="#cb1-103" aria-label="103"></a>$$CPI = \frac{1350 \text{ cicles}}{700 \text{ instruccions}} \approx 1{,}93$$</span>
+<span id="cb1-104"><a href="#cb1-104" aria-label="104"></a></span>
+<span id="cb1-105"><a href="#cb1-105" aria-label="105"></a>**c)** Amb 50 instruccions load (en comptes de 100):</span>
+<span id="cb1-106"><a href="#cb1-106" aria-label="106"></a></span>
+<span id="cb1-107"><a href="#cb1-107" aria-label="107"></a>$$\text{Cicles}_{opt} = 500 + 250 + 50 \cdot 5 + 100 = 1100$$</span>
+<span id="cb1-108"><a href="#cb1-108" aria-label="108"></a></span>
+<span id="cb1-109"><a href="#cb1-109" aria-label="109"></a>$$S = \frac{1350}{1100} \approx \mathbf{1{,}23} \times \qquad CPI_{opt} = \frac{1100}{650} \approx 1{,}69$$</span>
+<span id="cb1-110"><a href="#cb1-110" aria-label="110"></a>:::</span>
+<span id="cb1-111"><a href="#cb1-111" aria-label="111"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-label="112"></a>::: {#sol-p2-rendiment-classes .callout-tip}</span>
+<span id="cb1-113"><a href="#cb1-113" aria-label="113"></a><span class="fu">## Solució: quatre classes d'instruccions</span></span>
+<span id="cb1-114"><a href="#cb1-114" aria-label="114"></a></span>
+<span id="cb1-115"><a href="#cb1-115" aria-label="115"></a>**Enunciat**: @exr-p2-rendiment-classes.</span>
+<span id="cb1-116"><a href="#cb1-116" aria-label="116"></a></span>
+<span id="cb1-117"><a href="#cb1-117" aria-label="117"></a>**a)** El CPI mitjà es calcula com la mitjana ponderada per la freqüència de cada classe:</span>
+<span id="cb1-118"><a href="#cb1-118" aria-label="118"></a></span>
+<span id="cb1-119"><a href="#cb1-119" aria-label="119"></a>$$CPI_{P1} = 0{,}10 \cdot 1 + 0{,}20 \cdot 2 + 0{,}50 \cdot 3 + 0{,}20 \cdot 4 = 0{,}1 + 0{,}4 + 1{,}5 + 0{,}8 = \mathbf{2{,}8}$$</span>
+<span id="cb1-120"><a href="#cb1-120" aria-label="120"></a></span>
+<span id="cb1-121"><a href="#cb1-121" aria-label="121"></a>$$CPI_{P2} = 0{,}10 \cdot 2 + 0{,}20 \cdot 2 + 0{,}50 \cdot 2 + 0{,}20 \cdot 2 = \mathbf{2{,}0}$$</span>
+<span id="cb1-122"><a href="#cb1-122" aria-label="122"></a></span>
+<span id="cb1-123"><a href="#cb1-123" aria-label="123"></a>**b)** Per a $N = 10^6$ instruccions:</span>
+<span id="cb1-124"><a href="#cb1-124" aria-label="124"></a></span>
+<span id="cb1-125"><a href="#cb1-125" aria-label="125"></a>$$t_{P1} = \frac{10^6 \cdot 2{,}8}{1{,}5 \cdot 10^9} \approx 1{,}867 \text{ ms} \qquad t_{P2} = \frac{10^6 \cdot 2{,}0}{2{,}0 \cdot 10^9} = 1{,}000 \text{ ms}$$</span>
+<span id="cb1-126"><a href="#cb1-126" aria-label="126"></a></span>
+<span id="cb1-127"><a href="#cb1-127" aria-label="127"></a>P2 és més ràpid. El *speedup*:</span>
+<span id="cb1-128"><a href="#cb1-128" aria-label="128"></a></span>
+<span id="cb1-129"><a href="#cb1-129" aria-label="129"></a>$$S = \frac{t_{P1}}{t_{P2}} = \frac{N \cdot CPI_{P1} / f_{P1}}{N \cdot CPI_{P2} / f_{P2}} = \frac{CPI_{P1} \cdot f_{P2}}{CPI_{P2} \cdot f_{P1}} = \frac{2{,}8 \cdot 2{,}0}{2{,}0 \cdot 1{,}5} = \frac{28}{15} \approx \mathbf{1{,}87} \times$$</span>
+<span id="cb1-130"><a href="#cb1-130" aria-label="130"></a></span>
+<span id="cb1-131"><a href="#cb1-131" aria-label="131"></a>Observació: P2 té un CPI uniforme de 2 per a totes les classes. Això reflecteix que un disseny amb CPI uniforme pot ser competitiu si la freqüència de rellotge és prou alta.</span>
+<span id="cb1-132"><a href="#cb1-132" aria-label="132"></a>:::</span>
+<span id="cb1-133"><a href="#cb1-133" aria-label="133"></a></span>
+<span id="cb1-134"><a href="#cb1-134" aria-label="134"></a>::: {#sol-p2-rendiment-speedup-mul .callout-tip}</span>
+<span id="cb1-135"><a href="#cb1-135" aria-label="135"></a><span class="fu">## Solució: multiplicador per maquinari</span></span>
+<span id="cb1-136"><a href="#cb1-136" aria-label="136"></a></span>
+<span id="cb1-137"><a href="#cb1-137" aria-label="137"></a>**Enunciat**: @exr-p2-rendiment-speedup-mul.</span>
+<span id="cb1-138"><a href="#cb1-138" aria-label="138"></a></span>
+<span id="cb1-139"><a href="#cb1-139" aria-label="139"></a>Sigui $N$ el nombre d'instruccions amb el multiplicador per maquinari. El 0,5% de $N$ són multiplicacions (1 instrucció, CPI = 40); el 99,5% restant té CPI = 3.</span>
+<span id="cb1-140"><a href="#cb1-140" aria-label="140"></a></span>
+<span id="cb1-141"><a href="#cb1-141" aria-label="141"></a>**Sense multiplicador:** cada multiplicació s'expandeix a una subrutina de 200 instruccions. Les $0{,}005N$ multiplicacions passen a $0{,}005N \cdot 200 = N$ instruccions de subrutina, totes amb CPI = 3:</span>
+<span id="cb1-142"><a href="#cb1-142" aria-label="142"></a></span>
+<span id="cb1-143"><a href="#cb1-143" aria-label="143"></a>$$N_{orig} = 0{,}995N + 0{,}005N \cdot 200 = 1{,}995N$$</span>
+<span id="cb1-144"><a href="#cb1-144" aria-label="144"></a></span>
+<span id="cb1-145"><a href="#cb1-145" aria-label="145"></a>**a)** Comparació a freqüència idèntica ($f = 2$ GHz):</span>
+<span id="cb1-146"><a href="#cb1-146" aria-label="146"></a></span>
+<span id="cb1-147"><a href="#cb1-147" aria-label="147"></a>$$t_{orig} = 1{,}995N \cdot 3 \cdot t_c = 5{,}985N \cdot t_c$$</span>
+<span id="cb1-148"><a href="#cb1-148" aria-label="148"></a></span>
+<span id="cb1-149"><a href="#cb1-149" aria-label="149"></a>$$t_{nou}  = N \cdot (0{,}005 \cdot 40 + 0{,}995 \cdot 3) \cdot t_c = N \cdot 3{,}185 \cdot t_c$$</span>
+<span id="cb1-150"><a href="#cb1-150" aria-label="150"></a></span>
+<span id="cb1-151"><a href="#cb1-151" aria-label="151"></a>$$S = \frac{5{,}985}{3{,}185} = \frac{1197}{637} \approx \mathbf{1{,}88} \times$$</span>
+<span id="cb1-152"><a href="#cb1-152" aria-label="152"></a></span>
+<span id="cb1-153"><a href="#cb1-153" aria-label="153"></a>**b)** Per no empitjorar el rendiment cal $t_{nou}(f_{nou}) \leq t_{orig}(2 \text{ GHz})$:</span>
+<span id="cb1-154"><a href="#cb1-154" aria-label="154"></a></span>
+<span id="cb1-155"><a href="#cb1-155" aria-label="155"></a>$$\frac{N \cdot 3{,}185}{f_{nou}} \leq \frac{1{,}995N \cdot 3}{2 \cdot 10^9}$$</span>
+<span id="cb1-156"><a href="#cb1-156" aria-label="156"></a></span>
+<span id="cb1-157"><a href="#cb1-157" aria-label="157"></a>$$f_{nou} \geq \frac{2 \cdot 10^9 \cdot 3{,}185}{5{,}985} = \frac{1274}{1197} \cdot 10^9 \approx \mathbf{1{,}064} \text{ GHz}$$</span>
+<span id="cb1-158"><a href="#cb1-158" aria-label="158"></a></span>
+<span id="cb1-159"><a href="#cb1-159" aria-label="159"></a>La freqüència mínima acceptable és aproximadament 1,06 GHz, força per sota dels 2 GHz originals. El multiplicador per maquinari és clarament beneficiós fins i tot amb una degradació significativa de la freqüència de rellotge.</span>
+<span id="cb1-160"><a href="#cb1-160" aria-label="160"></a>:::</span>
+<span id="cb1-161"><a href="#cb1-161" aria-label="161"></a></span>
+<span id="cb1-162"><a href="#cb1-162" aria-label="162"></a>::: {#sol-p2-rendiment-temps .callout-tip}</span>
+<span id="cb1-163"><a href="#cb1-163" aria-label="163"></a><span class="fu">## Solució: millores per component</span></span>
+<span id="cb1-164"><a href="#cb1-164" aria-label="164"></a></span>
+<span id="cb1-165"><a href="#cb1-165" aria-label="165"></a>**Enunciat**: @exr-p2-rendiment-temps.</span>
+<span id="cb1-166"><a href="#cb1-166" aria-label="166"></a></span>
+<span id="cb1-167"><a href="#cb1-167" aria-label="167"></a>**Cas a** ($T = 200$ s: CF = 35 s, Enters = 85 s, L/S = 50 s, Branch = 30 s)</span>
+<span id="cb1-168"><a href="#cb1-168" aria-label="168"></a></span>
+<span id="cb1-169"><a href="#cb1-169" aria-label="169"></a>**a)** Reduïm el temps de CF un 20% ($35 \text{ s} \to 28 \text{ s}$):</span>
+<span id="cb1-170"><a href="#cb1-170" aria-label="170"></a></span>
+<span id="cb1-171"><a href="#cb1-171" aria-label="171"></a>$$T_{nou} = 200 - 35 + 28 = 193 \text{ s} \qquad S = \frac{200}{193} \approx 1{,}036 \times$$</span>
+<span id="cb1-172"><a href="#cb1-172" aria-label="172"></a></span>
+<span id="cb1-173"><a href="#cb1-173" aria-label="173"></a>**b)** Objectiu: $S = 1{,}20$, és a dir, $T_{nou} = 200/1{,}20 \approx 166{,}7$ s. El temps restant sense enters és $200 - 85 = 115$ s. Cal que el nou temps d'enters sigui:</span>
+<span id="cb1-174"><a href="#cb1-174" aria-label="174"></a></span>
+<span id="cb1-175"><a href="#cb1-175" aria-label="175"></a>$$t_{Enters,nou} = 166{,}7 - 115 = 51{,}7 \text{ s} \quad \Rightarrow \quad \text{reducció} = \frac{85 - 51{,}7}{85} \approx \mathbf{39{,}2\%}$$</span>
+<span id="cb1-176"><a href="#cb1-176" aria-label="176"></a></span>
+<span id="cb1-177"><a href="#cb1-177" aria-label="177"></a>**c)** El *speedup* màxim possible millorant únicament branch (fins a branch = 0) és:</span>
+<span id="cb1-178"><a href="#cb1-178" aria-label="178"></a></span>
+<span id="cb1-179"><a href="#cb1-179" aria-label="179"></a>$$S_{max} = \frac{200}{200 - 30} = \frac{200}{170} \approx 1{,}18 \times$$</span>
+<span id="cb1-180"><a href="#cb1-180" aria-label="180"></a></span>
+<span id="cb1-181"><a href="#cb1-181" aria-label="181"></a>Com que $1{,}18 &lt; 1{,}25$ (reduir un 20% equival a $S = 1{,}25$), **no és possible**.</span>
+<span id="cb1-182"><a href="#cb1-182" aria-label="182"></a></span>
+<span id="cb1-183"><a href="#cb1-183" aria-label="183"></a>---</span>
+<span id="cb1-184"><a href="#cb1-184" aria-label="184"></a></span>
+<span id="cb1-185"><a href="#cb1-185" aria-label="185"></a>**Cas b** ($T = 210$ s: CF = 50 s, Enters = 80 s, L/S = 50 s, Branch = 30 s)</span>
+<span id="cb1-186"><a href="#cb1-186" aria-label="186"></a></span>
+<span id="cb1-187"><a href="#cb1-187" aria-label="187"></a>**a)** CF un 20% més ràpid ($50 \text{ s} \to 40 \text{ s}$):</span>
+<span id="cb1-188"><a href="#cb1-188" aria-label="188"></a></span>
+<span id="cb1-189"><a href="#cb1-189" aria-label="189"></a>$$T_{nou} = 210 - 50 + 40 = 200 \text{ s} \qquad S = \frac{210}{200} = 1{,}05 \times$$</span>
+<span id="cb1-190"><a href="#cb1-190" aria-label="190"></a></span>
+<span id="cb1-191"><a href="#cb1-191" aria-label="191"></a>**b)** $T_{nou} = 210/1{,}20 = 175$ s; temps sense enters = $210 - 80 = 130$ s:</span>
+<span id="cb1-192"><a href="#cb1-192" aria-label="192"></a></span>
+<span id="cb1-193"><a href="#cb1-193" aria-label="193"></a>$$t_{Enters,nou} = 175 - 130 = 45 \text{ s} \quad \Rightarrow \quad \text{reducció} = \frac{80 - 45}{80} = \mathbf{43{,}75\%}$$</span>
+<span id="cb1-194"><a href="#cb1-194" aria-label="194"></a></span>
+<span id="cb1-195"><a href="#cb1-195" aria-label="195"></a>**c)** $S_{max}$ per branch:</span>
+<span id="cb1-196"><a href="#cb1-196" aria-label="196"></a></span>
+<span id="cb1-197"><a href="#cb1-197" aria-label="197"></a>$$S_{max} = \frac{210}{210 - 30} = \frac{210}{180} \approx 1{,}17 \times &lt; 1{,}25$$</span>
+<span id="cb1-198"><a href="#cb1-198" aria-label="198"></a></span>
+<span id="cb1-199"><a href="#cb1-199" aria-label="199"></a>Tampoc és possible en el cas b.</span>
+<span id="cb1-200"><a href="#cb1-200" aria-label="200"></a>:::</span>
+<span id="cb1-201"><a href="#cb1-201" aria-label="201"></a></span>
+<span id="cb1-202"><a href="#cb1-202" aria-label="202"></a><span class="fu">## Llei d'Amdahl</span></span>
+<span id="cb1-203"><a href="#cb1-203" aria-label="203"></a></span>
+<span id="cb1-204"><a href="#cb1-204" aria-label="204"></a>::: {#sol-p2-amdahl-basic .callout-tip}</span>
+<span id="cb1-205"><a href="#cb1-205" aria-label="205"></a><span class="fu">## Solució: Amdahl bàsic</span></span>
+<span id="cb1-206"><a href="#cb1-206" aria-label="206"></a></span>
+<span id="cb1-207"><a href="#cb1-207" aria-label="207"></a>**Enunciat**: @exr-p2-amdahl-basic.</span>
+<span id="cb1-208"><a href="#cb1-208" aria-label="208"></a></span>
+<span id="cb1-209"><a href="#cb1-209" aria-label="209"></a>La **llei d'Amdahl** (@eq-guany3) dona el *speedup* global quan s'accelera una fracció $f$ del temps d'execució un factor $k$:</span>
+<span id="cb1-210"><a href="#cb1-210" aria-label="210"></a></span>
+<span id="cb1-211"><a href="#cb1-211" aria-label="211"></a>$$S = \frac{1}{(1 - f) + f/k}$$</span>
+<span id="cb1-212"><a href="#cb1-212" aria-label="212"></a></span>
+<span id="cb1-213"><a href="#cb1-213" aria-label="213"></a>Aquí $f = 0{,}60$ (CF), fracció no millorada $= 0{,}40$.</span>
+<span id="cb1-214"><a href="#cb1-214" aria-label="214"></a></span>
+<span id="cb1-215"><a href="#cb1-215" aria-label="215"></a>**a)** Amb $k = 5$:</span>
+<span id="cb1-216"><a href="#cb1-216" aria-label="216"></a></span>
+<span id="cb1-217"><a href="#cb1-217" aria-label="217"></a>$$S = \frac{1}{0{,}40 + 0{,}60/5} = \frac{1}{0{,}40 + 0{,}12} = \frac{1}{0{,}52} = \frac{25}{13} \approx \mathbf{1{,}92} \times$$</span>
+<span id="cb1-218"><a href="#cb1-218" aria-label="218"></a></span>
+<span id="cb1-219"><a href="#cb1-219" aria-label="219"></a>**b)** Quan $k \to \infty$, el terme $f/k \to 0$ (@eq-amdahl):</span>
+<span id="cb1-220"><a href="#cb1-220" aria-label="220"></a></span>
+<span id="cb1-221"><a href="#cb1-221" aria-label="221"></a>$$S_{max} = \frac{1}{1 - f} = \frac{1}{0{,}40} = \mathbf{2{,}5} \times$$</span>
+<span id="cb1-222"><a href="#cb1-222" aria-label="222"></a></span>
+<span id="cb1-223"><a href="#cb1-223" aria-label="223"></a>Independentment de com s'accelerin les instruccions CF, el *speedup* global no pot superar 2,5, perquè el 40% restant és un **coll d'ampolla** irreductible.</span>
+<span id="cb1-224"><a href="#cb1-224" aria-label="224"></a></span>
+<span id="cb1-225"><a href="#cb1-225" aria-label="225"></a>**c)** Imposem $S = 3$:</span>
+<span id="cb1-226"><a href="#cb1-226" aria-label="226"></a></span>
+<span id="cb1-227"><a href="#cb1-227" aria-label="227"></a>$$3 = \frac{1}{0{,}40 + 0{,}60/k} \implies 0{,}40 + \frac{0{,}60}{k} = \frac{1}{3} \implies \frac{0{,}60}{k} = \frac{1}{3} - 0{,}40 = -\frac{1}{15}$$</span>
+<span id="cb1-228"><a href="#cb1-228" aria-label="228"></a></span>
+<span id="cb1-229"><a href="#cb1-229" aria-label="229"></a>El resultat és negatiu, cosa que és impossible. La raó és que el *speedup* màxim teòric és 2,5, estrictament inferior a 3: **no existeix cap valor de $k$ que permeti assolir un *speedup* global de 3** amb aquesta distribució del temps.</span>
+<span id="cb1-230"><a href="#cb1-230" aria-label="230"></a>:::</span>
+<span id="cb1-231"><a href="#cb1-231" aria-label="231"></a></span>
+<span id="cb1-232"><a href="#cb1-232" aria-label="232"></a>::: {#sol-p2-amdahl-multicomponent .callout-tip}</span>
+<span id="cb1-233"><a href="#cb1-233" aria-label="233"></a><span class="fu">## Solució: tres components simultanis</span></span>
+<span id="cb1-234"><a href="#cb1-234" aria-label="234"></a></span>
+<span id="cb1-235"><a href="#cb1-235" aria-label="235"></a>**Enunciat**: @exr-p2-amdahl-multicomponent.</span>
+<span id="cb1-236"><a href="#cb1-236" aria-label="236"></a></span>
+<span id="cb1-237"><a href="#cb1-237" aria-label="237"></a>Quan s'apliquen múltiples millores simultànies, la llei d'Amdahl es generalitza:</span>
+<span id="cb1-238"><a href="#cb1-238" aria-label="238"></a></span>
+<span id="cb1-239"><a href="#cb1-239" aria-label="239"></a>$$S = \frac{1}{\left(1 - \displaystyle\sum_i f_i\right) + \displaystyle\sum_i \frac{f_i}{k_i}}$$</span>
+<span id="cb1-240"><a href="#cb1-240" aria-label="240"></a></span>
+<span id="cb1-241"><a href="#cb1-241" aria-label="241"></a>on $f_i$ és la fracció del temps original que ocupa el component $i$ i $k_i$ la seva millora. En aquest exercici, els tres components cobreixen el 100% del temps ($\sum_i f_i = 1$), de manera que el primer terme s'anul·la i l'expressió es redueix a $S = 1/\sum_i (f_i/k_i)$.</span>
+<span id="cb1-242"><a href="#cb1-242" aria-label="242"></a></span>
+<span id="cb1-243"><a href="#cb1-243" aria-label="243"></a>**a)** Aplicant les tres millores:</span>
+<span id="cb1-244"><a href="#cb1-244" aria-label="244"></a></span>
+<span id="cb1-245"><a href="#cb1-245" aria-label="245"></a>$$S = \frac{1}{\dfrac{0{,}50}{2} + \dfrac{0{,}30}{4} + \dfrac{0{,}20}{1{,}5}} = \frac{1}{0{,}250 + 0{,}075 + 0{,}1\overline{3}} = \frac{1}{11/24} = \frac{24}{11} \approx \mathbf{2{,}18} \times$$</span>
+<span id="cb1-246"><a href="#cb1-246" aria-label="246"></a></span>
+<span id="cb1-247"><a href="#cb1-247" aria-label="247"></a>**b i c)** *Speedup* aplicant cada millora individualment:</span>
+<span id="cb1-248"><a href="#cb1-248" aria-label="248"></a></span>
+<span id="cb1-249"><a href="#cb1-249" aria-label="249"></a><span class="pp">|</span> Component <span class="pp">|</span> $f$ <span class="pp">|</span> $k$ <span class="pp">|</span> $S_{individual}$ <span class="pp">|</span></span>
+<span id="cb1-250"><a href="#cb1-250" aria-label="250"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-251"><a href="#cb1-251" aria-label="251"></a><span class="pp">|</span> Unitat entera <span class="pp">|</span> 50% <span class="pp">|</span> 2× <span class="pp">|</span> $1/(0{,}50 + 0{,}50/2) = 1{,}33\times$ <span class="pp">|</span></span>
+<span id="cb1-252"><a href="#cb1-252" aria-label="252"></a><span class="pp">|</span> Unitat CF <span class="pp">|</span> 30% <span class="pp">|</span> 4× <span class="pp">|</span> $1/(0{,}70 + 0{,}30/4) = 1{,}29\times$ <span class="pp">|</span></span>
+<span id="cb1-253"><a href="#cb1-253" aria-label="253"></a><span class="pp">|</span> Accés a memòria <span class="pp">|</span> 20% <span class="pp">|</span> 1,5× <span class="pp">|</span> $1/(0{,}80 + 0{,}20/1{,}5) = 1{,}07\times$ <span class="pp">|</span></span>
+<span id="cb1-254"><a href="#cb1-254" aria-label="254"></a></span>
+<span id="cb1-255"><a href="#cb1-255" aria-label="255"></a>: {.striped}</span>
+<span id="cb1-256"><a href="#cb1-256" aria-label="256"></a></span>
+<span id="cb1-257"><a href="#cb1-257" aria-label="257"></a>La millora individual amb **més impacte** és la de la **unitat entera** ($S = 1{,}33\times$), tot i que la seva millora disponible ($2\times$) és la menor de les tres. La llei d'Amdahl explica per què: el que determina l'impacte és principalment la **fracció de temps** ($f = 50\%$), no el factor de millora.</span>
+<span id="cb1-258"><a href="#cb1-258" aria-label="258"></a></span>
+<span id="cb1-259"><a href="#cb1-259" aria-label="259"></a>Si el pressupost permet una sola millora, s'ha d'escollir la **unitat entera**: maximitza el *speedup* global perquè actua sobre el component dominant en temps.</span>
+<span id="cb1-260"><a href="#cb1-260" aria-label="260"></a>:::</span>
+<span id="cb1-261"><a href="#cb1-261" aria-label="261"></a></span>
+<span id="cb1-262"><a href="#cb1-262" aria-label="262"></a>::: {#sol-p2-amdahl-limit .callout-tip}</span>
+<span id="cb1-263"><a href="#cb1-263" aria-label="263"></a><span class="fu">## Solució: Amdahl invers i límit teòric</span></span>
+<span id="cb1-264"><a href="#cb1-264" aria-label="264"></a></span>
+<span id="cb1-265"><a href="#cb1-265" aria-label="265"></a>**Enunciat**: @exr-p2-amdahl-limit.</span>
+<span id="cb1-266"><a href="#cb1-266" aria-label="266"></a></span>
+<span id="cb1-267"><a href="#cb1-267" aria-label="267"></a>**a)** Volem $S = 10$ amb $k = 20$. De la llei d'Amdahl:</span>
+<span id="cb1-268"><a href="#cb1-268" aria-label="268"></a></span>
+<span id="cb1-269"><a href="#cb1-269" aria-label="269"></a>$$10 = \frac{1}{(1 - f) + f/20} \implies \frac{1}{10} = 1 - f + \frac{f}{20} = 1 - f\left(1 - \frac{1}{20}\right) = 1 - \frac{19f}{20}$$</span>
+<span id="cb1-270"><a href="#cb1-270" aria-label="270"></a></span>
+<span id="cb1-271"><a href="#cb1-271" aria-label="271"></a>$$\frac{19f}{20} = 1 - \frac{1}{10} = \frac{9}{10} \implies f = \frac{9}{10} \cdot \frac{20}{19} = \frac{18}{19} \approx \mathbf{94{,}7\%}$$</span>
+<span id="cb1-272"><a href="#cb1-272" aria-label="272"></a></span>
+<span id="cb1-273"><a href="#cb1-273" aria-label="273"></a>Per anunciar un *speedup* de 10 basant-se exclusivament en les instruccions CF, caldria que el 94,7% del temps d'execució fos de coma flotant — una condició molt restrictiva que pocs programes reals compleixen.</span>
+<span id="cb1-274"><a href="#cb1-274" aria-label="274"></a></span>
+<span id="cb1-275"><a href="#cb1-275" aria-label="275"></a>**b)** En un programa típic amb $f = 0{,}35$:</span>
+<span id="cb1-276"><a href="#cb1-276" aria-label="276"></a></span>
+<span id="cb1-277"><a href="#cb1-277" aria-label="277"></a>$$S = \frac{1}{0{,}65 + 0{,}35/20} = \frac{1}{0{,}65 + 0{,}0175} = \frac{1}{0{,}6675} \approx \mathbf{1{,}50} \times$$</span>
+<span id="cb1-278"><a href="#cb1-278" aria-label="278"></a></span>
+<span id="cb1-279"><a href="#cb1-279" aria-label="279"></a>Molt lluny del 10× anunciat.</span>
+<span id="cb1-280"><a href="#cb1-280" aria-label="280"></a></span>
+<span id="cb1-281"><a href="#cb1-281" aria-label="281"></a>**c)** El *speedup* màxim assolible amb $f = 0{,}35$, independentment de $k$:</span>
+<span id="cb1-282"><a href="#cb1-282" aria-label="282"></a></span>
+<span id="cb1-283"><a href="#cb1-283" aria-label="283"></a>$$S_{max} = \frac{1}{1 - 0{,}35} = \frac{1}{0{,}65} \approx \mathbf{1{,}54} \times$$</span>
+<span id="cb1-284"><a href="#cb1-284" aria-label="284"></a></span>
+<span id="cb1-285"><a href="#cb1-285" aria-label="285"></a>Amb instruccions CF infinitament ràpides, el guany tendiria a 1,54× sense poder superar-lo. Això posa de manifest el missatge fonamental de la llei d'Amdahl: el guany màxim queda sempre limitat per la fracció de temps no millorada, per gran que sigui la millora aplicada a la part optimitzada.</span>
+<span id="cb1-286"><a href="#cb1-286" aria-label="286"></a>:::</span>
+<span id="cb1-287"><a href="#cb1-287" aria-label="287"></a></span>
+<span id="cb1-288"><a href="#cb1-288" aria-label="288"></a>::: {#sol-p2-amdahl-cpi .callout-tip}</span>
+<span id="cb1-289"><a href="#cb1-289" aria-label="289"></a><span class="fu">## Solució: CPI per components i speedup</span></span>
+<span id="cb1-290"><a href="#cb1-290" aria-label="290"></a></span>
+<span id="cb1-291"><a href="#cb1-291" aria-label="291"></a>**Enunciat**: @exr-p2-amdahl-cpi.</span>
+<span id="cb1-292"><a href="#cb1-292" aria-label="292"></a></span>
+<span id="cb1-293"><a href="#cb1-293" aria-label="293"></a>**a)** El nombre de cicles totals és la suma per tipus d'instruccions:</span>
+<span id="cb1-294"><a href="#cb1-294" aria-label="294"></a></span>
+<span id="cb1-295"><a href="#cb1-295" aria-label="295"></a><span class="pp">|</span> <span class="pp">|</span> CF <span class="pp">|</span> Enters <span class="pp">|</span> L/S <span class="pp">|</span> Branch <span class="pp">|</span> Total <span class="pp">|</span></span>
+<span id="cb1-296"><a href="#cb1-296" aria-label="296"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-297"><a href="#cb1-297" aria-label="297"></a><span class="pp">|</span> Proc. A <span class="pp">|</span> 90·2 = 180 <span class="pp">|</span> 240·1,5 = 360 <span class="pp">|</span> 150·6 = 900 <span class="pp">|</span> 120·3 = 360 <span class="pp">|</span> **1800** <span class="pp">|</span></span>
+<span id="cb1-298"><a href="#cb1-298" aria-label="298"></a><span class="pp">|</span> Proc. B <span class="pp">|</span> 45·3 = 135 <span class="pp">|</span> 225·1 = 225 <span class="pp">|</span> 135·5 = 675 <span class="pp">|</span> 45·2 = 90 <span class="pp">|</span> **1125** <span class="pp">|</span></span>
+<span id="cb1-299"><a href="#cb1-299" aria-label="299"></a></span>
+<span id="cb1-300"><a href="#cb1-300" aria-label="300"></a>: {.striped}</span>
+<span id="cb1-301"><a href="#cb1-301" aria-label="301"></a></span>
+<span id="cb1-302"><a href="#cb1-302" aria-label="302"></a>$$CPI_A = \frac{1800}{600} = \mathbf{3{,}0} \qquad CPI_B = \frac{1125}{450} = \mathbf{2{,}5}$$</span>
+<span id="cb1-303"><a href="#cb1-303" aria-label="303"></a></span>
+<span id="cb1-304"><a href="#cb1-304" aria-label="304"></a>**b)** Perquè tots dos processin el programa en el mateix temps:</span>
+<span id="cb1-305"><a href="#cb1-305" aria-label="305"></a></span>
+<span id="cb1-306"><a href="#cb1-306" aria-label="306"></a>$$\frac{N_A \cdot CPI_A}{F_A} = \frac{N_B \cdot CPI_B}{F_B} \implies \frac{F_A}{F_B} = \frac{N_A \cdot CPI_A}{N_B \cdot CPI_B} = \frac{\text{cicles}_A}{\text{cicles}_B} = \frac{1800}{1125} = \mathbf{1{,}6}$$</span>
+<span id="cb1-307"><a href="#cb1-307" aria-label="307"></a></span>
+<span id="cb1-308"><a href="#cb1-308" aria-label="308"></a>El processador A ha de funcionar a una freqüència 1,6 vegades superior a la de B per igualar el seu temps d'execució.</span>
+<span id="cb1-309"><a href="#cb1-309" aria-label="309"></a></span>
+<span id="cb1-310"><a href="#cb1-310" aria-label="310"></a>**c)** Si les instruccions L/S del processador A s'executessin en 0 cicles, els cicles totals serien $1800 - 900 = 900$:</span>
+<span id="cb1-311"><a href="#cb1-311" aria-label="311"></a></span>
+<span id="cb1-312"><a href="#cb1-312" aria-label="312"></a>$$S = \frac{1800}{900} = \mathbf{2{,}0} \times$$</span>
+<span id="cb1-313"><a href="#cb1-313" aria-label="313"></a></span>
+<span id="cb1-314"><a href="#cb1-314" aria-label="314"></a>Equivalent a aplicar la llei d'Amdahl amb $f_{L/S} = 900/1800 = 50\%$ del temps i $k \to \infty$: $S_{max} = 1/(1 - 0{,}5) = 2\times$.</span>
+<span id="cb1-315"><a href="#cb1-315" aria-label="315"></a>:::</span>
+<span id="cb1-316"><a href="#cb1-316" aria-label="316"></a></span>
+<span id="cb1-317"><a href="#cb1-317" aria-label="317"></a><span class="fu">## Potència</span></span>
+<span id="cb1-318"><a href="#cb1-318" aria-label="318"></a></span>
+<span id="cb1-319"><a href="#cb1-319" aria-label="319"></a>::: {#sol-p2-potencia-basica .callout-tip}</span>
+<span id="cb1-320"><a href="#cb1-320" aria-label="320"></a><span class="fu">## Solució: capacitat equivalent</span></span>
+<span id="cb1-321"><a href="#cb1-321" aria-label="321"></a></span>
+<span id="cb1-322"><a href="#cb1-322" aria-label="322"></a>**Enunciat**: @exr-p2-potencia-basica.</span>
+<span id="cb1-323"><a href="#cb1-323" aria-label="323"></a></span>
+<span id="cb1-324"><a href="#cb1-324" aria-label="324"></a>La **potència dinàmica** en circuits CMOS és $P_{din} = C \cdot V^2 \cdot f$ (@eq-potencia-dinamica; suposem factor d'activitat $\alpha = 1$).</span>
+<span id="cb1-325"><a href="#cb1-325" aria-label="325"></a></span>
+<span id="cb1-326"><a href="#cb1-326" aria-label="326"></a>**a)** Aïllem la capacitat equivalent $C = P_{din} / (V^2 \cdot f)$:</span>
+<span id="cb1-327"><a href="#cb1-327" aria-label="327"></a></span>
+<span id="cb1-328"><a href="#cb1-328" aria-label="328"></a>$$C_A = \frac{2 \text{ W}}{(5 \text{ V})^2 \cdot 10 \cdot 10^6 \text{ Hz}} = \frac{2}{250 \cdot 10^6} = \mathbf{8 \text{ nF}}$$</span>
+<span id="cb1-329"><a href="#cb1-329" aria-label="329"></a></span>
+<span id="cb1-330"><a href="#cb1-330" aria-label="330"></a>$$C_B = \frac{100 \text{ W}}{(1 \text{ V})^2 \cdot 3 \cdot 10^9 \text{ Hz}} = \frac{100}{3 \cdot 10^9} \approx \mathbf{33{,}3 \text{ nF}}$$</span>
+<span id="cb1-331"><a href="#cb1-331" aria-label="331"></a></span>
+<span id="cb1-332"><a href="#cb1-332" aria-label="332"></a>**b)** Apliquem la mateixa tensió i capacitància de A, però amb $f = f_B = 3$ GHz:</span>
+<span id="cb1-333"><a href="#cb1-333" aria-label="333"></a></span>
+<span id="cb1-334"><a href="#cb1-334" aria-label="334"></a>$$P_A' = C_A \cdot V_A^2 \cdot f_B = 8 \cdot 10^{-9} \cdot 25 \cdot 3 \cdot 10^9 = \mathbf{600 \text{ W}}$$</span>
+<span id="cb1-335"><a href="#cb1-335" aria-label="335"></a></span>
+<span id="cb1-336"><a href="#cb1-336" aria-label="336"></a>Aquesta potència és absolutament inassolible a la pràctica, i il·lustra per què no n'hi ha prou d'augmentar la freqüència sense reduir el voltatge: la potència creix linealment amb $f$.</span>
+<span id="cb1-337"><a href="#cb1-337" aria-label="337"></a>:::</span>
+<span id="cb1-338"><a href="#cb1-338" aria-label="338"></a></span>
+<span id="cb1-339"><a href="#cb1-339" aria-label="339"></a>::: {#sol-p2-potencia-evolucio .callout-tip}</span>
+<span id="cb1-340"><a href="#cb1-340" aria-label="340"></a><span class="fu">## Solució: evolució de vuit generacions Intel</span></span>
+<span id="cb1-341"><a href="#cb1-341" aria-label="341"></a></span>
+<span id="cb1-342"><a href="#cb1-342" aria-label="342"></a>**Enunciat**: @exr-p2-potencia-evolucio.</span>
+<span id="cb1-343"><a href="#cb1-343" aria-label="343"></a></span>
+<span id="cb1-344"><a href="#cb1-344" aria-label="344"></a>**a i e)** Ràtios entre generacions consecutives i capacitats equivalents ($C = P / (V^2 \cdot f)$):</span>
+<span id="cb1-345"><a href="#cb1-345" aria-label="345"></a></span>
+<span id="cb1-346"><a href="#cb1-346" aria-label="346"></a><span class="pp">|</span> Gen <span class="pp">|</span> Processador <span class="pp">|</span> $f$ <span class="pp">|</span> $V$ <span class="pp">|</span> $P$ <span class="pp">|</span> $r_f$ <span class="pp">|</span> $r_P$ <span class="pp">|</span> $C$ (nF) <span class="pp">|</span></span>
+<span id="cb1-347"><a href="#cb1-347" aria-label="347"></a><span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| ---:</span> <span class="pp">| ---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-348"><a href="#cb1-348" aria-label="348"></a><span class="pp">|</span> 1 <span class="pp">|</span> 80286 <span class="pp">|</span> 12,5 MHz <span class="pp">|</span> 5,0 V <span class="pp">|</span> 3,3 W <span class="pp">|</span> — <span class="pp">|</span> — <span class="pp">|</span> 10,56 <span class="pp">|</span></span>
+<span id="cb1-349"><a href="#cb1-349" aria-label="349"></a><span class="pp">|</span> 2 <span class="pp">|</span> 80386 <span class="pp">|</span> 16 MHz <span class="pp">|</span> 5,0 V <span class="pp">|</span> 4,1 W <span class="pp">|</span> 1,28 <span class="pp">|</span> 1,24 <span class="pp">|</span> 10,25 <span class="pp">|</span></span>
+<span id="cb1-350"><a href="#cb1-350" aria-label="350"></a><span class="pp">|</span> 3 <span class="pp">|</span> 80486 <span class="pp">|</span> 25 MHz <span class="pp">|</span> 5,0 V <span class="pp">|</span> 4,9 W <span class="pp">|</span> 1,56 <span class="pp">|</span> 1,20 <span class="pp">|</span> 7,84 <span class="pp">|</span></span>
+<span id="cb1-351"><a href="#cb1-351" aria-label="351"></a><span class="pp">|</span> 4 <span class="pp">|</span> Pentium <span class="pp">|</span> 66 MHz <span class="pp">|</span> 5,0 V <span class="pp">|</span> 10,1 W <span class="pp">|</span> 2,64 <span class="pp">|</span> 2,06 <span class="pp">|</span> 6,12 <span class="pp">|</span></span>
+<span id="cb1-352"><a href="#cb1-352" aria-label="352"></a><span class="pp">|</span> 5 <span class="pp">|</span> Pentium Pro <span class="pp">|</span> 200 MHz <span class="pp">|</span> 3,3 V <span class="pp">|</span> 29,1 W <span class="pp">|</span> 3,03 <span class="pp">|</span> 2,88 <span class="pp">|</span> 13,36 <span class="pp">|</span></span>
+<span id="cb1-353"><a href="#cb1-353" aria-label="353"></a><span class="pp">|</span> 6 <span class="pp">|</span> P4 Willamette <span class="pp">|</span> 2 GHz <span class="pp">|</span> 1,75 V <span class="pp">|</span> 75,3 W <span class="pp">|</span> 10,00 <span class="pp">|</span> 2,59 <span class="pp">|</span> 12,29 <span class="pp">|</span></span>
+<span id="cb1-354"><a href="#cb1-354" aria-label="354"></a><span class="pp">|</span> 7 <span class="pp">|</span> P4 Prescott <span class="pp">|</span> 3,6 GHz <span class="pp">|</span> 1,25 V <span class="pp">|</span> 103 W <span class="pp">|</span> 1,80 <span class="pp">|</span> 1,37 <span class="pp">|</span> 18,31 <span class="pp">|</span></span>
+<span id="cb1-355"><a href="#cb1-355" aria-label="355"></a><span class="pp">|</span> 8 <span class="pp">|</span> Core 2 Kentsfield <span class="pp">|</span> 2,667 GHz <span class="pp">|</span> 1,1 V <span class="pp">|</span> 95 W <span class="pp">|</span> 0,74 <span class="pp">|</span> 0,92 <span class="pp">|</span> 29,44 <span class="pp">|</span></span>
+<span id="cb1-356"><a href="#cb1-356" aria-label="356"></a></span>
+<span id="cb1-357"><a href="#cb1-357" aria-label="357"></a>: {tbl-colwidths="<span class="co">[</span><span class="ot">6,28,15,9,10,10,10,12</span><span class="co">]</span>" .striped}</span>
+<span id="cb1-358"><a href="#cb1-358" aria-label="358"></a></span>
+<span id="cb1-359"><a href="#cb1-359" aria-label="359"></a>Exemple de càlcul per a la generació 5 (Pentium Pro):</span>
+<span id="cb1-360"><a href="#cb1-360" aria-label="360"></a></span>
+<span id="cb1-361"><a href="#cb1-361" aria-label="361"></a>$$C_5 = \frac{29{,}1 \text{ W}}{(3{,}3 \text{ V})^2 \cdot 200 \cdot 10^6 \text{ Hz}} = \frac{29{,}1}{10{,}89 \cdot 2 \cdot 10^8} \approx 13{,}36 \text{ nF}$$</span>
+<span id="cb1-362"><a href="#cb1-362" aria-label="362"></a></span>
+<span id="cb1-363"><a href="#cb1-363" aria-label="363"></a>**b)** La ràtio màxima de freqüència es produeix entre les generacions 5 i 6 (de 200 MHz a 2 GHz): $r_f = 10$. La ràtio màxima de potència es produeix entre les generacions 4 i 5: $r_P \approx 2{,}88$.</span>
+<span id="cb1-364"><a href="#cb1-364" aria-label="364"></a></span>
+<span id="cb1-365"><a href="#cb1-365" aria-label="365"></a>**c)** La **mitjana geomètrica** de les ràtios entre 7 generacions consecutives:</span>
+<span id="cb1-366"><a href="#cb1-366" aria-label="366"></a></span>
+<span id="cb1-367"><a href="#cb1-367" aria-label="367"></a>$$\bar{r}_f = \left(\prod_{i=1}^{7} r_{f,i}\right)^{1/7} = \left(1{,}28 \cdot 1{,}56 \cdot 2{,}64 \cdot 3{,}03 \cdot 10 \cdot 1{,}80 \cdot 0{,}74\right)^{1/7} \approx \mathbf{2{,}15} \times$$</span>
+<span id="cb1-368"><a href="#cb1-368" aria-label="368"></a></span>
+<span id="cb1-369"><a href="#cb1-369" aria-label="369"></a>$$\bar{r}_P = \left(\prod_{i=1}^{7} r_{P,i}\right)^{1/7} \approx \mathbf{1{,}62} \times$$</span>
+<span id="cb1-370"><a href="#cb1-370" aria-label="370"></a></span>
+<span id="cb1-371"><a href="#cb1-371" aria-label="371"></a>**d)** Respecte de la generació 1:</span>
+<span id="cb1-372"><a href="#cb1-372" aria-label="372"></a></span>
+<span id="cb1-373"><a href="#cb1-373" aria-label="373"></a>$$\frac{f_8}{f_1} = \frac{2{,}667 \cdot 10^9}{12{,}5 \cdot 10^6} \approx \mathbf{213} \times \qquad \frac{P_8}{P_1} = \frac{95}{3{,}3} \approx \mathbf{28{,}8} \times$$</span>
+<span id="cb1-374"><a href="#cb1-374" aria-label="374"></a></span>
+<span id="cb1-375"><a href="#cb1-375" aria-label="375"></a>Observació: a partir de la generació 8 (Core 2), la freqüència deixa de créixer i la potència fins i tot es redueix lleugerament. Això marca el final de l'era del creixement de la freqüència com a via principal per millorar el rendiment.</span>
+<span id="cb1-376"><a href="#cb1-376" aria-label="376"></a>:::</span>
+<span id="cb1-377"><a href="#cb1-377" aria-label="377"></a></span>
+<span id="cb1-378"><a href="#cb1-378" aria-label="378"></a>::: {#sol-p2-potencia-estatica .callout-tip}</span>
+<span id="cb1-379"><a href="#cb1-379" aria-label="379"></a><span class="fu">## Solució: potència estàtica i corrent de fuita</span></span>
+<span id="cb1-380"><a href="#cb1-380" aria-label="380"></a></span>
+<span id="cb1-381"><a href="#cb1-381" aria-label="381"></a>**Enunciat**: @exr-p2-potencia-estatica.</span>
+<span id="cb1-382"><a href="#cb1-382" aria-label="382"></a></span>
+<span id="cb1-383"><a href="#cb1-383" aria-label="383"></a>**a)** Percentatge de cada component sobre la potència total:</span>
+<span id="cb1-384"><a href="#cb1-384" aria-label="384"></a></span>
+<span id="cb1-385"><a href="#cb1-385" aria-label="385"></a><span class="pp">|</span> Tecnologia <span class="pp">|</span> $P_{din}$ <span class="pp">|</span> $P_{est}$ <span class="pp">|</span> $P_{tot}$ <span class="pp">|</span> % dinàmica <span class="pp">|</span> % estàtica <span class="pp">|</span></span>
+<span id="cb1-386"><a href="#cb1-386" aria-label="386"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-387"><a href="#cb1-387" aria-label="387"></a><span class="pp">|</span> 250 nm <span class="pp">|</span> 49 W <span class="pp">|</span> 1 W <span class="pp">|</span> 50 W <span class="pp">|</span> **98%** | **2%** <span class="pp">|</span></span>
+<span id="cb1-388"><a href="#cb1-388" aria-label="388"></a><span class="pp">|</span> 90 nm <span class="pp">|</span> 75 W <span class="pp">|</span> 45 W <span class="pp">|</span> 120 W <span class="pp">|</span> **62,5%** | **37,5%** <span class="pp">|</span></span>
+<span id="cb1-389"><a href="#cb1-389" aria-label="389"></a></span>
+<span id="cb1-390"><a href="#cb1-390" aria-label="390"></a>: {.striped}</span>
+<span id="cb1-391"><a href="#cb1-391" aria-label="391"></a></span>
+<span id="cb1-392"><a href="#cb1-392" aria-label="392"></a>Els corrents de fuita passen de ser negligibles (2%) a representar el 37,5% de la potència total en passar de 250 nm a 90 nm. Aquesta és una de les raons principals per les quals la miniaturització porta associada una creixent importància del consum estàtic.</span>
+<span id="cb1-393"><a href="#cb1-393" aria-label="393"></a></span>
+<span id="cb1-394"><a href="#cb1-394" aria-label="394"></a>**b)** De $P_{s} = V_{CC} \cdot I_{fuita}$ (@eq-potencia-estatica):</span>
+<span id="cb1-395"><a href="#cb1-395" aria-label="395"></a></span>
+<span id="cb1-396"><a href="#cb1-396" aria-label="396"></a>$$I_{fuita,250} = \frac{1 \text{ W}}{3{,}3 \text{ V}} \approx \mathbf{0{,}303 \text{ A}}$$</span>
+<span id="cb1-397"><a href="#cb1-397" aria-label="397"></a></span>
+<span id="cb1-398"><a href="#cb1-398" aria-label="398"></a>$$I_{fuita,90} = \frac{45 \text{ W}}{1{,}1 \text{ V}} \approx \mathbf{40{,}9 \text{ A}}$$</span>
+<span id="cb1-399"><a href="#cb1-399" aria-label="399"></a></span>
+<span id="cb1-400"><a href="#cb1-400" aria-label="400"></a>Malgrat que el voltatge s'ha reduït de 3,3 V a 1,1 V (factor 3), el corrent de fuita s'ha multiplicat per gairebé 135. Això reflecteix la dificultat creixent de mantenir els transistors en tall quan les dimensions disminueixen.</span>
+<span id="cb1-401"><a href="#cb1-401" aria-label="401"></a></span>
+<span id="cb1-402"><a href="#cb1-402" aria-label="402"></a>**c)** La reducció màxima de $P_{tot}$ eliminant tota la $P_{din}$ és, per a cada tecnologia, el percentatge de la potència dinàmica sobre la total:</span>
+<span id="cb1-403"><a href="#cb1-403" aria-label="403"></a></span>
+<span id="cb1-404"><a href="#cb1-404" aria-label="404"></a>$$\Delta P_{tot,250} = \frac{49}{50} = \mathbf{98\%} \qquad \Delta P_{tot,90} = \frac{75}{120} = \mathbf{62{,}5\%}$$</span>
+<span id="cb1-405"><a href="#cb1-405" aria-label="405"></a></span>
+<span id="cb1-406"><a href="#cb1-406" aria-label="406"></a>En la tecnologia de 90 nm, la reducció màxima possible de $P_{tot}$ actuant exclusivament sobre la potència dinàmica és del 62,5%; la potència estàtica restant (37,5%) no es pot eliminar per aquesta via.</span>
+<span id="cb1-407"><a href="#cb1-407" aria-label="407"></a>:::</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>28&nbsp; Sessió 1: Introducció al simulador RARS – Estructura de computadors</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../04_laboratori/L2.html" rel="next">
+<link href="../03_solucions/S9.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-eaeb381c6b7494c50009502241a4985c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3a86d90b797903817cf2addb73264634.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../04_laboratori/L1.html">Laboratori</a></li><li class="breadcrumb-item"><a href="../04_laboratori/L1.html"><span class="chapter-title">S1 RARS</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Cerca" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Estructura de computadors</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Estructura-de-computadors.pdf" title="Descarrega PDF" class="quarto-navigation-tool px-1" aria-label="Descarrega PDF"><i class="bi bi-filetype-pdf"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Cerca"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👋 Presentació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Apunts</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Problemes</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Solucions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Laboratori</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L1.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">S1 RARS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S2 RISC-V</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S4 Matrius i subrutines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S6 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/Lcalendari.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Calendari</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_riscv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌️ RISC-V</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_sigles_simbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⚙️ Sigles, símbols i notació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_contrib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👥 Contribueix-hi</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_LICENSE.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">©️ Llicència i reconeixements</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Taula de continguts</h2>
+   
+  <ul>
+  <li><a href="#lliuraments" id="toc-lliuraments" class="nav-link active" data-scroll-target="#lliuraments">Lliuraments</a></li>
+  <li><a href="#lectura-prèvia" id="toc-lectura-prèvia" class="nav-link" data-scroll-target="#lectura-prèvia">Lectura prèvia</a></li>
+  <li><a href="#sec-rars-primer-programa" id="toc-sec-rars-primer-programa" class="nav-link" data-scroll-target="#sec-rars-primer-programa"><span class="header-section-number">28.1</span> El primer programa</a></li>
+  <li><a href="#sec-rars-exploracio" id="toc-sec-rars-exploracio" class="nav-link" data-scroll-target="#sec-rars-exploracio"><span class="header-section-number">28.2</span> Exploració del simulador</a></li>
+  <li><a href="#sec-rars-execucio" id="toc-sec-rars-execucio" class="nav-link" data-scroll-target="#sec-rars-execucio"><span class="header-section-number">28.3</span> Execució i inspecció</a></li>
+  <li><a href="#sec-rars-breakpoints" id="toc-sec-rars-breakpoints" class="nav-link" data-scroll-target="#sec-rars-breakpoints"><span class="header-section-number">28.4</span> Punts d’aturada</a></li>
+  <li><a href="#sec-rars-depuracio" id="toc-sec-rars-depuracio" class="nav-link" data-scroll-target="#sec-rars-depuracio"><span class="header-section-number">28.5</span> Depuració</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content column-page-right" id="quarto-document-content">
+
+<div class="sidebar-institucional">
+  <a href="https://dac.upc.edu" target="_blank">Departament d'Arquitectura de Computadors (DAC)</a><br>
+  <a href="https://www.upc.edu" target="_blank">Universitat Politècnica de Catalunya (UPC)</a>
+</div>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../04_laboratori/L1.html">Laboratori</a></li><li class="breadcrumb-item"><a href="../04_laboratori/L1.html"><span class="chapter-title">S1 RARS</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Sessió 1: Introducció al simulador RARS</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Codi</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- Headings 3 per `### Lliuraments {.unnumbered}` i `### Lectura prèvia {.unnumbered}` és correcte.
+        És un dirty hack per evitar que la capçalera de pàgina en PDF no sigui sempre "Lectura prèvia",
+        cosa que passa amb Headings 2 `## Lliuraments {.unnumbered}` i `## Lectura prèvia {.unnumbered}`
+        
+        No esborreu aquest comentari -->
+<section id="lliuraments" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="lliuraments">Lliuraments</h3>
+<p>Cal lliurar les respostes als exercicis següents al campus virtual abans de l’inici de la sessió de laboratori:</p>
+<table class="table-striped table-hover caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Exercici</th>
+<th style="text-align: left;">Nom i format del fitxer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><a href="#exr-rars-panells" class="quarto-xref">Exercici&nbsp;<span>28.1</span></a></td>
+<td style="text-align: left;"><code>s1_2_1.md</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#exr-rars-pseudoinstruccio" class="quarto-xref">Exercici&nbsp;<span>28.2</span></a></td>
+<td style="text-align: left;"><code>s1_2_2.md</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#exr-recompte-instruccions" class="quarto-xref">Exercici&nbsp;<span>28.3</span></a></td>
+<td style="text-align: left;"><code>s1_3_1.md</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#exr-rars-memoria" class="quarto-xref">Exercici&nbsp;<span>28.4</span></a></td>
+<td style="text-align: left;"><code>s1_3_2.md</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#exr-rars-breakpoints" class="quarto-xref">Exercici&nbsp;<span>28.5</span></a></td>
+<td style="text-align: left;"><code>s1_4_1.md</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#exr-depuracio-pas-a-pas" class="quarto-xref">Exercici&nbsp;<span>28.6</span></a></td>
+<td style="text-align: left;"><code>s1_5_1.s</code> i <code>s1_5_1.md</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#exr-depuracio-breakpoints" class="quarto-xref">Exercici&nbsp;<span>28.7</span></a></td>
+<td style="text-align: left;"><code>s1_5_2.s</code> i <code>s1_5_2.md</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="lectura-prèvia" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="lectura-prèvia">Lectura prèvia</h3>
+<p>Per fer la sessió, cal haver instal·lat RARS tal com s’indica a la <a href="../index.html#sec-presentacio-eines-rars">Presentació del curs</a>.</p>
+<p>També cal haver llegit i entès els continguts següents:</p>
+<table class="table-striped table-hover caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Concepte</th>
+<th style="text-align: left;">On trobar-ho</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Format del codi assemblador</td>
+<td style="text-align: left;"><a href="../01_apunts/A2.html#imp-codi-format-criteris" class="quarto-xref">EC&nbsp;<span>2.6</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Esquelet d’un programa</td>
+<td style="text-align: left;"><a href="../01_apunts/A2.html#nte-programa-esquelet" class="quarto-xref">RISC-V&nbsp;<span>2.17</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Accessos a memòria (<code>lw</code>), desplaçaments (<code>slli</code>) i salts condicionals (<code>bge</code>, <code>blt</code>)</td>
+<td style="text-align: left;"><a href="../01_apunts/A2.html#sec-acces-paraula-lw-sw" class="quarto-xref"><span>Secció 2.6.3.1</span></a>, <a href="../01_apunts/A3.html#sec-desplacaments-logics" class="quarto-xref"><span>Secció 3.1.1</span></a>, <a href="../01_apunts/A3.html#sec-salts-condicionals" class="quarto-xref"><span>Secció 3.4.1</span></a></td>
+</tr>
+</tbody>
+</table>
+<div id="cau-format-codi-esquelet" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;28.1: Format del codi i esquelet: obligatoris
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El <strong>format del codi</strong> (<a href="../01_apunts/A2.html#imp-codi-format-criteris" class="quarto-xref">EC&nbsp;<span>2.6</span></a>) i l’<strong>esquelet</strong> (<a href="../01_apunts/A2.html#nte-programa-esquelet" class="quarto-xref">RISC-V&nbsp;<span>2.17</span></a>) s’han de respectar en <strong>tots</strong> els programes lliurats al laboratori i a l’examen de laboratori.</p>
+</div>
+</div>
+</section>
+<section id="sec-rars-primer-programa" class="level2" data-number="28.1">
+<h2 data-number="28.1" class="anchored" data-anchor-id="sec-rars-primer-programa"><span class="header-section-number">28.1</span> El primer programa</h2>
+<p>El programa següent és el programa mínim executable a RARS: imprimeix un missatge per consola i en finalitza l’execució.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>hola.s</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="hola.s"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="kw">.globl</span>  _start</span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="kw">.data</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a><span class="fu">msg:</span>    <span class="kw">.asciz</span>  <span class="st">"Hola, món!</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a><span class="kw">.text</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="fu">_start:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a>        <span class="kw">la</span>      <span class="kw">a0</span><span class="op">,</span> msg         <span class="co"># a0 = adreça de msg</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a>        <span class="kw">li</span>      <span class="kw">a7</span><span class="op">,</span> <span class="dv">4</span>           <span class="co"># syscall 4: print_string</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a>        <span class="cf">ecall</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a>        <span class="kw">li</span>      <span class="kw">a7</span><span class="op">,</span> <span class="dv">93</span>          <span class="co"># syscall 93: exit2</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a>        <span class="kw">li</span>      <span class="kw">a0</span><span class="op">,</span> <span class="dv">0</span>           <span class="co"># codi de sortida: 0</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a>        <span class="cf">ecall</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Per executar-lo a RARS:</p>
+<ol type="1">
+<li>Copieu el codi a l’editor de RARS i guardeu-lo com <code>hola.s</code>.</li>
+<li>Assembleu amb <em>Run → Assemble</em> (o F3). Si hi ha errors, RARS els mostra al panell de missatges amb el número de línia.</li>
+<li>Executeu amb <em>Run → Go</em> (o F5). El missatge ha d’aparèixer al panell de consola.</li>
+</ol>
+<div id="cau-syscalls-rars" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;28.2: Syscalls de RARS
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Una <strong>syscall</strong> és una petició de servei al sistema operatiu (o, en el cas de RARS, al simulador). Es fa carregant el codi de servei a <code>a7</code> i els paràmetres a <code>a0</code>–<code>a2</code>, i executant <code>ecall</code>. Les syscalls s’estudien en detall a <a href="../01_apunts/A9.html#sec-ei-ecall" class="quarto-xref"><span>Secció 9.5</span></a>; per ara n’hi ha prou amb usar-les com a patró:</p>
+<table class="table-striped table-hover caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Codi de servei (<code>a7</code>)</th>
+<th style="text-align: left;">Servei</th>
+<th style="text-align: left;">Paràmetre (<code>a0</code>)</th>
+<th style="text-align: left;">Retorn (<code>a0</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: left;"><code>print_int</code></td>
+<td style="text-align: left;">enter a imprimir</td>
+<td style="text-align: left;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: left;"><code>print_string</code></td>
+<td style="text-align: left;">adreça de la cadena</td>
+<td style="text-align: left;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">93</td>
+<td style="text-align: left;"><code>exit2</code></td>
+<td style="text-align: left;">codi de sortida</td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="sec-rars-exploracio" class="level2" data-number="28.2">
+<h2 data-number="28.2" class="anchored" data-anchor-id="sec-rars-exploracio"><span class="header-section-number">28.2</span> Exploració del simulador</h2>
+<p>La secció treballa sobre el programa <code>suma.s</code>, que calcula la suma dels elements d’un vector d’enters i deixa el resultat al registre <code>t0</code>.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>suma.s</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-filename="suma.s"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="kw">.globl</span>  _start</span>
+<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-label="3"></a><span class="kw">.data</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-label="4"></a><span class="fu">V:</span>      <span class="kw">.word</span>   <span class="op">-</span><span class="dv">1</span><span class="op">,</span> <span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="op">-</span><span class="dv">3</span><span class="op">,</span> <span class="op">-</span><span class="dv">4</span><span class="op">,</span> <span class="op">-</span><span class="dv">5</span><span class="op">,</span> <span class="op">-</span><span class="dv">6</span><span class="op">,</span> <span class="op">-</span><span class="dv">7</span><span class="op">,</span> <span class="op">-</span><span class="dv">8</span><span class="op">,</span> <span class="op">-</span><span class="dv">9</span><span class="op">,</span> <span class="op">-</span><span class="dv">10</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-label="5"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-label="6"></a><span class="kw">.text</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-label="7"></a><span class="fu">_start:</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-label="8"></a>        <span class="kw">li</span>      <span class="kw">t0</span><span class="op">,</span> <span class="dv">0</span>           <span class="co"># t0 = suma = 0</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-label="9"></a>        <span class="kw">li</span>      <span class="kw">t1</span><span class="op">,</span> <span class="dv">0</span>           <span class="co"># t1 = i = 0</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-label="10"></a>        <span class="kw">li</span>      <span class="kw">t2</span><span class="op">,</span> <span class="dv">10</span>          <span class="co"># t2 = N = 10</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-label="11"></a>        <span class="kw">la</span>      <span class="kw">t3</span><span class="op">,</span> V           <span class="co"># t3 = adreça de V</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-label="12"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-label="13"></a><span class="fu">bucle:</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-label="14"></a>        <span class="cf">bge</span>     <span class="kw">t1</span><span class="op">,</span> <span class="kw">t2</span><span class="op">,</span> fi      <span class="co"># si i &gt;= N, surt</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-label="15"></a>        <span class="kw">slli</span>    <span class="kw">t4</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="dv">2</span>       <span class="co"># t4 = 4*i</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-label="16"></a>        <span class="kw">add</span>     <span class="kw">t4</span><span class="op">,</span> <span class="kw">t3</span><span class="op">,</span> <span class="kw">t4</span>      <span class="co"># t4 = @V[i]</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-label="17"></a>        <span class="kw">lw</span>      <span class="kw">t4</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t4</span><span class="op">)</span>       <span class="co"># t4 = V[i]</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-label="18"></a>        <span class="kw">add</span>     <span class="kw">t0</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="kw">t4</span>      <span class="co"># suma += V[i]</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-label="19"></a>        <span class="kw">addi</span>    <span class="kw">t1</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="dv">1</span>       <span class="co"># i++</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-label="20"></a>        <span class="cf">j</span>       bucle</span>
+<span id="cb2-21"><a href="#cb2-21" aria-label="21"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-label="22"></a><span class="fu">fi:</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-label="23"></a>        <span class="kw">li</span>      <span class="kw">a7</span><span class="op">,</span> <span class="dv">93</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-label="24"></a>        <span class="kw">li</span>      <span class="kw">a0</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-label="25"></a>        <span class="cf">ecall</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Un cop assemblat el programa (F3), la pestanya <em>Execute</em> mostra els panells que s’usaran durant la simulació:</p>
+<ul>
+<li><strong>Panell de codi desassemblat</strong> (<em>Text Segment</em>, esquerra): mostra les instruccions en memòria, una per fila, amb l’adreça, la codificació en hexadecimal i el mnemònic. La instrucció que s’executarà a continuació apareix ressaltada.</li>
+<li><strong>Panell de registres</strong> (<em>Registers</em>, dreta): mostra el contingut dels 32 registres de propòsit general i el PC. Els registres modificats a l’últim pas apareixen ressaltats.</li>
+<li><strong>Panell de memòria de dades</strong> (<em>Data Segment</em>, centre-baix): mostra el contingut del segment <code>.data</code> en format de words hexadecimals.</li>
+<li><strong>Panell de consola</strong> (<em>Run I/O</em>, baix): mostra la sortida de les syscalls i permet introduir dades.</li>
+</ul>
+<hr>
+<div id="exr-rars-panells" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 28.1 (<code>s1_2_1.md</code>)</strong></span> Assembleu <code>suma.s</code> i responeu les preguntes següents:</p>
+<ol type="a">
+<li>On es mostra el valor del comptador de programa (PC)?</li>
+<li>RARS no mostra el nombre d’instruccions executades als panells principals. Quina eina de RARS permet comptar-les? Indiqueu el camí de menús per obrir-la i el pas necessari perquè comenci a comptar.</li>
+<li>El panell de codi mostra, per a cada instrucció, tres columnes de valors (a més de la casella d’activació de punt d’aturada i la columna de codi font). Quina informació conté cadascuna?</li>
+</ol>
+</div>
+<hr>
+<div id="sol-rars-panells" class="proof solution">
+<p><span class="proof-title"><em>Solució 28.1</em>. </span></p>
+<ol type="a">
+<li>Al panell de registres (<em>Registers</em>), a la fila <code>pc</code>.</li>
+<li><em>Tools → Instruction Counter</em>. Cal obrir-la <strong>abans</strong> d’executar el programa i prémer <em>Connect to Program</em> perquè comenci a comptar; si s’executa el programa abans de connectar l’eina, el recompte no es registrarà.</li>
+<li><em>Address</em> (adreça de memòria de la instrucció), <em>Code</em> (codificació de la instrucció en hexadecimal) i <em>Basic</em> (la instrucció real, amb els registres identificats amb <code>x0</code>–<code>x31</code>).</li>
+</ol>
+</div>
+<hr>
+<div id="exr-rars-pseudoinstruccio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 28.2 (<code>s1_2_2.md</code>)</strong></span> Algunes pseudoinstruccions s’expandeixen en més d’una instrucció real. Treballeu sobre <code>suma.s</code> ja assemblat.</p>
+<ol type="a">
+<li>Localitzeu la pseudoinstrucció <code>la t3, V</code> al panell de codi desassemblat. Quines instruccions reals ha generat? Copieu-les exactament tal com apareixen al panell.</li>
+<li>Per quina raó <code>la</code> necessita dues instruccions reals en lloc d’una?</li>
+<li>La pseudoinstrucció <code>li t2, 10</code> en canvi genera una sola instrucció. Per quina raó en aquest cas n’hi ha prou amb una? Hauria passat el mateix amb <code>li t2, 100000</code>?</li>
+</ol>
+<p><strong>Indicació</strong>: els immediats de les instruccions tipus I tenen 12 bits amb signe (rang −2048..2047).</p>
+</div>
+<div id="sol-rars-pseudoinstruccio" class="proof solution">
+<p><span class="proof-title"><em>Solució 28.2</em>. </span></p>
+<ol type="a">
+<li><code>auipc t3, 0xfc10</code> seguida de <code>addi t3, t3, -12</code> (els valors exactes depenen de l’adreça de <code>V</code> i de la posició de <code>la</code> al programa; l’estructura auipc+addi és sempre la mateixa).</li>
+<li>Perquè una adreça de memòria ocupa 32 bits, i cap instrucció tipus I té un immediat de 32 bits: <code>auipc</code> aporta els 20 bits alts (relatius al PC) i <code>addi</code> hi suma els 12 bits baixos amb signe.</li>
+<li><code>10</code> cap dins el rang [−2048, 2047] d’un immediat de 12 bits amb signe, per tant una sola <code>addi</code> n’hi ha prou. Amb <code>li t2, 100000</code> <strong>no</strong> passaria el mateix: 100000 no cap en 12 bits, de manera que RARS generaria <code>lui t2, 0x18</code> seguida de <code>addi t2, t2, 1696</code> (dues instruccions), igual que amb <code>la</code>.</li>
+</ol>
+</div>
+<hr>
+</section>
+<section id="sec-rars-execucio" class="level2" data-number="28.3">
+<h2 data-number="28.3" class="anchored" data-anchor-id="sec-rars-execucio"><span class="header-section-number">28.3</span> Execució i inspecció</h2>
+<p>RARS ofereix tres modes d’execució:</p>
+<ul>
+<li><strong>Execució contínua</strong> (F5): executa el programa fins al final (o fins al primer punt d’aturada).</li>
+<li><strong>Execució pas a pas</strong> (F7): executa una instrucció i s’atura. Útil per seguir el flux instrucció per instrucció.</li>
+<li><strong>Reinici</strong> (F12): torna el programa a l’estat inicial sense tornar a assemblar.</li>
+</ul>
+<p>El programa <code>hola.s</code> de la secció anterior no té bucles: el nombre d’instruccions és fix i petit. És el programa que s’usarà per al recompte manual.</p>
+<hr>
+<div id="exr-recompte-instruccions" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 28.3 (<code>s1_3_1.md</code>)</strong></span> Treballeu sobre el programa <code>hola.s</code>.</p>
+<ol type="a">
+<li>Obriu <em>Tools → Instruction Counter</em>, connecteu-la al programa (<em>Connect to Program</em>) i executeu amb F5. Quin nombre d’instruccions executades reporta l’eina?</li>
+<li>Feu el recompte manual: llisteu totes les instruccions que s’executen, en ordre, indicant per a cada una si és una instrucció real o l’expansió d’una pseudoinstrucció. Quantes instruccions reals s’executen en total?</li>
+<li>El valor del recompte manual coincideix amb el que reporta l’Instruction Counter? Si hi ha diferència, expliqueu-ne la causa.</li>
+</ol>
+<p><strong>Indicació</strong>: la pseudoinstrucció <code>la</code> s’expandeix en dues instruccions reals. Useu el panell de codi desassemblat per veure exactament quines instruccions s’executen.</p>
+</div>
+<div id="sol-recompte-instruccions" class="proof solution">
+<p><span class="proof-title"><em>Solució 28.3</em>. </span></p>
+<ol type="a">
+<li>7 instruccions.</li>
+<li><code>la a0, msg</code> (auipc + addi, 2 instruccions reals), <code>li a7, 4</code> (addi, 1), <code>ecall</code> (1), <code>li a7, 93</code> (addi, 1), <code>li a0, 0</code> (addi, 1), <code>ecall</code> (1). Total: <strong>7 instruccions reals</strong>.</li>
+<li>Sí, coincideixen (7 = 7). Tot i que el codi font té 6 línies, el recompte manual dona 7 perquè <code>la</code> s’expandeix en dues instruccions reals.</li>
+</ol>
+</div>
+<hr>
+<div id="exr-rars-memoria" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 28.4 (<code>s1_3_2.md</code>)</strong></span> Assembleu <code>suma.s</code> i observeu el panell de memòria de dades.</p>
+<ol type="a">
+<li>En quina adreça de memòria comença el vector <code>V</code>?</li>
+<li>En quina adreça exacta es troba <code>V[3]</code>? Quin és el seu contingut en hexadecimal?</li>
+<li><code>V[0]</code> conté el valor <code>-1</code>. Quin valor hexadecimal té al panell de memòria? Expliqueu com s’obté aquesta representació.</li>
+<li>El panell mostra cada word com un valor hexadecimal de 32 bits. Quin ordre d’emmagatzematge dels bytes (endianness) usa RV32I?</li>
+</ol>
+</div>
+<div id="sol-rars-memoria" class="proof solution">
+<p><span class="proof-title"><em>Solució 28.4</em>. </span></p>
+<ol type="a">
+<li><code>0x10010000</code> (adreça per defecte del segment <code>.data</code> a RARS).</li>
+<li><code>0x1001000C</code> (= 0x10010000 + 3·4); conté <code>0xFFFFFFFC</code>.</li>
+<li><code>0xFFFFFFFF</code>. S’obté calculant el complement a 2 de −1 en 32 bits: es complementen tots els bits d’1 (0x00000000 → 0xFFFFFFFF) i se suma 1, o de manera equivalent 2³² − 1 = 0xFFFFFFFF.</li>
+<li>RV32I és <strong>little-endian</strong>: el byte de menys pes s’emmagatzema a l’adreça més baixa.</li>
+</ol>
+</div>
+<hr>
+</section>
+<section id="sec-rars-breakpoints" class="level2" data-number="28.4">
+<h2 data-number="28.4" class="anchored" data-anchor-id="sec-rars-breakpoints"><span class="header-section-number">28.4</span> Punts d’aturada</h2>
+<p>Un <strong>punt d’aturada</strong> (<em>breakpoint</em>) és una marca sobre una instrucció que fa que l’execució contínua (F5) s’aturi just abans d’executar-la. S’activa i es desactiva fent clic a la casella de l’esquerra del panell de codi desassemblat, a la fila de la instrucció triada.</p>
+<p>Els punts d’aturada permeten inspeccionar l’estat del programa en un punt clau sense haver d’executar-lo pas a pas des del principi. Quan el programa s’atura, es pot continuar amb F5 (fins al següent punt d’aturada) o amb F7 (pas a pas).</p>
+<hr>
+<div id="exr-rars-breakpoints" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 28.5 (<code>s1_4_1.md</code>)</strong></span> Treballeu sobre <code>suma.s</code>.</p>
+<ol type="a">
+<li>Afegiu un punt d’aturada a la instrucció <code>add t0, t0, t4</code> (la que acumula la suma). Executeu el programa amb F5. En quina iteració s’atura? Quins són els valors de <code>t0</code> i <code>t4</code> en aquest moment? Tingueu en compte que l’execució s’atura just <strong>abans</strong> d’executar la instrucció marcada.</li>
+<li>Premeu F5 repetidament fins al final. Anoteu el valor de <code>t4</code> en cada aturada. Verifiqueu que els valors corresponen als elements del vector <code>V</code> en ordre.</li>
+<li>Quin és el valor final de <code>t0</code> un cop ha acabat l’execució? Era el resultat esperat? Justifiqueu-lo.</li>
+</ol>
+</div>
+<div id="sol-rars-breakpoints" class="proof solution">
+<p><span class="proof-title"><em>Solució 28.5</em>. </span></p>
+<ol type="a">
+<li>S’atura a la primera iteració, amb <code>t0 = 0</code> i <code>t4 = -1</code>.</li>
+<li>Els valors de <code>t4</code> en cada aturada successiva són −1, −2, −3, −4, −5, −6, −7, −8, −9, −10: coincideixen exactament amb els elements de <code>V</code> en ordre.</li>
+<li><code>t0 = -55</code>. És el resultat esperat: −1−2−3−4−5−6−7−8−9−10 = −55.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="Comprovació pràctica">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Exemple</span>Comprovació pràctica
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Reproduïu la traça a RARS: 10 aturades en total, amb <code>t4</code> recorrent <code>V</code> en ordre i <code>t0</code> acumulant fins a −55.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="sec-rars-depuracio" class="level2" data-number="28.5">
+<h2 data-number="28.5" class="anchored" data-anchor-id="sec-rars-depuracio"><span class="header-section-number">28.5</span> Depuració</h2>
+<p>Quan un programa assembla sense errors però produeix un resultat incorrecte, cal <strong>depurar-lo</strong>: executar-lo pas a pas o amb punts d’aturada per identificar en quina instrucció el comportament no és l’esperat.</p>
+<p>El procediment general és:</p>
+<ol type="1">
+<li>Determineu el resultat esperat abans d’executar el programa.</li>
+<li>Identifiqueu un punt de control (per exemple, la instrucció d’acumulació d’un bucle) i afegiu-hi un punt d’aturada.</li>
+<li>En cada aturada, comproveu que els valors dels registres rellevants coincideixen amb el que s’esperava.</li>
+<li>Quan trobeu una discrepància, retrocediu un pas per identificar la instrucció causant. RARS ofereix <em>Run → Backstep</em> (F8) per desfer l’última instrucció executada sense haver de reiniciar.</li>
+</ol>
+<hr>
+<div id="exr-depuracio-pas-a-pas" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 28.6 (<code>s1_5_1.s</code> i <code>s1_5_1.md</code>)</strong></span> El programa <code>s1_5_1.s</code> és una versió <strong>errònia</strong> del programa <code>suma.s</code>. Conté un únic error que fa que el resultat final de <code>t0</code> no sigui <code>-55</code>.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>s1_5_1.s</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-filename="s1_5_1.s"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="kw">.globl</span>  _start</span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="kw">.data</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a><span class="fu">V:</span>      <span class="kw">.word</span>   <span class="op">-</span><span class="dv">1</span><span class="op">,</span> <span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="op">-</span><span class="dv">3</span><span class="op">,</span> <span class="op">-</span><span class="dv">4</span><span class="op">,</span> <span class="op">-</span><span class="dv">5</span><span class="op">,</span> <span class="op">-</span><span class="dv">6</span><span class="op">,</span> <span class="op">-</span><span class="dv">7</span><span class="op">,</span> <span class="op">-</span><span class="dv">8</span><span class="op">,</span> <span class="op">-</span><span class="dv">9</span><span class="op">,</span> <span class="op">-</span><span class="dv">10</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-label="6"></a><span class="kw">.text</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-label="7"></a><span class="fu">_start:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-label="8"></a>        <span class="kw">li</span>      <span class="kw">t0</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-label="9"></a>        <span class="kw">li</span>      <span class="kw">t1</span><span class="op">,</span> <span class="dv">9</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-label="10"></a>        <span class="kw">li</span>      <span class="kw">t2</span><span class="op">,</span> <span class="dv">10</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-label="11"></a>        <span class="kw">la</span>      <span class="kw">t3</span><span class="op">,</span> V</span>
+<span id="cb3-12"><a href="#cb3-12" aria-label="12"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-label="13"></a><span class="fu">bucle:</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-label="14"></a>        <span class="cf">bge</span>     <span class="kw">t1</span><span class="op">,</span> <span class="kw">t2</span><span class="op">,</span> fi</span>
+<span id="cb3-15"><a href="#cb3-15" aria-label="15"></a>        <span class="kw">slli</span>    <span class="kw">t4</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-label="16"></a>        <span class="kw">add</span>     <span class="kw">t4</span><span class="op">,</span> <span class="kw">t3</span><span class="op">,</span> <span class="kw">t4</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-label="17"></a>        <span class="kw">lw</span>      <span class="kw">t4</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t4</span><span class="op">)</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-label="18"></a>        <span class="kw">add</span>     <span class="kw">t0</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="kw">t4</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-label="19"></a>        <span class="kw">addi</span>    <span class="kw">t1</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-label="20"></a>        <span class="cf">j</span>       bucle</span>
+<span id="cb3-21"><a href="#cb3-21" aria-label="21"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-label="22"></a><span class="fu">fi:</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-label="23"></a>        <span class="kw">li</span>      <span class="kw">a7</span><span class="op">,</span> <span class="dv">93</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-label="24"></a>        <span class="kw">li</span>      <span class="kw">a0</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-label="25"></a>        <span class="cf">ecall</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol type="a">
+<li>Sense executar el programa, analitzeu el codi i preveieu quin serà el resultat incorrecte de <code>t0</code> i per quina raó.</li>
+<li>Executeu el programa pas a pas per confirmar la vostra predicció. En quina iteració s’observa per primera vegada un comportament incorrecte?</li>
+<li>Corregiu l’error (canvieu una única línia) i verifiqueu que el resultat és <code>-55</code>. Lliureu la versió corregida com <code>s1_5_1.s</code>.</li>
+<li>Al fitxer <code>s1_5_1.md</code>, descriviu: quina és la instrucció errònia, quin valor incorrecte produïa i com ho heu detectat.</li>
+</ol>
+</div>
+<div id="sol-depuracio-pas-a-pas" class="proof solution">
+<p><span class="proof-title"><em>Solució 28.6</em>. </span></p>
+<ol type="a">
+<li>L’error és <code>li t1, 9</code> (hauria de ser <code>li t1, 0</code>): l’índex <code>i</code> comença a 9 en lloc de 0, per tant el bucle només suma <code>V[9] = -10</code>. El resultat incorrecte previst és <code>t0 = -10</code>.</li>
+<li>El comportament incorrecte s’observa ja a la <strong>primera</strong> iteració: <code>t1</code> val 9 des de l’inici i <code>t4</code> carrega <code>V[9] = -10</code> en lloc de <code>V[0] = -1</code>.</li>
+<li>Cal canviar <code>li t1, 9</code> per <code>li t1, 0</code>. Amb la correcció, <code>t0</code> acaba valent <code>-55</code>.</li>
+<li>La instrucció errònia és <code>li t1, 9</code>; produïa <code>t0 = -10</code> perquè només s’acumulava l’últim element del vector; es detecta comparant l’índex inicial esperat (0) amb el valor carregat a <code>t1</code> a l’inici de l’execució pas a pas.</li>
+</ol>
+</div>
+<hr>
+<div id="exr-depuracio-breakpoints" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 28.7 (<code>s1_5_2.s</code> i <code>s1_5_2.md</code>)</strong></span> El programa <code>s1_5_2.s</code> calcula la <strong>mitjana entera</strong> dels elements del vector <code>V</code> (és a dir, la divisió entera de la suma entre el nombre d’elements). La divisió es fa per mitjà d’un segon bucle que resta repetidament el divisor del dividend mentre el dividend no sigui inferior al divisor.</p>
+<p>El programa conté un únic error. El resultat correcte del quocient (registre <code>t5</code>) hauria de ser <code>5</code> (ja que ⌊55/10⌋ = 5, i la suma dels elements de <code>V = {1, 2, ..., 10}</code> és 55).</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>s1_5_2.s</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-filename="s1_5_2.s"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="kw">.globl</span>  _start</span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a><span class="kw">.data</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a><span class="fu">V:</span>      <span class="kw">.word</span>   <span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">6</span><span class="op">,</span> <span class="dv">7</span><span class="op">,</span> <span class="dv">8</span><span class="op">,</span> <span class="dv">9</span><span class="op">,</span> <span class="dv">10</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-label="6"></a><span class="kw">.text</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-label="7"></a><span class="fu">_start:</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-label="8"></a>        <span class="kw">li</span>      <span class="kw">t0</span><span class="op">,</span> <span class="dv">0</span>           <span class="co"># t0 = suma = 0</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-label="9"></a>        <span class="kw">li</span>      <span class="kw">t1</span><span class="op">,</span> <span class="dv">0</span>           <span class="co"># t1 = i = 0</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-label="10"></a>        <span class="kw">li</span>      <span class="kw">t2</span><span class="op">,</span> <span class="dv">10</span>          <span class="co"># t2 = N = 10</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-label="11"></a>        <span class="kw">la</span>      <span class="kw">t3</span><span class="op">,</span> V</span>
+<span id="cb4-12"><a href="#cb4-12" aria-label="12"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-label="13"></a><span class="fu">bucle:</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-label="14"></a>        <span class="cf">bge</span>     <span class="kw">t1</span><span class="op">,</span> <span class="kw">t2</span><span class="op">,</span> fi</span>
+<span id="cb4-15"><a href="#cb4-15" aria-label="15"></a>        <span class="kw">slli</span>    <span class="kw">t4</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-label="16"></a>        <span class="kw">add</span>     <span class="kw">t4</span><span class="op">,</span> <span class="kw">t3</span><span class="op">,</span> <span class="kw">t4</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-label="17"></a>        <span class="kw">lw</span>      <span class="kw">t4</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t4</span><span class="op">)</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-label="18"></a>        <span class="kw">add</span>     <span class="kw">t0</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="kw">t4</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-label="19"></a>        <span class="kw">addi</span>    <span class="kw">t1</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-label="20"></a>        <span class="cf">j</span>       bucle</span>
+<span id="cb4-21"><a href="#cb4-21" aria-label="21"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-label="22"></a><span class="fu">fi:</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-label="23"></a>        <span class="kw">li</span>      <span class="kw">t5</span><span class="op">,</span> <span class="dv">0</span>           <span class="co"># t5 = quocient = 0</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-label="24"></a>        <span class="kw">mv</span>      <span class="kw">t6</span><span class="op">,</span> <span class="kw">t2</span>          <span class="co"># t6 = divisor = N</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-label="25"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-label="26"></a><span class="fu">bucle2:</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-label="27"></a>        <span class="cf">blt</span>     <span class="kw">t0</span><span class="op">,</span> <span class="kw">t6</span><span class="op">,</span> fi2     <span class="co"># si suma &lt; divisor, acaba</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-label="28"></a>        <span class="kw">sub</span>     <span class="kw">t0</span><span class="op">,</span> <span class="kw">t6</span><span class="op">,</span> <span class="kw">t0</span>      <span class="co"># suma -= divisor</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-label="29"></a>        <span class="kw">addi</span>    <span class="kw">t5</span><span class="op">,</span> <span class="kw">t5</span><span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-label="30"></a>        <span class="cf">j</span>       bucle2</span>
+<span id="cb4-31"><a href="#cb4-31" aria-label="31"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-label="32"></a><span class="fu">fi2:</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-label="33"></a>        <span class="kw">li</span>      <span class="kw">a7</span><span class="op">,</span> <span class="dv">93</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-label="34"></a>        <span class="kw">li</span>      <span class="kw">a0</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-label="35"></a>        <span class="cf">ecall</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol type="a">
+<li>Sense executar el programa, llegiu el codi del segon bucle (<code>bucle2</code>) i identifiqueu l’error. Què hauria de fer la instrucció errònia?</li>
+<li>Afegiu un punt d’aturada a la primera instrucció de <code>bucle2</code>. Executeu fins al punt d’aturada amb F5 i comproveu que <code>t0</code> és <code>55</code> i <code>t6</code> és <code>10</code>.</li>
+<li>Continueu amb F7 pas a pas. Observeu el valor de <code>t0</code> després de la instrucció <code>sub</code>. Es confirma el diagnòstic del punt a)?</li>
+<li>Corregiu l’error i verifiqueu que <code>t5</code> val <code>5</code>. Lliureu la versió corregida com <code>s1_5_2.s</code>.</li>
+<li>Al fitxer <code>s1_5_2.md</code>, descriviu: on heu col·locat el punt d’aturada i per quina raó, quina és la instrucció errònia i com l’heu corregit.</li>
+</ol>
+</div>
+<div id="sol-depuracio-breakpoints" class="proof solution">
+<p><span class="proof-title"><em>Solució 28.7</em>. </span></p>
+<ol type="a">
+<li>L’error és <code>sub t0, t6, t0</code> (els operands estan invertits: hauria de ser <code>sub t0, t0, t6</code>). La instrucció hauria de calcular <code>t0 = t0 - t6</code> (suma restant el divisor), no <code>t6 - t0</code>.</li>
+<li>A l’aturada, <code>t0 = 55</code> (suma de <code>V = {1, ..., 10}</code>) i <code>t6 = 10</code> (còpia de <code>N</code>).</li>
+<li>Després del <code>sub</code> erroni, <code>t0 = 10 - 55 = -45</code>. Això confirma el diagnòstic: en comptes de restar el divisor de la suma (55 − 10 = 45), es resta la suma del divisor, produint un valor negatiu que fa sortir del bucle massa aviat (amb <code>t5 = 1</code> en lloc de 5).</li>
+<li>Amb <code>sub t0, t0, t6</code>, el bucle itera 5 vegades (55→45→35→25→15→5) i <code>t5</code> acaba valent <code>5</code>.</li>
+<li>Exemple de resposta: el punt d’aturada es col·loca a <code>blt t0, t6, fi2</code> (primera instrucció de <code>bucle2</code>) perquè és el punt on es pot comprovar l’estat inicial de <code>t0</code> i <code>t6</code> abans de cap iteració; la instrucció errònia és <code>sub t0, t6, t0</code>, amb els operands invertits; es corregeix escrivint <code>sub t0, t0, t6</code>.</li>
+</ol>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiat!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiat!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="../03_solucions/S9.html" class="pagination-link" aria-label="T9 Excepcions i interrupcions">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">T9 Excepcions i interrupcions</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../04_laboratori/L2.html" class="pagination-link" aria-label="S2 RISC-V">
+        <span class="nav-page-text"><span class="chapter-title">S2 RISC-V</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Codi font</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="co">---</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a><span class="an">number-sections:</span><span class="co"> true</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a><span class="co">---</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-label="4"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-label="5"></a><span class="fu"># {{&lt; var sessio1 &gt;}} {#sec-sessio-introduccio}</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-label="6"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-label="7"></a><span class="co">&lt;!-- Headings 3 per `### Lliuraments {.unnumbered}` i `### Lectura prèvia {.unnumbered}` és correcte.</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-label="8"></a><span class="co">        És un dirty hack per evitar que la capçalera de pàgina en PDF no sigui sempre "Lectura prèvia",</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-label="9"></a><span class="co">        cosa que passa amb Headings 2 `## Lliuraments {.unnumbered}` i `## Lectura prèvia {.unnumbered}`</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-label="10"></a><span class="co">        </span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-label="11"></a><span class="co">        No esborreu aquest comentari --&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-label="12"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-label="13"></a><span class="fu">### Lliuraments {.unnumbered}</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-label="14"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-label="15"></a>Cal lliurar les respostes als exercicis següents al campus virtual abans de l'inici de la sessió de laboratori:</span>
+<span id="cb5-16"><a href="#cb5-16" aria-label="16"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-label="17"></a><span class="pp">|</span> Exercici <span class="pp">|</span> Nom i format del fitxer <span class="pp">|</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-label="18"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-label="19"></a><span class="pp">|</span> @exr-rars-panells <span class="pp">|</span> <span class="in">`s1_2_1.md`</span> <span class="pp">|</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-label="20"></a><span class="pp">|</span> @exr-rars-pseudoinstruccio <span class="pp">|</span> <span class="in">`s1_2_2.md`</span> <span class="pp">|</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-label="21"></a><span class="pp">|</span> @exr-recompte-instruccions <span class="pp">|</span> <span class="in">`s1_3_1.md`</span> <span class="pp">|</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-label="22"></a><span class="pp">|</span> @exr-rars-memoria <span class="pp">|</span> <span class="in">`s1_3_2.md`</span> <span class="pp">|</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-label="23"></a><span class="pp">|</span> @exr-rars-breakpoints <span class="pp">|</span> <span class="in">`s1_4_1.md`</span> <span class="pp">|</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-label="24"></a><span class="pp">|</span> @exr-depuracio-pas-a-pas <span class="pp">|</span> <span class="in">`s1_5_1.s`</span> i <span class="in">`s1_5_1.md`</span> <span class="pp">|</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-label="25"></a><span class="pp">|</span> @exr-depuracio-breakpoints <span class="pp">|</span> <span class="in">`s1_5_2.s`</span> i <span class="in">`s1_5_2.md`</span> <span class="pp">|</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-label="26"></a>: {.striped .hover}</span>
+<span id="cb5-27"><a href="#cb5-27" aria-label="27"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-label="28"></a><span class="fu">### Lectura prèvia {.unnumbered}</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-label="29"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-label="30"></a>Per fer la sessió, cal haver instal·lat RARS tal com s'indica a la <span class="co">[</span><span class="ot">Presentació del curs</span><span class="co">](../index.qmd#sec-presentacio-eines-rars)</span>.</span>
+<span id="cb5-31"><a href="#cb5-31" aria-label="31"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-label="32"></a>També cal haver llegit i entès els continguts següents:</span>
+<span id="cb5-33"><a href="#cb5-33" aria-label="33"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-label="34"></a><span class="pp">|</span> Concepte <span class="pp">|</span> On trobar-ho <span class="pp">|</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-label="35"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-label="36"></a><span class="pp">|</span> Format del codi assemblador <span class="pp">|</span> @imp-codi-format-criteris <span class="pp">|</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-label="37"></a><span class="pp">|</span> Esquelet d'un programa <span class="pp">|</span> @nte-programa-esquelet <span class="pp">|</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-label="38"></a><span class="pp">|</span> Accessos a memòria (<span class="in">`lw`</span>), desplaçaments (<span class="in">`slli`</span>) i salts condicionals (<span class="in">`bge`</span>, <span class="in">`blt`</span>) <span class="pp">|</span> @sec-acces-paraula-lw-sw, @sec-desplacaments-logics, @sec-salts-condicionals <span class="pp">|</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-label="39"></a>: {.striped .hover}</span>
+<span id="cb5-40"><a href="#cb5-40" aria-label="40"></a></span>
+<span id="cb5-41"><a href="#cb5-41" aria-label="41"></a>::: {#cau-format-codi-esquelet .callout-caution}</span>
+<span id="cb5-42"><a href="#cb5-42" aria-label="42"></a><span class="fu">## Format del codi i esquelet: obligatoris</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-label="43"></a></span>
+<span id="cb5-44"><a href="#cb5-44" aria-label="44"></a>El **format del codi** (@imp-codi-format-criteris) i l'**esquelet** (@nte-programa-esquelet) s'han de respectar en **tots** els programes lliurats al laboratori i a l'examen de laboratori.</span>
+<span id="cb5-45"><a href="#cb5-45" aria-label="45"></a>:::</span>
+<span id="cb5-46"><a href="#cb5-46" aria-label="46"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-label="47"></a><span class="fu">## El primer programa {#sec-rars-primer-programa}</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-label="48"></a></span>
+<span id="cb5-49"><a href="#cb5-49" aria-label="49"></a>El programa següent és el programa mínim executable a RARS: imprimeix un missatge per consola i en finalitza l'execució.</span>
+<span id="cb5-50"><a href="#cb5-50" aria-label="50"></a></span>
+<span id="cb5-51"><a href="#cb5-51" aria-label="51"></a><span class="in">```{.s filename="hola.s"}</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-label="52"></a><span class="in">.globl  _start</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-label="53"></a></span>
+<span id="cb5-54"><a href="#cb5-54" aria-label="54"></a><span class="in">.data</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-label="55"></a><span class="in">msg:    .asciz  "Hola, món!\n"</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-label="56"></a></span>
+<span id="cb5-57"><a href="#cb5-57" aria-label="57"></a><span class="in">.text</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-label="58"></a><span class="in">_start:</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-label="59"></a><span class="in">        la      a0, msg         # a0 = adreça de msg</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-label="60"></a><span class="in">        li      a7, 4           # syscall 4: print_string</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-label="61"></a><span class="in">        ecall</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-label="62"></a></span>
+<span id="cb5-63"><a href="#cb5-63" aria-label="63"></a><span class="in">        li      a7, 93          # syscall 93: exit2</span></span>
+<span id="cb5-64"><a href="#cb5-64" aria-label="64"></a><span class="in">        li      a0, 0           # codi de sortida: 0</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-label="65"></a><span class="in">        ecall</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-label="66"></a><span class="in">```</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-label="67"></a></span>
+<span id="cb5-68"><a href="#cb5-68" aria-label="68"></a>Per executar-lo a RARS:</span>
+<span id="cb5-69"><a href="#cb5-69" aria-label="69"></a></span>
+<span id="cb5-70"><a href="#cb5-70" aria-label="70"></a><span class="ss">1. </span>Copieu el codi a l'editor de RARS i guardeu-lo com <span class="in">`hola.s`</span>.</span>
+<span id="cb5-71"><a href="#cb5-71" aria-label="71"></a><span class="ss">2. </span>Assembleu amb *Run → Assemble* (o F3). Si hi ha errors, RARS els mostra al panell de missatges amb el número de línia.</span>
+<span id="cb5-72"><a href="#cb5-72" aria-label="72"></a><span class="ss">3. </span>Executeu amb *Run → Go* (o F5). El missatge ha d'aparèixer al panell de consola.</span>
+<span id="cb5-73"><a href="#cb5-73" aria-label="73"></a></span>
+<span id="cb5-74"><a href="#cb5-74" aria-label="74"></a>::: {#cau-syscalls-rars .callout-caution}</span>
+<span id="cb5-75"><a href="#cb5-75" aria-label="75"></a><span class="fu">## Syscalls de RARS</span></span>
+<span id="cb5-76"><a href="#cb5-76" aria-label="76"></a></span>
+<span id="cb5-77"><a href="#cb5-77" aria-label="77"></a>Una **syscall** és una petició de servei al sistema operatiu (o, en el cas de RARS, al simulador). Es fa carregant el codi de servei a <span class="in">`a7`</span> i els paràmetres a <span class="in">`a0`</span>–<span class="in">`a2`</span>, i executant <span class="in">`ecall`</span>. Les syscalls s'estudien en detall a @sec-ei-ecall; per ara n'hi ha prou amb usar-les com a patró:</span>
+<span id="cb5-78"><a href="#cb5-78" aria-label="78"></a></span>
+<span id="cb5-79"><a href="#cb5-79" aria-label="79"></a><span class="pp">|</span> Codi de servei (<span class="in">`a7`</span>) <span class="pp">|</span> Servei <span class="pp">|</span> Paràmetre (<span class="in">`a0`</span>) <span class="pp">|</span> Retorn (<span class="in">`a0`</span>) <span class="pp">|</span></span>
+<span id="cb5-80"><a href="#cb5-80" aria-label="80"></a><span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-label="81"></a><span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`print_int`</span> <span class="pp">|</span> enter a imprimir <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb5-82"><a href="#cb5-82" aria-label="82"></a><span class="pp">|</span> 4 <span class="pp">|</span> <span class="in">`print_string`</span> <span class="pp">|</span> adreça de la cadena <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb5-83"><a href="#cb5-83" aria-label="83"></a><span class="pp">|</span> 93 <span class="pp">|</span> <span class="in">`exit2`</span> <span class="pp">|</span> codi de sortida <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-label="84"></a>: {.striped .hover}</span>
+<span id="cb5-85"><a href="#cb5-85" aria-label="85"></a>:::</span>
+<span id="cb5-86"><a href="#cb5-86" aria-label="86"></a></span>
+<span id="cb5-87"><a href="#cb5-87" aria-label="87"></a><span class="fu">## Exploració del simulador {#sec-rars-exploracio}</span></span>
+<span id="cb5-88"><a href="#cb5-88" aria-label="88"></a></span>
+<span id="cb5-89"><a href="#cb5-89" aria-label="89"></a>La secció treballa sobre el programa <span class="in">`suma.s`</span>, que calcula la suma dels elements d'un vector d'enters i deixa el resultat al registre <span class="in">`t0`</span>.</span>
+<span id="cb5-90"><a href="#cb5-90" aria-label="90"></a></span>
+<span id="cb5-91"><a href="#cb5-91" aria-label="91"></a><span class="in">```{.s filename="suma.s"}</span></span>
+<span id="cb5-92"><a href="#cb5-92" aria-label="92"></a><span class="in">.globl  _start</span></span>
+<span id="cb5-93"><a href="#cb5-93" aria-label="93"></a></span>
+<span id="cb5-94"><a href="#cb5-94" aria-label="94"></a><span class="in">.data</span></span>
+<span id="cb5-95"><a href="#cb5-95" aria-label="95"></a><span class="in">V:      .word   -1, -2, -3, -4, -5, -6, -7, -8, -9, -10</span></span>
+<span id="cb5-96"><a href="#cb5-96" aria-label="96"></a></span>
+<span id="cb5-97"><a href="#cb5-97" aria-label="97"></a><span class="in">.text</span></span>
+<span id="cb5-98"><a href="#cb5-98" aria-label="98"></a><span class="in">_start:</span></span>
+<span id="cb5-99"><a href="#cb5-99" aria-label="99"></a><span class="in">        li      t0, 0           # t0 = suma = 0</span></span>
+<span id="cb5-100"><a href="#cb5-100" aria-label="100"></a><span class="in">        li      t1, 0           # t1 = i = 0</span></span>
+<span id="cb5-101"><a href="#cb5-101" aria-label="101"></a><span class="in">        li      t2, 10          # t2 = N = 10</span></span>
+<span id="cb5-102"><a href="#cb5-102" aria-label="102"></a><span class="in">        la      t3, V           # t3 = adreça de V</span></span>
+<span id="cb5-103"><a href="#cb5-103" aria-label="103"></a></span>
+<span id="cb5-104"><a href="#cb5-104" aria-label="104"></a><span class="in">bucle:</span></span>
+<span id="cb5-105"><a href="#cb5-105" aria-label="105"></a><span class="in">        bge     t1, t2, fi      # si i &gt;= N, surt</span></span>
+<span id="cb5-106"><a href="#cb5-106" aria-label="106"></a><span class="in">        slli    t4, t1, 2       # t4 = 4*i</span></span>
+<span id="cb5-107"><a href="#cb5-107" aria-label="107"></a><span class="in">        add     t4, t3, t4      # t4 = @V[i]</span></span>
+<span id="cb5-108"><a href="#cb5-108" aria-label="108"></a><span class="in">        lw      t4, 0(t4)       # t4 = V[i]</span></span>
+<span id="cb5-109"><a href="#cb5-109" aria-label="109"></a><span class="in">        add     t0, t0, t4      # suma += V[i]</span></span>
+<span id="cb5-110"><a href="#cb5-110" aria-label="110"></a><span class="in">        addi    t1, t1, 1       # i++</span></span>
+<span id="cb5-111"><a href="#cb5-111" aria-label="111"></a><span class="in">        j       bucle</span></span>
+<span id="cb5-112"><a href="#cb5-112" aria-label="112"></a></span>
+<span id="cb5-113"><a href="#cb5-113" aria-label="113"></a><span class="in">fi:</span></span>
+<span id="cb5-114"><a href="#cb5-114" aria-label="114"></a><span class="in">        li      a7, 93</span></span>
+<span id="cb5-115"><a href="#cb5-115" aria-label="115"></a><span class="in">        li      a0, 0</span></span>
+<span id="cb5-116"><a href="#cb5-116" aria-label="116"></a><span class="in">        ecall</span></span>
+<span id="cb5-117"><a href="#cb5-117" aria-label="117"></a><span class="in">```</span></span>
+<span id="cb5-118"><a href="#cb5-118" aria-label="118"></a></span>
+<span id="cb5-119"><a href="#cb5-119" aria-label="119"></a>Un cop assemblat el programa (F3), la pestanya *Execute* mostra els panells que s'usaran durant la simulació:</span>
+<span id="cb5-120"><a href="#cb5-120" aria-label="120"></a></span>
+<span id="cb5-121"><a href="#cb5-121" aria-label="121"></a><span class="ss">- </span>**Panell de codi desassemblat** (*Text Segment*, esquerra): mostra les instruccions en memòria, una per fila, amb l'adreça, la codificació en hexadecimal i el mnemònic. La instrucció que s'executarà a continuació apareix ressaltada.</span>
+<span id="cb5-122"><a href="#cb5-122" aria-label="122"></a><span class="ss">- </span>**Panell de registres** (*Registers*, dreta): mostra el contingut dels 32 registres de propòsit general i el PC. Els registres modificats a l'últim pas apareixen ressaltats.</span>
+<span id="cb5-123"><a href="#cb5-123" aria-label="123"></a><span class="ss">- </span>**Panell de memòria de dades** (*Data Segment*, centre-baix): mostra el contingut del segment <span class="in">`.data`</span> en format de words hexadecimals.</span>
+<span id="cb5-124"><a href="#cb5-124" aria-label="124"></a><span class="ss">- </span>**Panell de consola** (*Run I/O*, baix): mostra la sortida de les syscalls i permet introduir dades.</span>
+<span id="cb5-125"><a href="#cb5-125" aria-label="125"></a></span>
+<span id="cb5-126"><a href="#cb5-126" aria-label="126"></a>---</span>
+<span id="cb5-127"><a href="#cb5-127" aria-label="127"></a></span>
+<span id="cb5-128"><a href="#cb5-128" aria-label="128"></a>::: {#exr-rars-panells}</span>
+<span id="cb5-129"><a href="#cb5-129" aria-label="129"></a><span class="fu">## `s1_2_1.md`</span></span>
+<span id="cb5-130"><a href="#cb5-130" aria-label="130"></a></span>
+<span id="cb5-131"><a href="#cb5-131" aria-label="131"></a>Assembleu <span class="in">`suma.s`</span> i responeu les preguntes següents:</span>
+<span id="cb5-132"><a href="#cb5-132" aria-label="132"></a></span>
+<span id="cb5-133"><a href="#cb5-133" aria-label="133"></a>a) On es mostra el valor del comptador de programa (PC)?</span>
+<span id="cb5-134"><a href="#cb5-134" aria-label="134"></a>b) RARS no mostra el nombre d'instruccions executades als panells principals. Quina eina de RARS permet comptar-les? Indiqueu el camí de menús per obrir-la i el pas necessari perquè comenci a comptar.</span>
+<span id="cb5-135"><a href="#cb5-135" aria-label="135"></a>c) El panell de codi mostra, per a cada instrucció, tres columnes de valors (a més de la casella d'activació de punt d'aturada i la columna de codi font). Quina informació conté cadascuna?</span>
+<span id="cb5-136"><a href="#cb5-136" aria-label="136"></a>:::</span>
+<span id="cb5-137"><a href="#cb5-137" aria-label="137"></a></span>
+<span id="cb5-138"><a href="#cb5-138" aria-label="138"></a>---</span>
+<span id="cb5-139"><a href="#cb5-139" aria-label="139"></a></span>
+<span id="cb5-140"><a href="#cb5-140" aria-label="140"></a>::: {#sol-rars-panells}</span>
+<span id="cb5-141"><a href="#cb5-141" aria-label="141"></a>a) Al panell de registres (*Registers*), a la fila <span class="in">`pc`</span>.</span>
+<span id="cb5-142"><a href="#cb5-142" aria-label="142"></a>b) *Tools → Instruction Counter*. Cal obrir-la **abans** d'executar el programa i prémer *Connect to Program* perquè comenci a comptar; si s'executa el programa abans de connectar l'eina, el recompte no es registrarà.</span>
+<span id="cb5-143"><a href="#cb5-143" aria-label="143"></a>c) *Address* (adreça de memòria de la instrucció), *Code* (codificació de la instrucció en hexadecimal) i *Basic* (la instrucció real, amb els registres identificats amb <span class="in">`x0`</span>–<span class="in">`x31`</span>).</span>
+<span id="cb5-144"><a href="#cb5-144" aria-label="144"></a>:::</span>
+<span id="cb5-145"><a href="#cb5-145" aria-label="145"></a></span>
+<span id="cb5-146"><a href="#cb5-146" aria-label="146"></a>---</span>
+<span id="cb5-147"><a href="#cb5-147" aria-label="147"></a></span>
+<span id="cb5-148"><a href="#cb5-148" aria-label="148"></a>::: {#exr-rars-pseudoinstruccio}</span>
+<span id="cb5-149"><a href="#cb5-149" aria-label="149"></a><span class="fu">## `s1_2_2.md`</span></span>
+<span id="cb5-150"><a href="#cb5-150" aria-label="150"></a></span>
+<span id="cb5-151"><a href="#cb5-151" aria-label="151"></a>Algunes pseudoinstruccions s'expandeixen en més d'una instrucció real. Treballeu sobre <span class="in">`suma.s`</span> ja assemblat.</span>
+<span id="cb5-152"><a href="#cb5-152" aria-label="152"></a></span>
+<span id="cb5-153"><a href="#cb5-153" aria-label="153"></a>a) Localitzeu la pseudoinstrucció <span class="in">`la t3, V`</span> al panell de codi desassemblat. Quines instruccions reals ha generat? Copieu-les exactament tal com apareixen al panell.</span>
+<span id="cb5-154"><a href="#cb5-154" aria-label="154"></a>b) Per quina raó <span class="in">`la`</span> necessita dues instruccions reals en lloc d'una?</span>
+<span id="cb5-155"><a href="#cb5-155" aria-label="155"></a>c) La pseudoinstrucció <span class="in">`li t2, 10`</span> en canvi genera una sola instrucció. Per quina raó en aquest cas n'hi ha prou amb una? Hauria passat el mateix amb <span class="in">`li t2, 100000`</span>?</span>
+<span id="cb5-156"><a href="#cb5-156" aria-label="156"></a></span>
+<span id="cb5-157"><a href="#cb5-157" aria-label="157"></a>**Indicació**: els immediats de les instruccions tipus I tenen 12 bits amb signe (rang −2048..2047).</span>
+<span id="cb5-158"><a href="#cb5-158" aria-label="158"></a>:::</span>
+<span id="cb5-159"><a href="#cb5-159" aria-label="159"></a></span>
+<span id="cb5-160"><a href="#cb5-160" aria-label="160"></a>::: {#sol-rars-pseudoinstruccio}</span>
+<span id="cb5-161"><a href="#cb5-161" aria-label="161"></a>a) <span class="in">`auipc t3, 0xfc10`</span> seguida de <span class="in">`addi t3, t3, -12`</span> (els valors exactes depenen de l'adreça de <span class="in">`V`</span> i de la posició de <span class="in">`la`</span> al programa; l'estructura auipc+addi és sempre la mateixa).</span>
+<span id="cb5-162"><a href="#cb5-162" aria-label="162"></a>b) Perquè una adreça de memòria ocupa 32 bits, i cap instrucció tipus I té un immediat de 32 bits: <span class="in">`auipc`</span> aporta els 20 bits alts (relatius al PC) i <span class="in">`addi`</span> hi suma els 12 bits baixos amb signe.</span>
+<span id="cb5-163"><a href="#cb5-163" aria-label="163"></a>c) <span class="in">`10`</span> cap dins el rang <span class="co">[</span><span class="ot">−2048, 2047</span><span class="co">]</span> d'un immediat de 12 bits amb signe, per tant una sola <span class="in">`addi`</span> n'hi ha prou. Amb <span class="in">`li t2, 100000`</span> **no** passaria el mateix: 100000 no cap en 12 bits, de manera que RARS generaria <span class="in">`lui t2, 0x18`</span> seguida de <span class="in">`addi t2, t2, 1696`</span> (dues instruccions), igual que amb <span class="in">`la`</span>.</span>
+<span id="cb5-164"><a href="#cb5-164" aria-label="164"></a>:::</span>
+<span id="cb5-165"><a href="#cb5-165" aria-label="165"></a></span>
+<span id="cb5-166"><a href="#cb5-166" aria-label="166"></a>---</span>
+<span id="cb5-167"><a href="#cb5-167" aria-label="167"></a></span>
+<span id="cb5-168"><a href="#cb5-168" aria-label="168"></a><span class="fu">## Execució i inspecció {#sec-rars-execucio}</span></span>
+<span id="cb5-169"><a href="#cb5-169" aria-label="169"></a></span>
+<span id="cb5-170"><a href="#cb5-170" aria-label="170"></a>RARS ofereix tres modes d'execució:</span>
+<span id="cb5-171"><a href="#cb5-171" aria-label="171"></a></span>
+<span id="cb5-172"><a href="#cb5-172" aria-label="172"></a><span class="ss">- </span>**Execució contínua** (F5): executa el programa fins al final (o fins al primer punt d'aturada).</span>
+<span id="cb5-173"><a href="#cb5-173" aria-label="173"></a><span class="ss">- </span>**Execució pas a pas** (F7): executa una instrucció i s'atura. Útil per seguir el flux instrucció per instrucció.</span>
+<span id="cb5-174"><a href="#cb5-174" aria-label="174"></a><span class="ss">- </span>**Reinici** (F12): torna el programa a l'estat inicial sense tornar a assemblar.</span>
+<span id="cb5-175"><a href="#cb5-175" aria-label="175"></a></span>
+<span id="cb5-176"><a href="#cb5-176" aria-label="176"></a>El programa <span class="in">`hola.s`</span> de la secció anterior no té bucles: el nombre d'instruccions és fix i petit. És el programa que s'usarà per al recompte manual.</span>
+<span id="cb5-177"><a href="#cb5-177" aria-label="177"></a></span>
+<span id="cb5-178"><a href="#cb5-178" aria-label="178"></a>---</span>
+<span id="cb5-179"><a href="#cb5-179" aria-label="179"></a></span>
+<span id="cb5-180"><a href="#cb5-180" aria-label="180"></a>::: {#exr-recompte-instruccions}</span>
+<span id="cb5-181"><a href="#cb5-181" aria-label="181"></a><span class="fu">## `s1_3_1.md`</span></span>
+<span id="cb5-182"><a href="#cb5-182" aria-label="182"></a></span>
+<span id="cb5-183"><a href="#cb5-183" aria-label="183"></a>Treballeu sobre el programa <span class="in">`hola.s`</span>.</span>
+<span id="cb5-184"><a href="#cb5-184" aria-label="184"></a></span>
+<span id="cb5-185"><a href="#cb5-185" aria-label="185"></a>a) Obriu *Tools → Instruction Counter*, connecteu-la al programa (*Connect to Program*) i executeu amb F5. Quin nombre d'instruccions executades reporta l'eina?</span>
+<span id="cb5-186"><a href="#cb5-186" aria-label="186"></a>b) Feu el recompte manual: llisteu totes les instruccions que s'executen, en ordre, indicant per a cada una si és una instrucció real o l'expansió d'una pseudoinstrucció. Quantes instruccions reals s'executen en total?</span>
+<span id="cb5-187"><a href="#cb5-187" aria-label="187"></a>c) El valor del recompte manual coincideix amb el que reporta l'Instruction Counter? Si hi ha diferència, expliqueu-ne la causa.</span>
+<span id="cb5-188"><a href="#cb5-188" aria-label="188"></a></span>
+<span id="cb5-189"><a href="#cb5-189" aria-label="189"></a>**Indicació**: la pseudoinstrucció <span class="in">`la`</span> s'expandeix en dues instruccions reals. Useu el panell de codi desassemblat per veure exactament quines instruccions s'executen.</span>
+<span id="cb5-190"><a href="#cb5-190" aria-label="190"></a>:::</span>
+<span id="cb5-191"><a href="#cb5-191" aria-label="191"></a></span>
+<span id="cb5-192"><a href="#cb5-192" aria-label="192"></a>::: {#sol-recompte-instruccions}</span>
+<span id="cb5-193"><a href="#cb5-193" aria-label="193"></a>a) 7 instruccions.</span>
+<span id="cb5-194"><a href="#cb5-194" aria-label="194"></a>b) <span class="in">`la a0, msg`</span> (auipc + addi, 2 instruccions reals), <span class="in">`li a7, 4`</span> (addi, 1), <span class="in">`ecall`</span> (1), <span class="in">`li a7, 93`</span> (addi, 1), <span class="in">`li a0, 0`</span> (addi, 1), <span class="in">`ecall`</span> (1). Total: **7 instruccions reals**.</span>
+<span id="cb5-195"><a href="#cb5-195" aria-label="195"></a>c) Sí, coincideixen (7 = 7). Tot i que el codi font té 6 línies, el recompte manual dona 7 perquè <span class="in">`la`</span> s'expandeix en dues instruccions reals.</span>
+<span id="cb5-196"><a href="#cb5-196" aria-label="196"></a>:::</span>
+<span id="cb5-197"><a href="#cb5-197" aria-label="197"></a></span>
+<span id="cb5-198"><a href="#cb5-198" aria-label="198"></a>---</span>
+<span id="cb5-199"><a href="#cb5-199" aria-label="199"></a></span>
+<span id="cb5-200"><a href="#cb5-200" aria-label="200"></a>::: {#exr-rars-memoria}</span>
+<span id="cb5-201"><a href="#cb5-201" aria-label="201"></a><span class="fu">## `s1_3_2.md`</span></span>
+<span id="cb5-202"><a href="#cb5-202" aria-label="202"></a></span>
+<span id="cb5-203"><a href="#cb5-203" aria-label="203"></a>Assembleu <span class="in">`suma.s`</span> i observeu el panell de memòria de dades.</span>
+<span id="cb5-204"><a href="#cb5-204" aria-label="204"></a></span>
+<span id="cb5-205"><a href="#cb5-205" aria-label="205"></a>a) En quina adreça de memòria comença el vector <span class="in">`V`</span>?</span>
+<span id="cb5-206"><a href="#cb5-206" aria-label="206"></a>b) En quina adreça exacta es troba <span class="in">`V[3]`</span>? Quin és el seu contingut en hexadecimal?</span>
+<span id="cb5-207"><a href="#cb5-207" aria-label="207"></a>c) <span class="in">`V[0]`</span> conté el valor <span class="in">`-1`</span>. Quin valor hexadecimal té al panell de memòria? Expliqueu com s'obté aquesta representació.</span>
+<span id="cb5-208"><a href="#cb5-208" aria-label="208"></a>d) El panell mostra cada word com un valor hexadecimal de 32 bits. Quin ordre d'emmagatzematge dels bytes (endianness) usa RV32I?</span>
+<span id="cb5-209"><a href="#cb5-209" aria-label="209"></a>:::</span>
+<span id="cb5-210"><a href="#cb5-210" aria-label="210"></a></span>
+<span id="cb5-211"><a href="#cb5-211" aria-label="211"></a>::: {#sol-rars-memoria}</span>
+<span id="cb5-212"><a href="#cb5-212" aria-label="212"></a>a) <span class="in">`0x10010000`</span> (adreça per defecte del segment <span class="in">`.data`</span> a RARS).</span>
+<span id="cb5-213"><a href="#cb5-213" aria-label="213"></a>b) <span class="in">`0x1001000C`</span> (= 0x10010000 + 3·4); conté <span class="in">`0xFFFFFFFC`</span>.</span>
+<span id="cb5-214"><a href="#cb5-214" aria-label="214"></a>c) <span class="in">`0xFFFFFFFF`</span>. S'obté calculant el complement a 2 de −1 en 32 bits: es complementen tots els bits d'1 (0x00000000 → 0xFFFFFFFF) i se suma 1, o de manera equivalent 2³² − 1 = 0xFFFFFFFF.</span>
+<span id="cb5-215"><a href="#cb5-215" aria-label="215"></a>d) RV32I és **little-endian**: el byte de menys pes s'emmagatzema a l'adreça més baixa.</span>
+<span id="cb5-216"><a href="#cb5-216" aria-label="216"></a>:::</span>
+<span id="cb5-217"><a href="#cb5-217" aria-label="217"></a></span>
+<span id="cb5-218"><a href="#cb5-218" aria-label="218"></a>---</span>
+<span id="cb5-219"><a href="#cb5-219" aria-label="219"></a></span>
+<span id="cb5-220"><a href="#cb5-220" aria-label="220"></a><span class="fu">## Punts d'aturada {#sec-rars-breakpoints}</span></span>
+<span id="cb5-221"><a href="#cb5-221" aria-label="221"></a></span>
+<span id="cb5-222"><a href="#cb5-222" aria-label="222"></a>Un **punt d'aturada** (*breakpoint*) és una marca sobre una instrucció que fa que l'execució contínua (F5) s'aturi just abans d'executar-la. S'activa i es desactiva fent clic a la casella de l'esquerra del panell de codi desassemblat, a la fila de la instrucció triada.</span>
+<span id="cb5-223"><a href="#cb5-223" aria-label="223"></a></span>
+<span id="cb5-224"><a href="#cb5-224" aria-label="224"></a>Els punts d'aturada permeten inspeccionar l'estat del programa en un punt clau sense haver d'executar-lo pas a pas des del principi. Quan el programa s'atura, es pot continuar amb F5 (fins al següent punt d'aturada) o amb F7 (pas a pas).</span>
+<span id="cb5-225"><a href="#cb5-225" aria-label="225"></a></span>
+<span id="cb5-226"><a href="#cb5-226" aria-label="226"></a>---</span>
+<span id="cb5-227"><a href="#cb5-227" aria-label="227"></a></span>
+<span id="cb5-228"><a href="#cb5-228" aria-label="228"></a>::: {#exr-rars-breakpoints}</span>
+<span id="cb5-229"><a href="#cb5-229" aria-label="229"></a><span class="fu">## `s1_4_1.md`</span></span>
+<span id="cb5-230"><a href="#cb5-230" aria-label="230"></a></span>
+<span id="cb5-231"><a href="#cb5-231" aria-label="231"></a>Treballeu sobre <span class="in">`suma.s`</span>.</span>
+<span id="cb5-232"><a href="#cb5-232" aria-label="232"></a></span>
+<span id="cb5-233"><a href="#cb5-233" aria-label="233"></a>a) Afegiu un punt d'aturada a la instrucció <span class="in">`add t0, t0, t4`</span> (la que acumula la suma). Executeu el programa amb F5. En quina iteració s'atura? Quins són els valors de <span class="in">`t0`</span> i <span class="in">`t4`</span> en aquest moment? Tingueu en compte que l'execució s'atura just **abans** d'executar la instrucció marcada.</span>
+<span id="cb5-234"><a href="#cb5-234" aria-label="234"></a>b) Premeu F5 repetidament fins al final. Anoteu el valor de <span class="in">`t4`</span> en cada aturada. Verifiqueu que els valors corresponen als elements del vector <span class="in">`V`</span> en ordre.</span>
+<span id="cb5-235"><a href="#cb5-235" aria-label="235"></a>c) Quin és el valor final de <span class="in">`t0`</span> un cop ha acabat l'execució? Era el resultat esperat? Justifiqueu-lo.</span>
+<span id="cb5-236"><a href="#cb5-236" aria-label="236"></a>:::</span>
+<span id="cb5-237"><a href="#cb5-237" aria-label="237"></a></span>
+<span id="cb5-238"><a href="#cb5-238" aria-label="238"></a>::: {#sol-rars-breakpoints}</span>
+<span id="cb5-239"><a href="#cb5-239" aria-label="239"></a>a) S'atura a la primera iteració, amb <span class="in">`t0 = 0`</span> i <span class="in">`t4 = -1`</span>.</span>
+<span id="cb5-240"><a href="#cb5-240" aria-label="240"></a>b) Els valors de <span class="in">`t4`</span> en cada aturada successiva són −1, −2, −3, −4, −5, −6, −7, −8, −9, −10: coincideixen exactament amb els elements de <span class="in">`V`</span> en ordre.</span>
+<span id="cb5-241"><a href="#cb5-241" aria-label="241"></a>c) <span class="in">`t0 = -55`</span>. És el resultat esperat: −1−2−3−4−5−6−7−8−9−10 = −55.</span>
+<span id="cb5-242"><a href="#cb5-242" aria-label="242"></a></span>
+<span id="cb5-243"><a href="#cb5-243" aria-label="243"></a>::: {.callout-tip title="Comprovació pràctica"}</span>
+<span id="cb5-244"><a href="#cb5-244" aria-label="244"></a>Reproduïu la traça a RARS: 10 aturades en total, amb <span class="in">`t4`</span> recorrent <span class="in">`V`</span> en ordre i <span class="in">`t0`</span> acumulant fins a −55.</span>
+<span id="cb5-245"><a href="#cb5-245" aria-label="245"></a>:::</span>
+<span id="cb5-246"><a href="#cb5-246" aria-label="246"></a>:::</span>
+<span id="cb5-247"><a href="#cb5-247" aria-label="247"></a></span>
+<span id="cb5-248"><a href="#cb5-248" aria-label="248"></a>---</span>
+<span id="cb5-249"><a href="#cb5-249" aria-label="249"></a></span>
+<span id="cb5-250"><a href="#cb5-250" aria-label="250"></a><span class="fu">## Depuració {#sec-rars-depuracio}</span></span>
+<span id="cb5-251"><a href="#cb5-251" aria-label="251"></a></span>
+<span id="cb5-252"><a href="#cb5-252" aria-label="252"></a>Quan un programa assembla sense errors però produeix un resultat incorrecte, cal **depurar-lo**: executar-lo pas a pas o amb punts d'aturada per identificar en quina instrucció el comportament no és l'esperat.</span>
+<span id="cb5-253"><a href="#cb5-253" aria-label="253"></a></span>
+<span id="cb5-254"><a href="#cb5-254" aria-label="254"></a>El procediment general és:</span>
+<span id="cb5-255"><a href="#cb5-255" aria-label="255"></a></span>
+<span id="cb5-256"><a href="#cb5-256" aria-label="256"></a><span class="ss">1. </span>Determineu el resultat esperat abans d'executar el programa.</span>
+<span id="cb5-257"><a href="#cb5-257" aria-label="257"></a><span class="ss">2. </span>Identifiqueu un punt de control (per exemple, la instrucció d'acumulació d'un bucle) i afegiu-hi un punt d'aturada.</span>
+<span id="cb5-258"><a href="#cb5-258" aria-label="258"></a><span class="ss">3. </span>En cada aturada, comproveu que els valors dels registres rellevants coincideixen amb el que s'esperava.</span>
+<span id="cb5-259"><a href="#cb5-259" aria-label="259"></a><span class="ss">4. </span>Quan trobeu una discrepància, retrocediu un pas per identificar la instrucció causant. RARS ofereix *Run → Backstep* (F8) per desfer l'última instrucció executada sense haver de reiniciar.</span>
+<span id="cb5-260"><a href="#cb5-260" aria-label="260"></a></span>
+<span id="cb5-261"><a href="#cb5-261" aria-label="261"></a>---</span>
+<span id="cb5-262"><a href="#cb5-262" aria-label="262"></a></span>
+<span id="cb5-263"><a href="#cb5-263" aria-label="263"></a>::: {#exr-depuracio-pas-a-pas}</span>
+<span id="cb5-264"><a href="#cb5-264" aria-label="264"></a><span class="fu">## `s1_5_1.s` i `s1_5_1.md`</span></span>
+<span id="cb5-265"><a href="#cb5-265" aria-label="265"></a></span>
+<span id="cb5-266"><a href="#cb5-266" aria-label="266"></a>El programa <span class="in">`s1_5_1.s`</span> és una versió **errònia** del programa <span class="in">`suma.s`</span>. Conté un únic error que fa que el resultat final de <span class="in">`t0`</span> no sigui <span class="in">`-55`</span>.</span>
+<span id="cb5-267"><a href="#cb5-267" aria-label="267"></a></span>
+<span id="cb5-268"><a href="#cb5-268" aria-label="268"></a><span class="in">```{.s filename="s1_5_1.s"}</span></span>
+<span id="cb5-269"><a href="#cb5-269" aria-label="269"></a><span class="in">.globl  _start</span></span>
+<span id="cb5-270"><a href="#cb5-270" aria-label="270"></a></span>
+<span id="cb5-271"><a href="#cb5-271" aria-label="271"></a><span class="in">.data</span></span>
+<span id="cb5-272"><a href="#cb5-272" aria-label="272"></a><span class="in">V:      .word   -1, -2, -3, -4, -5, -6, -7, -8, -9, -10</span></span>
+<span id="cb5-273"><a href="#cb5-273" aria-label="273"></a></span>
+<span id="cb5-274"><a href="#cb5-274" aria-label="274"></a><span class="in">.text</span></span>
+<span id="cb5-275"><a href="#cb5-275" aria-label="275"></a><span class="in">_start:</span></span>
+<span id="cb5-276"><a href="#cb5-276" aria-label="276"></a><span class="in">        li      t0, 0</span></span>
+<span id="cb5-277"><a href="#cb5-277" aria-label="277"></a><span class="in">        li      t1, 9</span></span>
+<span id="cb5-278"><a href="#cb5-278" aria-label="278"></a><span class="in">        li      t2, 10</span></span>
+<span id="cb5-279"><a href="#cb5-279" aria-label="279"></a><span class="in">        la      t3, V</span></span>
+<span id="cb5-280"><a href="#cb5-280" aria-label="280"></a></span>
+<span id="cb5-281"><a href="#cb5-281" aria-label="281"></a><span class="in">bucle:</span></span>
+<span id="cb5-282"><a href="#cb5-282" aria-label="282"></a><span class="in">        bge     t1, t2, fi</span></span>
+<span id="cb5-283"><a href="#cb5-283" aria-label="283"></a><span class="in">        slli    t4, t1, 2</span></span>
+<span id="cb5-284"><a href="#cb5-284" aria-label="284"></a><span class="in">        add     t4, t3, t4</span></span>
+<span id="cb5-285"><a href="#cb5-285" aria-label="285"></a><span class="in">        lw      t4, 0(t4)</span></span>
+<span id="cb5-286"><a href="#cb5-286" aria-label="286"></a><span class="in">        add     t0, t0, t4</span></span>
+<span id="cb5-287"><a href="#cb5-287" aria-label="287"></a><span class="in">        addi    t1, t1, 1</span></span>
+<span id="cb5-288"><a href="#cb5-288" aria-label="288"></a><span class="in">        j       bucle</span></span>
+<span id="cb5-289"><a href="#cb5-289" aria-label="289"></a></span>
+<span id="cb5-290"><a href="#cb5-290" aria-label="290"></a><span class="in">fi:</span></span>
+<span id="cb5-291"><a href="#cb5-291" aria-label="291"></a><span class="in">        li      a7, 93</span></span>
+<span id="cb5-292"><a href="#cb5-292" aria-label="292"></a><span class="in">        li      a0, 0</span></span>
+<span id="cb5-293"><a href="#cb5-293" aria-label="293"></a><span class="in">        ecall</span></span>
+<span id="cb5-294"><a href="#cb5-294" aria-label="294"></a><span class="in">```</span></span>
+<span id="cb5-295"><a href="#cb5-295" aria-label="295"></a></span>
+<span id="cb5-296"><a href="#cb5-296" aria-label="296"></a>a) Sense executar el programa, analitzeu el codi i preveieu quin serà el resultat incorrecte de <span class="in">`t0`</span> i per quina raó.</span>
+<span id="cb5-297"><a href="#cb5-297" aria-label="297"></a>b) Executeu el programa pas a pas per confirmar la vostra predicció. En quina iteració s'observa per primera vegada un comportament incorrecte?</span>
+<span id="cb5-298"><a href="#cb5-298" aria-label="298"></a>c) Corregiu l'error (canvieu una única línia) i verifiqueu que el resultat és <span class="in">`-55`</span>. Lliureu la versió corregida com <span class="in">`s1_5_1.s`</span>.</span>
+<span id="cb5-299"><a href="#cb5-299" aria-label="299"></a>d) Al fitxer <span class="in">`s1_5_1.md`</span>, descriviu: quina és la instrucció errònia, quin valor incorrecte produïa i com ho heu detectat.</span>
+<span id="cb5-300"><a href="#cb5-300" aria-label="300"></a>:::</span>
+<span id="cb5-301"><a href="#cb5-301" aria-label="301"></a></span>
+<span id="cb5-302"><a href="#cb5-302" aria-label="302"></a>::: {#sol-depuracio-pas-a-pas}</span>
+<span id="cb5-303"><a href="#cb5-303" aria-label="303"></a>a) L'error és <span class="in">`li t1, 9`</span> (hauria de ser <span class="in">`li t1, 0`</span>): l'índex <span class="in">`i`</span> comença a 9 en lloc de 0, per tant el bucle només suma <span class="in">`V[9] = -10`</span>. El resultat incorrecte previst és <span class="in">`t0 = -10`</span>.</span>
+<span id="cb5-304"><a href="#cb5-304" aria-label="304"></a>b) El comportament incorrecte s'observa ja a la **primera** iteració: <span class="in">`t1`</span> val 9 des de l'inici i <span class="in">`t4`</span> carrega <span class="in">`V[9] = -10`</span> en lloc de <span class="in">`V[0] = -1`</span>.</span>
+<span id="cb5-305"><a href="#cb5-305" aria-label="305"></a>c) Cal canviar <span class="in">`li t1, 9`</span> per <span class="in">`li t1, 0`</span>. Amb la correcció, <span class="in">`t0`</span> acaba valent <span class="in">`-55`</span>.</span>
+<span id="cb5-306"><a href="#cb5-306" aria-label="306"></a>d) La instrucció errònia és <span class="in">`li t1, 9`</span>; produïa <span class="in">`t0 = -10`</span> perquè només s'acumulava l'últim element del vector; es detecta comparant l'índex inicial esperat (0) amb el valor carregat a <span class="in">`t1`</span> a l'inici de l'execució pas a pas.</span>
+<span id="cb5-307"><a href="#cb5-307" aria-label="307"></a>:::</span>
+<span id="cb5-308"><a href="#cb5-308" aria-label="308"></a></span>
+<span id="cb5-309"><a href="#cb5-309" aria-label="309"></a>---</span>
+<span id="cb5-310"><a href="#cb5-310" aria-label="310"></a></span>
+<span id="cb5-311"><a href="#cb5-311" aria-label="311"></a>::: {#exr-depuracio-breakpoints}</span>
+<span id="cb5-312"><a href="#cb5-312" aria-label="312"></a><span class="fu">## `s1_5_2.s` i `s1_5_2.md`</span></span>
+<span id="cb5-313"><a href="#cb5-313" aria-label="313"></a></span>
+<span id="cb5-314"><a href="#cb5-314" aria-label="314"></a>El programa <span class="in">`s1_5_2.s`</span> calcula la **mitjana entera** dels elements del vector <span class="in">`V`</span> (és a dir, la divisió entera de la suma entre el nombre d'elements). La divisió es fa per mitjà d'un segon bucle que resta repetidament el divisor del dividend mentre el dividend no sigui inferior al divisor.</span>
+<span id="cb5-315"><a href="#cb5-315" aria-label="315"></a></span>
+<span id="cb5-316"><a href="#cb5-316" aria-label="316"></a>El programa conté un únic error. El resultat correcte del quocient (registre <span class="in">`t5`</span>) hauria de ser <span class="in">`5`</span> (ja que ⌊55/10⌋ = 5, i la suma dels elements de <span class="in">`V = {1, 2, ..., 10}`</span> és 55).</span>
+<span id="cb5-317"><a href="#cb5-317" aria-label="317"></a></span>
+<span id="cb5-318"><a href="#cb5-318" aria-label="318"></a><span class="in">```{.s filename="s1_5_2.s"}</span></span>
+<span id="cb5-319"><a href="#cb5-319" aria-label="319"></a><span class="in">.globl  _start</span></span>
+<span id="cb5-320"><a href="#cb5-320" aria-label="320"></a></span>
+<span id="cb5-321"><a href="#cb5-321" aria-label="321"></a><span class="in">.data</span></span>
+<span id="cb5-322"><a href="#cb5-322" aria-label="322"></a><span class="in">V:      .word   1, 2, 3, 4, 5, 6, 7, 8, 9, 10</span></span>
+<span id="cb5-323"><a href="#cb5-323" aria-label="323"></a></span>
+<span id="cb5-324"><a href="#cb5-324" aria-label="324"></a><span class="in">.text</span></span>
+<span id="cb5-325"><a href="#cb5-325" aria-label="325"></a><span class="in">_start:</span></span>
+<span id="cb5-326"><a href="#cb5-326" aria-label="326"></a><span class="in">        li      t0, 0           # t0 = suma = 0</span></span>
+<span id="cb5-327"><a href="#cb5-327" aria-label="327"></a><span class="in">        li      t1, 0           # t1 = i = 0</span></span>
+<span id="cb5-328"><a href="#cb5-328" aria-label="328"></a><span class="in">        li      t2, 10          # t2 = N = 10</span></span>
+<span id="cb5-329"><a href="#cb5-329" aria-label="329"></a><span class="in">        la      t3, V</span></span>
+<span id="cb5-330"><a href="#cb5-330" aria-label="330"></a></span>
+<span id="cb5-331"><a href="#cb5-331" aria-label="331"></a><span class="in">bucle:</span></span>
+<span id="cb5-332"><a href="#cb5-332" aria-label="332"></a><span class="in">        bge     t1, t2, fi</span></span>
+<span id="cb5-333"><a href="#cb5-333" aria-label="333"></a><span class="in">        slli    t4, t1, 2</span></span>
+<span id="cb5-334"><a href="#cb5-334" aria-label="334"></a><span class="in">        add     t4, t3, t4</span></span>
+<span id="cb5-335"><a href="#cb5-335" aria-label="335"></a><span class="in">        lw      t4, 0(t4)</span></span>
+<span id="cb5-336"><a href="#cb5-336" aria-label="336"></a><span class="in">        add     t0, t0, t4</span></span>
+<span id="cb5-337"><a href="#cb5-337" aria-label="337"></a><span class="in">        addi    t1, t1, 1</span></span>
+<span id="cb5-338"><a href="#cb5-338" aria-label="338"></a><span class="in">        j       bucle</span></span>
+<span id="cb5-339"><a href="#cb5-339" aria-label="339"></a></span>
+<span id="cb5-340"><a href="#cb5-340" aria-label="340"></a><span class="in">fi:</span></span>
+<span id="cb5-341"><a href="#cb5-341" aria-label="341"></a><span class="in">        li      t5, 0           # t5 = quocient = 0</span></span>
+<span id="cb5-342"><a href="#cb5-342" aria-label="342"></a><span class="in">        mv      t6, t2          # t6 = divisor = N</span></span>
+<span id="cb5-343"><a href="#cb5-343" aria-label="343"></a></span>
+<span id="cb5-344"><a href="#cb5-344" aria-label="344"></a><span class="in">bucle2:</span></span>
+<span id="cb5-345"><a href="#cb5-345" aria-label="345"></a><span class="in">        blt     t0, t6, fi2     # si suma &lt; divisor, acaba</span></span>
+<span id="cb5-346"><a href="#cb5-346" aria-label="346"></a><span class="in">        sub     t0, t6, t0      # suma -= divisor</span></span>
+<span id="cb5-347"><a href="#cb5-347" aria-label="347"></a><span class="in">        addi    t5, t5, 1</span></span>
+<span id="cb5-348"><a href="#cb5-348" aria-label="348"></a><span class="in">        j       bucle2</span></span>
+<span id="cb5-349"><a href="#cb5-349" aria-label="349"></a></span>
+<span id="cb5-350"><a href="#cb5-350" aria-label="350"></a><span class="in">fi2:</span></span>
+<span id="cb5-351"><a href="#cb5-351" aria-label="351"></a><span class="in">        li      a7, 93</span></span>
+<span id="cb5-352"><a href="#cb5-352" aria-label="352"></a><span class="in">        li      a0, 0</span></span>
+<span id="cb5-353"><a href="#cb5-353" aria-label="353"></a><span class="in">        ecall</span></span>
+<span id="cb5-354"><a href="#cb5-354" aria-label="354"></a><span class="in">```</span></span>
+<span id="cb5-355"><a href="#cb5-355" aria-label="355"></a></span>
+<span id="cb5-356"><a href="#cb5-356" aria-label="356"></a>a) Sense executar el programa, llegiu el codi del segon bucle (<span class="in">`bucle2`</span>) i identifiqueu l'error. Què hauria de fer la instrucció errònia?</span>
+<span id="cb5-357"><a href="#cb5-357" aria-label="357"></a>b) Afegiu un punt d'aturada a la primera instrucció de <span class="in">`bucle2`</span>. Executeu fins al punt d'aturada amb F5 i comproveu que <span class="in">`t0`</span> és <span class="in">`55`</span> i <span class="in">`t6`</span> és <span class="in">`10`</span>.</span>
+<span id="cb5-358"><a href="#cb5-358" aria-label="358"></a>c) Continueu amb F7 pas a pas. Observeu el valor de <span class="in">`t0`</span> després de la instrucció <span class="in">`sub`</span>. Es confirma el diagnòstic del punt a)?</span>
+<span id="cb5-359"><a href="#cb5-359" aria-label="359"></a>d) Corregiu l'error i verifiqueu que <span class="in">`t5`</span> val <span class="in">`5`</span>. Lliureu la versió corregida com <span class="in">`s1_5_2.s`</span>.</span>
+<span id="cb5-360"><a href="#cb5-360" aria-label="360"></a>e) Al fitxer <span class="in">`s1_5_2.md`</span>, descriviu: on heu col·locat el punt d'aturada i per quina raó, quina és la instrucció errònia i com l'heu corregit.</span>
+<span id="cb5-361"><a href="#cb5-361" aria-label="361"></a>:::</span>
+<span id="cb5-362"><a href="#cb5-362" aria-label="362"></a></span>
+<span id="cb5-363"><a href="#cb5-363" aria-label="363"></a>::: {#sol-depuracio-breakpoints}</span>
+<span id="cb5-364"><a href="#cb5-364" aria-label="364"></a>a) L'error és <span class="in">`sub t0, t6, t0`</span> (els operands estan invertits: hauria de ser <span class="in">`sub t0, t0, t6`</span>). La instrucció hauria de calcular <span class="in">`t0 = t0 - t6`</span> (suma restant el divisor), no <span class="in">`t6 - t0`</span>.</span>
+<span id="cb5-365"><a href="#cb5-365" aria-label="365"></a>b) A l'aturada, <span class="in">`t0 = 55`</span> (suma de <span class="in">`V = {1, ..., 10}`</span>) i <span class="in">`t6 = 10`</span> (còpia de <span class="in">`N`</span>).</span>
+<span id="cb5-366"><a href="#cb5-366" aria-label="366"></a>c) Després del <span class="in">`sub`</span> erroni, <span class="in">`t0 = 10 - 55 = -45`</span>. Això confirma el diagnòstic: en comptes de restar el divisor de la suma (55 − 10 = 45), es resta la suma del divisor, produint un valor negatiu que fa sortir del bucle massa aviat (amb <span class="in">`t5 = 1`</span> en lloc de 5).</span>
+<span id="cb5-367"><a href="#cb5-367" aria-label="367"></a>d) Amb <span class="in">`sub t0, t0, t6`</span>, el bucle itera 5 vegades (55→45→35→25→15→5) i <span class="in">`t5`</span> acaba valent <span class="in">`5`</span>.</span>
+<span id="cb5-368"><a href="#cb5-368" aria-label="368"></a>e) Exemple de resposta: el punt d'aturada es col·loca a <span class="in">`blt t0, t6, fi2`</span> (primera instrucció de <span class="in">`bucle2`</span>) perquè és el punt on es pot comprovar l'estat inicial de <span class="in">`t0`</span> i <span class="in">`t6`</span> abans de cap iteració; la instrucció errònia és <span class="in">`sub t0, t6, t0`</span>, amb els operands invertits; es corregeix escrivint <span class="in">`sub t0, t0, t6`</span>.</span>
+<span id="cb5-369"><a href="#cb5-369" aria-label="369"></a>:::</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>13&nbsp; Tema 4: Aritmètica entera i matrius – Estructura de computadors</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../02_exercicis/E5.html" rel="next">
+<link href="../02_exercicis/E3.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-eaeb381c6b7494c50009502241a4985c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3a86d90b797903817cf2addb73264634.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../02_exercicis/E1.html">Problemes</a></li><li class="breadcrumb-item"><a href="../02_exercicis/E4.html"><span class="chapter-title">T4 Enters i matrius</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Cerca" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Estructura de computadors</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Estructura-de-computadors.pdf" title="Descarrega PDF" class="quarto-navigation-tool px-1" aria-label="Descarrega PDF"><i class="bi bi-filetype-pdf"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Cerca"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👋 Presentació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Apunts</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Problemes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E4.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Solucions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Laboratori</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S1 RARS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S2 RISC-V</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S4 Matrius i subrutines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S6 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/Lcalendari.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Calendari</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_riscv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌️ RISC-V</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_sigles_simbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⚙️ Sigles, símbols i notació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_contrib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👥 Contribueix-hi</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_LICENSE.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">©️ Llicència i reconeixements</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Taula de continguts</h2>
+   
+  <ul>
+  <li><a href="#suma-i-resta" id="toc-suma-i-resta" class="nav-link active" data-scroll-target="#suma-i-resta"><span class="header-section-number">13.1</span> Suma i resta</a></li>
+  <li><a href="#multiplicació" id="toc-multiplicació" class="nav-link" data-scroll-target="#multiplicació"><span class="header-section-number">13.2</span> Multiplicació</a></li>
+  <li><a href="#matrius" id="toc-matrius" class="nav-link" data-scroll-target="#matrius"><span class="header-section-number">13.3</span> Matrius</a></li>
+  <li><a href="#accés-seqüencial" id="toc-accés-seqüencial" class="nav-link" data-scroll-target="#accés-seqüencial"><span class="header-section-number">13.4</span> Accés seqüencial</a></li>
+  <li><a href="#divisió" id="toc-divisió" class="nav-link" data-scroll-target="#divisió"><span class="header-section-number">13.5</span> Divisió</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content column-page-right" id="quarto-document-content">
+
+<div class="sidebar-institucional">
+  <a href="https://dac.upc.edu" target="_blank">Departament d'Arquitectura de Computadors (DAC)</a><br>
+  <a href="https://www.upc.edu" target="_blank">Universitat Politècnica de Catalunya (UPC)</a>
+</div>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../02_exercicis/E1.html">Problemes</a></li><li class="breadcrumb-item"><a href="../02_exercicis/E4.html"><span class="chapter-title">T4 Enters i matrius</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Tema 4: Aritmètica entera i matrius</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Codi</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="suma-i-resta" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="suma-i-resta"><span class="header-section-number">13.1</span> Suma i resta</h2>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-suma-resta-enters" class="quarto-xref"><span>Secció 4.2</span></a> i <a href="../01_apunts/A1.html#sec-operacions-ca2" class="quarto-xref"><span>Secció 1.6</span></a>.</em></p>
+<div id="exr-p5-sr-conversio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.1</strong></span> Convertiu a decimal els números <code>0x0D34</code> i <code>0xBA1D</code>:</p>
+<ol type="a">
+<li>Suposant que representen naturals.</li>
+<li>Suposant que representen enters en complement a 2.</li>
+<li>Suposant que representen enters en signe-magnitud.</li>
+</ol>
+</div>
+<div id="exr-p5-sr-suma-naturals" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.2</strong></span> Siguin els números: <span class="math inline">\(A =\)</span> <code>0x0D34</code>, <span class="math inline">\(B =\)</span> <code>0xDD17</code>, <span class="math inline">\(C =\)</span> <code>0xBA1D</code>, <span class="math inline">\(D =\)</span> <code>0x3617</code>.</p>
+<ol type="a">
+<li>Quant val, en hexadecimal, la suma <span class="math inline">\(A+B\)</span> si representen naturals de 16 bits?</li>
+<li>Ídem per a la suma <span class="math inline">\(C+D\)</span>.</li>
+<li>Quant val, en hexadecimal, la suma <span class="math inline">\(A+B\)</span> si són enters en signe-magnitud de 16 bits?</li>
+<li>Ídem per a la suma <span class="math inline">\(C+D\)</span>.</li>
+</ol>
+</div>
+<div id="exr-p5-sr-resta-naturals" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.3</strong></span> Siguin els números: <span class="math inline">\(A =\)</span> <code>0xBA7C</code>, <span class="math inline">\(B =\)</span> <code>0x241A</code>, <span class="math inline">\(C =\)</span> <code>0xAADF</code>, <span class="math inline">\(D =\)</span> <code>0x47BE</code>.</p>
+<ol type="a">
+<li>Quant val, en hexadecimal, la resta <span class="math inline">\(A-B\)</span> si representen naturals de 16 bits?</li>
+<li>Ídem per a la resta <span class="math inline">\(C-D\)</span>.</li>
+<li>Quant val, en hexadecimal, la resta <span class="math inline">\(A-B\)</span> si són enters en signe-magnitud de 16 bits?</li>
+<li>Ídem per a la resta <span class="math inline">\(C-D\)</span>.</li>
+</ol>
+</div>
+<div id="exr-p5-sr-overflow-naturals-8bits" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.4</strong></span> Per a les operacions següents amb naturals de 8 bits, codifiqueu els operands en binari, realitzeu l’operació i indiqueu si s’ha produït arrossegament (<em>carry</em>) o, en el cas de la resta, préstec (<em>borrow</em>). Convertiu el resultat a decimal:</p>
+<ol type="a">
+<li><span class="math inline">\(200 + 50\)</span></li>
+<li><span class="math inline">\(25 + 34\)</span></li>
+<li><span class="math inline">\(254 + 3\)</span></li>
+<li><span class="math inline">\(128 - 20\)</span></li>
+</ol>
+</div>
+<div id="exr-p5-sr-overflow-enters-8bits" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.5</strong></span> Per a les operacions següents amb enters en Ca2 de 8 bits, codifiqueu els operands en binari, realitzeu l’operació i indiqueu si s’ha produït sobreeiximent (<em>overflow</em>). Convertiu el resultat a decimal:</p>
+<ol type="a">
+<li><span class="math inline">\((-25) + (-34)\)</span></li>
+<li><span class="math inline">\((-25) - (-34)\)</span></li>
+<li><span class="math inline">\((+127) - (-20)\)</span></li>
+<li><span class="math inline">\((-128) - (-20)\)</span></li>
+</ol>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-condicions-de-sobreeiximent" class="quarto-xref"><span>Secció 4.2.1</span></a>.</em></p>
+</div>
+<div id="exr-p5-sr-overflow-deteccio-natural" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.6</strong></span> Donades dues variables naturals de 32 bits emmagatzemades a <code>t1</code> i <code>t2</code>, escriviu un programa que calculi la seva suma (<code>t0 = t1 + t2</code>) i determini si s’ha produït arrossegament (<em>carry</em>), desant 1 a <code>t3</code> en cas afirmatiu i 0 altrament. El programa no ha de contenir cap instrucció de salt.</p>
+<p><em>Indicació:</em> si es produeix <em>carry</em>, el resultat <code>t0</code> és menor que qualsevol dels dos sumands.</p>
+</div>
+<div id="exr-p5-sr-overflow-deteccio-enter" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.7</strong></span> Donades dues variables enteres de 32 bits emmagatzemades a <code>t1</code> i <code>t2</code>, escriviu un programa que calculi la seva suma (<code>t0 = t1 + t2</code>) i determini si s’ha produït sobreeiximent (<em>overflow</em>). El programa no ha de contenir cap instrucció de salt.</p>
+<p><em>Indicació:</em> hi ha sobreeiximent si i només si els dos sumands tenen el mateix signe i el resultat té signe oposat. A RISC-V, la detecció es fa combinant instruccions de comparació i lògica de bits sobre els bits de signe.</p>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-sobreeiximent-programari" class="quarto-xref"><span>Secció 4.2.3</span></a> i <a href="../01_apunts/A4.html#tip-sobreeiximent-programari" class="quarto-xref">Exemple&nbsp;<span>4.1</span></a>.</em></p>
+</div>
+<div id="exr-p5-sr-64bits" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.8</strong></span> Donada la declaració en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="dt">long</span> <span class="dt">long</span> x<span class="op">,</span> y<span class="op">;</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Traduïu a assemblador RISC-V les sentències següents (cada variable ocupa dos registres consecutius: part alta i part baixa):</p>
+<ol type="a">
+<li><code>x = x + y;</code></li>
+<li><code>x = x - y;</code></li>
+<li><code>if (x &gt; y) x = 1;</code></li>
+</ol>
+</div>
+</section>
+<section id="multiplicació" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="multiplicació"><span class="header-section-number">13.2</span> Multiplicació</h2>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-multiplicacio-entera" class="quarto-xref"><span>Secció 4.3</span></a>.</em></p>
+<div id="exr-p5-mul-algorisme" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.9</strong></span> Donat el diagrama del multiplicador seqüencial de naturals de 32 bits estudiat a la teoria, que calcula el producte de 64 bits, completeu l’algorisme iteratiu que en descriu el funcionament cicle a cicle, indicant el valor inicial dels registres i les operacions de cada iteració.</p>
+<p><em>Vegeu <a href="../01_apunts/A4.html#thm-multiplicacio-sequencial" class="quarto-xref">Algorisme&nbsp;<span>4.1</span></a>.</em></p>
+</div>
+<div id="exr-p5-mul-passos" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.10</strong></span> Seguint el circuit multiplicador seqüencial, descriviu els passos per a la multiplicació dels naturals de 6 bits <span class="math inline">\(X\)</span> (multiplicand) i <span class="math inline">\(Y\)</span> (multiplicador), calculant en cada pas el valor dels registres <span class="math inline">\(P\)</span>, <span class="math inline">\(MD\)</span> i <span class="math inline">\(MR\)</span> en binari:</p>
+<ol type="a">
+<li><span class="math inline">\(X =\)</span> <code>101000</code>, <span class="math inline">\(Y =\)</span> <code>010011</code>.</li>
+<li><span class="math inline">\(X =\)</span> <code>110110</code>, <span class="math inline">\(Y =\)</span> <code>000100</code>.</li>
+</ol>
+<p><em>Vegeu <a href="../01_apunts/A4.html#thm-multiplicacio-sequencial" class="quarto-xref">Algorisme&nbsp;<span>4.1</span></a> i <a href="../01_apunts/A4.html#tip-seguiment-multiplicacio" class="quarto-xref">Exemple&nbsp;<span>4.3</span></a>.</em></p>
+</div>
+<div id="exr-p5-mul-programa" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.11</strong></span> Seguint el mateix algorisme del circuit multiplicador, i sense usar cap instrucció de multiplicació, escriviu un programa en assemblador RISC-V que calculi el producte de dos naturals de 32 bits guardats als registres <code>t0</code> i <code>t2</code>. El resultat de 64 bits s’ha de guardar a <code>t3</code> (part baixa) i <code>t4</code> (part alta).</p>
+<p><em>Vegeu <a href="../01_apunts/A4.html#thm-multiplicacio-sequencial" class="quarto-xref">Algorisme&nbsp;<span>4.1</span></a>.</em></p>
+</div>
+<div id="exr-p5-mul-overflow" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.12</strong></span> Siguin <code>x</code>, <code>y</code> i <code>z</code> variables de 32 bits emmagatzemades a <code>t1</code>, <code>t2</code> i <code>t3</code>. Escriviu un programa en RISC-V que calculi <code>z = x * y</code> i escrigui a <code>t0</code> el valor 0 si el resultat és correcte o 1 si s’ha produït sobreeiximent. El programa no ha de fer servir cap instrucció de salt. Considereu:</p>
+<ol type="a">
+<li><code>unsigned int x, y, z;</code></li>
+<li><code>int x, y, z;</code></li>
+</ol>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-sobreeiximent-en-la-multiplicacio" class="quarto-xref"><span>Secció 4.3.4</span></a>.</em></p>
+</div>
+<div id="exr-p5-mul-instruccions" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.13</strong></span> Completeu el contingut que han de tenir els registres operands de les instruccions següents perquè siguin coherents després de la seva execució. Considereu cada instrucció de manera independent:</p>
+<ol type="a">
+<li><code>mul t3, t1, t2</code> — el resultat als 32 bits baixos és <code>0xFFFFFFFA</code>; <code>t1 = 0x00000002</code>; calculeu el valor de <code>t2</code>.</li>
+<li><code>div t3, t1, t2</code> (divisió entera signada, truncament cap a zero) — <code>t1 = 0x00000005</code>, <code>t2 = 0xFFFFFFFE</code>; calculeu el quocient a <code>t3</code> i el residu.</li>
+<li>En quins casos concrets pot produir-se sobreeiximent en una divisió entera signada en Ca2?</li>
+</ol>
+</div>
+</section>
+<section id="matrius" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="matrius"><span class="header-section-number">13.3</span> Matrius</h2>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-matrius" class="quarto-xref"><span>Secció 4.5</span></a>.</em></p>
+<div id="exr-p5-matrius-adreces" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.14</strong></span> Donades les declaracions en C, on <code>NF</code> i <code>NC</code> són constants:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="dt">int</span> mat<span class="op">[</span>NF<span class="op">][</span>NC<span class="op">];</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a><span class="dt">int</span> f<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-label="3"></a>    <span class="dt">int</span> i<span class="op">,</span> j<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-label="4"></a>    <span class="op">...</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-label="5"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Escriviu el codi RISC-V per calcular les adreces dels elements següents, fent servir el mínim nombre d’instruccions i deixant el resultat a <code>a0</code>. Suposeu que <code>i</code> i <code>j</code> estan emmagatzemades a <code>t0</code> i <code>t1</code>:</p>
+<ol type="a">
+<li><code>mat[3][11]</code></li>
+<li><code>mat[i][11]</code></li>
+<li><code>mat[3][j]</code></li>
+<li><code>mat[i][j]</code></li>
+<li><code>mat[i+5][j-1]</code></li>
+<li><code>mat[i*10+4][6]</code></li>
+</ol>
+<p><em>Vegeu <a href="../01_apunts/A4.html#eq-acces-aleatori-matriu" class="quarto-xref">Equació&nbsp;<span>4.3</span></a>.</em></p>
+</div>
+<div id="exr-p5-matrius-funcio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.15</strong></span> Traduïu a assemblador RISC-V la funció següent, on <code>N</code> és una constant:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> mat<span class="op">[][</span>N<span class="op">],</span> <span class="dt">int</span> i<span class="op">,</span> <span class="dt">int</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a>    <span class="cf">if</span> <span class="op">(</span>i <span class="op">&gt;</span> j<span class="op">)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a>        mat<span class="op">[</span>i<span class="op">][</span>j<span class="op">]</span> <span class="op">=</span> mat<span class="op">[</span>j<span class="op">][</span>i<span class="op">];</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-matrius-diagonal" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.16</strong></span> Donada la declaració de variable global (on <code>N</code> és una constant):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="dt">int</span> M<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Traduïu a assemblador RISC-V el fragment de codi en C següent, usant el mínim nombre d’instruccions, suposant que <code>i</code> i <code>suma</code> ocupen els registres <code>t0</code> i <code>t1</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a>suma <span class="op">+=</span> M<span class="op">[</span>i<span class="op">][</span>i<span class="op">+</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> M<span class="op">[</span>i<span class="op">+</span><span class="dv">1</span><span class="op">][</span>i<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-matrius-punter-offset" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.17</strong></span> Sigui la declaració en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="dt">char</span> mat<span class="op">[</span><span class="dv">6</span><span class="op">][</span><span class="dv">10</span><span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si el registre <code>t0</code> és un punter que apunta a l’element <code>mat[i][j]</code>, és possible modificar <code>t0</code> amb una sola instrucció perquè apunti a <code>mat[i-3][j+5]</code>? Si la resposta és sí, escriviu-la.</p>
+</div>
+<div id="exr-p5-matrius-longlong" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.18</strong></span> Sigui la declaració de la variable global:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a><span class="dt">long</span> <span class="dt">long</span> mat<span class="op">[</span><span class="dv">10</span><span class="op">][</span><span class="dv">50</span><span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Suposant que inicialment <code>t0</code> conté l’adreça de l’element <code>mat[4][45]</code>, a quin element de la matriu apunta <code>t0</code> després d’executar la instrucció següent?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a><span class="kw">addi</span> <span class="kw">t0</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="dv">1384</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-matrius-inversa" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.19</strong></span> Donades les declaracions en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="dt">void</span> f<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-label="2"></a>    <span class="dt">int</span> j<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-label="3"></a>    <span class="dt">int</span> b<span class="op">[</span><span class="dv">8</span><span class="op">][</span><span class="dv">10</span><span class="op">];</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-label="4"></a>    <span class="op">...</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-label="5"></a>    <span class="co">/* Aquí va la sentència incògnita */</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-label="6"></a>    <span class="op">...</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-label="7"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El fragment de codi RISC-V següent correspon a la traducció de la sentència incògnita. Determineu quina és aquesta sentència i expresseu-la en C, tenint en compte que <code>t0</code> conté la variable <code>j</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb10-1"><a href="#cb10-1" aria-label="1"></a>        <span class="kw">li</span>    <span class="kw">t0</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-label="2"></a><span class="fu">bucle:</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-label="3"></a>        <span class="kw">li</span>    <span class="kw">t1</span><span class="op">,</span> <span class="dv">10</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-label="4"></a>        <span class="cf">bge</span>   <span class="kw">t0</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> final</span>
+<span id="cb10-5"><a href="#cb10-5" aria-label="5"></a>        <span class="kw">li</span>    <span class="kw">t1</span><span class="op">,</span> <span class="dv">10</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-label="6"></a>        <span class="kw">mul</span>   <span class="kw">t1</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="kw">a0</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-label="7"></a>        <span class="kw">add</span>   <span class="kw">t1</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="kw">t0</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-label="8"></a>        <span class="kw">slli</span>  <span class="kw">t1</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-label="9"></a>        <span class="kw">add</span>   <span class="kw">t1</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> <span class="kw">sp</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-label="10"></a>        <span class="kw">sw</span>    <span class="kw">zero</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t1</span><span class="op">)</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-label="11"></a>        <span class="kw">addi</span>  <span class="kw">t0</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-label="12"></a>        <span class="cf">j</span>     bucle</span>
+<span id="cb10-13"><a href="#cb10-13" aria-label="13"></a><span class="fu">final:</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-matrius-func-veci" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.20</strong></span> Donades les declaracions en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="dt">int</span> mati<span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">4</span><span class="op">];</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-label="2"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-label="3"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> veci<span class="op">[</span><span class="dv">4</span><span class="op">])</span> <span class="op">{</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-label="4"></a>    <span class="dt">int</span> j<span class="op">;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-label="5"></a>    <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> <span class="dv">4</span><span class="op">;</span> j<span class="op">++)</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-label="6"></a>        veci<span class="op">[</span>j<span class="op">]</span> <span class="op">=</span> j<span class="op">;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-label="7"></a><span class="op">}</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-label="8"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-label="9"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-label="10"></a>    <span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> <span class="op">&amp;</span>mati<span class="op">[</span><span class="dv">0</span><span class="op">][</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-label="11"></a>    <span class="dt">int</span> <span class="op">*</span>fi <span class="op">=</span> <span class="op">&amp;</span>mati<span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-label="12"></a>    <span class="cf">while</span> <span class="op">(</span>p <span class="op">!=</span> fi<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-label="13"></a>        func<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-label="14"></a>        p <span class="op">+=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-label="15"></a>    <span class="op">}</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-label="16"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Traduïu a RISC-V la subrutina <code>func</code> utilitzant accés seqüencial al vector <code>veci</code>, suposant que <code>j</code> ocupa <code>t0</code>.</li>
+<li>Traduïu a RISC-V la subrutina <code>main</code> utilitzant accés seqüencial a la matriu <code>mati</code>.</li>
+</ol>
+</div>
+</section>
+<section id="accés-seqüencial" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="accés-seqüencial"><span class="header-section-number">13.4</span> Accés seqüencial</h2>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-optimitzacions-bucle" class="quarto-xref"><span>Secció 4.6</span></a>.</em></p>
+<div id="exr-p5-seq-bucles" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.21</strong></span> Donades les declaracions en C (on <code>N</code> és una constant):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-label="1"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> A<span class="op">[</span>N<span class="op">][</span>N<span class="op">])</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-label="2"></a>    <span class="dt">int</span> i<span class="op">,</span> j<span class="op">,</span> suma <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-label="3"></a>    <span class="op">...</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-label="4"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Traduïu a RISC-V les sentències següents usant accés seqüencial per als accessos a <code>A</code>, suposant que <code>i</code>, <code>j</code> i <code>suma</code> ocupen <code>t0</code>, <code>t1</code> i <code>t2</code>:</p>
+<ol type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-label="2"></a>    suma <span class="op">+=</span> A<span class="op">[</span><span class="dv">3</span><span class="op">][</span>i<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-label="2"></a>    suma <span class="op">+=</span> A<span class="op">[</span>i<span class="op">][</span><span class="dv">4</span><span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="3" type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-label="2"></a>    suma <span class="op">+=</span> A<span class="op">[</span>i<span class="op">][</span>i<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="4" type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i <span class="op">+=</span> <span class="dv">3</span><span class="op">)</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-label="2"></a>    suma <span class="op">+=</span> A<span class="op">[</span>i<span class="op">][</span>N<span class="op">-</span><span class="dv">1</span><span class="op">-</span>i<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-seq-char-int-long" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.22</strong></span> Donades les declaracions en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="pp">#define N </span><span class="dv">100</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-label="2"></a><span class="dt">char</span>      vecchar<span class="op">[</span>N<span class="op">];</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-label="3"></a><span class="dt">int</span>       matint<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-label="4"></a><span class="dt">long</span> <span class="dt">long</span> matlong<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-label="5"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-label="6"></a><span class="dt">void</span> func<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-label="7"></a>    <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-label="8"></a>    <span class="op">...</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-label="9"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Traduïu a RISC-V les sentències següents usant accés seqüencial, suposant que <code>i</code> ocupa <code>t0</code>:</p>
+<ol type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i <span class="op">+=</span> <span class="dv">2</span><span class="op">)</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-label="2"></a>    vecchar<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> N <span class="op">-</span> i<span class="op">;</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-label="2"></a>    matint<span class="op">[</span>i<span class="op">][</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="3" type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-label="1"></a>i <span class="op">=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-label="2"></a><span class="cf">while</span> <span class="op">(</span>matint<span class="op">[</span><span class="dv">3</span><span class="op">][</span>i<span class="op">]</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-label="3"></a>    matint<span class="op">[</span><span class="dv">3</span><span class="op">][</span>i<span class="op">]--;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-label="4"></a>    i <span class="op">+=</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-label="5"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="4" type="a">
+<li></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> N<span class="op">-</span><span class="dv">1</span><span class="op">;</span> i <span class="op">&gt;=</span> <span class="dv">0</span><span class="op">;</span> i<span class="op">--)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-label="2"></a>    matlong<span class="op">[</span>i<span class="op">][</span><span class="dv">4</span><span class="op">]</span> <span class="op">=</span> i<span class="op">;</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-seq-mixed" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.23</strong></span> Siguin les declaracions en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1" aria-label="1"></a><span class="dt">int</span>   z<span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">3</span><span class="op">];</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-label="2"></a><span class="dt">int</span>   vector<span class="op">[</span><span class="dv">4</span><span class="op">];</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-label="3"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-label="4"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> i<span class="op">,</span> <span class="dt">int</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-label="5"></a>    <span class="dt">int</span> k<span class="op">;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-label="6"></a>    <span class="op">...</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-label="7"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Traduïu a RISC-V la sentència següent, pertanyent a <code>func</code>:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a>vector<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> z<span class="op">[</span><span class="dv">4</span><span class="op">][</span>j<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="a">
+<li>El codi assemblador RISC-V següent s’ha obtingut en traduir el bucle de la dreta implementant accés seqüencial. Completeu les quatre constants inicials perquè la traducció sigui correcta:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a><span class="kw">.set</span> offset_vector<span class="op">,</span> <span class="op">?</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-label="2"></a><span class="kw">.set</span> offset_z<span class="op">,</span>      <span class="op">?</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-label="3"></a><span class="kw">.set</span> max_dist<span class="op">,</span>      <span class="op">?</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-label="4"></a><span class="kw">.set</span> stride<span class="op">,</span>        <span class="op">?</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-label="5"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-label="6"></a><span class="fu">func:</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-label="7"></a>        <span class="kw">la</span>    <span class="kw">t2</span><span class="op">,</span> vector <span class="op">+</span> offset_vector</span>
+<span id="cb24-8"><a href="#cb24-8" aria-label="8"></a>        <span class="kw">la</span>    <span class="kw">t3</span><span class="op">,</span> z <span class="op">+</span> offset_z</span>
+<span id="cb24-9"><a href="#cb24-9" aria-label="9"></a>        <span class="kw">addi</span>  <span class="kw">t6</span><span class="op">,</span> <span class="kw">t3</span><span class="op">,</span> max_dist</span>
+<span id="cb24-10"><a href="#cb24-10" aria-label="10"></a><span class="fu">for:</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-label="11"></a>        <span class="cf">beq</span>   <span class="kw">t3</span><span class="op">,</span> <span class="kw">t6</span><span class="op">,</span> fifor</span>
+<span id="cb24-12"><a href="#cb24-12" aria-label="12"></a>        <span class="kw">lw</span>    <span class="kw">t4</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t2</span><span class="op">)</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-label="13"></a>        <span class="kw">lw</span>    <span class="kw">t5</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t3</span><span class="op">)</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-label="14"></a>        <span class="kw">add</span>   <span class="kw">t4</span><span class="op">,</span> <span class="kw">t4</span><span class="op">,</span> <span class="kw">t5</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-label="15"></a>        <span class="kw">sw</span>    <span class="kw">t4</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t2</span><span class="op">)</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-label="16"></a>        <span class="kw">addi</span>  <span class="kw">t3</span><span class="op">,</span> <span class="kw">t3</span><span class="op">,</span> stride</span>
+<span id="cb24-17"><a href="#cb24-17" aria-label="17"></a>        <span class="cf">j</span>     for</span>
+<span id="cb24-18"><a href="#cb24-18" aria-label="18"></a><span class="fu">fifor:</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-label="19"></a>        <span class="cf">ret</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a><span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> k<span class="op">++)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-label="2"></a>    vector<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">+=</span> z<span class="op">[</span>k<span class="op">][</span><span class="dv">2</span><span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-seq-diagonal-do" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.24</strong></span> Donades les declaracions en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a><span class="pp">#define N </span><span class="dv">10</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-label="2"></a><span class="dt">int</span> mat<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Traduïu a assemblador RISC-V el codi següent fent servir accés seqüencial amb un sol punter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb27-1"><a href="#cb27-1" aria-label="1"></a>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-label="2"></a><span class="cf">do</span> <span class="op">{</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-label="3"></a>    mat<span class="op">[</span>i<span class="op">][</span>i<span class="op">]</span>   <span class="op">=</span> mat<span class="op">[</span>i<span class="op">][</span>i<span class="op">+</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> mat<span class="op">[</span>i<span class="op">+</span><span class="dv">1</span><span class="op">][</span>i<span class="op">];</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-label="4"></a>    i <span class="op">+=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-label="5"></a><span class="op">}</span> <span class="cf">while</span> <span class="op">(</span>i <span class="op">&lt;</span> N<span class="op">);</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-seq-short" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.25</strong></span> Donades les declaracions en C:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb28-1"><a href="#cb28-1" aria-label="1"></a><span class="dt">void</span> examen<span class="op">(</span><span class="dt">short</span> p1<span class="op">[</span><span class="dv">100</span><span class="op">],</span> <span class="dt">int</span> p2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-label="2"></a>    <span class="dt">int</span>    i<span class="op">;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-label="3"></a>    <span class="dt">short</span> <span class="op">*</span>p<span class="op">;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-label="4"></a>    <span class="op">...</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-label="5"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Traduïu a C, amb una única sentència, el fragment d’assemblador RISC-V següent, sabent que forma part del cos de <code>examen</code>:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a><span class="kw">addi</span>  <span class="kw">t2</span><span class="op">,</span> <span class="kw">a1</span><span class="op">,</span> <span class="dv">3</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-label="2"></a><span class="kw">slli</span>  <span class="kw">t2</span><span class="op">,</span> <span class="kw">t2</span><span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-label="3"></a><span class="kw">add</span>   <span class="kw">t2</span><span class="op">,</span> <span class="kw">a0</span><span class="op">,</span> <span class="kw">t2</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-label="4"></a><span class="kw">sh</span>    <span class="kw">zero</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t2</span><span class="op">)</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="a">
+<li>El fragment incomplet de codi C i RISC-V següent pertany al cos de <code>examen</code> i inicialitza tots els elements de <code>p1</code> a zero usant accés seqüencial. Completeu les tres sentències que falten en C i les línies corresponents en assemblador, suposant que <code>i</code> i <code>p</code> es guarden a <code>t0</code> i <code>t1</code>:</li>
+</ol>
+<pre><code>p = _______ ;
+for (i = 0; i &lt; 100; i++) {
+    _______ ;
+    _______ ;
+}</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a>        <span class="kw">li</span>    <span class="kw">t0</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-label="2"></a>        <span class="kw">li</span>    <span class="kw">t2</span><span class="op">,</span> <span class="dv">100</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-label="3"></a><span class="fu">bucle:</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-label="4"></a>        <span class="cf">bge</span>   <span class="kw">t0</span><span class="op">,</span> <span class="kw">t2</span><span class="op">,</span> fibucle</span>
+<span id="cb31-5"><a href="#cb31-5" aria-label="5"></a>        ___________________</span>
+<span id="cb31-6"><a href="#cb31-6" aria-label="6"></a>        ___________________</span>
+<span id="cb31-7"><a href="#cb31-7" aria-label="7"></a>        <span class="kw">addi</span>  <span class="kw">t0</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-label="8"></a>        <span class="cf">j</span>     bucle</span>
+<span id="cb31-9"><a href="#cb31-9" aria-label="9"></a><span class="fu">fibucle:</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="exr-p5-seq-diagonal-ptr" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.26</strong></span> La funció <code>func</code> recorre la matriu <code>matriu</code> amb un punter. Suposeu que <code>N</code> i <code>M</code> són constants, amb <span class="math inline">\(N \leq M\)</span>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb32-1"><a href="#cb32-1" aria-label="1"></a><span class="dt">int</span> matriu<span class="op">[</span>N<span class="op">][</span>M<span class="op">];</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-label="2"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-label="3"></a><span class="dt">void</span> func<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-label="4"></a>    <span class="dt">int</span>  i<span class="op">,</span> <span class="op">*</span>p<span class="op">;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-label="5"></a>    p <span class="op">=</span> matriu<span class="op">;</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-label="6"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-label="7"></a>        <span class="op">*</span>p  <span class="op">=</span> i<span class="op">;</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-label="8"></a>        p   <span class="op">=</span> p <span class="op">+</span> M <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-label="9"></a>    <span class="op">}</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-label="10"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Enumereu els elements de la matriu que s’escriuen i indiqueu quin valor s’assigna a cada un.</li>
+<li>Traduïu a RISC-V el bucle anterior usant accés seqüencial, suposant que <code>i</code> i <code>p</code> ocupen <code>t0</code> i <code>t1</code>.</li>
+</ol>
+</div>
+<div id="exr-p5-seq-dispersa" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.27</strong></span> La funció <code>fila_dispersa</code> escriu els elements de la fila <code>i</code> d’una matriu dispersa, representada pels vectors <code>A</code>, <code>IA</code> i <code>JA</code>, a les posicions corresponents de la matriu global <code>mat</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb33-1"><a href="#cb33-1" aria-label="1"></a><span class="dt">int</span> mat<span class="op">[</span>N<span class="op">][</span>M<span class="op">];</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-label="2"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-label="3"></a><span class="dt">void</span> fila_dispersa<span class="op">(</span><span class="dt">int</span> <span class="op">*</span>A<span class="op">,</span> <span class="dt">int</span> <span class="op">*</span>IA<span class="op">,</span> <span class="dt">int</span> <span class="op">*</span>JA<span class="op">,</span> <span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-label="4"></a>    <span class="dt">int</span> k<span class="op">;</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-label="5"></a>    <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> IA<span class="op">[</span>i<span class="op">];</span> k <span class="op">&lt;</span> IA<span class="op">[</span>i<span class="op">+</span><span class="dv">1</span><span class="op">];</span> k<span class="op">++)</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-label="6"></a>        mat<span class="op">[</span>i<span class="op">][</span>JA<span class="op">[</span>k<span class="op">]]</span> <span class="op">=</span> A<span class="op">[</span>k<span class="op">];</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-label="7"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Dels accessos a memòria que fa aquest bucle (<code>IA[i]</code>, <code>IA[i+1]</code>, <code>JA[k]</code>, <code>mat[i][JA[k]]</code>, <code>A[k]</code>), quins es poden traduir amb accés seqüencial i quins només amb accés aleatori?</li>
+<li>Traduïu la funció <code>fila_dispersa</code> usant accés seqüencial per als recorreguts que ho permetin, suposant que <code>k</code> es guarda a <code>t0</code>.</li>
+</ol>
+</div>
+<div id="exr-p5-opt-condicio-final" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.28</strong></span> Donada la versió inicial del bucle següent (on <code>N</code> és una constant i <code>v</code> és un vector global d’enters):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode numberSource s number-lines code-with-copy"><code class="sourceCode gnuassembler"><span id="cb34-1"><a href="#cb34-1" aria-label="1"></a>        <span class="kw">li</span>    <span class="kw">t0</span><span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-label="2"></a><span class="fu">bucle:</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-label="3"></a>        <span class="kw">li</span>    <span class="kw">t1</span><span class="op">,</span> N</span>
+<span id="cb34-4"><a href="#cb34-4" aria-label="4"></a>        <span class="cf">bge</span>   <span class="kw">t0</span><span class="op">,</span> <span class="kw">t1</span><span class="op">,</span> fi</span>
+<span id="cb34-5"><a href="#cb34-5" aria-label="5"></a>        <span class="kw">la</span>    <span class="kw">t2</span><span class="op">,</span> v</span>
+<span id="cb34-6"><a href="#cb34-6" aria-label="6"></a>        <span class="kw">slli</span>  <span class="kw">t3</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-label="7"></a>        <span class="kw">add</span>   <span class="kw">t2</span><span class="op">,</span> <span class="kw">t2</span><span class="op">,</span> <span class="kw">t3</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-label="8"></a>        <span class="kw">lw</span>    <span class="kw">t3</span><span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">t2</span><span class="op">)</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-label="9"></a>        <span class="kw">add</span>   <span class="kw">t4</span><span class="op">,</span> <span class="kw">t4</span><span class="op">,</span> <span class="kw">t3</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-label="10"></a>        <span class="kw">addi</span>  <span class="kw">t0</span><span class="op">,</span> <span class="kw">t0</span><span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-label="11"></a>        <span class="cf">j</span>     bucle</span>
+<span id="cb34-12"><a href="#cb34-12" aria-label="12"></a><span class="fu">fi:</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Identifiqueu quantes instruccions s’executen per iteració i calculeu el temps total en cicles per a <span class="math inline">\(N\)</span> iteracions (usa el model de costos: memòria = 4 cicles, salt pres = 2, salt no pres = 1, resta = 1).</li>
+<li>Apliqueu l’optimització de condició al final del bucle (<em>do-while</em>). Escriviu la versió optimitzada i calculeu de nou el temps total.</li>
+<li>Quina reducció percentual del temps s’obté per a <span class="math inline">\(N = 100\)</span>?</li>
+</ol>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-opt-condicio-final" class="quarto-xref"><span>Secció 4.6.2</span></a>.</em></p>
+</div>
+<div id="exr-p5-opt-variable-induccio" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.29</strong></span> Donada la declaració (on <code>N</code> és una constant):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb35-1"><a href="#cb35-1" aria-label="1"></a><span class="dt">int</span> v<span class="op">[</span>N<span class="op">],</span> w<span class="op">[</span>N<span class="op">];</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El bucle <code>for (i = 0; i &lt; N; i++) w[i] = v[i] * 2;</code> es pot optimitzar eliminant la variable d’inducció <code>i</code>.</p>
+<ol type="a">
+<li>Escriviu la versió assemblador RISC-V <strong>sense</strong> cap optimització (usant <code>i</code> explícitament, amb la condició avaluada a l’inici del bucle).</li>
+<li>Apliqueu l’eliminació de la variable d’inducció: usa dos punters que avancin directament i elimina tots els càlculs d’adreça, mantenint la condició avaluada a l’inici. Escriviu la versió optimitzada.</li>
+<li>Combineu l’eliminació de la variable d’inducció (b) amb l’avaluació de la condició al final. Quantes instruccions té el cos del bucle resultant?</li>
+</ol>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-opt-acces-sequencial" class="quarto-xref"><span>Secció 4.6.1</span></a>, <a href="../01_apunts/A4.html#sec-opt-condicio-final" class="quarto-xref"><span>Secció 4.6.2</span></a> i <a href="../01_apunts/A4.html#sec-opt-eliminacio-induccio" class="quarto-xref"><span>Secció 4.6.3</span></a>.</em></p>
+</div>
+</section>
+<section id="divisió" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="divisió"><span class="header-section-number">13.5</span> Divisió</h2>
+<p><em>Vegeu <a href="../01_apunts/A4.html#sec-divisio-entera" class="quarto-xref"><span>Secció 4.4</span></a>.</em></p>
+<div id="exr-p5-div-algorisme" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.30</strong></span> Donat el diagrama del divisor seqüencial de naturals de 32 bits amb restauració estudiat a la teoria, que calcula el quocient i el residu, completeu l’algorisme iteratiu que en descriu el funcionament cicle a cicle.</p>
+<p><em>Vegeu <a href="../01_apunts/A4.html#thm-divisio-sequencial-restauracio" class="quarto-xref">Algorisme&nbsp;<span>4.2</span></a>.</em></p>
+</div>
+<div id="exr-p5-div-passos" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.31</strong></span> Seguint el circuit divisor seqüencial amb restauració, descriviu els passos per a la divisió dels naturals de 6 bits <span class="math inline">\(X\)</span> (dividend) entre <span class="math inline">\(Y\)</span> (divisor), calculant en cada pas el valor dels registres <span class="math inline">\(Q\)</span>, <span class="math inline">\(D\)</span> i <span class="math inline">\(R\)</span> en binari:</p>
+<ol type="a">
+<li><span class="math inline">\(X =\)</span> <code>101000</code>, <span class="math inline">\(Y =\)</span> <code>010011</code>.</li>
+<li><span class="math inline">\(X =\)</span> <code>010101</code>, <span class="math inline">\(Y =\)</span> <code>100100</code>.</li>
+</ol>
+<p><em>Vegeu <a href="../01_apunts/A4.html#thm-divisio-sequencial-restauracio" class="quarto-xref">Algorisme&nbsp;<span>4.2</span></a> i <a href="../01_apunts/A4.html#tip-seguiment-divisio" class="quarto-xref">Exemple&nbsp;<span>4.7</span></a>.</em></p>
+</div>
+<div id="exr-p5-div-programa" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercici 13.32</strong></span> Seguint el mateix algorisme del circuit divisor, i sense usar cap instrucció de multiplicació ni divisió, escriviu un programa en assemblador RISC-V que calculi el quocient i el residu de la divisió de dos naturals de 32 bits: el dividend al registre <code>t3</code> i el divisor a <code>t1</code>. El quocient s’ha de guardar a <code>t2</code> i el residu a <code>t3</code>.</p>
+<p><em>Vegeu <a href="../01_apunts/A4.html#thm-divisio-sequencial-restauracio" class="quarto-xref">Algorisme&nbsp;<span>4.2</span></a>.</em></p>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiat!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiat!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="../02_exercicis/E3.html" class="pagination-link" aria-label="T3 Traducció">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">T3 Traducció</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../02_exercicis/E5.html" class="pagination-link" aria-label="T5 Coma flotant">
+        <span class="nav-page-text"><span class="chapter-title">T5 Coma flotant</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Codi font</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb36-1"><a href="#cb36-1" aria-label="1"></a><span class="co">---</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-label="2"></a><span class="an">number-sections:</span><span class="co"> true</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-label="3"></a><span class="co">---</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-label="4"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-label="5"></a><span class="fu"># {{&lt; var tema4 &gt;}} {#sec-tema-enters-matrius-enunciats}</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-label="6"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-label="7"></a><span class="fu">## Suma i resta</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-label="8"></a></span>
+<span id="cb36-9"><a href="#cb36-9" aria-label="9"></a>*Vegeu @sec-suma-resta-enters i @sec-operacions-ca2.*</span>
+<span id="cb36-10"><a href="#cb36-10" aria-label="10"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-label="11"></a>::: {#exr-p5-sr-conversio}</span>
+<span id="cb36-12"><a href="#cb36-12" aria-label="12"></a>Convertiu a decimal els números <span class="in">`0x0D34`</span> i <span class="in">`0xBA1D`</span>:</span>
+<span id="cb36-13"><a href="#cb36-13" aria-label="13"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-label="14"></a>a) Suposant que representen naturals.</span>
+<span id="cb36-15"><a href="#cb36-15" aria-label="15"></a>b) Suposant que representen enters en complement a 2.</span>
+<span id="cb36-16"><a href="#cb36-16" aria-label="16"></a>c) Suposant que representen enters en signe-magnitud.</span>
+<span id="cb36-17"><a href="#cb36-17" aria-label="17"></a>:::</span>
+<span id="cb36-18"><a href="#cb36-18" aria-label="18"></a></span>
+<span id="cb36-19"><a href="#cb36-19" aria-label="19"></a>::: {#exr-p5-sr-suma-naturals}</span>
+<span id="cb36-20"><a href="#cb36-20" aria-label="20"></a>Siguin els números: $A =$ <span class="in">`0x0D34`</span>, $B =$ <span class="in">`0xDD17`</span>, $C =$ <span class="in">`0xBA1D`</span>, $D =$ <span class="in">`0x3617`</span>.</span>
+<span id="cb36-21"><a href="#cb36-21" aria-label="21"></a></span>
+<span id="cb36-22"><a href="#cb36-22" aria-label="22"></a>a) Quant val, en hexadecimal, la suma $A+B$ si representen naturals de 16 bits?</span>
+<span id="cb36-23"><a href="#cb36-23" aria-label="23"></a>b) Ídem per a la suma $C+D$.</span>
+<span id="cb36-24"><a href="#cb36-24" aria-label="24"></a>c) Quant val, en hexadecimal, la suma $A+B$ si són enters en signe-magnitud de 16 bits?</span>
+<span id="cb36-25"><a href="#cb36-25" aria-label="25"></a>d) Ídem per a la suma $C+D$.</span>
+<span id="cb36-26"><a href="#cb36-26" aria-label="26"></a>:::</span>
+<span id="cb36-27"><a href="#cb36-27" aria-label="27"></a></span>
+<span id="cb36-28"><a href="#cb36-28" aria-label="28"></a>::: {#exr-p5-sr-resta-naturals}</span>
+<span id="cb36-29"><a href="#cb36-29" aria-label="29"></a>Siguin els números: $A =$ <span class="in">`0xBA7C`</span>, $B =$ <span class="in">`0x241A`</span>, $C =$ <span class="in">`0xAADF`</span>, $D =$ <span class="in">`0x47BE`</span>.</span>
+<span id="cb36-30"><a href="#cb36-30" aria-label="30"></a></span>
+<span id="cb36-31"><a href="#cb36-31" aria-label="31"></a>a) Quant val, en hexadecimal, la resta $A-B$ si representen naturals de 16 bits?</span>
+<span id="cb36-32"><a href="#cb36-32" aria-label="32"></a>b) Ídem per a la resta $C-D$.</span>
+<span id="cb36-33"><a href="#cb36-33" aria-label="33"></a>c) Quant val, en hexadecimal, la resta $A-B$ si són enters en signe-magnitud de 16 bits?</span>
+<span id="cb36-34"><a href="#cb36-34" aria-label="34"></a>d) Ídem per a la resta $C-D$.</span>
+<span id="cb36-35"><a href="#cb36-35" aria-label="35"></a>:::</span>
+<span id="cb36-36"><a href="#cb36-36" aria-label="36"></a></span>
+<span id="cb36-37"><a href="#cb36-37" aria-label="37"></a>::: {#exr-p5-sr-overflow-naturals-8bits}</span>
+<span id="cb36-38"><a href="#cb36-38" aria-label="38"></a>Per a les operacions següents amb naturals de 8 bits, codifiqueu els operands en binari, realitzeu l'operació i indiqueu si s'ha produït arrossegament (*carry*) o, en el cas de la resta, préstec (*borrow*). Convertiu el resultat a decimal:</span>
+<span id="cb36-39"><a href="#cb36-39" aria-label="39"></a></span>
+<span id="cb36-40"><a href="#cb36-40" aria-label="40"></a>a) $200 + 50$</span>
+<span id="cb36-41"><a href="#cb36-41" aria-label="41"></a>b) $25 + 34$</span>
+<span id="cb36-42"><a href="#cb36-42" aria-label="42"></a>c) $254 + 3$</span>
+<span id="cb36-43"><a href="#cb36-43" aria-label="43"></a>d) $128 - 20$</span>
+<span id="cb36-44"><a href="#cb36-44" aria-label="44"></a>:::</span>
+<span id="cb36-45"><a href="#cb36-45" aria-label="45"></a></span>
+<span id="cb36-46"><a href="#cb36-46" aria-label="46"></a>::: {#exr-p5-sr-overflow-enters-8bits}</span>
+<span id="cb36-47"><a href="#cb36-47" aria-label="47"></a>Per a les operacions següents amb enters en Ca2 de 8 bits, codifiqueu els operands en binari, realitzeu l'operació i indiqueu si s'ha produït sobreeiximent (*overflow*). Convertiu el resultat a decimal:</span>
+<span id="cb36-48"><a href="#cb36-48" aria-label="48"></a></span>
+<span id="cb36-49"><a href="#cb36-49" aria-label="49"></a>a) $(-25) + (-34)$</span>
+<span id="cb36-50"><a href="#cb36-50" aria-label="50"></a>b) $(-25) - (-34)$</span>
+<span id="cb36-51"><a href="#cb36-51" aria-label="51"></a>c) $(+127) - (-20)$</span>
+<span id="cb36-52"><a href="#cb36-52" aria-label="52"></a>d) $(-128) - (-20)$</span>
+<span id="cb36-53"><a href="#cb36-53" aria-label="53"></a></span>
+<span id="cb36-54"><a href="#cb36-54" aria-label="54"></a>*Vegeu @sec-condicions-de-sobreeiximent.*</span>
+<span id="cb36-55"><a href="#cb36-55" aria-label="55"></a>:::</span>
+<span id="cb36-56"><a href="#cb36-56" aria-label="56"></a></span>
+<span id="cb36-57"><a href="#cb36-57" aria-label="57"></a>::: {#exr-p5-sr-overflow-deteccio-natural}</span>
+<span id="cb36-58"><a href="#cb36-58" aria-label="58"></a>Donades dues variables naturals de 32 bits emmagatzemades a <span class="in">`t1`</span> i <span class="in">`t2`</span>, escriviu un programa que calculi la seva suma (<span class="in">`t0 = t1 + t2`</span>) i determini si s'ha produït arrossegament (*carry*), desant 1 a <span class="in">`t3`</span> en cas afirmatiu i 0 altrament. El programa no ha de contenir cap instrucció de salt.</span>
+<span id="cb36-59"><a href="#cb36-59" aria-label="59"></a></span>
+<span id="cb36-60"><a href="#cb36-60" aria-label="60"></a>*Indicació:* si es produeix *carry*, el resultat <span class="in">`t0`</span> és menor que qualsevol dels dos sumands.</span>
+<span id="cb36-61"><a href="#cb36-61" aria-label="61"></a>:::</span>
+<span id="cb36-62"><a href="#cb36-62" aria-label="62"></a></span>
+<span id="cb36-63"><a href="#cb36-63" aria-label="63"></a>::: {#exr-p5-sr-overflow-deteccio-enter}</span>
+<span id="cb36-64"><a href="#cb36-64" aria-label="64"></a>Donades dues variables enteres de 32 bits emmagatzemades a <span class="in">`t1`</span> i <span class="in">`t2`</span>, escriviu un programa que calculi la seva suma (<span class="in">`t0 = t1 + t2`</span>) i determini si s'ha produït sobreeiximent (*overflow*). El programa no ha de contenir cap instrucció de salt.</span>
+<span id="cb36-65"><a href="#cb36-65" aria-label="65"></a></span>
+<span id="cb36-66"><a href="#cb36-66" aria-label="66"></a>*Indicació:* hi ha sobreeiximent si i només si els dos sumands tenen el mateix signe i el resultat té signe oposat. A RISC-V, la detecció es fa combinant instruccions de comparació i lògica de bits sobre els bits de signe.</span>
+<span id="cb36-67"><a href="#cb36-67" aria-label="67"></a></span>
+<span id="cb36-68"><a href="#cb36-68" aria-label="68"></a>*Vegeu @sec-sobreeiximent-programari i @tip-sobreeiximent-programari.*</span>
+<span id="cb36-69"><a href="#cb36-69" aria-label="69"></a>:::</span>
+<span id="cb36-70"><a href="#cb36-70" aria-label="70"></a></span>
+<span id="cb36-71"><a href="#cb36-71" aria-label="71"></a>::: {#exr-p5-sr-64bits}</span>
+<span id="cb36-72"><a href="#cb36-72" aria-label="72"></a>Donada la declaració en C:</span>
+<span id="cb36-73"><a href="#cb36-73" aria-label="73"></a></span>
+<span id="cb36-74"><a href="#cb36-74" aria-label="74"></a><span class="in">```c</span></span>
+<span id="cb36-75"><a href="#cb36-75" aria-label="75"></a><span class="dt">long</span> <span class="dt">long</span> x<span class="op">,</span> y<span class="op">;</span></span>
+<span id="cb36-76"><a href="#cb36-76" aria-label="76"></a><span class="in">```</span></span>
+<span id="cb36-77"><a href="#cb36-77" aria-label="77"></a></span>
+<span id="cb36-78"><a href="#cb36-78" aria-label="78"></a>Traduïu a assemblador RISC-V les sentències següents (cada variable ocupa dos registres consecutius: part alta i part baixa):</span>
+<span id="cb36-79"><a href="#cb36-79" aria-label="79"></a></span>
+<span id="cb36-80"><a href="#cb36-80" aria-label="80"></a>a) <span class="in">`x = x + y;`</span></span>
+<span id="cb36-81"><a href="#cb36-81" aria-label="81"></a>b) <span class="in">`x = x - y;`</span></span>
+<span id="cb36-82"><a href="#cb36-82" aria-label="82"></a>c) <span class="in">`if (x &gt; y) x = 1;`</span></span>
+<span id="cb36-83"><a href="#cb36-83" aria-label="83"></a>:::</span>
+<span id="cb36-84"><a href="#cb36-84" aria-label="84"></a></span>
+<span id="cb36-85"><a href="#cb36-85" aria-label="85"></a><span class="fu">## Multiplicació</span></span>
+<span id="cb36-86"><a href="#cb36-86" aria-label="86"></a></span>
+<span id="cb36-87"><a href="#cb36-87" aria-label="87"></a>*Vegeu @sec-multiplicacio-entera.*</span>
+<span id="cb36-88"><a href="#cb36-88" aria-label="88"></a></span>
+<span id="cb36-89"><a href="#cb36-89" aria-label="89"></a>::: {#exr-p5-mul-algorisme}</span>
+<span id="cb36-90"><a href="#cb36-90" aria-label="90"></a>Donat el diagrama del multiplicador seqüencial de naturals de 32 bits estudiat a la teoria, que calcula el producte de 64 bits, completeu l'algorisme iteratiu que en descriu el funcionament cicle a cicle, indicant el valor inicial dels registres i les operacions de cada iteració.</span>
+<span id="cb36-91"><a href="#cb36-91" aria-label="91"></a></span>
+<span id="cb36-92"><a href="#cb36-92" aria-label="92"></a>*Vegeu @thm-multiplicacio-sequencial.*</span>
+<span id="cb36-93"><a href="#cb36-93" aria-label="93"></a>:::</span>
+<span id="cb36-94"><a href="#cb36-94" aria-label="94"></a></span>
+<span id="cb36-95"><a href="#cb36-95" aria-label="95"></a>::: {#exr-p5-mul-passos}</span>
+<span id="cb36-96"><a href="#cb36-96" aria-label="96"></a>Seguint el circuit multiplicador seqüencial, descriviu els passos per a la multiplicació dels naturals de 6 bits $X$ (multiplicand) i $Y$ (multiplicador), calculant en cada pas el valor dels registres $P$, $MD$ i $MR$ en binari:</span>
+<span id="cb36-97"><a href="#cb36-97" aria-label="97"></a></span>
+<span id="cb36-98"><a href="#cb36-98" aria-label="98"></a>a) $X =$ <span class="in">`101000`</span>, $Y =$ <span class="in">`010011`</span>.</span>
+<span id="cb36-99"><a href="#cb36-99" aria-label="99"></a>b) $X =$ <span class="in">`110110`</span>, $Y =$ <span class="in">`000100`</span>.</span>
+<span id="cb36-100"><a href="#cb36-100" aria-label="100"></a></span>
+<span id="cb36-101"><a href="#cb36-101" aria-label="101"></a>*Vegeu @thm-multiplicacio-sequencial i @tip-seguiment-multiplicacio.*</span>
+<span id="cb36-102"><a href="#cb36-102" aria-label="102"></a>:::</span>
+<span id="cb36-103"><a href="#cb36-103" aria-label="103"></a></span>
+<span id="cb36-104"><a href="#cb36-104" aria-label="104"></a>::: {#exr-p5-mul-programa}</span>
+<span id="cb36-105"><a href="#cb36-105" aria-label="105"></a>Seguint el mateix algorisme del circuit multiplicador, i sense usar cap instrucció de multiplicació, escriviu un programa en assemblador RISC-V que calculi el producte de dos naturals de 32 bits guardats als registres <span class="in">`t0`</span> i <span class="in">`t2`</span>. El resultat de 64 bits s'ha de guardar a <span class="in">`t3`</span> (part baixa) i <span class="in">`t4`</span> (part alta).</span>
+<span id="cb36-106"><a href="#cb36-106" aria-label="106"></a></span>
+<span id="cb36-107"><a href="#cb36-107" aria-label="107"></a>*Vegeu @thm-multiplicacio-sequencial.*</span>
+<span id="cb36-108"><a href="#cb36-108" aria-label="108"></a>:::</span>
+<span id="cb36-109"><a href="#cb36-109" aria-label="109"></a></span>
+<span id="cb36-110"><a href="#cb36-110" aria-label="110"></a>::: {#exr-p5-mul-overflow}</span>
+<span id="cb36-111"><a href="#cb36-111" aria-label="111"></a>Siguin <span class="in">`x`</span>, <span class="in">`y`</span> i <span class="in">`z`</span> variables de 32 bits emmagatzemades a <span class="in">`t1`</span>, <span class="in">`t2`</span> i <span class="in">`t3`</span>. Escriviu un programa en RISC-V que calculi <span class="in">`z = x * y`</span> i escrigui a <span class="in">`t0`</span> el valor 0 si el resultat és correcte o 1 si s'ha produït sobreeiximent. El programa no ha de fer servir cap instrucció de salt. Considereu:</span>
+<span id="cb36-112"><a href="#cb36-112" aria-label="112"></a></span>
+<span id="cb36-113"><a href="#cb36-113" aria-label="113"></a>a) <span class="in">`unsigned int x, y, z;`</span></span>
+<span id="cb36-114"><a href="#cb36-114" aria-label="114"></a>b) <span class="in">`int x, y, z;`</span></span>
+<span id="cb36-115"><a href="#cb36-115" aria-label="115"></a></span>
+<span id="cb36-116"><a href="#cb36-116" aria-label="116"></a>*Vegeu @sec-sobreeiximent-en-la-multiplicacio.*</span>
+<span id="cb36-117"><a href="#cb36-117" aria-label="117"></a>:::</span>
+<span id="cb36-118"><a href="#cb36-118" aria-label="118"></a></span>
+<span id="cb36-119"><a href="#cb36-119" aria-label="119"></a>::: {#exr-p5-mul-instruccions}</span>
+<span id="cb36-120"><a href="#cb36-120" aria-label="120"></a>Completeu el contingut que han de tenir els registres operands de les instruccions següents perquè siguin coherents després de la seva execució. Considereu cada instrucció de manera independent:</span>
+<span id="cb36-121"><a href="#cb36-121" aria-label="121"></a></span>
+<span id="cb36-122"><a href="#cb36-122" aria-label="122"></a>a) <span class="in">`mul t3, t1, t2`</span> — el resultat als 32 bits baixos és <span class="in">`0xFFFFFFFA`</span>; <span class="in">`t1 = 0x00000002`</span>; calculeu el valor de <span class="in">`t2`</span>.</span>
+<span id="cb36-123"><a href="#cb36-123" aria-label="123"></a>b) <span class="in">`div t3, t1, t2`</span> (divisió entera signada, truncament cap a zero) — <span class="in">`t1 = 0x00000005`</span>, <span class="in">`t2 = 0xFFFFFFFE`</span>; calculeu el quocient a <span class="in">`t3`</span> i el residu.</span>
+<span id="cb36-124"><a href="#cb36-124" aria-label="124"></a>c) En quins casos concrets pot produir-se sobreeiximent en una divisió entera signada en Ca2?</span>
+<span id="cb36-125"><a href="#cb36-125" aria-label="125"></a>:::</span>
+<span id="cb36-126"><a href="#cb36-126" aria-label="126"></a></span>
+<span id="cb36-127"><a href="#cb36-127" aria-label="127"></a><span class="fu">## Matrius</span></span>
+<span id="cb36-128"><a href="#cb36-128" aria-label="128"></a></span>
+<span id="cb36-129"><a href="#cb36-129" aria-label="129"></a>*Vegeu @sec-matrius.*</span>
+<span id="cb36-130"><a href="#cb36-130" aria-label="130"></a></span>
+<span id="cb36-131"><a href="#cb36-131" aria-label="131"></a>::: {#exr-p5-matrius-adreces}</span>
+<span id="cb36-132"><a href="#cb36-132" aria-label="132"></a>Donades les declaracions en C, on <span class="in">`NF`</span> i <span class="in">`NC`</span> són constants:</span>
+<span id="cb36-133"><a href="#cb36-133" aria-label="133"></a></span>
+<span id="cb36-134"><a href="#cb36-134" aria-label="134"></a><span class="in">```c</span></span>
+<span id="cb36-135"><a href="#cb36-135" aria-label="135"></a><span class="dt">int</span> mat<span class="op">[</span>NF<span class="op">][</span>NC<span class="op">];</span></span>
+<span id="cb36-136"><a href="#cb36-136" aria-label="136"></a><span class="dt">int</span> f<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb36-137"><a href="#cb36-137" aria-label="137"></a>    <span class="dt">int</span> i<span class="op">,</span> j<span class="op">;</span></span>
+<span id="cb36-138"><a href="#cb36-138" aria-label="138"></a>    <span class="op">...</span></span>
+<span id="cb36-139"><a href="#cb36-139" aria-label="139"></a><span class="op">}</span></span>
+<span id="cb36-140"><a href="#cb36-140" aria-label="140"></a><span class="in">```</span></span>
+<span id="cb36-141"><a href="#cb36-141" aria-label="141"></a></span>
+<span id="cb36-142"><a href="#cb36-142" aria-label="142"></a>Escriviu el codi RISC-V per calcular les adreces dels elements següents, fent servir el mínim nombre d'instruccions i deixant el resultat a <span class="in">`a0`</span>. Suposeu que <span class="in">`i`</span> i <span class="in">`j`</span> estan emmagatzemades a <span class="in">`t0`</span> i <span class="in">`t1`</span>:</span>
+<span id="cb36-143"><a href="#cb36-143" aria-label="143"></a></span>
+<span id="cb36-144"><a href="#cb36-144" aria-label="144"></a>a) <span class="in">`mat[3][11]`</span></span>
+<span id="cb36-145"><a href="#cb36-145" aria-label="145"></a>b) <span class="in">`mat[i][11]`</span></span>
+<span id="cb36-146"><a href="#cb36-146" aria-label="146"></a>c) <span class="in">`mat[3][j]`</span></span>
+<span id="cb36-147"><a href="#cb36-147" aria-label="147"></a>d) <span class="in">`mat[i][j]`</span></span>
+<span id="cb36-148"><a href="#cb36-148" aria-label="148"></a>e) <span class="in">`mat[i+5][j-1]`</span></span>
+<span id="cb36-149"><a href="#cb36-149" aria-label="149"></a>f) <span class="in">`mat[i*10+4][6]`</span></span>
+<span id="cb36-150"><a href="#cb36-150" aria-label="150"></a></span>
+<span id="cb36-151"><a href="#cb36-151" aria-label="151"></a>*Vegeu @eq-acces-aleatori-matriu.*</span>
+<span id="cb36-152"><a href="#cb36-152" aria-label="152"></a>:::</span>
+<span id="cb36-153"><a href="#cb36-153" aria-label="153"></a></span>
+<span id="cb36-154"><a href="#cb36-154" aria-label="154"></a>::: {#exr-p5-matrius-funcio}</span>
+<span id="cb36-155"><a href="#cb36-155" aria-label="155"></a>Traduïu a assemblador RISC-V la funció següent, on <span class="in">`N`</span> és una constant:</span>
+<span id="cb36-156"><a href="#cb36-156" aria-label="156"></a></span>
+<span id="cb36-157"><a href="#cb36-157" aria-label="157"></a><span class="in">```c</span></span>
+<span id="cb36-158"><a href="#cb36-158" aria-label="158"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> mat<span class="op">[][</span>N<span class="op">],</span> <span class="dt">int</span> i<span class="op">,</span> <span class="dt">int</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-159"><a href="#cb36-159" aria-label="159"></a>    <span class="cf">if</span> <span class="op">(</span>i <span class="op">&gt;</span> j<span class="op">)</span></span>
+<span id="cb36-160"><a href="#cb36-160" aria-label="160"></a>        mat<span class="op">[</span>i<span class="op">][</span>j<span class="op">]</span> <span class="op">=</span> mat<span class="op">[</span>j<span class="op">][</span>i<span class="op">];</span></span>
+<span id="cb36-161"><a href="#cb36-161" aria-label="161"></a><span class="op">}</span></span>
+<span id="cb36-162"><a href="#cb36-162" aria-label="162"></a><span class="in">```</span></span>
+<span id="cb36-163"><a href="#cb36-163" aria-label="163"></a>:::</span>
+<span id="cb36-164"><a href="#cb36-164" aria-label="164"></a></span>
+<span id="cb36-165"><a href="#cb36-165" aria-label="165"></a>::: {#exr-p5-matrius-diagonal}</span>
+<span id="cb36-166"><a href="#cb36-166" aria-label="166"></a>Donada la declaració de variable global (on <span class="in">`N`</span> és una constant):</span>
+<span id="cb36-167"><a href="#cb36-167" aria-label="167"></a></span>
+<span id="cb36-168"><a href="#cb36-168" aria-label="168"></a><span class="in">```c</span></span>
+<span id="cb36-169"><a href="#cb36-169" aria-label="169"></a><span class="dt">int</span> M<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span>
+<span id="cb36-170"><a href="#cb36-170" aria-label="170"></a><span class="in">```</span></span>
+<span id="cb36-171"><a href="#cb36-171" aria-label="171"></a></span>
+<span id="cb36-172"><a href="#cb36-172" aria-label="172"></a>Traduïu a assemblador RISC-V el fragment de codi en C següent, usant el mínim nombre d'instruccions, suposant que <span class="in">`i`</span> i <span class="in">`suma`</span> ocupen els registres <span class="in">`t0`</span> i <span class="in">`t1`</span>:</span>
+<span id="cb36-173"><a href="#cb36-173" aria-label="173"></a></span>
+<span id="cb36-174"><a href="#cb36-174" aria-label="174"></a><span class="in">```c</span></span>
+<span id="cb36-175"><a href="#cb36-175" aria-label="175"></a>suma <span class="op">+=</span> M<span class="op">[</span>i<span class="op">][</span>i<span class="op">+</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> M<span class="op">[</span>i<span class="op">+</span><span class="dv">1</span><span class="op">][</span>i<span class="op">];</span></span>
+<span id="cb36-176"><a href="#cb36-176" aria-label="176"></a><span class="in">```</span></span>
+<span id="cb36-177"><a href="#cb36-177" aria-label="177"></a>:::</span>
+<span id="cb36-178"><a href="#cb36-178" aria-label="178"></a></span>
+<span id="cb36-179"><a href="#cb36-179" aria-label="179"></a>::: {#exr-p5-matrius-punter-offset}</span>
+<span id="cb36-180"><a href="#cb36-180" aria-label="180"></a>Sigui la declaració en C:</span>
+<span id="cb36-181"><a href="#cb36-181" aria-label="181"></a></span>
+<span id="cb36-182"><a href="#cb36-182" aria-label="182"></a><span class="in">```c</span></span>
+<span id="cb36-183"><a href="#cb36-183" aria-label="183"></a><span class="dt">char</span> mat<span class="op">[</span><span class="dv">6</span><span class="op">][</span><span class="dv">10</span><span class="op">];</span></span>
+<span id="cb36-184"><a href="#cb36-184" aria-label="184"></a><span class="in">```</span></span>
+<span id="cb36-185"><a href="#cb36-185" aria-label="185"></a></span>
+<span id="cb36-186"><a href="#cb36-186" aria-label="186"></a>Si el registre <span class="in">`t0`</span> és un punter que apunta a l'element <span class="in">`mat[i][j]`</span>, és possible modificar <span class="in">`t0`</span> amb una sola instrucció perquè apunti a <span class="in">`mat[i-3][j+5]`</span>? Si la resposta és sí, escriviu-la.</span>
+<span id="cb36-187"><a href="#cb36-187" aria-label="187"></a>:::</span>
+<span id="cb36-188"><a href="#cb36-188" aria-label="188"></a></span>
+<span id="cb36-189"><a href="#cb36-189" aria-label="189"></a>::: {#exr-p5-matrius-longlong}</span>
+<span id="cb36-190"><a href="#cb36-190" aria-label="190"></a>Sigui la declaració de la variable global:</span>
+<span id="cb36-191"><a href="#cb36-191" aria-label="191"></a></span>
+<span id="cb36-192"><a href="#cb36-192" aria-label="192"></a><span class="in">```c</span></span>
+<span id="cb36-193"><a href="#cb36-193" aria-label="193"></a><span class="dt">long</span> <span class="dt">long</span> mat<span class="op">[</span><span class="dv">10</span><span class="op">][</span><span class="dv">50</span><span class="op">];</span></span>
+<span id="cb36-194"><a href="#cb36-194" aria-label="194"></a><span class="in">```</span></span>
+<span id="cb36-195"><a href="#cb36-195" aria-label="195"></a></span>
+<span id="cb36-196"><a href="#cb36-196" aria-label="196"></a>Suposant que inicialment <span class="in">`t0`</span> conté l'adreça de l'element <span class="in">`mat[4][45]`</span>, a quin element de la matriu apunta <span class="in">`t0`</span> després d'executar la instrucció següent?</span>
+<span id="cb36-197"><a href="#cb36-197" aria-label="197"></a></span>
+<span id="cb36-198"><a href="#cb36-198" aria-label="198"></a><span class="in">```s</span></span>
+<span id="cb36-199"><a href="#cb36-199" aria-label="199"></a><span class="in">addi t0, t0, 1384</span></span>
+<span id="cb36-200"><a href="#cb36-200" aria-label="200"></a><span class="in">```</span></span>
+<span id="cb36-201"><a href="#cb36-201" aria-label="201"></a>:::</span>
+<span id="cb36-202"><a href="#cb36-202" aria-label="202"></a></span>
+<span id="cb36-203"><a href="#cb36-203" aria-label="203"></a>::: {#exr-p5-matrius-inversa}</span>
+<span id="cb36-204"><a href="#cb36-204" aria-label="204"></a>Donades les declaracions en C:</span>
+<span id="cb36-205"><a href="#cb36-205" aria-label="205"></a></span>
+<span id="cb36-206"><a href="#cb36-206" aria-label="206"></a><span class="in">```c</span></span>
+<span id="cb36-207"><a href="#cb36-207" aria-label="207"></a><span class="dt">void</span> f<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-208"><a href="#cb36-208" aria-label="208"></a>    <span class="dt">int</span> j<span class="op">;</span></span>
+<span id="cb36-209"><a href="#cb36-209" aria-label="209"></a>    <span class="dt">int</span> b<span class="op">[</span><span class="dv">8</span><span class="op">][</span><span class="dv">10</span><span class="op">];</span></span>
+<span id="cb36-210"><a href="#cb36-210" aria-label="210"></a>    <span class="op">...</span></span>
+<span id="cb36-211"><a href="#cb36-211" aria-label="211"></a>    <span class="co">/* Aquí va la sentència incògnita */</span></span>
+<span id="cb36-212"><a href="#cb36-212" aria-label="212"></a>    <span class="op">...</span></span>
+<span id="cb36-213"><a href="#cb36-213" aria-label="213"></a><span class="op">}</span></span>
+<span id="cb36-214"><a href="#cb36-214" aria-label="214"></a><span class="in">```</span></span>
+<span id="cb36-215"><a href="#cb36-215" aria-label="215"></a></span>
+<span id="cb36-216"><a href="#cb36-216" aria-label="216"></a>El fragment de codi RISC-V següent correspon a la traducció de la sentència incògnita. Determineu quina és aquesta sentència i expresseu-la en C, tenint en compte que <span class="in">`t0`</span> conté la variable <span class="in">`j`</span>:</span>
+<span id="cb36-217"><a href="#cb36-217" aria-label="217"></a></span>
+<span id="cb36-218"><a href="#cb36-218" aria-label="218"></a><span class="in">```s</span></span>
+<span id="cb36-219"><a href="#cb36-219" aria-label="219"></a><span class="in">        li    t0, 0</span></span>
+<span id="cb36-220"><a href="#cb36-220" aria-label="220"></a><span class="in">bucle:</span></span>
+<span id="cb36-221"><a href="#cb36-221" aria-label="221"></a><span class="in">        li    t1, 10</span></span>
+<span id="cb36-222"><a href="#cb36-222" aria-label="222"></a><span class="in">        bge   t0, t1, final</span></span>
+<span id="cb36-223"><a href="#cb36-223" aria-label="223"></a><span class="in">        li    t1, 10</span></span>
+<span id="cb36-224"><a href="#cb36-224" aria-label="224"></a><span class="in">        mul   t1, t1, a0</span></span>
+<span id="cb36-225"><a href="#cb36-225" aria-label="225"></a><span class="in">        add   t1, t1, t0</span></span>
+<span id="cb36-226"><a href="#cb36-226" aria-label="226"></a><span class="in">        slli  t1, t1, 2</span></span>
+<span id="cb36-227"><a href="#cb36-227" aria-label="227"></a><span class="in">        add   t1, t1, sp</span></span>
+<span id="cb36-228"><a href="#cb36-228" aria-label="228"></a><span class="in">        sw    zero, 0(t1)</span></span>
+<span id="cb36-229"><a href="#cb36-229" aria-label="229"></a><span class="in">        addi  t0, t0, 1</span></span>
+<span id="cb36-230"><a href="#cb36-230" aria-label="230"></a><span class="in">        j     bucle</span></span>
+<span id="cb36-231"><a href="#cb36-231" aria-label="231"></a><span class="in">final:</span></span>
+<span id="cb36-232"><a href="#cb36-232" aria-label="232"></a><span class="in">```</span></span>
+<span id="cb36-233"><a href="#cb36-233" aria-label="233"></a>:::</span>
+<span id="cb36-234"><a href="#cb36-234" aria-label="234"></a></span>
+<span id="cb36-235"><a href="#cb36-235" aria-label="235"></a>::: {#exr-p5-matrius-func-veci}</span>
+<span id="cb36-236"><a href="#cb36-236" aria-label="236"></a>Donades les declaracions en C:</span>
+<span id="cb36-237"><a href="#cb36-237" aria-label="237"></a></span>
+<span id="cb36-238"><a href="#cb36-238" aria-label="238"></a><span class="in">```c</span></span>
+<span id="cb36-239"><a href="#cb36-239" aria-label="239"></a><span class="dt">int</span> mati<span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">4</span><span class="op">];</span></span>
+<span id="cb36-240"><a href="#cb36-240" aria-label="240"></a></span>
+<span id="cb36-241"><a href="#cb36-241" aria-label="241"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> veci<span class="op">[</span><span class="dv">4</span><span class="op">])</span> <span class="op">{</span></span>
+<span id="cb36-242"><a href="#cb36-242" aria-label="242"></a>    <span class="dt">int</span> j<span class="op">;</span></span>
+<span id="cb36-243"><a href="#cb36-243" aria-label="243"></a>    <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> <span class="dv">4</span><span class="op">;</span> j<span class="op">++)</span></span>
+<span id="cb36-244"><a href="#cb36-244" aria-label="244"></a>        veci<span class="op">[</span>j<span class="op">]</span> <span class="op">=</span> j<span class="op">;</span></span>
+<span id="cb36-245"><a href="#cb36-245" aria-label="245"></a><span class="op">}</span></span>
+<span id="cb36-246"><a href="#cb36-246" aria-label="246"></a></span>
+<span id="cb36-247"><a href="#cb36-247" aria-label="247"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb36-248"><a href="#cb36-248" aria-label="248"></a>    <span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> <span class="op">&amp;</span>mati<span class="op">[</span><span class="dv">0</span><span class="op">][</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb36-249"><a href="#cb36-249" aria-label="249"></a>    <span class="dt">int</span> <span class="op">*</span>fi <span class="op">=</span> <span class="op">&amp;</span>mati<span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb36-250"><a href="#cb36-250" aria-label="250"></a>    <span class="cf">while</span> <span class="op">(</span>p <span class="op">!=</span> fi<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-251"><a href="#cb36-251" aria-label="251"></a>        func<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb36-252"><a href="#cb36-252" aria-label="252"></a>        p <span class="op">+=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb36-253"><a href="#cb36-253" aria-label="253"></a>    <span class="op">}</span></span>
+<span id="cb36-254"><a href="#cb36-254" aria-label="254"></a><span class="op">}</span></span>
+<span id="cb36-255"><a href="#cb36-255" aria-label="255"></a><span class="in">```</span></span>
+<span id="cb36-256"><a href="#cb36-256" aria-label="256"></a></span>
+<span id="cb36-257"><a href="#cb36-257" aria-label="257"></a>a) Traduïu a RISC-V la subrutina <span class="in">`func`</span> utilitzant accés seqüencial al vector <span class="in">`veci`</span>, suposant que <span class="in">`j`</span> ocupa <span class="in">`t0`</span>.</span>
+<span id="cb36-258"><a href="#cb36-258" aria-label="258"></a>b) Traduïu a RISC-V la subrutina <span class="in">`main`</span> utilitzant accés seqüencial a la matriu <span class="in">`mati`</span>.</span>
+<span id="cb36-259"><a href="#cb36-259" aria-label="259"></a>:::</span>
+<span id="cb36-260"><a href="#cb36-260" aria-label="260"></a></span>
+<span id="cb36-261"><a href="#cb36-261" aria-label="261"></a><span class="fu">## Accés seqüencial</span></span>
+<span id="cb36-262"><a href="#cb36-262" aria-label="262"></a></span>
+<span id="cb36-263"><a href="#cb36-263" aria-label="263"></a>*Vegeu @sec-optimitzacions-bucle.*</span>
+<span id="cb36-264"><a href="#cb36-264" aria-label="264"></a></span>
+<span id="cb36-265"><a href="#cb36-265" aria-label="265"></a>::: {#exr-p5-seq-bucles}</span>
+<span id="cb36-266"><a href="#cb36-266" aria-label="266"></a>Donades les declaracions en C (on <span class="in">`N`</span> és una constant):</span>
+<span id="cb36-267"><a href="#cb36-267" aria-label="267"></a></span>
+<span id="cb36-268"><a href="#cb36-268" aria-label="268"></a><span class="in">```c</span></span>
+<span id="cb36-269"><a href="#cb36-269" aria-label="269"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> A<span class="op">[</span>N<span class="op">][</span>N<span class="op">])</span> <span class="op">{</span></span>
+<span id="cb36-270"><a href="#cb36-270" aria-label="270"></a>    <span class="dt">int</span> i<span class="op">,</span> j<span class="op">,</span> suma <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb36-271"><a href="#cb36-271" aria-label="271"></a>    <span class="op">...</span></span>
+<span id="cb36-272"><a href="#cb36-272" aria-label="272"></a><span class="op">}</span></span>
+<span id="cb36-273"><a href="#cb36-273" aria-label="273"></a><span class="in">```</span></span>
+<span id="cb36-274"><a href="#cb36-274" aria-label="274"></a></span>
+<span id="cb36-275"><a href="#cb36-275" aria-label="275"></a>Traduïu a RISC-V les sentències següents usant accés seqüencial per als accessos a <span class="in">`A`</span>, suposant que <span class="in">`i`</span>, <span class="in">`j`</span> i <span class="in">`suma`</span> ocupen <span class="in">`t0`</span>, <span class="in">`t1`</span> i <span class="in">`t2`</span>:</span>
+<span id="cb36-276"><a href="#cb36-276" aria-label="276"></a></span>
+<span id="cb36-277"><a href="#cb36-277" aria-label="277"></a>a)</span>
+<span id="cb36-278"><a href="#cb36-278" aria-label="278"></a><span class="in">```c</span></span>
+<span id="cb36-279"><a href="#cb36-279" aria-label="279"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb36-280"><a href="#cb36-280" aria-label="280"></a>    suma <span class="op">+=</span> A<span class="op">[</span><span class="dv">3</span><span class="op">][</span>i<span class="op">];</span></span>
+<span id="cb36-281"><a href="#cb36-281" aria-label="281"></a><span class="in">```</span></span>
+<span id="cb36-282"><a href="#cb36-282" aria-label="282"></a></span>
+<span id="cb36-283"><a href="#cb36-283" aria-label="283"></a>b)</span>
+<span id="cb36-284"><a href="#cb36-284" aria-label="284"></a><span class="in">```c</span></span>
+<span id="cb36-285"><a href="#cb36-285" aria-label="285"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb36-286"><a href="#cb36-286" aria-label="286"></a>    suma <span class="op">+=</span> A<span class="op">[</span>i<span class="op">][</span><span class="dv">4</span><span class="op">];</span></span>
+<span id="cb36-287"><a href="#cb36-287" aria-label="287"></a><span class="in">```</span></span>
+<span id="cb36-288"><a href="#cb36-288" aria-label="288"></a></span>
+<span id="cb36-289"><a href="#cb36-289" aria-label="289"></a>c)</span>
+<span id="cb36-290"><a href="#cb36-290" aria-label="290"></a><span class="in">```c</span></span>
+<span id="cb36-291"><a href="#cb36-291" aria-label="291"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb36-292"><a href="#cb36-292" aria-label="292"></a>    suma <span class="op">+=</span> A<span class="op">[</span>i<span class="op">][</span>i<span class="op">];</span></span>
+<span id="cb36-293"><a href="#cb36-293" aria-label="293"></a><span class="in">```</span></span>
+<span id="cb36-294"><a href="#cb36-294" aria-label="294"></a></span>
+<span id="cb36-295"><a href="#cb36-295" aria-label="295"></a>d)</span>
+<span id="cb36-296"><a href="#cb36-296" aria-label="296"></a><span class="in">```c</span></span>
+<span id="cb36-297"><a href="#cb36-297" aria-label="297"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i <span class="op">+=</span> <span class="dv">3</span><span class="op">)</span></span>
+<span id="cb36-298"><a href="#cb36-298" aria-label="298"></a>    suma <span class="op">+=</span> A<span class="op">[</span>i<span class="op">][</span>N<span class="op">-</span><span class="dv">1</span><span class="op">-</span>i<span class="op">];</span></span>
+<span id="cb36-299"><a href="#cb36-299" aria-label="299"></a><span class="in">```</span></span>
+<span id="cb36-300"><a href="#cb36-300" aria-label="300"></a>:::</span>
+<span id="cb36-301"><a href="#cb36-301" aria-label="301"></a></span>
+<span id="cb36-302"><a href="#cb36-302" aria-label="302"></a>::: {#exr-p5-seq-char-int-long}</span>
+<span id="cb36-303"><a href="#cb36-303" aria-label="303"></a>Donades les declaracions en C:</span>
+<span id="cb36-304"><a href="#cb36-304" aria-label="304"></a></span>
+<span id="cb36-305"><a href="#cb36-305" aria-label="305"></a><span class="in">```c</span></span>
+<span id="cb36-306"><a href="#cb36-306" aria-label="306"></a><span class="pp">#define N </span><span class="dv">100</span></span>
+<span id="cb36-307"><a href="#cb36-307" aria-label="307"></a><span class="dt">char</span>      vecchar<span class="op">[</span>N<span class="op">];</span></span>
+<span id="cb36-308"><a href="#cb36-308" aria-label="308"></a><span class="dt">int</span>       matint<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span>
+<span id="cb36-309"><a href="#cb36-309" aria-label="309"></a><span class="dt">long</span> <span class="dt">long</span> matlong<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span>
+<span id="cb36-310"><a href="#cb36-310" aria-label="310"></a></span>
+<span id="cb36-311"><a href="#cb36-311" aria-label="311"></a><span class="dt">void</span> func<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb36-312"><a href="#cb36-312" aria-label="312"></a>    <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb36-313"><a href="#cb36-313" aria-label="313"></a>    <span class="op">...</span></span>
+<span id="cb36-314"><a href="#cb36-314" aria-label="314"></a><span class="op">}</span></span>
+<span id="cb36-315"><a href="#cb36-315" aria-label="315"></a><span class="in">```</span></span>
+<span id="cb36-316"><a href="#cb36-316" aria-label="316"></a></span>
+<span id="cb36-317"><a href="#cb36-317" aria-label="317"></a>Traduïu a RISC-V les sentències següents usant accés seqüencial, suposant que <span class="in">`i`</span> ocupa <span class="in">`t0`</span>:</span>
+<span id="cb36-318"><a href="#cb36-318" aria-label="318"></a></span>
+<span id="cb36-319"><a href="#cb36-319" aria-label="319"></a>a)</span>
+<span id="cb36-320"><a href="#cb36-320" aria-label="320"></a><span class="in">```c</span></span>
+<span id="cb36-321"><a href="#cb36-321" aria-label="321"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i <span class="op">+=</span> <span class="dv">2</span><span class="op">)</span></span>
+<span id="cb36-322"><a href="#cb36-322" aria-label="322"></a>    vecchar<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> N <span class="op">-</span> i<span class="op">;</span></span>
+<span id="cb36-323"><a href="#cb36-323" aria-label="323"></a><span class="in">```</span></span>
+<span id="cb36-324"><a href="#cb36-324" aria-label="324"></a></span>
+<span id="cb36-325"><a href="#cb36-325" aria-label="325"></a>b)</span>
+<span id="cb36-326"><a href="#cb36-326" aria-label="326"></a><span class="in">```c</span></span>
+<span id="cb36-327"><a href="#cb36-327" aria-label="327"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb36-328"><a href="#cb36-328" aria-label="328"></a>    matint<span class="op">[</span>i<span class="op">][</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb36-329"><a href="#cb36-329" aria-label="329"></a><span class="in">```</span></span>
+<span id="cb36-330"><a href="#cb36-330" aria-label="330"></a></span>
+<span id="cb36-331"><a href="#cb36-331" aria-label="331"></a>c)</span>
+<span id="cb36-332"><a href="#cb36-332" aria-label="332"></a><span class="in">```c</span></span>
+<span id="cb36-333"><a href="#cb36-333" aria-label="333"></a>i <span class="op">=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb36-334"><a href="#cb36-334" aria-label="334"></a><span class="cf">while</span> <span class="op">(</span>matint<span class="op">[</span><span class="dv">3</span><span class="op">][</span>i<span class="op">]</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-335"><a href="#cb36-335" aria-label="335"></a>    matint<span class="op">[</span><span class="dv">3</span><span class="op">][</span>i<span class="op">]--;</span></span>
+<span id="cb36-336"><a href="#cb36-336" aria-label="336"></a>    i <span class="op">+=</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb36-337"><a href="#cb36-337" aria-label="337"></a><span class="op">}</span></span>
+<span id="cb36-338"><a href="#cb36-338" aria-label="338"></a><span class="in">```</span></span>
+<span id="cb36-339"><a href="#cb36-339" aria-label="339"></a></span>
+<span id="cb36-340"><a href="#cb36-340" aria-label="340"></a>d)</span>
+<span id="cb36-341"><a href="#cb36-341" aria-label="341"></a><span class="in">```c</span></span>
+<span id="cb36-342"><a href="#cb36-342" aria-label="342"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> N<span class="op">-</span><span class="dv">1</span><span class="op">;</span> i <span class="op">&gt;=</span> <span class="dv">0</span><span class="op">;</span> i<span class="op">--)</span></span>
+<span id="cb36-343"><a href="#cb36-343" aria-label="343"></a>    matlong<span class="op">[</span>i<span class="op">][</span><span class="dv">4</span><span class="op">]</span> <span class="op">=</span> i<span class="op">;</span></span>
+<span id="cb36-344"><a href="#cb36-344" aria-label="344"></a><span class="in">```</span></span>
+<span id="cb36-345"><a href="#cb36-345" aria-label="345"></a>:::</span>
+<span id="cb36-346"><a href="#cb36-346" aria-label="346"></a></span>
+<span id="cb36-347"><a href="#cb36-347" aria-label="347"></a>::: {#exr-p5-seq-mixed}</span>
+<span id="cb36-348"><a href="#cb36-348" aria-label="348"></a>Siguin les declaracions en C:</span>
+<span id="cb36-349"><a href="#cb36-349" aria-label="349"></a></span>
+<span id="cb36-350"><a href="#cb36-350" aria-label="350"></a><span class="in">```c</span></span>
+<span id="cb36-351"><a href="#cb36-351" aria-label="351"></a><span class="dt">int</span>   z<span class="op">[</span><span class="dv">5</span><span class="op">][</span><span class="dv">3</span><span class="op">];</span></span>
+<span id="cb36-352"><a href="#cb36-352" aria-label="352"></a><span class="dt">int</span>   vector<span class="op">[</span><span class="dv">4</span><span class="op">];</span></span>
+<span id="cb36-353"><a href="#cb36-353" aria-label="353"></a></span>
+<span id="cb36-354"><a href="#cb36-354" aria-label="354"></a><span class="dt">void</span> func<span class="op">(</span><span class="dt">int</span> i<span class="op">,</span> <span class="dt">int</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-355"><a href="#cb36-355" aria-label="355"></a>    <span class="dt">int</span> k<span class="op">;</span></span>
+<span id="cb36-356"><a href="#cb36-356" aria-label="356"></a>    <span class="op">...</span></span>
+<span id="cb36-357"><a href="#cb36-357" aria-label="357"></a><span class="op">}</span></span>
+<span id="cb36-358"><a href="#cb36-358" aria-label="358"></a><span class="in">```</span></span>
+<span id="cb36-359"><a href="#cb36-359" aria-label="359"></a></span>
+<span id="cb36-360"><a href="#cb36-360" aria-label="360"></a>a) Traduïu a RISC-V la sentència següent, pertanyent a <span class="in">`func`</span>:</span>
+<span id="cb36-361"><a href="#cb36-361" aria-label="361"></a></span>
+<span id="cb36-362"><a href="#cb36-362" aria-label="362"></a><span class="in">```c</span></span>
+<span id="cb36-363"><a href="#cb36-363" aria-label="363"></a>vector<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> z<span class="op">[</span><span class="dv">4</span><span class="op">][</span>j<span class="op">];</span></span>
+<span id="cb36-364"><a href="#cb36-364" aria-label="364"></a><span class="in">```</span></span>
+<span id="cb36-365"><a href="#cb36-365" aria-label="365"></a></span>
+<span id="cb36-366"><a href="#cb36-366" aria-label="366"></a>b) El codi assemblador RISC-V següent s'ha obtingut en traduir el bucle de la dreta implementant accés seqüencial. Completeu les quatre constants inicials perquè la traducció sigui correcta:</span>
+<span id="cb36-367"><a href="#cb36-367" aria-label="367"></a></span>
+<span id="cb36-368"><a href="#cb36-368" aria-label="368"></a><span class="in">```s</span></span>
+<span id="cb36-369"><a href="#cb36-369" aria-label="369"></a><span class="in">.set offset_vector, ?</span></span>
+<span id="cb36-370"><a href="#cb36-370" aria-label="370"></a><span class="in">.set offset_z,      ?</span></span>
+<span id="cb36-371"><a href="#cb36-371" aria-label="371"></a><span class="in">.set max_dist,      ?</span></span>
+<span id="cb36-372"><a href="#cb36-372" aria-label="372"></a><span class="in">.set stride,        ?</span></span>
+<span id="cb36-373"><a href="#cb36-373" aria-label="373"></a></span>
+<span id="cb36-374"><a href="#cb36-374" aria-label="374"></a><span class="in">func:</span></span>
+<span id="cb36-375"><a href="#cb36-375" aria-label="375"></a><span class="in">        la    t2, vector + offset_vector</span></span>
+<span id="cb36-376"><a href="#cb36-376" aria-label="376"></a><span class="in">        la    t3, z + offset_z</span></span>
+<span id="cb36-377"><a href="#cb36-377" aria-label="377"></a><span class="in">        addi  t6, t3, max_dist</span></span>
+<span id="cb36-378"><a href="#cb36-378" aria-label="378"></a><span class="in">for:</span></span>
+<span id="cb36-379"><a href="#cb36-379" aria-label="379"></a><span class="in">        beq   t3, t6, fifor</span></span>
+<span id="cb36-380"><a href="#cb36-380" aria-label="380"></a><span class="in">        lw    t4, 0(t2)</span></span>
+<span id="cb36-381"><a href="#cb36-381" aria-label="381"></a><span class="in">        lw    t5, 0(t3)</span></span>
+<span id="cb36-382"><a href="#cb36-382" aria-label="382"></a><span class="in">        add   t4, t4, t5</span></span>
+<span id="cb36-383"><a href="#cb36-383" aria-label="383"></a><span class="in">        sw    t4, 0(t2)</span></span>
+<span id="cb36-384"><a href="#cb36-384" aria-label="384"></a><span class="in">        addi  t3, t3, stride</span></span>
+<span id="cb36-385"><a href="#cb36-385" aria-label="385"></a><span class="in">        j     for</span></span>
+<span id="cb36-386"><a href="#cb36-386" aria-label="386"></a><span class="in">fifor:</span></span>
+<span id="cb36-387"><a href="#cb36-387" aria-label="387"></a><span class="in">        ret</span></span>
+<span id="cb36-388"><a href="#cb36-388" aria-label="388"></a><span class="in">```</span></span>
+<span id="cb36-389"><a href="#cb36-389" aria-label="389"></a></span>
+<span id="cb36-390"><a href="#cb36-390" aria-label="390"></a><span class="in">```c</span></span>
+<span id="cb36-391"><a href="#cb36-391" aria-label="391"></a><span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> k<span class="op">++)</span></span>
+<span id="cb36-392"><a href="#cb36-392" aria-label="392"></a>    vector<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">+=</span> z<span class="op">[</span>k<span class="op">][</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb36-393"><a href="#cb36-393" aria-label="393"></a><span class="in">```</span></span>
+<span id="cb36-394"><a href="#cb36-394" aria-label="394"></a>:::</span>
+<span id="cb36-395"><a href="#cb36-395" aria-label="395"></a></span>
+<span id="cb36-396"><a href="#cb36-396" aria-label="396"></a>::: {#exr-p5-seq-diagonal-do}</span>
+<span id="cb36-397"><a href="#cb36-397" aria-label="397"></a>Donades les declaracions en C:</span>
+<span id="cb36-398"><a href="#cb36-398" aria-label="398"></a></span>
+<span id="cb36-399"><a href="#cb36-399" aria-label="399"></a><span class="in">```c</span></span>
+<span id="cb36-400"><a href="#cb36-400" aria-label="400"></a><span class="pp">#define N </span><span class="dv">10</span></span>
+<span id="cb36-401"><a href="#cb36-401" aria-label="401"></a><span class="dt">int</span> mat<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span>
+<span id="cb36-402"><a href="#cb36-402" aria-label="402"></a><span class="in">```</span></span>
+<span id="cb36-403"><a href="#cb36-403" aria-label="403"></a></span>
+<span id="cb36-404"><a href="#cb36-404" aria-label="404"></a>Traduïu a assemblador RISC-V el codi següent fent servir accés seqüencial amb un sol punter:</span>
+<span id="cb36-405"><a href="#cb36-405" aria-label="405"></a></span>
+<span id="cb36-406"><a href="#cb36-406" aria-label="406"></a><span class="in">```c</span></span>
+<span id="cb36-407"><a href="#cb36-407" aria-label="407"></a>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb36-408"><a href="#cb36-408" aria-label="408"></a><span class="cf">do</span> <span class="op">{</span></span>
+<span id="cb36-409"><a href="#cb36-409" aria-label="409"></a>    mat<span class="op">[</span>i<span class="op">][</span>i<span class="op">]</span>   <span class="op">=</span> mat<span class="op">[</span>i<span class="op">][</span>i<span class="op">+</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> mat<span class="op">[</span>i<span class="op">+</span><span class="dv">1</span><span class="op">][</span>i<span class="op">];</span></span>
+<span id="cb36-410"><a href="#cb36-410" aria-label="410"></a>    i <span class="op">+=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb36-411"><a href="#cb36-411" aria-label="411"></a><span class="op">}</span> <span class="cf">while</span> <span class="op">(</span>i <span class="op">&lt;</span> N<span class="op">);</span></span>
+<span id="cb36-412"><a href="#cb36-412" aria-label="412"></a><span class="in">```</span></span>
+<span id="cb36-413"><a href="#cb36-413" aria-label="413"></a>:::</span>
+<span id="cb36-414"><a href="#cb36-414" aria-label="414"></a></span>
+<span id="cb36-415"><a href="#cb36-415" aria-label="415"></a>::: {#exr-p5-seq-short}</span>
+<span id="cb36-416"><a href="#cb36-416" aria-label="416"></a>Donades les declaracions en C:</span>
+<span id="cb36-417"><a href="#cb36-417" aria-label="417"></a></span>
+<span id="cb36-418"><a href="#cb36-418" aria-label="418"></a><span class="in">```c</span></span>
+<span id="cb36-419"><a href="#cb36-419" aria-label="419"></a><span class="dt">void</span> examen<span class="op">(</span><span class="dt">short</span> p1<span class="op">[</span><span class="dv">100</span><span class="op">],</span> <span class="dt">int</span> p2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-420"><a href="#cb36-420" aria-label="420"></a>    <span class="dt">int</span>    i<span class="op">;</span></span>
+<span id="cb36-421"><a href="#cb36-421" aria-label="421"></a>    <span class="dt">short</span> <span class="op">*</span>p<span class="op">;</span></span>
+<span id="cb36-422"><a href="#cb36-422" aria-label="422"></a>    <span class="op">...</span></span>
+<span id="cb36-423"><a href="#cb36-423" aria-label="423"></a><span class="op">}</span></span>
+<span id="cb36-424"><a href="#cb36-424" aria-label="424"></a><span class="in">```</span></span>
+<span id="cb36-425"><a href="#cb36-425" aria-label="425"></a></span>
+<span id="cb36-426"><a href="#cb36-426" aria-label="426"></a>a) Traduïu a C, amb una única sentència, el fragment d'assemblador RISC-V següent, sabent que forma part del cos de <span class="in">`examen`</span>:</span>
+<span id="cb36-427"><a href="#cb36-427" aria-label="427"></a></span>
+<span id="cb36-428"><a href="#cb36-428" aria-label="428"></a><span class="in">```s</span></span>
+<span id="cb36-429"><a href="#cb36-429" aria-label="429"></a><span class="in">addi  t2, a1, 3</span></span>
+<span id="cb36-430"><a href="#cb36-430" aria-label="430"></a><span class="in">slli  t2, t2, 1</span></span>
+<span id="cb36-431"><a href="#cb36-431" aria-label="431"></a><span class="in">add   t2, a0, t2</span></span>
+<span id="cb36-432"><a href="#cb36-432" aria-label="432"></a><span class="in">sh    zero, 0(t2)</span></span>
+<span id="cb36-433"><a href="#cb36-433" aria-label="433"></a><span class="in">```</span></span>
+<span id="cb36-434"><a href="#cb36-434" aria-label="434"></a></span>
+<span id="cb36-435"><a href="#cb36-435" aria-label="435"></a>b) El fragment incomplet de codi C i RISC-V següent pertany al cos de <span class="in">`examen`</span> i inicialitza tots els elements de <span class="in">`p1`</span> a zero usant accés seqüencial. Completeu les tres sentències que falten en C i les línies corresponents en assemblador, suposant que <span class="in">`i`</span> i <span class="in">`p`</span> es guarden a <span class="in">`t0`</span> i <span class="in">`t1`</span>:</span>
+<span id="cb36-436"><a href="#cb36-436" aria-label="436"></a></span>
+<span id="cb36-437"><a href="#cb36-437" aria-label="437"></a><span class="in">```</span></span>
+<span id="cb36-438"><a href="#cb36-438" aria-label="438"></a><span class="in">p = _______ ;</span></span>
+<span id="cb36-439"><a href="#cb36-439" aria-label="439"></a><span class="in">for (i = 0; i &lt; 100; i++) {</span></span>
+<span id="cb36-440"><a href="#cb36-440" aria-label="440"></a><span class="in">    _______ ;</span></span>
+<span id="cb36-441"><a href="#cb36-441" aria-label="441"></a><span class="in">    _______ ;</span></span>
+<span id="cb36-442"><a href="#cb36-442" aria-label="442"></a><span class="in">}</span></span>
+<span id="cb36-443"><a href="#cb36-443" aria-label="443"></a><span class="in">```</span></span>
+<span id="cb36-444"><a href="#cb36-444" aria-label="444"></a></span>
+<span id="cb36-445"><a href="#cb36-445" aria-label="445"></a><span class="in">```s</span></span>
+<span id="cb36-446"><a href="#cb36-446" aria-label="446"></a><span class="in">        li    t0, 0</span></span>
+<span id="cb36-447"><a href="#cb36-447" aria-label="447"></a><span class="in">        li    t2, 100</span></span>
+<span id="cb36-448"><a href="#cb36-448" aria-label="448"></a><span class="in">bucle:</span></span>
+<span id="cb36-449"><a href="#cb36-449" aria-label="449"></a><span class="in">        bge   t0, t2, fibucle</span></span>
+<span id="cb36-450"><a href="#cb36-450" aria-label="450"></a><span class="in">        ___________________</span></span>
+<span id="cb36-451"><a href="#cb36-451" aria-label="451"></a><span class="in">        ___________________</span></span>
+<span id="cb36-452"><a href="#cb36-452" aria-label="452"></a><span class="in">        addi  t0, t0, 1</span></span>
+<span id="cb36-453"><a href="#cb36-453" aria-label="453"></a><span class="in">        j     bucle</span></span>
+<span id="cb36-454"><a href="#cb36-454" aria-label="454"></a><span class="in">fibucle:</span></span>
+<span id="cb36-455"><a href="#cb36-455" aria-label="455"></a><span class="in">```</span></span>
+<span id="cb36-456"><a href="#cb36-456" aria-label="456"></a>:::</span>
+<span id="cb36-457"><a href="#cb36-457" aria-label="457"></a></span>
+<span id="cb36-458"><a href="#cb36-458" aria-label="458"></a>::: {#exr-p5-seq-diagonal-ptr}</span>
+<span id="cb36-459"><a href="#cb36-459" aria-label="459"></a>La funció <span class="in">`func`</span> recorre la matriu <span class="in">`matriu`</span> amb un punter. Suposeu que <span class="in">`N`</span> i <span class="in">`M`</span> són constants, amb $N \leq M$:</span>
+<span id="cb36-460"><a href="#cb36-460" aria-label="460"></a></span>
+<span id="cb36-461"><a href="#cb36-461" aria-label="461"></a><span class="in">```c</span></span>
+<span id="cb36-462"><a href="#cb36-462" aria-label="462"></a><span class="dt">int</span> matriu<span class="op">[</span>N<span class="op">][</span>M<span class="op">];</span></span>
+<span id="cb36-463"><a href="#cb36-463" aria-label="463"></a></span>
+<span id="cb36-464"><a href="#cb36-464" aria-label="464"></a><span class="dt">void</span> func<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb36-465"><a href="#cb36-465" aria-label="465"></a>    <span class="dt">int</span>  i<span class="op">,</span> <span class="op">*</span>p<span class="op">;</span></span>
+<span id="cb36-466"><a href="#cb36-466" aria-label="466"></a>    p <span class="op">=</span> matriu<span class="op">;</span></span>
+<span id="cb36-467"><a href="#cb36-467" aria-label="467"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb36-468"><a href="#cb36-468" aria-label="468"></a>        <span class="op">*</span>p  <span class="op">=</span> i<span class="op">;</span></span>
+<span id="cb36-469"><a href="#cb36-469" aria-label="469"></a>        p   <span class="op">=</span> p <span class="op">+</span> M <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb36-470"><a href="#cb36-470" aria-label="470"></a>    <span class="op">}</span></span>
+<span id="cb36-471"><a href="#cb36-471" aria-label="471"></a><span class="op">}</span></span>
+<span id="cb36-472"><a href="#cb36-472" aria-label="472"></a><span class="in">```</span></span>
+<span id="cb36-473"><a href="#cb36-473" aria-label="473"></a></span>
+<span id="cb36-474"><a href="#cb36-474" aria-label="474"></a>a) Enumereu els elements de la matriu que s'escriuen i indiqueu quin valor s'assigna a cada un.</span>
+<span id="cb36-475"><a href="#cb36-475" aria-label="475"></a>b) Traduïu a RISC-V el bucle anterior usant accés seqüencial, suposant que <span class="in">`i`</span> i <span class="in">`p`</span> ocupen <span class="in">`t0`</span> i <span class="in">`t1`</span>.</span>
+<span id="cb36-476"><a href="#cb36-476" aria-label="476"></a>:::</span>
+<span id="cb36-477"><a href="#cb36-477" aria-label="477"></a></span>
+<span id="cb36-478"><a href="#cb36-478" aria-label="478"></a>::: {#exr-p5-seq-dispersa}</span>
+<span id="cb36-479"><a href="#cb36-479" aria-label="479"></a>La funció <span class="in">`fila_dispersa`</span> escriu els elements de la fila <span class="in">`i`</span> d'una matriu dispersa, representada pels vectors <span class="in">`A`</span>, <span class="in">`IA`</span> i <span class="in">`JA`</span>, a les posicions corresponents de la matriu global <span class="in">`mat`</span>:</span>
+<span id="cb36-480"><a href="#cb36-480" aria-label="480"></a></span>
+<span id="cb36-481"><a href="#cb36-481" aria-label="481"></a><span class="in">```c</span></span>
+<span id="cb36-482"><a href="#cb36-482" aria-label="482"></a><span class="dt">int</span> mat<span class="op">[</span>N<span class="op">][</span>M<span class="op">];</span></span>
+<span id="cb36-483"><a href="#cb36-483" aria-label="483"></a></span>
+<span id="cb36-484"><a href="#cb36-484" aria-label="484"></a><span class="dt">void</span> fila_dispersa<span class="op">(</span><span class="dt">int</span> <span class="op">*</span>A<span class="op">,</span> <span class="dt">int</span> <span class="op">*</span>IA<span class="op">,</span> <span class="dt">int</span> <span class="op">*</span>JA<span class="op">,</span> <span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb36-485"><a href="#cb36-485" aria-label="485"></a>    <span class="dt">int</span> k<span class="op">;</span></span>
+<span id="cb36-486"><a href="#cb36-486" aria-label="486"></a>    <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> IA<span class="op">[</span>i<span class="op">];</span> k <span class="op">&lt;</span> IA<span class="op">[</span>i<span class="op">+</span><span class="dv">1</span><span class="op">];</span> k<span class="op">++)</span></span>
+<span id="cb36-487"><a href="#cb36-487" aria-label="487"></a>        mat<span class="op">[</span>i<span class="op">][</span>JA<span class="op">[</span>k<span class="op">]]</span> <span class="op">=</span> A<span class="op">[</span>k<span class="op">];</span></span>
+<span id="cb36-488"><a href="#cb36-488" aria-label="488"></a><span class="op">}</span></span>
+<span id="cb36-489"><a href="#cb36-489" aria-label="489"></a><span class="in">```</span></span>
+<span id="cb36-490"><a href="#cb36-490" aria-label="490"></a></span>
+<span id="cb36-491"><a href="#cb36-491" aria-label="491"></a>a) Dels accessos a memòria que fa aquest bucle (<span class="in">`IA[i]`</span>, <span class="in">`IA[i+1]`</span>, <span class="in">`JA[k]`</span>, <span class="in">`mat[i][JA[k]]`</span>, <span class="in">`A[k]`</span>), quins es poden traduir amb accés seqüencial i quins només amb accés aleatori?</span>
+<span id="cb36-492"><a href="#cb36-492" aria-label="492"></a>b) Traduïu la funció <span class="in">`fila_dispersa`</span> usant accés seqüencial per als recorreguts que ho permetin, suposant que <span class="in">`k`</span> es guarda a <span class="in">`t0`</span>.</span>
+<span id="cb36-493"><a href="#cb36-493" aria-label="493"></a>:::</span>
+<span id="cb36-494"><a href="#cb36-494" aria-label="494"></a></span>
+<span id="cb36-495"><a href="#cb36-495" aria-label="495"></a>::: {#exr-p5-opt-condicio-final}</span>
+<span id="cb36-496"><a href="#cb36-496" aria-label="496"></a>Donada la versió inicial del bucle següent (on <span class="in">`N`</span> és una constant i <span class="in">`v`</span> és un vector global d'enters):</span>
+<span id="cb36-497"><a href="#cb36-497" aria-label="497"></a></span>
+<span id="cb36-498"><a href="#cb36-498" aria-label="498"></a><span class="in">```s</span></span>
+<span id="cb36-499"><a href="#cb36-499" aria-label="499"></a><span class="in">        li    t0, 0</span></span>
+<span id="cb36-500"><a href="#cb36-500" aria-label="500"></a><span class="in">bucle:</span></span>
+<span id="cb36-501"><a href="#cb36-501" aria-label="501"></a><span class="in">        li    t1, N</span></span>
+<span id="cb36-502"><a href="#cb36-502" aria-label="502"></a><span class="in">        bge   t0, t1, fi</span></span>
+<span id="cb36-503"><a href="#cb36-503" aria-label="503"></a><span class="in">        la    t2, v</span></span>
+<span id="cb36-504"><a href="#cb36-504" aria-label="504"></a><span class="in">        slli  t3, t0, 2</span></span>
+<span id="cb36-505"><a href="#cb36-505" aria-label="505"></a><span class="in">        add   t2, t2, t3</span></span>
+<span id="cb36-506"><a href="#cb36-506" aria-label="506"></a><span class="in">        lw    t3, 0(t2)</span></span>
+<span id="cb36-507"><a href="#cb36-507" aria-label="507"></a><span class="in">        add   t4, t4, t3</span></span>
+<span id="cb36-508"><a href="#cb36-508" aria-label="508"></a><span class="in">        addi  t0, t0, 1</span></span>
+<span id="cb36-509"><a href="#cb36-509" aria-label="509"></a><span class="in">        j     bucle</span></span>
+<span id="cb36-510"><a href="#cb36-510" aria-label="510"></a><span class="in">fi:</span></span>
+<span id="cb36-511"><a href="#cb36-511" aria-label="511"></a><span class="in">```</span></span>
+<span id="cb36-512"><a href="#cb36-512" aria-label="512"></a></span>
+<span id="cb36-513"><a href="#cb36-513" aria-label="513"></a>a) Identifiqueu quantes instruccions s'executen per iteració i calculeu el temps total en cicles per a $N$ iteracions (usa el model de costos: memòria = 4 cicles, salt pres = 2, salt no pres = 1, resta = 1).</span>
+<span id="cb36-514"><a href="#cb36-514" aria-label="514"></a>b) Apliqueu l'optimització de condició al final del bucle (*do-while*). Escriviu la versió optimitzada i calculeu de nou el temps total.</span>
+<span id="cb36-515"><a href="#cb36-515" aria-label="515"></a>c) Quina reducció percentual del temps s'obté per a $N = 100$?</span>
+<span id="cb36-516"><a href="#cb36-516" aria-label="516"></a></span>
+<span id="cb36-517"><a href="#cb36-517" aria-label="517"></a>*Vegeu @sec-opt-condicio-final.*</span>
+<span id="cb36-518"><a href="#cb36-518" aria-label="518"></a>:::</span>
+<span id="cb36-519"><a href="#cb36-519" aria-label="519"></a></span>
+<span id="cb36-520"><a href="#cb36-520" aria-label="520"></a>::: {#exr-p5-opt-variable-induccio}</span>
+<span id="cb36-521"><a href="#cb36-521" aria-label="521"></a>Donada la declaració (on <span class="in">`N`</span> és una constant):</span>
+<span id="cb36-522"><a href="#cb36-522" aria-label="522"></a></span>
+<span id="cb36-523"><a href="#cb36-523" aria-label="523"></a><span class="in">```c</span></span>
+<span id="cb36-524"><a href="#cb36-524" aria-label="524"></a><span class="dt">int</span> v<span class="op">[</span>N<span class="op">],</span> w<span class="op">[</span>N<span class="op">];</span></span>
+<span id="cb36-525"><a href="#cb36-525" aria-label="525"></a><span class="in">```</span></span>
+<span id="cb36-526"><a href="#cb36-526" aria-label="526"></a></span>
+<span id="cb36-527"><a href="#cb36-527" aria-label="527"></a>El bucle <span class="in">`for (i = 0; i &lt; N; i++) w[i] = v[i] * 2;`</span> es pot optimitzar eliminant la variable d'inducció <span class="in">`i`</span>.</span>
+<span id="cb36-528"><a href="#cb36-528" aria-label="528"></a></span>
+<span id="cb36-529"><a href="#cb36-529" aria-label="529"></a>a) Escriviu la versió assemblador RISC-V **sense** cap optimització (usant <span class="in">`i`</span> explícitament, amb la condició avaluada a l'inici del bucle).</span>
+<span id="cb36-530"><a href="#cb36-530" aria-label="530"></a>b) Apliqueu l'eliminació de la variable d'inducció: usa dos punters que avancin directament i elimina tots els càlculs d'adreça, mantenint la condició avaluada a l'inici. Escriviu la versió optimitzada.</span>
+<span id="cb36-531"><a href="#cb36-531" aria-label="531"></a>c) Combineu l'eliminació de la variable d'inducció (b) amb l'avaluació de la condició al final. Quantes instruccions té el cos del bucle resultant?</span>
+<span id="cb36-532"><a href="#cb36-532" aria-label="532"></a></span>
+<span id="cb36-533"><a href="#cb36-533" aria-label="533"></a>*Vegeu @sec-opt-acces-sequencial, @sec-opt-condicio-final i @sec-opt-eliminacio-induccio.*</span>
+<span id="cb36-534"><a href="#cb36-534" aria-label="534"></a>:::</span>
+<span id="cb36-535"><a href="#cb36-535" aria-label="535"></a></span>
+<span id="cb36-536"><a href="#cb36-536" aria-label="536"></a><span class="fu">## Divisió</span></span>
+<span id="cb36-537"><a href="#cb36-537" aria-label="537"></a></span>
+<span id="cb36-538"><a href="#cb36-538" aria-label="538"></a>*Vegeu @sec-divisio-entera.*</span>
+<span id="cb36-539"><a href="#cb36-539" aria-label="539"></a></span>
+<span id="cb36-540"><a href="#cb36-540" aria-label="540"></a>::: {#exr-p5-div-algorisme}</span>
+<span id="cb36-541"><a href="#cb36-541" aria-label="541"></a>Donat el diagrama del divisor seqüencial de naturals de 32 bits amb restauració estudiat a la teoria, que calcula el quocient i el residu, completeu l'algorisme iteratiu que en descriu el funcionament cicle a cicle.</span>
+<span id="cb36-542"><a href="#cb36-542" aria-label="542"></a></span>
+<span id="cb36-543"><a href="#cb36-543" aria-label="543"></a>*Vegeu @thm-divisio-sequencial-restauracio.*</span>
+<span id="cb36-544"><a href="#cb36-544" aria-label="544"></a>:::</span>
+<span id="cb36-545"><a href="#cb36-545" aria-label="545"></a></span>
+<span id="cb36-546"><a href="#cb36-546" aria-label="546"></a>::: {#exr-p5-div-passos}</span>
+<span id="cb36-547"><a href="#cb36-547" aria-label="547"></a>Seguint el circuit divisor seqüencial amb restauració, descriviu els passos per a la divisió dels naturals de 6 bits $X$ (dividend) entre $Y$ (divisor), calculant en cada pas el valor dels registres $Q$, $D$ i $R$ en binari:</span>
+<span id="cb36-548"><a href="#cb36-548" aria-label="548"></a></span>
+<span id="cb36-549"><a href="#cb36-549" aria-label="549"></a>a) $X =$ <span class="in">`101000`</span>, $Y =$ <span class="in">`010011`</span>.</span>
+<span id="cb36-550"><a href="#cb36-550" aria-label="550"></a>b) $X =$ <span class="in">`010101`</span>, $Y =$ <span class="in">`100100`</span>.</span>
+<span id="cb36-551"><a href="#cb36-551" aria-label="551"></a></span>
+<span id="cb36-552"><a href="#cb36-552" aria-label="552"></a>*Vegeu @thm-divisio-sequencial-restauracio i @tip-seguiment-divisio.*</span>
+<span id="cb36-553"><a href="#cb36-553" aria-label="553"></a>:::</span>
+<span id="cb36-554"><a href="#cb36-554" aria-label="554"></a></span>
+<span id="cb36-555"><a href="#cb36-555" aria-label="555"></a>::: {#exr-p5-div-programa}</span>
+<span id="cb36-556"><a href="#cb36-556" aria-label="556"></a>Seguint el mateix algorisme del circuit divisor, i sense usar cap instrucció de multiplicació ni divisió, escriviu un programa en assemblador RISC-V que calculi el quocient i el residu de la divisió de dos naturals de 32 bits: el dividend al registre <span class="in">`t3`</span> i el divisor a <span class="in">`t1`</span>. El quocient s'ha de guardar a <span class="in">`t2`</span> i el residu a <span class="in">`t3`</span>.</span>
+<span id="cb36-557"><a href="#cb36-557" aria-label="557"></a></span>
+<span id="cb36-558"><a href="#cb36-558" aria-label="558"></a>*Vegeu @thm-divisio-sequencial-restauracio.*</span>
+<span id="cb36-559"><a href="#cb36-559" aria-label="559"></a>:::</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

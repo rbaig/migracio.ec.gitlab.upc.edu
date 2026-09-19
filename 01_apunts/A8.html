@@ -1,0 +1,2287 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>8&nbsp; Tema 8: Memòria virtual – Estructura de computadors</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../01_apunts/A9.html" rel="next">
+<link href="../01_apunts/A7.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-eaeb381c6b7494c50009502241a4985c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3419ea62b3ca2d77d3d547f86109e84e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3a86d90b797903817cf2addb73264634.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b24e966df06b53f4d2f7e1988e39d445.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../01_apunts/A1.html">Apunts</a></li><li class="breadcrumb-item"><a href="../01_apunts/A8.html"><span class="chapter-title">T8 Memòria virtual</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Cerca" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Estructura de computadors</a> 
+        <div class="sidebar-tools-main">
+    <a href="../Estructura-de-computadors.pdf" title="Descarrega PDF" class="quarto-navigation-tool px-1" aria-label="Descarrega PDF"><i class="bi bi-filetype-pdf"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Cerca"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👋 Presentació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Apunts</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A8.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_apunts/A9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Problemes</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_exercicis/E9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Solucions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T1 Introducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T2 Instruccions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T4 Enters i matrius</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T6 Rendiment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S7.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T7 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S8.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T8 Memòria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_solucions/S9.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">T9 Excepcions i interrupcions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Laboratori</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S1 RARS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S2 RISC-V</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L3.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S3 Traducció</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L4.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S4 Matrius i subrutines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L5.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S5 Coma flotant</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/L6.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">S6 Memòria cau</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_laboratori/Lcalendari.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Calendari</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_riscv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📌️ RISC-V</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_sigles_simbols.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⚙️ Sigles, símbols i notació</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_contrib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">👥 Contribueix-hi</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_LICENSE.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">©️ Llicència i reconeixements</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Taula de continguts</h2>
+   
+  <ul>
+  <li><a href="#sec-mv-introduccio" id="toc-sec-mv-introduccio" class="nav-link active" data-scroll-target="#sec-mv-introduccio"><span class="header-section-number">8.1</span> Introducció</a>
+  <ul class="collapse">
+  <li><a href="#sec-mv-reubicacio" id="toc-sec-mv-reubicacio" class="nav-link" data-scroll-target="#sec-mv-reubicacio"><span class="header-section-number">8.1.1</span> El problema: reubicació i mida limitada</a></li>
+  <li><a href="#sec-mv-espais" id="toc-sec-mv-espais" class="nav-link" data-scroll-target="#sec-mv-espais"><span class="header-section-number">8.1.2</span> Espais d’adreçament lògic i físic</a></li>
+  <li><a href="#sec-mv-disc" id="toc-sec-mv-disc" class="nav-link" data-scroll-target="#sec-mv-disc"><span class="header-section-number">8.1.3</span> El disc com a nivell addicional de la jerarquia</a></li>
+  </ul></li>
+  <li><a href="#sec-mv-paginacio" id="toc-sec-mv-paginacio" class="nav-link" data-scroll-target="#sec-mv-paginacio"><span class="header-section-number">8.2</span> Paginació</a>
+  <ul class="collapse">
+  <li><a href="#sec-mv-pagines" id="toc-sec-mv-pagines" class="nav-link" data-scroll-target="#sec-mv-pagines"><span class="header-section-number">8.2.1</span> Pàgines i marcs de pàgina</a></li>
+  <li><a href="#sec-mv-traduccio" id="toc-sec-mv-traduccio" class="nav-link" data-scroll-target="#sec-mv-traduccio"><span class="header-section-number">8.2.2</span> Traducció d’adreces: VPN, PPN i desplaçament</a></li>
+  </ul></li>
+  <li><a href="#sec-mv-taula-pagines" id="toc-sec-mv-taula-pagines" class="nav-link" data-scroll-target="#sec-mv-taula-pagines"><span class="header-section-number">8.3</span> La taula de pàgines</a>
+  <ul class="collapse">
+  <li><a href="#sec-mv-pte" id="toc-sec-mv-pte" class="nav-link" data-scroll-target="#sec-mv-pte"><span class="header-section-number">8.3.1</span> Estructura d’una entrada (PTE)</a></li>
+  <li><a href="#sec-mv-registre-tp" id="toc-sec-mv-registre-tp" class="nav-link" data-scroll-target="#sec-mv-registre-tp"><span class="header-section-number">8.3.2</span> El registre de taula de pàgines i el canvi de context</a></li>
+  <li><a href="#sec-mv-multinivell" id="toc-sec-mv-multinivell" class="nav-link" data-scroll-target="#sec-mv-multinivell"><span class="header-section-number">8.3.3</span> Taules de pàgines multinivell</a></li>
+  </ul></li>
+  <li><a href="#sec-mv-fallada-pagina" id="toc-sec-mv-fallada-pagina" class="nav-link" data-scroll-target="#sec-mv-fallada-pagina"><span class="header-section-number">8.4</span> Fallada de pàgina</a></li>
+  <li><a href="#sec-mv-tlb" id="toc-sec-mv-tlb" class="nav-link" data-scroll-target="#sec-mv-tlb"><span class="header-section-number">8.5</span> Traducció ràpida: el TLB</a>
+  <ul class="collapse">
+  <li><a href="#sec-mv-tlb-estructura" id="toc-sec-mv-tlb-estructura" class="nav-link" data-scroll-target="#sec-mv-tlb-estructura"><span class="header-section-number">8.5.1</span> Estructura i funcionament</a></li>
+  <li><a href="#sec-mv-tlb-encert" id="toc-sec-mv-tlb-encert" class="nav-link" data-scroll-target="#sec-mv-tlb-encert"><span class="header-section-number">8.5.2</span> Encert de TLB</a></li>
+  <li><a href="#sec-mv-tlb-fallada" id="toc-sec-mv-tlb-fallada" class="nav-link" data-scroll-target="#sec-mv-tlb-fallada"><span class="header-section-number">8.5.3</span> Fallada de TLB</a></li>
+  <li><a href="#sec-mv-tlb-bitv" id="toc-sec-mv-tlb-bitv" class="nav-link" data-scroll-target="#sec-mv-tlb-bitv"><span class="header-section-number">8.5.4</span> El bit V del TLB: doble paper</a></li>
+  <li><a href="#sec-mv-tlb-bitd" id="toc-sec-mv-tlb-bitd" class="nav-link" data-scroll-target="#sec-mv-tlb-bitd"><span class="header-section-number">8.5.5</span> El bit D: consistència amb la taula de pàgines</a></li>
+  <li><a href="#sec-mv-tlb-flux" id="toc-sec-mv-tlb-flux" class="nav-link" data-scroll-target="#sec-mv-tlb-flux"><span class="header-section-number">8.5.6</span> Flux complet de traducció</a></li>
+  </ul></li>
+  <li><a href="#sec-mv-proteccio" id="toc-sec-mv-proteccio" class="nav-link" data-scroll-target="#sec-mv-proteccio"><span class="header-section-number">8.6</span> Protecció i compartició</a>
+  <ul class="collapse">
+  <li><a href="#sec-mv-proteccio-processos" id="toc-sec-mv-proteccio-processos" class="nav-link" data-scroll-target="#sec-mv-proteccio-processos"><span class="header-section-number">8.6.1</span> Protecció entre processos</a></li>
+  <li><a href="#sec-mv-proteccio-escriptura" id="toc-sec-mv-proteccio-escriptura" class="nav-link" data-scroll-target="#sec-mv-proteccio-escriptura"><span class="header-section-number">8.6.2</span> Protecció contra escriptura</a></li>
+  <li><a href="#sec-mv-comparticio" id="toc-sec-mv-comparticio" class="nav-link" data-scroll-target="#sec-mv-comparticio"><span class="header-section-number">8.6.3</span> Compartició de pàgines</a></li>
+  </ul></li>
+  <li><a href="#sec-mv-integracio" id="toc-sec-mv-integracio" class="nav-link" data-scroll-target="#sec-mv-integracio"><span class="header-section-number">8.7</span> Integració del TLB i la memòria cau</a>
+  <ul class="collapse">
+  <li><a href="#sec-mv-cache-fisica" id="toc-sec-mv-cache-fisica" class="nav-link" data-scroll-target="#sec-mv-cache-fisica"><span class="header-section-number">8.7.1</span> Memòria cau indexada físicament</a></li>
+  <li><a href="#sec-mv-cache-virtual" id="toc-sec-mv-cache-virtual" class="nav-link" data-scroll-target="#sec-mv-cache-virtual"><span class="header-section-number">8.7.2</span> Memòria cau indexada virtualment</a></li>
+  <li><a href="#sec-mv-vipt" id="toc-sec-mv-vipt" class="nav-link" data-scroll-target="#sec-mv-vipt"><span class="header-section-number">8.7.3</span> VIPT: la solució estàndard</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content column-page-right" id="quarto-document-content">
+
+<div class="sidebar-institucional">
+  <a href="https://dac.upc.edu" target="_blank">Departament d'Arquitectura de Computadors (DAC)</a><br>
+  <a href="https://www.upc.edu" target="_blank">Universitat Politècnica de Catalunya (UPC)</a>
+</div>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../01_apunts/A1.html">Apunts</a></li><li class="breadcrumb-item"><a href="../01_apunts/A8.html"><span class="chapter-title">T8 Memòria virtual</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">Tema 8: Memòria virtual</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Codi</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-mv-introduccio" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="sec-mv-introduccio"><span class="header-section-number">8.1</span> Introducció</h2>
+<section id="sec-mv-reubicacio" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" class="anchored" data-anchor-id="sec-mv-reubicacio"><span class="header-section-number">8.1.1</span> El problema: reubicació i mida limitada</h3>
+<p>Quan es compila un programa, el compilador assigna adreces de memòria a les instruccions i les dades. Però en un computador modern s’executen múltiples programes simultàniament, tots compartint la mateixa memòria física. Això planteja dos problemes fonamentals:</p>
+<ul>
+<li><strong>Reubicació.</strong> Si dos programes han estat compilats per ocupar les mateixes adreces, no poden coexistir a la memòria sense que les seves dades i instruccions col·lisionin. Cal un mecanisme que permeti que cada programa cregui que ocupa les adreces que li han estat assignades en compilació, però que en realitat estigui ubicat en una zona diferent de la memòria física.</li>
+<li><strong>Mida limitada.</strong> El conjunt d’instruccions i dades de tots els programes en execució pot superar fàcilment la capacitat de la memòria física. Sense cap mecanisme addicional, això impossibilitaria l’execució de certs programes o combinacions de programes.</li>
+</ul>
+<p>La solució a tots dos problemes és la <strong>memòria virtual</strong>.</p>
+</section>
+<section id="sec-mv-espais" class="level3" data-number="8.1.2">
+<h3 data-number="8.1.2" class="anchored" data-anchor-id="sec-mv-espais"><span class="header-section-number">8.1.2</span> Espais d’adreçament lògic i físic</h3>
+<p>La memòria virtual es fonamenta en la distinció entre dos espais d’adreçament independents.</p>
+<ul>
+<li>L’<strong>espai d’adreçament lògic</strong> (o virtual) és el conjunt d’adreces que utilitza un programa: tant en temps de compilació com en temps d’execució, la CPU treballa exclusivament amb adreces lògiques. Cada procés té el seu propi espai d’adreçament lògic, independent del dels altres, amb una mida màxima determinada pel nombre de bits d’adreça del processador (per exemple, <span class="math inline">\(2^{32}\)</span> bytes = 4 GiB en un sistema de 32 bits; vegeu <a href="A2.html#cau-prefixos-binaris" class="quarto-xref">Essencial&nbsp;<span>2.5</span></a> per la notació). Això proporciona a cada procés la il·lusió de disposar de tota la memòria per a ell sol.</li>
+<li>L’<strong>espai d’adreçament físic</strong> és el conjunt d’adreces de la memòria física real. La seva mida depèn de la quantitat de RAM instal·lada al sistema, i és totalment independent de l’espai d’adreçament lògic.</li>
+<li>La <strong>unitat de gestió de memòria</strong> (<em>memory management unit</em> o <strong>MMU</strong>) és el component maquinari responsable de traduir, en temps d’execució, cada adreça lògica generada per la CPU en l’adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.</li>
+</ul>
+<!-- fig-mv-espais: classe `estàndard` (W=680). Diagrama que mostra dos espais d'adreçament lògic independents (Procés 1 i Procés 2, cadascun de 0x00000000 a 0xFFFFFFFF) a l'esquerra, i l'espai d'adreçament físic (memòria física, més petit) a la dreta, amb fletxes que indiquen que pàgines de cada procés es mapen a marcs de pàgina físics diferents. El disc apareix a baix a la dreta com a nivell inferior. Colors (paleta svg.md §10): bloc de Procés 1 en `.data` (fill #cfe2ff, stroke #084298); bloc de Procés 2 en heap (fill #d1e7dd, stroke #0a3622); marcs físics en reservada/neutre (fill #f8f9fa, stroke #adb5bd); disc en pila (fill #fff3cd, stroke #664d03). Caption: "Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució." -->
+</section>
+<section id="sec-mv-disc" class="level3" data-number="8.1.3">
+<h3 data-number="8.1.3" class="anchored" data-anchor-id="sec-mv-disc"><span class="header-section-number">8.1.3</span> El disc com a nivell addicional de la jerarquia</h3>
+<p>Abans de la memòria virtual, quan la mida d’un programa superava la memòria física disponible, els programadors havien de gestionar manualment la càrrega i descàrrega de blocs de codi i dades entre la memòria i el disc, una tècnica de superposicions (<em>overlays</em>). La memòria virtual automatitza completament aquesta gestió, a càrrec del sistema operatiu i amb el suport del maquinari.</p>
+<p>En un sistema amb memòria virtual, el disc (o SSD) es converteix en un nivell addicional de la jerarquia de memòria, per sota de la memòria principal. De la mateixa manera que la memòria cau conté un subconjunt de les dades de la memòria principal (<a href="A7.html#sec-jerarquia" class="quarto-xref"><span>Secció 7.1.4</span></a>), la memòria principal conté un subconjunt de les dades del disc. La totalitat de les dades d’un procés resideix sempre al disc; la memòria física n’emmagatzema només les parts que s’utilitzen activament.</p>
+<div id="tbl-mv-jerarquia" class="striped quarto-float quarto-figure quarto-figure-center anchored" data-tbl-colwidths="[30,30,40]">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mv-jerarquia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Taula&nbsp;8.1: La jerarquia de memòria en un sistema amb memòria virtual (vegeu <a href="A7.html#tbl-tecnologies-memoria" class="quarto-xref">Taula&nbsp;<span>7.1</span></a> per a dades de capacitat i cost).
+</figcaption>
+<div aria-describedby="tbl-mv-jerarquia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 30%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Nivell</th>
+<th style="text-align: left;">Tecnologia</th>
+<th style="text-align: center;">Temps d’accés típic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Registres</td>
+<td style="text-align: left;">SRAM</td>
+<td style="text-align: center;">~0,25 ns</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Memòria cau</td>
+<td style="text-align: left;">SRAM</td>
+<td style="text-align: center;">0,5 – 5 ns</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Memòria principal</td>
+<td style="text-align: left;">DRAM</td>
+<td style="text-align: center;">50 – 100 ns</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Memòria secundària</td>
+<td style="text-align: left;">SSD</td>
+<td style="text-align: center;">0,05 – 0,1 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+</section>
+<section id="sec-mv-paginacio" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sec-mv-paginacio"><span class="header-section-number">8.2</span> Paginació</h2>
+<section id="sec-mv-pagines" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="sec-mv-pagines"><span class="header-section-number">8.2.1</span> Pàgines i marcs de pàgina</h3>
+<p>La memòria virtual gestiona la traducció d’adreces en blocs de mida fixa anomenats <strong>pàgines</strong>. L’espai d’adreçament lògic de cada procés es divideix en pàgines de <span class="math inline">\(T\)</span> bytes (habitualment <span class="math inline">\(T = 4\text{ KiB} = 2^{12}\)</span> bytes), i cada pàgina rep un <strong>número de pàgina virtual</strong> (<em>virtual page number</em> o <strong>VPN</strong>), que indica la seva posició dins l’espai lògic, començant per 0.</p>
+<p>De manera anàloga, l’espai d’adreçament físic es divideix en blocs de la mateixa mida <span class="math inline">\(T\)</span>, anomenats <strong>marcs de pàgina</strong> (<em>page frames</em>). Cada marc rep un <strong>número de pàgina física</strong> (<em>physical page number</em> o <strong>PPN</strong>).</p>
+<p>Un marc de pàgina és un contenidor: pot allotjar qualsevol pàgina lògica de qualsevol procés. El sistema operatiu decideix en quin marc es carrega cada pàgina en funció de l’espai disponible en cada moment, de manera completament associativa, com en una MC d’aquest tipus (<a href="A7.html#sec-completament-associativa" class="quarto-xref"><span>Secció 7.3.3</span></a>).</p>
+<p>Inicialment, totes les pàgines d’un procés resideixen al disc. Durant l’execució, el sistema operatiu les carrega a la memòria física a mesura que es necessiten. En un moment donat, la memòria física conté un subconjunt de les pàgines del procés; la resta romanen al disc.</p>
+<!-- fig-mv-pagines-marcs: classe `estàndard` (W=680). Diagrama amb dos processos a l'esquerra (Procés 1 i Procés 2), cadascun amb les seves pàgines virtuals (VPN 0, VPN 1, ...) i a la dreta la memòria física amb els seus marcs (PPN 0, PPN 1, PPN 2, PPN 3). Fletxes mostren que VPN 0 de Procés 1 → PPN 1, VPN 0 de Procés 2 → PPN 0, VPN 1 de Procés 2 → PPN 2, i VPN 1 de Procés 1 apareix al disc (no carregat). Colors (paleta svg.md §10): pàgines de Procés 1 en `.data` (fill #cfe2ff, stroke #084298); pàgines de Procés 2 en heap (fill #d1e7dd, stroke #0a3622); marcs físics en reservada/neutre (fill #f8f9fa, stroke #adb5bd); disc en pila (fill #fff3cd, stroke #664d03). Caption: "Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física de manera completament associativa. Les pàgines que no s'estan usant romanen al disc." -->
+</section>
+<section id="sec-mv-traduccio" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="sec-mv-traduccio"><span class="header-section-number">8.2.2</span> Traducció d’adreces: VPN, PPN i desplaçament</h3>
+<p>Com que <span class="math inline">\(T\)</span> és una potència de dos (<span class="math inline">\(T = 2^t\)</span>), qualsevol adreça lògica es descompon naturalment en dos camps:</p>
+<ul>
+<li>Els <strong><span class="math inline">\(t\)</span> bits de menor pes</strong> indiquen la posició de la dada dins la pàgina: és el <strong>desplaçament</strong> (<em>page offset</em>).</li>
+<li>Els <strong>bits restants</strong> identifiquen la pàgina: és el <strong>VPN</strong>.</li>
+</ul>
+<p>Per exemple, amb adreces de 32 bits i <span class="math inline">\(T = 4\text{ KiB} = 2^{12}\)</span> bytes:</p>
+<div id="cau-mv-traduccio" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;8.1: Traducció d’adreces lògiques a físiques
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Amb mida de pàgina <span class="math inline">\(T = 2^t\)</span> bytes, una adreça lògica de <span class="math inline">\(n\)</span> bits es descompon en:</p>
+<p><span class="math display">\[\underbrace{b_{n-1} \cdots b_t}_{\text{VPN}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}}\]</span></p>
+<p>La traducció substitueix el VPN pel PPN corresponent; el desplaçament es conserva intacte:</p>
+<p><span class="math display">\[\underbrace{b_{n-1} \cdots b_t}_{\text{VPN}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}} \;\longrightarrow\; \underbrace{\text{PPN}}_{\text{(de la taula de pàgines)}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}}\]</span></p>
+</div>
+</div>
+<div id="tip-mv-traduccio-exemple" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;8.1: Exemple de traducció d’adreces
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Considerem un sistema amb adreces de 32 bits i mida de pàgina <span class="math inline">\(T = 4\text{ KiB} = 2^{12}\)</span> bytes. L’espai d’adreçament lògic té <span class="math inline">\(2^{32} / 2^{12} = 2^{20}\)</span> pàgines virtuals; el VPN ocupa els 20 bits superiors i el desplaçament els 12 bits inferiors.</p>
+<p>Suposem que la pàgina VPN = <code>0x00001</code> està carregada al marc PPN = <code>0x2</code>. Volem traduir l’adreça lògica <code>0x00001801</code>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 55%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">VPN (20 bits)</th>
+<th style="text-align: center;">Desplaçament (12 bits)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Adreça lògica</strong></td>
+<td style="text-align: center;"><code>0000 0000 0000 0000 0001</code> (VPN = <code>0x00001</code>)</td>
+<td style="text-align: center;"><code>1000 0000 0001</code> (<code>0x801</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">↓ traducció (VPN → PPN)</td>
+<td style="text-align: center;">↓ es conserva</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Adreça física</strong></td>
+<td style="text-align: center;"><code>10</code> (PPN = <code>0x2</code>)</td>
+<td style="text-align: center;"><code>1000 0000 0001</code> (<code>0x801</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Adreça física resultant: <code>10</code> + <code>1000 0000 0001</code> = <code>0x2801</code>.</p>
+<p>El desplaçament <code>0x801</code> es conserva; només canvien els bits superiors (VPN → PPN). Amb una memòria física de <span class="math inline">\(2^{14}\)</span> bytes = 16 KiB, l’adreça física té 14 bits: 2 de PPN i 12 de desplaçament.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-mv-taula-pagines" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="sec-mv-taula-pagines"><span class="header-section-number">8.3</span> La taula de pàgines</h2>
+<p>Per poder traduir una adreça lògica cal saber en quin marc de pàgina (PPN) es troba cada pàgina virtual (VPN). Aquesta informació la manté una estructura de dades anomenada <strong>taula de pàgines</strong>. Cada procés té la seva pròpia taula de pàgines, emmagatzemada a la memòria principal.</p>
+<p>La taula de pàgines s’indexa pel VPN: cada fila correspon a una pàgina virtual i s’anomena <strong>entrada de la taula de pàgines</strong> (<em>page table entry</em> o <strong>PTE</strong>). El nombre d’entrades és igual al nombre de pàgines virtuals de l’espai d’adreçament (<span class="math inline">\(2^{20}\)</span> entrades en l’exemple de 32 bits amb pàgines de 4 KiB).</p>
+<section id="sec-mv-pte" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="sec-mv-pte"><span class="header-section-number">8.3.1</span> Estructura d’una entrada (PTE)</h3>
+<p>Cada PTE conté els camps següents:</p>
+<ul>
+<li><strong>PPN</strong> (<em>physical page number</em>): el número de marc de pàgina on es troba la pàgina, si és a la memòria física.</li>
+<li><strong>Bit V</strong> (<em>valid</em>, presència): val 1 si la pàgina és a la memòria física; val 0 si és al disc o si la pàgina no pertany a l’espai vàlid del procés.</li>
+<li><strong>Bit D</strong> (<em>dirty</em>): val 1 si la pàgina ha estat modificada des que es va carregar. Quan cal reemplaçar-la, només s’escriu al disc si D = 1.</li>
+<li><strong>Bit E</strong> (escriptura): indica si el procés té permís d’escriptura sobre aquesta pàgina. Si una instrucció intenta escriure en una pàgina amb E = 0, el sistema operatiu avorta l’execució.</li>
+</ul>
+<div id="cau-mv-pte" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;8.2: Estructura d’una entrada de la taula de pàgines (PTE)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 70%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Camp</th>
+<th style="text-align: center;">Mida</th>
+<th style="text-align: left;">Significat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">PPN</td>
+<td style="text-align: center;"><span class="math inline">\(p\)</span> bits</td>
+<td style="text-align: left;">Marc de pàgina física on es troba la pàgina</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">V</td>
+<td style="text-align: center;">1 bit</td>
+<td style="text-align: left;">1 = pàgina a memòria; 0 = al disc o invàlida</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">D</td>
+<td style="text-align: center;">1 bit</td>
+<td style="text-align: left;">1 = pàgina modificada (<em>dirty</em>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">E</td>
+<td style="text-align: center;">1 bit</td>
+<td style="text-align: left;">1 = permís d’escriptura</td>
+</tr>
+</tbody>
+</table>
+<p>Quan V = 0, el camp PPN no té validesa: la pàgina no és a la memòria física.</p>
+</div>
+</div>
+<div id="wrn-mv-notacio-v" class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Aprofundiment&nbsp;8.1: Notació: <code>V</code> a EC vs.&nbsp;<code>P</code> en altres fonts
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Aquests apunts segueixen la notació de la ISA de RISC-V (esquema Sv32) i de Harris &amp; Harris: el bit de presència de la PTE s’anomena <strong><code>V</code></strong> (<em>Valid</em>). Alguns textos i els exàmens anteriors d’EC anomenen aquest camp <strong><code>P</code></strong> (<em>Present</em>), com fa l’arquitectura x86; en consultar-los, cal tenir en compte aquesta diferència de notació.</p>
+</div>
+</div>
+</div>
+<!-- fig-mv-taula-pagines: classe `estàndard` (W=680). Diagrama de la taula de pàgines. Columnes: VPN (índex, a l'esquerra, de 0 a 2^20-1 amb punts suspensius al mig), V, D, E, PPN. Dues o tres files destacades (V=1, amb PPN vàlid) en `.data` (fill #cfe2ff, stroke #084298), la resta (V=0, PPN buit) en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d). Un registre de taula de pàgines (fletxa des de fora) apunta a la base de la taula. Caption: "La taula de pàgines s'indexa pel VPN. Cada entrada (PTE) conté el PPN i els bits de control V, D i E." -->
+</section>
+<section id="sec-mv-registre-tp" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" class="anchored" data-anchor-id="sec-mv-registre-tp"><span class="header-section-number">8.3.2</span> El registre de taula de pàgines i el canvi de context</h3>
+<p>En un sistema amb múltiples processos, cada procés té la seva pròpia taula de pàgines a la memòria. Per saber on és la taula del procés en execució, el maquinari incorpora un <strong>registre de taula de pàgines</strong> que conté l’adreça base de la taula del procés actiu. La MMU usa aquest registre per accedir a la PTE corresponent a cada VPN que cal traduir.</p>
+<p>Quan el sistema operatiu commuta d’un procés a un altre (<strong>canvi de context</strong>), actualitza el registre de taula de pàgines perquè apunti a la taula del nou procés actiu. Aquesta operació és suficient per canviar completament l’espai d’adreçament visible: a partir d’aquell moment, totes les traduccions es fan amb la taula del nou procés, i l’espai lògic de l’anterior queda inaccessible. El valor del registre de taula de pàgines forma part del <strong>context</strong> del procés, és a dir, de l’estat que el sistema operatiu desa i restaura en cada canvi de context.</p>
+</section>
+<section id="sec-mv-multinivell" class="level3" data-number="8.3.3">
+<h3 data-number="8.3.3" class="anchored" data-anchor-id="sec-mv-multinivell"><span class="header-section-number">8.3.3</span> Taules de pàgines multinivell</h3>
+<p>La taula de pàgines plana descrita fins ara ocupa una quantitat de memòria proporcional al nombre de pàgines virtuals possibles, independentment de quantes en faci servir realment el procés. En sistemes de 32 bits amb pàgines de 4 KiB i entrades de 4 bytes, això representa 4 MiB per procés en tot moment; en sistemes de 64 bits, el cost es fa inassumible. Les <strong>taules de pàgines multinivell</strong> resolen el problema assignant memòria només per a les regions de l’espai lògic que el procés utilitza realment.</p>
+<!-- fig-mv-taula-multinivell: classe `estàndard` (W=680). Diagrama d'una taula de pàgines de dos nivells (Sv32). A l'esquerra, una taula de primer nivell (directori de pàgines) amb 1024 entrades; algunes apunten a taules de segon nivell (a la dreta), la resta estan marcades com a no assignades. Cada taula de segon nivell té 1024 PTEs. Colors (paleta svg.md §10): entrades assignades en `.data` (fill #cfe2ff, stroke #084298); entrades no assignades en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d). Caption: "Taula de pàgines de dos nivells: les taules de segon nivell només s'assignen per a les regions de l'espai lògic en ús, reduint l'ús de memòria." -->
+<div id="wrn-mv-multinivell" class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Aprofundiment&nbsp;8.2: Taules de pàgines multinivell
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>En un sistema de 32 bits amb pàgines de 4 KiB, la taula de pàgines té <span class="math inline">\(2^{20}\)</span> entrades. Si cada entrada ocupa 4 bytes, la taula ocupa 4 MiB per procés, tots a la memòria principal. En sistemes de 64 bits el problema s’aguditza: amb adreces de 48 bits significatius i pàgines de 4 KiB, la taula tindria <span class="math inline">\(2^{36}\)</span> entrades, cosa inviable.</p>
+<p>La solució és estructurar la taula de pàgines en <strong>múltiples nivells</strong>. En una taula de dos nivells, els bits del VPN es divideixen en dues parts: els bits superiors indexen una <strong>taula de primer nivell</strong> (o directori de pàgines), on cada entrada apunta a una <strong>taula de segon nivell</strong>. Cada taula de segon nivell conté les PTEs d’un subconjunt de l’espai lògic.</p>
+<p>L’avantatge clau és que les taules de segon nivell només s’assignen per a les regions de l’espai lògic que el procés utilitza realment. Com que la majoria dels processos fan servir només una fracció petita dels <span class="math inline">\(2^{32}\)</span> o <span class="math inline">\(2^{48}\)</span> bytes d’espai lògic possible, la memòria ocupada per la taula de pàgines es redueix dràsticament. Linux usa taules de tres a cinc nivells segons l’arquitectura i la configuració: per exemple, quatre nivells a x86-64, o tres nivells (Sv39) per defecte a RISC-V de 64 bits.</p>
+</div>
+</div>
+</div>
+<div id="wrn-mv-sv32" class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Aprofundiment&nbsp;8.3: L’esquema Sv32 de RISC-V
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Sv32</strong> és l’esquema estàndard de paginació de 32 bits definit per l’arquitectura privilegiada de RISC-V. Tradueix adreces lògiques de 32 bits a adreces físiques de <strong>34 bits</strong> mitjançant una taula de pàgines de <strong>dos nivells</strong> amb pàgines de 4 KiB. Per tant, tot i que cada procés disposa d’un espai lògic de 4 GiB (<span class="math inline">\(2^{32}\)</span> bytes), el sistema pot adreçar fins a <strong>16 GiB</strong> (<span class="math inline">\(2^{34}\)</span> bytes) de memòria física.</p>
+<p>Per a sistemes de 64 bits, RISC-V defineix els esquemes <strong>Sv39</strong>, <strong>Sv48</strong> i <strong>Sv57</strong>, amb taules de pàgines de tres, quatre i cinc nivells respectivament, que permeten espais d’adreçament molt més grans.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-mv-fallada-pagina" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="sec-mv-fallada-pagina"><span class="header-section-number">8.4</span> Fallada de pàgina</h2>
+<p>Quan la CPU accedeix a una adreça lògica i el bit V de la PTE corresponent val 0, es produeix una <strong>fallada de pàgina</strong> (<em>page fault</em>). Això pot succeir per dos motius: la pàgina pertany a l’espai vàlid del procés però no és a la memòria física (és al disc), o bé l’adreça és invàlida (no pertany a cap regió reservada del procés). En el segon cas, el sistema operatiu avorta l’execució del programa (a Unix i derivats, amb un error de tipus <em>segmentation fault</em>).</p>
+<p>En el primer cas, el sistema operatiu gestiona la fallada carregant la pàgina des del disc:</p>
+<ol type="1">
+<li>Es localitza la pàgina al disc.</li>
+<li>Si hi ha un marc de pàgina lliure, s’hi carrega la pàgina. Si no n’hi ha cap de lliure, cal <strong>reemplaçar</strong> un marc ocupat.</li>
+<li>S’actualitza la PTE: es posa V = 1 i s’escriu el PPN del marc assignat.</li>
+<li>Es reexecuta la instrucció que ha causat la fallada.</li>
+</ol>
+<p>Com que un accés al disc és centenars o milers de vegades més lent que un accés a la memòria principal (desenes de milers, o més, en el cas d’un disc magnètic), la fallada de pàgina és, amb diferència, l’incident més costós de tot el sistema de memòria.</p>
+<div id="cau-mv-fallada-pagina" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;8.3: Mecanisme de la fallada de pàgina
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Una fallada de pàgina es produeix quan V = 0 en la PTE del VPN sol·licitat. Si la pàgina és vàlida, el sistema operatiu la carrega des del disc, actualitza la PTE i reexecuta la instrucció causant. Si l’adreça és invàlida, el procés s’avorta.</p>
+</div>
+</div>
+<p>Quan no hi ha cap marc lliure, el sistema operatiu n’ha de reemplaçar un, seguint un algorisme de reemplaçament (per exemple, <strong>LRU</strong>). Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l’escriptura retardada amb assignació que es fa servir a les memòries cau (<a href="A7.html#sec-escriptura-combinacions" class="quarto-xref"><span>Secció 7.5.3</span></a>).</p>
+<p>A la zona del disc on s’emmagatzemen les pàgines reemplaçades se l’anomena <strong>espai d’intercanvi</strong> (<em>swap space</em>).</p>
+</section>
+<section id="sec-mv-tlb" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="sec-mv-tlb"><span class="header-section-number">8.5</span> Traducció ràpida: el TLB</h2>
+<p>La taula de pàgines és a la memòria principal. Això implica que cada accés a memòria requereix, en realitat, dos accessos: un per llegir la PTE i traduir l’adreça, i un per llegir o escriure la dada. Per evitar aquest cost, els processadors moderns incorporen a la MMU una memòria cau de traduccions anomenada <strong>TLB</strong> (<em>translation-lookaside buffer</em>), que emmagatzema les PTEs utilitzades més recentment.</p>
+<section id="sec-mv-tlb-estructura" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="sec-mv-tlb-estructura"><span class="header-section-number">8.5.1</span> Estructura i funcionament</h3>
+<p>Cada entrada del TLB conté una còpia d’una PTE (camps V, D, E i PPN) i el VPN al qual correspon. A diferència de la taula de pàgines, que s’indexa directament pel VPN, el TLB funciona de manera <strong>completament associativa</strong>: per traduir una adreça, es compara el VPN amb tots els VPNs emmagatzemats simultàniament.</p>
+<p>Al TLB, el camp <code>V</code> té un significat <strong>lleugerament diferent</strong> del camp <code>V</code> de la PTE, com s’explica a la <a href="#sec-mv-tlb-bitv" class="quarto-xref"><span>Secció 8.5.4</span></a>.</p>
+<div id="cau-mv-tlb-estructura" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;8.4: Estructura d’una entrada del TLB
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="table-striped caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Camp</th>
+<th style="text-align: left;">Significat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">VPN</td>
+<td style="text-align: left;">Identificador de la pàgina virtual (clau de cerca)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">V</td>
+<td style="text-align: left;">1 = entrada inicialitzada i vàlida</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">1 = pàgina modificada (<em>dirty</em>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">E</td>
+<td style="text-align: left;">1 = permís d’escriptura</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PPN</td>
+<td style="text-align: left;">Marc de pàgina física corresponent</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- fig-mv-tlb-estructura: classe `estàndard` (W=680). Diagrama de dues estructures en paral·lel. A l'esquerra, la taula de pàgines (columnes VPN implícit com a índex, V, D, E, PPN) amb moltes files, la majoria en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d; V=0) i unes poques destacades en `.data` (fill #cfe2ff, stroke #084298; V=1). A la dreta, el TLB (columnes VPN, V, D, E, PPN) amb poques files (4-6), totes destacades en heap (fill #d1e7dd, stroke #0a3622), representant les entrades actives. Fletxes des d'algunes files del TLB cap a les files corresponents de la taula de pàgines, indicant que el TLB és una còpia parcial. Caption: "El TLB emmagatzema una còpia de les PTEs utilitzades més recentment. Cada entrada inclou el VPN com a clau de cerca." -->
+</section>
+<section id="sec-mv-tlb-encert" class="level3" data-number="8.5.2">
+<h3 data-number="8.5.2" class="anchored" data-anchor-id="sec-mv-tlb-encert"><span class="header-section-number">8.5.2</span> Encert de TLB</h3>
+<p>Quan cal traduir una adreça, la MMU extreu el VPN i el cerca al TLB. Si troba una entrada amb aquest VPN, es produeix un <strong>encert de TLB</strong> (<em>TLB hit</em>) i la traducció es completa directament amb el PPN d’aquella entrada, sense accedir a la taula de pàgines a la memòria. El cost de la traducció es redueix al temps d’accés al TLB, que és molt inferior al d’un accés a memòria.</p>
+<p>Després d’un encert, cal comprovar el bit V: si V = 0, la pàgina no és a la memòria física i es produirà una fallada de pàgina, que es gestiona tal com s’ha descrit a la <a href="#sec-mv-fallada-pagina" class="quarto-xref"><span>Secció 8.4</span></a>.</p>
+</section>
+<section id="sec-mv-tlb-fallada" class="level3" data-number="8.5.3">
+<h3 data-number="8.5.3" class="anchored" data-anchor-id="sec-mv-tlb-fallada"><span class="header-section-number">8.5.3</span> Fallada de TLB</h3>
+<p>Si el VPN no es troba al TLB, es produeix una <strong>fallada de TLB</strong> (<em>TLB miss</em>). Cal llegir la PTE corresponent de la taula de pàgines (a la memòria principal) i copiar-la a una entrada del TLB:</p>
+<ul>
+<li>Si hi ha alguna entrada amb V = 0 (no inicialitzada, o amb la pàgina absent de memòria), s’hi escriu la nova entrada.</li>
+<li>Si totes les entrades estan ocupades, cal reemplaçar-ne una seguint un algorisme de reemplaçament (LRU, aleatori, FIFO, etc.).</li>
+</ul>
+<p>Un cop copiada la PTE al TLB, es reintenta l’accés a memòria. Si el bit V de la PTE copiada val 0, el bit V de la nova entrada del TLB quedarà a 0 i l’accés reiterat provocarà una fallada de pàgina.</p>
+<div id="cau-mv-tlb-fallada" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;8.5: Encert i fallada de TLB
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Encert de TLB</strong> (TLB hit): el VPN es troba al TLB. La traducció es completa amb el PPN de l’entrada trobada, sense accedir a la memòria principal. Si V = 0, es produeix una fallada de pàgina.</p>
+<p><strong>Fallada de TLB</strong> (TLB miss): el VPN no es troba al TLB. Es llegeix la PTE de la taula de pàgines, es copia al TLB i es reintenta l’accés.</p>
+</div>
+</div>
+<div id="wrn-mv-tlb-hw-walker" class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Aprofundiment&nbsp;8.4: Qui resol la fallada de TLB: maquinari (RISC-V) vs.&nbsp;programari (MIPS)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>El mecanisme descrit més amunt —llegir la PTE, copiar-la al TLB, reintentar— es pot implementar de dues maneres ben diferents:</p>
+<p><strong>Maquinari (<em>hardware page-table walker</em>):</strong> el processador inclou un circuit dedicat que recorre la taula de pàgines automàticament quan es produeix una fallada de TLB. El procés en execució no s’interromp: la fallada és transparent al programari. Quan la PTE localitzada indica que la pàgina no és a la memòria (V = 0), <em>llavors</em> sí que es genera una excepció de fallada de pàgina que el SO ha de gestionar. Aquest és el model de <strong>RISC-V</strong>, x86 i ARM.</p>
+<p><strong>Programari (<em>software-managed TLB</em>):</strong> el processador genera una excepció en detectar la fallada de TLB. El SO executa una rutina que llegeix la taula de pàgines i actualitza el TLB per programari, i finalment reexecuta la instrucció causant. Aquest era el model de <strong>MIPS</strong> i d’alguns RISC antics. El Tema 9 il·lustra el mecanisme de gestió de fallades de pàgina amb codi RISC-V, que comparteix la mateixa estructura de RSE.</p>
+<p>La distinció és transparent per a l’alumne en el context d’EC: el resultat observable (la traducció es completa i l’accés es reintenta) és idèntic en tots dos casos.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-mv-tlb-bitv" class="level3" data-number="8.5.4">
+<h3 data-number="8.5.4" class="anchored" data-anchor-id="sec-mv-tlb-bitv"><span class="header-section-number">8.5.4</span> El bit V del TLB: doble paper</h3>
+<p>El bit <code>V</code> de la PTE i el bit <code>V</code> del TLB s’anomenen igual perquè tots dos indiquen «validesa», però en <strong>contexts d’ús</strong> lleugerament diferents:</p>
+<ul>
+<li><strong><code>V</code> a la PTE</strong> (taula de pàgines): indica si la pàgina és present a la memòria física. V = 1 significa «pàgina carregada»; V = 0 significa «pàgina al disc o adreça invàlida».</li>
+<li><strong><code>V</code> al TLB</strong> (entrada de la memòria cau de traduccions): compleix dos papers simultàniament, segons el context:
+<ul>
+<li><strong>Durant una fallada de TLB</strong> (quan es busca un VPN i no es troba): V = 0 indica que l’entrada no ha estat inicialitzada i pot ser sobreescrita amb la nova PTE.</li>
+<li><strong>Després d’un encert de TLB</strong> (quan el VPN es troba): V = 0 indica que la pàgina corresponent no és a la memòria física —reflecteix el V = 0 de la PTE— i cal gestionar una fallada de pàgina.</li>
+</ul></li>
+</ul>
+<p>El fet que el camp VPN d’una entrada no inicialitzada tingui un valor indeterminat no és un problema: si per casualitat coincidís amb el VPN cercat, l’encert resultant trobaria V = 0, la qual cosa desencadenaria igualment una fallada de pàgina que inicialitzaria l’entrada correctament.</p>
+</section>
+<section id="sec-mv-tlb-bitd" class="level3" data-number="8.5.5">
+<h3 data-number="8.5.5" class="anchored" data-anchor-id="sec-mv-tlb-bitd"><span class="header-section-number">8.5.5</span> El bit D: consistència amb la taula de pàgines</h3>
+<p>El bit D del TLB és l’únic camp que pot modificar l’execució del programa: quan una instrucció d’escriptura (<code>sw</code>, <code>fsw</code>, etc.) accedeix a una pàgina, el bit D s’ha de posar a 1. Com que el TLB és una còpia parcial de la taula de pàgines, cal mantenir la consistència entre ambdós.</p>
+<p>La política adoptada és d’<strong>escriptura immediata</strong>: quan s’escriu en una pàgina per primera vegada (D = 0 al TLB), el bit D es posa a 1 simultàniament al TLB i a la PTE de la taula de pàgines. Això requereix un accés addicional a la memòria principal, però només succeeix la primera vegada que s’escriu en cada pàgina, no en cada instrucció d’escriptura.</p>
+</section>
+<section id="sec-mv-tlb-flux" class="level3" data-number="8.5.6">
+<h3 data-number="8.5.6" class="anchored" data-anchor-id="sec-mv-tlb-flux"><span class="header-section-number">8.5.6</span> Flux complet de traducció</h3>
+<p>La <a href="#fig-mv-flux-traduccio" class="quarto-xref">Figura&nbsp;<span>8.1</span></a> resumeix totes les situacions possibles durant la traducció d’una adreça en un sistema amb TLB i memòria virtual.</p>
+<!-- fig-mv-flux-traduccio: classe `ampla` (W=960; diagrama de flux amb moltes branques, no cap en `estàndard` sense amuntegar text). Diagrama de flux complet de la traducció d'una adreça. Punt d'entrada: "Cerca VPN al TLB". Primera decisió: "TLB hit?" → branca "sí" (TLB hit): "V=1?" → "sí": "Escriptura i D=0?" → "sí": actualitzar D al TLB i a la TP (escriptura immediata) → "PPN (finalitzar accés)"; → "no": "PPN (finalitzar accés)"; → "no" (V=0): fallada de pàgina → gestió SO → reexecutar instrucció. Branca "no" (TLB miss): "TLB ple?" → "no": copiar PTE → TLB (entrada lliure) → reintent; → "sí": reemplaçar entrada LRU → copiar PTE → reintent. La fallada de pàgina: "Marc lliure?" → "sí": carregar pàgina → actualitzar PTE → reexecutar; → "no": reemplaçar pàgina (LRU), "D=1?" → "sí": escriure pàgina al disc → carregar nova pàgina → actualitzar PTE → reexecutar; → "no": carregar nova pàgina → actualitzar PTE → reexecutar. Colors (paleta svg.md §10, semàntica hit/miss): camí principal (encert) en verd (#198754, coherent amb "Hit" de MC); fallada de TLB en groc (fill #fff3cd, stroke #664d03, coherent amb pila); fallada de pàgina en vermell (#dc3545, coherent amb "Miss" de MC). Caption: "Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual." -->
+<div id="fig-mv-flux-traduccio" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mv-flux-traduccio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="light-content">
+<p><img src="../auto_figs/T8_mv_flux_traduccio__original_light.svg" class="img-fluid figure-img"></p>
+</div>
+<div class="dark-content">
+<p><img src="../auto_figs/T8_mv_flux_traduccio__original_dark.svg" class="img-fluid figure-img"></p>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mv-flux-traduccio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.1: Flux complet de traducció d’una adreça en un sistema amb TLB i memòria virtual.
+</figcaption>
+</figure>
+</div>
+<div id="wrn-mv-tlb-shootdown" class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Aprofundiment&nbsp;8.5: <em>TLB shootdown</em> en sistemes multicore
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>En un processador amb múltiples nuclis, cada nucli disposa del seu propi TLB. Quan el sistema operatiu modifica una PTE de la taula de pàgines d’un procés (per exemple, en reemplaçar una pàgina o revocar un permís d’escriptura), qualsevol nucli que tingui una còpia d’aquella entrada al seu TLB passa a tenir informació obsoleta.</p>
+<p>Per garantir la coherència, el sistema operatiu ha d’invalidar les entrades afectades als TLBs de tots els nuclis que puguin tenir-les. Això es fa enviant una interrupció especial (<em>inter-processor interrupt</em> o IPI) a cadascun dels nuclis implicats, forçant-los a invalidar l’entrada corresponent. Aquest procés s’anomena <strong><em>TLB shootdown</em></strong>.</p>
+<p>El cost del <em>TLB shootdown</em> és significatiu: cada nucli afectat ha d’interrompre l’execució, processar la interrupció i invalidar l’entrada. En sistemes amb molts nuclis i processos que comparteixen memòria, el <em>TLB shootdown</em> pot convertir-se en un coll d’ampolla de rendiment rellevant, i és una de les raons per les quals la gestió eficient de la memòria virtual en sistemes multicore és un problema de recerca actiu.</p>
+</div>
+</div>
+</div>
+<div id="tip-mv-tlb-exemple" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;8.2: Exemple de traducció amb TLB
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB (<span class="math inline">\(t = 12\)</span>), una memòria física de 16 KiB (4 marcs de pàgina, adreces físiques de 14 bits) i un TLB de 4 entrades amb reemplaçament LRU. L’estat inicial és:</p>
+<table class="table-striped caption-top table">
+<caption>TLB (estat inicial)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">VPN</th>
+<th style="text-align: center;">V</th>
+<th style="text-align: center;">D</th>
+<th style="text-align: center;">E</th>
+<th style="text-align: center;">PPN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>0x00003</code></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><code>0x00</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>0x00000</code></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><code>0x01</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>0x00002</code></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><code>0x02</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>0x0AFB3</code></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p>I la taula de pàgines (entrades rellevants):</p>
+<table class="table-striped caption-top table">
+<caption>Taula de pàgines (entrades rellevants)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">VPN</th>
+<th style="text-align: center;">V</th>
+<th style="text-align: center;">D</th>
+<th style="text-align: center;">E</th>
+<th style="text-align: center;">PPN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>0x00000</code></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><code>0x01</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>0x00001</code></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>0x00002</code></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><code>0x02</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>0x00003</code></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><code>0x00</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>0x00004</code></td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p>Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = 3 és lliure), i que els 3 darrers accessos han estat a VPN = 3, VPN = 0 i VPN = 2 (ordre LRU, de més antic a més recent).</p>
+<p><strong>Accés 1</strong>: Escriptura a <code>0x00002A0B</code> → VPN = <code>0x00002</code>.</p>
+<p>Encert de TLB (V = 1). Com que és una escriptura i D = 0, s’aplica la política d’escriptura immediata descrita a la <a href="#sec-mv-tlb-bitd" class="quarto-xref"><span>Secció 8.5.5</span></a>: D = 1 s’escriu simultàniament al TLB i a la TP. PPN = <code>0x02</code>. Adreça física (14 bits, memòria física de 16 KiB): <code>0x2A0B</code>.</p>
+<p><strong>Accés 2</strong>: Lectura a <code>0x00001F21</code> → VPN = <code>0x00001</code>.</p>
+<p>Fallada de TLB. Es llegeix la PTE de la TP: V = 0, fallada de pàgina. Hi ha un marc lliure (PPN = <code>0x03</code>); s’hi carrega la pàgina des del disc. S’actualitza la TP (V = 1, PPN = <code>0x03</code>). La PTE es copia al TLB a l’entrada no inicialitzada (V = 0, VPN = <code>0x0AFB3</code>). PPN = <code>0x03</code>. Adreça física: <code>0x3F21</code>.</p>
+<p><strong>Accés 3</strong>: Lectura a <code>0x0000420C</code> → VPN = <code>0x00004</code>.</p>
+<p>Fallada de TLB. Es llegeix la PTE de la TP: V = 0, fallada de pàgina. Cap marc lliure; cal reemplaçar. L’ordre d’ús de les pàgines residents —que en aquest exemple coincideix amb l’ordre LRU del TLB, ja que totes hi tenen entrada— és: VPN = <code>0x00003</code> (la més antiga, no accedida des de l’inici), VPN = <code>0x00000</code>, VPN = <code>0x00002</code>, VPN = <code>0x00001</code> (la més recent, accedida a l’Accés 2). Es reemplaça VPN = <code>0x00003</code> (D = 1): s’escriu primer al disc. Es carrega VPN = <code>0x00004</code> al PPN = <code>0x00</code>. S’actualitzen la TP (VPN 3 → V = 0; VPN 4 → V = 1, PPN = <code>0x00</code>) i el TLB. PPN = <code>0x00</code>. Adreça física: <code>0x020C</code>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-mv-proteccio" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="sec-mv-proteccio"><span class="header-section-number">8.6</span> Protecció i compartició</h2>
+<p>Una de les funcions més importants de la memòria virtual és permetre que múltiples processos comparteixin la memòria física de manera segura. Això requereix mecanismes que garanteixin que cap procés pugui accedir a l’espai d’adreçament d’un altre de manera no autoritzada.</p>
+<section id="sec-mv-proteccio-processos" class="level3" data-number="8.6.1">
+<h3 data-number="8.6.1" class="anchored" data-anchor-id="sec-mv-proteccio-processos"><span class="header-section-number">8.6.1</span> Protecció entre processos</h3>
+<p>El mecanisme de traducció d’adreces proporciona protecció entre processos de manera natural: com que cada procés té la seva pròpia taula de pàgines, i la MMU usa exclusivament la taula del procés actiu per a totes les traduccions, un procés no pot generar cap adreça física que correspongui a una pàgina assignada a un altre procés. L’aïllament és complet sense cap comprovació addicional.</p>
+<p>Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al sistema operatiu, accessible només quan el processador opera en <strong>mode sistema</strong> (<em>kernel mode</em>). Els programes d’usuari s’executen en <strong>mode usuari</strong>, en el qual qualsevol intent d’accedir a aquesta zona o de modificar el TLB causa una excepció. El <a href="A9.html">Tema 9</a> descriu amb més detall els modes d’execució (<a href="A9.html#sec-ei-csr-privilegis" class="quarto-xref"><span>Secció 9.2.1</span></a>) i el mecanisme d’excepcions.</p>
+</section>
+<section id="sec-mv-proteccio-escriptura" class="level3" data-number="8.6.2">
+<h3 data-number="8.6.2" class="anchored" data-anchor-id="sec-mv-proteccio-escriptura"><span class="header-section-number">8.6.2</span> Protecció contra escriptura</h3>
+<p>A més de l’aïllament entre processos, la memòria virtual permet controlar el tipus d’accés permès sobre cada pàgina individual mitjançant el <strong>bit E</strong> de la PTE i del TLB. Si una instrucció intenta escriure en una pàgina amb E = 0, la MMU genera una excepció i el sistema operatiu avorta el procés.</p>
+<p>Aquest mecanisme té diverses aplicacions pràctiques:</p>
+<ul>
+<li><strong>Protecció del codi</strong>: les pàgines que contenen instruccions es marquen habitualment com a només de lectura (E = 0), de manera que un error de programació no pugui sobreescriure el codi en execució.</li>
+<li><strong>Detecció d’errors</strong>: marcar com a només de lectura pàgines que no haurien de ser modificades permet detectar errors de programació que d’altra manera passarien desapercebuts.</li>
+<li><strong>Compartició segura</strong>: permet compartir pàgines entre processos amb permisos asimètrics (un procés pot escriure-hi i un altre només llegir-hi), com es veurà a la secció següent.</li>
+</ul>
+</section>
+<section id="sec-mv-comparticio" class="level3" data-number="8.6.3">
+<h3 data-number="8.6.3" class="anchored" data-anchor-id="sec-mv-comparticio"><span class="header-section-number">8.6.3</span> Compartició de pàgines</h3>
+<p>El sistema operatiu pot fer que dos processos comparteixin una mateixa pàgina física simplement escrivint a les seves taules de pàgines dues PTEs que apuntin al mateix PPN. Cada procés pot tenir la pàgina compartida assignada a un VPN diferent, i el bit E pot ser diferent per a cada procés.</p>
+<div id="tip-mv-comparticio" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple&nbsp;8.3: Exemple de compartició de pàgines
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El procés P1 vol compartir la seva pàgina VPN = <code>0x00000</code> (carregada al marc PPN = <code>0x02</code>) amb el procés P2 en mode escriptura. El sistema operatiu escriu una entrada a la taula de pàgines de P2 que assigna VPN = <code>0x00001</code> al mateix PPN = <code>0x02</code>, amb E = 1.</p>
+<p>A partir d’aquell moment, quan P2 accedeix a VPN = <code>0x00001</code> i P1 accedeix a VPN = <code>0x00000</code>, tots dos accedeixen a la mateixa pàgina física. Qualsevol modificació feta per un dels dos processos és visible immediatament per l’altre.</p>
+</div>
+</div>
+<!-- fig-mv-comparticio: classe `estàndard` (W=680). Diagrama amb dues taules de pàgines (P1 a l'esquerra, P2 a la dreta) i la memòria física al centre. La fila VPN=0x00000 de P1 (V=1, E=1, PPN=0x02) i la fila VPN=0x00001 de P2 (V=1, E=1, PPN=0x02) tenen fletxes que convergeixen al mateix marc PPN=0x02 de la memòria física, destacat en heap (fill #d1e7dd, stroke #0a3622; "Hit"/encert semàntic: marc compartit amb èxit). La resta de marcs en reservada/neutre (fill #f8f9fa, stroke #adb5bd). Caption: "Compartició d'una pàgina física entre dos processos: P1 i P2 mapen VPNs diferents al mateix PPN. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE." -->
+<p>La compartició de pàgines té dues aplicacions principals:</p>
+<ul>
+<li><strong>Comunicació entre processos</strong>: dos processos poden intercanviar dades escrivint i llegint una pàgina compartida, sense necessitat de còpies.</li>
+<li><strong>Biblioteques compartides</strong>: si múltiples processos usen simultàniament el codi d’una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapar-les (en mode només de lectura, E = 0) a l’espai lògic de cada procés, estalviant memòria física de manera significativa.</li>
+</ul>
+</section>
+</section>
+<section id="sec-mv-integracio" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="sec-mv-integracio"><span class="header-section-number">8.7</span> Integració del TLB i la memòria cau</h2>
+<p>En un sistema amb memòria virtual, cada accés a memòria implica dos passos: traduir l’adreça lògica a física (via TLB) i accedir a la dada (via memòria cau). La manera com s’organitzen aquests dos passos determina el temps d’accés efectiu i la complexitat del disseny.</p>
+<section id="sec-mv-cache-fisica" class="level3" data-number="8.7.1">
+<h3 data-number="8.7.1" class="anchored" data-anchor-id="sec-mv-cache-fisica"><span class="header-section-number">8.7.1</span> Memòria cau indexada físicament</h3>
+<p>L’esquema més senzill és la <strong>memòria cau indexada i etiquetada físicament</strong> (<em>PIPT, physically indexed physically tagged</em>): primer es tradueix l’adreça lògica amb el TLB i, un cop obtinguda l’adreça física, s’accedeix a la memòria cau amb aquesta adreça.</p>
+<!-- fig-mv-pipt: classe `estàndard` (W=680). Diagrama de blocs seqüencial. CPU → [adreça lògica] → TLB → (TLB hit) → [adreça física] → MC → (encert) → Dada. Els blocs TLB i MC estan en sèrie, amb una fletxa horitzontal que passa per tots dos. La memòria principal apareix per sota de la MC com a alternativa en cas de fallada. Colors (paleta svg.md §10): TLB en `.data` (fill #cfe2ff, stroke #084298); MC en heap (fill #d1e7dd, stroke #0a3622); memòria principal en reservada/neutre (fill #f8f9fa, stroke #adb5bd). Caption: "Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en sèrie." -->
+<p>L’avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adreça física identifica unívocament una dada. L’inconvenient és el <strong>temps d’accés</strong>: la memòria cau no pot començar a operar fins que el TLB hagi acabat la traducció, de manera que els dos accessos es fan en sèrie.</p>
+</section>
+<section id="sec-mv-cache-virtual" class="level3" data-number="8.7.2">
+<h3 data-number="8.7.2" class="anchored" data-anchor-id="sec-mv-cache-virtual"><span class="header-section-number">8.7.2</span> Memòria cau indexada virtualment</h3>
+<p>Per reduir la latència, una <strong>memòria cau indexada i etiquetada virtualment</strong> (<em>VIVT, virtually indexed virtually tagged</em>) usa l’adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s’obté sense accedir al TLB.</p>
+<p>El problema és l’<strong>aliàsing</strong> (<em>aliasing</em>): si dos processos (o dues pàgines lògiques d’un mateix procés) comparteixen una mateixa pàgina física, poden tenir blocs diferents a la memòria cau per a la mateixa dada. Una escriptura feta a través d’una adreça lògica pot no ser visible quan es llegeix a través de l’altra, trencant la coherència.</p>
+</section>
+<section id="sec-mv-vipt" class="level3" data-number="8.7.3">
+<h3 data-number="8.7.3" class="anchored" data-anchor-id="sec-mv-vipt"><span class="header-section-number">8.7.3</span> VIPT: la solució estàndard</h3>
+<p>La solució adoptada per la pràctica totalitat dels processadors actuals és la <strong>memòria cau indexada virtualment i etiquetada físicament</strong> (<em>VIPT, virtually indexed physically tagged</em>). La idea clau és que l’índex per accedir a la memòria cau i la traducció del TLB es poden fer en <strong>paral·lel</strong>:</p>
+<ul>
+<li>L’<strong>índex</strong> de la memòria cau s’extreu dels bits del desplaçament de l’adreça lògica (els <span class="math inline">\(t\)</span> bits de menor pes, que coincideixen exactament amb els de l’adreça física, ja que el desplaçament no es tradueix).</li>
+<li>Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.</li>
+<li>Un cop acabats els dos accessos en paral·lel, es compara el PPN obtingut del TLB amb les etiquetes físiques llegides de la memòria cau per determinar si hi ha encert.</li>
+</ul>
+<!-- fig-mv-vipt: classe `estàndard` (W=680). Diagrama de blocs amb dos camins paral·lels sortint de la CPU. Camí superior: [adreça lògica] → bits d'índex (desplaçament) → MC (lectura d'etiquetes i dades). Camí inferior: [adreça lògica] → VPN → TLB → PPN. Els dos camins convergeixen en un comparador (=) que confronta el PPN amb les etiquetes llegides de la MC. Si coincideixen: encert → Dada. Si no: fallada → memòria principal. Colors (paleta svg.md §10): camí TLB en `.data` (fill #cfe2ff, stroke #084298); camí MC en heap (fill #d1e7dd, stroke #0a3622); comparador en pila (fill #fff3cd, stroke #664d03). Caption: "Memòria cau VIPT: l'índex de la memòria cau i la traducció del TLB s'executen en paral·lel. L'etiqueta física elimina el problema d'aliàsing." -->
+<p>La condició perquè VIPT funcioni sense aliàsing és que l’índex de la memòria cau usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L’índex d’una memòria cau de mida <span class="math inline">\(C\)</span>, associativitat <span class="math inline">\(a\)</span> i mida de bloc <span class="math inline">\(B\)</span> ocupa <span class="math inline">\(\log_2(C / (a \cdot B))\)</span> bits. Perquè tots aquests bits pertanyin al desplaçament (els <span class="math inline">\(t = \log_2 T\)</span> bits de menor pes), cal que:</p>
+<p><span class="math display">\[C \leq a \cdot T\]</span></p>
+<p>on <span class="math inline">\(T\)</span> és la mida de pàgina. Per exemple, amb pàgines de 4 KiB i associativitat 4, la memòria cau L1 pot tenir fins a 16 KiB sense aliàsing. Els processadors actuals respecten sistemàticament aquesta restricció en el disseny de la L1.</p>
+<div id="cau-mv-cache-comparacio" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Essencial&nbsp;8.6: Comparació dels esquemes d’integració TLB–memòria cau
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="table-striped caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 31%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Esquema</th>
+<th style="text-align: center;">Indexació</th>
+<th style="text-align: center;">Etiqueta</th>
+<th style="text-align: left;">Avantatge</th>
+<th style="text-align: left;">Inconvenient</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">PIPT</td>
+<td style="text-align: center;">Física</td>
+<td style="text-align: center;">Física</td>
+<td style="text-align: left;">Simple, sense aliàsing</td>
+<td style="text-align: left;">TLB i MC en sèrie</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VIVT</td>
+<td style="text-align: center;">Virtual</td>
+<td style="text-align: center;">Virtual</td>
+<td style="text-align: left;">Ràpid (sense TLB)</td>
+<td style="text-align: left;"><em>Aliasing</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VIPT</td>
+<td style="text-align: center;">Virtual</td>
+<td style="text-align: center;">Física</td>
+<td style="text-align: left;">Ràpid i sense aliàsing</td>
+<td style="text-align: left;">Restricció de mida</td>
+</tr>
+</tbody>
+</table>
+<p>VIPT és l’esquema estàndard en els processadors actuals per a la memòria cau L1. Les memòries cau L2 i L3, menys crítiques en latència, usen habitualment PIPT.</p>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiat!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiat!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-page-right">
+  <div class="nav-page nav-page-previous">
+      <a href="../01_apunts/A7.html" class="pagination-link" aria-label="T7 Memòria cau">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">T7 Memòria cau</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../01_apunts/A9.html" class="pagination-link" aria-label="T9 Excepcions i interrupcions">
+        <span class="nav-page-text"><span class="chapter-title">T9 Excepcions i interrupcions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Codi font</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="an">number-sections:</span><span class="co"> true</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co">---</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a><span class="fu"># {{&lt; var tema8 &gt;}} {#sec-tema-mv}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="fu">## Introducció {#sec-mv-introduccio}</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a><span class="fu">### El problema: reubicació i mida limitada {#sec-mv-reubicacio}</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a>Quan es compila un programa, el compilador assigna adreces de memòria a les instruccions i les dades. Però en un computador modern s'executen múltiples programes simultàniament, tots compartint la mateixa memòria física. Això planteja dos problemes fonamentals:</span>
+<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a><span class="ss">- </span>**Reubicació.** Si dos programes han estat compilats per ocupar les mateixes adreces, no poden coexistir a la memòria sense que les seves dades i instruccions col·lisionin. Cal un mecanisme que permeti que cada programa cregui que ocupa les adreces que li han estat assignades en compilació, però que en realitat estigui ubicat en una zona diferent de la memòria física.</span>
+<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a><span class="ss">- </span>**Mida limitada.** El conjunt d'instruccions i dades de tots els programes en execució pot superar fàcilment la capacitat de la memòria física. Sense cap mecanisme addicional, això impossibilitaria l'execució de certs programes o combinacions de programes.</span>
+<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a>La solució a tots dos problemes és la **memòria virtual**.</span>
+<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a><span class="fu">### Espais d'adreçament lògic i físic {#sec-mv-espais}</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a>La memòria virtual es fonamenta en la distinció entre dos espais d'adreçament independents.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="ss">- </span>L'**espai d'adreçament lògic** (o virtual) és el conjunt d'adreces que utilitza un programa: tant en temps de compilació com en temps d'execució, la CPU treballa exclusivament amb adreces lògiques. Cada procés té el seu propi espai d'adreçament lògic, independent del dels altres, amb una mida màxima determinada pel nombre de bits d'adreça del processador (per exemple, $2^{32}$ bytes = 4 GiB en un sistema de 32 bits; vegeu @cau-prefixos-binaris per la notació). Això proporciona a cada procés la il·lusió de disposar de tota la memòria per a ell sol.</span>
+<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="ss">- </span>L'**espai d'adreçament físic** és el conjunt d'adreces de la memòria física real. La seva mida depèn de la quantitat de RAM instal·lada al sistema, i és totalment independent de l'espai d'adreçament lògic.</span>
+<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a><span class="ss">- </span>La **unitat de gestió de memòria** (*memory management unit* o **MMU**) és el component maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.</span>
+<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a><span class="co">&lt;!-- fig-mv-espais: classe `estàndard` (W=680). Diagrama que mostra dos espais d'adreçament lògic independents (Procés 1 i Procés 2, cadascun de 0x00000000 a 0xFFFFFFFF) a l'esquerra, i l'espai d'adreçament físic (memòria física, més petit) a la dreta, amb fletxes que indiquen que pàgines de cada procés es mapen a marcs de pàgina físics diferents. El disc apareix a baix a la dreta com a nivell inferior. Colors (paleta svg.md §10): bloc de Procés 1 en `.data` (fill #cfe2ff, stroke #084298); bloc de Procés 2 en heap (fill #d1e7dd, stroke #0a3622); marcs físics en reservada/neutre (fill #f8f9fa, stroke #adb5bd); disc en pila (fill #fff3cd, stroke #664d03). Caption: "Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució." --&gt;</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a><span class="fu">### El disc com a nivell addicional de la jerarquia {#sec-mv-disc}</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a>Abans de la memòria virtual, quan la mida d'un programa superava la memòria física disponible, els programadors havien de gestionar manualment la càrrega i descàrrega de blocs de codi i dades entre la memòria i el disc, una tècnica de superposicions (*overlays*). La memòria virtual automatitza completament aquesta gestió, a càrrec del sistema operatiu i amb el suport del maquinari.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a>En un sistema amb memòria virtual, el disc (o SSD) es converteix en un nivell addicional de la jerarquia de memòria, per sota de la memòria principal. De la mateixa manera que la memòria cau conté un subconjunt de les dades de la memòria principal (@sec-jerarquia), la memòria principal conté un subconjunt de les dades del disc. La totalitat de les dades d'un procés resideix sempre al disc; la memòria física n'emmagatzema només les parts que s'utilitzen activament.</span>
+<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a><span class="pp">|</span> Nivell <span class="pp">|</span> Tecnologia <span class="pp">|</span> Temps d'accés típic <span class="pp">|</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a><span class="pp">|</span> Registres <span class="pp">|</span> SRAM <span class="pp">|</span> ~0,25 ns <span class="pp">|</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a><span class="pp">|</span> Memòria cau <span class="pp">|</span> SRAM <span class="pp">|</span> 0,5 – 5 ns <span class="pp">|</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a><span class="pp">|</span> Memòria principal <span class="pp">|</span> DRAM <span class="pp">|</span> 50 – 100 ns <span class="pp">|</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-label="39"></a><span class="pp">|</span> Memòria secundària <span class="pp">|</span> SSD <span class="pp">|</span> 0,05 – 0,1 ms <span class="pp">|</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-label="40"></a>: La jerarquia de memòria en un sistema amb memòria virtual (vegeu @tbl-tecnologies-memoria per a dades de capacitat i cost). {#tbl-mv-jerarquia tbl-colwidths="<span class="co">[</span><span class="ot">30,30,40</span><span class="co">]</span>" .striped}</span>
+<span id="cb1-41"><a href="#cb1-41" aria-label="41"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-label="42"></a><span class="fu">## Paginació {#sec-mv-paginacio}</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-label="43"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-label="44"></a><span class="fu">### Pàgines i marcs de pàgina {#sec-mv-pagines}</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-label="45"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-label="46"></a>La memòria virtual gestiona la traducció d'adreces en blocs de mida fixa anomenats **pàgines**. L'espai d'adreçament lògic de cada procés es divideix en pàgines de $T$ bytes (habitualment $T = 4\text{ KiB} = 2^{12}$ bytes), i cada pàgina rep un **número de pàgina virtual** (*virtual page number* o **VPN**), que indica la seva posició dins l'espai lògic, començant per 0.</span>
+<span id="cb1-47"><a href="#cb1-47" aria-label="47"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-label="48"></a>De manera anàloga, l'espai d'adreçament físic es divideix en blocs de la mateixa mida $T$, anomenats **marcs de pàgina** (*page frames*). Cada marc rep un **número de pàgina física** (*physical page number* o **PPN**).</span>
+<span id="cb1-49"><a href="#cb1-49" aria-label="49"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-label="50"></a>Un marc de pàgina és un contenidor: pot allotjar qualsevol pàgina lògica de qualsevol procés. El sistema operatiu decideix en quin marc es carrega cada pàgina en funció de l'espai disponible en cada moment, de manera completament associativa, com en una MC d'aquest tipus (@sec-completament-associativa).</span>
+<span id="cb1-51"><a href="#cb1-51" aria-label="51"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-label="52"></a>Inicialment, totes les pàgines d'un procés resideixen al disc. Durant l'execució, el sistema operatiu les carrega a la memòria física a mesura que es necessiten. En un moment donat, la memòria física conté un subconjunt de les pàgines del procés; la resta romanen al disc.</span>
+<span id="cb1-53"><a href="#cb1-53" aria-label="53"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-label="54"></a><span class="co">&lt;!-- fig-mv-pagines-marcs: classe `estàndard` (W=680). Diagrama amb dos processos a l'esquerra (Procés 1 i Procés 2), cadascun amb les seves pàgines virtuals (VPN 0, VPN 1, ...) i a la dreta la memòria física amb els seus marcs (PPN 0, PPN 1, PPN 2, PPN 3). Fletxes mostren que VPN 0 de Procés 1 → PPN 1, VPN 0 de Procés 2 → PPN 0, VPN 1 de Procés 2 → PPN 2, i VPN 1 de Procés 1 apareix al disc (no carregat). Colors (paleta svg.md §10): pàgines de Procés 1 en `.data` (fill #cfe2ff, stroke #084298); pàgines de Procés 2 en heap (fill #d1e7dd, stroke #0a3622); marcs físics en reservada/neutre (fill #f8f9fa, stroke #adb5bd); disc en pila (fill #fff3cd, stroke #664d03). Caption: "Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física de manera completament associativa. Les pàgines que no s'estan usant romanen al disc." --&gt;</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-label="55"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-label="56"></a><span class="fu">### Traducció d'adreces: VPN, PPN i desplaçament {#sec-mv-traduccio}</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-label="57"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-label="58"></a>Com que $T$ és una potència de dos ($T = 2^t$), qualsevol adreça lògica es descompon naturalment en dos camps:</span>
+<span id="cb1-59"><a href="#cb1-59" aria-label="59"></a></span>
+<span id="cb1-60"><a href="#cb1-60" aria-label="60"></a><span class="ss">- </span>Els **$t$ bits de menor pes** indiquen la posició de la dada dins la pàgina: és el **desplaçament** (*page offset*).</span>
+<span id="cb1-61"><a href="#cb1-61" aria-label="61"></a><span class="ss">- </span>Els **bits restants** identifiquen la pàgina: és el **VPN**.</span>
+<span id="cb1-62"><a href="#cb1-62" aria-label="62"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-label="63"></a>Per exemple, amb adreces de 32 bits i $T = 4\text{ KiB} = 2^{12}$ bytes:</span>
+<span id="cb1-64"><a href="#cb1-64" aria-label="64"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-label="65"></a>::: {#cau-mv-traduccio .callout-caution}</span>
+<span id="cb1-66"><a href="#cb1-66" aria-label="66"></a><span class="fu">## Traducció d'adreces lògiques a físiques</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-label="67"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-label="68"></a>Amb mida de pàgina $T = 2^t$ bytes, una adreça lògica de $n$ bits es descompon en:</span>
+<span id="cb1-69"><a href="#cb1-69" aria-label="69"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-label="70"></a>$$\underbrace{b_{n-1} \cdots b_t}_{\text{VPN}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}}$$</span>
+<span id="cb1-71"><a href="#cb1-71" aria-label="71"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-label="72"></a>La traducció substitueix el VPN pel PPN corresponent; el desplaçament es conserva intacte:</span>
+<span id="cb1-73"><a href="#cb1-73" aria-label="73"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-label="74"></a>$$\underbrace{b_{n-1} \cdots b_t}_{\text{VPN}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}} \;\longrightarrow\; \underbrace{\text{PPN}}_{\text{(de la taula de pàgines)}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}}$$</span>
+<span id="cb1-75"><a href="#cb1-75" aria-label="75"></a>:::</span>
+<span id="cb1-76"><a href="#cb1-76" aria-label="76"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-label="77"></a>::: {#tip-mv-traduccio-exemple .callout-tip}</span>
+<span id="cb1-78"><a href="#cb1-78" aria-label="78"></a><span class="fu">## Exemple de traducció d'adreces</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-label="79"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-label="80"></a>Considerem un sistema amb adreces de 32 bits i mida de pàgina $T = 4\text{ KiB} = 2^{12}$ bytes. L'espai d'adreçament lògic té $2^{32} / 2^{12} = 2^{20}$ pàgines virtuals; el VPN ocupa els 20 bits superiors i el desplaçament els 12 bits inferiors.</span>
+<span id="cb1-81"><a href="#cb1-81" aria-label="81"></a></span>
+<span id="cb1-82"><a href="#cb1-82" aria-label="82"></a>Suposem que la pàgina VPN = <span class="in">`0x00001`</span> està carregada al marc PPN = <span class="in">`0x2`</span>. Volem traduir l'adreça lògica <span class="in">`0x00001801`</span>:</span>
+<span id="cb1-83"><a href="#cb1-83" aria-label="83"></a></span>
+<span id="cb1-84"><a href="#cb1-84" aria-label="84"></a><span class="pp">|</span> <span class="pp">|</span> VPN (20 bits) <span class="pp">|</span> Desplaçament (12 bits) <span class="pp">|</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-label="85"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-label="86"></a><span class="pp">|</span> **Adreça lògica** <span class="pp">|</span> <span class="in">`0000 0000 0000 0000 0001`</span> (VPN = <span class="in">`0x00001`</span>) <span class="pp">|</span> <span class="in">`1000 0000 0001`</span> (<span class="in">`0x801`</span>) <span class="pp">|</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-label="87"></a><span class="pp">|</span> <span class="pp">|</span> ↓ traducció (VPN → PPN) <span class="pp">|</span> ↓ es conserva <span class="pp">|</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-label="88"></a><span class="pp">|</span> **Adreça física** <span class="pp">|</span> <span class="in">`10`</span> (PPN = <span class="in">`0x2`</span>) <span class="pp">|</span> <span class="in">`1000 0000 0001`</span> (<span class="in">`0x801`</span>) <span class="pp">|</span></span>
+<span id="cb1-89"><a href="#cb1-89" aria-label="89"></a>: {tbl-colwidths="<span class="co">[</span><span class="ot">15,55,30</span><span class="co">]</span>"}</span>
+<span id="cb1-90"><a href="#cb1-90" aria-label="90"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-label="91"></a>Adreça física resultant: <span class="in">`10`</span> + <span class="in">`1000 0000 0001`</span> = <span class="in">`0x2801`</span>.</span>
+<span id="cb1-92"><a href="#cb1-92" aria-label="92"></a></span>
+<span id="cb1-93"><a href="#cb1-93" aria-label="93"></a>El desplaçament <span class="in">`0x801`</span> es conserva; només canvien els bits superiors (VPN → PPN). Amb una memòria física de $2^{14}$ bytes = 16 KiB, l'adreça física té 14 bits: 2 de PPN i 12 de desplaçament.</span>
+<span id="cb1-94"><a href="#cb1-94" aria-label="94"></a>:::</span>
+<span id="cb1-95"><a href="#cb1-95" aria-label="95"></a></span>
+<span id="cb1-96"><a href="#cb1-96" aria-label="96"></a><span class="fu">## La taula de pàgines {#sec-mv-taula-pagines}</span></span>
+<span id="cb1-97"><a href="#cb1-97" aria-label="97"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-label="98"></a>Per poder traduir una adreça lògica cal saber en quin marc de pàgina (PPN) es troba cada pàgina virtual (VPN). Aquesta informació la manté una estructura de dades anomenada **taula de pàgines**. Cada procés té la seva pròpia taula de pàgines, emmagatzemada a la memòria principal.</span>
+<span id="cb1-99"><a href="#cb1-99" aria-label="99"></a></span>
+<span id="cb1-100"><a href="#cb1-100" aria-label="100"></a>La taula de pàgines s'indexa pel VPN: cada fila correspon a una pàgina virtual i s'anomena **entrada de la taula de pàgines** (*page table entry* o **PTE**). El nombre d'entrades és igual al nombre de pàgines virtuals de l'espai d'adreçament ($2^{20}$ entrades en l'exemple de 32 bits amb pàgines de 4 KiB).</span>
+<span id="cb1-101"><a href="#cb1-101" aria-label="101"></a></span>
+<span id="cb1-102"><a href="#cb1-102" aria-label="102"></a><span class="fu">### Estructura d'una entrada (PTE) {#sec-mv-pte}</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-label="103"></a></span>
+<span id="cb1-104"><a href="#cb1-104" aria-label="104"></a>Cada PTE conté els camps següents:</span>
+<span id="cb1-105"><a href="#cb1-105" aria-label="105"></a></span>
+<span id="cb1-106"><a href="#cb1-106" aria-label="106"></a><span class="ss">- </span>**PPN** (*physical page number*): el número de marc de pàgina on es troba la pàgina, si és a la memòria física.</span>
+<span id="cb1-107"><a href="#cb1-107" aria-label="107"></a><span class="ss">- </span>**Bit V** (*valid*, presència): val 1 si la pàgina és a la memòria física; val 0 si és al disc o si la pàgina no pertany a l'espai vàlid del procés.</span>
+<span id="cb1-108"><a href="#cb1-108" aria-label="108"></a><span class="ss">- </span>**Bit D** (*dirty*): val 1 si la pàgina ha estat modificada des que es va carregar. Quan cal reemplaçar-la, només s'escriu al disc si D = 1.</span>
+<span id="cb1-109"><a href="#cb1-109" aria-label="109"></a><span class="ss">- </span>**Bit E** (escriptura): indica si el procés té permís d'escriptura sobre aquesta pàgina. Si una instrucció intenta escriure en una pàgina amb E = 0, el sistema operatiu avorta l'execució.</span>
+<span id="cb1-110"><a href="#cb1-110" aria-label="110"></a></span>
+<span id="cb1-111"><a href="#cb1-111" aria-label="111"></a>::: {#cau-mv-pte .callout-caution}</span>
+<span id="cb1-112"><a href="#cb1-112" aria-label="112"></a><span class="fu">## Estructura d'una entrada de la taula de pàgines (PTE)</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-label="113"></a></span>
+<span id="cb1-114"><a href="#cb1-114" aria-label="114"></a><span class="pp">|</span> Camp <span class="pp">|</span> Mida <span class="pp">|</span> Significat <span class="pp">|</span></span>
+<span id="cb1-115"><a href="#cb1-115" aria-label="115"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-label="116"></a><span class="pp">|</span> PPN <span class="pp">|</span> $p$ bits <span class="pp">|</span> Marc de pàgina física on es troba la pàgina <span class="pp">|</span></span>
+<span id="cb1-117"><a href="#cb1-117" aria-label="117"></a><span class="pp">|</span> V <span class="pp">|</span> 1 bit <span class="pp">|</span> 1 = pàgina a memòria; 0 = al disc o invàlida <span class="pp">|</span></span>
+<span id="cb1-118"><a href="#cb1-118" aria-label="118"></a><span class="pp">|</span> D <span class="pp">|</span> 1 bit <span class="pp">|</span> 1 = pàgina modificada (*dirty*) <span class="pp">|</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-label="119"></a><span class="pp">|</span> E <span class="pp">|</span> 1 bit <span class="pp">|</span> 1 = permís d'escriptura <span class="pp">|</span></span>
+<span id="cb1-120"><a href="#cb1-120" aria-label="120"></a>: {.striped tbl-colwidths="<span class="co">[</span><span class="ot">15,15,70</span><span class="co">]</span>"}</span>
+<span id="cb1-121"><a href="#cb1-121" aria-label="121"></a></span>
+<span id="cb1-122"><a href="#cb1-122" aria-label="122"></a>Quan V = 0, el camp PPN no té validesa: la pàgina no és a la memòria física.</span>
+<span id="cb1-123"><a href="#cb1-123" aria-label="123"></a>:::</span>
+<span id="cb1-124"><a href="#cb1-124" aria-label="124"></a></span>
+<span id="cb1-125"><a href="#cb1-125" aria-label="125"></a>::: {#wrn-mv-notacio-v .callout-warning collapse="true"}</span>
+<span id="cb1-126"><a href="#cb1-126" aria-label="126"></a><span class="fu">## Notació: `V` a EC vs. `P` en altres fonts</span></span>
+<span id="cb1-127"><a href="#cb1-127" aria-label="127"></a></span>
+<span id="cb1-128"><a href="#cb1-128" aria-label="128"></a>Aquests apunts segueixen la notació de la ISA de RISC-V (esquema Sv32) i de Harris &amp; Harris: el bit de presència de la PTE s'anomena **`V`** (*Valid*). Alguns textos i els exàmens anteriors d'EC anomenen aquest camp **`P`** (*Present*), com fa l'arquitectura x86; en consultar-los, cal tenir en compte aquesta diferència de notació.</span>
+<span id="cb1-129"><a href="#cb1-129" aria-label="129"></a>:::</span>
+<span id="cb1-130"><a href="#cb1-130" aria-label="130"></a></span>
+<span id="cb1-131"><a href="#cb1-131" aria-label="131"></a><span class="co">&lt;!-- fig-mv-taula-pagines: classe `estàndard` (W=680). Diagrama de la taula de pàgines. Columnes: VPN (índex, a l'esquerra, de 0 a 2^20-1 amb punts suspensius al mig), V, D, E, PPN. Dues o tres files destacades (V=1, amb PPN vàlid) en `.data` (fill #cfe2ff, stroke #084298), la resta (V=0, PPN buit) en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d). Un registre de taula de pàgines (fletxa des de fora) apunta a la base de la taula. Caption: "La taula de pàgines s'indexa pel VPN. Cada entrada (PTE) conté el PPN i els bits de control V, D i E." --&gt;</span></span>
+<span id="cb1-132"><a href="#cb1-132" aria-label="132"></a></span>
+<span id="cb1-133"><a href="#cb1-133" aria-label="133"></a><span class="fu">### El registre de taula de pàgines i el canvi de context {#sec-mv-registre-tp}</span></span>
+<span id="cb1-134"><a href="#cb1-134" aria-label="134"></a></span>
+<span id="cb1-135"><a href="#cb1-135" aria-label="135"></a>En un sistema amb múltiples processos, cada procés té la seva pròpia taula de pàgines a la memòria. Per saber on és la taula del procés en execució, el maquinari incorpora un **registre de taula de pàgines** que conté l'adreça base de la taula del procés actiu. La MMU usa aquest registre per accedir a la PTE corresponent a cada VPN que cal traduir.</span>
+<span id="cb1-136"><a href="#cb1-136" aria-label="136"></a></span>
+<span id="cb1-137"><a href="#cb1-137" aria-label="137"></a>Quan el sistema operatiu commuta d'un procés a un altre (**canvi de context**), actualitza el registre de taula de pàgines perquè apunti a la taula del nou procés actiu. Aquesta operació és suficient per canviar completament l'espai d'adreçament visible: a partir d'aquell moment, totes les traduccions es fan amb la taula del nou procés, i l'espai lògic de l'anterior queda inaccessible. El valor del registre de taula de pàgines forma part del **context** del procés, és a dir, de l'estat que el sistema operatiu desa i restaura en cada canvi de context.</span>
+<span id="cb1-138"><a href="#cb1-138" aria-label="138"></a></span>
+<span id="cb1-139"><a href="#cb1-139" aria-label="139"></a><span class="fu">### Taules de pàgines multinivell {#sec-mv-multinivell}</span></span>
+<span id="cb1-140"><a href="#cb1-140" aria-label="140"></a></span>
+<span id="cb1-141"><a href="#cb1-141" aria-label="141"></a>La taula de pàgines plana descrita fins ara ocupa una quantitat de memòria proporcional al nombre de pàgines virtuals possibles, independentment de quantes en faci servir realment el procés. En sistemes de 32 bits amb pàgines de 4 KiB i entrades de 4 bytes, això representa 4 MiB per procés en tot moment; en sistemes de 64 bits, el cost es fa inassumible. Les **taules de pàgines multinivell** resolen el problema assignant memòria només per a les regions de l'espai lògic que el procés utilitza realment.</span>
+<span id="cb1-142"><a href="#cb1-142" aria-label="142"></a></span>
+<span id="cb1-143"><a href="#cb1-143" aria-label="143"></a><span class="co">&lt;!-- fig-mv-taula-multinivell: classe `estàndard` (W=680). Diagrama d'una taula de pàgines de dos nivells (Sv32). A l'esquerra, una taula de primer nivell (directori de pàgines) amb 1024 entrades; algunes apunten a taules de segon nivell (a la dreta), la resta estan marcades com a no assignades. Cada taula de segon nivell té 1024 PTEs. Colors (paleta svg.md §10): entrades assignades en `.data` (fill #cfe2ff, stroke #084298); entrades no assignades en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d). Caption: "Taula de pàgines de dos nivells: les taules de segon nivell només s'assignen per a les regions de l'espai lògic en ús, reduint l'ús de memòria." --&gt;</span></span>
+<span id="cb1-144"><a href="#cb1-144" aria-label="144"></a></span>
+<span id="cb1-145"><a href="#cb1-145" aria-label="145"></a>::: {#wrn-mv-multinivell .callout-warning collapse="true"}</span>
+<span id="cb1-146"><a href="#cb1-146" aria-label="146"></a><span class="fu">## Taules de pàgines multinivell</span></span>
+<span id="cb1-147"><a href="#cb1-147" aria-label="147"></a></span>
+<span id="cb1-148"><a href="#cb1-148" aria-label="148"></a>En un sistema de 32 bits amb pàgines de 4 KiB, la taula de pàgines té $2^{20}$ entrades. Si cada entrada ocupa 4 bytes, la taula ocupa 4 MiB per procés, tots a la memòria principal. En sistemes de 64 bits el problema s'aguditza: amb adreces de 48 bits significatius i pàgines de 4 KiB, la taula tindria $2^{36}$ entrades, cosa inviable.</span>
+<span id="cb1-149"><a href="#cb1-149" aria-label="149"></a></span>
+<span id="cb1-150"><a href="#cb1-150" aria-label="150"></a>La solució és estructurar la taula de pàgines en **múltiples nivells**. En una taula de dos nivells, els bits del VPN es divideixen en dues parts: els bits superiors indexen una **taula de primer nivell** (o directori de pàgines), on cada entrada apunta a una **taula de segon nivell**. Cada taula de segon nivell conté les PTEs d'un subconjunt de l'espai lògic.</span>
+<span id="cb1-151"><a href="#cb1-151" aria-label="151"></a></span>
+<span id="cb1-152"><a href="#cb1-152" aria-label="152"></a>L'avantatge clau és que les taules de segon nivell només s'assignen per a les regions de l'espai lògic que el procés utilitza realment. Com que la majoria dels processos fan servir només una fracció petita dels $2^{32}$ o $2^{48}$ bytes d'espai lògic possible, la memòria ocupada per la taula de pàgines es redueix dràsticament. Linux usa taules de tres a cinc nivells segons l'arquitectura i la configuració: per exemple, quatre nivells a x86-64, o tres nivells (Sv39) per defecte a RISC-V de 64 bits.</span>
+<span id="cb1-153"><a href="#cb1-153" aria-label="153"></a>:::</span>
+<span id="cb1-154"><a href="#cb1-154" aria-label="154"></a></span>
+<span id="cb1-155"><a href="#cb1-155" aria-label="155"></a>::: {#wrn-mv-sv32 .callout-warning collapse="true"}</span>
+<span id="cb1-156"><a href="#cb1-156" aria-label="156"></a><span class="fu">## L'esquema Sv32 de RISC-V</span></span>
+<span id="cb1-157"><a href="#cb1-157" aria-label="157"></a>**Sv32** és l'esquema estàndard de paginació de 32 bits definit per l'arquitectura privilegiada de RISC-V. Tradueix adreces lògiques de 32 bits a adreces físiques de **34 bits** mitjançant una taula de pàgines de **dos nivells** amb pàgines de 4 KiB. Per tant, tot i que cada procés disposa d'un espai lògic de 4 GiB ($2^{32}$ bytes), el sistema pot adreçar fins a **16 GiB** ($2^{34}$ bytes) de memòria física.</span>
+<span id="cb1-158"><a href="#cb1-158" aria-label="158"></a></span>
+<span id="cb1-159"><a href="#cb1-159" aria-label="159"></a>Per a sistemes de 64 bits, RISC-V defineix els esquemes **Sv39**, **Sv48** i **Sv57**, amb taules de pàgines de tres, quatre i cinc nivells respectivament, que permeten espais d'adreçament molt més grans.</span>
+<span id="cb1-160"><a href="#cb1-160" aria-label="160"></a>:::</span>
+<span id="cb1-161"><a href="#cb1-161" aria-label="161"></a></span>
+<span id="cb1-162"><a href="#cb1-162" aria-label="162"></a><span class="fu">## Fallada de pàgina {#sec-mv-fallada-pagina}</span></span>
+<span id="cb1-163"><a href="#cb1-163" aria-label="163"></a></span>
+<span id="cb1-164"><a href="#cb1-164" aria-label="164"></a>Quan la CPU accedeix a una adreça lògica i el bit V de la PTE corresponent val 0, es produeix una **fallada de pàgina** (*page fault*). Això pot succeir per dos motius: la pàgina pertany a l'espai vàlid del procés però no és a la memòria física (és al disc), o bé l'adreça és invàlida (no pertany a cap regió reservada del procés). En el segon cas, el sistema operatiu avorta l'execució del programa (a Unix i derivats, amb un error de tipus *segmentation fault*).</span>
+<span id="cb1-165"><a href="#cb1-165" aria-label="165"></a></span>
+<span id="cb1-166"><a href="#cb1-166" aria-label="166"></a>En el primer cas, el sistema operatiu gestiona la fallada carregant la pàgina des del disc:</span>
+<span id="cb1-167"><a href="#cb1-167" aria-label="167"></a></span>
+<span id="cb1-168"><a href="#cb1-168" aria-label="168"></a><span class="ss">1. </span>Es localitza la pàgina al disc.</span>
+<span id="cb1-169"><a href="#cb1-169" aria-label="169"></a><span class="ss">2. </span>Si hi ha un marc de pàgina lliure, s'hi carrega la pàgina. Si no n'hi ha cap de lliure, cal **reemplaçar** un marc ocupat.</span>
+<span id="cb1-170"><a href="#cb1-170" aria-label="170"></a><span class="ss">3. </span>S'actualitza la PTE: es posa V = 1 i s'escriu el PPN del marc assignat.</span>
+<span id="cb1-171"><a href="#cb1-171" aria-label="171"></a><span class="ss">4. </span>Es reexecuta la instrucció que ha causat la fallada.</span>
+<span id="cb1-172"><a href="#cb1-172" aria-label="172"></a></span>
+<span id="cb1-173"><a href="#cb1-173" aria-label="173"></a>Com que un accés al disc és centenars o milers de vegades més lent que un accés a la memòria principal (desenes de milers, o més, en el cas d'un disc magnètic), la fallada de pàgina és, amb diferència, l'incident més costós de tot el sistema de memòria.</span>
+<span id="cb1-174"><a href="#cb1-174" aria-label="174"></a></span>
+<span id="cb1-175"><a href="#cb1-175" aria-label="175"></a>::: {#cau-mv-fallada-pagina .callout-caution}</span>
+<span id="cb1-176"><a href="#cb1-176" aria-label="176"></a><span class="fu">## Mecanisme de la fallada de pàgina</span></span>
+<span id="cb1-177"><a href="#cb1-177" aria-label="177"></a></span>
+<span id="cb1-178"><a href="#cb1-178" aria-label="178"></a>Una fallada de pàgina es produeix quan V = 0 en la PTE del VPN sol·licitat. Si la pàgina és vàlida, el sistema operatiu la carrega des del disc, actualitza la PTE i reexecuta la instrucció causant. Si l'adreça és invàlida, el procés s'avorta.</span>
+<span id="cb1-179"><a href="#cb1-179" aria-label="179"></a>:::</span>
+<span id="cb1-180"><a href="#cb1-180" aria-label="180"></a></span>
+<span id="cb1-181"><a href="#cb1-181" aria-label="181"></a>Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament (per exemple, **LRU**). Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions).</span>
+<span id="cb1-182"><a href="#cb1-182" aria-label="182"></a></span>
+<span id="cb1-183"><a href="#cb1-183" aria-label="183"></a>A la zona del disc on s'emmagatzemen les pàgines reemplaçades se l'anomena **espai d'intercanvi** (*swap space*).</span>
+<span id="cb1-184"><a href="#cb1-184" aria-label="184"></a></span>
+<span id="cb1-185"><a href="#cb1-185" aria-label="185"></a><span class="fu">## Traducció ràpida: el TLB {#sec-mv-tlb}</span></span>
+<span id="cb1-186"><a href="#cb1-186" aria-label="186"></a></span>
+<span id="cb1-187"><a href="#cb1-187" aria-label="187"></a>La taula de pàgines és a la memòria principal. Això implica que cada accés a memòria requereix, en realitat, dos accessos: un per llegir la PTE i traduir l'adreça, i un per llegir o escriure la dada. Per evitar aquest cost, els processadors moderns incorporen a la MMU una memòria cau de traduccions anomenada **TLB** (*translation-lookaside buffer*), que emmagatzema les PTEs utilitzades més recentment.</span>
+<span id="cb1-188"><a href="#cb1-188" aria-label="188"></a></span>
+<span id="cb1-189"><a href="#cb1-189" aria-label="189"></a><span class="fu">### Estructura i funcionament {#sec-mv-tlb-estructura}</span></span>
+<span id="cb1-190"><a href="#cb1-190" aria-label="190"></a></span>
+<span id="cb1-191"><a href="#cb1-191" aria-label="191"></a>Cada entrada del TLB conté una còpia d'una PTE (camps V, D, E i PPN) i el VPN al qual correspon. A diferència de la taula de pàgines, que s'indexa directament pel VPN, el TLB funciona de manera **completament associativa**: per traduir una adreça, es compara el VPN amb tots els VPNs emmagatzemats simultàniament.</span>
+<span id="cb1-192"><a href="#cb1-192" aria-label="192"></a></span>
+<span id="cb1-193"><a href="#cb1-193" aria-label="193"></a>Al TLB, el camp <span class="in">`V`</span> té un significat **lleugerament diferent** del camp <span class="in">`V`</span> de la PTE, com s'explica a la @sec-mv-tlb-bitv.</span>
+<span id="cb1-194"><a href="#cb1-194" aria-label="194"></a></span>
+<span id="cb1-195"><a href="#cb1-195" aria-label="195"></a>::: {#cau-mv-tlb-estructura .callout-caution}</span>
+<span id="cb1-196"><a href="#cb1-196" aria-label="196"></a><span class="fu">## Estructura d'una entrada del TLB</span></span>
+<span id="cb1-197"><a href="#cb1-197" aria-label="197"></a></span>
+<span id="cb1-198"><a href="#cb1-198" aria-label="198"></a><span class="pp">|</span> Camp <span class="pp">|</span> Significat <span class="pp">|</span></span>
+<span id="cb1-199"><a href="#cb1-199" aria-label="199"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb1-200"><a href="#cb1-200" aria-label="200"></a><span class="pp">|</span> VPN <span class="pp">|</span> Identificador de la pàgina virtual (clau de cerca) <span class="pp">|</span></span>
+<span id="cb1-201"><a href="#cb1-201" aria-label="201"></a><span class="pp">|</span> V <span class="pp">|</span> 1 = entrada inicialitzada i vàlida <span class="pp">|</span></span>
+<span id="cb1-202"><a href="#cb1-202" aria-label="202"></a><span class="pp">|</span> D <span class="pp">|</span> 1 = pàgina modificada (*dirty*) <span class="pp">|</span></span>
+<span id="cb1-203"><a href="#cb1-203" aria-label="203"></a><span class="pp">|</span> E <span class="pp">|</span> 1 = permís d'escriptura <span class="pp">|</span></span>
+<span id="cb1-204"><a href="#cb1-204" aria-label="204"></a><span class="pp">|</span> PPN <span class="pp">|</span> Marc de pàgina física corresponent <span class="pp">|</span></span>
+<span id="cb1-205"><a href="#cb1-205" aria-label="205"></a>: {.striped}</span>
+<span id="cb1-206"><a href="#cb1-206" aria-label="206"></a>:::</span>
+<span id="cb1-207"><a href="#cb1-207" aria-label="207"></a></span>
+<span id="cb1-208"><a href="#cb1-208" aria-label="208"></a><span class="co">&lt;!-- fig-mv-tlb-estructura: classe `estàndard` (W=680). Diagrama de dues estructures en paral·lel. A l'esquerra, la taula de pàgines (columnes VPN implícit com a índex, V, D, E, PPN) amb moltes files, la majoria en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d; V=0) i unes poques destacades en `.data` (fill #cfe2ff, stroke #084298; V=1). A la dreta, el TLB (columnes VPN, V, D, E, PPN) amb poques files (4-6), totes destacades en heap (fill #d1e7dd, stroke #0a3622), representant les entrades actives. Fletxes des d'algunes files del TLB cap a les files corresponents de la taula de pàgines, indicant que el TLB és una còpia parcial. Caption: "El TLB emmagatzema una còpia de les PTEs utilitzades més recentment. Cada entrada inclou el VPN com a clau de cerca." --&gt;</span></span>
+<span id="cb1-209"><a href="#cb1-209" aria-label="209"></a></span>
+<span id="cb1-210"><a href="#cb1-210" aria-label="210"></a><span class="fu">### Encert de TLB {#sec-mv-tlb-encert}</span></span>
+<span id="cb1-211"><a href="#cb1-211" aria-label="211"></a></span>
+<span id="cb1-212"><a href="#cb1-212" aria-label="212"></a>Quan cal traduir una adreça, la MMU extreu el VPN i el cerca al TLB. Si troba una entrada amb aquest VPN, es produeix un **encert de TLB** (*TLB hit*) i la traducció es completa directament amb el PPN d'aquella entrada, sense accedir a la taula de pàgines a la memòria. El cost de la traducció es redueix al temps d'accés al TLB, que és molt inferior al d'un accés a memòria.</span>
+<span id="cb1-213"><a href="#cb1-213" aria-label="213"></a></span>
+<span id="cb1-214"><a href="#cb1-214" aria-label="214"></a>Després d'un encert, cal comprovar el bit V: si V = 0, la pàgina no és a la memòria física i es produirà una fallada de pàgina, que es gestiona tal com s'ha descrit a la @sec-mv-fallada-pagina.</span>
+<span id="cb1-215"><a href="#cb1-215" aria-label="215"></a></span>
+<span id="cb1-216"><a href="#cb1-216" aria-label="216"></a><span class="fu">### Fallada de TLB {#sec-mv-tlb-fallada}</span></span>
+<span id="cb1-217"><a href="#cb1-217" aria-label="217"></a></span>
+<span id="cb1-218"><a href="#cb1-218" aria-label="218"></a>Si el VPN no es troba al TLB, es produeix una **fallada de TLB** (*TLB miss*). Cal llegir la PTE corresponent de la taula de pàgines (a la memòria principal) i copiar-la a una entrada del TLB:</span>
+<span id="cb1-219"><a href="#cb1-219" aria-label="219"></a></span>
+<span id="cb1-220"><a href="#cb1-220" aria-label="220"></a><span class="ss">- </span>Si hi ha alguna entrada amb V = 0 (no inicialitzada, o amb la pàgina absent de memòria), s'hi escriu la nova entrada.</span>
+<span id="cb1-221"><a href="#cb1-221" aria-label="221"></a><span class="ss">- </span>Si totes les entrades estan ocupades, cal reemplaçar-ne una seguint un algorisme de reemplaçament (LRU, aleatori, FIFO, etc.).</span>
+<span id="cb1-222"><a href="#cb1-222" aria-label="222"></a></span>
+<span id="cb1-223"><a href="#cb1-223" aria-label="223"></a>Un cop copiada la PTE al TLB, es reintenta l'accés a memòria. Si el bit V de la PTE copiada val 0, el bit V de la nova entrada del TLB quedarà a 0 i l'accés reiterat provocarà una fallada de pàgina.</span>
+<span id="cb1-224"><a href="#cb1-224" aria-label="224"></a></span>
+<span id="cb1-225"><a href="#cb1-225" aria-label="225"></a>::: {#cau-mv-tlb-fallada .callout-caution}</span>
+<span id="cb1-226"><a href="#cb1-226" aria-label="226"></a><span class="fu">## Encert i fallada de TLB</span></span>
+<span id="cb1-227"><a href="#cb1-227" aria-label="227"></a></span>
+<span id="cb1-228"><a href="#cb1-228" aria-label="228"></a>**Encert de TLB** (TLB hit): el VPN es troba al TLB. La traducció es completa amb el PPN de l'entrada trobada, sense accedir a la memòria principal. Si V = 0, es produeix una fallada de pàgina.</span>
+<span id="cb1-229"><a href="#cb1-229" aria-label="229"></a></span>
+<span id="cb1-230"><a href="#cb1-230" aria-label="230"></a>**Fallada de TLB** (TLB miss): el VPN no es troba al TLB. Es llegeix la PTE de la taula de pàgines, es copia al TLB i es reintenta l'accés.</span>
+<span id="cb1-231"><a href="#cb1-231" aria-label="231"></a>:::</span>
+<span id="cb1-232"><a href="#cb1-232" aria-label="232"></a></span>
+<span id="cb1-233"><a href="#cb1-233" aria-label="233"></a>::: {#wrn-mv-tlb-hw-walker .callout-warning collapse="true"}</span>
+<span id="cb1-234"><a href="#cb1-234" aria-label="234"></a><span class="fu">## Qui resol la fallada de TLB: maquinari (RISC-V) vs. programari (MIPS)</span></span>
+<span id="cb1-235"><a href="#cb1-235" aria-label="235"></a></span>
+<span id="cb1-236"><a href="#cb1-236" aria-label="236"></a>El mecanisme descrit més amunt —llegir la PTE, copiar-la al TLB, reintentar— es pot implementar de dues maneres ben diferents:</span>
+<span id="cb1-237"><a href="#cb1-237" aria-label="237"></a></span>
+<span id="cb1-238"><a href="#cb1-238" aria-label="238"></a>**Maquinari (*hardware page-table walker*):** el processador inclou un circuit dedicat que recorre la taula de pàgines automàticament quan es produeix una fallada de TLB. El procés en execució no s'interromp: la fallada és transparent al programari. Quan la PTE localitzada indica que la pàgina no és a la memòria (V = 0), *llavors* sí que es genera una excepció de fallada de pàgina que el SO ha de gestionar. Aquest és el model de **RISC-V**, x86 i ARM.</span>
+<span id="cb1-239"><a href="#cb1-239" aria-label="239"></a></span>
+<span id="cb1-240"><a href="#cb1-240" aria-label="240"></a>**Programari (*software-managed TLB*):** el processador genera una excepció en detectar la fallada de TLB. El SO executa una rutina que llegeix la taula de pàgines i actualitza el TLB per programari, i finalment reexecuta la instrucció causant. Aquest era el model de **MIPS** i d'alguns RISC antics. El Tema 9 il·lustra el mecanisme de gestió de fallades de pàgina amb codi RISC-V, que comparteix la mateixa estructura de RSE.</span>
+<span id="cb1-241"><a href="#cb1-241" aria-label="241"></a></span>
+<span id="cb1-242"><a href="#cb1-242" aria-label="242"></a>La distinció és transparent per a l'alumne en el context d'EC: el resultat observable (la traducció es completa i l'accés es reintenta) és idèntic en tots dos casos.</span>
+<span id="cb1-243"><a href="#cb1-243" aria-label="243"></a>:::</span>
+<span id="cb1-244"><a href="#cb1-244" aria-label="244"></a></span>
+<span id="cb1-245"><a href="#cb1-245" aria-label="245"></a><span class="fu">### El bit V del TLB: doble paper {#sec-mv-tlb-bitv}</span></span>
+<span id="cb1-246"><a href="#cb1-246" aria-label="246"></a></span>
+<span id="cb1-247"><a href="#cb1-247" aria-label="247"></a>El bit <span class="in">`V`</span> de la PTE i el bit <span class="in">`V`</span> del TLB s'anomenen igual perquè tots dos indiquen «validesa», però en **contexts d'ús** lleugerament diferents:</span>
+<span id="cb1-248"><a href="#cb1-248" aria-label="248"></a></span>
+<span id="cb1-249"><a href="#cb1-249" aria-label="249"></a><span class="ss">- </span>**`V` a la PTE** (taula de pàgines): indica si la pàgina és present a la memòria física. V = 1 significa «pàgina carregada»; V = 0 significa «pàgina al disc o adreça invàlida».</span>
+<span id="cb1-250"><a href="#cb1-250" aria-label="250"></a><span class="ss">- </span>**`V` al TLB** (entrada de la memòria cau de traduccions): compleix dos papers simultàniament, segons el context:</span>
+<span id="cb1-251"><a href="#cb1-251" aria-label="251"></a><span class="ss">    - </span>**Durant una fallada de TLB** (quan es busca un VPN i no es troba): V = 0 indica que l'entrada no ha estat inicialitzada i pot ser sobreescrita amb la nova PTE.</span>
+<span id="cb1-252"><a href="#cb1-252" aria-label="252"></a><span class="ss">    - </span>**Després d'un encert de TLB** (quan el VPN es troba): V = 0 indica que la pàgina corresponent no és a la memòria física —reflecteix el V = 0 de la PTE— i cal gestionar una fallada de pàgina.</span>
+<span id="cb1-253"><a href="#cb1-253" aria-label="253"></a></span>
+<span id="cb1-254"><a href="#cb1-254" aria-label="254"></a>El fet que el camp VPN d'una entrada no inicialitzada tingui un valor indeterminat no és un problema: si per casualitat coincidís amb el VPN cercat, l'encert resultant trobaria V = 0, la qual cosa desencadenaria igualment una fallada de pàgina que inicialitzaria l'entrada correctament.</span>
+<span id="cb1-255"><a href="#cb1-255" aria-label="255"></a></span>
+<span id="cb1-256"><a href="#cb1-256" aria-label="256"></a><span class="fu">### El bit D: consistència amb la taula de pàgines {#sec-mv-tlb-bitd}</span></span>
+<span id="cb1-257"><a href="#cb1-257" aria-label="257"></a></span>
+<span id="cb1-258"><a href="#cb1-258" aria-label="258"></a>El bit D del TLB és l'únic camp que pot modificar l'execució del programa: quan una instrucció d'escriptura (<span class="in">`sw`</span>, <span class="in">`fsw`</span>, etc.) accedeix a una pàgina, el bit D s'ha de posar a 1. Com que el TLB és una còpia parcial de la taula de pàgines, cal mantenir la consistència entre ambdós.</span>
+<span id="cb1-259"><a href="#cb1-259" aria-label="259"></a></span>
+<span id="cb1-260"><a href="#cb1-260" aria-label="260"></a>La política adoptada és d'**escriptura immediata**: quan s'escriu en una pàgina per primera vegada (D = 0 al TLB), el bit D es posa a 1 simultàniament al TLB i a la PTE de la taula de pàgines. Això requereix un accés addicional a la memòria principal, però només succeeix la primera vegada que s'escriu en cada pàgina, no en cada instrucció d'escriptura.</span>
+<span id="cb1-261"><a href="#cb1-261" aria-label="261"></a></span>
+<span id="cb1-262"><a href="#cb1-262" aria-label="262"></a><span class="fu">### Flux complet de traducció {#sec-mv-tlb-flux}</span></span>
+<span id="cb1-263"><a href="#cb1-263" aria-label="263"></a></span>
+<span id="cb1-264"><a href="#cb1-264" aria-label="264"></a>La @fig-mv-flux-traduccio resumeix totes les situacions possibles durant la traducció d'una adreça en un sistema amb TLB i memòria virtual.</span>
+<span id="cb1-265"><a href="#cb1-265" aria-label="265"></a></span>
+<span id="cb1-266"><a href="#cb1-266" aria-label="266"></a><span class="co">&lt;!-- fig-mv-flux-traduccio: classe `ampla` (W=960; diagrama de flux amb moltes branques, no cap en `estàndard` sense amuntegar text). Diagrama de flux complet de la traducció d'una adreça. Punt d'entrada: "Cerca VPN al TLB". Primera decisió: "TLB hit?" → branca "sí" (TLB hit): "V=1?" → "sí": "Escriptura i D=0?" → "sí": actualitzar D al TLB i a la TP (escriptura immediata) → "PPN (finalitzar accés)"; → "no": "PPN (finalitzar accés)"; → "no" (V=0): fallada de pàgina → gestió SO → reexecutar instrucció. Branca "no" (TLB miss): "TLB ple?" → "no": copiar PTE → TLB (entrada lliure) → reintent; → "sí": reemplaçar entrada LRU → copiar PTE → reintent. La fallada de pàgina: "Marc lliure?" → "sí": carregar pàgina → actualitzar PTE → reexecutar; → "no": reemplaçar pàgina (LRU), "D=1?" → "sí": escriure pàgina al disc → carregar nova pàgina → actualitzar PTE → reexecutar; → "no": carregar nova pàgina → actualitzar PTE → reexecutar. Colors (paleta svg.md §10, semàntica hit/miss): camí principal (encert) en verd (#198754, coherent amb "Hit" de MC); fallada de TLB en groc (fill #fff3cd, stroke #664d03, coherent amb pila); fallada de pàgina en vermell (#dc3545, coherent amb "Miss" de MC). Caption: "Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual." --&gt;</span></span>
+<span id="cb1-267"><a href="#cb1-267" aria-label="267"></a>::: {#fig-mv-flux-traduccio}</span>
+<span id="cb1-268"><a href="#cb1-268" aria-label="268"></a>::: {.content-visible when-format="html"}</span>
+<span id="cb1-269"><a href="#cb1-269" aria-label="269"></a>::: {.light-content}</span>
+<span id="cb1-270"><a href="#cb1-270" aria-label="270"></a><span class="al">![](/auto_figs/T8_mv_flux_traduccio__original_light.svg)</span></span>
+<span id="cb1-271"><a href="#cb1-271" aria-label="271"></a>:::</span>
+<span id="cb1-272"><a href="#cb1-272" aria-label="272"></a>::: {.dark-content}</span>
+<span id="cb1-273"><a href="#cb1-273" aria-label="273"></a><span class="al">![](/auto_figs/T8_mv_flux_traduccio__original_dark.svg)</span></span>
+<span id="cb1-274"><a href="#cb1-274" aria-label="274"></a>:::</span>
+<span id="cb1-275"><a href="#cb1-275" aria-label="275"></a>:::</span>
+<span id="cb1-276"><a href="#cb1-276" aria-label="276"></a>::: {.content-visible when-format="pdf"}</span>
+<span id="cb1-277"><a href="#cb1-277" aria-label="277"></a><span class="al">![](/auto_figs/T8_mv_flux_traduccio__original_light.svg)</span></span>
+<span id="cb1-278"><a href="#cb1-278" aria-label="278"></a>:::</span>
+<span id="cb1-279"><a href="#cb1-279" aria-label="279"></a>Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual.</span>
+<span id="cb1-280"><a href="#cb1-280" aria-label="280"></a>:::</span>
+<span id="cb1-281"><a href="#cb1-281" aria-label="281"></a></span>
+<span id="cb1-282"><a href="#cb1-282" aria-label="282"></a>::: {#wrn-mv-tlb-shootdown .callout-warning collapse="true"}</span>
+<span id="cb1-283"><a href="#cb1-283" aria-label="283"></a><span class="fu">## *TLB shootdown* en sistemes multicore</span></span>
+<span id="cb1-284"><a href="#cb1-284" aria-label="284"></a></span>
+<span id="cb1-285"><a href="#cb1-285" aria-label="285"></a>En un processador amb múltiples nuclis, cada nucli disposa del seu propi TLB. Quan el sistema operatiu modifica una PTE de la taula de pàgines d'un procés (per exemple, en reemplaçar una pàgina o revocar un permís d'escriptura), qualsevol nucli que tingui una còpia d'aquella entrada al seu TLB passa a tenir informació obsoleta.</span>
+<span id="cb1-286"><a href="#cb1-286" aria-label="286"></a></span>
+<span id="cb1-287"><a href="#cb1-287" aria-label="287"></a>Per garantir la coherència, el sistema operatiu ha d'invalidar les entrades afectades als TLBs de tots els nuclis que puguin tenir-les. Això es fa enviant una interrupció especial (*inter-processor interrupt* o IPI) a cadascun dels nuclis implicats, forçant-los a invalidar l'entrada corresponent. Aquest procés s'anomena ***TLB shootdown***.</span>
+<span id="cb1-288"><a href="#cb1-288" aria-label="288"></a></span>
+<span id="cb1-289"><a href="#cb1-289" aria-label="289"></a>El cost del *TLB shootdown* és significatiu: cada nucli afectat ha d'interrompre l'execució, processar la interrupció i invalidar l'entrada. En sistemes amb molts nuclis i processos que comparteixen memòria, el *TLB shootdown* pot convertir-se en un coll d'ampolla de rendiment rellevant, i és una de les raons per les quals la gestió eficient de la memòria virtual en sistemes multicore és un problema de recerca actiu.</span>
+<span id="cb1-290"><a href="#cb1-290" aria-label="290"></a>:::</span>
+<span id="cb1-291"><a href="#cb1-291" aria-label="291"></a></span>
+<span id="cb1-292"><a href="#cb1-292" aria-label="292"></a>::: {#tip-mv-tlb-exemple .callout-tip}</span>
+<span id="cb1-293"><a href="#cb1-293" aria-label="293"></a><span class="fu">## Exemple de traducció amb TLB</span></span>
+<span id="cb1-294"><a href="#cb1-294" aria-label="294"></a></span>
+<span id="cb1-295"><a href="#cb1-295" aria-label="295"></a>Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB ($t = 12$), una memòria física de 16 KiB (4 marcs de pàgina, adreces físiques de 14 bits) i un TLB de 4 entrades amb reemplaçament LRU. L'estat inicial és:</span>
+<span id="cb1-296"><a href="#cb1-296" aria-label="296"></a></span>
+<span id="cb1-297"><a href="#cb1-297" aria-label="297"></a><span class="pp">|</span> VPN <span class="pp">|</span> V <span class="pp">|</span> D <span class="pp">|</span> E <span class="pp">|</span> PPN <span class="pp">|</span></span>
+<span id="cb1-298"><a href="#cb1-298" aria-label="298"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-299"><a href="#cb1-299" aria-label="299"></a><span class="pp">|</span> <span class="in">`0x00003`</span> <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`0x00`</span> <span class="pp">|</span></span>
+<span id="cb1-300"><a href="#cb1-300" aria-label="300"></a><span class="pp">|</span> <span class="in">`0x00000`</span> <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`0x01`</span> <span class="pp">|</span></span>
+<span id="cb1-301"><a href="#cb1-301" aria-label="301"></a><span class="pp">|</span> <span class="in">`0x00002`</span> <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`0x02`</span> <span class="pp">|</span></span>
+<span id="cb1-302"><a href="#cb1-302" aria-label="302"></a><span class="pp">|</span> <span class="in">`0x0AFB3`</span> <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-303"><a href="#cb1-303" aria-label="303"></a>: TLB (estat inicial) {.striped}</span>
+<span id="cb1-304"><a href="#cb1-304" aria-label="304"></a></span>
+<span id="cb1-305"><a href="#cb1-305" aria-label="305"></a>I la taula de pàgines (entrades rellevants):</span>
+<span id="cb1-306"><a href="#cb1-306" aria-label="306"></a></span>
+<span id="cb1-307"><a href="#cb1-307" aria-label="307"></a><span class="pp">|</span> VPN <span class="pp">|</span> V <span class="pp">|</span> D <span class="pp">|</span> E <span class="pp">|</span> PPN <span class="pp">|</span></span>
+<span id="cb1-308"><a href="#cb1-308" aria-label="308"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb1-309"><a href="#cb1-309" aria-label="309"></a><span class="pp">|</span> <span class="in">`0x00000`</span> <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`0x01`</span> <span class="pp">|</span></span>
+<span id="cb1-310"><a href="#cb1-310" aria-label="310"></a><span class="pp">|</span> <span class="in">`0x00001`</span> <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-311"><a href="#cb1-311" aria-label="311"></a><span class="pp">|</span> <span class="in">`0x00002`</span> <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`0x02`</span> <span class="pp">|</span></span>
+<span id="cb1-312"><a href="#cb1-312" aria-label="312"></a><span class="pp">|</span> <span class="in">`0x00003`</span> <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> <span class="in">`0x00`</span> <span class="pp">|</span></span>
+<span id="cb1-313"><a href="#cb1-313" aria-label="313"></a><span class="pp">|</span> <span class="in">`0x00004`</span> <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb1-314"><a href="#cb1-314" aria-label="314"></a>: Taula de pàgines (entrades rellevants) {.striped}</span>
+<span id="cb1-315"><a href="#cb1-315" aria-label="315"></a></span>
+<span id="cb1-316"><a href="#cb1-316" aria-label="316"></a>Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = 3 és lliure), i que els 3 darrers accessos han estat a VPN = 3, VPN = 0 i VPN = 2 (ordre LRU, de més antic a més recent).</span>
+<span id="cb1-317"><a href="#cb1-317" aria-label="317"></a></span>
+<span id="cb1-318"><a href="#cb1-318" aria-label="318"></a>**Accés 1**: Escriptura a <span class="in">`0x00002A0B`</span> → VPN = <span class="in">`0x00002`</span>.</span>
+<span id="cb1-319"><a href="#cb1-319" aria-label="319"></a></span>
+<span id="cb1-320"><a href="#cb1-320" aria-label="320"></a>Encert de TLB (V = 1). Com que és una escriptura i D = 0, s'aplica la política d'escriptura immediata descrita a la @sec-mv-tlb-bitd: D = 1 s'escriu simultàniament al TLB i a la TP. PPN = <span class="in">`0x02`</span>. Adreça física (14 bits, memòria física de 16 KiB): <span class="in">`0x2A0B`</span>.</span>
+<span id="cb1-321"><a href="#cb1-321" aria-label="321"></a></span>
+<span id="cb1-322"><a href="#cb1-322" aria-label="322"></a>**Accés 2**: Lectura a <span class="in">`0x00001F21`</span> → VPN = <span class="in">`0x00001`</span>.</span>
+<span id="cb1-323"><a href="#cb1-323" aria-label="323"></a></span>
+<span id="cb1-324"><a href="#cb1-324" aria-label="324"></a>Fallada de TLB. Es llegeix la PTE de la TP: V = 0, fallada de pàgina. Hi ha un marc lliure (PPN = <span class="in">`0x03`</span>); s'hi carrega la pàgina des del disc. S'actualitza la TP (V = 1, PPN = <span class="in">`0x03`</span>). La PTE es copia al TLB a l'entrada no inicialitzada (V = 0, VPN = <span class="in">`0x0AFB3`</span>). PPN = <span class="in">`0x03`</span>. Adreça física: <span class="in">`0x3F21`</span>.</span>
+<span id="cb1-325"><a href="#cb1-325" aria-label="325"></a></span>
+<span id="cb1-326"><a href="#cb1-326" aria-label="326"></a>**Accés 3**: Lectura a <span class="in">`0x0000420C`</span> → VPN = <span class="in">`0x00004`</span>.</span>
+<span id="cb1-327"><a href="#cb1-327" aria-label="327"></a></span>
+<span id="cb1-328"><a href="#cb1-328" aria-label="328"></a>Fallada de TLB. Es llegeix la PTE de la TP: V = 0, fallada de pàgina. Cap marc lliure; cal reemplaçar. L'ordre d'ús de les pàgines residents —que en aquest exemple coincideix amb l'ordre LRU del TLB, ja que totes hi tenen entrada— és: VPN = <span class="in">`0x00003`</span> (la més antiga, no accedida des de l'inici), VPN = <span class="in">`0x00000`</span>, VPN = <span class="in">`0x00002`</span>, VPN = <span class="in">`0x00001`</span> (la més recent, accedida a l'Accés 2). Es reemplaça VPN = <span class="in">`0x00003`</span> (D = 1): s'escriu primer al disc. Es carrega VPN = <span class="in">`0x00004`</span> al PPN = <span class="in">`0x00`</span>. S'actualitzen la TP (VPN 3 → V = 0; VPN 4 → V = 1, PPN = <span class="in">`0x00`</span>) i el TLB. PPN = <span class="in">`0x00`</span>. Adreça física: <span class="in">`0x020C`</span>.</span>
+<span id="cb1-329"><a href="#cb1-329" aria-label="329"></a>:::</span>
+<span id="cb1-330"><a href="#cb1-330" aria-label="330"></a></span>
+<span id="cb1-331"><a href="#cb1-331" aria-label="331"></a><span class="fu">## Protecció i compartició {#sec-mv-proteccio}</span></span>
+<span id="cb1-332"><a href="#cb1-332" aria-label="332"></a></span>
+<span id="cb1-333"><a href="#cb1-333" aria-label="333"></a>Una de les funcions més importants de la memòria virtual és permetre que múltiples processos comparteixin la memòria física de manera segura. Això requereix mecanismes que garanteixin que cap procés pugui accedir a l'espai d'adreçament d'un altre de manera no autoritzada.</span>
+<span id="cb1-334"><a href="#cb1-334" aria-label="334"></a></span>
+<span id="cb1-335"><a href="#cb1-335" aria-label="335"></a><span class="fu">### Protecció entre processos {#sec-mv-proteccio-processos}</span></span>
+<span id="cb1-336"><a href="#cb1-336" aria-label="336"></a></span>
+<span id="cb1-337"><a href="#cb1-337" aria-label="337"></a>El mecanisme de traducció d'adreces proporciona protecció entre processos de manera natural: com que cada procés té la seva pròpia taula de pàgines, i la MMU usa exclusivament la taula del procés actiu per a totes les traduccions, un procés no pot generar cap adreça física que correspongui a una pàgina assignada a un altre procés. L'aïllament és complet sense cap comprovació addicional.</span>
+<span id="cb1-338"><a href="#cb1-338" aria-label="338"></a></span>
+<span id="cb1-339"><a href="#cb1-339" aria-label="339"></a>Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al sistema operatiu, accessible només quan el processador opera en **mode sistema** (*kernel mode*). Els programes d'usuari s'executen en **mode usuari**, en el qual qualsevol intent d'accedir a aquesta zona o de modificar el TLB causa una excepció. El <span class="co">[</span><span class="ot">Tema 9</span><span class="co">](#sec-tema-excepcions-interrupcions)</span> descriu amb més detall els modes d'execució (@sec-ei-csr-privilegis) i el mecanisme d'excepcions.</span>
+<span id="cb1-340"><a href="#cb1-340" aria-label="340"></a></span>
+<span id="cb1-341"><a href="#cb1-341" aria-label="341"></a><span class="fu">### Protecció contra escriptura {#sec-mv-proteccio-escriptura}</span></span>
+<span id="cb1-342"><a href="#cb1-342" aria-label="342"></a></span>
+<span id="cb1-343"><a href="#cb1-343" aria-label="343"></a>A més de l'aïllament entre processos, la memòria virtual permet controlar el tipus d'accés permès sobre cada pàgina individual mitjançant el **bit E** de la PTE i del TLB. Si una instrucció intenta escriure en una pàgina amb E = 0, la MMU genera una excepció i el sistema operatiu avorta el procés.</span>
+<span id="cb1-344"><a href="#cb1-344" aria-label="344"></a></span>
+<span id="cb1-345"><a href="#cb1-345" aria-label="345"></a>Aquest mecanisme té diverses aplicacions pràctiques:</span>
+<span id="cb1-346"><a href="#cb1-346" aria-label="346"></a></span>
+<span id="cb1-347"><a href="#cb1-347" aria-label="347"></a><span class="ss">- </span>**Protecció del codi**: les pàgines que contenen instruccions es marquen habitualment com a només de lectura (E = 0), de manera que un error de programació no pugui sobreescriure el codi en execució.</span>
+<span id="cb1-348"><a href="#cb1-348" aria-label="348"></a><span class="ss">- </span>**Detecció d'errors**: marcar com a només de lectura pàgines que no haurien de ser modificades permet detectar errors de programació que d'altra manera passarien desapercebuts.</span>
+<span id="cb1-349"><a href="#cb1-349" aria-label="349"></a><span class="ss">- </span>**Compartició segura**: permet compartir pàgines entre processos amb permisos asimètrics (un procés pot escriure-hi i un altre només llegir-hi), com es veurà a la secció següent.</span>
+<span id="cb1-350"><a href="#cb1-350" aria-label="350"></a></span>
+<span id="cb1-351"><a href="#cb1-351" aria-label="351"></a><span class="fu">### Compartició de pàgines {#sec-mv-comparticio}</span></span>
+<span id="cb1-352"><a href="#cb1-352" aria-label="352"></a></span>
+<span id="cb1-353"><a href="#cb1-353" aria-label="353"></a>El sistema operatiu pot fer que dos processos comparteixin una mateixa pàgina física simplement escrivint a les seves taules de pàgines dues PTEs que apuntin al mateix PPN. Cada procés pot tenir la pàgina compartida assignada a un VPN diferent, i el bit E pot ser diferent per a cada procés.</span>
+<span id="cb1-354"><a href="#cb1-354" aria-label="354"></a></span>
+<span id="cb1-355"><a href="#cb1-355" aria-label="355"></a>::: {#tip-mv-comparticio .callout-tip}</span>
+<span id="cb1-356"><a href="#cb1-356" aria-label="356"></a><span class="fu">## Exemple de compartició de pàgines</span></span>
+<span id="cb1-357"><a href="#cb1-357" aria-label="357"></a></span>
+<span id="cb1-358"><a href="#cb1-358" aria-label="358"></a>El procés P1 vol compartir la seva pàgina VPN = <span class="in">`0x00000`</span> (carregada al marc PPN = <span class="in">`0x02`</span>) amb el procés P2 en mode escriptura. El sistema operatiu escriu una entrada a la taula de pàgines de P2 que assigna VPN = <span class="in">`0x00001`</span> al mateix PPN = <span class="in">`0x02`</span>, amb E = 1.</span>
+<span id="cb1-359"><a href="#cb1-359" aria-label="359"></a></span>
+<span id="cb1-360"><a href="#cb1-360" aria-label="360"></a>A partir d'aquell moment, quan P2 accedeix a VPN = <span class="in">`0x00001`</span> i P1 accedeix a VPN = <span class="in">`0x00000`</span>, tots dos accedeixen a la mateixa pàgina física. Qualsevol modificació feta per un dels dos processos és visible immediatament per l'altre.</span>
+<span id="cb1-361"><a href="#cb1-361" aria-label="361"></a>:::</span>
+<span id="cb1-362"><a href="#cb1-362" aria-label="362"></a></span>
+<span id="cb1-363"><a href="#cb1-363" aria-label="363"></a><span class="co">&lt;!-- fig-mv-comparticio: classe `estàndard` (W=680). Diagrama amb dues taules de pàgines (P1 a l'esquerra, P2 a la dreta) i la memòria física al centre. La fila VPN=0x00000 de P1 (V=1, E=1, PPN=0x02) i la fila VPN=0x00001 de P2 (V=1, E=1, PPN=0x02) tenen fletxes que convergeixen al mateix marc PPN=0x02 de la memòria física, destacat en heap (fill #d1e7dd, stroke #0a3622; "Hit"/encert semàntic: marc compartit amb èxit). La resta de marcs en reservada/neutre (fill #f8f9fa, stroke #adb5bd). Caption: "Compartició d'una pàgina física entre dos processos: P1 i P2 mapen VPNs diferents al mateix PPN. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE." --&gt;</span></span>
+<span id="cb1-364"><a href="#cb1-364" aria-label="364"></a></span>
+<span id="cb1-365"><a href="#cb1-365" aria-label="365"></a>La compartició de pàgines té dues aplicacions principals:</span>
+<span id="cb1-366"><a href="#cb1-366" aria-label="366"></a></span>
+<span id="cb1-367"><a href="#cb1-367" aria-label="367"></a><span class="ss">- </span>**Comunicació entre processos**: dos processos poden intercanviar dades escrivint i llegint una pàgina compartida, sense necessitat de còpies.</span>
+<span id="cb1-368"><a href="#cb1-368" aria-label="368"></a><span class="ss">- </span>**Biblioteques compartides**: si múltiples processos usen simultàniament el codi d'una mateixa biblioteca, el sistema operatiu pot mantenir una sola còpia de les pàgines de codi a la memòria física i mapar-les (en mode només de lectura, E = 0) a l'espai lògic de cada procés, estalviant memòria física de manera significativa.</span>
+<span id="cb1-369"><a href="#cb1-369" aria-label="369"></a></span>
+<span id="cb1-370"><a href="#cb1-370" aria-label="370"></a><span class="fu">## Integració del TLB i la memòria cau {#sec-mv-integracio}</span></span>
+<span id="cb1-371"><a href="#cb1-371" aria-label="371"></a></span>
+<span id="cb1-372"><a href="#cb1-372" aria-label="372"></a>En un sistema amb memòria virtual, cada accés a memòria implica dos passos: traduir l'adreça lògica a física (via TLB) i accedir a la dada (via memòria cau). La manera com s'organitzen aquests dos passos determina el temps d'accés efectiu i la complexitat del disseny.</span>
+<span id="cb1-373"><a href="#cb1-373" aria-label="373"></a></span>
+<span id="cb1-374"><a href="#cb1-374" aria-label="374"></a><span class="fu">### Memòria cau indexada físicament {#sec-mv-cache-fisica}</span></span>
+<span id="cb1-375"><a href="#cb1-375" aria-label="375"></a></span>
+<span id="cb1-376"><a href="#cb1-376" aria-label="376"></a>L'esquema més senzill és la **memòria cau indexada i etiquetada físicament** (*PIPT, physically indexed physically tagged*): primer es tradueix l'adreça lògica amb el TLB i, un cop obtinguda l'adreça física, s'accedeix a la memòria cau amb aquesta adreça.</span>
+<span id="cb1-377"><a href="#cb1-377" aria-label="377"></a></span>
+<span id="cb1-378"><a href="#cb1-378" aria-label="378"></a><span class="co">&lt;!-- fig-mv-pipt: classe `estàndard` (W=680). Diagrama de blocs seqüencial. CPU → [adreça lògica] → TLB → (TLB hit) → [adreça física] → MC → (encert) → Dada. Els blocs TLB i MC estan en sèrie, amb una fletxa horitzontal que passa per tots dos. La memòria principal apareix per sota de la MC com a alternativa en cas de fallada. Colors (paleta svg.md §10): TLB en `.data` (fill #cfe2ff, stroke #084298); MC en heap (fill #d1e7dd, stroke #0a3622); memòria principal en reservada/neutre (fill #f8f9fa, stroke #adb5bd). Caption: "Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en sèrie." --&gt;</span></span>
+<span id="cb1-379"><a href="#cb1-379" aria-label="379"></a></span>
+<span id="cb1-380"><a href="#cb1-380" aria-label="380"></a>L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adreça física identifica unívocament una dada. L'inconvenient és el **temps d'accés**: la memòria cau no pot començar a operar fins que el TLB hagi acabat la traducció, de manera que els dos accessos es fan en sèrie.</span>
+<span id="cb1-381"><a href="#cb1-381" aria-label="381"></a></span>
+<span id="cb1-382"><a href="#cb1-382" aria-label="382"></a><span class="fu">### Memòria cau indexada virtualment {#sec-mv-cache-virtual}</span></span>
+<span id="cb1-383"><a href="#cb1-383" aria-label="383"></a></span>
+<span id="cb1-384"><a href="#cb1-384" aria-label="384"></a>Per reduir la latència, una **memòria cau indexada i etiquetada virtualment** (*VIVT, virtually indexed virtually tagged*) usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense accedir al TLB.</span>
+<span id="cb1-385"><a href="#cb1-385" aria-label="385"></a></span>
+<span id="cb1-386"><a href="#cb1-386" aria-label="386"></a>El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física, poden tenir blocs diferents a la memòria cau per a la mateixa dada. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, trencant la coherència.</span>
+<span id="cb1-387"><a href="#cb1-387" aria-label="387"></a></span>
+<span id="cb1-388"><a href="#cb1-388" aria-label="388"></a><span class="fu">### VIPT: la solució estàndard {#sec-mv-vipt}</span></span>
+<span id="cb1-389"><a href="#cb1-389" aria-label="389"></a></span>
+<span id="cb1-390"><a href="#cb1-390" aria-label="390"></a>La solució adoptada per la pràctica totalitat dels processadors actuals és la **memòria cau indexada virtualment i etiquetada físicament** (*VIPT, virtually indexed physically tagged*). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel**:</span>
+<span id="cb1-391"><a href="#cb1-391" aria-label="391"></a></span>
+<span id="cb1-392"><a href="#cb1-392" aria-label="392"></a><span class="ss">- </span>L'**índex** de la memòria cau s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menor pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).</span>
+<span id="cb1-393"><a href="#cb1-393" aria-label="393"></a><span class="ss">- </span>Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.</span>
+<span id="cb1-394"><a href="#cb1-394" aria-label="394"></a><span class="ss">- </span>Un cop acabats els dos accessos en paral·lel, es compara el PPN obtingut del TLB amb les etiquetes físiques llegides de la memòria cau per determinar si hi ha encert.</span>
+<span id="cb1-395"><a href="#cb1-395" aria-label="395"></a></span>
+<span id="cb1-396"><a href="#cb1-396" aria-label="396"></a><span class="co">&lt;!-- fig-mv-vipt: classe `estàndard` (W=680). Diagrama de blocs amb dos camins paral·lels sortint de la CPU. Camí superior: [adreça lògica] → bits d'índex (desplaçament) → MC (lectura d'etiquetes i dades). Camí inferior: [adreça lògica] → VPN → TLB → PPN. Els dos camins convergeixen en un comparador (=) que confronta el PPN amb les etiquetes llegides de la MC. Si coincideixen: encert → Dada. Si no: fallada → memòria principal. Colors (paleta svg.md §10): camí TLB en `.data` (fill #cfe2ff, stroke #084298); camí MC en heap (fill #d1e7dd, stroke #0a3622); comparador en pila (fill #fff3cd, stroke #664d03). Caption: "Memòria cau VIPT: l'índex de la memòria cau i la traducció del TLB s'executen en paral·lel. L'etiqueta física elimina el problema d'aliàsing." --&gt;</span></span>
+<span id="cb1-397"><a href="#cb1-397" aria-label="397"></a></span>
+<span id="cb1-398"><a href="#cb1-398" aria-label="398"></a>La condició perquè VIPT funcioni sense aliàsing és que l'índex de la memòria cau usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L'índex d'una memòria cau de mida $C$, associativitat $a$ i mida de bloc $B$ ocupa $\log_2(C / (a \cdot B))$ bits. Perquè tots aquests bits pertanyin al desplaçament (els $t = \log_2 T$ bits de menor pes), cal que:</span>
+<span id="cb1-399"><a href="#cb1-399" aria-label="399"></a></span>
+<span id="cb1-400"><a href="#cb1-400" aria-label="400"></a>$$C \leq a \cdot T$$</span>
+<span id="cb1-401"><a href="#cb1-401" aria-label="401"></a></span>
+<span id="cb1-402"><a href="#cb1-402" aria-label="402"></a>on $T$ és la mida de pàgina. Per exemple, amb pàgines de 4 KiB i associativitat 4, la memòria cau L1 pot tenir fins a 16 KiB sense aliàsing. Els processadors actuals respecten sistemàticament aquesta restricció en el disseny de la L1.</span>
+<span id="cb1-403"><a href="#cb1-403" aria-label="403"></a></span>
+<span id="cb1-404"><a href="#cb1-404" aria-label="404"></a>::: {#cau-mv-cache-comparacio .callout-caution}</span>
+<span id="cb1-405"><a href="#cb1-405" aria-label="405"></a><span class="fu">## Comparació dels esquemes d'integració TLB–memòria cau</span></span>
+<span id="cb1-406"><a href="#cb1-406" aria-label="406"></a></span>
+<span id="cb1-407"><a href="#cb1-407" aria-label="407"></a><span class="pp">|</span> Esquema <span class="pp">|</span> Indexació <span class="pp">|</span> Etiqueta <span class="pp">|</span> Avantatge <span class="pp">|</span> Inconvenient <span class="pp">|</span></span>
+<span id="cb1-408"><a href="#cb1-408" aria-label="408"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb1-409"><a href="#cb1-409" aria-label="409"></a><span class="pp">|</span> PIPT <span class="pp">|</span> Física <span class="pp">|</span> Física <span class="pp">|</span> Simple, sense aliàsing <span class="pp">|</span> TLB i MC en sèrie <span class="pp">|</span></span>
+<span id="cb1-410"><a href="#cb1-410" aria-label="410"></a><span class="pp">|</span> VIVT <span class="pp">|</span> Virtual <span class="pp">|</span> Virtual <span class="pp">|</span> Ràpid (sense TLB) <span class="pp">|</span> *Aliasing* <span class="pp">|</span></span>
+<span id="cb1-411"><a href="#cb1-411" aria-label="411"></a><span class="pp">|</span> VIPT <span class="pp">|</span> Virtual <span class="pp">|</span> Física <span class="pp">|</span> Ràpid i sense aliàsing <span class="pp">|</span> Restricció de mida <span class="pp">|</span></span>
+<span id="cb1-412"><a href="#cb1-412" aria-label="412"></a>: {.striped tbl-colwidths="<span class="co">[</span><span class="ot">12,13,13,31,31</span><span class="co">]</span>"}</span>
+<span id="cb1-413"><a href="#cb1-413" aria-label="413"></a></span>
+<span id="cb1-414"><a href="#cb1-414" aria-label="414"></a>VIPT és l'esquema estàndard en els processadors actuals per a la memòria cau L1. Les memòries cau L2 i L3, menys crítiques en latència, usen habitualment PIPT.</span>
+<span id="cb1-415"><a href="#cb1-415" aria-label="415"></a>:::</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
