@@ -41,7 +41,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 ## Operacions lògiques i desplaçaments
 
-Les operacions de desplaçament i lògiques bit a bit permeten manipular bits individuals sense recórrer a operacions aritmètiques costoses. En aquest exercici les combinareu per construir una màscara de bits de mida variable en temps d'execució (@nte-instruccions-desplacament-logic, @nte-instruccions-logiques).
+Les operacions de desplaçament i lògiques bit a bit permeten construir màscares i manipular bits individuals. En aquest exercici les combinareu per construir una màscara de bits de mida variable en temps d'execució (@nte-instruccions-desplacament-logic, @nte-instruccions-logiques).
 
 ---
 
@@ -84,7 +84,7 @@ La clau és construir la màscara en temps d'execució: `1 << X` produeix un `1`
 
 ## Sentències condicionals
 
-Una sentència `if-then-else` aniuada es tradueix aplicant el patró de @sec-if-then-else de manera recursiva: cada `if` interior es tracta com una sentència del cos del `else` exterior. L'avaluació lazy de `&&` i `||` (@imp-ec-lazy-evaluation) s'implementa encadenant salts condicionals sense avaluar la segona condició quan la primera ja determina el resultat.
+Una sentència `if-then-else` aniuada es tradueix aplicant el patró de @sec-if-then-else de manera recursiva: cada `if` interior es tracta com una sentència del cos de l'`else` exterior. L'avaluació gandula (*lazy*) de `&&` i `||` (@imp-ec-lazy-evaluation, @sec-avaluacio-lazy-encadenats) s'implementa encadenant salts condicionals sense avaluar la segona condició quan la primera ja determina el resultat.
 
 ---
 
@@ -181,7 +181,7 @@ El patró de traducció d'un `while` (@sec-bucles) consisteix a avaluar la condi
 ::: {#exr-compta-caracter}
 ## `s3_3_1.s`
 
-La cadena de caràcters `w` conté 31 dígits numèrics seguits del sentinella `'\0'`. Escriviu un programa RV32I que compti quantes vegades apareix el caràcter `'4'` a `w` i deixi el resultat al registre `s0`.
+La cadena de caràcters `w` conté 31 dígits decimals seguits del sentinella `'\0'`. Escriviu un programa RV32I que compti quantes vegades apareix el caràcter `'4'` a `w` i deixi el resultat al registre `s0`.
 
 ```{.c filename="s3_3_1.c"}
 char w[32] = "4444185720444938167204449251044";
@@ -197,7 +197,7 @@ void main() {
 }
 ```
 
-**Nota**: useu un punter (`t1`) en lloc d'un índex per recórrer la cadena: és el patró que reapareixerà a l'exercici de subrutines.
+**Nota**: useu un punter (`t1`) en lloc d'un índex per recórrer la cadena: és un patró que reapareixerà, amb variacions, a l'exercici de subrutines.
 :::
 
 ---
@@ -562,9 +562,7 @@ El programa conté tres errors, identificats per les marques (B), (C) i (D):
 
 **Error 1 — (B) i (E): `ra` no es desa ni es restaura.**
 
-`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, no torna a `_start` sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica`.
-
-El símptoma observable és immediat: l'epíleg ja ha restaurat `s0` amb el valor que tenia en entrar a `codifica` —el de `_start`, que no l'inicialitza mai i per tant val 0—, de manera que la primera instrucció reexecutada, `sb a0, 0(s0)`, intenta escriure a l'adreça `0x00000000`. RARS avorta amb «`address out of range 0x00000000`».
+`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, no torna a `_start` sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica` i el programa no acaba correctament.
 
 Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
 
