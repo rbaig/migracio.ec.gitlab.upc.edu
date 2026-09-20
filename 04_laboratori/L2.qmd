@@ -42,7 +42,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 Els tipus de dades bàsics del llenguatge C tenen una correspondència directa amb les directives de declaració de variables globals en RV32I. Recordeu les taules de mides i directives de T2 (@imp-variables-mida-naturals, @imp-variables-mida-enters, @nte-directives-alineacio-inicialitzacio).
 
-Quan es declaren diverses variables globals consecutivament, l'assemblador insereix automàticament **bytes de farciment** (*padding*) entre elles per garantir les restriccions d'alineació (@sec-memoria-alineacio). A més, els valors s'emmagatzemen en ordre *little-endian* (@sec-endianness): el byte de menor pes s'emmagatzema a l'adreça més baixa.
+Quan es declaren diverses variables globals consecutivament, l'assemblador insereix automàticament **bytes de farciment** (*padding*) entre elles per respectar les restriccions d'alineació (@sec-memoria-alineacio). A més, els valors s'emmagatzemen en ordre *little-endian* (@sec-endianness): el byte de menys pes s'emmagatzema a l'adreça més baixa.
 
 ---
 
@@ -82,7 +82,7 @@ ff: .half  -1
 
 Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, ompliu la taula de distribució de variables:
 
-| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Padding [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `aa` |  |  |  |  |  |
 | `bb` |  |  |  |  |  |
@@ -92,7 +92,7 @@ Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, 
 | `ff` |  |  |  |  |  |
 : {.striped .hover}
 
-Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Indiqueu cada etiqueta a la posició que li correspon i marqueu amb `--` els bytes de *padding*. Deixeu en blanc els bytes lliures (no inicialitzats).
+Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Indiqueu cada etiqueta a la posició que li correspon i marqueu amb `--` els bytes de padding. Deixeu en blanc els bytes lliures (no inicialitzats).
 
 ::: {layout="[50,-1,50]"}
 ::: {}
@@ -138,7 +138,7 @@ Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Ind
 :::
 
 ```{.markdown filename="s2_1_2.md"}
-| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Padding [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `aa` |  |  |  |  |  |
 | `bb` |  |  |  |  |  |
@@ -177,7 +177,7 @@ RARS 0xfea800fb 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x0000000
 
 **Solució correcta (comportament GCC/MARS — alineació de `.dword` a 8 bytes)**:
 
-| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Padding [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `aa` | `char` | 1 | 1 | `0x10010000` |  |
 | `bb` | `short` | 2 | 2 | `0x10010002` | 1 |
@@ -234,7 +234,7 @@ RARS 0xfea800fb 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x0000000
 
 **Solució alternativa (comportament RARS — alineació de `.dword` a 4 bytes)**:
 
-| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Padding [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `aa` | `char` | 1 | 1 | `0x10010000` |  |
 | `bb` | `short` | 2 | 2 | `0x10010002` | 1 |
@@ -340,10 +340,10 @@ El byte de menor adreça ocupa la posició de la dreta; el de major adreça, la 
 
 | Adreça | Valor RARS | `+0` | `+1` | `+2` | `+3` | Variable(s) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, *padding*, `bb` |
+| `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, padding, `bb` |
 | `0x10010004` | `0xfffffffd` | `0xFD` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 0–3) |
 | `0x10010008` | `0xffffffff` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 4–7) |
-| `0x1001000C` | `0x000000a0` | `0xA0` | `--` | `--` | `--` | `dd`, *padding* |
+| `0x1001000C` | `0x000000a0` | `0xA0` | `--` | `--` | `--` | `dd`, padding |
 | `0x10010010` | `0x000016a7` | `0xA7` | `0x16` | `0x00` | `0x00` | `ee` |
 | `0x10010014` | `0x0000ffff` | `0xFF` | `0xFF` |  |  | `ff` |
 | `0x10010018` | `0x00000000` |  |  |  |  |  |
@@ -387,7 +387,7 @@ pdada: .word dada
 Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els blancs de les vinyetes i calculeu el valor de cada expressió C:
 
 - `dada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__`.
-- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de *padding*).
+- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de padding).
 
 | Expressió C | Valor (hex) |
 | :--- | :--- |
@@ -401,7 +401,7 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 ```{.markdown filename="s2_2_1.md"}
 
 - `dada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__`.
-- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de *padding*).
+- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de padding).
 
 | Expressió C | Valor (hex) |
 | :--- | :--- |
@@ -418,7 +418,7 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 ::: {#sol-punters-valors}
 
 - `dada` és un `short` (2 bytes, alineació 2), s'emmagatzema a `0x10010000`.
-- `pdada` és un punter (4 bytes, alineació 4), s'emmagatzema a `0x10010004` (2 bytes de *padding*).
+- `pdada` és un punter (4 bytes, alineació 4), s'emmagatzema a `0x10010004` (2 bytes de padding).
 
 | Expressió C | Valor (hex) | Explicació |
 | :--- | :--- | :--- |
@@ -641,7 +641,7 @@ Una **cadena de caràcters** (*string*) és un vector de caràcters (`char`) que
 ::: {#exr-strings-ascii}
 ## `s2_4_1.s`
 
-El vector `vec` conté els dígits decimals del nombre `19865`, ordenats de menor a major pes. El programa següent converteix cada dígit a la seva representació ASCII i l'emmagatzema a la cadena `cadena`, ordenat de major a menor pes per poder-lo imprimir correctament.
+El vector `vec` conté els dígits decimals del nombre 19865, ordenats de menys a més pes. El programa següent converteix cada dígit a la seva representació ASCII i l'emmagatzema a la cadena `cadena`; els caràcters queden ordenats de més a menys pes per poder imprimir el nombre correctament.
 
 ```{.c filename="s2_4_1.c"}
 char         cadena[6];
@@ -659,7 +659,7 @@ void main() {
 
 Traduïu el programa a RV32I. La variable `i` s'emmagatzema al registre `s0`.
 
-**Nota**: la conversió de dígit a caràcter ASCII consisteix a sumar el valor del dígit al codi ASCII de `'0'` (`0x30`). Consulteu el @cau-rars-vista-memoria per interpretar el contingut de `cadena` a la vista de memòria de RARS.
+**Nota**: la conversió de dígit a caràcter ASCII consisteix a sumar el valor del dígit al codi ASCII de `'0'` (`0x30`). Per interpretar el contingut de `cadena` a la vista de memòria de RARS, vegeu @cau-rars-vista-memoria.
 :::
 
 ---
