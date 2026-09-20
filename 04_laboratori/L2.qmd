@@ -353,9 +353,18 @@ El byte de menor adreça ocupa la posició de la dreta; el de major adreça, la 
 
 ---
 
-## Pseudoinstrucció `la` i `li`
+## Pseudoinstruccions `la` i `li`
 
-TODO
+Els programes d'aquesta sessió operen amb variables globals emmagatzemades en memòria. Com que l'únic mode d'adreçament per accedir-hi en RV32I és el mode base + desplaçament (@sec-operands-base-desplacament), abans de cada accés cal carregar l'adreça de la variable en un registre. Per fer-ho s'usen dues pseudoinstruccions (@sec-pseudoinstruccions), que l'assemblador expandeix en una o dues instruccions reals en el moment d'assemblar:
+
+- **`la rd, etiqueta`** (***load address***, @nte-pseudoinstruccio-la) carrega a `rd` l'**adreça** associada a `etiqueta`. Per exemple, `la t0, vec` deixa a `t0` l'adreça de `vec`.
+- **`li rd, valor`** (***load immediate***, @nte-pseudoinstruccio-li) carrega a `rd` un **valor immediat** de fins a 32 bits. Per exemple, `li t1, 10`.
+
+::: {#cau-rars-la-offset .callout-caution}
+## RARS — `la` amb desplaçament
+
+A la teoria i als exàmens d'**EC** s'admet la sintaxi `la rd, etiqueta+desplaçament`, però **RARS no la suporta** (@imp-ec-la-offset): al laboratori cal substituir-la sempre per la parella `la` + `addi`.
+:::
 
 
 ## Punters
@@ -415,10 +424,16 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 | :--- | :--- | :--- |
 | `&dada` | `0x10010000` | Adreça de `dada` |
 | `&pdada` | `0x10010004` | Adreça de `pdada` |
-| `dada` | `0x00000003` | Contingut de `dada` |
+| `dada` | `0x0003` | Contingut de `dada` (un `short`, 2 bytes) |
 | `pdada` | `0x10010000` | Contingut de `pdada` (adreça de `dada`) |
-| `*pdada` | `0x00000003` | Contingut de l'adreça apuntada per `pdada` |
+| `*pdada` | `0x0003` | Contingut de l'adreça apuntada per `pdada` (un `short`) |
 : {.striped .hover}
+
+En carregar `dada` (o `*pdada`) en un registre amb `lh`, el valor s'estén en signe a 32 bits: `0x00000003`.
+
+::: {.callout-tip title="Comprovació pràctica"}
+Assembleu la declaració a RARS: a la vista de memòria, el word a `0x10010000` mostra `0x00000003` (el `short` `dada` seguit de 2 bytes de padding) i el word a `0x10010004` mostra `0x10010000` (el punter `pdada`).
+:::
 :::
 
 ---
