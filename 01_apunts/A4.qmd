@@ -644,6 +644,29 @@ k = mat[3][5];
 ```
 :::
 
+::: {#tip-matriu-pas-referencia .callout-tip}
+## Pas d'una matriu per referència
+
+Quan una matriu es passa com a paràmetre, el que es passa és la seva **adreça base**, igual que amb un vector (@tip-exemple-pas-vector): el paràmetre és, de fet, un punter. L'única diferència respecte a l'accés a una matriu global és que l'adreça base **arriba en un registre d'argument** en lloc d'obtenir-se amb `la`. Per això el tipus del paràmetre ha de declarar el nombre de columnes (`int m[][NC]`) i no pot ser `int m[][]`: sense `NC` no es pot calcular el salt d'una fila a la següent, que és el `i*NC` de la fórmula.
+
+```{.c filename="C"}
+int f(int m[][NC], int i, int j) {
+    return m[i][j];
+}
+```
+
+Amb `@m` a `a0`, `i` a `a1` i `j` a `a2`, l'accés a `m[i][j]` aplica la mateixa fórmula que a @tip-matriu-acces-ij, però prenent l'adreça base del registre d'argument `a0` en comptes de carregar-la amb `la`:
+
+```{.s filename="RV32IM"}
+        li      t0, NC              # NC = nombre de columnes
+        mul     t0, a1, t0          # i*NC
+        add     t0, t0, a2          # i*NC + j
+        slli    t0, t0, 2           # (i*NC + j)*4
+        add     t0, a0, t0          # @m[i][j] = @m + (i*NC + j)*4
+        lw      a0, 0(t0)           # return m[i][j]
+```
+:::
+
 ## Optimitzacions de bucle {#sec-optimitzacions-bucle}
 
 Els bucles que recorren vectors i matrius sovint admeten optimitzacions que redueixen el nombre d'instruccions executades per iteració. Com s'ha vist a @sec-extraccio-invariants, l'extracció d'invariants és un prerequisit implícit que cal aplicar sempre abans de qualsevol altra optimització.
