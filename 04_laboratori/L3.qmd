@@ -238,7 +238,7 @@ El resultat ha de ser `s0 = 12`. El patró fonamental és: carregar el caràcter
 
 ## Subrutines
 
-En una subrutina multinivell cal preservar `ra` i els registres segurs (`s0`–`s11`) que continguin valors generats abans d'una crida i usats després (@sec-multinivell-pila, @cau-regla-registres-segurs). Les variables locals estructurades (vectors) s'han d'allotjar al bloc d'activació (@nte-abi-variables-locals). Els dos exercicis d'aquesta secció s'han de fer en ordre: el segon reutilitza la traducció del primer.
+En una subrutina multinivell, els valors generats abans d'una crida i usats després s'han d'assignar a registres segurs (`s0`–`s11`); la subrutina ha de desar i restaurar aquests registres i `ra` (@sec-multinivell-pila, @cau-regla-registres-segurs). Les variables locals estructurades (vectors) s'han d'allotjar al bloc d'activació (BA) de la subrutina (@nte-abi-variables-locals). Els dos exercicis d'aquesta secció s'han de fer en ordre: el segon reutilitza la traducció del primer.
 
 ---
 
@@ -260,7 +260,7 @@ char update(int *h, char i, char imax) {
 Traduïu `update` a RV32I. Tingueu en compte:
 
 - És una subrutina **uninivell**: no cal desar `ra`.
-- Determineu quins registres, si n'hi ha, necessiten ser segurs abans d'escriure cap instrucció.
+- Determineu quins valors, si n'hi ha, cal assignar a registres segurs abans d'escriure cap instrucció.
 - El resultat es retorna a `a0` (@nte-abi-pas-parametres).
 :::
 
@@ -562,7 +562,9 @@ El programa conté tres errors, identificats per les marques (B), (C) i (D):
 
 **Error 1 — (B) i (E): `ra` no es desa ni es restaura.**
 
-`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, salta a una adreça incorrecta i el programa falla.
+`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, no torna a `_start` sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica`.
+
+El símptoma observable és immediat: l'epíleg ja ha restaurat `s0` amb el valor que tenia en entrar a `codifica` —el de `_start`, que no l'inicialitza mai i per tant val 0—, de manera que la primera instrucció reexecutada, `sb a0, 0(s0)`, intenta escriure a l'adreça `0x00000000`. RARS avorta amb «`address out of range 0x00000000`».
 
 Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
 
