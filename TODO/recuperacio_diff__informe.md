@@ -190,7 +190,102 @@ dels identificadors ho confirma independentment.
 
 ### 2. `L3_revisio_interna/` — GRUP 1
 
-*(pendent en aquesta sessió — vegeu «Pendent immediat»)*
+Premissa del grup 1 verificada:
+
+- `04_laboratori/L3.qmd`: darrer commit `fe53cfc` (2026-07-13). Base intacta.
+- `CLAUDE.md`: darrer commit `614f576` (2026-07-12). Base intacta. Marcador
+  `zobacz` encara present.
+- `13_contrib.qmd`: darrers commits `025b580` i `3debb1e` (2026-09-19, regla
+  d'ordre de `_start`). **Divergit**, com estava previst.
+
+**Cap hunk dels extrets toca l'ordre de `_start` a `L3.qmd`.** La Decisió 1
+d'aquell xat no forma part dels canvis recuperats, tal com es va anticipar.
+
+#### `CLAUDE.md` — 1 hunk, categoria A
+
+| # | Línia | Actual | Proposat |
+| :--- | :--- | :--- | :--- |
+| CM-1 | 79 | `Tasques vives pendents: zobacz \`TODO.md\`.` | `... vegeu \`TODO.md\`.` |
+
+`zobacz` és un mot polonès infiltrat al text català. `git log -S`: cap commit
+n'ha tocat mai la forma correcta en aquest punt.
+
+#### `04_laboratori/L3.qmd` — 10 hunks, tots categoria A
+
+Discriminador `git log -S` aplicat als 12 fragments nous: **cap commit**. Cap
+contingut ha existit mai al repositori.
+
+Tots els identificadors nous que el text referencia existeixen a `A3.qmd`:
+`nte-pseudoinstruccions-salt-condicional`, `nte-pseudoinstruccions-salt-zero`,
+`sec-avaluacio-lazy-encadenats`.
+
+| # | Línia | Naturalesa | Criticitat |
+| :--- | :--- | :--- | :--- |
+| L3-1 | 32 | Taula de repàs: la fila de salts condicionals no esmentava les pseudoinstruccions (`bgt`, `ble`, `beqz`); s'hi afegeixen amb les dues referències noves | Alta (cobertura) |
+| L3-2 | 241 | **Correcció conceptual**: «cal preservar els registres segurs que continguin valors...» → «els *valors* generats abans d'una crida i usats després s'han d'assignar a registres segurs; la subrutina ha de desar i restaurar aquests registres i `ra`». Alinea amb A3 §`sec-determinacio-registres-segurs`, que parla de determinar **dades**, no registres; i separa la regla de `ra` (caller-saved) dels `s0`–`s11` | **Màxima (conceptual)** |
+| L3-3 | 263 | Coherent amb L3-2: «quins registres necessiten ser segurs» → «quins valors cal assignar a registres segurs» | Alta |
+| L3-4 | 565 | **Precisió tècnica** a l'Error 1 de `#sol-depuracio`: «salta a una adreça incorrecta i el programa falla» → descriu el comportament real (torna a la instrucció següent a `jal ra, g`, l'execució reprèn dins del bucle de `codifica` i el programa no acaba correctament). Verificat contra el codi del bloc: `ra` conté l'adreça de `sb a0, 0(s0)` | **Alta (rigor)** |
+| L3-5 | 366 | `# update: vegeu @sol-update` → `vegeu la solució de s3_4_1.s`. La línia és **dins d'un bloc de codi** `.s`, on Quarto no resol les referències creuades: es renderitzaria literalment `@sol-update`, i a més és un comentari que l'alumne copia al seu fitxer | **Alta (ref. inoperant)** |
+| L3-6 | 395 | Mateix cas: `← mateix patró que exr-compta-caracter` dins d'un bloc de codi → `mateix patró que s3_3_1.s` | Alta |
+| L3-7 | 87 | «avaluació lazy» → «avaluació gandula (*lazy*)»; «del cos del `else`» → «de l'`else`» (apostrofació); afegeix `@sec-avaluacio-lazy-encadenats` | Mitjana (terminologia) |
+| L3-8 | 333 | El «nexe» afirmava «exactament el mateix patró de recorregut amb punter», però el segon `for` de `moda` usa **índex explícit**, no punter. Es corregeix a «mateix patró de recorregut seqüencial caràcter a caràcter (ara amb índex explícit en lloc de punter)» | **Alta (error factual)** |
+| L3-9 | 184, 200 | «dígits numèrics» → «dígits decimals»; «és el patró que reapareixerà» → «és un patró que reapareixerà, amb variacions» (coherent amb L3-8) | Mitjana |
+| L3-10 | 44 | Redacció: «sense recórrer a operacions aritmètiques costoses» (afirmació de rendiment no justificada) → «permeten construir màscares i manipular bits individuals» | Baixa |
+
+#### `13_contrib.qmd` — 6 hunks, classificació sencera
+
+El parany funciona exactament com estava descrit. Discriminador per a tots:
+
+| # | Hunk | `git log -S` | Categoria |
+| :--- | :--- | :--- | :--- |
+| C-1 | Elimina la regla **«`_start` ha de ser la primera etiqueta de `.text`»** | `3debb1e` (2026-09-19) | **B** — feina posterior. L'extret de juliol no la pot contenir. NO aplicar |
+| C-2 | Elimina la fila `padding → farciment` de la taula de terminologia | `ca6c01a` (L6 Fase B) | **B** — el repositori té contingut més nou |
+| C-3 | Elimina el paràgraf **«Manlleus en cursiva als títols de secció»** i en simplifica la fila de la taula | `ca6c01a` (L6 Fase B) | **B** — íd. |
+| C-4 | Elimina la fila de branca `revisio/<grup>-t<N>-t<M>` i el seu paràgraf | `99c8543` (2026-09-19) | **B** — feina posterior |
+| C-5 | `bibliografia.qmd` → `15_bibliografia.bib` (§Exemples d'aplicació) | vegeu sota | **A** (regressió) |
+| C-6 | `bibliografia.qmd` → `15_bibliografia.bib` (§Bibliografia) | vegeu sota | **A** (regressió) |
+
+**Quatre hunks de sis són categoria B.** Confirma l'advertència central: en un
+fitxer divergit, la majoria de diferències són feina posterior.
+
+---
+
+## 🔴 TROBALLA FORA D'ABAST — reversió accidental a `13_contrib.qmd` (12/07)
+
+Els hunks C-5 i C-6 no són una millora del xat de L3: són la **supervivència
+d'un text correcte que el repositori va perdre**. Cronologia reconstruïda amb
+`git log -S` i `git show`:
+
+| Data | Commit | Què va passar |
+| :--- | :--- | :--- |
+| 12/07 | `614f576` «Fase C: Sanejament dels fitxers operacionals» | Corregeix **deliberadament** `bibliografia.qmd` → `15_bibliografia.bib`. Consta al missatge del commit: «actualitzat references sigles.md→12_sigles_simbols.qmd, bibliografia.qmd→15_bibliografia.bib» |
+| 12/07 (h. després) | `4f973d5` «12_sigles_simbols.qmd afegida secció de notació» | **Desfà `614f576` a `13_contrib.qmd`**. El commit inclou un `A3.qmd_` de 2110 línies: va arrossegar fitxers de treball i una còpia antiga del fitxer |
+| Juliol | xat L3 | Treballa sobre una còpia que encara tenia la correcció bona. D'aquí que l'extret la conservi |
+
+**L'estat actual encara arrossega la reversió.** No es va reparar mai:
+
+| Contingut perdut el 12/07 | Present avui a `13_contrib.qmd`? |
+| :--- | :--- |
+| §«Política de generació SVG» (sencera) | ❌ 0 ocurrències |
+| §«Criteris de generació de l'slug» | ❌ 0 ocurrències |
+| `15_bibliografia.bib` (2 llocs) | ❌ 0 ocurrències — diu `bibliografia.qmd`, **que no existeix** |
+| Errata «l'esclat» (per «l'escalat»), «e.g.» | ⚠️ encara present |
+| §«Sigles» → «Sigles, símbols i notació» | ✅ recuperat |
+
+Conseqüències verificades:
+
+- `15_bibliografia.bib` **existeix** i `_quarto.yml:213` l'hi apunta
+  (`bibliography: 15_bibliografia.bib`); `bibliografia.qmd` **no existeix**.
+  `13_contrib.qmd` documenta un fitxer inexistent en dos llocs.
+- `CLAUDE.md:93` remet a «`13_contrib.qmd §Etiquetes `{#sec-}` a les
+  capçaleres`» i `CLAUDE.md:135` a «`13_contrib.qmd §Figures i material
+  gràfic`». **Cap de les dues seccions existeix** a `13_contrib.qmd`: les va
+  eliminar la reversió.
+
+Això depassa l'abast de la recuperació de diffs (és una pèrdua del repositori,
+no un deliverable no integrat) i **queda pendent de decisió de l'usuari**.
+Els hunks C-5 i C-6 en són només la punta visible: reparar-los sense restituir
+les seccions deixaria `CLAUDE.md` apuntant igualment al buit.
 
 ### 3. `L6_revisio_interna/` — GRUP 2 (control)
 
@@ -212,9 +307,9 @@ dues versions extretes i el repositori s'ha de fer allà.
 | :--- | :--- | :--- |
 | `L2_revisio_interna/` | `L2.qmd` | ✅ **Aplicat** (`1489c84`, `254509b`, `12bac2c`) |
 | `L2_revisio_interna/` | `A2.qmd` | ✅ **Aplicat** (`1489c84`) |
-| `L3_revisio_interna/` | `L3.qmd` | ⏳ pendent de classificar |
-| `L3_revisio_interna/` | `CLAUDE.md` | ⏳ pendent de classificar |
-| `L3_revisio_interna/` | `13_contrib.qmd` | ⏳ pendent (classificació sencera A/B/C/D) |
+| `L3_revisio_interna/` | `L3.qmd` | 🔍 classificat: 10 hunks, tots A — pendent d'aplicar |
+| `L3_revisio_interna/` | `CLAUDE.md` | 🔍 classificat: 1 hunk A — pendent d'aplicar |
+| `L3_revisio_interna/` | `13_contrib.qmd` | 🔍 classificat: 4 B + 2 A (regressió, fora d'abast) |
 | `L6_revisio_interna/` | `L6.qmd` | ✅ tancat: idèntic (control superat) |
 | `L6_revisio_interna/` | `A7.qmd` | ✅ tancat: idèntic |
 | `L6_revisio_interna/` | `13_contrib.qmd` | ⏳ pendent (classificació sencera) |
@@ -222,16 +317,23 @@ dues versions extretes i el repositori s'ha de fer allà.
 
 ## Pendent immediat (resta de la sessió A)
 
-1. `L3_revisio_interna/L3.qmd` (22 lín.) — grup 1, categoria A per premissa.
-2. `L3_revisio_interna/CLAUDE.md` (2 lín.) — grup 1, categoria A per premissa.
-3. `L3_revisio_interna/13_contrib.qmd` (13 lín.) — **classificació sencera A/B/C/D**
-   (el fitxer va rebre feina el 19/09 i ha divergit).
-4. `L6_revisio_interna/13_contrib.qmd` (4 lín.) — classificació sencera.
-5. `L6_revisio_interna/A7.qmd` — idèntic, tancat.
-6. `L6_revisio_interna/L6.qmd` — idèntic, control superat, tancat.
+1. **Decisió de l'usuari** sobre els candidats A de L3 (11 hunks: 10 a
+   `L3.qmd`, 1 a `CLAUDE.md`) — pendents d'aplicar.
+2. **Decisió de l'usuari** sobre la reversió accidental del 12/07 a
+   `13_contrib.qmd` (vegeu la troballa fora d'abast).
+3. `L6_revisio_interna/13_contrib.qmd` (4 lín.) — classificació sencera.
+4. `L6_revisio_interna/A7.qmd` — idèntic, tancat.
+5. `L6_revisio_interna/L6.qmd` — idèntic, control superat, tancat.
 
 **Recordatori explícit**: si a `L6.qmd` hi apareguessin candidats A, NO
 s'apliquen — voldria dir que falla la classificació. No és el cas: és idèntic.
+
+## Exclòs d'aquesta feina (confirmat)
+
+La correcció de l'ordre de `_start` a `s3_4_2.s` (línia 368) i al bloc
+`L3:490` era la Decisió 1 del xat de L3, mai resposta. **No forma part dels
+canvis recuperats**: cap hunk dels extrets de `L3.qmd` hi toca. Va en una
+tasca a part.
 
 ---
 
