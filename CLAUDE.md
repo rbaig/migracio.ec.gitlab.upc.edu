@@ -76,7 +76,7 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
 - **`E3.qmd` i `S3.qmd`** — revisió interna completada. Encaix T2↔T3 en terminologia caller-saved/callee-saved (vegeu `TODO.md §T3`).
-- **La resta de fitxers** (`E1.qmd`–`E2.qmd`, `E4.qmd`–`E9.qmd` i `S1.qmd`–`S2.qmd`, `S4.qmd`–`S9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Ax.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic. Tasques vives pendents: zobacz `TODO.md`.
+- **La resta de fitxers** (`E1.qmd`–`E2.qmd`, `E4.qmd`–`E9.qmd` i `S1.qmd`–`S2.qmd`, `S4.qmd`–`S9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Ax.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic. Tasques vives pendents: vegeu `TODO.md`.
 - Tasca prèvia opcional (Claude Code): substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web.
 
 #### Laboratori (`L1`–`L6`)
