@@ -250,6 +250,167 @@ fitxer divergit, la majoria de diferències són feina posterior.
 
 ---
 
+### APLICAT — L3, CLAUDE.md i C-5/C-6 tancats (2026-09-20)
+
+| Commit | Contingut |
+| :--- | :--- |
+| `f136762` | L3-2, L3-3, L3-4 (conceptuals) |
+| `c52538a` | L3-1, L3-5, L3-6, L3-8 (referències i nexe) |
+| `7f0703c` | L3-7, L3-9, L3-10 (redacció) |
+| `0951e74` | `CLAUDE.md`: `zobacz` → `vegeu` |
+| `8f363d2` | `13_contrib.qmd`: C-5 i C-6 (nom del fitxer de bibliografia) |
+| `b6c8124` | Reordenació de `_start` a `#exr-depuracio` (vegeu sota) |
+| `8b9f82d` | **Restauració** del paràgraf del símptoma observable (vegeu CAS 2) |
+
+**L3-4 ampliat a petició de l'usuari.** El text aprovat afegeix el símptoma
+observable a la causa, perquè en un exercici de depuració val tant com la
+causa: l'epíleg ja ha restaurat `s0` amb el valor heretat de `_start` (0), de
+manera que el `sb a0, 0(s0)` reexecutat escriu a `0x00000000` i RARS avorta
+amb «`address out of range 0x00000000`».
+
+**Estat verificat a l'arbre de treball** (no al commit que ho va introduir):
+el paràgraf **hi és**, a `04_laboratori/L3.qmd:567`, i arriba a l'HTML
+renderitzat. Va estar absent entre `7f0703c` i `8b9f82d`; vegeu CAS 2.
+
+⚠️ **`L3.qmd` NO ha de ser idèntic a l'extret**, i no ho és: hi vam afegir
+contingut acordat durant la revisió (el paràgraf del símptoma). La igualtat
+amb l'extret seria, en aquest fitxer, el símptoma de l'error.
+
+#### Reordenació de `_start` a `#exr-depuracio` — autoritzada i executada
+
+L'exclusió d'aquest bloc es va revocar: la posició de `_start` havia deixat
+de ser una decisió oberta, perquè la regla «`_start` ha de ser la primera
+etiqueta de `.text`» és a `13_contrib.qmd` des del 19/09. Reordenació
+mecànica, i el text de L3-4 en depenia.
+
+**Descoberta durant la verificació**: amb l'ordre antic (`g`, `codifica`,
+`_start`), RARS començava a executar per `g` amb `a1 = 0` i avortava a la
+primera instrucció del programa. **Cap dels tres errors deliberats no
+arribava a manifestar-se**, i el símptoma que descriu l'Error 1 era
+inobservable.
+
+Verificat a RARS 1.6 real (`rars1_6.jar`), tres execucions:
+
+| Cas | Resultat |
+| :--- | :--- |
+| Ordre antic | `line 11` (`lb t0, 0(a1)`, dins de `g`), `at 0x00400000: address out of range 0x00000000` |
+| Ordre nou | `line 47` (`sb a0, 0(s0)`), `at 0x00400074: address out of range 0x00000000` — el símptoma de l'Error 1 |
+| Control, tres errors corregits | `Program terminated by calling exit` |
+
+#### Verificació post-aplicació
+
+- `make render` complet: **cap warning**; cap `?@` a `_book/`.
+- `python3 25_scripts/verifica_laboratoris.py`: **1 error E1**, no 2.
+  - ✅ `L3:490` ha desaparegut de la llista d'E1: ara consta com a
+    `ASSEMBLA / OK`, amb l'excepció d'execució registrada com a informació
+    (`line 47 ... 0x00400074`), que és el comportament esperat d'un exercici
+    de depuració amb tres errors deliberats.
+  - ⏳ Queda `s3_4_2.s` línia 368 («primera etiqueta després de `.text` és
+    `moda:`, no `_start:`»), **fora d'abast per decisió de l'usuari**.
+
+**Nota per a l'auditoria**: el verificador tracta com a E1 el que en un
+exercici de depuració és el comportament esperat. En aquest cas s'ha resolt
+sol en reordenar, però la qüestió de fons —que el script no distingeix un
+programa que falla per disseny d'un que falla per error— queda oberta. No
+s'ha tocat el script.
+
+### 3. `L6_revisio_interna/` — GRUP 2 (control)
+
+**Control superat.** `L6.qmd` és idèntic al repositori: la classificació no
+produeix falsos positius. `A7.qmd`, també idèntic. Cap candidat A, cap
+aturada necessària.
+
+#### `13_contrib.qmd` — 4 hunks, tots categoria B
+
+| # | Hunk | `git log -S` | Categoria |
+| :--- | :--- | :--- | :--- |
+| L6-C1 | Elimina la regla d'ordre de `_start` | `3debb1e` (19/09) | **B** |
+| L6-C2 | `15_bibliografia.bib` → `bibliografia.qmd` (§Exemples) | `8f363d2` (avui) | **B** — sentit invers |
+| L6-C3 | `15_bibliografia.bib` → `bibliografia.qmd` (§Bibliografia) | `8f363d2` (avui) | **B** — íd. |
+| L6-C4 | Elimina la branca `revisio/<grup>-t<N>-t<M>` | `99c8543` (19/09) | **B** |
+
+L6-C2 i L6-C3 van **en sentit invers**: l'extret de L6 duu la forma
+**dolenta** (`bibliografia.qmd`), perquè és posterior a la reversió del 12/07
+i en va heretar l'error.
+
+#### Datació dels extrets per l'estat de `13_contrib.qmd`
+
+Comparació de les cinc versions extretes del fitxer:
+
+| Extret | `bibliografia.qmd` | `15_bibliografia.bib` | §Política SVG | §Criteris slug |
+| :--- | :---: | :---: | :---: | :---: |
+| `L3_revisio_interna` | 0 | **2** | 0 | 0 |
+| `L6_revisio_interna` | 2 | 0 | 0 | 0 |
+| `baixat_EC_A3_E3_S3` | 2 | 0 | 0 | 0 |
+| `baixat_EC_A4_E4_S4` | 2 | 0 | 0 | 0 |
+| `baixat_T9-PE_T9` | 2 | 0 | 0 | 0 |
+
+Dues conclusions:
+
+1. **L'extret de L3 és l'únic que duu la versió bona** de la bibliografia.
+2. **Cap extret conserva la §Política de generació SVG ni els criteris
+   d'slug**: tots són posteriors a la reversió del 12/07. La restauració
+   d'aquelles dues seccions només podia venir de `git show 614f576`.
+
+### REPARACIÓ ÚNICA DE `13_contrib.qmd` — EXECUTADA (`ca9c701`)
+
+`+51 / −24`, més el callout de discrepància i la convenció de commits.
+Tot el text restaurat es va **verificar contra l'estat actual** del
+repositori abans d'aplicar-lo, no copiar a cegues.
+
+| # | Bloc | Detall |
+| :--- | :--- | :--- |
+| R1 | §Política de generació SVG | Restaurada de `614f576`. Verificat que `gen_dark.py`, `gen_regs.py`, `registres.toml` i `svg.md` existeixen. **Actualitzada**: el text del 12/07 no podia conèixer `gen_crops.py` (13/07) ni esmentava `norm_font.py`; el flux enumera ara els quatre scripts reals |
+| R2 | Fila Graphviz | Redactada **de nou**: ni la versió actual ni la del 12/07 coincidien amb el disc. Taula a 4 columnes (`.gv` / SVG / generats / contingut) |
+| R3 | Errata | `l'esclat` → `L'escalat`, `e.g.` → `p. ex.` |
+| R4 | §Etiquetes `{#sec-}` | Restaurada amb els criteris 1–7 i les excepcions. **`CLAUDE.md:93` ja no apunta al buit.** S'hi treu «(aplicats a `A4.qmd`)», nota de progrés de juliol |
+| R5 | Quatre `<!-- TODO -->` | Comprovat un a un que tots quatre són a `TODO.md` (línies 130, 131, 132) abans de treure'ls |
+| R6 | §IAs | Llista duplicada → remissió a `CLAUDE.md`. **El diff va destapar** que la frase de la revisió prèvia quedava repetida dues vegades al final del fitxer; se'n conserva una |
+
+#### Derivació del destí de la fila Graphviz
+
+Com es va demanar, derivat de la cadena de construcció, no inventat:
+
+1. `_quarto.yml` (pre-render) crida `norm_font.py … "22_figs_originals/[^/]+[.]svg" "__original_light" --output-dir="auto_figs/"`.
+2. `norm_font.py:212` construeix el nom: `out_path = output_dir / f'{stem}{output_suffix}.svg'`.
+3. `gen_dark.py:34` (docstring): «El nom de sortida substitueix el sufix `_light` per `_dark`».
+
+Cadena resultant, **confirmada pels dos extrems**:
+
+```
+24_specs/T7_mc_politiques__graphviz.gv          (font, dot a mà)
+ └─> 22_figs_originals/T7_mc_politiques_resum__graphviz.svg
+      └─> auto_figs/T7_mc_politiques_resum__graphviz__original_light.svg
+      └─> auto_figs/T7_mc_politiques_resum__graphviz__original_dark.svg
+           ^ consumits per A7.qmd:648, :651 i :655
+```
+
+#### Discrepància de noms destapada
+
+L'arrel del `.gv` (`T7_mc_politiques`) i la del SVG
+(`T7_mc_politiques_resum`) **no coincideixen**. És real, no una errata de la
+taula. S'ha documentat amb un callout a `13_contrib.qmd §Figures Graphviz`
+perquè ningú no l'«arregli» pel cantó dolent, i amb una entrada a
+`TODO.md §Tasques transversals`:
+
+- Renombrar el **`.gv`** és **inofensiu**: verificat que cap script, cap
+  `.qmd` i cap entrada de `_quarto.yml` no el referencia (el `dot` s'executa
+  a mà i el pre-render parteix del SVG ja generat).
+- Renombrar el **SVG** trencaria les **tres** línies d'`A7.qmd` (648, 651,
+  655). No s'ha renombrat res.
+
+#### Convenció de missatges de commit
+
+Afegida a `13_contrib.qmd §Commits`, perquè existia de fet però no era
+escrita enlloc: assumpte curt en imperatiu (què i on, sense prefixos fixos,
+perquè la línia és el que es veu a `git log --oneline` i al `blame`); cos que
+explica el perquè i, si cal, per què no es va detectar abans; `Co-Authored-By:`
+per a la feina assistida, amb l'autoria de qui revisa i aprova. Exemple: el
+commit `8b9f82d`.
+
+**Recordatori explícit**: si a `L6.qmd` hi apareguessin candidats A, NO
+s'apliquen — voldria dir que falla la classificació. No és el cas: és idèntic.
+
 ## 🔴 TROBALLA FORA D'ABAST — reversió accidental a `13_contrib.qmd` (12/07)
 
 Els hunks C-5 i C-6 no són una millora del xat de L3: són la **supervivència
@@ -359,10 +520,6 @@ un bloc de commits. Motiu de prioritat: `13_contrib.qmd` és el fitxer de
 convencions que llegeix cada sessió nova en arrencar; mentre estigui
 incomplet, cada sessió comença amb convencions parcials.
 
-### 3. `L6_revisio_interna/` — GRUP 2 (control)
-
-*(pendent en aquesta sessió)*
-
 ### 4. `EC_sigles_i_símbols_T7_T8/` — GRUP 3 per presumpció, tancat a la Passada 0
 
 `12_sigles_simbols.qmd`: **idèntic** al repositori. Cap feina.
@@ -373,109 +530,47 @@ dues versions extretes i el repositori s'ha de fer allà.
 
 ---
 
-## Estat de la sessió A
+## SESSIÓ A — TANCADA (2026-09-20)
 
-| Xat | Fitxer | Estat |
+Tots els fitxers dels grups 1 i 2 processats. **13 commits de contingut.**
+
+| Commit | Fitxer | Contingut |
 | :--- | :--- | :--- |
-| `L2_revisio_interna/` | `L2.qmd` | ✅ **Aplicat** (`1489c84`, `254509b`, `12bac2c`) |
-| `L2_revisio_interna/` | `A2.qmd` | ✅ **Aplicat** (`1489c84`) |
-| `L3_revisio_interna/` | `L3.qmd` | ✅ **Aplicat** (`f136762`, `c52538a`, `7f0703c`) + reordenació (`b6c8124`) |
-| `L3_revisio_interna/` | `CLAUDE.md` | ✅ **Aplicat** (`0951e74`) |
-| `L3_revisio_interna/` | `13_contrib.qmd` | ✅ C-5/C-6 aplicats (`8f363d2`); 4 hunks B descartats |
-| `L6_revisio_interna/` | `L6.qmd` | ✅ tancat: idèntic (control superat) |
-| `L6_revisio_interna/` | `A7.qmd` | ✅ tancat: idèntic |
-| `L6_revisio_interna/` | `13_contrib.qmd` | ⏳ pendent (classificació sencera) |
-| `EC_sigles_i_símbols_T7_T8/` | `12_sigles_simbols.qmd` | ✅ tancat: idèntic |
+| `1489c84` | L2 + A2 | L2-7, L2-8, parell atòmic del slug |
+| `254509b` | L2 | Referències, taules, comprovacions RARS |
+| `12bac2c` | L2 | Redacció |
+| `f136762` | L3 | L3-2, L3-3, L3-4 (conceptuals) |
+| `c52538a` | L3 | Referències i nexe |
+| `7f0703c` | L3 | Redacció |
+| `0951e74` | CLAUDE.md | `zobacz` → `vegeu` |
+| `8f363d2` | 13_contrib | C-5, C-6 |
+| `b6c8124` | L3 | Reordenació de `_start` a `#exr-depuracio` |
+| `8b9f82d` | L3 | Restauració del paràgraf (CAS 2) |
+| `ca9c701` | 13_contrib + TODO | Reparació única |
 
-## Pendent immediat (resta de la sessió A)
+### Verificació final (invariant (a): contra la llista de canvis aprovats)
 
-1. `L6_revisio_interna/13_contrib.qmd` (4 lín.) — classificació sencera.
-   **És l'últim pas abans de poder fer la reparació única del fitxer.**
-2. `L6_revisio_interna/A7.qmd` — idèntic, tancat.
-3. `L6_revisio_interna/L6.qmd` — idèntic, control superat, tancat.
+- **L2**: 15 marcadors dels 13 hunks, tots presents a l'arbre final.
+- **L3**: 12 canvis aprovats + el paràgraf restaurat, tots presents.
+  `_start` és la primera etiqueta del bloc `#exr-depuracio`.
+- **A2**: `nte-restriccions-alineacio` present; cap `restricicons` al corpus.
+- **CLAUDE.md**: cap `zobacz`; les remissions `:93` i `:135` resolen.
+- **13_contrib.qmd**: §Política SVG i §Etiquetes `{#sec-}` presents; cap
+  `bibliografia.qmd`, cap `<!-- TODO -->`, cap errata «l'esclat»; la frase de
+  §IAs una sola vegada.
+- `make render`: net, cap warning, cap `?@` a tot `_book/`.
+- `verifica_laboratoris.py`: **1 error E1** (baixat de 2). L'únic que queda és
+  `s3_4_2.s:368`, fora d'abast per decisió de l'usuari.
 
-### Encàrrec per a la reparació única de `13_contrib.qmd`
+### Incidents de la sessió
 
-Un cop classificat contra `L6_revisio_interna/`, es fa **una sola passada**
-sobre el fitxer que inclogui alhora:
-
-- Els candidats A dels dos xats (L3 ja aplicats: C-5, C-6).
-- La restauració del 12/07: política de generació SVG, criteris d'slug,
-  remissions a `CLAUDE.md` per als fitxers obligatoris, errata «l'esclat».
-- **Les 20 línies de text obsolet** que la reversió va reintroduir, la
-  **llista de fitxers obligatoris duplicada** (`13_contrib.qmd:792`) i els
-  **quatre `<!-- TODO -->`** ja migrats a `TODO.md`.
-- **Fila Graphviz**: l'usuari ha confirmat que l'origen
-  `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` és el bo. El
-  **destí no s'ha d'inventar**: cal derivar-lo de `25_scripts/gen_dark.py`,
-  que és qui el genera, i documentar d'on s'ha tret.
-
-**Recordatori explícit**: si a `L6.qmd` hi apareguessin candidats A, NO
-s'apliquen — voldria dir que falla la classificació. No és el cas: és idèntic.
-
-### APLICAT — L3, CLAUDE.md i C-5/C-6 tancats (2026-09-20)
-
-| Commit | Contingut |
-| :--- | :--- |
-| `f136762` | L3-2, L3-3, L3-4 (conceptuals) |
-| `c52538a` | L3-1, L3-5, L3-6, L3-8 (referències i nexe) |
-| `7f0703c` | L3-7, L3-9, L3-10 (redacció) |
-| `0951e74` | `CLAUDE.md`: `zobacz` → `vegeu` |
-| `8f363d2` | `13_contrib.qmd`: C-5 i C-6 (nom del fitxer de bibliografia) |
-| `b6c8124` | Reordenació de `_start` a `#exr-depuracio` (vegeu sota) |
-| `8b9f82d` | **Restauració** del paràgraf del símptoma observable (vegeu CAS 2) |
-
-**L3-4 ampliat a petició de l'usuari.** El text aprovat afegeix el símptoma
-observable a la causa, perquè en un exercici de depuració val tant com la
-causa: l'epíleg ja ha restaurat `s0` amb el valor heretat de `_start` (0), de
-manera que el `sb a0, 0(s0)` reexecutat escriu a `0x00000000` i RARS avorta
-amb «`address out of range 0x00000000`».
-
-**Estat verificat a l'arbre de treball** (no al commit que ho va introduir):
-el paràgraf **hi és**, a `04_laboratori/L3.qmd:567`, i arriba a l'HTML
-renderitzat. Va estar absent entre `7f0703c` i `8b9f82d`; vegeu CAS 2.
-
-⚠️ **`L3.qmd` NO ha de ser idèntic a l'extret**, i no ho és: hi vam afegir
-contingut acordat durant la revisió (el paràgraf del símptoma). La igualtat
-amb l'extret seria, en aquest fitxer, el símptoma de l'error.
-
-#### Reordenació de `_start` a `#exr-depuracio` — autoritzada i executada
-
-L'exclusió d'aquest bloc es va revocar: la posició de `_start` havia deixat
-de ser una decisió oberta, perquè la regla «`_start` ha de ser la primera
-etiqueta de `.text`» és a `13_contrib.qmd` des del 19/09. Reordenació
-mecànica, i el text de L3-4 en depenia.
-
-**Descoberta durant la verificació**: amb l'ordre antic (`g`, `codifica`,
-`_start`), RARS començava a executar per `g` amb `a1 = 0` i avortava a la
-primera instrucció del programa. **Cap dels tres errors deliberats no
-arribava a manifestar-se**, i el símptoma que descriu l'Error 1 era
-inobservable.
-
-Verificat a RARS 1.6 real (`rars1_6.jar`), tres execucions:
-
-| Cas | Resultat |
-| :--- | :--- |
-| Ordre antic | `line 11` (`lb t0, 0(a1)`, dins de `g`), `at 0x00400000: address out of range 0x00000000` |
-| Ordre nou | `line 47` (`sb a0, 0(s0)`), `at 0x00400074: address out of range 0x00000000` — el símptoma de l'Error 1 |
-| Control, tres errors corregits | `Program terminated by calling exit` |
-
-#### Verificació post-aplicació
-
-- `make render` complet: **cap warning**; cap `?@` a `_book/`.
-- `python3 25_scripts/verifica_laboratoris.py`: **1 error E1**, no 2.
-  - ✅ `L3:490` ha desaparegut de la llista d'E1: ara consta com a
-    `ASSEMBLA / OK`, amb l'excepció d'execució registrada com a informació
-    (`line 47 ... 0x00400074`), que és el comportament esperat d'un exercici
-    de depuració amb tres errors deliberats.
-  - ⏳ Queda `s3_4_2.s` línia 368 («primera etiqueta després de `.text` és
-    `moda:`, no `_start:`»), **fora d'abast per decisió de l'usuari**.
-
-**Nota per a l'auditoria**: el verificador tracta com a E1 el que en un
-exercici de depuració és el comportament esperat. En aquest cas s'ha resolt
-sol en reordenar, però la qüestió de fons —que el script no distingeix un
-programa que falla per disseny d'un que falla per error— queda oberta. No
-s'ha tocat el script.
+1. **CAS 2** (vegeu §Segon mode de fallada): un paràgraf aprovat esborrat per
+   un commit posterior del mateix lot. Detectat per l'usuari, reparat a
+   `8b9f82d`. En deriva l'**invariant de verificació**.
+2. **Descoberta a `#exr-depuracio`**: amb l'ordre antic de `_start`, cap dels
+   tres errors deliberats no es manifestava. Resolt a `b6c8124`.
+3. **Reversió del 12/07**: 40 línies perdudes durant dos mesos, reparades a
+   `ca9c701`. Obre l'entrada d'auditoria del segon mode de fallada.
 
 ## Exclòs d'aquesta feina (confirmat)
 
