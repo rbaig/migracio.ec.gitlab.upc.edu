@@ -5,7 +5,103 @@ Fitxer **transitori**. S'esborra en tancar la feina de recuperació.
 Col·lecció analitzada: `/home/roger/tmp/EC_RV_migracio_claude_clara/extrets/`
 (70 fitxers, 14 subdirectoris = 14 xats).
 
-Sessió A (grups 1 i 2) — data: 2026-09-20. Model: Opus 5.
+Sessió A (grups 1 i 2) i sessió B (grup 3) — 2026-09-20. Model: Opus 5.
+
+---
+
+## ✅ PASSADA 1 — TANCADA. Resum global
+
+### El resultat més important: la proporció
+
+| Mesura | Xifra |
+| :--- | ---: |
+| Fitxers de contingut comparats | **45** |
+| Idèntics al repositori (tancats sense feina) | 26 |
+| Amb diferències, classificats hunk a hunk | 19 |
+| **Hunks/línies classificats** | **~320** |
+| **Candidats A trobats** | **25** |
+| **Candidats A aplicats** | **25** |
+| **Hunks categoria B o C** | **~295 (>90 %)** |
+
+**Més de nou de cada deu diferències eren feina posterior del repositori, no
+correccions pendents.** Aquesta és la conclusió operativa de tota la feina: un
+diff contra un extret de fa dos mesos és, per defecte, soroll. Aplicar-lo a
+cegues no hauria «recuperat» res: hauria revertit dos mesos de revisió.
+
+Els 25 candidats A es concentren en **3 fitxers de 45**, tots del grup 1
+(deliverables que sabíem del cert que no s'havien integrat) més un del grup 3:
+
+| Fitxer | Candidats A | Origen |
+| :--- | ---: | :--- |
+| `04_laboratori/L2.qmd` | 13 | Grup 1 — Fase C sencera mai integrada |
+| `04_laboratori/L3.qmd` | 10 | Grup 1 — íd. |
+| `01_apunts/A2.qmd` | 1 | Grup 1 — parell atòmic amb L2 |
+| `CLAUDE.md` | 1 | Grup 1 |
+| `01_apunts/A4.qmd` | 1 | **Grup 3** — l'únic candidat A fora del grup 1 |
+
+Del grup 3 sencer (7 xats, ~150 línies candidates) només en va sortir **un**
+candidat: el callout `#tip-matriu-pas-referencia`. Tota la resta, B o C.
+
+### Els dos modes de fallada
+
+| | Mode 1 | Mode 2 |
+| :--- | :--- | :--- |
+| **Què és** | Feina mai integrada | Feina integrada i després esborrada en silenci |
+| **Com es detecta** | Comparant extrets amb el repositori | No es detecta així: cal l'historial |
+| **Casos** | L2, L3, A2, CLAUDE.md, A4 (25 hunks) | **CAS 1** (`4f973d5`, 12/07, 40 línies perdudes 2 mesos) · **CAS 2** (`7f0703c`, 20/09, comès per nosaltres) |
+
+El mode 2 és el perillós: no trenca el render, no deixa rastre al missatge del
+commit, i **només es veu si en tens els extrets o si preguntes a l'historial**.
+El CAS 2 el vam cometre hores després de documentar el CAS 1, cosa que mostra
+que no depèn del descuit sinó del mètode de verificació.
+
+### Les tres tècniques reutilitzables
+
+**1. El discriminador `git log -S`, obligatori per a tot hunk A.**
+Si el text va existir al repositori i se'n va treure, és B, no A. Cas exemplar:
+`fcvt.w.s` (vegeu la secció pròpia). Un hunk amb aparença de precisió tècnica
+contenia una afirmació **incorrecta** que el repositori ja havia corregit;
+aplicar-lo hauria reintroduït l'error al fitxer de convencions. La inspecció
+del text no ho hauria detectat mai.
+
+**2. `git show <commit>~1:<fitxer>` contra l'extret.**
+Quan se sospita que un extret és l'estat previ a un commit conegut, comparar-hi
+directament ho resol en una ordre, en lloc de classificar desenes de hunks.
+`A3.qmd` (80 línies, 29 hunks) es va tancar així: l'extret era **byte a byte**
+`b55e413~1`. Igualment per a `A4.qmd`/Fable, on el diff coincidia exactament
+amb `0e715c2` (+191/−151).
+
+**3. La invariant de verificació.**
+La comprovació final es fa **contra la llista de canvis aprovats i sobre
+l'arbre de treball**, mai contra el fitxer extret ni contra el commit que va
+introduir el canvi. Si durant la revisió s'hi ha afegit contingut acordat, la
+igualtat amb l'extret és una **ALARMA**, no una confirmació. Aquesta regla
+existeix perquè es va violar (CAS 2) i va costar un paràgraf aprovat.
+
+### Verificació final
+
+- `make render` complet: **cap warning**; cap `?@` a tot `_book/`.
+- `verifica_laboratoris.py`: **1 error E1**, i és l'únic `ERROR` de tot
+  l'informe. És `s3_4_2.s:368`, fora d'abast per decisió de l'usuari.
+  - El recompte previst era 2. La diferència és correcta i ja constava:
+    `b6c8124` va reordenar `_start` al bloc `L3:490`, i **E1 és una
+    comprovació estàtica de l'ordre de `_start`**
+    (`verifica_laboratoris.py:167`), de manera que aquell bloc va deixar de
+    complir la condició d'error. Ara consta com a `ASSEMBLA / OK`, amb
+    l'excepció d'execució registrada com a informació: és el comportament
+    correcte d'un exercici amb tres errors deliberats.
+  - Comprovat bloc a bloc: dels 5 blocs de `L3.qmd` amb `_start`, **4
+    compleixen** la regla i l'únic que no és `L3:357` (= `s3_4_2.s:368`).
+- **Escombrada de pèrdues** sobre els 28 commits del 19 i 20/09, fitxers de
+  contingut: 4 línies afegides absents de l'estat final, **totes explicades**:
+
+| Commit | Línia | Explicació |
+| :--- | :--- | :--- |
+| `254509b` ×2 | capçalera amb `*Padding*` | Supersessió aprovada: `12bac2c` la passa a `Padding` (L2-5) |
+| `7f0703c` | paràgraf de l'Error 1 | CAS 2, restaurat per `8b9f82d` |
+| `3debb1e` | regla d'ordre de `_start` | **Fals positiu**: la línia hi és; `025b580` només en va canviar les cometes rectes per guillemets |
+
+**Cap pèrdua real.**
 
 ---
 
