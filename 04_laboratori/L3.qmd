@@ -562,7 +562,9 @@ El programa conté tres errors, identificats per les marques (B), (C) i (D):
 
 **Error 1 — (B) i (E): `ra` no es desa ni es restaura.**
 
-`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, no torna a `_start` sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica` i el programa no acaba correctament.
+`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, no torna a `_start` sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica`.
+
+El símptoma observable és immediat: l'epíleg ja ha restaurat `s0` amb el valor que tenia en entrar a `codifica` —el de `_start`, que no l'inicialitza mai i per tant val 0—, de manera que la primera instrucció reexecutada, `sb a0, 0(s0)`, intenta escriure a l'adreça `0x00000000`. RARS avorta amb «`address out of range 0x00000000`».
 
 Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
 
