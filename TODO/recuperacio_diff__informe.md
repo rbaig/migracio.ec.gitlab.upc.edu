@@ -583,6 +583,88 @@ explícita de l'usuari del 2026-09-20.
 
 ---
 
+## Sessió B (grup 3) — en curs (2026-09-20)
+
+### `12_sigles_simbols.qmd` — TANCAT, tot B/C
+
+Dues versions extretes: `EC_sigles_i_símbols_T7_T8` (240 lín., **idèntica** al
+repositori) i `baixat_EC_A1_E1_S1_Fable` (167 lín., 327 línies de diff).
+
+**Patró L4/L5 confirmat**: la versió d'A1 és anterior. Comparació per
+contingut de cel·la, no per línia (el repositori hi ha afegit una **tercera
+columna** d'observacions, cosa que fa que 127 línies surtin com a «absents»
+quan només han canviat d'estructura):
+
+| Mètrica | A1 | Repositori |
+| :--- | ---: | ---: |
+| Entrades de taula | 145 | **201** |
+| Entrades noves al repositori | — | 60 |
+| Entrades amb valor enriquit | — | 29 |
+| Entrades només a A1 | 4 | — |
+
+Les 29 entrades amb valor diferent van **totes** en la mateixa direcció: el
+repositori hi afegeix observacions tècniques (desambiguacions de símbols entre
+temes, fórmules, remissions creuades).
+
+Les 4 entrades «només a A1» són **refactors (C)**, no pèrdues: s'han
+desdoblat i enriquit.
+
+| A1 | Repositori |
+| :--- | :--- |
+| `$CPI_i$, $C_i$` | `$C_i$` (l. 123) i `$CPI_i$` (l. 125), amb l'avís «**No confondre amb $CPI_i$**» |
+| `$n_A$` | `$n_A$, $n_B$` (l. 150) |
+| `$N_C$, $N_L$` | `$N_C$` (l. 160) i `$N_L$` (l. 161) |
+| `$P_d$, $P_s$, $P_x$` | `$P_d$, $P_s$` (l. 165) |
+
+**Cap candidat A. Cap pèrdua. Fitxer tancat.**
+
+### `A4.qmd` — dues versions, comportament oposat
+
+| Extret | Línies | Diff amb repo | Veredicte |
+| :--- | ---: | ---: | :--- |
+| `baixat_EC_A4_E4_S4_Fable` | 848 | 342 | **Tot B/C** — anterior |
+| `EC_Revisio_interna_de_L4_L3` | 911 | 23 | **1 candidat A** |
+
+Repositori: 888 línies. No és una cadena lineal.
+
+#### Fable (342 lín.) — tot categoria B
+
+5 hunks, i el diff és **exactament** el commit `0e715c2` (2026-07-20, «Canvi
+ordre divisio. Aclariment overflow enters i llenguatges. Aclariment overflow
+naturals. Aclariment fusio mul i mulh»), +191/−151 — la mateixa xifra que
+`git show --stat`.
+
+| Hunk | Volum | Contingut | Cat. |
+| :--- | :--- | :--- | :--- |
+| 1 | +15 | `#wrn-sobreeiximent-llenguatges` | B (`0e715c2`) |
+| 2 | +13 | `#wrn-sobreeiximent-naturals` | B (`0e715c2`) |
+| 3 | +11 | `#wrn-mul-mulh-fusio` | B (`0e715c2`) |
+| 4 | +151 | §Divisió entera en la posició nova | C (reordenació) |
+| 5 | −151 | La mateixa secció, treta de la posició antiga | C (reordenació) |
+
+Els hunks 4 i 5 són les dues cares del mateix moviment de secció.
+
+#### L4L3 (23 lín.) — **1 candidat A**
+
+Un sol hunk: el callout `#tip-matriu-pas-referencia` («Pas d'una matriu per
+referència»), 23 línies, present a l'extret i absent del repositori.
+
+**No és el patró L4/L5.** Discriminador:
+
+```
+git log -S'tip-matriu-pas-referencia' --oneline -- 01_apunts/A4.qmd   → (buit)
+git log -S"Pas d'una matriu per referència" --oneline -- 01_apunts/A4.qmd → (buit)
+```
+
+Mai ha existit al repositori: és contingut que el xat va produir i que no es
+va integrar. Els quatre identificadors que referencia existeixen tots
+(`tip-exemple-pas-vector` a A3, `tip-matriu-acces-ij` i
+`sec-optimitzacions-bucle` a A4, `sec-extraccio-invariants` a A2), de manera
+que no deixaria cap referència trencada. Cap altre fitxer no el referencia,
+per tant la seva absència no trenca res avui.
+
+⏸️ **Pendent de decisió de l'usuari.**
+
 ## Pendent — sessió B (grup 3)
 
 Ordre previst (punts 5–10 de l'ordre original):
