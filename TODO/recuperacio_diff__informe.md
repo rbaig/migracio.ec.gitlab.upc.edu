@@ -423,14 +423,21 @@ s'apliquen — voldria dir que falla la classificació. No és el cas: és idèn
 | `0951e74` | `CLAUDE.md`: `zobacz` → `vegeu` |
 | `8f363d2` | `13_contrib.qmd`: C-5 i C-6 (nom del fitxer de bibliografia) |
 | `b6c8124` | Reordenació de `_start` a `#exr-depuracio` (vegeu sota) |
-
-`L3.qmd` després dels tres primers commits: **idèntic** a l'extret.
+| `8b9f82d` | **Restauració** del paràgraf del símptoma observable (vegeu CAS 2) |
 
 **L3-4 ampliat a petició de l'usuari.** El text aprovat afegeix el símptoma
 observable a la causa, perquè en un exercici de depuració val tant com la
 causa: l'epíleg ja ha restaurat `s0` amb el valor heretat de `_start` (0), de
 manera que el `sb a0, 0(s0)` reexecutat escriu a `0x00000000` i RARS avorta
 amb «`address out of range 0x00000000`».
+
+**Estat verificat a l'arbre de treball** (no al commit que ho va introduir):
+el paràgraf **hi és**, a `04_laboratori/L3.qmd:567`, i arriba a l'HTML
+renderitzat. Va estar absent entre `7f0703c` i `8b9f82d`; vegeu CAS 2.
+
+⚠️ **`L3.qmd` NO ha de ser idèntic a l'extret**, i no ho és: hi vam afegir
+contingut acordat durant la revisió (el paràgraf del símptoma). La igualtat
+amb l'extret seria, en aquest fitxer, el símptoma de l'error.
 
 #### Reordenació de `_start` a `#exr-depuracio` — autoritzada i executada
 
@@ -545,7 +552,9 @@ no hauria trobat si no fos que en teníem els extrets:
 > commit** i en revessa canvis ja integrats. No hi ha conflicte, ni error, ni
 > rastre al missatge del commit: la feina simplement desapareix.
 
-Característiques del cas documentat (`4f973d5`, 12/07):
+### CAS 1 — 2026-07-12: `4f973d5` sobre `13_contrib.qmd`
+
+Característiques:
 
 - El missatge del commit parla de `12_sigles_simbols.qmd`; la víctima és
   `13_contrib.qmd`, que no s'hi esmenta.
@@ -555,6 +564,71 @@ Característiques del cas documentat (`4f973d5`, 12/07):
   `git add` massa ampli des d'un directori de treball desincronitzat.
 - Va sobreviure 2 mesos sense detectar-se perquè no trenca el render: el
   llibre compila igual amb les convencions incompletes.
+
+### CAS 2 — 2026-09-20: el vam cometre nosaltres, hores després d'escriure això
+
+El mateix patró, dins d'aquesta mateixa feina de recuperació i el mateix dia
+que es va documentar el CAS 1. Val la pena que consti sencer, perquè demostra
+que el mode 2 no requereix ni descuit ni pressa: n'hi ha prou amb una
+comprovació mal orientada.
+
+| Commit | Què va fer |
+| :--- | :--- |
+| `f136762` | Va afegir el paràgraf del símptoma observable a l'Error 1 de `#sol-depuracio`, redactat durant la revisió i **aprovat explícitament** per l'usuari |
+| `7f0703c` | «L3 Fase C: redacció», hores després. Va **esborrar-lo**, i va tornar a fusionar les dues frases acabant amb «i el programa no acaba correctament» |
+
+**Causa**: el commit de redacció va prendre el text de l'extret per a tota
+aquella regió del fitxer. El paràgraf s'havia escrit **aquell mateix dia** i
+no és a l'extret, de manera que aplicar-hi l'extret el va suprimir. És el
+mecanisme del CAS 1 en miniatura: una còpia més antiga d'una regió
+sobreescriu feina ja integrada, sense conflicte ni avís.
+
+**Per què la verificació no ho va detectar**: la comprovació final es va fer
+contra el **fitxer extret** («L3.qmd després dels tres primers commits:
+idèntic a l'extret») i va donar OK. Però «idèntic a l'extret» només és un
+criteri vàlid quan no s'hi ha afegit res més enllà de l'extret — cert a L2,
+**fals a L3**. La comprovació confirmava la pèrdua en comptes de detectar-la.
+
+**Detectat per**: lectura de l'usuari, amb
+`git log -S'símptoma observable' -- 04_laboratori/L3.qmd`.
+
+**Reparat**: `8b9f82d`, fix-forward, sense reescriure l'historial.
+
+#### Regla que se'n deriva (vigent a partir d'ara)
+
+1. La comprovació final de cada fitxer es fa **contra la llista de canvis
+   aprovats**, mai contra el fitxer extret.
+2. Si durant la revisió s'ha acordat qualsevol afegit que no és a l'extret,
+   **la igualtat amb l'extret és una ALARMA, no una confirmació**.
+3. L'informe ha d'afirmar **el que hi ha a l'arbre de treball final**, no el
+   que deia el commit que ho va introduir. Cal verificar l'estat final del
+   fitxer abans d'escriure'n res.
+
+#### Auditoria del lot sencer (executada el 2026-09-20)
+
+Comprovació sistemàtica de tots els commits de contingut d'avui: per a cada
+línia afegida per un commit del lot, es mira si segueix a l'arbre final.
+
+| Resultat | Detall |
+| :--- | :--- |
+| Commits de contingut revisats | 10 |
+| Línies afegides absents a l'arbre final | 3 |
+| — 2 a `L2.qmd` (`254509b`) | **Benignes**: `\| ... \| *Padding* [B] \|` era l'estadi intermedi; `12bac2c` el va convertir a `Padding [B]`, que és la forma aprovada (L2-5). 4 ocurrències correctes a l'arbre final |
+| — 1 a `L3.qmd` (`7f0703c`) | **L'incident**, ja reparat |
+
+Verificació positiva dels canvis aprovats a l'arbre final:
+
+- **L2**: els 15 marcadors dels 13 hunks hi són (5 callouts «Comprovació
+  pràctica», 4 taules amb `Padding [B]`, cap adreça `0x1001 0000`).
+- **L3**: els 12 canvis aprovats hi són, inclòs el paràgraf restaurat;
+  `_start` és la primera etiqueta del bloc.
+- **`A2.qmd`**: `nte-restriccions-alineacio` present, cap `restricicons`.
+- **`CLAUDE.md`**: cap `zobacz`.
+- **`13_contrib.qmd`**: 2 × `15_bibliografia.bib`, cap `bibliografia.qmd`.
+- `make render` net, cap referència trencada, el paràgraf arriba a l'HTML.
+
+**Conclusió**: un sol canvi perdut a tot el lot, i restaurat. A L2 no se'n
+podia perdre cap, perquè no s'hi va afegir res fora de l'extret.
 
 ### Proposta de detecció (per executar a l'auditoria)
 
@@ -587,8 +661,23 @@ dels quals no tenim extrets** (on el mode 2 és invisible per comparació).
 
 5. **Remissions penjades**: tot `§Nom de secció` citat des de `CLAUDE.md` o
    `13_contrib.qmd` ha de correspondre a una capçalera existent al fitxer
-   destí. Va ser el símptoma que va destapar aquest cas
+   destí. Va ser el símptoma que va destapar el CAS 1
    (`CLAUDE.md:93` → secció inexistent).
+
+6. **Dins d'un mateix lot de commits** (derivada del CAS 2): per a cada línia
+   que un commit del lot afegeix, comprovar que segueix a l'arbre final. És
+   barat i detecta el cas en què un commit posterior del mateix lot
+   sobreescriu feina del primer:
+
+   ```bash
+   # per a cada commit del rang, diff de les línies afegides contra l'arbre
+   git log --format=%H <base>..HEAD
+   ```
+
+   Cal filtrar els estadis intermedis legítims (com el `*Padding*` de L2,
+   introduït pel commit 2 perquè el commit 3 el convertís): la pregunta no és
+   «ha desaparegut?» sinó «ha desaparegut **sense que cap canvi aprovat
+   posterior ho expliqui**?».
 
 **Abast**: el mode 2 pot haver afectat qualsevol fitxer, no només els que
 tenim als extrets. Els punts 1–3 són purament històrics (només `git log`) i
