@@ -663,7 +663,57 @@ va integrar. Els quatre identificadors que referencia existeixen tots
 que no deixaria cap referència trencada. Cap altre fitxer no el referencia,
 per tant la seva absència no trenca res avui.
 
-⏸️ **Pendent de decisió de l'usuari.**
+⏸️ **Pendent de decisió de l'usuari.** Les 23 línies se li han mostrat
+literalment.
+
+### `13_contrib.qmd` (3 xats) — TANCAT, 92 candidats, **tots B**
+
+El parany va funcionar exactament com estava descrit. Línies que el
+repositori no té, per xat:
+
+| Xat | Total | Revertirien `ca9c701` | Altres |
+| :--- | ---: | ---: | ---: |
+| `baixat_EC_A3_E3_S3` | 21 | **20** | 1 |
+| `baixat_EC_A4_E4_S4` | 27 | **21** | 6 |
+| `baixat_T9-PE_T9` | 44 | **21** | 23 |
+
+**62 de 92 desfarien literalment la reparació d'ahir**: `bibliografia.qmd`,
+`l'esclat`, els quatre `<!-- TODO -->`, la llista duplicada de fitxers, la
+taula Graphviz amb la doble extensió. Tots els extrets en són anteriors.
+
+Els 30 restants, un a un amb `git log -S`, **també tots B**:
+
+| Fragment | Veredicte |
+| :--- | :--- |
+| `fcvt.w.s` trunca cap a zero | **B** — `92345e4` el va **corregir**. L'extret conté l'afirmació **tècnicament incorrecta**; el repositori diu que s'arrodoneix segons el camp `rm` i cal `rtz` explícit, coherent amb `A5.qmd:915`. Aplicar-ho hauria reintroduït un error tècnic |
+| `Mermaids (diagrames renderitzats in-line)` | **B** — `dd0524f` («No meramid», 14/07), supressió deliberada |
+| `.global _start` | **B** — `fe53cfc` el va corregir a `.globl`, i `13_contrib.qmd:118` documenta ara la tria |
+| «Mantissa» / bit `E` / prefixos `KiB` | **B** — hi són al repositori, en versió ampliada |
+| 2a persona del **singular** als `{.callout-tip}` | **B** — `31f7571`; el criteri es va revisar |
+| `sigles.md`, taules de callouts, `RV32I_pseudo_*` | **B** — versions anteriors al renom i a l'ampliació |
+
+Cap candidat A. **Cap aturada necessària.**
+
+### `CLAUDE.md` (`baixat_T9-PE_T9`) — TANCAT, 39 línies, **totes B**
+
+L'extret duu **inline** els criteris de generació de l'slug i la política de
+generació SVG. `git show 614f576 -- CLAUDE.md` mostra que aquell commit els va
+**migrar** a `13_contrib.qmd` i els va substituir per remissions:
+
+```
+-**Criteris de generació de l'slug** (aplicats a `A4.qmd`):
++**Criteris de generació de l'slug**: vegeu `13_contrib.qmd §Etiquetes …`
++Política de generació SVG …: vegeu `13_contrib.qmd §Figures i material gràfic`.
+```
+
+L'extret és anterior a la migració. **El cercle es tanca amb la feina d'ahir**:
+les dues remissions de `CLAUDE.md` (`:93` i `:135`) funcionen perquè `ca9c701`
+va restaurar les seccions destí a `13_contrib.qmd`. Reintroduir els blocs
+inline duplicaria el contingut i desfaria la migració.
+
+Resta: `sigles.md` → `12_sigles_simbols.qmd` (renom, `614f576`),
+`S_criteris.qmd` → `S_criteris_seleccio.qmd` (renom, `87015d2`), i la taula de
+model, que al repositori té una columna `Thinking` de més. Tot **B**.
 
 ## Pendent — sessió B (grup 3)
 
