@@ -379,9 +379,9 @@ dues versions extretes i el repositori s'ha de fer allà.
 | :--- | :--- | :--- |
 | `L2_revisio_interna/` | `L2.qmd` | ✅ **Aplicat** (`1489c84`, `254509b`, `12bac2c`) |
 | `L2_revisio_interna/` | `A2.qmd` | ✅ **Aplicat** (`1489c84`) |
-| `L3_revisio_interna/` | `L3.qmd` | 🔍 classificat: 10 hunks, tots A — pendent d'aplicar |
-| `L3_revisio_interna/` | `CLAUDE.md` | 🔍 classificat: 1 hunk A — pendent d'aplicar |
-| `L3_revisio_interna/` | `13_contrib.qmd` | 🔍 classificat: 4 B + 2 A (regressió, fora d'abast) |
+| `L3_revisio_interna/` | `L3.qmd` | ✅ **Aplicat** (`f136762`, `c52538a`, `7f0703c`) + reordenació (`b6c8124`) |
+| `L3_revisio_interna/` | `CLAUDE.md` | ✅ **Aplicat** (`0951e74`) |
+| `L3_revisio_interna/` | `13_contrib.qmd` | ✅ C-5/C-6 aplicats (`8f363d2`); 4 hunks B descartats |
 | `L6_revisio_interna/` | `L6.qmd` | ✅ tancat: idèntic (control superat) |
 | `L6_revisio_interna/` | `A7.qmd` | ✅ tancat: idèntic |
 | `L6_revisio_interna/` | `13_contrib.qmd` | ⏳ pendent (classificació sencera) |
@@ -389,23 +389,95 @@ dues versions extretes i el repositori s'ha de fer allà.
 
 ## Pendent immediat (resta de la sessió A)
 
-1. **Decisió de l'usuari** sobre els candidats A de L3 (11 hunks: 10 a
-   `L3.qmd`, 1 a `CLAUDE.md`) — pendents d'aplicar.
-2. **Decisió de l'usuari** sobre la reversió accidental del 12/07 a
-   `13_contrib.qmd` (vegeu la troballa fora d'abast).
-3. `L6_revisio_interna/13_contrib.qmd` (4 lín.) — classificació sencera.
-4. `L6_revisio_interna/A7.qmd` — idèntic, tancat.
-5. `L6_revisio_interna/L6.qmd` — idèntic, control superat, tancat.
+1. `L6_revisio_interna/13_contrib.qmd` (4 lín.) — classificació sencera.
+   **És l'últim pas abans de poder fer la reparació única del fitxer.**
+2. `L6_revisio_interna/A7.qmd` — idèntic, tancat.
+3. `L6_revisio_interna/L6.qmd` — idèntic, control superat, tancat.
+
+### Encàrrec per a la reparació única de `13_contrib.qmd`
+
+Un cop classificat contra `L6_revisio_interna/`, es fa **una sola passada**
+sobre el fitxer que inclogui alhora:
+
+- Els candidats A dels dos xats (L3 ja aplicats: C-5, C-6).
+- La restauració del 12/07: política de generació SVG, criteris d'slug,
+  remissions a `CLAUDE.md` per als fitxers obligatoris, errata «l'esclat».
+- **Les 20 línies de text obsolet** que la reversió va reintroduir, la
+  **llista de fitxers obligatoris duplicada** (`13_contrib.qmd:792`) i els
+  **quatre `<!-- TODO -->`** ja migrats a `TODO.md`.
+- **Fila Graphviz**: l'usuari ha confirmat que l'origen
+  `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` és el bo. El
+  **destí no s'ha d'inventar**: cal derivar-lo de `25_scripts/gen_dark.py`,
+  que és qui el genera, i documentar d'on s'ha tret.
 
 **Recordatori explícit**: si a `L6.qmd` hi apareguessin candidats A, NO
 s'apliquen — voldria dir que falla la classificació. No és el cas: és idèntic.
 
+### APLICAT — L3, CLAUDE.md i C-5/C-6 tancats (2026-09-20)
+
+| Commit | Contingut |
+| :--- | :--- |
+| `f136762` | L3-2, L3-3, L3-4 (conceptuals) |
+| `c52538a` | L3-1, L3-5, L3-6, L3-8 (referències i nexe) |
+| `7f0703c` | L3-7, L3-9, L3-10 (redacció) |
+| `0951e74` | `CLAUDE.md`: `zobacz` → `vegeu` |
+| `8f363d2` | `13_contrib.qmd`: C-5 i C-6 (nom del fitxer de bibliografia) |
+| `b6c8124` | Reordenació de `_start` a `#exr-depuracio` (vegeu sota) |
+
+`L3.qmd` després dels tres primers commits: **idèntic** a l'extret.
+
+**L3-4 ampliat a petició de l'usuari.** El text aprovat afegeix el símptoma
+observable a la causa, perquè en un exercici de depuració val tant com la
+causa: l'epíleg ja ha restaurat `s0` amb el valor heretat de `_start` (0), de
+manera que el `sb a0, 0(s0)` reexecutat escriu a `0x00000000` i RARS avorta
+amb «`address out of range 0x00000000`».
+
+#### Reordenació de `_start` a `#exr-depuracio` — autoritzada i executada
+
+L'exclusió d'aquest bloc es va revocar: la posició de `_start` havia deixat
+de ser una decisió oberta, perquè la regla «`_start` ha de ser la primera
+etiqueta de `.text`» és a `13_contrib.qmd` des del 19/09. Reordenació
+mecànica, i el text de L3-4 en depenia.
+
+**Descoberta durant la verificació**: amb l'ordre antic (`g`, `codifica`,
+`_start`), RARS començava a executar per `g` amb `a1 = 0` i avortava a la
+primera instrucció del programa. **Cap dels tres errors deliberats no
+arribava a manifestar-se**, i el símptoma que descriu l'Error 1 era
+inobservable.
+
+Verificat a RARS 1.6 real (`rars1_6.jar`), tres execucions:
+
+| Cas | Resultat |
+| :--- | :--- |
+| Ordre antic | `line 11` (`lb t0, 0(a1)`, dins de `g`), `at 0x00400000: address out of range 0x00000000` |
+| Ordre nou | `line 47` (`sb a0, 0(s0)`), `at 0x00400074: address out of range 0x00000000` — el símptoma de l'Error 1 |
+| Control, tres errors corregits | `Program terminated by calling exit` |
+
+#### Verificació post-aplicació
+
+- `make render` complet: **cap warning**; cap `?@` a `_book/`.
+- `python3 25_scripts/verifica_laboratoris.py`: **1 error E1**, no 2.
+  - ✅ `L3:490` ha desaparegut de la llista d'E1: ara consta com a
+    `ASSEMBLA / OK`, amb l'excepció d'execució registrada com a informació
+    (`line 47 ... 0x00400074`), que és el comportament esperat d'un exercici
+    de depuració amb tres errors deliberats.
+  - ⏳ Queda `s3_4_2.s` línia 368 («primera etiqueta després de `.text` és
+    `moda:`, no `_start:`»), **fora d'abast per decisió de l'usuari**.
+
+**Nota per a l'auditoria**: el verificador tracta com a E1 el que en un
+exercici de depuració és el comportament esperat. En aquest cas s'ha resolt
+sol en reordenar, però la qüestió de fons —que el script no distingeix un
+programa que falla per disseny d'un que falla per error— queda oberta. No
+s'ha tocat el script.
+
 ## Exclòs d'aquesta feina (confirmat)
 
-La correcció de l'ordre de `_start` a `s3_4_2.s` (línia 368) i al bloc
-`L3:490` era la Decisió 1 del xat de L3, mai resposta. **No forma part dels
-canvis recuperats**: cap hunk dels extrets de `L3.qmd` hi toca. Va en una
-tasca a part.
+La correcció de l'ordre de `_start` a **`s3_4_2.s` (línia 368)** continua
+fora d'abast. **No forma part dels canvis recuperats**: cap hunk dels
+extrets de `L3.qmd` hi toca. Va en una tasca a part.
+
+El bloc `L3:490` sí que s'ha corregit (vegeu `b6c8124`), amb autorització
+explícita de l'usuari del 2026-09-20.
 
 ---
 
