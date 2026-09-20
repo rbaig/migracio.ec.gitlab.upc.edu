@@ -30,12 +30,12 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 | Directives de declaració i inicialització de variables globals | @nte-directives-alineacio-inicialitzacio |
 | Model de memòria i adreces | @sec-memoria-t2 |
 | Ordenació de bytes (*little-endian*) | @sec-endianness |
-| Restriccions d'alineació | @nte-restricicons-alineacio |
+| Restriccions d'alineació | @nte-restriccions-alineacio |
 | Instruccions d'accés a memòria (`lw`, `lh`, `lhu`, `lb`, `lbu`, `sw`, `sh`, `sb`) | @nte-load-store |
-| Punters: declaració, `&`, `*`, aritmètica | @sec-punters-c-declaracio, @sec-punters-ampersand, @sec-punters-desreferencia |
+| Punters: declaració, `&`, `*`, aritmètica | @sec-punters-c-declaracio, @sec-punters-ampersand, @sec-punters-desreferencia, @sec-aritmetica-punters |
 | Vectors: declaració, indexació, relació amb punters | @sec-vectors, @sec-vector-indexacio, @sec-punters-vectors |
-| Caràcters i cadenes de caràcters | @nte-directives-ascii-asciz-string |
-| Pseudoinstrucció `la` | @nte-pseudoinstruccio-la |
+| Caràcters i cadenes de caràcters | @sec-caracters-cadenes |
+| Pseudoinstruccions `la` i `li` | @nte-pseudoinstruccio-la, @nte-pseudoinstruccio-li |
 : {.striped .hover}
 
 ## Representació en memòria
@@ -82,14 +82,14 @@ ff: .half  -1
 
 Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, ompliu la taula de distribució de variables:
 
-| Variable | Tipus | Mida | Alineació | Adreça | *Padding* |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `aa` |  |  |  |  |
-| `bb` |  |  |  |  |
-| `cc` |  |  |  |  |
-| `dd` |  |  |  |  |
-| `ee` |  |  |  |  |
-| `ff` |  |  |  |  |
+| `aa` |  |  |  |  |  |
+| `bb` |  |  |  |  |  |
+| `cc` |  |  |  |  |  |
+| `dd` |  |  |  |  |  |
+| `ee` |  |  |  |  |  |
+| `ff` |  |  |  |  |  |
 : {.striped .hover}
 
 Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Indiqueu cada etiqueta a la posició que li correspon i marqueu amb `--` els bytes de *padding*. Deixeu en blanc els bytes lliures (no inicialitzats).
@@ -98,61 +98,61 @@ Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Ind
 ::: {}
 | Etiqueta | Adreça | Contingut |
 | :--- | :--- | :--- |
-|  | `0x1001 0000` |  |
-|  | `0x1001 0001` |  |
-|  | `0x1001 0002` |  |
-|  | `0x1001 0003` |  |
-|  | `0x1001 0004` |  |
-|  | `0x1001 0005` |  |
-|  | `0x1001 0006` |  |
-|  | `0x1001 0007` |  |
-|  | `0x1001 0008` |  |
-|  | `0x1001 0009` |  |
-|  | `0x1001 000A` |  |
-|  | `0x1001 000B` |  |
-|  | `0x1001 000C` |  |
-|  | `0x1001 000D` |  |
-|  | `0x1001 000E` |  |
-|  | `0x1001 000F` |  |
+|  | `0x10010000` |  |
+|  | `0x10010001` |  |
+|  | `0x10010002` |  |
+|  | `0x10010003` |  |
+|  | `0x10010004` |  |
+|  | `0x10010005` |  |
+|  | `0x10010006` |  |
+|  | `0x10010007` |  |
+|  | `0x10010008` |  |
+|  | `0x10010009` |  |
+|  | `0x1001000A` |  |
+|  | `0x1001000B` |  |
+|  | `0x1001000C` |  |
+|  | `0x1001000D` |  |
+|  | `0x1001000E` |  |
+|  | `0x1001000F` |  |
 :::
 ::: {}
 | Etiqueta | Adreça | Contingut |
 | :--- | :--- | :--- |
-|  | `0x1001 0010` |  |
-|  | `0x1001 0011` |  |
-|  | `0x1001 0012` |  |
-|  | `0x1001 0013` |  |
-|  | `0x1001 0014` |  |
-|  | `0x1001 0015` |  |
-|  | `0x1001 0016` |  |
-|  | `0x1001 0017` |  |
-|  | `0x1001 0018` |  |
-|  | `0x1001 0019` |  |
-|  | `0x1001 001A` |  |
-|  | `0x1001 001B` |  |
-|  | `0x1001 001C` |  |
-|  | `0x1001 001D` |  |
-|  | `0x1001 001E` |  |
-|  | `0x1001 001F` |  |
+|  | `0x10010010` |  |
+|  | `0x10010011` |  |
+|  | `0x10010012` |  |
+|  | `0x10010013` |  |
+|  | `0x10010014` |  |
+|  | `0x10010015` |  |
+|  | `0x10010016` |  |
+|  | `0x10010017` |  |
+|  | `0x10010018` |  |
+|  | `0x10010019` |  |
+|  | `0x1001001A` |  |
+|  | `0x1001001B` |  |
+|  | `0x1001001C` |  |
+|  | `0x1001001D` |  |
+|  | `0x1001001E` |  |
+|  | `0x1001001F` |  |
 :::
 :::
 
 ```{.markdown filename="s2_1_2.md"}
-| Variable | Tipus | Mida | Alineació | Adreça | *Padding* |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | *Padding* [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `aa` |  |  |  |  |
-| `bb` |  |  |  |  |
-| `cc` |  |  |  |  |
-| `dd` |  |  |  |  |
-| `ee` |  |  |  |  |
-| `ff` |  |  |  |  |
+| `aa` |  |  |  |  |  |
+| `bb` |  |  |  |  |  |
+| `cc` |  |  |  |  |  |
+| `dd` |  |  |  |  |  |
+| `ee` |  |  |  |  |  |
+| `ff` |  |  |  |  |  |
 
 | Etiqueta | Adreça | Contingut |
 | :--- | :--- | :--- |
-|  | `0x1001 0000` |  |
-|  | `0x1001 0001` |  |
+|  | `0x10010000` |  |
+|  | `0x10010001` |  |
 ...
-|  | `0x1001 001F` |  |
+|  | `0x1001001F` |  |
 ```
 :::
 
@@ -191,42 +191,42 @@ RARS 0xfea800fb 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x0000000
 ::: {}
 | Etiqueta | Adreça | Contingut |
 | :--- | :--- | :--- |
-| `aa` | `0x1001 0000` | `0xFB` |
-| | `0x1001 0001` | `--` |
-| `bb` | `0x1001 0002` | `0xA8` |
-| | `0x1001 0003` | `0xFE` |
-| | `0x1001 0004` | `--` |
-| | `0x1001 0005` | `--` |
-| | `0x1001 0006` | `--` |
-| | `0x1001 0007` | `--` |
-| `cc` | `0x1001 0008` | `0xFD` |
-| | `0x1001 0009` | `0xFF` |
-| | `0x1001 000A` | `0xFF` |
-| | `0x1001 000B` | `0xFF` |
-| | `0x1001 000C` | `0xFF` |
-| | `0x1001 000D` | `0xFF` |
-| | `0x1001 000E` | `0xFF` |
-| | `0x1001 000F` | `0xFF` |
+| `aa` | `0x10010000` | `0xFB` |
+| | `0x10010001` | `--` |
+| `bb` | `0x10010002` | `0xA8` |
+| | `0x10010003` | `0xFE` |
+| | `0x10010004` | `--` |
+| | `0x10010005` | `--` |
+| | `0x10010006` | `--` |
+| | `0x10010007` | `--` |
+| `cc` | `0x10010008` | `0xFD` |
+| | `0x10010009` | `0xFF` |
+| | `0x1001000A` | `0xFF` |
+| | `0x1001000B` | `0xFF` |
+| | `0x1001000C` | `0xFF` |
+| | `0x1001000D` | `0xFF` |
+| | `0x1001000E` | `0xFF` |
+| | `0x1001000F` | `0xFF` |
 :::
 ::: {}
 | Etiqueta | Adreça | Contingut |
 | :--- | :--- | :--- |
-| `dd` | `0x1001 0010` | `0xA0` |
-| | `0x1001 0011` | `--` |
-| | `0x1001 0012` | `--` |
-| | `0x1001 0013` | `--` |
-| `ee` | `0x1001 0014` | `0xA7` |
-| | `0x1001 0015` | `0x16` |
-| | `0x1001 0016` | `0x00` |
-| | `0x1001 0017` | `0x00` |
-| `ff` | `0x1001 0018` | `0xFF` |
-| | `0x1001 0019` | `0xFF` |
-| | `0x1001 001A` |  |
-| | `0x1001 001B` |  |
-| | `0x1001 001C` |  |
-| | `0x1001 001D` |  |
-| | `0x1001 001E` |  |
-| | `0x1001 001F` |  |
+| `dd` | `0x10010010` | `0xA0` |
+| | `0x10010011` | `--` |
+| | `0x10010012` | `--` |
+| | `0x10010013` | `--` |
+| `ee` | `0x10010014` | `0xA7` |
+| | `0x10010015` | `0x16` |
+| | `0x10010016` | `0x00` |
+| | `0x10010017` | `0x00` |
+| `ff` | `0x10010018` | `0xFF` |
+| | `0x10010019` | `0xFF` |
+| | `0x1001001A` |  |
+| | `0x1001001B` |  |
+| | `0x1001001C` |  |
+| | `0x1001001D` |  |
+| | `0x1001001E` |  |
+| | `0x1001001F` |  |
 :::
 :::
 
@@ -248,42 +248,42 @@ RARS 0xfea800fb 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x0000000
 ::: {}
 | Etiqueta | Adreça | Contingut |
 | :--- | :--- | :--- |
-| `aa` | `0x1001 0000` | `0xFB` |
-| | `0x1001 0001` | `--` |
-| `bb` | `0x1001 0002` | `0xA8` |
-| | `0x1001 0003` | `0xFE` |
-| `cc` | `0x1001 0004` | `0xFD` |
-| | `0x1001 0005` | `0xFF` |
-| | `0x1001 0006` | `0xFF` |
-| | `0x1001 0007` | `0xFF` |
-| | `0x1001 0008` | `0xFF` |
-| | `0x1001 0009` | `0xFF` |
-| | `0x1001 000A` | `0xFF` |
-| | `0x1001 000B` | `0xFF` |
-| `dd` | `0x1001 000C` | `0xA0` |
-| | `0x1001 000D` | `--` |
-| | `0x1001 000E` | `--` |
-| | `0x1001 000F` | `--` |
+| `aa` | `0x10010000` | `0xFB` |
+| | `0x10010001` | `--` |
+| `bb` | `0x10010002` | `0xA8` |
+| | `0x10010003` | `0xFE` |
+| `cc` | `0x10010004` | `0xFD` |
+| | `0x10010005` | `0xFF` |
+| | `0x10010006` | `0xFF` |
+| | `0x10010007` | `0xFF` |
+| | `0x10010008` | `0xFF` |
+| | `0x10010009` | `0xFF` |
+| | `0x1001000A` | `0xFF` |
+| | `0x1001000B` | `0xFF` |
+| `dd` | `0x1001000C` | `0xA0` |
+| | `0x1001000D` | `--` |
+| | `0x1001000E` | `--` |
+| | `0x1001000F` | `--` |
 :::
 ::: {}
 | Etiqueta | Adreça | Contingut |
 | :--- | :--- | :--- |
-| `ee` | `0x1001 0010` | `0xA7` |
-| | `0x1001 0011` | `0x16` |
-| | `0x1001 0012` | `0x00` |
-| | `0x1001 0013` | `0x00` |
-| `ff` | `0x1001 0014` | `0xFF` |
-| | `0x1001 0015` | `0xFF` |
-| | `0x1001 0016` |  |
-| | `0x1001 0017` |  |
-| | `0x1001 0018` |  |
-| | `0x1001 0019` |  |
-| | `0x1001 001A` |  |
-| | `0x1001 001B` |  |
-| | `0x1001 001C` |  |
-| | `0x1001 001D` |  |
-| | `0x1001 001E` |  |
-| | `0x1001 001F` |  |
+| `ee` | `0x10010010` | `0xA7` |
+| | `0x10010011` | `0x16` |
+| | `0x10010012` | `0x00` |
+| | `0x10010013` | `0x00` |
+| `ff` | `0x10010014` | `0xFF` |
+| | `0x10010015` | `0xFF` |
+| | `0x10010016` |  |
+| | `0x10010017` |  |
+| | `0x10010018` |  |
+| | `0x10010019` |  |
+| | `0x1001001A` |  |
+| | `0x1001001B` |  |
+| | `0x1001001C` |  |
+| | `0x1001001D` |  |
+| | `0x1001001E` |  |
+| | `0x1001001F` |  |
 :::
 :::
 
@@ -298,7 +298,7 @@ RARS mostra el contingut de la memòria agrupat en **words de 4 bytes**. Cada fi
 
 Per exemple, el word a l'adreça `0x10010000` conté els bytes (de menor a major adreça):
 
-| @`+0` | @`+1` | @`+2` | @`+3` |
+| `+0` | `+1` | `+2` | `+3` |
 | :---: | :---: | :---: | :---: |
 | `0xFB` | `--` | `0xA8` | `0xFE` |
 
@@ -320,8 +320,8 @@ Address      Value (+0)  Value (+4)  Value (+8)  Value (+c)  Value (+10) Value (
 Per a cada word, identifiqueu a quina variable correspon cada byte i expliqueu per què apareix en aquest ordre.
 
 ```{.markdown filename="s2_1_3.md"}
-| Adreça | Valor RARS | `+0` | @`+1` | @`+2` | @`+3` | Variable(s) |
-| :--- | :---: | :---: | :---: | :---: | :--- | :--- |
+| Adreça | Valor RARS | `+0` | `+1` | `+2` | `+3` | Variable(s) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | `0x10010000` |  |  |  |  |  |
 | `0x10010004` |  |  |  |  |  |
 | `0x10010008` |  |  |  |  |  |
@@ -338,8 +338,8 @@ Per a cada word, identifiqueu a quina variable correspon cada byte i expliqueu p
 ::: {#sol-rars-vista-memoria}
 El byte de menor adreça ocupa la posició de la dreta; el de major adreça, la de l'esquerra:
 
-| Adreça | Valor RARS | `+0` | @`+1` | @`+2` | @`+3` | Variable(s) |
-| :--- | :---: | :---: | :---: | :---: | :--- | :--- |
+| Adreça | Valor RARS | `+0` | `+1` | `+2` | `+3` | Variable(s) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, *padding*, `bb` |
 | `0x10010004` | `0xfffffffd` | `0xFD` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 0–3) |
 | `0x10010008` | `0xffffffff` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 4–7) |
@@ -493,17 +493,21 @@ _start:
         li   a0, 0
         ecall
 ```
+
+::: {.callout-tip title="Comprovació pràctica"}
+En acabar l'execució a RARS, `s0` val `0x0000000C` (12). A la vista de memòria, el word de `A[1]` (`0x10010004`) mostra `0x0000000C` i el de `punter` (`0x1001000C`) mostra `0x10010008` (l'adreça de `A[2]`).
+:::
 :::
 
 ---
 
 ## Vectors
 
-Un **vector** és una seqüència d'elements del mateix tipus emmagatzemats consecutivament en memòria. L'adreça de l'element `v[i]` es calcula a partir de l'adreça base del vector i la mida de cada element (@sec-vectors, @sec-vector-indexacio):
+Un **vector** és una seqüència d'elements del mateix tipus emmagatzemats consecutivament en memòria. L'adreça de l'element `vec[i]` es calcula a partir de l'adreça base del vector i la mida de cada element, segons l'@eq-acces-aleatori-vector (@sec-vectors, @sec-vector-indexacio):
 
-$$@\texttt{v[i]} = @\texttt{v} + i \times \texttt{mida\_element}$$
+$$@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot T$$
 
-En RV32I, l'accés indexat requereix calcular aquesta adreça explícitament, ja que no hi ha mode d'adreçament indexat (@sec-operands-base-desplacament).
+on $T$ és la mida en bytes de cada element. En RV32I, l'accés indexat requereix calcular aquesta adreça explícitament, ja que no hi ha mode d'adreçament indexat (@sec-operands-base-desplacament).
 
 ---
 
@@ -525,7 +529,9 @@ int vec[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 ::: {#sol-vectors-declaracio}
 **1. Fórmula d'accés**:
 
-$$@\texttt{vec[i]} = @\texttt{vec} + i \times 4$$
+$$@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot 4$$
+
+(o, equivalentment, $@\texttt{vec} + i \cdot 4$, ja que `vec` és `&vec[0]`, @sec-punters-vectors)
 
 
 **2. Declaració en RV32I i fragment de codi**:
@@ -540,6 +546,10 @@ vec: .word 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
         add  t0, t0, t1     # t0 = @vec[i]
         lw   s1, 0(t0)      # s1 = vec[i]
 ```
+
+::: {.callout-tip title="Comprovació pràctica"}
+Afegiu `li s2, 7` abans del fragment i executeu-lo a RARS: `s1` ha de valer `0x00000002` (= `vec[7]`).
+:::
 :::
 
 ---
@@ -614,13 +624,17 @@ fi:
         li   a0, 0
         ecall
 ```
+
+::: {.callout-tip title="Comprovació pràctica"}
+En acabar l'execució a RARS, el segment de dades conté els 10 termes: `0`, `1`, `1`, `2`, `3`, `5`, `8`, `0xD`, `0x15`, `0x22`.
+:::
 :::
 
 ---
 
 ## Cadenes de caràcters
 
-Una **cadena de caràcters** (*string*) és un vector de caràcters (`char`) que finalitza amb el caràcter sentinella `'\0'` (valor `0x00`). La codificació utilitzada és ASCII de 7 bits (@nte-directives-ascii-asciz-string). Per recórrer una cadena de caràcters no cal conèixer-ne la longitud prèviament: n'hi ha prou de recórrer-lo fins a trobar el sentinella.
+Una **cadena de caràcters** (*string*) és un vector de caràcters (`char`) que finalitza amb el caràcter sentinella `'\0'` (valor `0x00`). La codificació utilitzada és ASCII de 7 bits (@sec-codificacio-caracters). Per recórrer una cadena de caràcters no cal conèixer-ne la longitud prèviament: n'hi ha prou de recórrer-la fins a trobar el sentinella.
 
 ---
 
@@ -697,4 +711,8 @@ fi:
         li   a0, 0
         ecall
 ```
+
+::: {.callout-tip title="Comprovació pràctica"}
+En acabar l'execució a RARS, la vista de memòria mostra el word a `0x10010000` com a `0x36383931` i el word a `0x10010004` com a `0x00000035`: llegint els bytes de menys a més adreça s'obté `"19865\0"` (@cau-rars-vista-memoria).
+:::
 :::
