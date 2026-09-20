@@ -663,8 +663,26 @@ va integrar. Els quatre identificadors que referencia existeixen tots
 que no deixaria cap referència trencada. Cap altre fitxer no el referencia,
 per tant la seva absència no trenca res avui.
 
-⏸️ **Pendent de decisió de l'usuari.** Les 23 línies se li han mostrat
-literalment.
+✅ **APLICAT** (`1f8132a`), amb dues millores aprovades per l'usuari sobre la
+versió de l'extret:
+
+1. Al final del primer paràgraf: «Per això el tipus del paràmetre ha de
+   declarar el nombre de columnes (`int m[][NC]`) i no pot ser `int m[][]`:
+   sense `NC` no es pot calcular el salt d'una fila a la següent, que és el
+   `i*NC` de la fórmula.» És la part no òbvia del pas d'una matriu, que
+   l'original tenia implícita.
+2. `# NC` → `# NC = nombre de columnes`.
+
+**Coherència de `NC` comprovada abans d'aplicar**: el callout germà
+`@tip-matriu-acces-ij` usa `NC` com a constant simbòlica, sense `.eqv` ni
+`#define`. La regla de `13_contrib.qmd:213` (les `.eqv` es defineixen abans
+de la primera directiva de segment) **no hi aplica**: tots dos són fragments
+il·lustratius, no programes complets.
+
+⚠️ **Verificació feta amb l'invariant**, no contra l'extret: amb les
+millores, `A4.qmd` **no ha de ser idèntic** a l'extret, i no ho és. El diff
+contra l'extret conté exactament les dues millores i res més. Render net,
+callout a l'HTML.
 
 ### `13_contrib.qmd` (3 xats) — TANCAT, 92 candidats, **tots B**
 
@@ -714,6 +732,62 @@ inline duplicaria el contingut i desfaria la migració.
 Resta: `sigles.md` → `12_sigles_simbols.qmd` (renom, `614f576`),
 `S_criteris.qmd` → `S_criteris_seleccio.qmd` (renom, `87015d2`), i la taula de
 model, que al repositori té una columna `Thinking` de més. Tot **B**.
+
+### Resta del grup 3 — TANCAT, tot B
+
+#### `A3.qmd` (2 xats) — prova concloent
+
+| Extret | Línies | Resultat |
+| :--- | ---: | :--- |
+| `baixat_EC_A3_E3_S3` | 2106 | **Idèntic** al repositori |
+| `baixat_EC_A5_E5_S5` | 2116 | 80 línies de diff |
+
+`git show b55e413~1:01_apunts/A3.qmd` és **byte a byte** l'extret d'A5E5S5:
+és l'estat del fitxer just abans del commit `b55e413` («A3-E3-S3 Fase C
+acabada», 13/07). Les 80 línies són exactament aquell commit. **Tot B**, sense
+necessitat de classificar hunk a hunk.
+
+Aquesta comparació —extret contra `<commit>~1`— és més barata i més
+concloent que el discriminador línia a línia quan se sospita que un extret és
+l'estat previ a un commit conegut. Val la pena tenir-la a mà.
+
+#### `S_criteris.qmd` (2 xats, 8 lín. cadascun) — tot B
+
+Formes anteriors a la revisió: «No associativitat» → «No-associativitat»
+(`92345e4`), «Compilació, muntatge i càrrega» → «Compilació, assemblatge,
+enllaçat i càrrega» (`b55e413`), i la reordenació de files de T9 (`87015d2`).
+
+📌 **Discrepància detectada, fora d'abast**: `13_contrib.qmd:155` fixa «No
+associativitat» (sense guionet) i `03_solucions/S_criteris_seleccio.qmd` usa
+«No-associativitat» (amb guionet) en dues files. El commit `92345e4` va
+introduir la forma amb guionet al solucionari, de manera que la del fitxer de
+convencions és anterior. **No s'ha tocat**: no és feina d'aquesta sessió.
+
+#### `index.qmd` (`baixat_EC_A5_E5_S5`, 69 lín.) — tot B
+
+Dos canvis, tots dos del commit `edac921` («retocs cosmètics pàgina
+benvinguda i barra esquerra»): «Avaluació» → «Qualificació» al títol de
+secció, i la retirada d'un bloc MathML de ~50 línies (`#eq-nota-final`,
+`.callout-equation`) substituït per l'expressió LaTeX simple. Cap fitxer no
+referencia `@eq-nota-final`.
+
+#### Fitxers idèntics — tancats sense feina
+
+`A1`, `E1`, `S1`, `A3`(A3E3S3), `E3`, `S3`, `E4`, `S4`, `A9`, `E9`, `S9`,
+`L4`(3passades), `L5`(Revisio_final), els 3 `RV32I_*` d'A3E3S3, i els 3
+`RARS_*`/`RV32I_*`/`Zicsr_*` de T9.
+
+#### `A2.qmd` (`baixat_EC_L4_revisio_interna_tres_passades`) — B
+
+A la Passada 0 sortia idèntic; ara difereix en 1 línia perquè `1489c84` (ahir)
+hi va corregir l'errata del slug. L'extret duu la forma dolenta
+(`nte-restricicons-alineacio`). **B**, evidentment.
+
+#### `baixat_S_criteris_seleccio.qmd` — procedència resolta
+
+Fitxer solt a l'arrel d'`extrets/`, sense xat propi. És **idèntic** al
+repositori: una còpia de referència de la versió ja integrada, no un
+deliverable. Tancat sense feina.
 
 ## Pendent — sessió B (grup 3)
 
@@ -890,6 +964,38 @@ dels quals no tenim extrets** (on el mode 2 és invisible per comparació).
    `13_contrib.qmd` ha de correspondre a una capçalera existent al fitxer
    destí. Va ser el símptoma que va destapar el CAS 1
    (`CLAUDE.md:93` → secció inexistent).
+
+### ⭐ Cas exemplar del discriminador `git log -S` — `fcvt.w.s` (2026-09-20)
+
+El millor argument a favor del `git log -S` obligatori que ha donat tota la
+feina. A `13_contrib.qmd`, dos extrets de juliol duien aquesta línia, absent
+del repositori:
+
+> - **`fcvt.w.s` trunca cap a zero** (mode RTZ) independentment del `fcsr`.
+>   Per arrodonir al més pròxim cal afegir 0,5 abans de la conversió.
+
+Sense discriminador semblava un candidat A raonable: text tècnic concret, amb
+aparença de precisió, que el repositori no té. **És tècnicament incorrecte.**
+
+`git log -S` mostra que el commit `92345e4` («A5-E5-S5 revisió interna
+parcial») el va **corregir**, i el repositori diu ara:
+
+> - **`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el camp `rm`** de la
+>   instrucció, no trunquen sempre. Sense operand de mode
+>   (`fcvt.w.s rd, rs1`), l'assemblador hi assigna `dyn` (mode dinàmic: el
+>   del registre `frm`, RNE per defecte a RARS). Per traduir el *cast*
+>   `(int)` de C (que trunca cap a zero) cal escriure explícitament
+>   `fcvt.w.s rd, rs1, rtz`.
+
+Coherent amb `A5.qmd:915`, que ja ensenya el `rtz` explícit.
+
+**Aplicar aquell hunk hauria reintroduït un error tècnic al fitxer de
+convencions del projecte** — el que llegeix cada sessió nova en arrencar. La
+inspecció del text, per acurada que sigui, no ho hauria detectat: calia
+preguntar a l'historial si allò havia existit i per què va desaparèixer.
+
+**Regla**: un hunk que sembla A i conté una afirmació tècnica verificable és
+precisament on el discriminador val més, no menys.
 
 6. **Dins d'un mateix lot de commits** (derivada del CAS 2): per a cada línia
    que un commit del lot afegeix, comprovar que segueix a l'arbre final. És
