@@ -283,9 +283,81 @@ Conseqüències verificades:
   eliminar la reversió.
 
 Això depassa l'abast de la recuperació de diffs (és una pèrdua del repositori,
-no un deliverable no integrat) i **queda pendent de decisió de l'usuari**.
-Els hunks C-5 i C-6 en són només la punta visible: reparar-los sense restituir
-les seccions deixaria `CLAUDE.md` apuntant igualment al buit.
+no un deliverable no integrat).
+
+**Correcció de l'usuari (2026-09-20)**: `CLAUDE.md:135` remet a
+`13_contrib.qmd §Figures i material gràfic`, que **sí existeix**
+(`13_contrib.qmd:467`): aquella remissió resol, i el que falta és la
+subsecció `#### Política de generació SVG` de dins. És una secció
+empobrida, no una remissió trencada. L'única remissió que apunta al buit és
+**`CLAUDE.md:93`** → `§Etiquetes {#sec-} a les capçaleres`. `A3.qmd_` ja no
+existeix al repositori; l'única seqüela viva és `13_contrib.qmd`.
+
+**Decisió presa**: C-5 i C-6 s'apliquen ara, amb la resta dels candidats A.
+Són un error factual autocontingut (un fitxer que no existeix, en dos llocs)
+i es corregeixen independentment de si les seccions es restauren. La
+restauració del 12/07 va a part.
+
+### Reconstrucció del que es va perdre el 12/07
+
+`git show 614f576 -- 13_contrib.qmd`: +57 / −29.
+`git show 4f973d5 -- 13_contrib.qmd`: +38 / −58 (la reversió és més gran que
+el sanejament: va desfer també text anterior).
+
+**De les 41 línies de contingut que `614f576` va afegir, 40 segueixen
+absents avui.** Agrupades:
+
+| Bloc perdut | Línies | Estat avui |
+| :--- | :--- | :--- |
+| `#### Política de generació SVG` (sencera: prioritat de SVG natiu, figures de nova creació, figures extretes de PDF amb `pymupdf`, figures de registres de bits, flux de pre-render, font de veritat de fonts i colors) | 18 | ❌ absent |
+| `### Etiquetes {#sec-} a les capçaleres` (criteris 1–7 de generació de l'slug + excepcions) | 13 | ❌ absent — és la secció que `CLAUDE.md:93` referencia |
+| `15_bibliografia.bib` (§Exemples d'aplicació i §Bibliografia) | 2 | ❌ absent (= hunks C-5 i C-6) |
+| Fitxers obligatoris per a les IAs: remissió a `CLAUDE.md §Fitxers de referència obligatòria` i a `§Model i effortness` | 3 | ❌ absent (avui hi ha la llista antiga duplicada, `13_contrib.qmd:792`) |
+| Taula Graphviz corregida | 1 | ⚠️ cas propi, vegeu sota |
+| Errata «l'esclat» → «l'escalat», «e.g.» → «p. ex.» | 1 | ❌ absent (l'errata és viva) |
+| Callout de separació de figures, referències provisionals | 2 | ❌ absent |
+
+**Descomptat com a NO-pèrdua** (reescriptura posterior legítima, no cal
+restaurar):
+
+- `- **Sortida del programa**: ... syscall `exit`. Hipòtesi de treball...`:
+  avui diu `syscall `exit2`. No es fa servir `startup.s`.`
+  (`13_contrib.qmd:205`). El text actual és **posterior i millor**: la
+  hipòtesi s'ha resolt. Categoria B.
+- `referencias` → `referències`: la forma correcta ja va guanyar. Cap acció.
+
+**Text obsolet que la reversió va reintroduir i encara és viu** (20 línies),
+el més visible:
+
+| Línia | Problema |
+| :--- | :--- |
+| `13_contrib.qmd:404` | `Noms de fitxers `A1.qmd`, `bibliografia.qmd`` — fitxer inexistent (= C-5) |
+| `13_contrib.qmd:601` | `Definició: al fitxer `bibliografia.qmd`` — íd. (= C-6) |
+| `l'esclat es fa amb width="40%"` | Errata ortogràfica + `e.g.` en lloc de `p. ex.` |
+| `13_contrib.qmd:792` | Llista de fitxers obligatoris duplicada, en lloc de la remissió a `CLAUDE.md` |
+| 4 comentaris `<!-- TODO: ... -->` | Es van migrar a `TODO.md` i van tornar |
+
+**Cas propi — taula Graphviz** (`13_contrib.qmd:512`). No és una restauració
+mecànica: **cap de les dues versions és correcta**. Avui diu origen
+`24_specs/T7_mc_politiques_resum__graphviz.svg` i destí
+`22_figs_originals/T7_mc_politiques_resum__graphviz.svg.svg` (doble
+extensió). Comprovat al disc:
+
+- Existeix: `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` (origen).
+- Existeixen: `auto_figs/T7_mc_politiques_resum__graphviz__original_{light,dark}.svg`
+  (destins reals).
+- No existeix res a `24_specs/` amb aquest nom, ni cap `.svg.svg`.
+
+La versió de juliol (`22_figs_originals/T7_mc_politiques_resum.gv` →
+`auto_figs/T7_mc_politiques_resum_light.svg`) tampoc coincideix amb els noms
+actuals. **Cal redactar-la de nou contra l'estat real**, no restaurar-la.
+
+**Pla acordat**: la reparació de `13_contrib.qmd` es fa **un cop classificat
+també contra `L6_revisio_interna/`**, en un sol bloc que inclogui els
+candidats A dels dos xats i la restauració del 12/07. Un fitxer, una decisió,
+un bloc de commits. Motiu de prioritat: `13_contrib.qmd` és el fitxer de
+convencions que llegeix cada sessió nova en arrencar; mentre estigui
+incomplet, cada sessió comença amb convencions parcials.
 
 ### 3. `L6_revisio_interna/` — GRUP 2 (control)
 
@@ -380,6 +452,76 @@ consultar-ho.
 
 `baixat_S_criteris_seleccio.qmd` és un fitxer solt a l'arrel d'`extrets/`, sense
 subdirectori de xat. Cal determinar-ne l'origen abans de classificar-lo.
+
+---
+
+## ⚠️ SEGON MODE DE FALLADA — per a l'auditoria posterior
+
+**No investigar ara.** Entrada oberta el 2026-09-20 arran del cas del 12/07.
+
+Aquest pipeline de recuperació busca **un sol** mode de fallada:
+
+> **Mode 1 — feina mai integrada.** Un xat produeix un deliverable i ningú no
+> el porta al repositori. Es detecta comparant els extrets amb el repositori:
+> el contingut és als extrets i no hi és al repo.
+
+El cas del 12/07 n'exhibeix un de **diferent**, que el pipeline no busca i que
+no hauria trobat si no fos que en teníem els extrets:
+
+> **Mode 2 — feina integrada i després esborrada en silenci.** Un commit
+> posterior arrossega una còpia vella d'un fitxer que **no és l'objecte del
+> commit** i en revessa canvis ja integrats. No hi ha conflicte, ni error, ni
+> rastre al missatge del commit: la feina simplement desapareix.
+
+Característiques del cas documentat (`4f973d5`, 12/07):
+
+- El missatge del commit parla de `12_sigles_simbols.qmd`; la víctima és
+  `13_contrib.qmd`, que no s'hi esmenta.
+- Relació insercions/supressions anòmala en el fitxer víctima: +38 / −58,
+  quan el commit és nominalment d'addició de contingut en un **altre** fitxer.
+- El commit arrossega fitxers de treball (`A3.qmd_`, 2110 línies), senyal d'un
+  `git add` massa ampli des d'un directori de treball desincronitzat.
+- Va sobreviure 2 mesos sense detectar-se perquè no trenca el render: el
+  llibre compila igual amb les convencions incompletes.
+
+### Proposta de detecció (per executar a l'auditoria)
+
+L'objectiu és trobar altres commits amb el mateix patró, **incloent-hi xats
+dels quals no tenim extrets** (on el mode 2 és invisible per comparació).
+
+1. **Commits amb supressions grans en fitxers que el missatge no esmenta.**
+   Per a cada commit, comparar la llista de fitxers amb supressions
+   significatives (p. ex. > 20 línies o > 25 % del fitxer) contra els noms de
+   fitxer citats al missatge. Els que no hi apareixen són candidats.
+
+   ```bash
+   git log --format='%H%n%s%n%b' --numstat -- '*.qmd' '*.md'
+   ```
+
+2. **Commits amb relació anòmala insercions/supressions** en un fitxer que no
+   és l'objecte declarat del commit (com aquí: +38 / −58 a `13_contrib.qmd`
+   en un commit sobre `12_sigles_simbols.qmd`).
+
+3. **Commits que arrosseguen fitxers de treball** (`*_`, `*.orig`, `*.bak`,
+   `*.qmd_`, còpies numerades): indici d'un `git add` massa ampli, i per tant
+   de possible reversió col·lateral.
+
+4. **Verificació creuada amb els missatges de commit que declaren
+   correccions**: `614f576` enumerava explícitament les seves correccions
+   («bibliografia.qmd→15_bibliografia.bib»). Comprovar que cada correcció
+   declarada en un missatge de commit **segueix viva** al fitxer avui és una
+   prova barata i d'alt rendiment. Es pot automatitzar parcialment extraient
+   els patrons `X→Y` dels missatges i comprovant que `Y` hi és i `X` no.
+
+5. **Remissions penjades**: tot `§Nom de secció` citat des de `CLAUDE.md` o
+   `13_contrib.qmd` ha de correspondre a una capçalera existent al fitxer
+   destí. Va ser el símptoma que va destapar aquest cas
+   (`CLAUDE.md:93` → secció inexistent).
+
+**Abast**: el mode 2 pot haver afectat qualsevol fitxer, no només els que
+tenim als extrets. Els punts 1–3 són purament històrics (només `git log`) i
+els 4–5 comproven l'estat actual; cap no depèn de tenir els deliverables
+originals.
 
 ---
 
