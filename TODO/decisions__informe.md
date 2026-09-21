@@ -452,3 +452,88 @@ Família de fitxers de contingut **fora** de `01_apunts/`–`04_laboratori/`, qu
 Corol·lari operatiu: un patró restringit a `'*.qmd'` ja cobreix l'arrel i
 `21_riscv/` si l'ordre és `git grep`. El filtre perillós no és l'extensió sinó
 el **prefix de directori**.
+
+---
+
+## Bloc 2 — dues llistes per revisar. **CAP CANVI APLICAT**
+
+Estat: llistes presentades a l'usuari, pendents de veredicte. Res tocat al
+corpus. Una sessió nova pot reprendre des d'aquí sense reconstruir res.
+
+### 2a — «escriviu un programa» on es demana un fragment
+
+**Ordre**: `git grep -in "escriviu un programa" -- .` → **6 ocurrències**,
+que confirma el compte de l'usuari.
+
+Cinc són a `E4.qmd`, no a un fitxer de T5: els slugs són `exr-p5-*` però el
+fitxer és `02_exercicis/E4.qmd`.
+
+**Discriminador aplicat** (de l'usuari): si les dades arriben ja en registres
+i l'enunciat no demana `.data`, ni `_start`, ni seqüència de sortida, és un
+fragment.
+
+| # | Ocurrència | Slug | Dades | Veredicte |
+| ---: | :--- | :--- | :--- | :--- |
+| 1 | `E4.qmd:58` | `exr-p5-sr-overflow-deteccio-natural` | ja a `t1`,`t2`; surt a `t0`,`t3` | **FRAGMENT** |
+| 2 | `E4.qmd:64` | `exr-p5-sr-overflow-deteccio-enter` | ja a `t1`,`t2`; surt a `t0` | **FRAGMENT** |
+| 3 | `E4.qmd:105` | `exr-p5-mul-programa` | ja a `t0`,`t2`; surt a `t3`,`t4` | **FRAGMENT** |
+| 4 | `E4.qmd:111` | `exr-p5-mul-overflow` | ja a `t1`,`t2`,`t3`; surt a `t0` | **FRAGMENT** |
+| 5 | `E4.qmd:556` | `exr-p5-div-programa` | ja a `t3`,`t1`; surt a `t2`,`t3` | **FRAGMENT** |
+| 6 | `L3.qmd:184` | `exr-compta-caracter` | `.data` amb `w`, `_start`, syscall 93 | **PROGRAMA — no tocar** |
+
+El cas 6 no era a la llista de l'usuari i és el contraexemple que valida el
+discriminador: té `.data`, `_start` i sortida, és el lliurament `s3_3_1.s`
+(taula de `L3.qmd:18`) i `verifica_laboratoris.py` el classifica com a
+ASSEMBLA / EXECUTA FINS AL FINAL. Els cinc d'E4 no són lliurables ni
+executables sols.
+
+**Límits d'instruccions redactats com «menys de N»**: cap als cinc casos.
+Ordre: `git grep -in "menys de [0-9]\|com a màxim [0-9]\|no més de [0-9]\|màxim de [0-9]" -- '*.qmd'`.
+Els límits del corpus són:
+
+- `E2.qmd:151` «no més de 12 línies» i `E3.qmd:45` «no més de 6 instruccions»
+  — forma «no més de N», **inclusiva i correcta**, no és «menys de N».
+- `L3.qmd:51` «com a màxim 4 instruccions» — ja convertida a la passada B.
+- La resta de resultats són «menys de 32 bits» i «menys de 5 línies»
+  (`13_contrib.qmd:849`), que no són límits d'enunciat.
+
+Conclusió: **no hi ha cap «menys de N» a convertir**. La feina de 2a es
+redueix a la redacció «programa» → «fragment» als cinc casos d'E4.
+
+### 2b — `void main()` vs. `int main`
+
+**Ordres**: `git grep -oh "int main" -- . | wc -l` → 26;
+`git grep -oh "void main" -- . | wc -l` → 23; `git grep -n "int main" -- .`
+per a la llista.
+
+Dels 26, **3 no són blocs de codi C a convertir**:
+
+- `13_contrib.qmd:404` — `int main() { return 0; }` dins la prosa que
+  exemplifica què va en format codi. No és codi del corpus.
+- `TODO/L2_tasques.md:162` i `TODO/T4_P_tasques.md:232-234` — registres.
+
+Queden **23**, que és exactament la xifra de l'usuari.
+
+**Dos casos on el context suggereix que `int main` hi és a posta:**
+
+| Ocurrència | Per què |
+| :--- | :--- |
+| `A2.qmd:859` | Dins `@tip-forcar-error-tipus`. És **codi C real que es compila de debò**: l'acompanya l'ordre `gcc codi_erroni__gcc_tipus.c -Wall -Wextra -Wpedantic` i la sortida literal del compilador, que cita «In function ‘main’». Té `return 0;`. És `int main(void)`, la forma de l'estàndard. Canviar-lo a `void main()` faria que l'exemple deixés de ser reproduïble amb `-Wpedantic` i contradiria la justificació que el bloc 3 ha de redactar (la qual diu que en C allotjat sí que cal `int main`). |
+| `E3.qmd:661` + `S3.qmd:685` | `@exr-p4-compilacio-relocacio`. L'exercici **tracta del flux de compilació**: `a.c`/`b.c`, fitxers `.o`, símbols externs, enllaçat. `int main() { return f(x); }` retorna un valor i el `return` és el que fa visible la referència externa a `f` i a `x`. Aquí el C **no** és notació per traduir a mà: és l'objecte d'estudi. |
+
+Nota: `E3.qmd:661` i `S3.qmd:685` són **el mateix bloc reproduït dues vegades**
+(enunciat i solució); si es decideix excloure'l, s'han d'excloure tots dos.
+
+**Comprovació que sosté el criteri**: dels 23, **només aquests 2 blocs
+contenen un `return`** dins de `main`. Verificat llegint els 14 restants amb
+`awk` sobre les 14 línies següents a cada ocurrència. Els altres 21 són
+notació d'un programa que l'alumne tradueix a mà, sense valor de retorn.
+
+**Cas a vigilar**: `E4.qmd:247` i `S4.qmd:351` van ser harmonitzats
+**cap a `int main`** per `TODO/T4_P_tasques.md §4.3`, que prenia E2/E3 com a
+precedent. Si ara s'unifica cap a `void main()`, aquella decisió es reverteix.
+No és contradicció —aleshores no existia la justificació que el bloc 3 ha
+d'escriure— però convé que consti.
+
+**Pendent de veredicte de l'usuari**: si els 23 o si 21 (excloent A2 i el
+parell E3/S3).
