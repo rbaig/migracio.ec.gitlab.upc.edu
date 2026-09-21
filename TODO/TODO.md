@@ -6,7 +6,7 @@ informes de l'auditoria i els 23 fitxers dels set registres de `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**49 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+**48 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,7 +16,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 ```
 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
-`§Tasques per tema` 19 · `§Tasques globals` 10.
+`§Tasques per tema` 19 · `§Tasques globals` 9.
 
 ---
 
@@ -307,39 +307,6 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
   La fila duplicada de *Toolchain* ja no hi és (verificat 2026-07-13: la taula té una sola fila per ítem).
 
-- **`index.qmd:146` — l'enllaç «Còpia local» de `rars1_6.jar` apunta a un fitxer que no és al repositori.** L'àncora `<a href="04_laboratori/rars1_6.jar" download>Còpia local</a>` no pot funcionar: `04_laboratori/` només conté `L1.qmd`–`L6.qmd` i `Lcalendari.qmd`.
-
-  **És l'únic enllaç de descàrrega local de tot el corpus:**
-
-  ```bash
-  git grep -n "download>" -- '*.qmd' ':!TODO/'   # una sola línia: index.qmd:146
-  ```
-
-  **Gravetat: menor.** La mateixa línia ofereix **dos** enllaços — el de la *release* de GitHub, que funciona, i la «Còpia local», que no. L'alumne no queda bloquejat: és el recurs de reserva el que falla, i ho fa en silenci.
-
-  **El fitxer hi va ser, i la supressió és deliberada i documentada.** No és cap pèrdua silenciosa: el cos del commit que l'elimina ho diu explícitament. L'historial:
-
-  | Commit | Què va passar |
-  | :--- | :--- |
-  | `1d57f8d` (inicial) | El `.jar` hi és, a `laboratori/` |
-  | `9f6ba6f` | Mogut a `04_L/rars1_6.jar` |
-  | `c5d9416` | Mogut a `04_laboratori/rars1_6.jar` |
-  | **`fbf7c3d`** (2026-07-11) | **Eliminat** — 1 860 244 bytes. El cos del commit ho declara: «Elimina `04_laboratori/rars1_6.jar` (binari ja no present al disc)» |
-
-  ```bash
-  git log --oneline --diff-filter=D --all -- '*.jar'   # fbf7c3d
-  git show fbf7c3d --format='%s%n%n%b' --no-patch      # el cos declara la supressió
-  ```
-
-  El que va quedar sense actualitzar són **les dues remissions**: l'àncora d'`index.qmd:146` i la línia de l'arbre del `README.md` (aquesta última, corregida el 2026-09-21). És la mateixa forma que la resta del que s'ha corregit avui: no es perd res, queda un rastre apuntant al buit.
-
-  **Dues sortides, i la decisió és de l'usuari:**
-
-  1. **Restaurar el binari** — `git checkout c5d9416 -- 04_laboratori/rars1_6.jar`. ⚠️ No és recuperar una pèrdua: és **revertir una decisió presa el juliol de 2026**, i tornaria a posar 1,8 MB de binari al repositori per servir un **recurs de reserva** quan l'enllaç primari a la *release* de GitHub funciona.
-  2. **Assumir que no hi ha de ser** — llavors cal **eliminar l'àncora d'`index.qmd:146`**, deixant l'enllaç de GitHub. Això toca corpus, i és coherent amb la decisió de `fbf7c3d`.
-
-  📌 **Nota de mètode.** És el germà de l'enllaç de `startup.s` que la sessió 2 va eliminar d'`index.qmd`, on ja es va anotar que apuntava a un fitxer inexistent. Aquella comprovació es va fer **sobre la línia que s'esborrava**, no com a escombrada de totes les àncores `download` del corpus, i per això aquest ha trigat cinc hores a aparèixer. La regla de sempre, en un lloc nou: **quan trobis un cas d'una forma, escombra la forma.**
-
 ---
 
 ## Entrades retirades en la reescriptura del 2026-09-21
@@ -367,7 +334,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | `void main()` vs `int main()` | **Decisió presa i executada** a la passada C, bloc 2b (`b3072a6`) | Regla a `13_contrib.qmd:469`, justificació a `:471`, blocs protegits a `:479`. Estat del corpus: 40 `void main` i 4 `int main`, que són els **tres protegits** (`A2:797`, `E3:661`, `S3:685`) més `A2:1960`, que és la nota per a l'alumne, no codi |
 | `index.qmd` — enllaç a `laboratori/L0/TODO.s` | RESOLTA: ja no hi és | — |
 | `index.qmd` — fila duplicada de Toolchain | RESOLTA parcialment; la resta viu a §`index.qmd` | Aquest fitxer |
-| `index.qmd` — URL de la còpia local de RARS | RESOLTA: `index.qmd:179` | — |
+| `index.qmd` — enllaç «Còpia local» de `rars1_6.jar` | **Executada (decisió de l'usuari, 2026-09-21)**: el binari es queda **fora del repositori** i l'enllaç primari és la *release* de GitHub. Eliminada l'àncora `<a href="04_laboratori/rars1_6.jar" download>` d'`index.qmd:146`, mantenint la frase i l'enllaç de GitHub. Coherent amb `fbf7c3d` (2026-07-11), que va eliminar el binari perquè ja no era al disc. L'entrada antiga d'aquesta taula («URL de la còpia local: RESOLTA, ja hi és») era la que havia introduït l'àncora | **Cap còpia pendent**: `git grep -n "download>" -- '*.qmd' ':!TODO/'` → cap, i `git grep -n "04_laboratori/rars1_6"` → cap. No queda cap rastre apuntant al fitxer. El `README.md:174` el cita com a descàrrega externa, que és correcte |
 
 ### Caduques per mesura
 
