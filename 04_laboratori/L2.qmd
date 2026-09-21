@@ -367,6 +367,7 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 | `*pdada` | |
 : {.striped .hover}
 
+Comproveu que, en assemblar la declaració a RARS, el word a `0x10010000` mostra `0x00000003` i el word a `0x10010004`, `0x10010000`.
 :::
 
 ---
@@ -388,7 +389,7 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 En carregar `dada` (o `*pdada`) en un registre amb `lh`, el valor s'estén en signe a 32 bits: `0x00000003`.
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Assembleu la declaració a RARS: a la vista de memòria, el word a `0x10010000` mostra `0x00000003` (el `short` `dada` seguit de 2 bytes de padding) i el word a `0x10010004` mostra `0x10010000` (el punter `pdada`).
+No cal executar el programa: n'hi ha prou d'assemblar-lo i obrir la vista del segment de dades, on es veuen el `short` `dada` seguit de 2 bytes de padding i, a continuació, el punter `pdada`.
 :::
 :::
 
@@ -411,6 +412,8 @@ void main() {
     A[1] = temp;
 }
 ```
+
+Comproveu que, en acabar l'execució, `s0` val `0x0000000C` (12), que `A[1]` (`0x10010004`) conté `0x0000000C` i que `punter` (`0x1001000C`) conté `0x10010008`, l'adreça de `A[2]`.
 :::
 
 ---
@@ -451,7 +454,7 @@ _start:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-En acabar l'execució a RARS, `s0` val `0x0000000C` (12). A la vista de memòria, el word de `A[1]` (`0x10010004`) mostra `0x0000000C` i el de `punter` (`0x1001000C`) mostra `0x10010008` (l'adreça de `A[2]`).
+El resultat es reparteix entre dues vistes de RARS: `s0` a la finestra de registres i els valors de `A[1]` i `punter` al segment de dades. Avançant pas a pas es pot seguir com `punter` s'escriu abans que `A[1]`.
 :::
 :::
 
@@ -478,6 +481,8 @@ int vec[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 
 1. Escriviu la fórmula per calcular l'adreça de `vec[i]` en funció de l'adreça base de `vec` i de l'índex `i`.
 2. Escriviu un fragment de codi RV32I, amb la declaració corresponent, que copiï el valor de `vec[i]` al registre `s1`, suposant que `i` es troba al registre `s2`.
+
+Comproveu que, afegint `li s2, 7` abans del fragment i executant-lo a RARS, `s1` val `0x00000002` (= `vec[7]`).
 :::
 
 ---
@@ -502,10 +507,6 @@ vec: .word 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
         add  t0, t0, t1     # t0 = @vec[i]
         lw   s1, 0(t0)      # s1 = vec[i]
 ```
-
-::: {.callout-tip title="Comprovació pràctica"}
-Afegiu `li s2, 7` abans del fragment i executeu-lo a RARS: `s1` ha de valer `0x00000002` (= `vec[7]`).
-:::
 :::
 
 ---
@@ -528,6 +529,8 @@ void main() {
     }
 }
 ```
+
+Comproveu que, en acabar l'execució, el segment de dades conté els 10 termes: `0x0`, `0x1`, `0x1`, `0x2`, `0x3`, `0x5`, `0x8`, `0xD`, `0x15`, `0x22`.
 :::
 
 ---
@@ -580,10 +583,6 @@ fi:
         li   a0, 0
         ecall
 ```
-
-::: {.callout-tip title="Comprovació pràctica"}
-En acabar l'execució a RARS, el segment de dades conté els 10 termes: `0`, `1`, `1`, `2`, `3`, `5`, `8`, `0xD`, `0x15`, `0x22`.
-:::
 :::
 
 ---
@@ -616,6 +615,8 @@ void main() {
 Traduïu el programa a RV32I. La variable `i` s'emmagatzema al registre `s0`.
 
 **Nota**: la conversió de dígit a caràcter ASCII consisteix a sumar el valor del dígit al codi ASCII de `'0'` (`0x30`). Per interpretar el contingut de `cadena` a la vista de memòria de RARS, vegeu @cau-rars-vista-memoria.
+
+Comproveu que, en acabar l'execució, el word a `0x10010000` mostra `0x36383931` i el word a `0x10010004`, `0x00000035`.
 :::
 
 ---
@@ -669,6 +670,6 @@ fi:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-En acabar l'execució a RARS, la vista de memòria mostra el word a `0x10010000` com a `0x36383931` i el word a `0x10010004` com a `0x00000035`: llegint els bytes de menys a més adreça s'obté `"19865\0"` (@cau-rars-vista-memoria).
+Llegint els bytes d'aquests dos words de menys a més adreça —és a dir, invertint l'ordre amb què RARS els mostra dins de cada word (@cau-rars-vista-memoria)— s'obté `"19865\0"`.
 :::
 :::
