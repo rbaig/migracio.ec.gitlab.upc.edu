@@ -74,9 +74,9 @@ SUPERSEDED = {
 # es deriva únicament del contingut del bloc (vegeu Block.is_subroutine_fragment
 # i check_e1_start_order), no d'aquesta taula.
 INCOMPLETE_BY_DESIGN = {
-    ("L3", "s3_4_2.s", 1): "conté el comentari `# update: vegeu @sol-update "
-                            "(inseriu el codi aquí)` — la subrutina update "
-                            "l'ha d'enganxar l'alumne.",
+    ("L3", "s3_4_2.s", 1): "conté el comentari `# update: vegeu la solució de "
+                            "s3_4_1.s (inseriu el codi aquí)` — la subrutina "
+                            "update l'ha d'enganxar l'alumne.",
 }
 
 

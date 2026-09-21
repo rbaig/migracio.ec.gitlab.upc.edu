@@ -116,17 +116,24 @@ Regles operatives:
 
 - Pots fer canvis d'ordre i crear, reanomenar o eliminar seccions, figures, taules, llistes, etc.
 - Interromp l'execució només si tens un dubte que hagi de resoldre l'usuari; mostra-li les opcions disponibles.
-- Claude Code: fes només canvis locals. L'usuari actualitza el repositori manualment.
+- Claude Code: pots fer commit i `push` a `origin`, però **només de canvis que l'usuari hagi confirmat explícitament**. Fix-forward sempre: no reescriguis l'historial. L'informe de la feina en curs es publica a cada aturada, perquè la revisió es fa llegint el repositori.
+- El mirall de GitHub s'actualitza **automàticament** des de GitLab, amb un parell de minuts de retard. **No s'hi ha d'empènyer a mà** pel remot `mirror`: competiria amb la sincronització. Verificat el 2026-09-21.
 
 ### Model i effortness
 
-| Tasca | Model | Effortness | Thinking |
-| :--- | :--- | :--- | :--- |
-| Revisió tècnica o lingüística de teoria | Sonnet | Normal | No |
-| Solucionari (`Sx.qmd`) | Opus | High | No |
-| Tasques operatives (reorganització, neteja de fitxers) | Sonnet | Low | No |
-| Neteja de warnings del render | Sonnet | Low–Medium | No |
+| Tasca | Model | Effort |
+| :--- | :--- | :--- |
+| Revisió tècnica o lingüística de teoria | Sonnet | Normal |
+| Solucionari (`Sx.qmd`) | Opus | High |
+| Tasques operatives (reorganització, neteja de fitxers) | Sonnet | Low |
+| Neteja de warnings del render | Sonnet | Low–Medium |
+| Classificar diferències amb criteri (moltes decisions independents, cadascuna amb el seu veredicte) | Opus | High |
+| Aplicar decisions ja preses i escrites (l'experiència de les passades A, B i C mostra que aplicar **no és mecànic**: l'especificació filtra i afloren judicis que ningú no havia previst) | Opus | High |
+| Escombrades del corpus amb un discriminador (`git grep` + veredicte cas a cas, inclosos els contraexemples) | Opus | Medium–High |
+| Substitucions mecàniques amb el compte ja verificat (l'abast i la xifra ja són comprovats **abans** de començar; només queda substituir) | Sonnet | Low |
 
+- L'**effort** és la palanca del raonament estès: en aquesta versió de Claude Code **no hi ha cap interruptor de *Thinking* a part**.
+- El model es tria per si el criteri ja és escrit **i verificat**, no pel nom de la tasca. I qualsevol configuració, en trobar una cosa que l'especificació no cobreix, **s'atura** en lloc de decidir-la.
 - Si la tasca canvia, indica-ho explícitament.
 - Si vols que et canviï la configuració, digues-m'ho.
 
