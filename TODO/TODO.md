@@ -4,7 +4,31 @@
 
 Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
-- **`startup.s`**: ~~mantenir o eliminar?~~ **RESOLTA — EXCLOURE (2026-07-19, decisió d'assignatura amb tots els professors):** s'exclou totalment el mecanisme `startup.s` / `main` com a punt d'entrada; es manté `_start` com a punt d'entrada, amb sortida via `li a7, 93` + `ecall`. Els blocs actualment comentats relatius a l'opció «amb `startup.s`» es poden **eliminar** (no cal mantenir-los comentats): A2.qmd (`#imp-programa-esquelet`/`#imp-exception-handler`), A3.qmd (`#tip-rars-main-multinivell`), `index.qmd` (descàrrega i configuració de l'*Exception Handler*). Afecta també E9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93`. Execució d'aquesta neteja pendent: vegeu `§Tasques per tema → Laboratori → Extensions al corpus derivades de la revisió interna de L4`.
+- **`startup.s`**: ~~mantenir o eliminar?~~ **RESOLTA — EXCLOURE (2026-07-19, decisió d'assignatura amb tots els professors):** s'exclou totalment el mecanisme `startup.s` / `main` com a punt d'entrada; es manté `_start` com a punt d'entrada, amb sortida via `li a7, 93` + `ecall`. Els blocs actualment comentats relatius a l'opció «amb `startup.s`» es poden **eliminar** (no cal mantenir-los comentats): A2.qmd (`#imp-programa-esquelet`/`#imp-exception-handler`), A3.qmd (`#tip-rars-main-multinivell`), `index.qmd` (descàrrega i configuració de l'*Exception Handler*). Afecta també E9: `exr-p9-syscall-programa` demana la sortida amb `li a7, 10`; unificar amb `li a7, 93`. Execució d'aquesta neteja pendent: vegeu `§Tasques per tema → Laboratori → Extensions al corpus derivades de la revisió interna de L4`. **EXECUTADA** (auditoria, sessió 2, 2026-09-21): eliminats els quatre blocs comentats (`A1.qmd:39-40`, `A2.qmd:744-810`, `A3.qmd:1541-1550`, `index.qmd:147-151` i `:160-167`) i unificats `E9:72` i `S9:201` a `li a7, 93`. Vegeu la preservació de dades de sota.
+
+  **Dades preservades del bloc eliminat `A2.qmd:744-810`.** No existien en cap altre lloc del corpus (`git grep -c "00c000ef" -- . ':!TODO/'` → només A2). Es registren aquí perquè la supressió no se les endugui; documenten el mecanisme **exclòs**, de manera que només tenen valor si algú reobre mai la decisió del 19/07.
+
+  Bolcat de RARS en carregar un programa amb `startup.s` — les tres primeres instruccions de `.text`:
+
+  | Adreça | Codi | Bàsic | Línia font |
+  | :--- | :--- | :--- | :--- |
+  | `0x00400000` | `0x00c000ef` | `jal x1, 0x0000000c` | `jal main` |
+  | `0x00400004` | `0x00a00893` | `addi x17, x0, 10` | `li a7, 10` |
+  | `0x00400008` | `0x00000073` | `ecall` | `ecall` |
+
+  Flux complet documentat: `_start` → `main` → `exit` → `_exit`. RARS emulava `__start` i la syscall `exit` (número 10), però no la funció `exit` de la libc ni `_exit`. Contingut del fitxer `startup.s` tal com el presentava A2 (l'original de RARS, amb `__start` i `li a7, 10`, és a `TODO/laboratori/startup.s` fins que es buidi `TODO/`):
+
+  ```
+  .text
+  .globl _start
+  _start:
+          jal     main
+
+          li      a0, 0       # Valor de retorn de main a a0 (exit code)
+          li      a7, 93      # Número de servei a a7; 93 (sortida amb codi de sortida);
+                              #   a0 (codi de sortida)
+          ecall
+  ```
 - **Syntax highlighting**: confirmar que `.s` és correcte per a instruccions, macros i directives de RARS.
 - **Criteris de codi C**: completar.
 - **Plantilles Markdown** (`L2.qmd` i resta): posar-ne a tots excepte `L2.qmd`, o eliminar de `L2.qmd`?
