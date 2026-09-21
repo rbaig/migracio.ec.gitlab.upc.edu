@@ -462,7 +462,7 @@ El programa següent declara el vector global `alfabet` amb les lletres majúscu
 
 ```{.c filename="..."}
 char alfabet[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-char w1[16]      = "ARQUITECTURA";
+char w1[13]      = "ARQUITECTURA";
 char w2[16];
 
 int codifica(char *pfrasein, char *pfraseout) {
@@ -486,7 +486,7 @@ void main() {
 }
 ```
 
-La traducció RV32I següent conté **tres errors**, tots dins de `codifica`. La funció `g` és correcta. Identifiqueu cada error, expliqueu per què és incorrecte i escriviu la línia corregida.
+La traducció RV32I següent conté **tres errors**, tots dins de `codifica`. La funció `g` és correcta. Identifiqueu cada error, expliqueu per què és incorrecte i escriviu-ne la correcció. Les explicacions van com a comentaris dins del mateix `s3_5_1.s`, a la línia de cada correcció.
 
 ```{.s}
 .globl _start
@@ -518,11 +518,10 @@ g:
         ret
 
 codifica:
-        addi sp, sp, -16        # (A) reserva BA
+        addi sp, sp, -16        # reserva el BA
         sw   s0,  0(sp)
         sw   s1,  4(sp)
         sw   s2,  8(sp)
-                                # (B) ra no es desa
         mv   s0, a0             # s0 = pfrasein
         mv   s1, a1             # s1 = pfraseout
         li   s2, 0              # i = 0
@@ -532,10 +531,10 @@ while:
         beqz t0, fwhile
 
         la   a0, alfabet
-        mv   a1, s1             # (C) passa pfraseout en lloc de pfrasein
+        mv   a1, s1
         jal  ra, g
 
-        sb   a0, 0(s0)          # (D) escriu a pfrasein en lloc de pfraseout
+        sb   a0, 0(s0)
         addi s0, s0, 1
         addi s1, s1, 1
         addi s2, s2, 1
@@ -548,7 +547,6 @@ fwhile:
         lw   s0,  0(sp)
         lw   s1,  4(sp)
         lw   s2,  8(sp)
-                                # (E) ra no es restaura
         addi sp, sp, 16
         ret
 ```
@@ -559,9 +557,9 @@ Comproveu la correcció del programa un cop esmenats els errors: al final de l'e
 ---
 
 ::: {#sol-depuracio}
-El programa conté tres errors, identificats per les marques (B), (C) i (D):
+El programa conté tres errors, tots dins de `codifica`: el pròleg i l'epíleg no tracten `ra`, la crida a `g` rep el punter equivocat i el resultat s'escriu al vector equivocat.
 
-**Error 1 — (B) i (E): `ra` no es desa ni es restaura.**
+**Error 1 — el pròleg no desa `ra` i l'epíleg no el restaura.**
 
 `codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, no torna a `_start` sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica`.
 
@@ -571,30 +569,30 @@ Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
 
 ```{.s filename="RV32I"}
         # pròleg — afegir:
-        sw   ra, 12(sp)
+        sw   ra, 12(sp)         # codifica crida g, que sobreescriu ra
 
         # epíleg — afegir:
-        lw   ra, 12(sp)
+        lw   ra, 12(sp)         # recupera l'adreça de retorn cap a _start
 ```
 
-**Error 2 — (C): es passa `pfraseout` (`s1`) en lloc de `pfrasein` (`s0`) a `g`.**
+**Error 2 — `mv a1, s1` passa `pfraseout` (`s1`) a `g` en lloc de `pfrasein` (`s0`).**
 
 La funció `g` ha de rebre el punter al caràcter d'entrada per calcular-ne la lletra simètrica. Amb `mv a1, s1` rep el punter de sortida, que apunta a una posició de `w2` (inicialment buida), i retorna un resultat incorrecte.
 
 Correcció:
 
 ```{.s filename="RV32I"}
-        mv   a1, s0             # passa pfrasein
+        mv   a1, s0             # g ha de rebre el punter d'entrada
 ```
 
-**Error 3 — (D): el resultat s'escriu a `pfrasein` (`s0`) en lloc de `pfraseout` (`s1`).**
+**Error 3 — `sb a0, 0(s0)` escriu a `pfrasein` (`s0`) en lloc de `pfraseout` (`s1`).**
 
 El caràcter codificat que retorna `g` a `a0` s'ha d'escriure al vector de sortida. Amb `sb a0, 0(s0)` s'escriu sobre el vector d'entrada `w1`, corrompent-lo i deixant `w2` sense modificar.
 
 Correcció:
 
 ```{.s filename="RV32I"}
-        sb   a0, 0(s1)          # escriu a pfraseout
+        sb   a0, 0(s1)          # el caràcter codificat va al vector de sortida
 ```
 
 **Versió corregida de `codifica`**:
@@ -605,7 +603,7 @@ codifica:
         sw   s0,  0(sp)
         sw   s1,  4(sp)
         sw   s2,  8(sp)
-        sw   ra, 12(sp)         # (B) corregit
+        sw   ra, 12(sp)         # codifica crida g, que sobreescriu ra
         mv   s0, a0
         mv   s1, a1
         li   s2, 0
@@ -615,10 +613,10 @@ while:
         beqz t0, fwhile
 
         la   a0, alfabet
-        mv   a1, s0             # (C) corregit
+        mv   a1, s0             # g ha de rebre el punter d'entrada
         jal  ra, g
 
-        sb   a0, 0(s1)          # (D) corregit
+        sb   a0, 0(s1)          # el caràcter codificat va al vector de sortida
         addi s0, s0, 1
         addi s1, s1, 1
         addi s2, s2, 1
@@ -631,7 +629,7 @@ fwhile:
         lw   s0,  0(sp)
         lw   s1,  4(sp)
         lw   s2,  8(sp)
-        lw   ra, 12(sp)         # (E) corregit
+        lw   ra, 12(sp)         # recupera l'adreça de retorn cap a _start
         addi sp, sp, 16
         ret
 ```
