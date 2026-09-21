@@ -186,7 +186,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 
 - **`ecall`**: la convenció de crides al sistema Linux/RISC-V usa `a7` per al codi de servei (no `a0`) i admet fins a sis arguments (`a0`–`a5`).
 - **RSE**: cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
-- **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del hardware.
+- **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del maquinari.
 - **Zicsr**: les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
 - **Mode S**: el tractament de fallades de TLB per programari requereix mode S (`satp`, `stval`, `sfence.vma`). El cos del text descriu el mecanisme en mode M; l'aprofundiment cobreix mode S.
 
@@ -201,7 +201,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### Convencions globals del laboratori
 
 - **Punt d'entrada**: `_start` (no `main`). Directiva `.globl _start` al principi del fitxer.
-- **`_start` ha de ser la primera etiqueta de `.text`**: RARS inicia l'execució a la primera instrucció del segment de text, i l'opció «start at main» només reconeix l'etiqueta `main`. `_start` no ha de tenir pròleg ni epíleg, perquè no és callee de ningú i acaba amb la sortida `li a7, 93` + `ecall`; sí que ha d'usar registres segurs per a les dades pròpies que travessen crides. Aplicat a L4, L5 i L6, verificat empíricament amb RARS 1.6; pendent d'aplicar a L3.
+- **`_start` ha de ser la primera etiqueta de `.text`**: RARS inicia l'execució a la primera instrucció del segment de text, i l'opció «start at main» només reconeix l'etiqueta `main`. `_start` no ha de tenir pròleg ni epíleg, perquè no és callee de ningú i acaba amb la sortida `li a7, 93` + `ecall`; sí que ha d'usar registres segurs per a les dades pròpies que travessen crides. Aplicat a tot el laboratori (L1–L6) i verificat empíricament amb RARS 1.6.
 - **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit2`). No es fa servir `startup.s`.
 - **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
 - **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.

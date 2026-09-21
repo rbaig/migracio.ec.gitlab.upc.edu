@@ -96,7 +96,7 @@ La revisió interna de L4 (commit `3cae913`) va confirmar independentment el mat
 
 **Aplicat als tres `_start` de L5** (exercici 1 `abs`, exercici 2 `descompon` sol, exercici 3 programa complet): eliminat el pròleg/epíleg (desat/restauració de `ra` i, a l'exercici 3, de `s0`–`s2`), mantenint l'ús dels registres segurs `s0`–`s2` a l'exercici 3 per a les dades que travessen les dues crides. Actualitzades en coherència les dues taules d'anàlisi de registres segurs i bloc d'activació que en depenien (exercici 1 i exercici 3), que altrament haurien quedat inconsistents amb el codi. Reverificat a RARS 1.6 als tres exercicis: execució correcta, valors coincidents amb els documentats.
 
-`TODO/TODO.md` actualitzat en conseqüència: L5 ja no consta com a pendent en aquest punt (només queda L3). La regla encara no s'ha afegit a `13_contrib.qmd`, tal com indica el mateix TODO, perquè la consolidació de la convenció està supeditada a completar també la revisió de L3.
+`TODO/TODO.md` actualitzat en conseqüència: L5 ja no consta com a pendent en aquest punt. **Tancat** (auditoria, sessió 2, 2026-09-21): L3 també complia des del commit `b6c8124`, i la regla ja és consolidada a `13_contrib.qmd §Convencions globals del laboratori`, verificada sobre els 25 blocs de `.text` amb `_start` de L1–L6.
 
 # Fitxer final (actualitzat)
 
