@@ -251,6 +251,33 @@ Recompte comprovat abans/després: 139 → **144** amb `C`; 10 → **5** amb nom
 d'estil lliurament. Aquests 5 són **la desviació**, no la norma, i s'alinearan
 a la **passada C**, no ara. L2 ja ha quedat alineat com a efecte de P3.
 
+### `CLAUDE.md` — la regla operativa està desfasada (passada C)
+
+Contradicció detectada en arribar al push d'aquesta passada: el protocol de la
+feina demana publicar l'informe a cada aturada, però `CLAUDE.md §Regles
+operatives` encara diu «Claude Code: fes només canvis locals. L'usuari
+actualitza el repositori manualment».
+
+Veredicte de l'usuari: **el desfasat és `CLAUDE.md`**. Aquella regla descriu
+com es treballava abans. Ara Claude Code fa commit i push d'allò que l'usuari
+confirma, i **l'informe publicat és el mecanisme de revisió**. La salvaguarda
+de debò no és no publicar: és **no canviar res sense confirmació**, i es manté
+intacta.
+
+**No s'ha arreglat en aquesta passada** (fora d'abast de la passada A). Text de
+substitució acordat, per aplicar a la passada C:
+
+> - Claude Code: pots fer commit i `push` a `origin`, però **només de canvis
+>   que l'usuari hagi confirmat explícitament**. Fix-forward sempre: no
+>   reescriguis l'historial. L'informe de la feina en curs es publica a cada
+>   aturada, perquè la revisió es fa llegint el repositori.
+
+### `CLAUDE.md` — taula de «Model i effortness» (passada C)
+
+La taula no preveu el tipus de feina d'aquests dos dies —**classificació i
+aplicació de decisions**— i les files que hi ha no s'han fet servir. Cal
+revisar-la a la passada C i **proposar una taula nova** quan s'hi arribi.
+
 ### Un ús que `13_contrib.qmd` no preveu — decisió pendent
 
 Els marcadors `⚠️ codi_erroni__*.c ⚠️` i
