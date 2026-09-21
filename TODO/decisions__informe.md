@@ -455,10 +455,10 @@ el **prefix de directori**.
 
 ---
 
-## Bloc 2 — dues llistes per revisar. **CAP CANVI APLICAT**
+## Bloc 2 — dues llistes. **APLICAT** (aprovat per l'usuari)
 
-Estat: llistes presentades a l'usuari, pendents de veredicte. Res tocat al
-corpus. Una sessió nova pot reprendre des d'aquí sense reconstruir res.
+Estat: llistes aprovades amb un veredicte i un refinament de l'usuari, i
+aplicades. Commits `bcc9d52` (2a) i `b3072a6` (2b).
 
 ### 2a — «escriviu un programa» on es demana un fragment
 
@@ -537,3 +537,147 @@ d'escriure— però convé que consti.
 
 **Pendent de veredicte de l'usuari**: si els 23 o si 21 (excloent A2 i el
 parell E3/S3).
+
+---
+
+## Bloc 2 — veredicte de l'usuari i aplicació
+
+### 2a aplicat (`bcc9d52`)
+
+Els cinc d'E4 convertits a «fragment de codi». A cada enunciat s'hi ha ajustat
+també la represa anafòrica («El programa no ha de…» → «El fragment no ha
+de…») perquè la frase concordi.
+
+El sisè es queda, i el motiu, amb les paraules de l'usuari:
+
+> `exr-compta-caracter` té `.data`, `_start` i syscall 93, és el lliurament
+> `s3_3_1.s` i el verificador el classifica com a executable. **És el
+> contraexemple que valida el discriminador — un criteri que no exclou mai res
+> no s'ha provat.**
+
+Les solucions corresponents (`S4.qmd:103`, `:122`, `:866`) ja eren coherents:
+seqüències d'instruccions sense `.data`, `_start` ni sortida. Comprovat que la
+seva prosa no els anomena «programa» enlloc (l'única coincidència és
+«en programari», mot diferent).
+
+Els slugs `exr-p5-mul-programa` i `exr-p5-div-programa` **no es toquen**:
+reanomenar-los és un canvi transversal d'un altre abast.
+
+### 2b aplicat (`b3072a6`) — **la regla de `main`**
+
+L'usuari va refinar el criteri proposat i el resultat és millor que la
+proposta inicial de les dues bandes. **Forma exacta de la regla**, que la
+sessió del bloc 3 ha de registrar a `13_contrib.qmd §Estil de codi C` i que
+la justificació que hi redacti ha de dir el mateix:
+
+> **`void main()` quan el C és notació per traduir a mà a assemblador;
+> `int main` quan el C es compila de debò o quan la cadena de compilació és el
+> tema.**
+
+Raó de fons, en paraules de l'usuari: amb aquesta forma el corpus
+**demostra** les dues meitats de la justificació en lloc d'afirmar-ne una. El
+cas d'A2 **no és una excepció a la regla: és l'altra meitat de la regla**.
+
+**Discriminador empíric**, verificat independentment per totes dues bandes:
+dels blocs `.c` amb `int main`, **només tres tenen un `return` dins de
+`main`**, i són exactament els tres que es queden. La coincidència no és
+casual: és el discriminador.
+
+| Bloc | Paper |
+| :--- | :--- |
+| `A2.qmd:856` | Únic C del corpus que es compila de debò: `-Wall -Wextra -Wpedantic` i sortida de gcc citada literalment. Amb `void main()` gcc hi afegiria un diagnòstic nou i la citació deixaria de ser reproduïble. |
+| `E3.qmd:657` | `@exr-p4-compilacio-relocacio`: el C és l'objecte d'estudi. |
+| `S3.qmd:682` | El mateix bloc, reproduït a la solució. |
+
+**Correcció de xifra: són 19 convertides, no 21.** Les 23 «de contingut» que
+vaig comptar incloïen `13_contrib.qmd:404`, que és **prosa** exemplificant què
+va en format codi i mai va ser candidata a conversió. El compte correcte:
+
+| | Abans | Després |
+| :--- | ---: | ---: |
+| `int main` (contingut) | 23 | 4 |
+| `void main` (contingut) | 19 | 38 |
+
+Ordres: `git grep -oh 'int main' -- '*.qmd' ':!TODO/' \| wc -l` i l'anàloga per
+a `void main`. El pathspec `':!TODO/'` és imprescindible: sense ell el compte
+inclou els registres de `TODO/` i **el mateix informe**, que parla de les dues
+formes. Les 4 restants són els tres blocs protegits més la prosa de
+`13_contrib.qmd:404`.
+
+Nota metodològica: `git grep -c` compta **línies**, no ocurrències. Per a
+comptatges s'ha d'usar `git grep -oh … | wc -l`.
+
+### Reversió deliberada de l'harmonització de juliol
+
+`E4.qmd:247` i `S4.qmd:351` havien estat harmonitzats **cap a `int main`** per
+`TODO/T4_P_tasques.md §4.3`, que prenia E2/E3 com a precedent. Sota la regla
+nova **tornen a `void main()`**.
+
+Consta aquí explícitament, a petició de l'usuari, perquè qui llegeixi
+`TODO/T4_P_tasques.md §4.3` d'aquí a mesos no pensi que ens l'hem saltada:
+**és una reversió deliberada, no un descuit**. Aleshores la justificació del
+criteri no existia; ara sí, i sota la regla aquells dos blocs són notació per
+traduir a mà, no C compilable.
+
+### Verificació del bloc 2
+
+| Comprovació | Ordre | Resultat |
+| :--- | :--- | :--- |
+| Render complet | `make render` | **exit 0**, cap warning |
+| Referències no resoltes | `grep -rho '?@[a-z-]*' _book/*.html \| sort -u \| wc -l` | **0** |
+| Íd. al PDF | `grep -co '?@[a-z-]*' Estructura-de-computadors.tex` | **0** |
+| Laboratoris | `python3 25_scripts/verifica_laboratoris.py` | **exit 0**, «Cap troballa» |
+| «escriviu un programa» | `git grep -in "escriviu un programa" -- .` | només `L3.qmd:184`, volguda |
+| `int main` en contingut | `git grep -n "int main" -- '*.qmd' ':!TODO/'` | els 3 protegits + la prosa |
+
+### Escombrada de pèrdues — tots els commits de la passada
+
+Cada línia afegida pels commits de contingut (`953edca`, `4accc6c`,
+`a29a65b`) comprovada contra l'arbre de treball amb `git grep -qF`.
+**Cap pèrdua**: 0 línies absents.
+
+---
+
+## Estat en tancar aquesta sessió
+
+**Blocs 1 i 2: tancats i verificats.** Corpus tocat, render net, verificador a
+zero errors.
+
+**Bloc 3: no començat.** És autònom —toca `13_contrib.qmd`, `CLAUDE.md` i
+`25_scripts/verifica_laboratoris.py`, i no necessita res del corpus— i es farà
+en una sessió nova. El que ha de saber:
+
+1. **3a — justificació de `void main()`** a `13_contrib.qmd §Estil de codi C`.
+   Ha de registrar la regla **amb la forma exacta citada a §2b aplicat** i
+   dir el mateix que ella. Contingut exigit per l'usuari: l'estàndard de C
+   exigeix `int main` a les implementacions **allotjades**; en un entorn
+   **autònom** la forma del punt d'entrada és definida per la implementació,
+   i a EC no hi ha host (`#imp-directe-sobre-processador`) i aquell C no es
+   compila mai; ha de **reconèixer explícitament** que en un programa normal
+   de C sí que cal `int main`; l'estàndard especifica dues formes,
+   `int main(void)` i `int main(int argc, char *argv[])`, i **cap no és més
+   canònica que l'altra**. Si sembla que l'alumne també ho necessita veure,
+   proposar on, **sense aplicar-ho**.
+2. **3b — `CLAUDE.md §Regles operatives`**: substituir «Claude Code: fes només
+   canvis locals…» pel text acordat (ja transcrit a §`CLAUDE.md` — la regla
+   operativa està desfasada, més amunt en aquest informe), i afegir-hi que el
+   **mirall de GitHub s'actualitza automàticament des de GitLab**: no s'hi ha
+   d'empènyer a mà pel remot `mirror`. Verificat el 2026-09-21.
+3. **3c — `CLAUDE.md`, taula de «Model i effortness»**: proposar-ne una de
+   nova que prevegi la feina d'aquests tres dies (classificar diferències,
+   aplicar decisions preses, escombrar el corpus). **No aplicar-la** fins que
+   l'usuari la confirmi.
+4. **3d — `25_scripts/verifica_laboratoris.py`**: a `INCOMPLETE_BY_DESIGN`,
+   corregir **només la raó** de l'entrada `("L3", "s3_4_2.s", 1)`, que cita
+   `@sol-update` quan el bloc ara diu `s3_4_1.s`. **No decidir** si
+   `#exr-depuracio` hi ha d'entrar: aquell bloc assembla i falla en execució
+   a posta, que és una categoria diferent i va a l'auditoria.
+
+**Regles vigents per a la sessió nova**: les tres de protocol (§Regla de
+protocol adoptada en obrir la passada) i la de `git grep` (§Regla
+d'escombrada). Cap canvi sense confirmació explícita de l'usuari.
+
+**Per a l'auditoria, que ve després**: la classificació del bloc
+d'`#exr-depuracio` al verificador (assembla i falla en execució a posta) i la
+noció de «bloc no autònom» derivada del contingut en lloc de la taula
+codificada a mà.
