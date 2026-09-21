@@ -6,6 +6,18 @@ informes de l'auditoria i els 23 fitxers dels set registres de `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
+**48 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
+compten. Ordre que ho mesura:
+
+```bash
+head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) \
+  TODO/TODO.md | grep -cE '^- '
+```
+
+Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
+`§Tasques per tema` 19 · `§Tasques globals` 9.
+
 ---
 
 ## Decisions obertes
@@ -272,7 +284,7 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
 - **Figures externes (llicències)**: taula completa de figures extretes de PDFs (incloses fonts i llicències). Referència eliminada temporalment de `13_contrib.qmd`. Enllaça amb `§Decisions obertes → Figures portades d'extern`.
 
-- **Gestió d'errades post-commit**: definir protocol. ⚠️ **Referència circular coneguda**: `13_contrib.qmd §Gestió d'errades` existeix però només conté aquest mateix pendent. En resoldre-ho, o bé s'omple la secció, o bé se n'elimina la remissió circular.
+- **Gestió d'errades post-commit**: definir protocol. ⚠️ **La secció de destí és buida**: `13_contrib.qmd:756` té la capçalera `### Gestió d'errades` seguida directament de `## Eines`, sense cap contingut. En resoldre-ho, o bé s'omple la secció, o bé se n'elimina la capçalera i la tasca queda només aquí.
 
 ### Eines
 
@@ -328,7 +340,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 
 | Entrada | Comprovació que la retira |
 | :--- | :--- |
-| **A1. Slugs `{#sec-}` a T1, T2 i T5** | Mesurat **per forma**, excloent capçaleres dins de callouts (que l'entrada ja exceptuava): **cap** capçalera `##`–`####` sense etiqueta a A1, A2 ni A5. Coherent amb `CLAUDE.md`, que declara A1–A9 «complet» |
+| **A1. Slugs `{#sec-}` a T1, T2 i T5** | Mesurat **per forma**, excloent capçaleres dins de callouts (que l'entrada ja exceptuava): **cap** capçalera `##`–`####` sense etiqueta a **cap dels nou fitxers `A1`–`A9`** — més fort que l'abast de l'entrada, que només parlava de T1, T2 i T5. Coherent amb `CLAUDE.md`, que declara A1–A9 «complet». ⚠️ **Avís per a qui la refaci**: un `awk` que segueixi l'estat obert/tancat dels callouts amb un *toggle* de `^:::` **dona sis falsos positius** (`A2.qmd:399,600,714,792,896` i `A9.qmd:2254`), perquè els callouts encastats obren amb `::::` de quatre punts i descompensen el comptador. Les sis línies comencen amb un espai (` ## …`): són títols de callout, no capçaleres de document |
 | **A2. Identificador duplicat `sec-opt-acces-sequencial`** | `git grep -n "{#sec-opt-acces-sequencial}" -- '*.qmd' ':!TODO/'` → **una sola definició** (`A4.qmd:681`). Les altres 6 ocurrències són referències `@` |
 | **A3. Div sense tancar a `A7.qmd`** | 122 obertures `::: {` i 122 tancaments nus. `make render` de la sessió 2: **cap warning** |
 | **A4. Referències creuades no resoltes** | Cap de les cinc existeix al corpus: `@sec-ecall`, `@sec-operands-memoria`, `@imp-ec-alineacio-pila`, `@imp-exception-handler`, `@sec-politica-reemplacement` → `git grep` sense cap ocurrència |
