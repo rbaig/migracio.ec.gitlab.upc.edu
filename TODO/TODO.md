@@ -317,24 +317,26 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
   **Gravetat: menor.** La mateixa línia ofereix **dos** enllaços — el de la *release* de GitHub, que funciona, i la «Còpia local», que no. L'alumne no queda bloquejat: és el recurs de reserva el que falla, i ho fa en silenci.
 
-  ⚠️ **El fitxer hi havia estat, i la supressió sembla accidental.** No és que s'excloguès per mida: **no hi ha cap regla de `.jar` a `.gitignore`**. L'historial:
+  **El fitxer hi va ser, i la supressió és deliberada i documentada.** No és cap pèrdua silenciosa: el cos del commit que l'elimina ho diu explícitament. L'historial:
 
   | Commit | Què va passar |
   | :--- | :--- |
   | `1d57f8d` (inicial) | El `.jar` hi és, a `laboratori/` |
   | `9f6ba6f` | Mogut a `04_L/rars1_6.jar` |
   | `c5d9416` | Mogut a `04_laboratori/rars1_6.jar` |
-  | **`fbf7c3d`** (2026-07-11) | **Eliminat** — 1 860 244 bytes. El missatge del commit («`gen_regs.py`: fa opcional el preview HTML…») **no l'esmenta**: va caure de passada, amb `gen_regs.py` i un fitxer de `TODO/` |
+  | **`fbf7c3d`** (2026-07-11) | **Eliminat** — 1 860 244 bytes. El cos del commit ho declara: «Elimina `04_laboratori/rars1_6.jar` (binari ja no present al disc)» |
 
   ```bash
   git log --oneline --diff-filter=D --all -- '*.jar'   # fbf7c3d
-  git show --stat fbf7c3d | grep jar                   # Bin 1860244 -> 0 bytes
+  git show fbf7c3d --format='%s%n%n%b' --no-patch      # el cos declara la supressió
   ```
+
+  El que va quedar sense actualitzar són **les dues remissions**: l'àncora d'`index.qmd:146` i la línia de l'arbre del `README.md` (aquesta última, corregida el 2026-09-21). És la mateixa forma que la resta del que s'ha corregit avui: no es perd res, queda un rastre apuntant al buit.
 
   **Dues sortides, i la decisió és de l'usuari:**
 
-  1. **Restaurar-lo** — `git checkout c5d9416 -- 04_laboratori/rars1_6.jar`. El `README.md` tornaria a tenir raó i l'enllaç funcionaria. Cal valorar si es vol un binari d'1,86 MB al repositori.
-  2. **Assumir que no hi ha de ser** — llavors cal **eliminar l'àncora d'`index.qmd:146`** (deixant l'enllaç de GitHub, que funciona). Això toca corpus.
+  1. **Restaurar el binari** — `git checkout c5d9416 -- 04_laboratori/rars1_6.jar`. ⚠️ No és recuperar una pèrdua: és **revertir una decisió presa el juliol de 2026**, i tornaria a posar 1,8 MB de binari al repositori per servir un **recurs de reserva** quan l'enllaç primari a la *release* de GitHub funciona.
+  2. **Assumir que no hi ha de ser** — llavors cal **eliminar l'àncora d'`index.qmd:146`**, deixant l'enllaç de GitHub. Això toca corpus, i és coherent amb la decisió de `fbf7c3d`.
 
   📌 **Nota de mètode.** És el germà de l'enllaç de `startup.s` que la sessió 2 va eliminar d'`index.qmd`, on ja es va anotar que apuntava a un fitxer inexistent. Aquella comprovació es va fer **sobre la línia que s'esborrava**, no com a escombrada de totes les àncores `download` del corpus, i per això aquest ha trigat cinc hores a aparèixer. La regla de sempre, en un lloc nou: **quan trobis un cas d'una forma, escombra la forma.**
 
