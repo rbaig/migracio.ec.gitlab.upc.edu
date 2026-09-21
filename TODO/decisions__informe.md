@@ -681,3 +681,147 @@ d'escombrada). Cap canvi sense confirmació explícita de l'usuari.
 d'`#exr-depuracio` al verificador (assembla i falla en execució a posta) i la
 noció de «bloc no autònom» derivada del contingut en lloc de la taula
 codificada a mà.
+
+---
+---
+
+# Bloc 3 — convencions i documentació operativa. **TANCAT**
+
+Sessió 2026-09-21 (continuació). Model: Opus 5. Base: `ef0205f`.
+Commits: `d713262`, `a8e5df3`, `892c798`. Publicats a `origin/main`.
+
+No toca el corpus: tot el que s'hi ha afegit és prosa, taules i una nota nova.
+Els tres blocs `.c` protegits pel bloc 2b (`A2.qmd:859`, `E3.qmd:661`,
+`S3.qmd:685`) són intactes — verificat amb
+`git diff ef0205f..HEAD -- '*.qmd' | grep -E '^[+-].*main'`: cap línia de bloc
+de codi.
+
+| Punt | Què | Commit |
+| :--- | :--- | :--- |
+| 3a | Regla i justificació de `void main()` a `13_contrib.qmd §Estil de codi C` | `d713262` |
+| 3a | Nota per a l'alumne, `A2.qmd:2022` | `a8e5df3` |
+| 3b | `CLAUDE.md §Regles operatives` + mirall de GitHub | `892c798` |
+| 3c | Taula de «Model i effortness» | `892c798` |
+| 3d | Raó desfasada a `verifica_laboratoris.py:77` | `892c798` |
+
+## 3a — la justificació i la nota
+
+La justificació registra la regla amb la forma exacta del bloc 2b i cita els
+tres blocs amb `int main` **com l'altra meitat de la regla, no com a
+excepcions**.
+
+Afirmació estreta deliberadament: A2 és «l'únic C del corpus **del qual se
+cita literalment la sortida del compilador**», no «l'únic que es compila».
+Ordre: `git grep -n "gcc " -- '*.qmd' ':!TODO/'` → 3 resultats. Dos són
+`A2.qmd:201,204`, un compilador creuat sobre un `fitxer.c` genèric sense cap
+`main` a la vista, que no afecten la regla; només `A2.qmd:868` cita sortida.
+
+**Ubicació de la nota: corregida respecte de la proposta.** La proposta era
+`A2:776`; és **dins d'un comentari HTML** (`<!--` a `:745`, tancat a `:810`) i
+no es renderitza. S'ha posat a `A2.qmd:2022`, just abans del primer
+`void main()` del llibre (`:2030`), seguint la forma de
+`#cau-avancament-instruccions-bucles`, que avisa igual d'allò encara no
+presentat. Renderitza com a «Essencial 2.35», amb la referència resolta a
+«EC 1.1», immediatament abans d'«Exemple 2.32».
+
+**Nota de comptatge**: `git grep -oh 'int main' -- '*.qmd' ':!TODO/'` ja **no**
+és un discriminador net, perquè la convenció nova parla de les dues formes.
+Per comptar el corpus cal afegir-hi `':!13_contrib.qmd'`. Xifres després del
+bloc 3: 42 `void main` i 13 `int main`, de les quals només 3 són blocs de codi.
+
+## 3c — la taula
+
+Dos canvis demanats per l'usuari sobre la proposta:
+
+- **Fora la columna «Thinking»**: descrivia una interfície que ja no hi és (el
+  raonament estès va dins del control d'*effort*). Mantenir-la hauria fet que
+  algú la busqués i no la trobés — el mateix tipus d'instrucció morta que
+  aquesta passada ha anat netejant.
+- **«Aplicar decisions ja preses» puja a Opus/High.** L'evidència dels tres
+  dies el contradeia: les passades A i B eren exactament això i totes dues van
+  fer aflorar judicis reals (els blocs `.c` i la partició dels cinc callouts a
+  A; el `_start` ja existent i l'asimetria dels comentaris a B; `11_riscv.qmd`
+  fora de l'escombrada i el compte de 4-i-no-3 al bloc 1 de C). **Aplicar no és
+  mecànic: l'especificació filtra.** L'única fila barata és la substitució
+  mecànica, i va condicionada a tenir l'abast i el compte verificats *abans*.
+
+## Verificació final de la passada C
+
+| Comprovació | Ordre | Resultat |
+| :--- | :--- | :--- |
+| Render complet | `make render` | **exit 0**, cap warning |
+| Referències no resoltes, HTML | `grep -rho '?@[a-z-]*' _book/ --include=*.html \| sort -u \| wc -l` | **0** |
+| Íd., PDF | `pdftotext _book/Estructura-de-computadors.pdf - \| grep -c '?@'` | **0** |
+| Laboratoris | `python3 25_scripts/verifica_laboratoris.py` | **exit 0**, «Cap troballa» |
+| Escombrada de pèrdues | `git grep -qF` per línia afegida als 3 commits | **0 absents** |
+| Corpus intacte | `git diff ef0205f..HEAD -- '*.qmd'` | només prosa i taules |
+
+**Correcció metodològica**: el `grep` del `?@` s'havia fet sobre `_book/*.html`,
+que només agafa l'arrel; els capítols són a `_book/01_apunts/` etc., i els 5
+fitxers de l'arrel eren restes d'un render HTML antic. Refet amb `-r`. El
+resultat segueix sent 0, i **la xarxa primària és el `make render`**, que emet
+warning per cada referència no resolta i ha estat net els tres dies. La segona
+xarxa era redundant; que estigués mal enfocada s'anota i es refà a l'auditoria.
+
+---
+
+## Per a l'auditoria — troballes del bloc 3
+
+### 1. `#nte-programa-esquelet` té dues definicions al mateix fitxer
+
+Ordre: `git grep -n "{#nte-programa-esquelet" -- . ':!TODO/'`
+
+| Línia | Estat |
+| :--- | :--- |
+| `A2.qmd:730` | **Viva.** Esquelet complet: `.data`/`.text`, `li a0,0`, `li a7,93`, `ecall`. |
+| `A2.qmd:746` | **Comentada** (dins del `<!--` de `:745`). |
+
+**La premissa de la decisió 13 es manté**: `@nte-programa-esquelet` resol per
+la definició viva, i els tres llocs que hi apunten funcionen —`L1.qmd:37`,
+`L1.qmd:44` i `L2.qmd:63`, aquest últim el `s2_1_1.s` escrit a la passada A.
+Treure les plantilles de L2 no ha deixat ningú sense esquelet.
+
+Però **dues definicions del mateix identificador al mateix fitxer** és una
+situació que cal resoldre. Va a l'auditoria.
+
+### 2. Decisions vives amagades dins de comentaris HTML — amb un matís
+
+L'escombrada del corpus (`git grep -n "TODO\|Cal decidir\|Reactivar" --
+'*.qmd' ':!TODO/'`) dóna **38 resultats en 10 fitxers**: A1×1, **A2×10**,
+A3×2, A4×2, A5×2, A7×2, `S_criteris_seleccio`×1, L2×2, `13_contrib`×9,
+`index.qmd`×7.
+
+**Matís important, i inverteix el diagnòstic d'un dels dos casos.** La decisió
+del `startup.s` **no** és invisible al `TODO.md`: hi consta com a **RESOLTA el
+2026-07-19**, decisió d'assignatura amb tots els professors — s'exclou el
+mecanisme `startup.s`/`main` com a punt d'entrada i es manté `_start` amb
+`li a7, 93`. El `TODO.md` fins i tot **enumera els blocs comentats que es poden
+eliminar**, i hi inclou aquest d'A2.
+
+Per tant el problema d'`A2:744` no és que la decisió estigui amagada, sinó que
+**el comentari és obsolet i diu el contrari del que es va decidir**: «Reactivar
+si es manté l'esquelet específic d'EC amb `startup.s`», quan fa dos mesos que
+es va decidir **no** mantenir-lo. Les seves dues correccions pendents
+(`_start` no `__start`; `li a7, 93` no `a7, 10`) són exactament el que la
+resolució ja imposa. N'hi ha un de bessó a `A3.qmd:1541`, que hi remet.
+
+El cas de **`L2.qmd:156-163`** (alineació de `long long` a RARS: `.dword` a 4
+bytes en lloc de 8, «Cal decidir quina versió presentar als alumnes») **sí** és
+una decisió viva que no consta enlloc del `TODO.md`. Aquest és el cas pur.
+
+**Conseqüència per a l'auditoria**: la reescriptura del `TODO.md` ha
+d'escombrar **els comentaris HTML de tot el corpus**, no només el text
+renderitzat, i per dos motius diferents —(a) decisions vives que no consten
+enlloc, com la de `L2:163`; (b) comentaris obsolets que contradiuen decisions
+ja preses, com el d'`A2:744` i el seu bessó d'`A3:1541`. Els 38 resultats
+s'han de triar un per un: són una font de pendents que fins ara no s'havia
+comptat.
+
+### 3. Pendents heretats
+
+- Classificació del bloc d'`#exr-depuracio` al verificador (assembla i falla
+  en execució a posta) i noció de «bloc no autònom» derivada del contingut.
+- `CLAUDE.md`: la capçalera diu «Model i **effortness**» i la columna ara diu
+  «Effort». No s'ha tocat: el nom de la secció és referenciat des de
+  `13_contrib.qmd:890` i `CLAUDE.md:111`, i reanomenar-lo és transversal.
+- El `grep` del `?@`, refet amb l'abast correcte (vegeu §Verificació final).
