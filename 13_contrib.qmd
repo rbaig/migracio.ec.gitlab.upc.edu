@@ -463,6 +463,18 @@ El camp `filename` indica el llenguatge o el context del bloc:
 
 - Indentats: múltiples de 4.
 - Comentaris d'una sola línia: `//`. Més d'una línia: `/* */`.
+- Punt d'entrada: **`void main()` quan el C és notació per traduir a mà a assemblador; `int main` quan el C es compila de debò o quan la cadena de compilació és el tema.**
+
+**Per què `void main()`, si el C estàndard demana `int main`.** L'estàndard exigeix `int main` a les implementacions **allotjades** (*hosted*): les que corren sota un sistema operatiu que en recull el codi de retorn. En un entorn **autònom** (*freestanding*) la forma i el nom del punt d'entrada són **definits per la implementació**, i és aquest el cas d'EC: s'hi treballa directament sobre el processador, sense SO (@imp-directe-sobre-processador). A més, aquell C **no es compila mai**: és la notació del programa que l'alumne tradueix a mà a assemblador. Un `return` que ningú no recull seria una ficció, i `void` ho diu sense enganyar.
+
+Això val **dins d'EC i pel motiu dit**, no en general: en un programa de C normal, compilat per a un SO, **cal `int main`**. L'estàndard n'especifica dues formes, `int main(void)` i `int main(int argc, char *argv[])`; **cap de les dues no és més canònica que l'altra**, i la tria depèn de si el programa fa servir els arguments de la línia d'ordres.
+
+Els blocs que porten `int main` **no són excepcions: són l'altra meitat de la regla**, i hi són perquè el corpus la demostri sencera en lloc d'afirmar-ne només una meitat:
+
+| Bloc | Per què hi va `int main` |
+| :--- | :--- |
+| `A2.qmd` @tip-forcar-error-tipus | És l'únic C del corpus del qual se cita literalment la sortida del compilador: es compila de debò amb `gcc -Wall -Wextra -Wpedantic`. Amb `void main()`, gcc hi afegiria un diagnòstic nou i la citació deixaria de ser reproduïble. |
+| `E3.qmd`/`S3.qmd` @exr-p4-compilacio-relocacio | L'exercici tracta del **flux de compilació i enllaçat**: el C hi és l'objecte d'estudi, no notació. El `return f(x)` és justament el que fa visible la referència externa que s'ha de resoldre en l'enllaçat. |
 
 #### Estil de codi RISC-V
 
