@@ -129,8 +129,15 @@ Decisió del 19/07 (assignatura, tots els professors), mai executada.
 | `#imp-exception-handler` | 3 | **Totes dins dels blocs eliminats** (A1:40, A2:770, A3:1541, index:147/160) |
 
 `#nte-programa-esquelet` estava **duplicat**: la còpia comentada (`:746`) va
-desaparèixer amb el bloc i **el viu de `:730` queda**, amb les seves 6
-referències intactes (A3, A9, S9, L1×2, L2). Confirmat com demanava l'encàrrec.
+desaparèixer amb el bloc i **el viu de `:730` queda**. Confirmat com demanava
+l'encàrrec.
+
+⚠️ **Correcció posterior (bloc 1).** Aquest informe deia que en quedaven «6
+referències intactes (A3, A9, S9, L1×2, L2)». Eren **5** resolubles: la sisena
+era la de `S9:202`, que aquesta mateixa sessió havia escrit **dins d'un bloc
+`.s`**, on Quarto no resol les referències creuades. No comptava com a
+referència perquè no s'hi renderitzava com a tal. Corregida al bloc 1: ara la
+remissió és a la prosa sota el bloc i **les 6 són resolubles de debò**.
 
 **Dades.** Bloc a bloc, el que contenien que no fos la instrucció obsoleta:
 
