@@ -426,3 +426,29 @@ d'aquest bloc (assembla i falla en execució **a posta**) va a l'auditoria.
 | Referències no resoltes | `grep -rho '?@[a-z-]*' _book/*.html \| sort -u \| wc -l` | **0** |
 | Íd. al PDF | `grep -o "?@[a-z-]*" Estructura-de-computadors.tex` | **cap** |
 | Laboratoris | `python3 25_scripts/verifica_laboratoris.py` | **exit 0**, «Cap troballa» a les estàtiques |
+
+---
+
+## Regla d'escombrada — `git grep`, mai `grep -r`
+
+Elevada a regla arran de 1a (l'ocurrència oblidada era a `11_riscv.qmd`).
+
+**Tota escombrada d'aquesta passada i de l'auditoria es fa amb `git grep`.**
+Raó: `git grep` només veu fitxers **versionats**, de manera que cobreix l'arrel
+i `21_riscv/` i exclou `auto_riscv/` i `_book/` sense haver-hi de pensar.
+`grep -r` obliga a enumerar exclusions a mà, que és precisament com es
+perden ocurrències.
+
+Família de fitxers de contingut **fora** de `01_apunts/`–`04_laboratori/`, que
+és on es perden les escombrades mal delimitades:
+
+| Lloc | Què | Escombrar-hi? |
+| :--- | :--- | :--- |
+| Arrel | `11_riscv.qmd`, `12_sigles_simbols.qmd`, `13_contrib.qmd`, `14_LICENSE.qmd`, `index.qmd` | **Sí** |
+| `21_riscv/` | ~45 fragments inclosos amb `{{< include >}}`, versionats | **Sí** |
+| `auto_riscv/` | Generat, a `.gitignore` | **No** — es regenera |
+| `_book/`, `auto_figs/` | Sortida del render | **No** |
+
+Corol·lari operatiu: un patró restringit a `'*.qmd'` ja cobreix l'arrel i
+`21_riscv/` si l'ordre és `git grep`. El filtre perillós no és l'extensió sinó
+el **prefix de directori**.
