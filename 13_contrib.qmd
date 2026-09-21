@@ -788,6 +788,94 @@ make render
 
 - Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
+### Escombrades i verificació del corpus
+
+Una **escombrada** és tota cerca que pretén mesurar el corpus sencer: comptar
+ocurrències d'una forma, localitzar tots els casos d'una convenció o sostenir
+una afirmació sobre el conjunt. Aquestes regles surten totes d'una escombrada
+que va fallar; cadascuna en porta el cas.
+
+**1. `git grep`, mai `grep -r`.** `git grep` només veu fitxers versionats: cobreix
+l'arrel i `21_riscv/`, i exclou `auto_riscv/` (generat) i `_book/` sense haver-hi
+de pensar. `grep -r` obliga a enumerar exclusions a mà, que és com es perden
+ocurrències: l'escombrada de l'slug `desplacament-arithmetic` es va limitar a
+`01_apunts/` i `04_laboratori/` i va deixar la quarta ocurrència a
+`11_riscv.qmd`, que és contingut inclòs amb `{{< include >}}` i que cau fora de
+les carpetes numerades (`953edca`). Afegiu el pathspec `':!TODO/'` a tota
+escombrada, o la mesura s'inclou a si mateixa: el compte d'`int main`/`void main` sense el
+pathspec comptava els registres i l'informe que parlava de totes dues formes.
+I **`git grep -c` compta línies, no ocurrències**: per a comptatges,
+`git grep -o … | wc -l`.
+
+**2. Mesureu per forma, no per nom.** Un patró que busca noms concrets no mesura
+el que la regla defineix. El que RARS rebutja no és cap nom sinó **l'expressió
+aritmètica a l'operand**; el patró que buscava `NC*4`, `NC*2` i `.space` va
+donar 20 línies a `A4.qmd` i 5 a `S4.qmd` (`c2a9171`), i les xifres per forma
+eren 11 i 27 (`45f6cc2`) — a A4 inflava amb comentaris i repeticions, i a S4 se
+li escapaven `N*4`, `(N+1)*4`, `3*(N-1)*4` i les directives `.set`, o sigui una
+secció sencera, que la nota afegida amb la xifra dolenta deixava fora.
+
+**3. Cap afirmació «és l'únic» o «no n'hi ha cap» sense l'ordre exacta que la
+sosté**, i sense haver llegit el fitxer o el bloc sencer. Val igual per a les
+afirmacions que arriben ja mesurades des d'un encàrrec o d'un registre: una
+mesura pot no mesurar el que afirma, i verificar-la costa una ordre.
+
+**4. El patró ha de cobrir totes les formes i tots els tipus de fitxer.**
+Majúscules incloses (`-i`), i no només els `.qmd`. L'escombrada de «simple
+precisió» ho va fallar per les dues bandes alhora: un patró en minúscules
+deixava sis capçaleres de columna i de paràgraf a `A5.qmd` i `S5.qmd`, i un
+patró restringit als `.qmd` deixava nou ocurrències més que viuen als SVG de
+`22_figs_originals/` i al `24_specs/registres.toml`, que és la font de veritat
+de les figures de registres.
+
+**5. Per afirmar res sobre l'historial, pregunteu a l'historial**
+(`git log -S'<fragment>' -- <fitxer>`, `git log --all -- <ruta>`), no a l'arbre
+de treball. Un text absent del repositori pot ser feina no integrada o feina
+**retirada a posta**, i des de l'arbre les dues coses són idèntiques. El cas:
+dos extrets de juliol duien una línia sobre `fcvt.w.s` que semblava una millora
+tècnica; `git log -S` va mostrar que el commit `92345e4` l'havia corregida
+perquè era **incorrecta**. Reintroduir-la hauria posat un error tècnic en
+aquest mateix fitxer.
+
+`git log --all -- <ruta>` respon una pregunta diferent —si una cosa **hi va ser
+mai**— i és igual d'invisible des de l'arbre. El cas és de la capa de revisió,
+no de qui executava: de `04_laboratori/rars1_6.jar`, absent del repositori i
+sense cap regla de `.gitignore` per als `.jar`, se'n va concloure que no hi
+havia estat mai, i hi va ser des del commit inicial fins a `fbf7c3d`, que el va
+eliminar deliberadament i ho diu al cos del missatge. `git ls-files` i el
+`.gitignore` descriuen l'arbre d'avui; la pregunta era sobre l'historial.
+
+**6. Quan trobeu un cas d'una forma, escombreu la forma**: ni el nom sol, ni la
+línia sola. En excloure el mecanisme `startup.s`, l'escombrada pel nom va donar
+setze ocurrències i un panorama tranquil; la traça que de debò contradeia la
+decisió al llibre publicat era un bloc amb `.globl main` / `main:` / `ret` que
+**no conté la paraula «startup»**, i era al callout de bones pràctiques, tres
+línies abans de l'esquelet bo. Es va trobar escombrant les formes sintàctiques
+del mecanisme, no el seu nom, i el bloc diu ara `suma:` (`c2a9171`).
+
+**7. Abans d'afirmar que una línia arriba a l'alumne, comproveu `_quarto.yml`.**
+Un fitxer comentat als `chapters:` segueix sent del projecte (vegeu
+`CLAUDE.md §Volum`) i el seu contingut sortirà imprès quan es descomenti:
+l'únic «TODO» escrit com a text de llibre era a `S_criteris_seleccio.qmd`, que
+avui no es renderitza, i per això cap escombrada del `_book/` no el veia. A
+l'inrevés, aquest fitxer és **HTML-only** (`.content-visible when-format="html"`
+obert a l'inici i tancat al final): res del que s'hi escriu no arriba al PDF.
+L'escombrada es fa sempre **sobre el font**, no sobre la sortida.
+
+**8. Un marcador dins del corpus és una còpia.** Abans de fer-lo desaparèixer
+—o de retirar una entrada del `TODO.md`— comproveu **on en queda còpia** i
+digueu-ho. Dos casos amb desenllaç oposat: el comentari `fig-lru-roger` es va
+poder eliminar perquè el `TODO.md` ja en tenia l'entrada (i ara n'és l'única
+còpia, cosa que consta a l'entrada); en canvi el bloc comentat d'`A2.qmd`
+contenia un bolcat de RARS que no existia enlloc més
+(`git grep -c "00c000ef" -- . ':!TODO/'` → cap), i es va copiar al `TODO.md`
+**abans** de la supressió, no després: totes dues coses, al mateix commit
+`cef40b1`. L'inventari del que conté un bloc va a
+l'informe abans d'eliminar-lo.
+
+Sobre les referències creuades dins dels blocs de codi, vegeu §Blocs de codi:
+no n'hi ha d'haver, i el motiu hi és escrit.
+
 ### Protocol de contribució
 
 La branca `main` està **protegida**: tot canvi s'integra a través d'una **Merge Request (MR)**.
