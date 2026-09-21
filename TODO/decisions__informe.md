@@ -278,6 +278,34 @@ La taula no preveu el tipus de feina d'aquests dos dies —**classificació i
 aplicació de decisions**— i les files que hi ha no s'han fet servir. Cal
 revisar-la a la passada C i **proposar una taula nova** quan s'hi arribi.
 
+### `verifica_laboratoris.py` no dedueix el «bloc no autònom» — auditoria (passada B)
+
+Detectat en tancar el punt 4. El script **ja té** la noció de bloc que no ha
+d'assemblar sol, però com a **taula codificada a mà**, no com a propietat
+derivada del contingut:
+
+```python
+INCOMPLETE_BY_DESIGN = {
+    ("L3", "s3_4_2.s", 1): "conté el comentari `# update: vegeu @sol-update …`",
+}
+```
+
+`s3_4_2.s` crida `jal ra, update` i `update:` no hi és definit — és justament
+el que l'estudiant ha d'inserir. El bloc no és autònom **per disseny**, i el
+`OK` de l'informe surt d'aquesta entrada, no de cap anàlisi del bloc.
+
+Dues conseqüències:
+
+- **La raó ja està desfasada**: la taula cita `@sol-update` i el bloc diu ara
+  «vegeu la solució de `s3_4_1.s`». Una taula paral·lela al contingut divergeix
+  en silenci — el mateix motiu que va treure les plantilles `.markdown` a D3.
+- **`#exr-depuracio` no hi és**, i és el mateix cas per un altre camí: té tres
+  errors a posta. Un bloc pot ser no autònom per omissió (falta codi) o per
+  incorrecció deliberada (el codi hi és i està malament a propòsit).
+
+Cal una noció de **bloc no autònom** derivada del contingut. **No s'ha tocat
+res**: ni el script ni la taula. Fora d'abast de la passada B.
+
 ### Un ús que `13_contrib.qmd` no preveu — decisió pendent
 
 Els marcadors `⚠️ codi_erroni__*.c ⚠️` i

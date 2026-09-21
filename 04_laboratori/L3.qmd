@@ -93,7 +93,7 @@ Una sentència `if-then-else` aniuada es tradueix aplicant el patró de @sec-if-
 
 Traduïu a RV32I el programa C següent. Les variables globals `num` i `result` s'han de declarar a la secció `.data`. Tots els temporals van a registres `t`.
 
-```{.c filename="s3_2_1.c"}
+```{.c filename="C"}
 char   num    = '7';
 int    result = 0;
 
@@ -183,7 +183,7 @@ El patró de traducció d'un `while` (@sec-bucles) consisteix a avaluar la condi
 
 La cadena de caràcters `w` conté 31 dígits decimals seguits del sentinella `'\0'`. Escriviu un programa RV32I que compti quantes vegades apareix el caràcter `'4'` a `w` i deixi el resultat al registre `s0`.
 
-```{.c filename="s3_3_1.c"}
+```{.c filename="C"}
 char w[32] = "4444185720444938167204449251044";
 
 void main() {
@@ -304,7 +304,7 @@ Com que `update` és uninivell, els paràmetres `a0`–`a2` es poden usar direct
 
 La funció `moda` recorre la cadena `vec` de `num` caràcters, construeix un histograma local `histo[10]` i, per a cada caràcter, crida `update` (traduïda a @sol-update) per actualitzar el dígit més freqüent.
 
-```{.c filename="s3_4_2.c"}
+```{.c filename="C"}
 char w[32]    = "4444185720444938167204449251044";
 char resultat;
 
@@ -363,6 +363,18 @@ w:        .asciz "4444185720444938167204449251044"
 resultat: .byte  0
 
 .text
+
+_start:
+        la   a0, w
+        li   a1, 31
+        jal  ra, moda
+
+        la   t0, resultat
+        sb   a0, 0(t0)
+
+        li   a7, 93
+        li   a0, 0
+        ecall
 
 # update: vegeu la solució de s3_4_1.s (inseriu el codi aquí)
 
@@ -430,18 +442,6 @@ ffor2:
         lw   ra,  56(sp)
         addi sp, sp, 60
         ret
-
-_start:
-        la   a0, w
-        li   a1, 31
-        jal  ra, moda
-
-        la   t0, resultat
-        sb   a0, 0(t0)
-
-        li   a7, 93
-        li   a0, 0
-        ecall
 ```
 
 El patró de @exr-compta-caracter reapareix al segon `for`: `add t0, s0, s2` calcula l'adreça del caràcter actual (equivalent a avançar el punter), `lb t0, 0(t0)` el carrega, i `bge s2, s1, ffor2` comprova la condició de fi (aquí amb comptador explícit en lloc de sentinella, perquè `num` és conegut). El resultat esperat a `resultat` és `'4'` (`0x34`).
