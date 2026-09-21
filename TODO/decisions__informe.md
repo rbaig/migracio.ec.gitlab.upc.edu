@@ -314,3 +314,115 @@ són una marca semàntica de «codi deliberadament incorrecte». La taula de
 `13_contrib.qmd §Blocs de codi` no en preveu la categoria.
 
 **Cal decidir si mereixen fila pròpia.** No s'ha tocat res.
+
+---
+---
+
+# Passada C — escombrades del corpus i convencions
+
+Sessió 2026-09-21 (continuació). Model: Opus 5. Base: `6ee1a8a` (tancament de
+la passada B).
+
+## Regla de protocol adoptada en obrir la passada
+
+Quatre errors del mateix tipus a les passades A i B, tots dos interlocutors:
+**concloure sobre el conjunt des del tros mirat**. La passada C és tota
+escombrades, que és on aquest error fa més mal. Regles vigents:
+
+1. Tota escombrada **declara el seu abast**, i l'abast és el corpus sencer
+   tret que hi hagi un motiu escrit per excloure'n res.
+2. Tota afirmació de la forma «és l'únic», «no n'hi ha cap» o «no hi ha
+   precedent» va acompanyada de **l'ordre exacta que la sosté**.
+3. Abans de concloure sobre un bloc, **llegir-lo sencer**.
+
+La regla 1 ha donat fruit immediatament: vegeu 1a.
+
+---
+
+## Bloc 1 — mecànic. Tres commits
+
+### 1a — slug `desplacament-arithmetic` → `-aritmetic` (`953edca`)
+
+**Ordre**: `git grep -n "desplacament-arithmetic" -- .` (tots els fitxers
+versionats, sense filtre d'extensió).
+
+| Fitxer | Paper |
+| :--- | :--- |
+| `01_apunts/A3.qmd:91` | Definició del callout |
+| `04_laboratori/L3.qmd:29` | Referència |
+| `04_laboratori/L5.qmd:29` | Referència |
+| `11_riscv.qmd:91` | Referència — **la que faltava** |
+| `TODO/L3_tasques.md:155` | Registre històric; no es toca |
+
+Eren **4 ocurrències de contingut, no 3**. `TODO/L3_tasques.md` deia «tocaria
+A3 (definició), L3 i L5» i es va escriure sense escombrar `11_riscv.qmd`.
+És el mateix fitxer que ja havia quedat fora d'una escombrada de `∈` a la
+passada B: un compendi inclòs per `{{< include >}}`, fàcil d'ometre quan
+l'escombrada es limita a `01_apunts/` i `04_laboratori/`.
+
+Sense col·lisió: `#imp-notacio-desplacament-aritmetic` (A3.qmd:85) ja existia i
+és un slug diferent de `#nte-instruccions-desplacament-aritmetic`.
+
+### 1b — «de menor pes» → «de menys pes» (`4accc6c`)
+
+**Ordres**: `git grep -o "de menor pes" -- '*.qmd' | wc -l` → 18;
+`git grep -n "de menor pes" -- '*.qmd'` per a la llista.
+
+17 de contingut (A2×1, A3×3, A5×2, A8×3, L3×3, L5×5) i 1 a
+`TODO/recuperacio_diff__informe.md`, informe tancat, no tocat.
+
+Criteri: **simetria, no majoria**. Mesurat abans de tocar res:
+
+| Forma | Ocurrències |
+| :--- | ---: |
+| `de més pes` | 28 |
+| `de major pes` | **0** |
+| `de menys pes` | 32 |
+| `de menor pes` | 17 |
+
+El costat alt ja era unànime; «més» aparella amb «menys». Després del canvi,
+`de menys pes` = 49 i `de menor pes` = 0.
+
+**Abast deliberadament exclòs**: la resta d'usos de «menor»/«major» al corpus
+(`git grep -n "menor\|major" -- '*.qmd'`, ~70 línies) són comparacions
+matemàtiques («el menor enter representable»), «row-major order» i «la
+majoria». La regla és sobre el **pes dels bits**; no s'hi toca res més.
+
+### 1c — tanca la regla de `filename` (`a29a65b`)
+
+Tres parts, totes sota `13_contrib.qmd §Blocs de codi`.
+
+| Lloc | Abans | Després | Motiu |
+| :--- | :--- | :--- | :--- |
+| `L4.qmd:143` | `s4_2_2.c` | `C` | El lliurament és `.md`+`.s`; el `.c` és l'enunciat |
+| `L4.qmd:300` | `s4_3_1.c` | `C` | Ídem |
+| `L3.qmd:463` | `"..."` | `C` | Placeholder literal (ja detectat a `TODO/L3_tasques.md:107`) |
+| `L3.qmd:491` | *(cap atribut)* | `s3_5_1.s` | És el lliurament declarat a `L3.qmd:18` |
+
+Amb els dos de L4 s'esgoten els 5 blocs `.c` anotats com a pendents a
+l'informe de la passada A.
+
+**Escombrades de tancament**:
+
+- `git grep -n 'filename="\.\.\."' -- '*.qmd'` → queda **només**
+  `13_contrib.qmd:151`, on `"..."` és metavariable dins la prosa que descriu
+  la convenció. Correcte tal com està.
+- `git grep -n '^```{\.s}$' -- '*.qmd'` → **cap** bloc `.s` sense `filename`
+  a tot el corpus.
+
+**Efecte lateral mesurat**: en posar-li `filename`, el bloc d'`#exr-depuracio`
+entra a l'informe de `verifica_laboratoris.py` i hi surt com a **EXCEPCIÓ**
+(`address out of range 0x00000000`) — que és **exactament** el símptoma que
+`@sol-depuracio` documenta com a Error 1 (l'epíleg restaura `s0`=0 i
+`sb a0, 0(s0)` escriu a l'adreça 0). No és una regressió: les comprovacions
+estàtiques segueixen amb «Cap troballa» i l'exit code és 0. La classificació
+d'aquest bloc (assembla i falla en execució **a posta**) va a l'auditoria.
+
+### Verificació del bloc 1
+
+| Comprovació | Ordre | Resultat |
+| :--- | :--- | :--- |
+| Render complet | `make render` | **exit 0**, cap warning |
+| Referències no resoltes | `grep -rho '?@[a-z-]*' _book/*.html \| sort -u \| wc -l` | **0** |
+| Íd. al PDF | `grep -o "?@[a-z-]*" Estructura-de-computadors.tex` | **cap** |
+| Laboratoris | `python3 25_scripts/verifica_laboratoris.py` | **exit 0**, «Cap troballa» a les estàtiques |
