@@ -72,13 +72,19 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ## Tasques per tema
 
+### T2
+
+- **Verificació tècnica de la taula de restriccions d'alineació** (`A2.qmd:1012`, callout `#cau-memoria-restriccions-alineacio`): comprovar que la informació de la taula és correcta i coincideix amb l'**ABI `ilp32`**, i que **no hi ha col·lisió amb l'alineació a 16 del Bloc d'Activació** que fixa l'ABI de RISC-V. Afecta el rigor tècnic i no consta en cap registre anterior (detectat a l'auditoria, sessió 1). És la taula que la Fase C de L2 va corregir, de manera que la verificació ha de cobrir totes dues. El comentari segueix al corpus fins que la verificació es faci.
+
 ### T3
 
 - ~~`WARN: 01_apunts/A3.html: Unable to resolve crossref @wrn-codificacio-enters-ca1`~~ **RESOLTA (verificat 2026-07-13):** `A3.qmd` L. 48 ja usa `@sec-enters-en-ca1` (no `@wrn-codificacio-enters-ca1`). Sense acció.
 
 - **Criteri «quatre formats nuclears» (RISC-V International)**: la revisió interna de T2 (A2.qmd) ha adoptat el criteri de la font de veritat `@riscv_rv32i` (docs.riscv.org, citada a `15_bibliografia.bib`): RV32I té «quatre formats nuclears d'instrucció» (R/I/S/U), amb B i J com a variants de S i U respectivament. A3.qmd ja s'hi ha ajustat parcialment (referències creuades afegides cap a T2 als callouts `#nte-format-b`, `#nte-format-j`, `#nte-format-u`), però cal revisar-lo sencer per aplicar aquest mateix criteri de manera estricta i coherent a tot el tema (redactat, introducció dels formats, qualsevol menció al nombre total de formats). Fer en un xat de revisió interna dedicat a A3.qmd.
 - ~~**Encaix T2↔T3 — caller-saved/callee-saved**: verificar que A2.qmd introdueix els conceptes de registres temporals/segurs...~~ **RESOLTA (2026-07-13, xat A2-E2-S2):** l'encaix ja era correcte per construcció (A2 presenta la taula amb la columna «Qui el guarda (*Saver*)» sense anticipar la terminologia anglesa; A3 ja hi remet formalment via `@nte-registres-proposit-general`). S'hi ha afegit, dins el mateix callout `#nte-registres-proposit-general` d'A2.qmd, una remissió puntual («Aquesta distinció es formalitza al Tema 3 amb la terminologia *caller-saved*/*callee-saved*, @nte-caller-saved-vs-callee-saved»), coherent amb el patró ja aplicat a T2 per a altres avançaments terminològics (salts/desplaçaments de bits als bucles, `slt`).
-- **Revisar referència `@imp-exception-handler` reparada** (A3.qmd, ~L. 1546, callout `#tip-rars-main-multinivell`): l'etiqueta original no tenia destí; s'ha reescrit apuntant a `@sec-ei-rse` (T9) i retocat la frase perquè tingués sentit gramatical. És una interpretació de Claude Code, no una simple correcció mecànica d'slug — verificar que el destí i la redacció són correctes.
+- ~~**Revisar referència `@imp-exception-handler` reparada** (A3.qmd, ~L. 1546, callout `#tip-rars-main-multinivell`)~~ **CADUCA (auditoria, sessió 2, 2026-09-21):** el callout `#tip-rars-main-multinivell` s'ha eliminat amb els quatre blocs de `startup.s`, i amb ell la remissió que calia revisar. Ja no hi ha res a verificar.
+
+- **Decisió de contingut a `#cau-boolea-c`** (`A3.qmd:244`, pendent d'Adrià, obert des de la revisió de T3): el text diu que «unes expressions no nul·les s'interpreten com a certes» sense dir **quines**. Cal indicar com s'identifiquen les que sí i les que no. Afecta el rigor tècnic. El comentari segueix al corpus perquè la decisió és viva i no la pot prendre Claude Code.
 - Retocs manuals pendents (Roger) a les figures:
   - `auto_figs/T3_ba_exemple__original_light.svg`
   - `auto_figs/T3_deps_multi__original_light.svg`
@@ -93,6 +99,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### T6
 
 - **Etiquetes de classe d'instruccions en anglès** a les taules d'E6/S6 («Load», «Store», «Branch», «L/S»…): decidir si es mantenen com a etiquetes de columna/fila (opció actual) o es tradueixen («Lectura», «Escriptura», «Salt»), coherentment amb les substitucions obligatòries de prosa. Revisió pendent 2026-07-12 (`13_contrib.qmd §T6`).
+
+- **Notació de la tensió d'alimentació a la fórmula de potència dinàmica** (auditoria, sessió 2, 2026-09-21). `A6.qmd:278` defineix `@eq-potencia-dinamica` amb $V_{CC}^{2}$, i `E6.qmd:192` també usa $V_{CC}$. `A7.qmd:113` deia $V^2$ i **ja s'ha harmonitzat** a $V_{CC}^{2}$ (citava la secció; ara cita l'equació, com fa `A6.qmd:354`). **Queda `S6.qmd:324`**, que usa $V$ de manera consistent dins de tota la seva derivació (`$C = P_{din}/(V^2 \cdot f)$`, `$V_A^2$`, `$C_A$`/`$C_B$`): canviar-hi només la línia que cita l'equació el deixaria incoherent amb el seu propi desenvolupament, de manera que l'harmonització de S6 s'ha de fer sencera o no fer-se. Decisió pendent; afecta la parella E6/S6, que ara no concorda.
 
 ### T7 — Figures pendents de creació
 
@@ -145,6 +153,8 @@ Tres troballes de la revisió de L4, resoltes a L4 i pendents de fer extensives 
 ### SVG
 
 - **Migració de canvas a amplades estàndard**: figures de BA i mapa de memòria (`W=316 px`) → classe `estreta` (`W=340 px`). Decisió pendent: mantenir `w_rect=230` (marge dret 10→34) o ampliar `w_rect` a 254 (marges simètrics). Un cop decidit, aplicar a les 7 figures afectades i actualitzar `24_specs/svg.md §2`. Figures: `T3_mapa_memoria`, `T3_ba_general`, `T3_ba_func`, `T3_ba_multi`, `T3_ba_exemple`, `T3_func_uninivell_pila`, `T3_pila_crides_aniuades`.
+
+- **`22_figs_originals/T4_multiplicador_sequencial.png` (63 KB)**: decidir si s'elimina. Verificat (auditoria, sessió 2, 2026-09-21): **no el referencia ningú** — `A4.qmd:174,177,181` usen només el `.svg` via `auto_figs/` (`git grep -n "T4_multiplicador_sequencial" -- . ':!TODO/'`). És **l'única parella `.png`+`.svg` de tot el directori**, de manera que eliminar-lo també elimina l'excepció al criteri d'un sol format font. No s'ha tocat: és un fitxer binari i la supressió no entrava a l'abast autoritzat de la sessió 2.
 
 ### Neteja de warnings del render
 
