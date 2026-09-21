@@ -198,7 +198,7 @@ void descompon(int cf, int *s, int *e, int *m) {
 
 Aquest codi és descriptiu de l'algorisme a nivell de bits: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, cosa que reforça per què en assemblador cal triar explícitament `srli` (i no `srai`) per obtenir el comportament desitjat.
 
-L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 12 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menor pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
+L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 12 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menys pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
 
 ---
 
@@ -461,13 +461,13 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 ::: {#sol-precisio}
 **Pregunta 1.**
 
-El format de coma fixa té 31 bits de magnitud; el format IEEE 754 de simple precisió té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menor pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes per caure en aquest rang un cop normalitzada.
+El format de coma fixa té 31 bits de magnitud; el format IEEE 754 de simple precisió té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menys pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes per caure en aquest rang un cop normalitzada.
 
 De manera equivalent i exacta: sigui $b_{\text{alt}}$ la posició del bit `1` de més pes de la magnitud i $b_{\text{baix}}$ la posició del bit `1` de menys pes. Es produeix pèrdua de precisió si i només si $b_{\text{alt}} - b_{\text{baix}} + 1 \geq 25$, és a dir, si la magnitud «ocupa» 25 bits o més entre el seu bit significatiu més alt i el més baix (només 24 d'aquests bits caben al format IEEE 754: el bit ocult més els 23 de fracció).
 
 **Pregunta 2.**
 
-Un exemple clar és `cfixa = 0x7FFFFFFF` (magnitud màxima: tots els bits 30–0 a `1`, valor $\approx 2^{19}$). Després de `cf = cf << 1`, `cf = 0xFFFFFFFE`; el bit 31 ja és `1`, de manera que el bucle de normalització no itera i `exp` es manté a `18`. El desplaçament `cf = (cf >> 8) & 0x7FFFFF` dona `cf = 0x007FFFFF` (la fracció resultant). L'exponent codificat és `exp = 18 + 127 = 145 = 0x91`. El valor `cflotant` resultant és `0x48FFFFFF`: els 7 bits significatius de menor pes de la magnitud original (tots amb valor `1`), més el `0` introduït pel desplaçament inicial `cf << 1`, s'han descartat, i el nombre representat és lleugerament inferior al valor original.
+Un exemple clar és `cfixa = 0x7FFFFFFF` (magnitud màxima: tots els bits 30–0 a `1`, valor $\approx 2^{19}$). Després de `cf = cf << 1`, `cf = 0xFFFFFFFE`; el bit 31 ja és `1`, de manera que el bucle de normalització no itera i `exp` es manté a `18`. El desplaçament `cf = (cf >> 8) & 0x7FFFFF` dona `cf = 0x007FFFFF` (la fracció resultant). L'exponent codificat és `exp = 18 + 127 = 145 = 0x91`. El valor `cflotant` resultant és `0x48FFFFFF`: els 7 bits significatius de menys pes de la magnitud original (tots amb valor `1`), més el `0` introduït pel desplaçament inicial `cf << 1`, s'han descartat, i el nombre representat és lleugerament inferior al valor original.
 
 **Pregunta 3.**
 
@@ -477,11 +477,11 @@ La pèrdua de precisió es produeix a la instrucció:
 cf = (cf >> 8) & 0x7FFFFF;
 ```
 
-El desplaçament a la dreta de 8 posicions descarta els 8 bits de menor pes de la mantissa normalitzada. Si algun d'aquests bits era significatiu, la informació es perd de manera irreversible.
+El desplaçament a la dreta de 8 posicions descarta els 8 bits de menys pes de la mantissa normalitzada. Si algun d'aquests bits era significatiu, la informació es perd de manera irreversible.
 
 **Pregunta 4.**
 
-El programa aplica el mode d'**arrodoniment a zero** (*round toward zero*): el desplaçament `>> 8` descarta els bits de menor pes sense cap ajust (truncament).
+El programa aplica el mode d'**arrodoniment a zero** (*round toward zero*): el desplaçament `>> 8` descarta els bits de menys pes sense cap ajust (truncament).
 
 **Pregunta 5.**
 

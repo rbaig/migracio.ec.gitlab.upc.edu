@@ -57,7 +57,7 @@ Inicialment, totes les pàgines d'un procés resideixen al disc. Durant l'execuc
 
 Com que $T$ és una potència de dos ($T = 2^t$), qualsevol adreça lògica es descompon naturalment en dos camps:
 
-- Els **$t$ bits de menor pes** indiquen la posició de la dada dins la pàgina: és el **desplaçament** (*page offset*).
+- Els **$t$ bits de menys pes** indiquen la posició de la dada dins la pàgina: és el **desplaçament** (*page offset*).
 - Els **bits restants** identifiquen la pàgina: és el **VPN**.
 
 Per exemple, amb adreces de 32 bits i $T = 4\text{ KiB} = 2^{12}$ bytes:
@@ -389,13 +389,13 @@ El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines 
 
 La solució adoptada per la pràctica totalitat dels processadors actuals és la **memòria cau indexada virtualment i etiquetada físicament** (*VIPT, virtually indexed physically tagged*). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel**:
 
-- L'**índex** de la memòria cau s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menor pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).
+- L'**índex** de la memòria cau s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menys pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).
 - Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.
 - Un cop acabats els dos accessos en paral·lel, es compara el PPN obtingut del TLB amb les etiquetes físiques llegides de la memòria cau per determinar si hi ha encert.
 
 <!-- fig-mv-vipt: classe `estàndard` (W=680). Diagrama de blocs amb dos camins paral·lels sortint de la CPU. Camí superior: [adreça lògica] → bits d'índex (desplaçament) → MC (lectura d'etiquetes i dades). Camí inferior: [adreça lògica] → VPN → TLB → PPN. Els dos camins convergeixen en un comparador (=) que confronta el PPN amb les etiquetes llegides de la MC. Si coincideixen: encert → Dada. Si no: fallada → memòria principal. Colors (paleta svg.md §10): camí TLB en `.data` (fill #cfe2ff, stroke #084298); camí MC en heap (fill #d1e7dd, stroke #0a3622); comparador en pila (fill #fff3cd, stroke #664d03). Caption: "Memòria cau VIPT: l'índex de la memòria cau i la traducció del TLB s'executen en paral·lel. L'etiqueta física elimina el problema d'aliàsing." -->
 
-La condició perquè VIPT funcioni sense aliàsing és que l'índex de la memòria cau usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L'índex d'una memòria cau de mida $C$, associativitat $a$ i mida de bloc $B$ ocupa $\log_2(C / (a \cdot B))$ bits. Perquè tots aquests bits pertanyin al desplaçament (els $t = \log_2 T$ bits de menor pes), cal que:
+La condició perquè VIPT funcioni sense aliàsing és que l'índex de la memòria cau usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L'índex d'una memòria cau de mida $C$, associativitat $a$ i mida de bloc $B$ ocupa $\log_2(C / (a \cdot B))$ bits. Perquè tots aquests bits pertanyin al desplaçament (els $t = \log_2 T$ bits de menys pes), cal que:
 
 $$C \leq a \cdot T$$
 
