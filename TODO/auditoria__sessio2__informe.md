@@ -20,13 +20,36 @@ L'encàrrec afirmava, sobre D4:
 
 **Era fals**, i l'informe de la sessió 1 ja ho deia a §1c D4 («`A4.qmd`
 ❌ **Intacte: 20 línies**»). L'encàrrec i l'informe es contradeien, i l'informe
-tenia raó: hi ha **20 línies vives a A4 i 5 a S4**, comprovades una a una i
-totes fora de comentari HTML.
+tenia raó.
 
-El que ho va aturar va ser **llegir l'informe contra l'encàrrec en comptes
-d'executar l'encàrrec**. Si s'hagués corregit només `:529`, el fitxer hauria
-quedat amb un literal enmig de 24 expressions supervivents: més incoherent que
-abans de tocar-lo.
+⚠️ **Correcció posterior (bloc 3): les xifres bones són 11 i 27, no 20 i 5.**
+Aquest informe deia «20 línies vives a A4 i 5 a S4». Totes dues xifres són
+d'una mesura **per noms** (`NC*4`, `NC*2`, `.space`, `mat + N`), no **per
+forma**, i el que RARS rebutja no és cap nom concret sinó **l'expressió
+aritmètica a l'operand**. Comptades per forma —expressió dins d'un operand
+d'un bloc `.s`— són:
+
+| Fitxer | Total | Repartiment |
+| :--- | ---: | :--- |
+| `A4.qmd` | **11** | 5 a `## Matrius`, 6 a `## Optimitzacions de bucle` |
+| `S4.qmd` | **27** | 13 a `## Matrius`, 14 a `## Accés seqüencial` |
+
+A4 en tenia **menys** de les comptades (el patró per noms inflava: comptava
+comentaris i repeticions) i S4 **cinc vegades més** (el patró només mirava
+`NC*4`/`NC*2` i se li escapaven `N*4`, `(N+1)*4`, `3*(N-1)*4`, `4*4`, `5*3*4`
+i les directives `.set`). L'error de S4 és el greu: va deixar 14 línies
+senceres —tota la secció `## Accés seqüencial`— fora de la cobertura de la
+nota que la sessió 2 hi va afegir.
+
+És **la mateixa regla que aquest informe ja deixa escrita al punt 1**: una
+mesura pot no mesurar el que afirma. Aquí s'ha tornat a aplicar el mateix
+patró de fallada un bloc més tard, i amb la mateixa causa: escombrar per nom
+allò que es defineix per forma.
+
+El que va aturar la sessió 2 va ser **llegir l'informe contra l'encàrrec en
+comptes d'executar l'encàrrec**. Si s'hagués corregit només `:529`, el fitxer
+hauria quedat amb un literal enmig de les altres 10 expressions
+supervivents: més incoherent que abans de tocar-lo.
 
 > ⭐ **Regla nova.** Quan l'encàrrec afirma un fet verificable del corpus
 > («és l'únic», «no n'hi ha cap»), **es verifica abans d'executar-lo**, encara
@@ -54,7 +77,7 @@ precisament que `NC*4` és un invariant.
 
 | Element | Acció |
 | :--- | :--- |
-| 20 línies `li tX, NC*4` / `NC*2` d'A4 i les de S4 | **No es toquen** |
+| Les 11 línies amb expressió a l'operand d'A4 i les 27 de S4 (xifres corregides al bloc 3) | **No es toquen** |
 | Línies `la` amb desplaçament (A4, S4) | **No es toquen** (`#cau-rars-la-offset`) |
 | `A4.qmd:529` (`.space NF*NC*4`) | **No es toca** — vegeu sota |
 | Remissió a `@nte-rars-operands-literals` | **Afegida** a A4 i a S4 |
