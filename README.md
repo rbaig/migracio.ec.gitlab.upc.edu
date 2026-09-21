@@ -56,10 +56,10 @@ Directori `04_laboratori/`:
 | `index.qmd` | Pàgina de presentació (avaluació, eines, bibliografia) |
 | `preamble.tex` | Preàmbul LaTeX addicional (PDF) |
 | `11_riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
-| `12_sigles.qmd` | Glossari de sigles |
+| `12_sigles_simbols.qmd` | Glossari de sigles i símbols |
 | `styles.css` | Estils CSS addicionals (HTML) |
 | `24_specs/svg.md` | Especificacions d'estil per a les figures SVG |
-| `TODO.md` | Llista de tasques pendents (contingut transitori) |
+| `TODO/TODO.md` | Llista de tasques pendents (contingut transitori) |
 
 ### Arbre de directoris
 
@@ -67,11 +67,9 @@ Directori `04_laboratori/`:
 .
 ├── .vscode/                    # Diccionari
 ├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
-├── 02_exercicis/                # Problemes     (`Ex.qmd`, x ∈ [1, 9])
+├── 02_exercicis/               # Problemes     (`Ex.qmd`, x ∈ [1, 9])
 ├── 03_solucions/               # Solucions     (`Sx.qmd`, x ∈ [1, 9])
-├── 04_laboratori/              # Laboratori    (`Ly.1md`, y ∈ [1, 6])
-│   ├── Ly/                     # Plantilles sessió y
-│   └── rars1_6.jar             # Simulador RARS (versió de referència)
+├── 04_laboratori/              # Laboratori    (`Ly.qmd`, y ∈ [1, 6])
 ├── 21_riscv/                   # Contingut de taules de `.callout-note`
 ├── 22_figs_originals/
 ├── 23_figs_externes/
@@ -83,7 +81,7 @@ Directori `04_laboratori/`:
 ├── index_files/                # Quarto
 ├── TODO/                       # Fitxers de suport a l'edició
 ├── 11_riscv.qmd
-├── 12_sigles.qmd
+├── 12_sigles_simbols.qmd
 ├── 13_contrib.qmd
 ├── 14_LICENSE.qmd
 ├── 15_bibliografia.bib

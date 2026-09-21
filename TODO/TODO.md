@@ -6,7 +6,7 @@ informes de l'auditoria i els 23 fitxers dels set registres de `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**48 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+**49 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,7 +16,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 ```
 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
-`§Tasques per tema` 19 · `§Tasques globals` 9.
+`§Tasques per tema` 19 · `§Tasques globals` 10.
 
 ---
 
@@ -306,6 +306,37 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
   | `:199` | **Versió numèrica o de data per a CSR** (fila de RISC-V, `[@riscv_csrs]`): decidir si la referència s'identifica per número de versió o per data. ✅ **No constava en cap registre anterior** |
 
   La fila duplicada de *Toolchain* ja no hi és (verificat 2026-07-13: la taula té una sola fila per ítem).
+
+- **`index.qmd:146` — l'enllaç «Còpia local» de `rars1_6.jar` apunta a un fitxer que no és al repositori.** L'àncora `<a href="04_laboratori/rars1_6.jar" download>Còpia local</a>` no pot funcionar: `04_laboratori/` només conté `L1.qmd`–`L6.qmd` i `Lcalendari.qmd`.
+
+  **És l'únic enllaç de descàrrega local de tot el corpus:**
+
+  ```bash
+  git grep -n "download>" -- '*.qmd' ':!TODO/'   # una sola línia: index.qmd:146
+  ```
+
+  **Gravetat: menor.** La mateixa línia ofereix **dos** enllaços — el de la *release* de GitHub, que funciona, i la «Còpia local», que no. L'alumne no queda bloquejat: és el recurs de reserva el que falla, i ho fa en silenci.
+
+  ⚠️ **El fitxer hi havia estat, i la supressió sembla accidental.** No és que s'excloguès per mida: **no hi ha cap regla de `.jar` a `.gitignore`**. L'historial:
+
+  | Commit | Què va passar |
+  | :--- | :--- |
+  | `1d57f8d` (inicial) | El `.jar` hi és, a `laboratori/` |
+  | `9f6ba6f` | Mogut a `04_L/rars1_6.jar` |
+  | `c5d9416` | Mogut a `04_laboratori/rars1_6.jar` |
+  | **`fbf7c3d`** (2026-07-11) | **Eliminat** — 1 860 244 bytes. El missatge del commit («`gen_regs.py`: fa opcional el preview HTML…») **no l'esmenta**: va caure de passada, amb `gen_regs.py` i un fitxer de `TODO/` |
+
+  ```bash
+  git log --oneline --diff-filter=D --all -- '*.jar'   # fbf7c3d
+  git show --stat fbf7c3d | grep jar                   # Bin 1860244 -> 0 bytes
+  ```
+
+  **Dues sortides, i la decisió és de l'usuari:**
+
+  1. **Restaurar-lo** — `git checkout c5d9416 -- 04_laboratori/rars1_6.jar`. El `README.md` tornaria a tenir raó i l'enllaç funcionaria. Cal valorar si es vol un binari d'1,86 MB al repositori.
+  2. **Assumir que no hi ha de ser** — llavors cal **eliminar l'àncora d'`index.qmd:146`** (deixant l'enllaç de GitHub, que funciona). Això toca corpus.
+
+  📌 **Nota de mètode.** És el germà de l'enllaç de `startup.s` que la sessió 2 va eliminar d'`index.qmd`, on ja es va anotar que apuntava a un fitxer inexistent. Aquella comprovació es va fer **sobre la línia que s'esborrava**, no com a escombrada de totes les àncores `download` del corpus, i per això aquest ha trigat cinc hores a aparèixer. La regla de sempre, en un lloc nou: **quan trobis un cas d'una forma, escombra la forma.**
 
 ---
 
