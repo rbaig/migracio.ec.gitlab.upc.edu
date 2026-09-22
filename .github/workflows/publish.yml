@@ -21,6 +21,12 @@ jobs:
       - name: Clona el repositori
         uses: actions/checkout@v4
 
+      # Habilita Pages i exposa la URL pública del lloc a `steps.pages.outputs.base_url`,
+      # necessària per recuperar el PDF ja publicat en els pushos automàtics (vegeu més avall).
+      - name: Configura GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Instal·la Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         # Els scripts de pre-render (25_scripts/*.py) només usen la llibreria
@@ -51,6 +57,24 @@ jobs:
             quarto render
           else
             quarto render --to html
+          fi
+
+      # El PDF només es renderitza en els dispatch manuals (~7 min). En els pushos
+      # automàtics (HTML-only) el `_book/` es genera net i sense PDF; com que el
+      # desplegament substitueix el lloc sencer, el PDF publicat es perdria. Per
+      # evitar-ho, es recupera el PDF ja publicat del lloc en viu i es diposita a
+      # `_book/` abans de pujar l'artefacte. Si encara no n'hi ha cap (primer
+      # desplegament, «bootstrap»), es continua sense PDF sense trencar el build.
+      - name: Recupera el PDF publicat (només en push automàtic)
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          url="${{ steps.pages.outputs.base_url }}/Estructura-de-computadors.pdf"
+          echo "Recuperant el PDF publicat de: $url"
+          if curl -fsSL "$url" -o _book/Estructura-de-computadors.pdf; then
+            echo "PDF recuperat correctament."
+          else
+            echo "No hi ha PDF previ publicat (bootstrap) o la baixada ha fallat; es continua sense PDF."
+            rm -f _book/Estructura-de-computadors.pdf
           fi
 
       - name: Puja l'artefacte de Pages
