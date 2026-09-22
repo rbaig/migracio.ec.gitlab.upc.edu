@@ -44,7 +44,7 @@ Directori `04_laboratori/`:
 | Fitxer | Contingut |
 | :--- | :--- |
 | `_quarto.yml` | Configuració del projecte Quarto |
-| `Makefile` | `make render` (genera les taules fusionades i renderitza) i `make clean` |
+| `Makefile` | `make render` / `make render-complet` (HTML, o HTML + PDF) i `make clean` |
 | `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
 | `15_bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
 | `CLAUDE.md` | Instruccions operatives per a Claude |
@@ -112,15 +112,16 @@ cd ~/git/EC
 
 | Comanda | Efecte |
 | :--- | :--- |
-| `make render` | Genera les taules fusionades (`auto_riscv/`) i tot seguit renderitza les dues sortides |
+| `make render` | Genera les taules fusionades (`auto_riscv/`) i renderitza **només l'HTML** (bucle diari, segons) |
+| `make render-complet` | Genera les taules fusionades i renderitza **HTML + PDF** (~7 min; requereix LaTeX) |
 | `make clean` | Elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) |
-| `quarto render --to html` | Renderitza HTML (ràpid; recomanat durant el desenvolupament) |
+| `quarto render --to html` | Renderitza HTML sense generar les taules fusionades |
 | `quarto render --to pdf` | Renderitza PDF (lent; requereix LaTeX) |
 | `quarto render` | Renderitza les dues sortides |
 
-> **Nota**: `quarto render --to html` neteja la carpeta `_book` abans de renderitzar. Si cal conservar el PDF generat, feu `quarto render` complet (o `make render`) o guardeu el PDF abans.
+> **Nota**: `make render` (i `quarto render --to html`) neteja la carpeta `_book` i **no hi deixa cap PDF**: el que hi hagués d'un render anterior desapareix. Quan necessiteu el PDF —verificació final abans d'una Merge Request, material per a alumnes, o qualsevol canvi que el toqui— feu `make render-complet`. Si voleu conservar un PDF concret, guardeu-lo fora de `_book/` abans.
 
-> **Taules fusionades de `11_riscv.qmd`**: `make render` ja genera `auto_riscv/` abans de renderitzar. Si en comptes d'això useu `quarto render` directament i obteniu un error del tipus `could not find file .../auto_riscv/NOM.qmd`, executeu primer:
+> **Taules fusionades de `11_riscv.qmd`**: `make render` i `make render-complet` ja generen `auto_riscv/` abans de renderitzar. Si en comptes d'això useu `quarto render` directament i obteniu un error del tipus `could not find file .../auto_riscv/NOM.qmd`, executeu primer:
 >
 > ```bash
 > python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"

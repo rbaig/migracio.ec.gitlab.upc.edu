@@ -783,7 +783,18 @@ Comproveu que el projecte renderitza correctament abans de fer push. Des de la l
 make render
 ```
 
-(equivalent a generar les taules fusionades de `11_riscv.qmd` amb `25_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `auto_riscv/` ja existeix i està al dia.
+(equivalent a generar les taules fusionades de `11_riscv.qmd` amb `25_scripts/gen_taules_auto.py` i després `quarto render --to html`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `auto_riscv/` ja existeix i està al dia.
+
+`make render` només genera l'HTML, que és el bucle diari. **`make
+render-complet` (HTML + PDF, ~7 min) és obligatori** abans de tocar res que
+depengui del PDF —qualsevol bloc `when-format`, una figura, una taula amb
+`tbl-colwidths`, o matemàtiques— i abans de compartir material amb alumnes o
+d'obrir la revisió externa. El motiu és que un render HTML no exercita el PDF:
+el corpus té **83 blocs `when-format="pdf"`**, i almenys cinc convencions
+d'aquest fitxer existeixen precisament perquè el PDF es comporta diferent (la
+duplicació de figures si no se separen les variants, `tbl-colwidths` que ha de
+sumar 100, les capçaleres `###` del laboratori, `[@sec-]` que només funciona a
+PDF, i aquest fitxer sent HTML-only). Per a la resta, `make render`.
 
 Una escombrada de referències creuades trencades sobre el resultat del render
 és la xarxa secundària; la primària és que `make render` acabi net. Si la feu,
@@ -798,6 +809,15 @@ regular d'AnchorJS, no surt de cap `.qmd`. A més, aquest mateix paràgraf en
 posa dues més: com que hi cita la cadena, `?@` surt també a
 `_book/13_contrib.html` i a `_book/search.json`. Les tres ocurrències són
 esperades i cap no és una referència trencada.
+
+La part de l'escombrada que mira el PDF demana un `make render-complet`
+previ: després d'un `make render` no hi ha cap PDF a `_book/`, de manera que
+una cerca sobre el PDF no és que surti neta, és que no té sobre què buscar.
+Compte també amb `Estructura-de-computadors.tex`: un `make render` **no**
+l'esborra, i per tant el que trobareu a l'arrel és el de l'últim
+`make render-complet`, que pot ser de fa setmanes. No el llegiu com si fos
+d'ara; per tenir-lo al dia, `make render-complet` (o `make clean` primer, si
+voleu que la seva absència sigui visible).
 
 - Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
@@ -967,7 +987,7 @@ Fix-forward: no es reescriu l'historial.
 Co-Authored-By: ...
 ```
 - Abans de fer commit, apliqueu **linting** a la prosa dels fitxers `.qmd` modificats: elimineu dobles espais (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu que no hi ha cometes rectes `"..."` que haurien de ser guillemets `«...»`.
-- Abans de fer commit, verifiqueu que el projecte renderitza correctament.
+- Abans de fer commit, verifiqueu que el projecte renderitza correctament: `make render` per defecte, i `make render-complet` si el canvi toca res del PDF (vegeu §Verificació de l'entorn).
 
 ### Push directe a `main` (només maintainers)
 
@@ -991,14 +1011,15 @@ Qualsevol altre canvi, independentment del rol, requereix una **Merge Request**.
 El projecte té dues sortides independents: **HTML** i **PDF**. Són pipelines completament separades — HTML usa Bootstrap, PDF usa LaTeX (`scrbook`). Cap de les dues es construeix sobre l'altra.
 
 ```bash
-make render               # genera les taules fusionades i les dues sortides (recomanat)
-quarto render --to html   # ràpid, recomanat durant el desenvolupament
-quarto render --to pdf    # lent (compilació LaTeX), recomanat abans de la MR
-quarto render             # genera les dues sortides
+make render               # bucle diari: taules fusionades + HTML (segons)
+make render-complet       # HTML + PDF (~7 min); obligatori si toqueu res del PDF
+quarto render --to html   # només HTML, sense generar les taules fusionades
+quarto render --to pdf    # només PDF (compilació LaTeX)
+quarto render             # les dues sortides
 ```
 
 ::: {.callout-warning}
-`quarto render --to html` neteja `_book` i és el més ràpid: recomanat durant el desenvolupament. Feu `quarto render` complet (HTML + PDF), o `make render`, com a verificació final abans d'obrir la Merge Request. Si necessiteu conservar un PDF generat anteriorment, feu `quarto render` o guardeu-lo abans de renderitzar només HTML.
+**`make render` (i `quarto render --to html`) neteja `_book` i no hi deixa cap PDF**: el que hi hagués d'un render anterior desapareix. És el comportament per defecte i el que volem al bucle diari, que és prosa i referències. Quan necessiteu el PDF —verificació final abans d'obrir la Merge Request, material per a alumnes, o qualsevol canvi que el toqui— feu `make render-complet`. Si voleu conservar un PDF concret, guardeu-lo fora de `_book/` abans.
 :::
 
 `make clean` elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) sense tocar fitxers font.

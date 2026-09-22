@@ -6,7 +6,7 @@ informes de l'auditoria i els 23 fitxers dels set registres de `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**48 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+**49 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,7 +16,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 ```
 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
-`§Tasques per tema` 19 · `§Tasques globals` 9.
+`§Tasques per tema` 19 · `§Tasques globals` 10.
 
 **El `TODO/` té un subdirectori, i el compte és de 35 fitxers versionats, no
 de 28.** `CLAUDE.md` diu que al final el `TODO/` ha de quedar buit; qui
@@ -310,6 +310,15 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
   - **`#exr-depuracio` no hi és**, i és el mateix cas per un altre camí: té tres errors a posta. Un bloc pot ser no autònom **per omissió** (falta codi) o **per incorrecció deliberada** (el codi hi és i està malament a propòsit).
 
   Cal una noció de **bloc no autònom** derivada del contingut. *(Origen: `TODO/decisions__informe.md`, informe transitori esborrat per `87f2853`; es recupera sencer amb `git show 87f2853^:TODO/decisions__informe.md`.)*
+
+- **El `.gitignore` té `*.tex` i `preamble.tex` és versionat.** Avui funciona, perquè el `.gitignore` no desversiona el que ja ho està. La fragilitat és el cas futur: si mai se suprimeix `preamble.tex` i es torna a afegir, `*.tex` (`.gitignore:14`) se l'empassarà **en silenci**, i `git add preamble.tex` no dirà res tret que s'hi posi `-f`.
+
+  ```bash
+  git ls-files | grep "\.tex$"     # preamble.tex
+  sed -n '10p;14p' .gitignore      # Estructura-de-computadors.tex  /  *.tex
+  ```
+
+  Verificat que el risc és real: un `.tex` nou a l'arrel queda ignorat per `.gitignore:14` i invisible a `git status`. Pesa més des que `make render` és HTML-only (2026-09-22): `preamble.tex` és el preàmbul LaTeX del PDF —el fitxer que algú editaria justament quan el PDF es trenqui— i els renders de PDF passen a ser rars, de manera que una pèrdua trigaria a fer-se visible. La línia 10 ja excepciona `Estructura-de-computadors.tex` pel seu nom; la correcció natural és afegir `!preamble.tex` després del `*.tex`, però **no s'ha tocat**: cal decidir si es vol l'excepció pel nom o restringir `*.tex` a l'artefacte generat.
 
 ### `index.qmd`
 
