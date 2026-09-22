@@ -18,25 +18,33 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
 `§Tasques per tema` 19 · `§Tasques globals` 10.
 
-**El `TODO/` té un subdirectori, i el compte és de 17 fitxers versionats, no
-de 10.** `CLAUDE.md` diu que al final el `TODO/` ha de quedar buit; qui
+**El `TODO/` té un subdirectori, i el compte és de 8 fitxers versionats, no
+d'1.** `CLAUDE.md` diu que al final el `TODO/` ha de quedar buit; qui
 n'inventariï el contingut ha de comptar-lo recursivament, perquè un `ls` de
 l'arrel en deixa set fora:
 
 ```bash
-git ls-files TODO/ | wc -l                     # 17, el total
-git ls-files TODO/ | grep -c '^TODO/[^/]*$'    # 10, només l'arrel
+git ls-files TODO/ | wc -l                     # 8, el total
+git ls-files TODO/ | grep -c '^TODO/[^/]*$'    # 1, només l'arrel: aquest fitxer
 git ls-files TODO/laboratori/ | wc -l          # 7, el subdirectori
 ```
 
-Els 10 de l'arrel són aquest `TODO.md` i **9 prompts** de revisió interna
-(`Ax_Ex_Px__…__plantilla.md`, `Lx__…__plantilla.md`, `L2`–`L6__revisio_interna*.md`).
+A l'arrel només queda aquest `TODO.md`: el que falta per buidar el `TODO/` són
+els set de `TODO/laboratori/`, que no es poden esborrar mentre l'entrada que els
+referencia sigui viva (vegeu-ne el motiu més avall).
 
-**Els 18 registres de tasques caducs es van esborrar el 2026-09-22** (`TODO/T1`–`T9_P_tasques.md`,
-`TODO/L1`–`L6_tasques.md`, `saneja_tasques.md`, `substantiu_adjectiu.md`,
-`12_sigles_simbols__revisio_interna.md`), un cop verificat un per un que la seva
-Fase C era executada o que el pendent viu ja era en aquest fitxer. Es recuperen
-tots amb `git show a211bbf:<ruta>`, que és l'últim commit on existien.
+**Què se n'ha tret, i on és ara** (sanejament del 2026-09-22):
+
+  - **18 registres de tasques caducs, esborrats** (`TODO/T1`–`T9_P_tasques.md`,
+    `TODO/L1`–`L6_tasques.md`, `saneja_tasques.md`, `substantiu_adjectiu.md`,
+    `12_sigles_simbols__revisio_interna.md`), un cop verificat un per un que la seva
+    Fase C era executada o que el pendent viu ja era en aquest fitxer. Es recuperen
+    tots amb `git show a211bbf:<ruta>`, que és l'últim commit on existien.
+  - **9 prompts de revisió interna, moguts a `26_prompts/`** (`Ax_Ex_Px__…__plantilla.md`,
+    `Lx__…__plantilla.md`, `L2`–`L6__revisio_interna*.md`). **No són transitoris**: són
+    plantilles reutilitzables, i per això no entren al compte del que s'ha de buidar.
+    Les rutes que citen (`CLAUDE.md`, `13_contrib.qmd`, `24_specs/svg.md`,
+    `TODO/TODO.md`) són des de l'arrel del repositori i segueixen sent vàlides.
 
 Els set de `TODO/laboratori/` no són residu: `startup.s` és l'original de RARS
 que referencia §Dades preservades, i els sis `TODO.s` (`L0`–`L5`) són l'objecte

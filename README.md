@@ -59,6 +59,7 @@ Directori `04_laboratori/`:
 | `12_sigles_simbols.qmd` | Glossari de sigles i símbols |
 | `styles.css` | Estils CSS addicionals (HTML) |
 | `24_specs/svg.md` | Especificacions d'estil per a les figures SVG |
+| `26_prompts/` | Prompts i plantilles reutilitzables de revisió interna |
 | `TODO/TODO.md` | Llista de tasques pendents (contingut transitori) |
 
 ### Arbre de directoris
@@ -75,6 +76,7 @@ Directori `04_laboratori/`:
 ├── 23_figs_externes/
 ├── 24_specs/
 ├── 25_scripts/
+├── 26_prompts/                 # Prompts i plantilles de revisió interna
 ├── _book                       # Quarto: Directori de sortida
 ├── auto_figs/                  # Figures generades per script (s'elimina a cada render)
 ├── auto_riscv/                 # Taules generades per script (s'elimina a cada render)
