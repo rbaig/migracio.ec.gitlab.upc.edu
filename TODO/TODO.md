@@ -2,7 +2,7 @@
 
 Reescrit el 2026-09-21 (auditoria, sessió 3) a partir d'un inventari complet:
 les 58 entrades del `TODO.md` anterior, els 29 marcadors del corpus, els quatre
-informes de l'auditoria i els 23 fitxers dels set registres de `TODO/`. Cada
+informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
@@ -18,16 +18,25 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
 `§Tasques per tema` 19 · `§Tasques globals` 10.
 
-**El `TODO/` té un subdirectori, i el compte és de 35 fitxers versionats, no
-de 28.** `CLAUDE.md` diu que al final el `TODO/` ha de quedar buit; qui
+**El `TODO/` té un subdirectori, i el compte és de 17 fitxers versionats, no
+de 10.** `CLAUDE.md` diu que al final el `TODO/` ha de quedar buit; qui
 n'inventariï el contingut ha de comptar-lo recursivament, perquè un `ls` de
 l'arrel en deixa set fora:
 
 ```bash
-git ls-files TODO/ | wc -l                     # 35, el total
-git ls-files TODO/ | grep -c '^TODO/[^/]*$'    # 28, només l'arrel
+git ls-files TODO/ | wc -l                     # 17, el total
+git ls-files TODO/ | grep -c '^TODO/[^/]*$'    # 10, només l'arrel
 git ls-files TODO/laboratori/ | wc -l          # 7, el subdirectori
 ```
+
+Els 10 de l'arrel són aquest `TODO.md` i **9 prompts** de revisió interna
+(`Ax_Ex_Px__…__plantilla.md`, `Lx__…__plantilla.md`, `L2`–`L6__revisio_interna*.md`).
+
+**Els 18 registres de tasques caducs es van esborrar el 2026-09-22** (`TODO/T1`–`T9_P_tasques.md`,
+`TODO/L1`–`L6_tasques.md`, `saneja_tasques.md`, `substantiu_adjectiu.md`,
+`12_sigles_simbols__revisio_interna.md`), un cop verificat un per un que la seva
+Fase C era executada o que el pendent viu ja era en aquest fitxer. Es recuperen
+tots amb `git show a211bbf:<ruta>`, que és l'últim commit on existien.
 
 Els set de `TODO/laboratori/` no són residu: `startup.s` és l'original de RARS
 que referencia §Dades preservades, i els sis `TODO.s` (`L0`–`L5`) són l'objecte
@@ -98,7 +107,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   📌 **La lliçó, germana de la que ja teníem.** Fins ara la regla escrita deia que *un grep massa literal fabrica discrepàncies que no existeixen*. Aquesta entrada mostra l'altra cara: **també se'n deixa de reals**, i aquí ho va fer per les dues bandes alhora — un compte era sensible a majúscules i perdia sis capçaleres; l'altre mirava només els `.qmd` i perdia les nou de les figures. La forma completa de la regla: **el patró ha de cobrir totes les formes del que es mesura (majúscules incloses) i tots els tipus de fitxer on pot viure, no només els que es tenen al cap.**
 
-  L'altre patró que el registre d'origen citava («el següent exemple» → «l'exemple següent») és **residual**: 6 ocurrències del calc contra 244 de la forma bona. *(Origen: `TODO/substantiu_adjectiu.md`, fitxer transitori.)*
+  L'altre patró que el registre d'origen citava («el següent exemple» → «l'exemple següent») és **residual**: 6 ocurrències del calc contra 244 de la forma bona. *(Origen: `TODO/substantiu_adjectiu.md`, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/substantiu_adjectiu.md`.)*
 
 ---
 
@@ -133,9 +142,9 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Discrepància de noms a la figura Graphviz de T7** (detectada 2026-09-20): el fitxer font és `24_specs/T7_mc_politiques__graphviz.gv` i el SVG derivat és `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` — arrels diferents, el `_resum` només és al SVG. Documentat com a discrepància coneguda a `13_contrib.qmd §Figures Graphviz` perquè ningú no «l'arregli» pel cantó dolent. **Via de resolució**: renombrar el `.gv` a `T7_mc_politiques_resum__graphviz.gv` és **inofensiu** (cap script ni cap `.qmd` no el referencia: el `dot` s'executa a mà i el pre-render parteix del SVG ja generat). Renombrar el SVG, en canvi, **trencaria** les tres línies d'`A7.qmd` (648, 651, 655) que consumeixen `auto_figs/T7_mc_politiques_resum__graphviz__original_{light,dark}.svg`.
 
-- **Revisió sistemàtica del corpus per nodrir les taules de `Símbols` i `Notació` de `12_sigles_simbols.qmd`.** Abast concret verificat, que fins ara no constava: la revisió creuada de T7/T8 va deixar **sense verificar la major part de la taula actual** — tots els símbols exclusius de T1–T6 i T9 que no s'hagin creuat casualment amb T7/T8. Sospitosos prioritaris per la seva similitud notacional (font típica de confusió símbol↔concepte): $CPI$/$CPI_i$/$C_i$, $f_B$/$f_{clock}$, $K$, $m$/$m_d$/$m_i$/$m_{L1}$/$m_{L2}$, $P$/$P_d$/$P_s$/$P_x$, $s_{max}$/$s_x$, $V_{CC}$/$V_{in}$/$V_t$ — **tots de T6, tema no verificat en cap xat anterior**. Cobertura actual de la taula `## Símbols`, per tema: T1 6, T2 2, T3 3, T4 20, T5 17, T6 28, T7 39, T8 9, **T9 cap**. *(Origen: `TODO/12_sigles_simbols__revisio_interna.md:147`, fitxer transitori.)*
+- **Revisió sistemàtica del corpus per nodrir les taules de `Símbols` i `Notació` de `12_sigles_simbols.qmd`.** Abast concret verificat, que fins ara no constava: la revisió creuada de T7/T8 va deixar **sense verificar la major part de la taula actual** — tots els símbols exclusius de T1–T6 i T9 que no s'hagin creuat casualment amb T7/T8. Sospitosos prioritaris per la seva similitud notacional (font típica de confusió símbol↔concepte): $CPI$/$CPI_i$/$C_i$, $f_B$/$f_{clock}$, $K$, $m$/$m_d$/$m_i$/$m_{L1}$/$m_{L2}$, $P$/$P_d$/$P_s$/$P_x$, $s_{max}$/$s_x$, $V_{CC}$/$V_{in}$/$V_t$ — **tots de T6, tema no verificat en cap xat anterior**. Cobertura actual de la taula `## Símbols`, per tema: T1 6, T2 2, T3 3, T4 20, T5 17, T6 28, T7 39, T8 9, **T9 cap**. *(Origen: `TODO/12_sigles_simbols__revisio_interna.md:147`, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/12_sigles_simbols__revisio_interna.md`.)*
 
-  Hi encaixa també: **`NF`, `NC`, $T$ (mida d'element) i *stride*** apareixen en fórmules de T4 i L4 i **no tenen entrada** al glossari (`git grep -n "NF\|stride" -- 12_sigles_simbols.qmd` → cap). *(Origen: `TODO/L4_tasques.md` D4.)*
+  Hi encaixa també: **`NF`, `NC`, $T$ (mida d'element) i *stride*** apareixen en fórmules de T4 i L4 i **no tenen entrada** al glossari (`git grep -n "NF\|stride" -- 12_sigles_simbols.qmd` → cap). *(Origen: `TODO/L4_tasques.md` D4, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
 - **Revisió sistemàtica del corpus per l'aplicació de la regla d'ús `AND`, `OR`, `XOR`, `NOT`--`barra superior`** (enters).
 
@@ -181,7 +190,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   # A4.qmd:460 (definició) · S4.qmd:228 (referència)
   ```
 
-  *(Origen: `TODO/T4_P_tasques.md:311`, fitxer transitori; mai va arribar a aquest fitxer.)*
+  *(Origen: `TODO/T4_P_tasques.md:311`, tercera vinyeta del §8 «Pendents heretats que romanen oberts»; fitxer transitori esborrat, mai no va arribar a aquest fitxer fins ara. Es recupera sencer amb `git show a211bbf:TODO/T4_P_tasques.md`. El text original deia: «slug `{#sec-casos-especials}` és genèric; si mai cal desambiguar, `{#sec-casos-especials-divisio}` (ara no es referencia des d'enlloc; canviar-lo no trenca res, però tampoc no urgeix)» — l'última clàusula és la que ha caducat, com diu l'avís de dalt.)*
 
 ### T5
 
@@ -251,9 +260,9 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
 - **L6 — Tipografia d'UI de RARS**: L6 marca sistemàticament els elements d'interfície de RARS en negreta (**Tools → Data Cache Simulator**, **Set size**, **Reset**…), mentre que L4 i L5 (harmonitzat a la revisió interna de L5, 2026-07-20) usen cursiva, coherent amb l'exemple de `13_contrib.qmd §Codi, matemàtiques i cursiva` («A RARS: "F3", "Execute", "*Settings*"»). Abast mesurat: **22 negretes d'UI** a `L6.qmd`. Harmonitzar a cursiva en la seva pròpia revisió interna.
 
-- **Cap material explica a l'alumne el punt d'entrada de RARS.** La regla existeix com a **convenció interna** a `13_contrib.qmd:204` («`_start` ha de ser la primera etiqueta de `.text`»), però cap `.qmd` no explica a l'estudiant que RARS comença a executar a la primera instrucció de `.text` i que `_start` no és una etiqueta reconeguda pel simulador. Proposta d'origen: un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. Verificació: `git grep -n "primera instrucció del segment de text" -- '*.qmd' ':!TODO/'` → només `13_contrib.qmd:204`. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori.)*
+- **Cap material explica a l'alumne el punt d'entrada de RARS.** La regla existeix com a **convenció interna** a `13_contrib.qmd:204` («`_start` ha de ser la primera etiqueta de `.text`»), però cap `.qmd` no explica a l'estudiant que RARS comença a executar a la primera instrucció de `.text` i que `_start` no és una etiqueta reconeguda pel simulador. Proposta d'origen: un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. Verificació: `git grep -n "primera instrucció del segment de text" -- '*.qmd' ':!TODO/'` → només `13_contrib.qmd:204`. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
-- **Etiquetes de bucle heterogènies a L3.** El patró dominant al corpus és `for:`/`fifor:`; `L3.qmd:396,403,410,433` usa `for1:`/`ffor1:`/`for2:`/`ffor2:` en un mateix exercici. Harmonització menor, candidata per al xat de revisió interna de L3. *(Origen: `TODO/L4_tasques.md` D5.)*
+- **Etiquetes de bucle heterogènies a L3.** El patró dominant al corpus és `for:`/`fifor:`; `L3.qmd:396,403,410,433` usa `for1:`/`ffor1:`/`for2:`/`ffor2:` en un mateix exercici. Harmonització menor, candidata per al xat de revisió interna de L3. *(Origen: `TODO/L4_tasques.md` D5, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
 - **Expressions aritmètiques als operands: escombrada pendent de `Ex`/`Sx`/`11_riscv.qmd`.** La regla ja és consolidada a `13_contrib.qmd §Convencions globals del laboratori`, amb **exempció explícita** per a teoria, problemes i exàmens (decisió de la sessió 2: l'aritmètica als operands s'hi admet perquè fa visible l'estructura del càlcul; al laboratori cal el literal ja calculat). A4 i S4 van rebre la remissió a `@nte-rars-operands-literals` i **no es toquen**. Queda revisar la resta d'`Ex.qmd`/`Sx.qmd` i `11_riscv.qmd` per detectar casos que siguin realment de laboratori.
 
