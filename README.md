@@ -114,6 +114,7 @@ cd ~/git/EC
 | :--- | :--- |
 | `make render` | Genera les taules fusionades (`auto_riscv/`) i renderitza **només l'HTML** (bucle diari, segons) |
 | `make render-complet` | Genera les taules fusionades i renderitza **HTML + PDF** (~7 min; requereix LaTeX) |
+| `make taules` | Genera només les taules fusionades (`auto_riscv/`), sense renderitzar; `render` i `render-complet` ja en depenen |
 | `make clean` | Elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) |
 | `quarto render --to html` | Renderitza HTML sense generar les taules fusionades |
 | `quarto render --to pdf` | Renderitza PDF (lent; requereix LaTeX) |
@@ -124,8 +125,10 @@ cd ~/git/EC
 > **Taules fusionades de `11_riscv.qmd`**: `make render` i `make render-complet` ja generen `auto_riscv/` abans de renderitzar. Si en comptes d'això useu `quarto render` directament i obteniu un error del tipus `could not find file .../auto_riscv/NOM.qmd`, executeu primer:
 >
 > ```bash
-> python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"
+> make taules
 > ```
+>
+> (equivalent, si no useu `make`: `python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"`)
 >
 > Cal repetir-ho el primer cop després de clonar el repositori, i sempre que editeu un fitxer de `21_riscv/` que aparegui a `24_specs/taules_fusio.toml`: si no, `auto_riscv/` queda desactualitzat en silenci (el render no fallarà, però la taula no reflectirà el canvi). Detalls tècnics a `13_contrib.qmd` §Fitxer de referència tècnica.
 
