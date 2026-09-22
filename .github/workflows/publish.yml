@@ -27,12 +27,28 @@ jobs:
         # estàndard de Python (ast, re, sys, pathlib, colorsys, tomllib);
         # el runner ubuntu-latest ja porta Python 3.12+ preinstal·lat,
         # per tant no cal cap pas addicional d'instal·lació de dependències.
+
+      # TinyTeX perquè el runner pugui compilar a PDF
+      - name: Instal·la TinyTeX (per a PDF)
+        run: quarto install tool tinytex
         
+      # Eines per convertir SVG a PDF
+      - name: Instal·la llibreries per a imatges SVG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin
+        
+      # Instal·la les eines per convertir SVG a PDF
+      - name: Instal·la llibreries per a imatges SVG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin
+
       - name: Genera les taules fusionades (auto_riscv/)
         run: python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"
 
-      - name: Renderitza el llibre a HTML
-        run: quarto render --to html
+      - name: Renderitza el llibre
+        run: quarto render
 
       - name: Puja l'artefacte de Pages
         uses: actions/upload-pages-artifact@v3
