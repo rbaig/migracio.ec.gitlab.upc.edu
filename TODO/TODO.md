@@ -18,20 +18,14 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
 `§Tasques per tema` 19 · `§Tasques globals` 10.
 
-**El `TODO/` té un subdirectori, i el compte és de 8 fitxers versionats, no
-d'1.** `CLAUDE.md` diu que al final el `TODO/` ha de quedar buit; qui
-n'inventariï el contingut ha de comptar-lo recursivament, perquè un `ls` de
-l'arrel en deixa set fora:
+**El `TODO/` ja només conté aquest fitxer.** `CLAUDE.md` diu que al final ha de
+quedar buit: el que falta per arribar-hi és buidar aquest `TODO.md` mateix, és a
+dir, tancar o reubicar les entrades vives. Ja no hi ha cap subdirectori ni cap
+altre fitxer, de manera que el compte recursiu i el de l'arrel coincideixen:
 
 ```bash
-git ls-files TODO/ | wc -l                     # 8, el total
-git ls-files TODO/ | grep -c '^TODO/[^/]*$'    # 1, només l'arrel: aquest fitxer
-git ls-files TODO/laboratori/ | wc -l          # 7, el subdirectori
+git ls-files TODO/ | wc -l                     # 1, només aquest fitxer
 ```
-
-A l'arrel només queda aquest `TODO.md`: el que falta per buidar el `TODO/` són
-els set de `TODO/laboratori/`, que no es poden esborrar mentre l'entrada que els
-referencia sigui viva (vegeu-ne el motiu més avall).
 
 **Què se n'ha tret, i on és ara** (sanejament del 2026-09-22):
 
@@ -45,11 +39,13 @@ referencia sigui viva (vegeu-ne el motiu més avall).
     plantilles reutilitzables, i per això no entren al compte del que s'ha de buidar.
     Les rutes que citen (`CLAUDE.md`, `13_contrib.qmd`, `24_specs/svg.md`,
     `TODO/TODO.md`) són des de l'arrel del repositori i segueixen sent vàlides.
-
-Els set de `TODO/laboratori/` no són residu: `startup.s` és l'original de RARS
-que referencia §Dades preservades, i els sis `TODO.s` (`L0`–`L5`) són l'objecte
-de l'entrada de renumeració de lliuraments. Cap dels dos grups no es pot
-esborrar mentre l'entrada que el referencia sigui viva.
+  - **7 fitxers de `TODO/laboratori/`, esborrats**, amb el seu contingut
+    informatiu recollit abans en aquest fitxer: `startup.s` (l'original de RARS)
+    s'ha copiat literalment a §Dades preservades, com a segon bloc i amb la taula
+    que el compara amb la versió d'A2; els sis `TODO.s` (`L0`–`L5`) eren marcadors
+    de **zero bytes** i les seves rutes, que eren tota la informació que
+    contenien, són ara al text de l'entrada de renumeració de lliuraments.
+    Es recuperen amb `git show 3a3aea6:<ruta>`.
 
 ---
 
@@ -264,7 +260,20 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
 ### Laboratori
 
-- **Renumeració de lliuraments (2026-07-05)**: els fitxers de lliurament de L2–L6 s'han renumerat al número de sessió (`s2_*`–`s6_*`; abans anaven una sessió endarrerits i col·lidien amb L1). El directori `TODO/laboratori/` conserva els subdirectoris `L0`–`L5` amb `TODO.s` (6 fitxers, verificat amb `find`): revisar-ne els noms quan es decideixi el mecanisme de descàrrega.
+- **Renumeració de lliuraments (2026-07-05)**: els fitxers de lliurament de L2–L6 s'han renumerat al número de sessió (`s2_*`–`s6_*`; abans anaven una sessió endarrerits i col·lidien amb L1). Cal revisar-ne els noms quan es decideixi el mecanisme de descàrrega.
+
+  El que quedava d'això al `TODO/` eren sis marcadors **de zero bytes** (comprovat amb `git cat-file -s`: 0 tots sis), les rutes dels quals eren tota la informació que contenien. S'han esborrat el 2026-09-22 i les rutes es preserven aquí, que és el que s'ha de revisar:
+
+  ```
+  TODO/laboratori/L0/TODO.s
+  TODO/laboratori/L1/TODO.s
+  TODO/laboratori/L2/TODO.s
+  TODO/laboratori/L3/TODO.s
+  TODO/laboratori/L4/TODO.s
+  TODO/laboratori/L5/TODO.s
+  ```
+
+  Noteu el desfasament que la renumeració havia de resoldre, i que aquests noms encara reflecteixen: numerats `L0`–`L5` per a sessions que ara són `L1`–`L6`. Es recuperen (buits) amb `git show 3a3aea6:<ruta>`.
 
 - **L6 — Tipografia d'UI de RARS**: L6 marca sistemàticament els elements d'interfície de RARS en negreta (**Tools → Data Cache Simulator**, **Set size**, **Reset**…), mentre que L4 i L5 (harmonitzat a la revisió interna de L5, 2026-07-20) usen cursiva, coherent amb l'exemple de `13_contrib.qmd §Codi, matemàtiques i cursiva` («A RARS: "F3", "Execute", "*Settings*"»). Abast mesurat: **22 negretes d'UI** a `L6.qmd`. Harmonitzar a cursiva en la seva pròpia revisió interna.
 
@@ -414,7 +423,19 @@ Bolcat de RARS en carregar un programa amb `startup.s` — les tres primeres ins
 | `0x00400004` | `0x00a00893` | `addi x17, x0, 10` | `li a7, 10` |
 | `0x00400008` | `0x00000073` | `ecall` | `ecall` |
 
-Flux complet documentat: `_start` → `main` → `exit` → `_exit`. RARS emulava `__start` i la syscall `exit` (número 10), però no la funció `exit` de la libc ni `_exit`. Contingut del fitxer `startup.s` tal com el presentava A2 (l'original de RARS, amb `__start` i `li a7, 10`, és a `TODO/laboratori/startup.s` fins que es buidi `TODO/`):
+Flux complet documentat: `_start` → `main` → `exit` → `_exit`. RARS emulava `__start` i la syscall `exit` (número 10), però no la funció `exit` de la libc ni `_exit`.
+
+**Són dues versions diferents, i la diferència és el contingut informatiu.** El primer bloc és el `startup.s` **tal com el presentava A2**; el segon és **l'original de RARS**, que fins al 2026-09-22 vivia a `TODO/laboratori/startup.s` i que s'ha copiat aquí en esborrar-lo (es recupera amb `git show 3a3aea6:TODO/laboratori/startup.s`). Difereixen en tres punts, i cap no és accessori:
+
+| | Versió d'A2 | Original de RARS |
+| :--- | :--- | :--- |
+| Etiqueta | `_start` (`.globl _start`) | **`__start`** (`.globl __start`), amb dos guions baixos |
+| Servei d'`ecall` | `li a7, 93` (sortida amb codi de sortida) | **`li a7, 10`** (sortida simple) |
+| Codi de retorn | `li a0, 0` explícit | **cap**: no en posa |
+
+L'original és el que documenta **què emulava RARS**: l'etiqueta `__start` i el servei 10. La fila `li a7, 10` de la taula de bolcat de dalt correspon a aquest segon bloc, no al primer.
+
+Versió tal com la presentava `A2.qmd`:
 
 ```
 .text
@@ -426,6 +447,21 @@ _start:
         li      a7, 93      # Número de servei a a7; 93 (sortida amb codi de sortida);
                             #   a0 (codi de sortida)
         ecall
+```
+
+Original de RARS (contingut literal de `TODO/laboratori/startup.s`, amb tabulacions):
+
+```
+###################################
+# Standard startup code.  Invokes the routine "main"
+# and calls exit() on return from main
+.text
+.globl __start
+__start:
+	jal	main
+
+	li	a7, 10		# Service number in register a7; 10 (exit)
+	ecall
 ```
 
 ---
