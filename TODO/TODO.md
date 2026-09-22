@@ -18,6 +18,22 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
 `§Tasques per tema` 19 · `§Tasques globals` 9.
 
+**El `TODO/` té un subdirectori, i el compte és de 35 fitxers versionats, no
+de 28.** `CLAUDE.md` diu que al final el `TODO/` ha de quedar buit; qui
+n'inventariï el contingut ha de comptar-lo recursivament, perquè un `ls` de
+l'arrel en deixa set fora:
+
+```bash
+git ls-files TODO/ | wc -l                     # 35, el total
+git ls-files TODO/ | grep -c '^TODO/[^/]*$'    # 28, només l'arrel
+git ls-files TODO/laboratori/ | wc -l          # 7, el subdirectori
+```
+
+Els set de `TODO/laboratori/` no són residu: `startup.s` és l'original de RARS
+que referencia §Dades preservades, i els sis `TODO.s` (`L0`–`L5`) són l'objecte
+de l'entrada de renumeració de lliuraments. Cap dels dos grups no es pot
+esborrar mentre l'entrada que el referencia sigui viva.
+
 ---
 
 ## Decisions obertes
