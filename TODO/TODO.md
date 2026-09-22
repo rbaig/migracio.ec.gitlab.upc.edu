@@ -293,7 +293,7 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
   - **Una taula paral·lela al contingut divergeix en silenci** — el mateix motiu que va treure les plantilles `.markdown`. La raó codificada ja s'ha hagut d'actualitzar un cop (citava `@sol-update`; ara el bloc diu «vegeu la solució de `s3_4_1.s`»).
   - **`#exr-depuracio` no hi és**, i és el mateix cas per un altre camí: té tres errors a posta. Un bloc pot ser no autònom **per omissió** (falta codi) o **per incorrecció deliberada** (el codi hi és i està malament a propòsit).
 
-  Cal una noció de **bloc no autònom** derivada del contingut. *(Origen: `TODO/decisions__informe.md`, fitxer transitori.)*
+  Cal una noció de **bloc no autònom** derivada del contingut. *(Origen: `TODO/decisions__informe.md`, informe transitori esborrat per `87f2853`; es recupera sencer amb `git show 87f2853^:TODO/decisions__informe.md`.)*
 
 ### `index.qmd`
 
