@@ -201,7 +201,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### Convencions globals del laboratori
 
 - **Punt d'entrada**: `_start` (no `main`). Directiva `.globl _start` al principi del fitxer.
-- **`_start` ha de ser la primera etiqueta de `.text`**: RARS inicia l'execució a la primera instrucció del segment de text, i l'opció «start at main» només reconeix l'etiqueta `main`. `_start` no ha de tenir pròleg ni epíleg, perquè no és callee de ningú i acaba amb la sortida `li a7, 93` + `ecall`; sí que ha d'usar registres segurs per a les dades pròpies que travessen crides. Aplicat a tot el laboratori (L1–L6) i verificat empíricament amb RARS 1.6.
+- **`_start` ha de ser la primera etiqueta de `.text`**: RARS inicia l'execució a la primera instrucció del segment de text, i l'opció «start at main» només reconeix l'etiqueta `main`. `_start` no ha de tenir pròleg ni epíleg, perquè no és callee de ningú i acaba amb la sortida `li a7, 93` + `ecall`; sí que ha d'usar registres segurs per a les dades pròpies que travessen crides. Aplicat a tot el laboratori (L1–L6) i verificat empíricament amb RARS 1.6. **Abast**: la regla és d'ordre intern d'un bloc i només val quan el bloc conté `_start`. Tres blocs del laboratori porten `.text` sense `_start` i en queden fora legítimament: `s2_4_1.s` (`L2.qmd`) és un fragment d'accés a vector, no un programa; `s5_1_1.s` i `s5_2_1.s` (`L5.qmd`) són fitxers de subrutina sola (`abs` i `descompon`), que s'enllacen amb un fitxer `_start` separat. No els «arregleu» afegint-hi un `_start`.
 - **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit2`). No es fa servir `startup.s`.
 - **Expressions aritmètiques als operands**: a la **teoria, els problemes i els exàmens** s'admeten (`.space NF*NC*4`, `li t0, NC*4`, `la t0, vec+8`), perquè fan visible l'estructura del càlcul. Al **laboratori** cal el **literal ja calculat**, amb l'expressió al comentari; i `la rd, etiqueta+desplaçament` se substitueix per la parella `la` + `addi`. Font única: `@imp-ec-operands-expressions` (el cas de `la`, a `@imp-ec-la-offset`).
 - **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0.
@@ -786,6 +786,17 @@ make render
 
 (equivalent a generar les taules fusionades de `11_riscv.qmd` amb `25_scripts/gen_taules_auto.py` i després `quarto render`; vegeu §Fitxer de referència tècnica i `README.md`). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `auto_riscv/` ja existeix i està al dia.
 
+Una escombrada de referències creuades trencades sobre el resultat del render
+és la xarxa secundària; la primària és que `make render` acabi net. Si la feu,
+té tres trampes. **Ha de ser recursiva sobre `_book/`**: `_book/*.html` són 5
+fitxers de 39 i no inclouen cap capítol de teoria, exercicis, solucions ni
+laboratori, que viuen en subdirectoris. **Al PDF es busca `?@`, no `??`**: els
+13 `??` del PDF són els bytes de padding indeterminat del bolcat de memòria
+amb tipus mixtos d'`S2.qmd`, no referències trencades. I l'única ocurrència de
+`?@` que avui apareix al `_book/` és dins d'`anchor.min.js`, JavaScript
+minificat que Quarto hi copia: és una classe de caràcters d'una expressió
+regular d'AnchorJS, no surt de cap `.qmd`.
+
 - Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
 
 ### Escombrades i verificació del corpus
@@ -845,6 +856,13 @@ havia estat mai, i hi va ser des del commit inicial fins a `fbf7c3d`, que el va
 eliminar deliberadament i ho diu al cos del missatge. `git ls-files` i el
 `.gitignore` descriuen l'arbre d'avui; la pregunta era sobre l'historial.
 
+Una tercera pregunta a l'historial: `git show <commit>~1:<fitxer>` respon
+«aquesta còpia antiga, és l'estat previ a tal commit?». Si coincideix byte a
+byte, totes les diferències són aquell commit i no cal classificar-ne cap una
+a una. Serveix per a qualsevol còpia antiga —un `.orig`, una branca
+abandonada, un fitxer que algú us passi—, no només per a la feina que la va
+originar.
+
 **6. Quan trobeu un cas d'una forma, escombreu la forma**: ni el nom sol, ni la
 línia sola. En excloure el mecanisme `startup.s`, l'escombrada pel nom va donar
 setze ocurrències i un panorama tranquil; la traça que de debò contradeia la
@@ -872,6 +890,15 @@ contenia un bolcat de RARS que no existia enlloc més
 **abans** de la supressió, no després: totes dues coses, al mateix commit
 `cef40b1`. L'inventari del que conté un bloc va a
 l'informe abans d'eliminar-lo.
+
+**9. Verifiqueu contra la llista de canvis aprovats i sobre l'arbre de
+treball**, mai contra el fitxer d'on heu copiat. Si durant la revisió s'ha
+acordat qualsevol afegit que no és a la font, la igualtat amb la font és una
+**alarma, no una confirmació**. El cas: la comprovació final d'un fitxer es va
+fer contra una còpia antiga i va donar OK; el que feia era confirmar la pèrdua
+d'un paràgraf aprovat aquell mateix dia. `f136762` el va afegir, `7f0703c` el
+va esborrar en aplicar l'extret a tota la regió, i `8b9f82d` el va restaurar
+(el missatge d'aquest commit és l'exemple de §Format del missatge).
 
 Sobre les referències creuades dins dels blocs de codi, vegeu §Blocs de codi:
 no n'hi ha d'haver, i el motiu hi és escrit.
