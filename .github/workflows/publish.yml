@@ -3,7 +3,7 @@ name: Publica a GitHub Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch:   # permet llançar-ho manualment des de la pestanya Actions
+  workflow_dispatch:   # Permet llançar-ho manualment des de la pestanya Actions
 
 permissions:
   contents: read
@@ -28,18 +28,14 @@ jobs:
         # el runner ubuntu-latest ja porta Python 3.12+ preinstal·lat,
         # per tant no cal cap pas addicional d'instal·lació de dependències.
 
-      # TinyTeX perquè el runner pugui compilar a PDF
+      # El motor de PDF només s'instal·la si es llança manualment (workflow_dispatch)
       - name: Instal·la TinyTeX (per a PDF)
+        if: github.event_name == 'workflow_dispatch'
         run: quarto install tool tinytex
         
-      # Eines per convertir SVG a PDF
+      # Les llibreries d'imatges només s'instal·len si es llança manualment
       - name: Instal·la llibreries per a imatges SVG
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y librsvg2-bin
-        
-      # Instal·la les eines per convertir SVG a PDF
-      - name: Instal·la llibreries per a imatges SVG
+        if: github.event_name == 'workflow_dispatch'
         run: |
           sudo apt-get update
           sudo apt-get install -y librsvg2-bin
@@ -47,8 +43,15 @@ jobs:
       - name: Genera les taules fusionades (auto_riscv/)
         run: python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"
 
+      # Si és un push automàtic, només renderitza l'HTML per estalviar temps (segons).
+      # Si és un llançament manual, renderitza tots els formats (HTML i PDF, ~7 minuts).
       - name: Renderitza el llibre
-        run: quarto render
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            quarto render
+          else
+            quarto render --to html
+          fi
 
       - name: Puja l'artefacte de Pages
         uses: actions/upload-pages-artifact@v3
