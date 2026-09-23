@@ -107,7 +107,6 @@ Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit o
 
 | Fitxer | Assumpte del commit | Commit | Estat declarat al registre (`L<N>_tasques.md`) | Passades posteriors | Declaració de tancament |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `L2.qmd` | «L2 Fase C: redacció» (3 commits) | `12bac2c` (2026-09-20) | **Fase B**; reconciliació 2026-07-20: «tota la llista B1–B11 continua vàlida» (anterior a la Fase C, que és del setembre) | cap | **pendent** |
 | `L3.qmd` | «L3 Fase C: redacció» (3 commits) | `7f0703c` (2026-09-20) | «Data: 2026-07-19. **Fase B completada**» (anterior a la Fase C, del setembre) | correccions puntuals per exercici (`b6c8124`, `8b9f82d`, `01fff2d`, `afdc884`, `eb3f856`, `6ee1a8a`), no una passada | **pendent** |
 | `L4.qmd` | «L4 revisió interna **pre passades finals**» | `3cae913` (2026-07-21) | «Data: 2026-07-19 · **Fase B completada**» | cap | **pendent** |
 | `L5.qmd` | «L5 **tres passades fetes**» | `b5ca2f4` (2026-07-21), després d'`a83dc16` | «Fase A, B i C: completades» + «**Revisió final en 3 passades: completada (2026-07-21)**» | — (la passada posterior és aquest mateix commit) | **pendent** |
