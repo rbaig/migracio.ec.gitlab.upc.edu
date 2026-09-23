@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**52 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+**55 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,12 +16,14 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
 ```
 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 11 ·
-`§Tasques per tema` 21 · `§Tasques globals` 10.
+`§Tasques per tema` 24 · `§Tasques globals` 10.
 
-Les tres entrades noves del 2026-09-23 (passades finals pendents, estat parcial
-de T5, contradicció de T9) surten de la fusió de les dues seccions d'estat de
+Les tres entrades del 2026-09-23 (passades finals pendents, estat parcial de
+T5, contradicció de T9) surten de la fusió de les dues seccions d'estat de
 `CLAUDE.md`: eren pendents que només constaven a la secció eliminada o als
-assumptes dels commits, i s'han registrat **abans** de treure-la.
+assumptes dels commits, i s'han registrat **abans** de treure-la. Les tres
+següents (§T5, ítems 4.8, 4.12 i 3.8) surten de l'auditoria dels 29 ítems del
+registre de T5, feta el mateix dia contra el corpus.
 
 **El `TODO/` ja només conté aquest fitxer.** `CLAUDE.md` diu que al final ha de
 quedar buit: el que falta per arribar-hi és buidar aquest `TODO.md` mateix, és a
@@ -222,7 +224,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present. *(No retirar sense actualitzar `13_contrib.qmd:706`, que hi remet explícitament: «T5 → T9: `fcsr` → `@nte-zicsr` (vegeu `TODO.md §T5 P8`)».)*
 
-- **La revisió interna de T5 és declarada «parcial», no acabada.** És l'únic tema en aquesta situació: `92345e4` («A5-E5-S5 revisió interna **parcial**») i `b81e3fa` («A5-E5-S5 revisió **parcial** acabada + una mica de neteja de TODOs»), tots dos del 2026-07-13. Cap commit posterior no la completa: el següent que toca A5/E5/S5 és `4accc6c`, que és una harmonització transversal («de menor pes» → «de menys pes», 6 fitxers), no una passada de revisió de T5. **Què és el que va quedar fora del «parcial» no consta enlloc**, i és el primer que caldrà establir quan es reprengui. Cap de les dues seccions d'estat de `CLAUDE.md` no ho recollia.
+- **La revisió interna de T5 és declarada «parcial», no acabada.** És l'únic tema en aquesta situació: `92345e4` («A5-E5-S5 revisió interna **parcial**») i `b81e3fa` («A5-E5-S5 revisió **parcial** acabada + una mica de neteja de TODOs»), tots dos del 2026-07-13. Cap commit posterior no la completa: el següent que toca A5/E5/S5 és `4accc6c`, que és una harmonització transversal («de menor pes» → «de menys pes», 6 fitxers), no una passada de revisió de T5.
+
+  ✅ **Què va quedar fora del «parcial»: mesurat el 2026-09-23.** S'han comprovat **els 29 ítems** del registre (`git show a211bbf:TODO/T5_P_tasques.md`, ítems 1.1–4.12: 23 ⏳ d'execució i 6 ❓ de decisió) **un per un contra el corpus**, no contra el registre, que no porta cap marca de resolució global. Resultat: **26 aplicats, 3 oberts**, que són els tres que segueixen. Les sis decisions ❓ estan totes resoltes al corpus amb l'opció recomanada (2.2, 3.2, 3.4, 3.6, 3.9), tret de 3.8.
+
+- **T5 · ítem 4.8 — dobles espais en prosa a `S5.qmd:739-742`.** La llista de registres de `#sol-p6-ops-variancia` alinea les fletxes amb espais dins de prosa (`` - `q`   → `fs1` ``), cosa que `13_contrib.qmd §Commits` prohibeix fora dels blocs de codi, fórmules i cel·les de taula. Quatre línies. *(Origen: `TODO/T5_P_tasques.md` ítem 4.8; el registre el donava per resoldre «de passada amb 2.2», i 2.2 es va aplicar sense arrossegar-lo.)*
+
+- **T5 · ítem 4.12 — cursives repetides de *sticky*.** La regla del projecte és cursiva només a la primera aparició per fitxer. Estat verificat: `A5.qmd:440` ✓ primera en cursiva, però `:764` i `:789` també haurien d'anar sense — hi van sense, correcte; el que resta és **`E5.qmd:209`**, que repeteix `*sticky*` en cursiva quan la primera del fitxer ja és a `:110`. *(Origen: `TODO/T5_P_tasques.md` ítem 4.12.)*
+
+- **T5 · ítem 3.8 [decisió] — títol de secció «Suma i multiplicació»** (`E5.qmd:85`, `S5.qmd:372`). La secció conté també divisió, conversions i traducció a assemblador, de manera que el títol no cobreix el contingut. Renomenar-la (p. ex. «Operacions») obliga a tocar E5, S5 i `S_criteris_seleccio.qmd`. **La recomanació del registre era deixar-ho com està** (nom heretat, poc cost de confusió), però la decisió no consta enlloc com a presa. *(Origen: `TODO/T5_P_tasques.md` ítem 3.8.)*
 
 ### T6
 
@@ -412,6 +422,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | `index.qmd` — enllaç a `laboratori/L0/TODO.s` | RESOLTA: ja no hi és | — |
 | `index.qmd` — fila duplicada de Toolchain | RESOLTA parcialment; la resta viu a §`index.qmd` | Aquest fitxer |
 | `index.qmd` — enllaç «Còpia local» de `rars1_6.jar` | **Executada (decisió de l'usuari, 2026-09-21)**: el binari es queda **fora del repositori** i l'enllaç primari és la *release* de GitHub. Eliminada l'àncora `<a href="04_laboratori/rars1_6.jar" download>` d'`index.qmd:146`, mantenint la frase i l'enllaç de GitHub. Coherent amb `fbf7c3d` (2026-07-11), que va eliminar el binari perquè ja no era al disc. L'entrada antiga d'aquesta taula («URL de la còpia local: RESOLTA, ja hi és») era la que havia introduït l'àncora | **Cap còpia pendent**: `git grep -n "download>" -- '*.qmd' ':!TODO/'` → cap, i `git grep -n "04_laboratori/rars1_6"` → cap. No queda cap rastre apuntant al fitxer. El `README.md:174` el cita com a descàrrega externa, que és correcte |
+| **P3 — matís del `mul` mòdul $2^n$** (decisió heretada de la revisió interna d'A1, 2026-07-11; ítem 3 del registre de T4) | **Executada**: el callout `#wrn-mul-modul-2n` és a `A4.qmd:323`, just després de `#tip-sobreeiximent-multiplicacio` i abans de `## Divisió entera`, amb el text exacte que proposava el registre; `S4.qmd:214` l'hi referencia amb `@wrn-mul-modul-2n` | ⚠️ **La cadena de rastre estava trencada pels dos extrems i per això es deixa aquesta fila**: l'entrada P3 d'aquest fitxer es va retirar el 2026-07-12 cedint la propietat del pendent al registre de T4, i el registre es va esborrar el 2026-09-22 (`4bfb43c`). El detall —anàlisi, opcions i text del callout— és a `git show a211bbf:TODO/T4_P_tasques.md §3` |
 
 ### Caduques per mesura
 

@@ -922,6 +922,19 @@ d'un paràgraf aprovat aquell mateix dia. `f136762` el va afegir, `7f0703c` el
 va esborrar en aplicar l'extret a tota la regió, i `8b9f82d` el va restaurar
 (el missatge d'aquest commit és l'exemple de §Format del missatge).
 
+**10. Una escombrada amb la sortida truncada no sosté cap negació.** Un
+`| head -N`, un `-m N` o qualsevol altre límit donen una **mostra**: permeten
+dir «n'hi ha almenys N», mai «no n'hi ha cap» ni «és l'únic» ni «enlloc». Per a
+una negació, l'ordre s'executa **sencera** i se'n compta el resultat
+(`… | wc -l`). El cas (2026-09-23):
+`git grep -niE "\bmul\b" -- 01_apunts/A4.qmd | head -5` va fer concloure que el
+callout `#wrn-mul-modul-2n` no existia i que el matís del `mul` mòdul $2^n$ era
+un pendent obert; el callout és a `A4.qmd:323` i el `head -5` tallava a `:281`.
+El límit no va acotar la lectura: va decidir la resposta. És la mateixa família
+que la regla 3 —cap afirmació «és l'únic» o «no n'hi ha cap» sense l'ordre
+exacta que la sosté—, i aquí la trampa és que l'ordre **hi era** i semblava
+completa.
+
 Sobre les referències creuades dins dels blocs de codi, vegeu §Blocs de codi:
 no n'hi ha d'haver, i el motiu hi és escrit.
 
