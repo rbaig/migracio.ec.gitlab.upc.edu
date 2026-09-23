@@ -222,11 +222,18 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Revisió sistemàtica del corpus per l'aplicació de la regla d'ús `AND`, `OR`, `XOR`, `NOT`--`barra superior`** (enters).
 
-- **Cometes `"..."` → `«...»`**: substitució global. Abast mesurat per forma (cometes rectes que envolten text amb lletres, descartats els atributs `clau="valor"`): **65 línies candidates en 14 fitxers** — `A1` 3, `A2` 12, `A3` 1, `A4` 1, `A5` 1, `A7` 9, `A8` 9, `A9` 1, `S4` 1, `L1` 2, `L3` 3, `13_contrib` 18, `RARS_directives` 3, `index` 1.
+- **Cometes `"..."` → `«...»`**: substitució global. Abast mesurat per forma (cometes rectes que envolten text amb lletres, descartats els atributs `clau="valor"`): **57 línies candidates en 13 fitxers** — `A2` 17, `A7` 9, `A8` 9, `L3` 5, `A1` 4, `A3` 3, `RARS_directives` 3, `L1` 2, `A4` 1, `A5` 1, `A9` 1, `S4` 1, `index` 1 (suma 57).
 
   ```bash
-  git grep -nP '(?<![-\w=])"[^"]*\p{L}[^"]*"' -- '*.qmd' ':!TODO.md' | grep -vP '\w+="'
+  git grep -nP '(?<![-\w=])"[^"]*\p{L}[^"]*"' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
+    | grep -vP '\w+="'
   ```
+
+  ⚠️ **`13_contrib.qmd` en queda fora, i no per higiene de mesura.** Les seves línies **no eren candidates**: el que hi ha entre cometes són **cites d'exemples**, no prosa del llibre —`:212` («Capçaleres de "Lliuraments" i "Lectura prèvia"»), `:265` («"5 V", "8 bits", "12 bits"»), `:395` («Extensió "M", Extensió "Zicsr"»), a més de valors TOML i ordres de shell—. Convertir-les no arreglaria res, i a `:269` **falsejaria la lliçó**, que cita literalment les dues formes per contrastar-les («Sempre: "Cal verificar…" (no "hem de verificar")»). Eren soroll comptat com a feina. És la regla 12 aplicada a una substitució: el fitxer que documenta el cas no és corpus a convertir.
+
+  📌 **Per què la xifra no es podia estabilitzar.** Amb `13_contrib.qmd` dins, el compte creixia cada cop que algú hi escrivia una lliçó: 18 al commit que el va publicar (`bb64329`), 23 el 2026-09-23 i **24 dins del mateix commit** que ho mesurava, perquè la regla 12 bis que s'hi acabava d'escriure hi afegia una línia.
+
+  ⚠️ **El valor d'`A2` era fals en néixer**, no desfasat: publicava 12 quan a `bb64329` ja n'hi havia **17**, que són les d'avui. Els altres dotze valors reprodueixen exacte. És la regla 12 bis.
 
   **Bona part són codi C i directives legítimes** (`printf("%d", x)`, `.asciz "cadena"`), que no s'han de tocar: el discriminador ha de ser cas a cas. Casos reals de prosa ja identificats: `A2.qmd:1446` («punter a», «multiplicació», «desreferència/indirecció»), `:1470` («adreça de»), `:1472` («ampersand»), `:1560` («variable de tipus punter al \<tipus\>»), `:1760-1761` («vector de 100 enters»).
 
