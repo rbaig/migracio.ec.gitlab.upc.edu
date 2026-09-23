@@ -990,6 +990,23 @@ efectivament una cita —si l'ordre segueix sense reproduir la xifra publicada,
 hi ha una ocurrència que no s'havia vist, i llavors el que s'ha de corregir és
 l'afirmació, no el pathspec.
 
+**12 bis. Un desglossament s'ha de poder sumar al total que acompanya.** Quan
+una entrada publica un repartiment —per fitxer, per secció o per forma— al
+costat d'una xifra global, les parts **han de sumar el global** i han de portar
+l'ordre que les reprodueix, com el porta el total. El cas (2026-09-23): el
+repartiment de `_start` sumava **91** contra un titular de **104**, amb quatre
+valors dolents, i el total sí que reproduïa.
+
+```bash
+git grep -o "_start" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
+  | awk -F: '{print $1}' | sed 's|.*/||' | sort | uniq -c | sort -rn
+```
+
+📌 **Un total correcte no avala les parts**: és precisament el que fa que se'n
+refiï qui les llegeix. Va de bracet amb la regla 11 —el repartiment de `_start`
+no era desfasat sinó **fals en néixer**, i només mesurar-lo al seu propi commit
+ho distingeix—, i la comprovació és barata: sumar.
+
 **13. Una afirmació sobre branques ha de dir de quin remot parla, i mesurar-se
 amb `git ls-remote`.** `git branch -r` ensenya la **vista guardada del clon**,
 que pot estar desfasada en les dues direccions: branques que ja no hi són i

@@ -80,9 +80,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **R4-TYPE a T5** (`A5.qmd:5`, `<!-- TODO: cal introduir el R4-TYPE? (Harris) -->`): decisió d'abast de contingut. Rellevant perquè `24_specs/registres.toml` ja genera la figura `T5_instruccio_tipus_R4`, avui sense ús. El marcador és a la capçalera del fitxer, abans del `# {{< var tema5 >}}`, fora de cap secció.
 
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+
 - **R5-TYPE (RISC-V *compressed*) com a aprofundiment** (`A5.qmd:6`): decisió d'abast que **creua dos temes** — el marcador pregunta si aniria al principi de T2. Mateixa ubicació que l'anterior.
 
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+
 - **Figures de half-adder i full-adder (T4)** (`A4.qmd:80`, `:81`): dos marcadors consecutius dins de `#wrn-sobreeiximent-maquinari`. El primer és una **tasca** (afegir la figura d'un *half-adder* i la d'un *full-adder*); el segon és una **decisió**, pel signe d'interrogació: si cal la figura de la seqüència de *full-adders* amb la porta XOR per detectar el sobreeiximent en el darrer. Si es creen, SVG natiu segons `24_specs/svg.md`.
+
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
 - **Taules de memòria de T2 → figura estàndard** (`A2.qmd:926`, `:964`): dos marcadors amb la mateixa tasca sobre dues taules diferents — la segona és dins de `#tip-endianness` i afecta `#fig-big-endian`/`#fig-little-endian`. Pendent de figura, no de decisió, però no hi ha secció de figures de T2 en aquest fitxer: hi entra aquí fins que se'n creï una.
 
@@ -131,6 +137,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   📌 **La lliçó, germana de la que ja teníem.** Fins ara la regla escrita deia que *un grep massa literal fabrica discrepàncies que no existeixen*. Aquesta entrada mostra l'altra cara: **també se'n deixa de reals**, i aquí ho va fer per les dues bandes alhora — un compte era sensible a majúscules i perdia sis capçaleres; l'altre mirava només els `.qmd` i perdia les nou de les figures. La forma completa de la regla: **el patró ha de cobrir totes les formes del que es mesura (majúscules incloses) i tots els tipus de fitxer on pot viure, no només els que es tenen al cap.**
 
   L'altre patró que el registre d'origen citava («el següent exemple» → «l'exemple següent») és **residual**: 6 ocurrències del calc contra 244 de la forma bona. *(Origen: `TODO/substantiu_adjectiu.md`, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/substantiu_adjectiu.md`.)*
+
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
 - **Branques del remot: la revisió externa de T4–T6 és en curs a `temes456`** (registrada 2026-09-23). Les branques es registren, **no es toquen**: cap fusió, cap esborrat, i les fusions les farà el grup de treball.
 
@@ -198,6 +206,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   El commit `92345e4` («A5-E5-S5 revisió interna parcial») va introduir la forma amb guionet al solucionari, de manera que la del fitxer de convencions és l'anterior.
 
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+
 - **`S_criteris_seleccio.qmd` — taula de T1 incompleta** (auditoria, sessió 2, 2026-09-21). La taula de `## {{< var tema1 >}}` té **una sola fila** (`@exr-p1-enters-taules`, `:23`) i ha de recollir la resta de problemes seleccionats de `S1.qmd`. El marcador «TODO» que ho registrava era contingut destinat a l'alumne i es va substituir per la nota neutra de `:19` («*Taula provisional: recull els problemes de `S1.qmd` seleccionats fins ara.*»); **aquesta entrada és ara l'únic registre de la tasca**. El fitxer és comentat a `_quarto.yml:95`, de manera que avui no es renderitza.
 
 - **`L2.qmd:156-166` — alineació de `.dword` a RARS** (registrat 2026-09-20; **no tocat** per la sessió 2, que el va declarar decisió viva). RARS alinea `.dword` a 4 bytes (no a 8, com fan GCC/MARS) i el solucionari presenta **les dues versions alhora**. Decisió pedagògica pendent: mantenir les dues, quedar-se només amb la de RARS (que és la que l'alumne observarà al laboratori), o explicitar millor per què se'n donen dues.
@@ -220,18 +230,35 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   **Bona part són codi C i directives legítimes** (`printf("%d", x)`, `.asciz "cadena"`), que no s'han de tocar: el discriminador ha de ser cas a cas. Casos reals de prosa ja identificats: `A2.qmd:1446` («punter a», «multiplicació», «desreferència/indirecció»), `:1470` («adreça de»), `:1472` («ampersand»), `:1560` («variable de tipus punter al \<tipus\>»), `:1760-1761` («vector de 100 enters»).
 
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 1 línia a A4, 3 a A5 i 1 a A6.
+
 - 🔴 **CANVI DE CRITERI (usuari, 2026-09-23): `_start` surt de tot el codi del llibre i només es presenta a teoria.** Fins ara la convenció era l'oposada —`13_contrib.qmd:203-204` **exigeix** `_start` com a punt d'entrada i com a primera etiqueta de `.text`—, de manera que això **inverteix una regla consolidada** i s'ha d'executar de dalt a baix, no fitxer a fitxer. Tres parts:
 
   **(i) Afegir el callout a teoria.** A `A3.qmd §Compilació separada` (`{#sec-compilacio-separada}`, `A3.qmd:1857`), un `#nte-` amb el contingut: «A EC es programa directament sobre el xip (@sec-entorn-autonom-bare-metal); quan es programa en Linux, el SO exigeix que el punt d'entrada al programa estigui marcat amb l'etiqueta `_start`». Les dues àncores existeixen i resolen (`sec-entorn-autonom-bare-metal` és a `A1.qmd:87`).
 
-  **(ii) Eliminar les etiquetes `_start` dels fragments d'assemblador.** Abast mesurat: **104 ocurrències de `_start`** a 10 fitxers, de les quals **26 són definicions d'etiqueta** (`^_start:`). Repartiment: `L5` 24 · `L4` 16 · `L3` 15 · `L6` 14 · `L2` 8 · `L1` 8 · `13_contrib` 2 · `A2` 2 · `E9` 1 · `A3` 1.
-
-  **(iii) Eliminar les línies `.globl _start`.** ⚠️ **No totes les `.globl` se'n van**: de les **45** del corpus, **27 són `.globl _start`** i les altres **18 exporten símbols reals** (`suma`, `abs`, `descompon`, `compon`, `main`, `X`, `g`) i **s'han de mantenir**. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
+  **(ii) Eliminar les etiquetes `_start` dels fragments d'assemblador.** Abast mesurat: **96 ocurrències de `_start`** a 9 fitxers del corpus, de les quals **26 són definicions d'etiqueta** (`^_start:`). Repartiment: `L5` 27 · `L4` 19 · `L3` 16 · `L6` 14 · `L2` 8 · `L1` 8 · `A2` 2 · `E9` 1 · `A3` 1 (suma 96).
 
   ```bash
-  git grep -o "_start" -- '*.qmd' ':!TODO.md' | wc -l          # 104
-  git grep -oE "^_start:" -- '*.qmd' ':!TODO.md' | wc -l       #  26
-  git grep -oE "\.globl\s+_start" -- '*.qmd' ':!TODO.md' | wc -l  # 27 de 45
+  git grep -o "_start" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
+    | awk -F: '{print $1}' | sed 's|.*/||' | sort | uniq -c | sort -rn
+  ```
+
+  ⚠️ El repartiment publicat fins al 2026-09-23 sumava **91** contra un titular de **104**, amb quatre valors dolents. **No era desfasament**: mesurat a `ab494fb`, el commit que el va escriure, el repartiment real ja era el d'avui. El titular ha passat de 104 a **96** perquè l'ordre exclou ara també `13_contrib.qmd` (regla 12): les seves ocurrències són la convenció i la lliçó que en parlen, no codi a convertir, i creixien cada cop que algú hi escrivia. Vegeu-hi les regles 12 i 12 bis de `13_contrib.qmd §Escombrades i verificació del corpus`.
+
+  **(iii) Eliminar les línies `.globl _start`.** ⚠️ **No totes les `.globl` se'n van**: de les **32 línies** que comencen per `.globl`, **26 són `.globl _start`** i les altres **6 exporten símbols reals** (`suma`, `abs`, `descompon`, `compon`, `X`, `g`) i **s'han de mantenir**.
+
+  ```bash
+  git grep -cE "^\\s*\\.globl" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \\
+    | awk -F: '{s+=$2} END{print s}'      # 32 = 26 + 6
+  ```
+
+  ⚠️ La xifra publicada abans («de les 45 … 27 … les altres 18») **no sumava** (27+18=45 només si el total és 45, i el corpus no en té 45) i barrejava dues formes: comptava `.globl` **en qualsevol posició** (42 ocurrències) contra `.globl _start` **a principi de línia**. Mesurat per una sola forma —la línia, que és el que s'esborra— surt 32 = 26 + 6, i `main` no hi és: no hi ha cap `.globl main` al corpus. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
+
+  ```bash
+  X=("--" "*.qmd" ":!TODO.md" ":!13_contrib.qmd")   # regla 12: fora els fitxers que en parlen
+  git grep -o "_start" "${X[@]}" | wc -l               # 96
+  git grep -oE "^_start:" "${X[@]}" | wc -l            # 26
+  git grep -oE "\.globl\s+_start" "${X[@]}" | wc -l   # 26 de 44
   ```
 
   ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
@@ -245,6 +272,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   Es va detectar arran del canvi de criteri de `_start`: totes dues tasques toquen les mateixes capçaleres de fragment, de manera que **convé executar-les en la mateixa passada**.
 
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 1 directiva nua a `A4.qmd:529` i 4 a `A5.qmd` (`:939`, `:942`, `:973`, `:977`), cap a A6.
+
 - **Homogeneïtzació del format de les adreces** (usuari, 2026-09-23). Revisió transversal del format amb què s'escriuen les adreces i els valors hexadecimals a tot el corpus. `13_contrib.qmd` en fixa avui **dos** aspectes i en deixa la resta sense criteri:
 
   | Aspecte | Estat | Mesura |
@@ -256,6 +285,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   **El que cal decidir és sobretot el tercer**: si les adreces de memòria s'escriuen sempre amb 8 dígits (`0x00400000`) o si s'admet escurçar-les quan no hi ha ambigüitat, i si el criteri val igual per a adreces, per a contingut de registres i per a codificacions d'instrucció. Un cop decidit, ha d'aterrar a `13_contrib.qmd` al costat de les altres dues regles.
 
   ⚠️ **Abans d'escombrar, dues cauteles.** (i) La regla de majúscules **exempta explícitament** els bolcats de RARS: una substitució global a majúscules els falsejaria. (ii) Els hexadecimals no són tots adreces —n'hi ha de valors, de màscares i de codificacions d'instrucció—, i el criteri d'amplada no té per què ser el mateix: mesureu **per forma i per rol**, no pel prefix `0x`.
+
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 13 hexadecimals a A5, i cap a A4 ni a A6.
 
 - **Passades finals pendents: la Fase C no és el tancament de la revisió interna.** Entre «Fase C executada» i «revisió interna acabada» hi ha una etapa sencera —les *segones passades* o *passades finals*—, i el tancament és una **declaració de l'usuari**, no una cosa deduïble del corpus: `26_prompts/Lx__revisio_interna__plantilla.md` tanca preguntant si es donen per finalitzades la revisió pedagògica, la tècnica i la lingüística (tres preguntes separades). El model del que és una passada final el dona `26_prompts/Lx__revisio_interna__plantilla.md:52` per a L5: «contrast ISA oficial, comparació didàctica L4/L5/L6, lingüística dedicada», en xat separat.
 
@@ -309,6 +340,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ```
 
   *(Origen: `TODO/T4_P_tasques.md:311`, tercera vinyeta del §8 «Pendents heretats que romanen oberts»; fitxer transitori esborrat, mai no va arribar a aquest fitxer fins ara. Es recupera sencer amb `git show a211bbf:TODO/T4_P_tasques.md`. El text original deia: «slug `{#sec-casos-especials}` és genèric; si mai cal desambiguar, `{#sec-casos-especials-divisio}` (ara no es referencia des d'enlloc; canviar-lo no trenca res, però tampoc no urgeix)» — l'última clàusula és la que ha caducat, com diu l'avís de dalt.)*
+
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
 ### T5
 
@@ -418,6 +451,8 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
   📌 **Conseqüència: `24_specs/svg.md` ha quedat desfasat.** Les línies `:70` («`w_rect=230 px`; `W=316 px`») i `:76` («els valors numèrics … corresponen al canvas actual … `W=316 px`») fixen com a «canvas actual» un valor que **sis de les set figures no compleixen**. La migració ha de corregir també l'especificació, no només les figures. **No s'ha tocat**: és corpus, i l'auditoria no en modifica.
 
 - **`22_figs_originals/T4_multiplicador_sequencial.png` (63 KB)**: decidir si s'elimina. Verificat (auditoria, sessió 2): **no el referencia ningú** — `A4.qmd:175,178,182` usen només el `.svg` via `auto_figs/`. És **l'única parella `.png`+`.svg` del directori**, de manera que eliminar-lo també elimina l'excepció al criteri d'un sol format font. No s'ha tocat: és un fitxer binari i la supressió no entrava a l'abast autoritzat.
+
+  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
   ```bash
   git grep -n "T4_multiplicador_sequencial" -- '*.qmd' ':!TODO.md'
