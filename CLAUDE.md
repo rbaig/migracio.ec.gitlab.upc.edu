@@ -71,7 +71,15 @@ Fase actual del projecte. El contingut de teoria (T1–T9), laboratori (L1–L6)
 
 El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
-**Com es llegeixen les taules.** Cada cel·la o bé **remet a un commit** —i llavors és certa per sempre, perquè descriu el que aquell commit va declarar— o bé és una **declaració de l'usuari**, i llavors és a la columna «declaració de tancament», que només pot omplir ell. No s'hi escriu cap veredicte derivat: «Fase C executada» **no** vol dir «revisió interna acabada». Entre les dues hi ha les *passades finals* (vegeu `TODO.md §Tasques transversals → Passades finals pendents`), i el tancament es declara per separat per a les tres revisions —**pedagògica, tècnica i lingüística**—, tal com les pregunta `26_prompts/Lx__revisio_interna__plantilla.md`.
+**Com es llegeixen les taules.** Una cel·la pot tenir **tres formes**, i cap d'elles és un veredicte derivat:
+
+1. **Remet a un commit** — certa per sempre, perquè descriu el que aquell commit va declarar.
+2. **Remet a l'estat declarat en un fitxer** (els registres de revisió, avui esborrats), amb el punter que el recupera. Sovint és **més precís que l'assumpte del commit**, que ha de cabre en una línia.
+3. **És una declaració de l'usuari** — va a la columna «declaració de tancament», i només ell la pot omplir.
+
+«Fase C executada» **no** vol dir «revisió interna acabada». Entre les dues hi ha les *passades finals* (vegeu `TODO.md §Tasques transversals → Passades finals pendents`), i el tancament es declara per separat per a les tres revisions —**pedagògica, tècnica i lingüística**—, tal com les pregunta `26_prompts/Lx__revisio_interna__plantilla.md`.
+
+⚠️ **Una declaració de l'usuari no es verifica: es registra.** Demanar-li el commit que la sosté és un error de categoria —equival a demanar el commit que demostra una decisió— i esborrar-la per «no verificable» destrueix l'única còpia del que algú va declarar. Val tant per al punt 3 del protocol de sanejament (§Flux de treball) com per a qualsevol fusió de seccions: **abans de treure una secció, se'n registren els pendents i també les declaracions**.
 
 Els commits transversals (auditories i harmonitzacions de setembre: `c2a9171`, `4accc6c`, `b3072a6`, `d017ee2`, `45f6cc2`, `257d37f`…) toquen molts fitxers alhora i **no són passades de revisió d'un tema**: no compten a la columna «passades posteriors».
 
@@ -79,19 +87,25 @@ Els commits transversals (auditories i harmonitzacions de setembre: `c2a9171`, `
 
 Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prioritats de la revisió, això **no** vol dir tancat a canvis, especialment els d'harmonització.
 
-| Tema | Últim estat declarat | Commit que el declara | Passades posteriors | Declaració de tancament |
-| :--- | :--- | :--- | :--- | :--- |
-| T1 | «revisió interna acabada. TODO segones passades» | `9de6756` (2026-07-13) | cap | **pendent** |
-| T2 | «Fase C acabada. Falta segones passades» | `31f7571` (2026-07-12) | cap | **pendent** |
-| T3 | «Fase C acabada» | `b55e413` (2026-07-13) | cap | **pendent** |
-| T4 | «revisió interna acabada. TODO segones passades» | `9faab05` (2026-07-13) | cap | **pendent** |
-| T5 | «revisió **parcial** acabada» | `b81e3fa` (2026-07-13) | cap | **pendent** |
-| T6 | «Fase C acabada. Següent segones passades» | `77853ff` (2026-07-12) | cap | **pendent** |
-| T7 | «T7-PE_T7-PS_T7 Fable raw» | `2206477` (2026-07-11) | cap | **pendent** |
-| T8 | «Fase C acabada» | `ccae7dd` (2026-07-13) | cap | **pendent** |
-| T9 | «Fable … **(s'ha d'acabar)**» | `87015d2` (2026-07-11) | cap | **pendent** |
+Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
 
-⚠️ **T5** és l'únic tema amb la revisió declarada *parcial*, i què en va quedar fora no consta enlloc. **T9** té una contradicció sense resoldre entre el commit i el seu registre. Totes dues són entrades vives del `TODO.md` (`§T5`, `§T9`).
+| Tema | Assumpte del commit | Commit | Estat declarat al registre (`T<N>_P_tasques.md`) | Passades posteriors | Declaració de tancament |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| T1 | «revisió interna acabada. TODO segones passades» | `9de6756` (2026-07-13) | «Fase C executada (2026-07-12) i **sincronitzada amb el repositori remot** (2026-07-13)» | cap | **«tancat de facto»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
+| T2 | «Fase C acabada. Falta segones passades» | `31f7571` (2026-07-12) | — (el registre descriu el mètode, no declara estat final) | cap | **pendent** |
+| T3 | «Fase C acabada» | `b55e413` (2026-07-13) | — (acaba amb l'ordre d'execució proposat per a la Fase C) | cap | **pendent** |
+| T4 | «revisió interna acabada. TODO segones passades» | `9faab05` (2026-07-13) | «**ESTAT: FASE C COMPLETADA + DECISIONS FINALS RESOLTES**» | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
+| T5 | «revisió **parcial** acabada» | `b81e3fa` (2026-07-13) | «Fitxers modificats en aquesta revisió (Fase C, 2026-07-13)»; conserva ítems marcats ⏳ | cap | **pendent** |
+| T6 | «Fase C acabada. Següent segones passades» | `77853ff` (2026-07-12) | «totes les accions d'aquest registre (A, B, C) s'han aplicat a la Fase C (2026-07-12)» | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
+| T7 | «T7-PE_T7-PS_T7 Fable raw» ⚠️ **obertura, no estat** | `2206477` (2026-07-11) | **40 ítems ✅**, secció A «errors tècnics ✅ aplicats», tres tandes; tanca: «Pendent a `TODO.md §T7`: **només C3**» | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
+| T8 | «Fase C acabada» | `ccae7dd` (2026-07-13) | «**Estat: revisió interna de T8 tancada.** Blocs A, B i C íntegrament [executats]» | cap | **pendent** |
+| T9 | «Fable … **(s'ha d'acabar)**» | `87015d2` (2026-07-11) | «Fitxers modificats (**Fase C, execució completa**)» ⚠️ contradiu l'assumpte | cap | **pendent** |
+
+⚠️ **T7: l'assumpte del commit no és una declaració d'estat.** `2206477` és anterior al refactor de directoris (toca `02_PE/`, `03_PS/`, `07_contrib.qmd`) i és el commit que **crea** `T7_P_tasques.md`: és l'obertura de la revisió. L'estat real de T7 és el de la columna del registre, i és dels més avançats, no el menys.
+
+⚠️ **T5** és l'únic tema amb la revisió declarada *parcial*, i què en va quedar fora no consta enlloc. **T9** té una contradicció sense resoldre entre l'assumpte del commit i el seu registre. Totes dues són entrades vives del `TODO.md` (`§T5`, `§T9`).
+
+📌 **Les tres declaracions de tancament** («tancat de facto» per a T1; «quasi tancat» per a T4, T6 i T7) són de l'usuari, del **2026-07-12**, i es recuperen de la secció eliminada amb `git show 397c2da:CLAUDE.md`. Es registren aquí **com a declaració anterior, no com a tancament vigent**: són anteriors a Fases C posteriors (T3 i T8 són del 13 de juliol; les de L2 i L3, del setembre). La frase que les acompanyava, «T2/T3/T8 amb Fase C pendent», **no** es recupera: no era una declaració sinó un fet, i és fals (`31f7571`, `b55e413`, `ccae7dd`).
 
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
@@ -101,14 +115,16 @@ Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prior
 
 #### Laboratori (`L1`–`L6`)
 
-| Fitxer | Últim estat declarat | Commit que el declara | Passades posteriors | Declaració de tancament |
-| :--- | :--- | :--- | :--- | :--- |
-| `L1.qmd` | «L1 revisió interna feta» | `fe53cfc` (2026-07-13) | cap | **pendent** |
-| `L2.qmd` | «L2 Fase C: redacció» (3 commits de Fase C) | `12bac2c` (2026-09-20) | cap | **pendent** |
-| `L3.qmd` | «L3 Fase C: redacció» (3 commits de Fase C) | `7f0703c` (2026-09-20) | correccions puntuals per exercici (`b6c8124`, `8b9f82d`, `01fff2d`, `afdc884`, `eb3f856`, `6ee1a8a`), no una passada | **pendent** |
-| `L4.qmd` | «L4 revisió interna **pre passades finals**» | `3cae913` (2026-07-21) | cap | **pendent** |
-| `L5.qmd` | «L5 **tres passades fetes**» | `b5ca2f4` (2026-07-21), després d'`a83dc16` | — (la passada posterior és aquest mateix commit) | **pendent** |
-| `L6.qmd` | «L6 Fase B» ⚠️ | `ca6c01a` (2026-07-21) | cap | **pendent** |
+Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
+
+| Fitxer | Assumpte del commit | Commit | Estat declarat al registre (`L<N>_tasques.md`) | Passades posteriors | Declaració de tancament |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `L1.qmd` | «L1 revisió interna feta» | `fe53cfc` (2026-07-13) | «Fase A, B i **C: completades** (2026-07-13). Totes les tasques (T1–T7, T9) fetes» | cap | **pendent** |
+| `L2.qmd` | «L2 Fase C: redacció» (3 commits) | `12bac2c` (2026-09-20) | **Fase B**; reconciliació 2026-07-20: «tota la llista B1–B11 continua vàlida» (anterior a la Fase C, que és del setembre) | cap | **pendent** |
+| `L3.qmd` | «L3 Fase C: redacció» (3 commits) | `7f0703c` (2026-09-20) | «Data: 2026-07-19. **Fase B completada**» (anterior a la Fase C, del setembre) | correccions puntuals per exercici (`b6c8124`, `8b9f82d`, `01fff2d`, `afdc884`, `eb3f856`, `6ee1a8a`), no una passada | **pendent** |
+| `L4.qmd` | «L4 revisió interna **pre passades finals**» | `3cae913` (2026-07-21) | «Data: 2026-07-19 · **Fase B completada**» | cap | **pendent** |
+| `L5.qmd` | «L5 **tres passades fetes**» | `b5ca2f4` (2026-07-21), després d'`a83dc16` | «Fase A, B i C: completades» + «**Revisió final en 3 passades: completada (2026-07-21)**» | — (la passada posterior és aquest mateix commit) | **pendent** |
+| `L6.qmd` | «L6 Fase B» ⚠️ **l'assumpte enganya** | `ca6c01a` (2026-07-21) | «Fase A, B i **C: completades**»; «**Pendent**: res propi de L6» (les troballes cross-file van al `TODO.md`) | cap | **pendent** |
 
 ⚠️ **`ca6c01a` es diu «L6 Fase B» però conté la Fase C sencera**: toca els quatre fitxers que el registre de L6 llistava com a modificats (`L6.qmd`, `A7.qmd`, `13_contrib.qmd` i el registre mateix), i s'hi verifiquen els ítems de Fase C (literals als `.space`, «farciment», l'exercici nou `s6_4_5`, la correcció d'`A7.qmd`). L'assumpte del commit enganya; el contingut, no.
 
@@ -141,6 +157,7 @@ Regles operatives:
 - Interromp l'execució només si tens un dubte que hagi de resoldre l'usuari; mostra-li les opcions disponibles.
 - **Un commit per bloc d'instruccions**, i push a cada un: el bloc és la unitat que l'usuari ha confirmat i ha de ser la unitat que es pugui revisar i revertir.
 - **Treballa per àncora de contingut, no per número de línia.** Els números que et doni l'usuari són d'una lectura seva i poden haver-se mogut; si l'àncora no hi és o no coincideix amb el que esperaves, atura't en lloc d'aplicar el canvi a on sembli que toca.
+- **Abans d'esborrar o fusionar una secció, registra'n els pendents *i les declaracions de l'usuari*.** Una declaració («tancat de facto», «quasi tancat», «ho dono per bo») **no es verifica: es registra**. No té commit que la sostingui per construcció —demanar-l'hi és com demanar el commit que demostra una decisió—, de manera que descartar-la per «no verificable» n'esborra l'única còpia. El cas: la fusió de les dues seccions d'estat (2026-09-23) va descartar tres declaracions del 2026-07-12 per aquest motiu, i es van haver de recuperar de `git show 397c2da:CLAUDE.md`. Un fet fals es corregeix; una declaració, només qui la va fer la pot retirar.
 - Claude Code: pots fer commit i `push` a `origin`, però **només de canvis que l'usuari hagi confirmat explícitament**. Fix-forward sempre: no reescriguis l'historial. L'informe de la feina en curs es publica a cada aturada, perquè la revisió es fa llegint el repositori.
 - El mirall de GitHub s'actualitza **automàticament** des de GitLab, amb un parell de minuts de retard. **No s'hi ha d'empènyer a mà** pel remot `mirror`: competiria amb la sincronització. Verificat el 2026-09-21.
 
