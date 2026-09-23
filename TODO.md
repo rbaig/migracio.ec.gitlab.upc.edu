@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**48 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+**49 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,7 +15,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 13 ·
+Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 13 ·
 `§Tasques per tema` 15 · `§Tasques globals` 10.
 
 Les tres entrades del 2026-09-23 (passades finals pendents, estat parcial de
@@ -131,6 +131,35 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   📌 **La lliçó, germana de la que ja teníem.** Fins ara la regla escrita deia que *un grep massa literal fabrica discrepàncies que no existeixen*. Aquesta entrada mostra l'altra cara: **també se'n deixa de reals**, i aquí ho va fer per les dues bandes alhora — un compte era sensible a majúscules i perdia sis capçaleres; l'altre mirava només els `.qmd` i perdia les nou de les figures. La forma completa de la regla: **el patró ha de cobrir totes les formes del que es mesura (majúscules incloses) i tots els tipus de fitxer on pot viure, no només els que es tenen al cap.**
 
   L'altre patró que el registre d'origen citava («el següent exemple» → «l'exemple següent») és **residual**: 6 ocurrències del calc contra 244 de la forma bona. *(Origen: `TODO/substantiu_adjectiu.md`, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/substantiu_adjectiu.md`.)*
+
+- **Dues branques del remot amb feina no conciliada** (registrades 2026-09-23). `origin` té **tres** branques: `main` i dues d'endarrerides que ningú no ha tocat des de l'agost. **Només es registren**: no s'ha fusionat ni esborrat res, i la decisió de què se'n fa és de l'usuari.
+
+  ```bash
+  for b in contingut/t3-traduccio temes456; do
+    echo "$b: $(git rev-list --count origin/$b..origin/main) darrere, \
+  $(git rev-list --count origin/main..origin/$b) propis"
+    git diff --stat origin/main...origin/$b | tail -1
+  done
+  ```
+
+  | Branca | Darrere | Propis | Abast |
+  | :--- | ---: | ---: | :--- |
+  | `contingut/t3-traduccio` | 163 | 1 | 4 fitxers, +61/−48 |
+  | `temes456` | 118 | **11** | 6 fitxers, **+243/−225** |
+
+  ⚠️ **`temes456` conté onze commits de revisió de T4, T5 i T6** sobre `A4.qmd`, `A5.qmd` i `A6.qmd` (243 línies afegides, 225 tretes), del 21 de juliol al 7 d'agost, amb assumptes d'una altra mà («Revision of T4», «Tema 6 revisat fins Rendiment i Guany…»). **La revisió interna d'aquests tres temes es va declarar tancada el 2026-09-23** (`2f18e1a`, `4c37084`, `6846dff`) sense que aquesta feina s'hagi conciliat mai. Són dues revisions independents dels mateixos tres capítols.
+
+  Tres precisions que la mesura afegeix:
+
+  - **Els autors són tres i cap no és l'usuari**: Pedro J. Martinez-Ferrer (T4, T5, T6), Fernando Agraz (T6, warnings de render) i dos commits amb l'autor sense configurar (`FIRST_NAME LAST_NAME`). És feina de la revisió externa avançada pel seu compte, no un esborrany propi.
+  - **Toca dues fonts de veritat**, no només prosa: `24_specs/registres.toml` i `22_figs_originals/T5_ieee754_format_registre.svg` — els dos fitxers que l'entrada «Ordre substantiu–adjectiu» d'aquesta mateixa secció identifica com a font de la figura de T5. Qualsevol conciliació els ha de regenerar, no només fusionar-los.
+  - També toca `.gitignore` (3 línies).
+
+  `contingut/t3-traduccio` (un commit, `62700c0`, 2026-07-06, Pedro J. Martinez-Ferrer) porta **rutes d'abans del refactor de directoris** (`c5d9416`): `01_T/T3.qmd` i `11_riscv/…`, camins que avui no existeixen. **Qualsevol fusió és manual**, perquè git no pot resseguir el canvi de nom automàticament a través del refactor.
+
+  ⚠️ **No hi ha cap branca `build` a `origin`**, contra el que una lectura anterior donava per fet: les branques del remot són tres i prou, i `build` no hi surt ni hi ha existit mai com a branca (l'única menció és l'assumpte del commit `d4086cd`, «push previ a test de publicació a `build`»). Si es buscava un artefacte de render, no és aquí.
+
+  📌 **El remot `mirror` (GitHub) en té dues més que `origin` no té**: `T3-review-adria` (224 darrere, 1 propi) i `to-trash` (257 darrere, 3 propis). Queden **fora d'aquesta entrada** —el mirall se sincronitza sol i no és la font de veritat—, però consten aquí perquè ningú no les descobreixi com una sorpresa. `git branch -r` les llista.
 
 ---
 
