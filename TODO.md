@@ -259,13 +259,16 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
     | awk -F: '{s+=$2} END{print s}'      # 32 = 26 + 6
   ```
 
-  ⚠️ La xifra publicada abans («de les 45 … 27 … les altres 18») **no sumava** (27+18=45 només si el total és 45, i el corpus no en té 45) i barrejava dues formes: comptava `.globl` **en qualsevol posició** (42 ocurrències) contra `.globl _start` **a principi de línia**. Mesurat per una sola forma —la línia, que és el que s'esborra— surt 32 = 26 + 6, i `main` no hi és: no hi ha cap `.globl main` al corpus. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
+  ⚠️ La xifra publicada abans («de les 45 … 27 … les altres 18») **no sumava** (27+18=45 només si el total és 45, i el corpus no en té 45) i barrejava dues formes: comptava `.globl` **en qualsevol posició** (42 ocurrències) contra `.globl _start` **a principi de línia**. Mesurat per una sola forma —la línia, que és el que s'esborra— surt 32 = 26 + 6, i `main` no hi és: no hi ha cap `.globl main` al corpus. (`.globl main` només surt a `13_contrib.qmd:898`, dins d'una lliçó: com a directiva no existeix.)
+
+  📌 **La mateixa avaria s'hi va reproduir en reparar-la.** El bloc `bash` va quedar publicant «26 de 44», un parell on el numerador compta línies i el denominador no compta res: cap forma no dona 44 —`^\.globl` en dona 32, `\.globl` en qualsevol posició 42, amb `13_contrib.qmd` dins 46 i a tot el repositori 62—. Corregit a **26 de 32**, amb l'ordre del denominador al costat de la del numerador perquè totes dues siguin comprovables. **Un quocient és un desglossament de dos termes**: la regla 12 bis li val igual, i les dues parts s'han de mesurar amb la mateixa forma. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
 
   ```bash
   X=("--" "*.qmd" ":!TODO.md" ":!13_contrib.qmd")   # regla 12: fora els fitxers que en parlen
   git grep -o "_start" "${X[@]}" | wc -l               # 96
   git grep -oE "^_start:" "${X[@]}" | wc -l            # 26
-  git grep -oE "\.globl\s+_start" "${X[@]}" | wc -l   # 26 de 44
+  git grep -cE "^\s*\.globl" "${X[@]}" | awk -F: '{s+=$2} END{print s}'          # 32
+  git grep -cE "^\s*\.globl\s+_start" "${X[@]}" | awk -F: '{s+=$2} END{print s}'  # 26 de 32
   ```
 
   ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
