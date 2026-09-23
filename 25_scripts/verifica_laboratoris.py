@@ -70,9 +70,8 @@ SUPERSEDED = {
 # Blocs "incomplets per disseny": depenen d'una subrutina que l'enunciat
 # demana escriure a l'alumne i que no és present al bloc. Es couen soles:
 # no compten com a fallada dinàmica (assemblatge/execució). NOMÉS s'usa per
-# a la classificació dinàmica: la comprovació estàtica E1 (ordre de _start)
-# es deriva únicament del contingut del bloc (vegeu Block.is_subroutine_fragment
-# i check_e1_start_order), no d'aquesta taula.
+# a la classificació dinàmica: les comprovacions estàtiques es deriven
+# únicament del contingut del bloc, no d'aquesta taula.
 INCOMPLETE_BY_DESIGN = {
     ("L3", "s3_4_2.s", 1): "conté el comentari `# update: vegeu la solució de "
                             "s3_4_1.s (inseriu el codi aquí)` — la subrutina "
@@ -109,19 +108,42 @@ class Block:
         return bool(TEXT_DIRECTIVE_RE.search(self.body))
 
     @property
-    def has_start_label(self):
-        return bool(re.search(r'^_start\s*:', self.body, re.M))
+    def has_exit_syscall(self):
+        """Sortida del programa: `li a7, 93` + `ecall` (§Convencions globals
+        del laboratori). És l'àncora que substitueix `_start:` d'ençà que el
+        punt d'entrada no porta etiqueta (criteri de l'usuari, 2026-09-23)."""
+        return bool(EXIT_SYSCALL_RE.search(self.body))
 
     @property
     def is_complete_program(self):
-        return "_start:" in self.body
+        """Programa autònom: té segment de text i acaba amb la sortida.
+
+        Abans era `"_start:" in body`. El criteri nou treu l'etiqueta del
+        punt d'entrada, de manera que el que identifica un programa complet
+        ja no és com comença sinó com **acaba**. Equivalència verificada
+        sobre el corpus de `b2c1a4f` (l'últim amb `_start`): 28 blocs amb
+        `.text`, 25 amb `_start:`, 25 amb `li a7, 93`, **cap discrepància**.
+        Sense aquest canvi, buidat el corpus, tots els blocs cauen per
+        `is_complete_program` i l'informe surt sencer havent executat zero
+        programes: llum verda per buit."""
+        return self.has_text_segment and self.has_exit_syscall
 
     @property
     def is_subroutine_fragment(self):
-        """Bloc que no té .text ni _start: un fragment de subrutina solt,
-        no un programa autònom. No és error (vegeu E1): és classificació,
-        no incompliment."""
-        return not self.has_text_segment and not self.has_start_label
+        """Bloc que no és un programa autònom i no s'ha de verificar sol.
+
+        Amb `_start` al corpus n'hi havia prou amb «ni `.text` ni `_start:`».
+        Amb el criteri nou fan falta dos casos, perquè un fitxer de subrutina
+        sola SÍ que té `.text` (`s5_1_1.s`, `s5_2_1.s`) i només es distingeix
+        d'un programa perquè acaba amb `ret` i no amb `ecall`:
+
+          - sense `.text`: fragment solt (`s3_4_1.s`, blocs `RV32I`);
+          - amb `.text` però sense sortida: subrutina sola, que s'enllaça
+            amb el fitxer que porta el programa principal.
+
+        Tots dos són classificació, no incompliment: són els blocs que
+        §Convencions globals del laboratori declara exempts legítims."""
+        return not self.is_complete_program
 
     @property
     def superseded(self):
@@ -140,6 +162,10 @@ class Block:
 
 LABEL_RE = re.compile(r'^([A-Za-z_.][\w.]*)\s*:', re.M)
 TEXT_DIRECTIVE_RE = re.compile(r'^\s*\.text\b', re.M)
+
+# Sortida del programa: `li a7, 93` + `ecall`. Identifica un programa complet
+# d'ençà que el punt d'entrada no porta etiqueta (vegeu Block.is_complete_program).
+EXIT_SYSCALL_RE = re.compile(r'^\s*li\s+a7\s*,\s*93\b', re.M)
 
 # Directives/instruccions l'operand de les quals no admet cap expressió
 # aritmètica a RARS: cal el literal ja calculat.
@@ -163,40 +189,21 @@ def line_at(body, pos):
     return body.count("\n", 0, pos) + 1
 
 
-def check_e1_start_order(block):
-    """E1 — quan el bloc conté una etiqueta `_start:`, ha de ser la primera
-    etiqueta després de `.text`: RARS inicia el PC a la primera instrucció
-    de `.text`, no a `_start`.
-
-    Derivada únicament del contingut del bloc (cap taula cablejada):
-      - Sense `.text` ni `_start:`: fragment de subrutina solt
-        (`Block.is_subroutine_fragment`). No és error.
-      - Amb `.text` però sense `_start:` (subrutines de compilació separada,
-        p. ex. L5 §1/§3): no és, per si sol, un error E1; la comprovació
-        d'ordre s'aplica al fitxer que sí conté `_start`.
-      - Amb `_start:` (amb o sense `.text` explícit, p. ex. un bloc sense
-        `.text` que comença directament amb `_start:`): ha de ser la
-        primera etiqueta després de `.text` (o la primera etiqueta de
-        tot el bloc, si no hi ha `.text` explícit)."""
-    if not block.has_start_label:
-        return []
-
-    search_from = 0
-    m = TEXT_DIRECTIVE_RE.search(block.body)
-    if m:
-        search_from = m.end()
-
-    after = block.body[search_from:]
-    lm = LABEL_RE.search(after)
-    if lm and lm.group(1) != "_start":
-        return [(
-            "ERROR", "E1",
-            line_at(block.body, search_from + lm.start()),
-            f"primera etiqueta després de `.text` és `{lm.group(1)}:`, "
-            f"no `_start:` — RARS inicia el PC a la primera instrucció "
-            f"de `.text` i el programa no s'executarà com l'enunciat diu.",
-        )]
-    return []
+# E1 (ordre de `_start:` dins de `.text`) — RETIRADA el 2026-09-24.
+#
+# Comprovava que `_start:` fos la primera etiqueta després de `.text`. El
+# criteri de l'usuari del 2026-09-23 treu l'etiqueta del punt d'entrada
+# (§Convencions globals del laboratori), de manera que la comprovació no té
+# objecte: no hi ha cap ordre a verificar quan no hi ha cap etiqueta.
+#
+# Es retira en lloc de deixar-la retornant sempre [] a posta: una comprovació
+# que no dispara mai és soroll que algú confondrà amb una garantia. Qui la
+# necessiti per a un corpus antic la recupera amb
+# `git show b2c1a4f:25_scripts/verifica_laboratoris.py`.
+#
+# El que RARS fa segueix sent cert i ara és a la regla, no aquí: l'execució
+# comença a la primera instrucció de `.text`, i `sm` només actua amb un `main`
+# declarat global (verificat amb RARS 1.6, 2026-09-24).
 
 
 def check_e2_arith_operands(block):
@@ -216,25 +223,40 @@ def check_e2_arith_operands(block):
     return findings
 
 
-def check_e3_start_prolog(block):
-    """E3 — _start no és callee de ningú: cap desat/restauració de ra."""
+def check_e3_entry_prolog(block):
+    """E3 — el punt d'entrada no és callee de ningú: cap desat/restauració
+    de `ra`.
+
+    La regla NO ha canviat: §Convencions globals del laboratori manté que el
+    punt d'entrada no ha de tenir pròleg ni epíleg. El que ha canviat és com
+    es localitza. Abans l'àncora era l'etiqueta `_start:`; ara el bloc
+    principal és el que va de la primera instrucció de `.text` fins a la
+    primera etiqueta, que és on RARS comença a executar.
+    """
     findings = []
-    m = re.search(r'^_start\s*:', block.body, re.M)
+    if not block.is_complete_program:
+        return findings
+
+    m = TEXT_DIRECTIVE_RE.search(block.body)
     if not m:
         return findings
-    after = block.body[m.end():]
-    # Talla a la següent etiqueta de primer nivell (fi de _start), si n'hi ha.
+    start = m.end()
+
+    # El bloc principal acaba a la primera etiqueta que trobem: a partir
+    # d'allà ja és una subrutina, que sí que pot desar `ra` legítimament.
+    after = block.body[start:]
     nm = LABEL_RE.search(after)
     scope = after[:nm.start()] if nm else after
-    base_line = line_at(block.body, m.end())
+    base_line = line_at(block.body, start)
+
     for rel_line, raw_line in enumerate(scope.splitlines(), start=0):
         code = strip_comment(raw_line)
         if RA_SPILL_RE.search(code):
             findings.append((
                 "AVÍS", "E3", base_line + rel_line,
-                "desat/restauració de `ra` dins `_start` — `_start` no és "
-                "callee de ningú i acaba amb `li a7, 93` + `ecall`; no ha de "
-                "tenir pròleg ni epíleg.",
+                "desat/restauració de `ra` al bloc principal — el punt "
+                "d'entrada no és callee de ningú i acaba amb `li a7, 93` + "
+                "`ecall`; no ha de tenir pròleg ni epíleg.",
             ))
     return findings
 
@@ -243,9 +265,8 @@ def static_checks(block):
     """Totes les comprovacions estàtiques per a un bloc. Retorna una llista
     de (nivell, regla, línia_relativa_al_bloc, missatge)."""
     findings = []
-    findings += check_e1_start_order(block)
     findings += check_e2_arith_operands(block)
-    findings += check_e3_start_prolog(block)
+    findings += check_e3_entry_prolog(block)
     return findings
 
 
@@ -373,12 +394,6 @@ def main():
             handled.add(rowkey)
             continue
 
-        if b.is_subroutine_fragment:
-            rows.append((b.lab, b.label, b.order, b.line, "—",
-                         "FRAGMENT DE SUBRUTINA (sense .text ni _start, no verificable sol)", "", estatic))
-            handled.add(rowkey)
-            continue
-
         reason = b.incomplete_reason
         if reason:
             rows.append((b.lab, b.label, b.order, b.line, "—", "INCOMPLET PER DISSENY", reason, estatic))
@@ -405,8 +420,16 @@ def main():
             continue
 
         if not b.is_complete_program:
-            rows.append((b.lab, b.label, b.order, b.line, "—",
-                         "SENSE _start (no verificable sol)", "", estatic))
+            # Dos casos, i el missatge els distingeix: sense `.text` és un
+            # fragment solt; amb `.text` però sense sortida és un fitxer de
+            # subrutina sola, que s'enllaça amb el que porta el programa
+            # principal (§Convencions globals del laboratori: els tres blocs
+            # exempts). Cap dels dos no és verificable sol.
+            motiu = ("FRAGMENT DE SUBRUTINA (amb .text, sense sortida: "
+                     "s'enllaça amb el programa principal)"
+                     if b.has_text_segment else
+                     "FRAGMENT (sense .text, no verificable sol)")
+            rows.append((b.lab, b.label, b.order, b.line, "—", motiu, "", estatic))
             handled.add(rowkey)
             continue
 
