@@ -59,14 +59,16 @@ Els PDFs originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas
 
 ## Revisió interna
 
-Fase actual del projecte. El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (S2–S8) ja està generat; ara es fa la **revisió** (tècnica i lingüística), només per l'usuari. La fase següent serà la **revisió externa**, amb altres professors de l'assignatura.
+El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (S2–S8) ja està generat. **La revisió interna de teoria i de laboratori és tancada** —T1–T9 i L1–L6, per declaració de l'usuari del 2026-09-23 (vegeu §Estat dels materials)—; el que en resta obert són els enunciats i els solucionaris, que segueixen el pas combinat descrit a §Estat dels materials.
+
+**El projecte és, doncs, en dues fases alhora.** La revisió interna que queda la fa **només l'usuari**; la **revisió externa, amb altres professors de l'assignatura, ja ha començat** per T4, T5 i T6 a la branca `temes456` —des del 21 de juliol del 2026—, i el detall és al 📌 de §Estat dels materials → Teoria, que no cal repetir aquí. Per a la resta de temes encara no ha començat.
 
 ### Prioritats de la revisió
 
 - Prioritats màximes: **coherència pedagògica** i **rigor tècnic** en tot el contingut.
 - Revisió tècnica profunda i revisió lingüística en **català normatiu**.
 - Solucionaris: detall **pas a pas**, excepte els passos trivials.
-- **Harmonització abans de la revisió externa**: «Preparat per a revisió externa» no vol dir tancat a canvis profunds, especialment els d'harmonització (terminologia, estil, convencions transversals). Tot el que es pugui detectar i corregir abans que comenci la revisió externa s'ha de fer ara, encara que impliqui tocar fitxers ja marcats com a preparats: un cop entrin altres professors en la revisió, qualsevol canvi transversal té un cost de coordinació molt més alt. Si detectes una inconsistència que afecta múltiples fitxers (per exemple, terminologia o notació aplicada de manera desigual), proposa'n la correcció sistemàtica encara que surti de l'abast estricte del xat en curs.
+- **Harmonització abans de la revisió externa**: «Preparat per a revisió externa» no vol dir tancat a canvis profunds, especialment els d'harmonització (terminologia, estil, convencions transversals). Tot el que es pugui detectar i corregir abans que la revisió externa arribi a un fitxer s'ha de fer ara, encara que impliqui tocar fitxers ja marcats com a preparats: amb altres professors ja dins de la revisió, qualsevol canvi transversal té un cost de coordinació molt més alt. ⚠️ Per a **T4, T5 i T6 això ja ha passat**: la revisió externa hi és en curs (§Estat dels materials → Teoria), de manera que un canvi transversal que els toqui s'ha de coordinar amb el grup de treball, no aplicar-hi pel davant. Si detectes una inconsistència que afecta múltiples fitxers (per exemple, terminologia o notació aplicada de manera desigual), proposa'n la correcció sistemàtica encara que surti de l'abast estricte del xat en curs.
 
 ### Estat dels materials
 
