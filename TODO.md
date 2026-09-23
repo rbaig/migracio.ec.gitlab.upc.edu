@@ -273,16 +273,35 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
 
-- 🔴 **CANVI DE CRITERI (usuari, 2026-09-23): la directiva `.section` és obligatòria a tots els fragments d'assemblador.** Decisió pedagògica: `.section` s'ha de presentar a teoria i fer-se servir sistemàticament (`.section .data`, `.section .text`, etc.) en lloc de les formes nues. Abast mesurat: **126 directives de segment nues** (`.data`, `.text`, `.bss`, `.rodata` a principi de línia) contra només **5 `.section`** a tot el corpus. Cal: (i) decidir on es presenta la directiva a teoria (candidat natural: A2, on es presenten els segments) i registrar-ho a `13_contrib.qmd`; (ii) convertir les 126; (iii) comprovar que RARS accepta la forma llarga en tots els casos, **abans** de convertir res.
+- ✅ **CANVI DE CRITERI RETIRAT (usuari, 2026-09-23): la directiva `.section` NO s'adopta.** La proposta era fer-la obligatòria a tots els fragments (`.section .data`, `.section .text`) en lloc de les formes nues. El punt (iii) —«comprovar que RARS accepta la forma llarga **abans** de convertir res»— era un tall, i ha tallat: **RARS 1.6 no accepta `.section .data` ni `.section .text`**. La conversió hauria produït 121 fragments que no assemblen.
+
+  **Resultat de l'experiment (2026-09-23, RARS 1.6 `sha256 780f730e…`, Java 21):**
+
+  | Forma | Resultat |
+  | :--- | :--- |
+  | `.section .data` / `.section .text` | ❌ error dur: `.section must be followed by a section name` |
+  | `.section .rodata` / `.section .sdata` | ⚠️ assembla i **no commuta de segment** (no-op silenciosa) |
+  | `.section .bss` / `data` / `foo` / `".data"` | ⚠️ avís `section name "X" is ignored` |
+  | `.section .data.x` / `.section .text.trap, "ax"` | ✅ assembla (no és *token* de directiva) |
+
+  Motiu: `.data` i `.text` són *tokens* de directiva de l'analitzador lèxic i, darrere de `.section`, es consumeixen com a directiva pròpia sense arribar-hi mai com a operand. Cap grafia no hi arriba (tabulador, doble espai, `.SECTION`, `.DATA`, cometes). El cas greu és el segon: amb `.section .rodata`, dues dades separades per la directiva queden **contigües** (`0x10010000` i `0x10010004`) i, davant d'instruccions, el segment de text queda **buit** sense cap error —el codi desapareix i el programa «drops off the bottom»—. Comprovat amb les adreces del bolcat i contra un control amb la forma nua, no per absència d'error.
+
+  **Executat en lloc de la conversió** (opcions 2 i 3, decisió de l'usuari): el criteri s'inverteix **en documentació**, no al codi.
+
+  - `13_contrib.qmd:132` (§T2 i T3) i `:208` (§Convencions globals del laboratori): les dues regles que deien «no s'utilitza» sense dir per què porten ara el **motiu tècnic verificat**. Les regles **no canvien de sentit**: el canvi les reforça.
+  - `A2.qmd` → `#wrn-segments-elf`: paràgraf nou que presenta la forma llarga a l'alumne com a forma d'ELF/`gcc` que RARS no admet. És la **intenció pedagògica conservada sense tocar el codi**.
+
+  ⚠️ **Les 121 directives nues no es toquen.** L'abast mesurat es conserva aquí per si el criteri es reobre amb un altre simulador: **126** nues totals · **121** excloent A4–A6 · repartiment `A2` 34 · `E2` 13 · `L6` 12 · `L2` 11 · `L3` 9 · `A3` 9 · `L5` 8 · `L1` 8 · `L4` 6 · `S5` 4 · `S9` 2 · `S3` 2 · `E3` 2 · `S2` 1 (suma **121**, regla 12 bis).
 
   ```bash
   git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO.md' | wc -l   # 126
-  git grep -o "\.section" -- '*.qmd' ':!TODO.md' | wc -l                          #   5
+  git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO.md' \
+    ':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd' | wc -l          # 121
   ```
 
-  Es va detectar arran del canvi de criteri de `_start`: totes dues tasques toquen les mateixes capçaleres de fragment, de manera que **convé executar-les en la mateixa passada**.
+  De les **5 `.section`** del corpus, **només una és una directiva real**: `A9.qmd:402` (`.section .text.trap, "ax"`), dins d'un exemple declarat «il·lustratiu (no executable directament)» i amb la forma GNU amb *flags*, que **sí** que assembla. **No s'ha de tocar.** Les altres quatre són cadena, no ús: les dues regles de `13_contrib.qmd` (`:132`, `:208`), la fila de `21_riscv/RARS_directives.qmd:16` i la prosa d'`A9.qmd:399`. Aquesta comprovació confirma la lectura de la taula de directives: «inclòs per compatibilitat amb `gcc`» vol dir *es parseja*, no *funciona*.
 
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 1 directiva nua a `A4.qmd:529` i 4 a `A5.qmd` (`:939`, `:942`, `:973`, `:977`), cap a A6.
+  📌 **El canvi de criteri de `_start` no depèn d'aquest** i es manté: treure les etiquetes no mou el punt d'entrada, perquè RARS comença a la primera instrucció de `.text`.
 
 - **Homogeneïtzació del format de les adreces** (usuari, 2026-09-23). Revisió transversal del format amb què s'escriuen les adreces i els valors hexadecimals a tot el corpus. `13_contrib.qmd` en fixa avui **dos** aspectes i en deixa la resta sense criteri:
 
