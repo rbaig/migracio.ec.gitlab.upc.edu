@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**48 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+**50 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,7 +15,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
   TODO/TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 11 ·
+Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 13 ·
 `§Tasques per tema` 17 · `§Tasques globals` 10.
 
 Les tres entrades del 2026-09-23 (passades finals pendents, estat parcial de
@@ -167,6 +167,31 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   **Bona part són codi C i directives legítimes** (`printf("%d", x)`, `.asciz "cadena"`), que no s'han de tocar: el discriminador ha de ser cas a cas. Casos reals de prosa ja identificats: `A2.qmd:1446` («punter a», «multiplicació», «desreferència/indirecció»), `:1470` («adreça de»), `:1472` («ampersand»), `:1560` («variable de tipus punter al \<tipus\>»), `:1760-1761` («vector de 100 enters»).
 
+- 🔴 **CANVI DE CRITERI (usuari, 2026-09-23): `_start` surt de tot el codi del llibre i només es presenta a teoria.** Fins ara la convenció era l'oposada —`13_contrib.qmd:203-204` **exigeix** `_start` com a punt d'entrada i com a primera etiqueta de `.text`—, de manera que això **inverteix una regla consolidada** i s'ha d'executar de dalt a baix, no fitxer a fitxer. Tres parts:
+
+  **(i) Afegir el callout a teoria.** A `A3.qmd §Compilació separada` (`{#sec-compilacio-separada}`, `A3.qmd:1857`), un `#nte-` amb el contingut: «A EC es programa directament sobre el xip (@sec-entorn-autonom-bare-metal); quan es programa en Linux, el SO exigeix que el punt d'entrada al programa estigui marcat amb l'etiqueta `_start`». Les dues àncores existeixen i resolen (`sec-entorn-autonom-bare-metal` és a `A1.qmd:87`).
+
+  **(ii) Eliminar les etiquetes `_start` dels fragments d'assemblador.** Abast mesurat: **104 ocurrències de `_start`** a 10 fitxers, de les quals **26 són definicions d'etiqueta** (`^_start:`). Repartiment: `L5` 24 · `L4` 16 · `L3` 15 · `L6` 14 · `L2` 8 · `L1` 8 · `13_contrib` 2 · `A2` 2 · `E9` 1 · `A3` 1.
+
+  **(iii) Eliminar les línies `.globl _start`.** ⚠️ **No totes les `.globl` se'n van**: de les **45** del corpus, **27 són `.globl _start`** i les altres **18 exporten símbols reals** (`suma`, `abs`, `descompon`, `compon`, `main`, `X`, `g`) i **s'han de mantenir**. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
+
+  ```bash
+  git grep -o "_start" -- '*.qmd' ':!TODO/' | wc -l          # 104
+  git grep -oE "^_start:" -- '*.qmd' ':!TODO/' | wc -l       #  26
+  git grep -oE "\.globl\s+_start" -- '*.qmd' ':!TODO/' | wc -l  # 27 de 45
+  ```
+
+  ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
+
+- 🔴 **CANVI DE CRITERI (usuari, 2026-09-23): la directiva `.section` és obligatòria a tots els fragments d'assemblador.** Decisió pedagògica: `.section` s'ha de presentar a teoria i fer-se servir sistemàticament (`.section .data`, `.section .text`, etc.) en lloc de les formes nues. Abast mesurat: **126 directives de segment nues** (`.data`, `.text`, `.bss`, `.rodata` a principi de línia) contra només **5 `.section`** a tot el corpus. Cal: (i) decidir on es presenta la directiva a teoria (candidat natural: A2, on es presenten els segments) i registrar-ho a `13_contrib.qmd`; (ii) convertir les 126; (iii) comprovar que RARS accepta la forma llarga en tots els casos, **abans** de convertir res.
+
+  ```bash
+  git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO/' | wc -l   # 126
+  git grep -o "\.section" -- '*.qmd' ':!TODO/' | wc -l                          #   5
+  ```
+
+  Es va detectar arran del canvi de criteri de `_start`: totes dues tasques toquen les mateixes capçaleres de fragment, de manera que **convé executar-les en la mateixa passada**.
+
 - **Passades finals pendents: la Fase C no és el tancament de la revisió interna.** Entre «Fase C executada» i «revisió interna acabada» hi ha una etapa sencera —les *segones passades* o *passades finals*—, i el tancament és una **declaració de l'usuari**, no una cosa deduïble del corpus: `26_prompts/Lx__revisio_interna__plantilla.md` tanca preguntant si es donen per finalitzades la revisió pedagògica, la tècnica i la lingüística (tres preguntes separades). El model del que és una passada final el dona `26_prompts/Lx__revisio_interna__plantilla.md:52` per a L5: «contrast ISA oficial, comparació didàctica L4/L5/L6, lingüística dedicada», en xat separat.
 
   **Aquesta entrada és l'única còpia viva d'aquest pendent.** Fins ara només constava als assumptes dels commits, que el diuen a la segona meitat de la línia —el lloc on és més fàcil de perdre— i a la secció `CLAUDE.md §Seqüència de revisió pendent`, eliminada el 2026-09-23 per duplicada (`git show 397c2da:CLAUDE.md`). Els commits que el declaren:
@@ -299,6 +324,8 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
 - **Cap material explica a l'alumne el punt d'entrada de RARS.** La regla existeix com a **convenció interna** a `13_contrib.qmd:204` («`_start` ha de ser la primera etiqueta de `.text`»), però cap `.qmd` no explica a l'estudiant que RARS comença a executar a la primera instrucció de `.text` i que `_start` no és una etiqueta reconeguda pel simulador. Proposta d'origen: un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. Verificació: `git grep -n "primera instrucció del segment de text" -- '*.qmd' ':!TODO/'` → només `13_contrib.qmd:204`. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
+  🔴 **Afectada pel canvi de criteri del 2026-09-23** (vegeu `§Tasques transversals`): si `_start` surt de tot el codi, aquesta entrada **no es pot executar tal com està escrita**, perquè proposava explicar a l'alumne una convenció que deixa d'existir. S'ha de reformular —el que caldrà explicar és que RARS comença per la primera instrucció de `.text`, sense parlar de `_start`— o retirar-se. **No s'executi abans que el canvi de criteri.**
+
 - **Etiquetes de bucle heterogènies a L3.** El patró dominant al corpus és `for:`/`fifor:`; `L3.qmd:396,403,410,433` usa `for1:`/`ffor1:`/`for2:`/`ffor2:` en un mateix exercici. Harmonització menor, candidata per al xat de revisió interna de L3. *(Origen: `TODO/L4_tasques.md` D5, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
 - **Expressions aritmètiques als operands: escombrada pendent de `Ex`/`Sx`/`11_riscv.qmd`.** La regla ja és consolidada a `13_contrib.qmd §Convencions globals del laboratori`, amb **exempció explícita** per a teoria, problemes i exàmens (decisió de la sessió 2: l'aritmètica als operands s'hi admet perquè fa visible l'estructura del càlcul; al laboratori cal el literal ja calculat). A4 i S4 van rebre la remissió a `@nte-rars-operands-literals` i **no es toquen**. Queda revisar la resta d'`Ex.qmd`/`Sx.qmd` i `11_riscv.qmd` per detectar casos que siguin realment de laboratori.
@@ -420,6 +447,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | **T7 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T7 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: **cap passada posterior** i declaració prèvia «quasi tancat» del 2026-07-12. ⚠️ L'assumpte del commit (`2206477`, «T7-PE_T7-PS_T7 Fable raw») **no era una declaració d'estat sinó l'obertura de la revisió**: és anterior al refactor de directoris i és el commit que crea el registre. L'estat real és el del registre: **40 ítems ✅**, tres tandes de feina, i tanca dient «Pendent a `TODO.md §T7`: només C3» — que és la fila anterior, executada al mateix commit que aquest tancament | Sobreviuen quatre entrades del `§T7`, **totes de figures i totes dependents de l'usuari** (LO Draw o decisió): la taula de **7 figures pendents de reconstrucció com a natives**; **`fig-lru-roger`** (cal figura independent de la màquina d'estats LRU?), de la qual aquesta entrada **és l'única còpia** des que se'n va eliminar el marcador del corpus; **`fig-capacitat-exemple`** (dues figures o una de combinada?); i els **dos SVG orfes amb `____error____` al nom**, que ningú no ha decidit si són a refer o descartables |
 | **T8 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T8 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: Fase C acabada (`ccae7dd`, 2026-07-13), assumpte **net** —sense cap «falta» ni «TODO»— i **cap passada posterior**. És l'únic dels nou registres de teoria que es declarava tancat a si mateix: «**Estat: revisió interna de T8 tancada.** Blocs A, B i C íntegrament [executats]» | `A8.qmd` **no tenia cap marcador viu**. Sobreviu `§T8 — Figures pendents de creació`: **7 figures** de nova creació, dependents de l'usuari, amb destí `/auto_figs/T8_*__original_light.svg`. ⚠️ La xifra ja era corregida de 8 a 7 per l'auditoria (sessió 3), en verificar que `T8_mv_flux_traduccio` existeix i que `@fig-mv-flux-traduccio` **no** és una referència trencada. Nota de comptabilitat: el `§T8` no té cap vinyeta `^- `, de manera que mai no ha comptat com a entrada viva encara que descrigui feina pendent |
 | **T9 — contradicció sobre l'estat, i revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat, i la contradicció queda resolta per decisió.** L'únic commit de revisió de T9 (`87015d2`, 2026-07-11) acaba amb «**(s'ha d'acabar)**», mentre que el registre declarava «Fase C, **execució completa**». No es podien conciliar des del corpus —cap commit posterior no tanca el que `87015d2` deixava obert, i els que toquen A9/E9/S9 des de llavors són transversals (`c2a9171`, `d017ee2`, `7f243f5`, `257d37f`)—, de manera que la decisió era de l'usuari. **En tancar el tema, val el registre**: el «s'ha d'acabar» de l'assumpte descrivia l'estat d'aquell moment, no un pendent viu | `A9.qmd` **no tenia cap marcador viu**. Sobreviu una entrada al `§T9`: les **figures SVG**, diferides a una fase posterior (A9 consumeix 24 vegades `auto_figs/`, totes de `T9_cicle_interrupcio`). ⚠️ **Fora del `§T9`, T9 és el tema amb menys cobertura al glossari**: `12_sigles_simbols.qmd §Símbols` no té **cap** entrada de T9 (`grep -c "\| T9 \|"` → 0). Això no és un pendent de la revisió de T9 sinó de l'entrada transversal «nodrir les taules de Símbols i Notació», que ja ho recull i segueix viva |
+| **L1 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de `L1.qmd` de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: «L1 revisió interna feta» (`fe53cfc`, 2026-07-13) —**l'assumpte més net dels quinze ítems**, sense cap clàusula posterior— i **cap passada posterior**. El registre confirmava les tres fases completades i que la tasca T8 es va eliminar perquè l'usuari ja l'havia resolta manualment a `L3.qmd`. La decisió de L1 es va aplicar amb l'opció 1 (blocs `{#sol-}` per als 7 exercicis, `L1.qmd:134,142,185,187`) | **Cap entrada viva era específica de L1.** Dues transversals hi poden aterrar: la del **punt d'entrada de RARS**, que proposa com a destí «un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2» —i que el canvi de criteri de `_start` obliga a reformular abans d'executar-la—, i el **canvi de criteri de `_start` i `.section`** mateix, que tocarà els fragments d'assemblador de `L1.qmd` (8 ocurrències de `_start`, 4 `.globl`). Cap de les dues no reobre la revisió de L1 |
 | **P3 — matís del `mul` mòdul $2^n$** (decisió heretada de la revisió interna d'A1, 2026-07-11; ítem 3 del registre de T4) | **Executada**: el callout `#wrn-mul-modul-2n` és a `A4.qmd:323`, just després de `#tip-sobreeiximent-multiplicacio` i abans de `## Divisió entera`, amb el text exacte que proposava el registre; `S4.qmd:214` l'hi referencia amb `@wrn-mul-modul-2n` | ⚠️ **La cadena de rastre estava trencada pels dos extrems i per això es deixa aquesta fila**: l'entrada P3 d'aquest fitxer es va retirar el 2026-07-12 cedint la propietat del pendent al registre de T4, i el registre es va esborrar el 2026-09-22 (`4bfb43c`). El detall —anàlisi, opcions i text del callout— és a `git show a211bbf:TODO/T4_P_tasques.md §3` |
 
 ### Caduques per mesura
