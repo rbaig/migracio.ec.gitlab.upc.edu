@@ -89,19 +89,11 @@ Els commits transversals (auditories i harmonitzacions de setembre: `c2a9171`, `
 
 Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prioritats de la revisió, això **no** vol dir tancat a canvis, especialment els d'harmonització.
 
-Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
+✅ **La revisió interna de teoria és tancada: T1–T9, tots nou, el 2026-09-23** (declaracions de l'usuari, una per tema, al llarg del Bloc 4d). La taula d'estat per tema ja no cal, perquè no hi resta cap tema obert.
 
-**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1**, **T2**, **T3**, **T4**, **T5**, **T6**, **T7**, **T8** (2026-09-23).
+El tancament de cada tema —amb l'estat que tenia, el commit que el declarava i què en sobreviu— és a `TODO.md §Entrades retirades`. Quatre casos hi van necessitar una decisió o una execució abans de tancar-se, i el registre en diu el resultat: **T5** (revisió declarada «parcial»: auditats els 29 ítems del seu registre, executats els tres que restaven), **T6** (S6 harmonitzada sencera a $V_{CC}$), **T7** (C3, l'enunciat truncat d'`exr-p7-assoc-multinivell`, reparat contra el PDF original) i **T9** (contradicció entre l'assumpte del commit i el registre, resolta per decisió a favor del registre).
 
-| Tema | Assumpte del commit | Commit | Estat declarat al registre (`T<N>_P_tasques.md`) | Passades posteriors | Declaració de tancament |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| T9 | «Fable … **(s'ha d'acabar)**» | `87015d2` (2026-07-11) | «Fitxers modificats (**Fase C, execució completa**)» ⚠️ contradiu l'assumpte | cap | **pendent** |
-
-⚠️ **T7: l'assumpte del commit no és una declaració d'estat.** `2206477` és anterior al refactor de directoris (toca `02_PE/`, `03_PS/`, `07_contrib.qmd`) i és el commit que **crea** `T7_P_tasques.md`: és l'obertura de la revisió. L'estat real de T7 és el de la columna del registre, i és dels més avançats, no el menys.
-
-⚠️ **T5** és l'únic tema amb la revisió declarada *parcial*, i què en va quedar fora no consta enlloc. **T9** té una contradicció sense resoldre entre l'assumpte del commit i el seu registre. Totes dues són entrades vives del `TODO.md` (`§T5`, `§T9`).
-
-📌 **Les declaracions de tancament** («quasi tancat» per a T4, T6 i T7; i la de T1, «tancat de facto», que ja ha donat lloc al tancament del tema) són de l'usuari, del **2026-07-12**, i es recuperen de la secció eliminada amb `git show 397c2da:CLAUDE.md`. Es registren aquí **com a declaració anterior, no com a tancament vigent**: són anteriors a Fases C posteriors (T3 i T8 són del 13 de juliol; les de L2 i L3, del setembre). La frase que les acompanyava, «T2/T3/T8 amb Fase C pendent», **no** es recupera: no era una declaració sinó un fet, i és fals (`31f7571`, `b55e413`, `ccae7dd`).
+⚠️ **Tancar la revisió d'un tema no tanca el que hi queda registrat.** Els marcadors del corpus, les figures pendents i les decisions obertes **sobreviuen** al tancament i es resolen des de les seves entrades del `TODO.md`, sense reobrir cap tema: els set marcadors d'`A2.qmd`, les figures de T7 i T8, les decisions R4-TYPE i R5-TYPE d'A5, `#cau-boolea-c` d'A3, l'ítem 8 de T4 i la resta.
 
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
