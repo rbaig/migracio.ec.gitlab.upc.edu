@@ -91,9 +91,10 @@ Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prior
 
 Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
 
+**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1** (2026-09-23).
+
 | Tema | Assumpte del commit | Commit | Estat declarat al registre (`T<N>_P_tasques.md`) | Passades posteriors | Declaració de tancament |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| T1 | «revisió interna acabada. TODO segones passades» | `9de6756` (2026-07-13) | «Fase C executada (2026-07-12) i **sincronitzada amb el repositori remot** (2026-07-13)» | cap | **«tancat de facto»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
 | T2 | «Fase C acabada. Falta segones passades» | `31f7571` (2026-07-12) | — (el registre descriu el mètode, no declara estat final) | cap | **pendent** |
 | T3 | «Fase C acabada» | `b55e413` (2026-07-13) | — (acaba amb l'ordre d'execució proposat per a la Fase C) | cap | **pendent** |
 | T4 | «revisió interna acabada. TODO segones passades» | `9faab05` (2026-07-13) | Resum **final** (`:312`): «**no queda cap decisió pendent tret de l'ítem 8**» (figures half/full-adder, que romanen com a `<!-- TODO -->` a `A4.qmd:80,81` i són entrada viva del `TODO.md`) | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
@@ -107,7 +108,7 @@ Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit o
 
 ⚠️ **T5** és l'únic tema amb la revisió declarada *parcial*, i què en va quedar fora no consta enlloc. **T9** té una contradicció sense resoldre entre l'assumpte del commit i el seu registre. Totes dues són entrades vives del `TODO.md` (`§T5`, `§T9`).
 
-📌 **Les tres declaracions de tancament** («tancat de facto» per a T1; «quasi tancat» per a T4, T6 i T7) són de l'usuari, del **2026-07-12**, i es recuperen de la secció eliminada amb `git show 397c2da:CLAUDE.md`. Es registren aquí **com a declaració anterior, no com a tancament vigent**: són anteriors a Fases C posteriors (T3 i T8 són del 13 de juliol; les de L2 i L3, del setembre). La frase que les acompanyava, «T2/T3/T8 amb Fase C pendent», **no** es recupera: no era una declaració sinó un fet, i és fals (`31f7571`, `b55e413`, `ccae7dd`).
+📌 **Les declaracions de tancament** («quasi tancat» per a T4, T6 i T7; i la de T1, «tancat de facto», que ja ha donat lloc al tancament del tema) són de l'usuari, del **2026-07-12**, i es recuperen de la secció eliminada amb `git show 397c2da:CLAUDE.md`. Es registren aquí **com a declaració anterior, no com a tancament vigent**: són anteriors a Fases C posteriors (T3 i T8 són del 13 de juliol; les de L2 i L3, del setembre). La frase que les acompanyava, «T2/T3/T8 amb Fase C pendent», **no** es recupera: no era una declaració sinó un fet, i és fals (`31f7571`, `b55e413`, `ccae7dd`).
 
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
