@@ -67,11 +67,31 @@ Fase actual del projecte. El contingut de teoria (T1–T9), laboratori (L1–L6)
 
 ### Estat dels materials
 
+*Actualitzat el 2026-09-23. Secció única: hi és fusionada l'antiga §Seqüència de revisió pendent, que duplicava aquesta amb un marcador de progrés per tema.*
+
 El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
+
+**Com es llegeixen les taules.** Cada cel·la o bé **remet a un commit** —i llavors és certa per sempre, perquè descriu el que aquell commit va declarar— o bé és una **declaració de l'usuari**, i llavors és a la columna «declaració de tancament», que només pot omplir ell. No s'hi escriu cap veredicte derivat: «Fase C executada» **no** vol dir «revisió interna acabada». Entre les dues hi ha les *passades finals* (vegeu `TODO.md §Tasques transversals → Passades finals pendents`), i el tancament es declara per separat per a les tres revisions —**pedagògica, tècnica i lingüística**—, tal com les pregunta `26_prompts/Lx__revisio_interna__plantilla.md`.
+
+Els commits transversals (auditories i harmonitzacions de setembre: `c2a9171`, `4accc6c`, `b3072a6`, `d017ee2`, `45f6cc2`, `257d37f`…) toquen molts fitxers alhora i **no són passades de revisió d'un tema**: no compten a la columna «passades posteriors».
 
 #### Teoria (T1–T9)
 
-- Preparats per a revisió externa: `A1.qmd`–`A9.qmd`.
+Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prioritats de la revisió, això **no** vol dir tancat a canvis, especialment els d'harmonització.
+
+| Tema | Últim estat declarat | Commit que el declara | Passades posteriors | Declaració de tancament |
+| :--- | :--- | :--- | :--- | :--- |
+| T1 | «revisió interna acabada. TODO segones passades» | `9de6756` (2026-07-13) | cap | **pendent** |
+| T2 | «Fase C acabada. Falta segones passades» | `31f7571` (2026-07-12) | cap | **pendent** |
+| T3 | «Fase C acabada» | `b55e413` (2026-07-13) | cap | **pendent** |
+| T4 | «revisió interna acabada. TODO segones passades» | `9faab05` (2026-07-13) | cap | **pendent** |
+| T5 | «revisió **parcial** acabada» | `b81e3fa` (2026-07-13) | cap | **pendent** |
+| T6 | «Fase C acabada. Següent segones passades» | `77853ff` (2026-07-12) | cap | **pendent** |
+| T7 | «T7-PE_T7-PS_T7 Fable raw» | `2206477` (2026-07-11) | cap | **pendent** |
+| T8 | «Fase C acabada» | `ccae7dd` (2026-07-13) | cap | **pendent** |
+| T9 | «Fable … **(s'ha d'acabar)**» | `87015d2` (2026-07-11) | cap | **pendent** |
+
+⚠️ **T5** és l'únic tema amb la revisió declarada *parcial*, i què en va quedar fora no consta enlloc. **T9** té una contradicció sense resoldre entre el commit i el seu registre. Totes dues són entrades vives del `TODO.md` (`§T5`, `§T9`).
 
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
@@ -81,7 +101,20 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 #### Laboratori (`L1`–`L6`)
 
-- Pendents de revisió interna: `L1.qmd`–`L6.qmd`.
+| Fitxer | Últim estat declarat | Commit que el declara | Passades posteriors | Declaració de tancament |
+| :--- | :--- | :--- | :--- | :--- |
+| `L1.qmd` | «L1 revisió interna feta» | `fe53cfc` (2026-07-13) | cap | **pendent** |
+| `L2.qmd` | «L2 Fase C: redacció» (3 commits de Fase C) | `12bac2c` (2026-09-20) | cap | **pendent** |
+| `L3.qmd` | «L3 Fase C: redacció» (3 commits de Fase C) | `7f0703c` (2026-09-20) | correccions puntuals per exercici (`b6c8124`, `8b9f82d`, `01fff2d`, `afdc884`, `eb3f856`, `6ee1a8a`), no una passada | **pendent** |
+| `L4.qmd` | «L4 revisió interna **pre passades finals**» | `3cae913` (2026-07-21) | cap | **pendent** |
+| `L5.qmd` | «L5 **tres passades fetes**» | `b5ca2f4` (2026-07-21), després d'`a83dc16` | — (la passada posterior és aquest mateix commit) | **pendent** |
+| `L6.qmd` | «L6 Fase B» ⚠️ | `ca6c01a` (2026-07-21) | cap | **pendent** |
+
+⚠️ **`ca6c01a` es diu «L6 Fase B» però conté la Fase C sencera**: toca els quatre fitxers que el registre de L6 llistava com a modificats (`L6.qmd`, `A7.qmd`, `13_contrib.qmd` i el registre mateix), i s'hi verifiquen els ítems de Fase C (literals als `.space`, «farciment», l'exercici nou `s6_4_5`, la correcció d'`A7.qmd`). L'assumpte del commit enganya; el contingut, no.
+
+⚠️ **`3cae913` és l'únic commit de revisió que ha tocat mai `L4.qmd`**, i el seu assumpte diu que és *previ* a les passades finals.
+
+Detalls transversals i decisions obertes: vegeu `TODO.md`.
 
 ### Etiquetes `{#sec-}` a les capçaleres
 
@@ -91,16 +124,6 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Ax.qmd` han de tenir un
 - Tots els fitxers `A1.qmd`–`A9.qmd` tenen les capçaleres etiquetades: **complet**.
 
 **Criteris de generació de l'slug**: vegeu `13_contrib.qmd §Etiquetes `{#sec-}` a les capçaleres`.
-
-### Seqüència de revisió pendent
-
-Estat actual (2026-07-12):
-
-- **Teoria (A1–A9)**: Preparats per a revisió externa. T1 tancat de facto (Fase C executada); T2/T3/T8 amb Fase C pendent; T4/T6/T7 quasi tancats.
-- **Enunciats (E1–E9) i Solucionaris (S1–S9)**: Pas combinat adaptació + revisió interna, 1 xat per fitxer, en ordre temàtic (E3/S3 completats).
-- **Laboratori (L1–L6)**: Pendents de revisió interna (2 xats: L1–L3 i L4–L6).
-
-Detalls transversals i decisions obertes: vegeu `TODO.md`.
 
 ### Flux de treball
 

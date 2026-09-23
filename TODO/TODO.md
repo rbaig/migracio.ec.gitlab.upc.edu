@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**49 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
+**52 entrades vives.** Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,13 @@ head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) 
   TODO/TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
-`§Tasques per tema` 19 · `§Tasques globals` 10.
+Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 11 ·
+`§Tasques per tema` 21 · `§Tasques globals` 10.
+
+Les tres entrades noves del 2026-09-23 (passades finals pendents, estat parcial
+de T5, contradicció de T9) surten de la fusió de les dues seccions d'estat de
+`CLAUDE.md`: eren pendents que només constaven a la secció eliminada o als
+assumptes dels commits, i s'han registrat **abans** de treure-la.
 
 **El `TODO/` ja només conté aquest fitxer.** `CLAUDE.md` diu que al final ha de
 quedar buit: el que falta per arribar-hi és buidar aquest `TODO.md` mateix, és a
@@ -160,6 +165,23 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   **Bona part són codi C i directives legítimes** (`printf("%d", x)`, `.asciz "cadena"`), que no s'han de tocar: el discriminador ha de ser cas a cas. Casos reals de prosa ja identificats: `A2.qmd:1446` («punter a», «multiplicació», «desreferència/indirecció»), `:1470` («adreça de»), `:1472` («ampersand»), `:1560` («variable de tipus punter al \<tipus\>»), `:1760-1761` («vector de 100 enters»).
 
+- **Passades finals pendents: la Fase C no és el tancament de la revisió interna.** Entre «Fase C executada» i «revisió interna acabada» hi ha una etapa sencera —les *segones passades* o *passades finals*—, i el tancament és una **declaració de l'usuari**, no una cosa deduïble del corpus: `26_prompts/Lx__revisio_interna__plantilla.md` tanca preguntant si es donen per finalitzades la revisió pedagògica, la tècnica i la lingüística (tres preguntes separades). El model del que és una passada final el dona `26_prompts/Lx__revisio_interna__plantilla.md:52` per a L5: «contrast ISA oficial, comparació didàctica L4/L5/L6, lingüística dedicada», en xat separat.
+
+  **Aquesta entrada és l'única còpia viva d'aquest pendent.** Fins ara només constava als assumptes dels commits, que el diuen a la segona meitat de la línia —el lloc on és més fàcil de perdre— i a la secció `CLAUDE.md §Seqüència de revisió pendent`, eliminada el 2026-09-23 per duplicada (`git show 397c2da:CLAUDE.md`). Els commits que el declaren:
+
+  | Ítem | Commit | El que diu l'assumpte |
+  | :--- | :--- | :--- |
+  | T1 | `f5e8223`, `9de6756` | «Fase C completa. **TODO segones passades**» |
+  | T2 | `31f7571` | «Fase C acabada. **Falta segones passades**» |
+  | T4 | `9faab05` | «revisió interna acabada. **TODO segones passades**» |
+  | T6 | `77853ff` | «Fase C acabada. **Següent segones passades**» |
+  | **L4** | `3cae913` | «L4 revisió interna **pre passades finals**» |
+  | L5 | `a83dc16` → `b5ca2f4` | «TODO darreres passades» → «**tres passades fetes**» (l'únic ítem amb la passada posterior feta) |
+
+  ⚠️ **L4 és el cas crític**: `3cae913` és **l'únic commit de revisió que ha tocat mai `L4.qmd`**, i el seu assumpte diu literalment que és *previ* a les passades finals. Cap altre document viu no ho recollia.
+
+  L'estat ítem per ítem és a `CLAUDE.md §Estat dels materials`, amb la columna «declaració de tancament» pendent de l'usuari.
+
 - **Nova eina disponible: retalls (crops) SVG a partir d'una figura font única** (afegida 2026-07-13, revisió interna T5): `25_scripts/gen_crops.py` + `24_specs/retalls.toml`, integrat al `pre-render` de `_quarto.yml` entre `gen_regs.py` i `gen_dark.py`. Permet definir una figura «detall»/«zoom» com una finestra `(x, y, w, h)` sobre el `viewBox` d'una figura font ja existent, sense duplicar-ne el contingut. Documentat a `13_contrib.qmd §Retalls`. Aplicable només quan el detall és un subconjunt geomètric net de la font (cap connector/etiqueta tallat a mig camí).
 
   **Cap ús real encara**: `24_specs/retalls.toml` té 23 línies, **totes comentari**, i cap retall definit. S'ha valorat dues vegades per a les figures de T5 i descartat totes dues: (1) `T5_recta_zoom_zero` com a retall de `T5_recta_global` — `T5_recta_zoom_zero` mostra informació pròpia dels denormals (hexadecimals concrets) que la global no té espai per representar; (2) totes dues com a retalls de `T5_coma_flotant_racionals__drawio.svg` (figura orfe a `22_figs_originals/`, no referenciada per cap `.qmd`, que sembla l'esborrany original) — el drawio (7465 línies, estil amb fletxes i icones pròpies) no comparteix coordenades ni disseny amb les figures actuals en estil pla.
@@ -199,6 +221,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### T5
 
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present. *(No retirar sense actualitzar `13_contrib.qmd:706`, que hi remet explícitament: «T5 → T9: `fcsr` → `@nte-zicsr` (vegeu `TODO.md §T5 P8`)».)*
+
+- **La revisió interna de T5 és declarada «parcial», no acabada.** És l'únic tema en aquesta situació: `92345e4` («A5-E5-S5 revisió interna **parcial**») i `b81e3fa` («A5-E5-S5 revisió **parcial** acabada + una mica de neteja de TODOs»), tots dos del 2026-07-13. Cap commit posterior no la completa: el següent que toca A5/E5/S5 és `4accc6c`, que és una harmonització transversal («de menor pes» → «de menys pes», 6 fitxers), no una passada de revisió de T5. **Què és el que va quedar fora del «parcial» no consta enlloc**, i és el primer que caldrà establir quan es reprengui. Cap de les dues seccions d'estat de `CLAUDE.md` no ho recollia.
 
 ### T6
 
@@ -257,6 +281,8 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 ### T9
 
 - **F/G — Figures SVG**: diferides a una fase posterior. Estat actual: A9 consumeix 24 vegades `auto_figs/`, totes de la mateixa figura (`T9_cicle_interrupcio`).
+
+- **Contradicció sobre l'estat de T9, sense resoldre.** L'únic commit de revisió de T9 és `87015d2` (2026-07-11), i l'assumpte acaba amb **«(s'ha d'acabar)»**; el registre `TODO/T9_P_tasques.md`, en canvi, declarava «Fase C, execució completa» (§Fitxers modificats, `git show a211bbf:TODO/T9_P_tasques.md`). Les dues afirmacions no es poden conciliar des del corpus: no hi ha cap commit posterior que tanqui el que `87015d2` deixava obert, i els que toquen A9/E9/S9 des de llavors són transversals (`c2a9171`, `d017ee2`, `7f243f5`, `257d37f`). **Cal decidir quina de les dues val** abans de donar T9 per revisat. Cap de les dues seccions d'estat de `CLAUDE.md` no ho recollia.
 
 ### Laboratori
 
