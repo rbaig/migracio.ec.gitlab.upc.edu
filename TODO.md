@@ -650,7 +650,10 @@ directiva pròpia sense arribar-hi mai com a operand. Cap grafia no hi arriba
 que RARS reconeix (`.rodata`, `.sdata`), les instruccions posteriors a la
 directiva **no s'assemblen enlloc** —ni a `.text`, ni a `.data`, ni a cap
 adreça—. Quatre instruccions queden en una, sense cap error ni avís, i el
-programa acaba «dropped off the bottom». La inversió és contraintuïtiva i val
+programa acaba «dropped off the bottom». **No es desen al lloc equivocat:
+desapareixen.** El bolcat de `.data` del mateix programa respon «This segment
+has not been written to, there is nothing to dump», cosa que descarta la
+hipòtesi natural —que acabin com a dades— i tanca la recerca. La inversió és contraintuïtiva i val
 la pena retenir-la: **`.section .foo`, que no es reconeix, és la forma segura**
 (avisa i conserva les quatre instruccions); les reconegudes són les perilloses.
 
@@ -692,6 +695,8 @@ printf '.text
  ecall
 ' > t3.s
 java -jar rars1_6.jar nc a t3.s dump .text HexText /dev/stdout   # → només 07700293
+java -jar rars1_6.jar nc a t3.s dump .data HexText /dev/stdout   # → "has not been written to":
+                                                                #   no són a cap segment, desapareixen
 
 # 4. L'assemblador es queda on era (el mateix .bss, amb i sense .data al davant)
 printf '.section .bss
