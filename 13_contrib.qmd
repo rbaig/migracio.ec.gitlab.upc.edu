@@ -990,6 +990,26 @@ efectivament una cita —si l'ordre segueix sense reproduir la xifra publicada,
 hi ha una ocurrència que no s'havia vist, i llavors el que s'ha de corregir és
 l'afirmació, no el pathspec.
 
+**13. Una afirmació sobre branques ha de dir de quin remot parla, i mesurar-se
+amb `git ls-remote`.** `git branch -r` ensenya la **vista guardada del clon**,
+que pot estar desfasada en les dues direccions: branques que ja no hi són i
+branques que hi són i no s'han baixat. El projecte té **dos remots amb
+contingut diferent** —GitLab (`origin`), que és la font de veritat, i el mirall
+de GitHub (`mirror`), on el CI escriu la branca `build`—, de manera que «no
+existeix» sense dir **on** no vol dir res.
+
+```bash
+git ls-remote --heads origin    # el que hi ha de debò a GitLab, ara
+git ls-remote --heads mirror    # i al mirall, que no és el mateix
+```
+
+El cas (2026-09-23): `build` declarada inexistent mirant només GitLab —hi és,
+al mirall, generada pel bot—, i `T3-review-adria` i `to-trash` declarades
+existents des de referències de seguiment obsoletes, que `git fetch --prune`
+va treure. Les dues direccions de l'error, en una sola lectura. Quan una
+branca resulti ser una referència obsoleta, el que cal és **podar**, no
+registrar-la.
+
 Sobre les referències creuades dins dels blocs de codi, vegeu §Blocs de codi:
 no n'hi ha d'haver, i el motiu hi és escrit.
 

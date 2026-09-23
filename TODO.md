@@ -132,9 +132,11 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   L'altre patró que el registre d'origen citava («el següent exemple» → «l'exemple següent») és **residual**: 6 ocurrències del calc contra 244 de la forma bona. *(Origen: `TODO/substantiu_adjectiu.md`, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/substantiu_adjectiu.md`.)*
 
-- **Dues branques del remot amb feina no conciliada** (registrades 2026-09-23). `origin` té **tres** branques: `main` i dues d'endarrerides que ningú no ha tocat des de l'agost. **Només es registren**: no s'ha fusionat ni esborrat res, i la decisió de què se'n fa és de l'usuari.
+- **Branques del remot: la revisió externa de T4–T6 és en curs a `temes456`** (registrada 2026-09-23). Les branques es registren, **no es toquen**: cap fusió, cap esborrat, i les fusions les farà el grup de treball.
 
   ```bash
+  git ls-remote --heads origin           # GitLab: la font de veritat
+  git ls-remote --heads mirror           # GitHub: el mirall, hi ha `build` de més
   for b in contingut/t3-traduccio temes456; do
     echo "$b: $(git rev-list --count origin/$b..origin/main) darrere, \
   $(git rev-list --count origin/main..origin/$b) propis"
@@ -142,25 +144,37 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   done
   ```
 
-  | Branca | Darrere | Propis | Abast |
-  | :--- | ---: | ---: | :--- |
-  | `contingut/t3-traduccio` | 163 | 1 | 4 fitxers, +61/−48 |
-  | `temes456` | 118 | **11** | 6 fitxers, **+243/−225** |
+  | Branca | Remot | Darrere | Propis | Abast |
+  | :--- | :--- | ---: | ---: | :--- |
+  | `contingut/t3-traduccio` | tots dos | 163 | 1 | 4 fitxers, +61/−48 |
+  | `temes456` | tots dos | 118 | **11** | 6 fitxers, **+243/−225** |
+  | `build` | **només el mirall** | — | 1 | sortida de CI, vegeu més avall |
 
-  ⚠️ **`temes456` conté onze commits de revisió de T4, T5 i T6** sobre `A4.qmd`, `A5.qmd` i `A6.qmd` (243 línies afegides, 225 tretes), del 21 de juliol al 7 d'agost, amb assumptes d'una altra mà («Revision of T4», «Tema 6 revisat fins Rendiment i Guany…»). **La revisió interna d'aquests tres temes es va declarar tancada el 2026-09-23** (`2f18e1a`, `4c37084`, `6846dff`) sense que aquesta feina s'hagi conciliat mai. Són dues revisions independents dels mateixos tres capítols.
+  **`temes456` és la revisió externa de T4, T5 i T6, i és l'etapa que segueix la interna, no una de paral·lela.** Onze commits sobre `A4.qmd`, `A5.qmd` i `A6.qmd` (+243/−225), del **21 de juliol al 7 d'agost**; la revisió interna dels tres temes es va acabar just abans, el **12–13 de juliol** (`77853ff` T6, `b81e3fa` T5, `9faab05` T4). La declaració de tancament de la interna (2026-09-23, `2f18e1a`, `4c37084`, `6846dff`) n'és la **condició prèvia**, no una contradicció.
 
-  Tres precisions que la mesura afegeix:
+  La signen **tres col·legues**: Rubén Tous (4 commits; hi surten com a `FIRST_NAME LAST_NAME` perquè té el `user.name` sense configurar, però el correu és el seu), Fernando Agraz (4) i Pedro J. Martinez-Ferrer (3).
 
-  - **Els autors són tres i cap no és l'usuari**: Pedro J. Martinez-Ferrer (T4, T5, T6), Fernando Agraz (T6, warnings de render) i dos commits amb l'autor sense configurar (`FIRST_NAME LAST_NAME`). És feina de la revisió externa avançada pel seu compte, no un esborrany propi.
-  - **Toca dues fonts de veritat**, no només prosa: `24_specs/registres.toml` i `22_figs_originals/T5_ieee754_format_registre.svg` — els dos fitxers que l'entrada «Ordre substantiu–adjectiu» d'aquesta mateixa secció identifica com a font de la figura de T5. Qualsevol conciliació els ha de regenerar, no només fusionar-los.
-  - També toca `.gitignore` (3 línies).
+  **El que la fusió haurà de resoldre.** Des del punt de separació (`0e715c2`, 2026-07-20), el que `main` ha mogut de cada fitxer:
 
-  `contingut/t3-traduccio` (un commit, `62700c0`, 2026-07-06, Pedro J. Martinez-Ferrer) porta **rutes d'abans del refactor de directoris** (`c5d9416`): `01_T/T3.qmd` i `11_riscv/…`, camins que avui no existeixen. **Qualsevol fusió és manual**, perquè git no pot resseguir el canvi de nom automàticament a través del refactor.
+  | Fitxer | Commits a `main` | Conseqüència |
+  | :--- | ---: | :--- |
+  | `A6.qmd` | **0** | **Fusió neta** |
+  | `A5.qmd` | 1 | `4accc6c`, mecànic («de menor pes» → «de menys pes») |
+  | `A4.qmd` | **5** | Dos amb canvis de contingut: `1f8132a` (callout de pas de matriu per referència) i `45f6cc2` (expressions als operands) |
 
-  ⚠️ **No hi ha cap branca `build` a `origin`**, contra el que una lectura anterior donava per fet: les branques del remot són tres i prou, i `build` no hi surt ni hi ha existit mai com a branca (l'única menció és l'assumpte del commit `d4086cd`, «push previ a test de publicació a `build`»). Si es buscava un artefacte de render, no és aquí.
+  ```bash
+  git log --oneline 0e715c2..origin/main -- 01_apunts/A4.qmd   # 5
+  git log --oneline 0e715c2..origin/main -- 01_apunts/A5.qmd   # 1
+  git log --oneline 0e715c2..origin/main -- 01_apunts/A6.qmd   # cap
+  ```
 
-  📌 **El remot `mirror` (GitHub) en té dues més que `origin` no té**: `T3-review-adria` (224 darrere, 1 propi) i `to-trash` (257 darrere, 3 propis). Queden **fora d'aquesta entrada** —el mirall se sincronitza sol i no és la font de veritat—, però consten aquí perquè ningú no les descobreixi com una sorpresa. `git branch -r` les llista.
+  ⚠️ **La branca toca dues fonts de veritat**, no només prosa: `24_specs/registres.toml` i `22_figs_originals/T5_ieee754_format_registre.svg` — els dos fitxers que l'entrada «Ordre substantiu–adjectiu» d'aquesta mateixa secció identifica com a font de la figura de T5. Conciliar-los vol dir **regenerar**, no només fusionar. També toca `.gitignore` (3 línies).
 
+  `contingut/t3-traduccio` (un commit, `62700c0`, 2026-07-06, Pedro J. Martinez-Ferrer) porta **rutes d'abans del refactor de directoris** (`c5d9416`): `01_T/T3.qmd` i `11_riscv/…`, camins que avui no existeixen. **Qualsevol fusió és manual**, perquè git no pot resseguir el canvi de nom a través del refactor.
+
+  📌 **`build` existeix només al mirall de GitHub, i no s'ha de tocar.** No és a `origin` (GitLab). El seu únic commit és `6d5d2cf` (2026-09-19), d'autor `github-actions[bot]` i assumpte «Render de 38f0ebc»: és **sortida de CI generada a GitHub**, que per això no arriba a GitLab —i el `38f0ebc` que cita no resol en aquest clon, per la mateixa raó—. El `publish.yml` actual ja no l'escriu: desplega amb `upload-pages-artifact` i `deploy-pages` (`:81`, `:94`). No és residu del `d4086cd` de juliol ni feina de ningú.
+
+  ⚠️ **Mesureu les branques amb `git ls-remote`, i digueu de quin remot parleu** (regla 13 de `13_contrib.qmd §Escombrades i verificació del corpus`). En registrar aquesta entrada, `git branch -r` va fer declarar `build` inexistent —ho és a GitLab, no al mirall— i va fer registrar `T3-review-adria` i `to-trash` com a existents, quan eren **referències de seguiment obsoletes** d'aquest clon: ja no són a cap dels dos remots, i `git fetch mirror --prune` les ha tretes.
 ---
 
 ## Tasques transversals

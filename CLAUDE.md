@@ -98,7 +98,7 @@ El tancament de cada tema —amb l'estat que tenia, el commit que el declarava i
 
 ⚠️ **Tancar la revisió d'un tema no tanca el que hi queda registrat.** Els marcadors del corpus, les figures pendents i les decisions obertes **sobreviuen** al tancament i es resolen des de les seves entrades del `TODO.md`, sense reobrir cap tema: els set marcadors d'`A2.qmd`, les figures de T7 i T8, les decisions R4-TYPE i R5-TYPE d'A5, `#cau-boolea-c` d'A3, l'ítem 8 de T4 i la resta.
 
-⚠️ **T4, T5 i T6: hi ha feina de revisió no conciliada fora de `main`.** La branca `origin/temes456` porta **onze commits** d'una altra mà sobre `A4.qmd`, `A5.qmd` i `A6.qmd` (juliol–agost del 2026), que no s'han fusionat mai. El tancament del 2026-09-23 —que es manté tal com és declarat més amunt— es va declarar sobre `main`, i per tant **no cobreix aquella feina**: són dues revisions independents dels mateixos tres capítols. Qui llegeixi «tancada» per a T4, T5 o T6 ha de saber-ho abans de donar els tres temes per resolts de cara a la revisió externa. Detall, mesura i ordres de comprovació: `TODO.md §Decisions obertes → Dues branques del remot amb feina no conciliada`.
+📌 **T4, T5 i T6: la revisió externa ja és en curs, a `temes456`.** El grup de treball hi revisa `A4.qmd`, `A5.qmd` i `A6.qmd` des del 21 de juliol; darrer commit, **2026-08-07**. És l'etapa que segueix la interna, i el tancament de la interna declarat més amunt n'és la **condició prèvia**: les dues coses són coherents. Les fusions les farà el grup de treball. Estat de la branca, autors i el que la fusió haurà de resoldre fitxer per fitxer: `TODO.md §Decisions obertes → Branques del remot`.
 
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
