@@ -417,6 +417,38 @@ L'ABI ELF admet també una **forma llarga** de la directiva de segment, `.sectio
 
 Una **etiqueta** (***label***) és un nom simbòlic que representa una adreça de memòria. Es declara escrivint el nom seguit de dos punts (`:`), sense indentació. L'assemblador la substitueix per l'adreça definitiva durant el procés d'assemblatge (@sec-compilacio).
 
+::: {#nte-rars-noms-reservats .callout-note}
+## RARS — Noms reservats
+
+A **RARS**, un nom que trieu vosaltres —una etiqueta o una constant simbòlica— **no pot coincidir amb cap nom que l'assemblador ja conegui**: cap mnemònic (`add`, `b`, `j`, `li`, `mv`, `ret`, `nop`…) ni cap nom de registre (`t0`, `a0`, `zero`…). **El missatge d'error no us ho diu**, i és per això que costa de trobar.
+
+Els dos missatges amb què hi arribareu:
+
+| On | Nom que hi poseu | Missatge |
+| :--- | :--- | :--- |
+| `.eqv` | mnemònic o registre | `Malformed .eqv directive` |
+| Etiqueta a `.text` | registre en minúscules | `"t0" is not a recognized operator` |
+
+Exemple concret: si voleu una constant per a la mida d'un bloc i escriviu
+
+```{.s filename="RV32I"}
+.eqv    B, 16           # ✗ Malformed .eqv directive
+```
+
+falla perquè `B` és el salt incondicional `b`, i **els mnemònics no distingeixen majúscules de minúscules**. La solució és un nom més descriptiu, que a més es llegeix millor:
+
+```{.s filename="RV32I"}
+.eqv    BLK, 16         # ✓
+```
+
+Dos detalls que fan el diagnòstic més difícil:
+
+- **Les dues cares no es comporten igual.** Una *etiqueta* sí que pot dir-se `add` o `b` (els mnemònics només són reservats per a `.eqv`); en canvi un nom de *registre* en minúscules com a etiqueta només falla al segment `.text`.
+- **Al segment `.data`, una etiqueta anomenada `t0` assembla**, però és inservible: l'error apareix més tard, on la useu (`la t1, t0` → `"t0": operand is of incorrect type`).
+
+En majúscules (`T0`, `ZERO`) no hi ha xoc, perquè els noms de registre sí que distingeixen majúscules; però **no és una solució recomanable**: un nom com `T0` confon el lector. Trieu noms descriptius i el problema no apareix.
+:::
+
 ### Directives {#sec-directives-assemblador}
 
 ::: {#cau-directives .callout-caution}
@@ -429,7 +461,7 @@ Les directives cobreixen funcions molt diverses: reservar espai en memòria, ini
 
 Les **constants simbòliques** faciliten l'escriptura i la lectura dels programes: permeten donar un nom significatiu a un valor que pot aparèixer en múltiples llocs, de manera que una sola modificació actualitza totes les ocurrències.
 
-A **RARS**, les constants simbòliques es declaren mitjançant la directiva `.eqv` (`.equ` / `.set` en GNU assembly).
+A **RARS**, les constants simbòliques es declaren mitjançant la directiva `.eqv` (`.equ` / `.set` en GNU assembly). El nom que se'ls dona no pot coincidir amb cap mnemònic ni cap nom de registre (@nte-rars-noms-reservats).
 
 ::: {#tip-declaracio-cnts-simboliques .callout-tip}
 ## C i RARS — Constants simbòliques
