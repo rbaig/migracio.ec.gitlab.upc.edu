@@ -61,7 +61,7 @@ Estat de la Revisió interna Lx
 *Configuració esperada: Fable 5 High amb Thinking.*
 
 0. Explora els fitxers que t'he passat.
-1. Llegeix `CLAUDE.md`, `13_contrib.qmd` i `TODO/TODO.md`.
+1. Llegeix `CLAUDE.md`, `13_contrib.qmd` i `TODO.md`.
 2. Llegeix el fitxer principal a revisar (`L6.qmd`) i els fitxers dels apunts les seves referències creuades (`Ax.qmd`, amb x ∈ [1, 9]).
 3. `raw.githubusercontent.com/rbaig/migracio.ec.gitlab.upc.edu/main/...` al repositori els fitxers que necessitis.
 4. Fes un primer mapa de l'estructura i el contingut: identifica seccions, detecta inconsistències evidents de coherència, pedagogia i llenguatge. **En aquesta fase no cal encara verificar exhaustivament cada càlcul** — l'objectiu és tenir el mapa global. Un cop extretes les convencions rellevants de `CLAUDE.md`, `13_contrib.qmd`, no cal rellegir-los sencers a la Fase B: treballa amb el resum ja fet a menys que sorgeixi un dubte concret que ho justifiqui.

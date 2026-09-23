@@ -11,8 +11,8 @@ sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i n
 compten. Ordre que ho mesura:
 
 ```bash
-head -n $(($(grep -n "^## Entrades retirades" TODO/TODO.md | cut -d: -f1) - 1)) \
-  TODO/TODO.md | grep -cE '^- '
+head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
+  TODO.md | grep -cE '^- '
 ```
 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 13 ·
@@ -25,14 +25,24 @@ assumptes dels commits, i s'han registrat **abans** de treure-la. Les tres
 següents (§T5, ítems 4.8, 4.12 i 3.8) surten de l'auditoria dels 29 ítems del
 registre de T5, feta el mateix dia contra el corpus.
 
-**El `TODO/` ja només conté aquest fitxer.** `CLAUDE.md` diu que al final ha de
-quedar buit: el que falta per arribar-hi és buidar aquest `TODO.md` mateix, és a
-dir, tancar o reubicar les entrades vives. Ja no hi ha cap subdirectori ni cap
-altre fitxer, de manera que el compte recursiu i el de l'arrel coincideixen:
+**El directori `TODO/` ja no existeix: aquest fitxer viu a l'arrel des del
+2026-09-23.** El sanejament del 2026-09-22 el va deixar com a únic habitant del
+directori, i el trasllat n'ha tret el nivell sobrer. El que ha de quedar buit,
+doncs, és **el fitxer**, no cap directori: el que falta per arribar-hi és
+tancar o reubicar les entrades vives d'aquest `TODO.md` mateix. La comprovació
+ja no és un recompte de directori sinó que el `TODO/` no hi torni a ser:
 
 ```bash
-git ls-files TODO/ | wc -l                     # 1, només aquest fitxer
+git ls-files | grep -c "^TODO/"                # 0, el directori ja no existeix
+git ls-files TODO.md                           # TODO.md, a l'arrel
 ```
+
+⚠️ El trasllat va invalidar el pathspec `':!TODO/'` que excloïa aquest fitxer
+de les escombrades: sense `TODO/`, deixava d'excloure res i les mesures que el
+fitxer publica de si mateix s'haurien inclòs a si mateixes (el compte de
+«simple precisió», per exemple, passava de 52 a 56). Les 28 ordres afectades
+—26 aquí i 2 a `13_contrib.qmd`— usen ara `':!TODO.md'`, i la regla d'origen és
+a `13_contrib.qmd §Escombrades i verificació del corpus`, regla 1.
 
 **Què se n'ha tret, i on és ara** (sanejament del 2026-09-22):
 
@@ -45,7 +55,9 @@ git ls-files TODO/ | wc -l                     # 1, només aquest fitxer
     `Lx__…__plantilla.md`, `L2`–`L6__revisio_interna*.md`). **No són transitoris**: són
     plantilles reutilitzables, i per això no entren al compte del que s'ha de buidar.
     Les rutes que citen (`CLAUDE.md`, `13_contrib.qmd`, `24_specs/svg.md`,
-    `TODO/TODO.md`) són des de l'arrel del repositori i segueixen sent vàlides.
+    `TODO.md`) són des de l'arrel del repositori i segueixen sent vàlides. La
+    de `TODO.md` deia `TODO/TODO.md` i es va actualitzar amb el trasllat del
+    2026-09-23 (`26_prompts/L6__revisio_interna.md`, l'únic prompt que la cita).
   - **7 fitxers de `TODO/laboratori/`, esborrats**, amb el seu contingut
     informatiu recollit abans en aquest fitxer: `startup.s` (l'original de RARS)
     s'ha copiat literalment a §Dades preservades, com a segon bloc i amb la taula
@@ -82,7 +94,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   **(i) Decidir la forma canònica i registrar-la a `13_contrib.qmd`.** Avui **no hi ha cap regla d'ordre substantiu–adjectiu** al fitxer de convencions: `grep -niP "substantiu|adjectiu|anteposa" 13_contrib.qmd` → cap resultat. (`13_contrib.qmd:143` parla d'«esbiaixat»/«biaix» i només fa servir l'ordre bo dins del títol d'una font citada; no fixa cap criteri.) La regla lingüística de fons: en català normatiu els adjectius **classificadors** van darrere del substantiu, i anteposar-los és un calc de l'anglès. Amb excepcions que la decisió ha de recollir: ordinals, quantificadors i indefinits, «mateix», «propi», «altre», adjectius valoratius idiomàtics, i **«simple» en sentit de «mer»** («un simple error tipogràfic»), que sí que va anteposat.
 
-  **(ii) L'escombrada.** Asimetria mesurada sobre tot el versionat, exclòs `TODO/`, **insensible a majúscules**:
+  **(ii) L'escombrada.** Asimetria mesurada sobre tot el versionat, exclòs aquest `TODO.md`, **insensible a majúscules**:
 
   | Forma | Ocurrències | Repartiment |
   | :--- | ---: | :--- |
@@ -92,10 +104,10 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | «precisió doble» | **0** | — |
 
   ```bash
-  git grep -oi "simple precisió" -- . ':!TODO/' | wc -l    # 52
-  git grep -oi "precisió simple" -- . ':!TODO/' | wc -l    #  6
-  git grep -oi "doble precisió"  -- . ':!TODO/' | wc -l    # 10
-  git grep -oi "precisió doble"  -- . ':!TODO/' | wc -l    #  0
+  git grep -oi "simple precisió" -- . ':!TODO.md' | wc -l    # 52
+  git grep -oi "precisió simple" -- . ':!TODO.md' | wc -l    #  6
+  git grep -oi "doble precisió"  -- . ':!TODO.md' | wc -l    # 10
+  git grep -oi "precisió doble"  -- . ':!TODO.md' | wc -l    #  0
   ```
 
   ⚠️ **Dues trampes que l'execució ha d'evitar, totes dues comprovades:**
@@ -103,7 +115,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   **1. L'escombrada ha de ser insensible a majúscules** (`-i`). Sis ocurrències són capitalitzades perquè encapçalen columna o paràgraf, i un patró en minúscules se les deixa totes:
 
   ```bash
-  git grep -n "Simple precisió\|Doble precisió" -- . ':!TODO/'
+  git grep -n "Simple precisió\|Doble precisió" -- . ':!TODO.md'
   # A5.qmd:63 (dues, capçaleres de columna) · S5.qmd:296, :309, :338, :351
   ```
 
@@ -129,7 +141,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   Volum verificat: **498 ocurrències**, repartides per prefix p1–p9 (46, 56, 74, 74, 77, 67, 40, 32, 32).
 
   ```bash
-  git grep -o "exr-p[0-9]*-\|sol-p[0-9]*-" -- '*.qmd' ':!TODO/' | wc -l   # 498
+  git grep -o "exr-p[0-9]*-\|sol-p[0-9]*-" -- '*.qmd' ':!TODO.md' | wc -l   # 498
   ```
 
   Mecànic i de volum considerable: candidat clar per a Claude Code.
@@ -147,7 +159,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **`L2.qmd:156-166` — alineació de `.dword` a RARS** (registrat 2026-09-20; **no tocat** per la sessió 2, que el va declarar decisió viva). RARS alinea `.dword` a 4 bytes (no a 8, com fan GCC/MARS) i el solucionari presenta **les dues versions alhora**. Decisió pedagògica pendent: mantenir les dues, quedar-se només amb la de RARS (que és la que l'alumne observarà al laboratori), o explicitar millor per què se'n donen dues.
 
-  ⚠️ **El bolcat comparatiu MARS/RARS de `L2.qmd:164-166` no existeix enlloc més del corpus.** Si en resoldre la decisió s'elimina el comentari, aquelles línies s'han de preservar aquí abans, com es va fer amb el bolcat d'`A2.qmd` a la sessió 2. Ordre que ho sosté: `git grep -n "fea800fb" -- . ':!TODO/'`.
+  ⚠️ **El bolcat comparatiu MARS/RARS de `L2.qmd:164-166` no existeix enlloc més del corpus.** Si en resoldre la decisió s'elimina el comentari, aquelles línies s'han de preservar aquí abans, com es va fer amb el bolcat d'`A2.qmd` a la sessió 2. Ordre que ho sosté: `git grep -n "fea800fb" -- . ':!TODO.md'`.
 
 - **Discrepància de noms a la figura Graphviz de T7** (detectada 2026-09-20): el fitxer font és `24_specs/T7_mc_politiques__graphviz.gv` i el SVG derivat és `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` — arrels diferents, el `_resum` només és al SVG. Documentat com a discrepància coneguda a `13_contrib.qmd §Figures Graphviz` perquè ningú no «l'arregli» pel cantó dolent. **Via de resolució**: renombrar el `.gv` a `T7_mc_politiques_resum__graphviz.gv` és **inofensiu** (cap script ni cap `.qmd` no el referencia: el `dot` s'executa a mà i el pre-render parteix del SVG ja generat). Renombrar el SVG, en canvi, **trencaria** les tres línies d'`A7.qmd` (648, 651, 655) que consumeixen `auto_figs/T7_mc_politiques_resum__graphviz__original_{light,dark}.svg`.
 
@@ -160,7 +172,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 - **Cometes `"..."` → `«...»`**: substitució global. Abast mesurat per forma (cometes rectes que envolten text amb lletres, descartats els atributs `clau="valor"`): **65 línies candidates en 14 fitxers** — `A1` 3, `A2` 12, `A3` 1, `A4` 1, `A5` 1, `A7` 9, `A8` 9, `A9` 1, `S4` 1, `L1` 2, `L3` 3, `13_contrib` 18, `RARS_directives` 3, `index` 1.
 
   ```bash
-  git grep -nP '(?<![-\w=])"[^"]*\p{L}[^"]*"' -- '*.qmd' ':!TODO/' | grep -vP '\w+="'
+  git grep -nP '(?<![-\w=])"[^"]*\p{L}[^"]*"' -- '*.qmd' ':!TODO.md' | grep -vP '\w+="'
   ```
 
   **Bona part són codi C i directives legítimes** (`printf("%d", x)`, `.asciz "cadena"`), que no s'han de tocar: el discriminador ha de ser cas a cas. Casos reals de prosa ja identificats: `A2.qmd:1446` («punter a», «multiplicació», «desreferència/indirecció»), `:1470` («adreça de»), `:1472` («ampersand»), `:1560` («variable de tipus punter al \<tipus\>»), `:1760-1761` («vector de 100 enters»).
@@ -174,9 +186,9 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   **(iii) Eliminar les línies `.globl _start`.** ⚠️ **No totes les `.globl` se'n van**: de les **45** del corpus, **27 són `.globl _start`** i les altres **18 exporten símbols reals** (`suma`, `abs`, `descompon`, `compon`, `main`, `X`, `g`) i **s'han de mantenir**. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
 
   ```bash
-  git grep -o "_start" -- '*.qmd' ':!TODO/' | wc -l          # 104
-  git grep -oE "^_start:" -- '*.qmd' ':!TODO/' | wc -l       #  26
-  git grep -oE "\.globl\s+_start" -- '*.qmd' ':!TODO/' | wc -l  # 27 de 45
+  git grep -o "_start" -- '*.qmd' ':!TODO.md' | wc -l          # 104
+  git grep -oE "^_start:" -- '*.qmd' ':!TODO.md' | wc -l       #  26
+  git grep -oE "\.globl\s+_start" -- '*.qmd' ':!TODO.md' | wc -l  # 27 de 45
   ```
 
   ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
@@ -184,8 +196,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 - 🔴 **CANVI DE CRITERI (usuari, 2026-09-23): la directiva `.section` és obligatòria a tots els fragments d'assemblador.** Decisió pedagògica: `.section` s'ha de presentar a teoria i fer-se servir sistemàticament (`.section .data`, `.section .text`, etc.) en lloc de les formes nues. Abast mesurat: **126 directives de segment nues** (`.data`, `.text`, `.bss`, `.rodata` a principi de línia) contra només **5 `.section`** a tot el corpus. Cal: (i) decidir on es presenta la directiva a teoria (candidat natural: A2, on es presenten els segments) i registrar-ho a `13_contrib.qmd`; (ii) convertir les 126; (iii) comprovar que RARS accepta la forma llarga en tots els casos, **abans** de convertir res.
 
   ```bash
-  git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO/' | wc -l   # 126
-  git grep -o "\.section" -- '*.qmd' ':!TODO/' | wc -l                          #   5
+  git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO.md' | wc -l   # 126
+  git grep -o "\.section" -- '*.qmd' ':!TODO.md' | wc -l                          #   5
   ```
 
   Es va detectar arran del canvi de criteri de `_start`: totes dues tasques toquen les mateixes capçaleres de fragment, de manera que **convé executar-les en la mateixa passada**.
@@ -194,7 +206,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   | Aspecte | Estat | Mesura |
   | :--- | :--- | :--- |
-  | Espais de separació | ✅ **Regla fixada** (`13_contrib.qmd:130`: «sense espais», no separador cada 4 nibbles) i **corpus net** | `git grep -nE "0x[0-9A-Fa-f]{4} [0-9A-Fa-f]{4}" -- '*.qmd' ':!TODO/'` → cap. Les 99 de `L2.qmd` les va convertir la Fase C (`254509b`) |
+  | Espais de separació | ✅ **Regla fixada** (`13_contrib.qmd:130`: «sense espais», no separador cada 4 nibbles) i **corpus net** | `git grep -nE "0x[0-9A-Fa-f]{4} [0-9A-Fa-f]{4}" -- '*.qmd' ':!TODO.md'` → cap. Les 99 de `L2.qmd` les va convertir la Fase C (`254509b`) |
   | Majúscules/minúscules | ⚠️ **Regla permissiva** (`13_contrib.qmd:267`: preferència per majúscules, «s'admeten minúscules perquè és el criteri de RARS», i diu explícitament que **no cal unificar-ho**) | **534 en majúscules · 36 en minúscules** (`A2` 5, `A3` 5, `L1` 1, `L2` 9 i la resta). La majoria de minúscules són **bolcats reals de RARS**, on la grafia és fidelitat a l'eina |
   | **Amplada / farciment de zeros** | 🔴 **Sense cap regla** | Conviuen amplades diferents dins d'un mateix fitxer: `A2` 64 de 8 dígits i 4 de 5; `A8` 6 de 8 i 27 de 5; `L2` 175 de 8 i 2 de 7 |
 
@@ -249,7 +261,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 - **Slug `{#sec-casos-especials}` genèric** (`A4.qmd:460`). Si mai cal desambiguar, `{#sec-casos-especials-divisio}`. ⚠️ **El registre d'origen deia que «ara no es referencia des d'enlloc; canviar-lo no trenca res», i això ja no és cert**: `S4.qmd:228` fa `@sec-casos-especials`, de manera que reanomenar-lo **obliga a tocar també aquella referència**. Prioritat baixa, però amb el cost actualitzat. Sobreviu al tancament de la revisió interna de T4 (2026-09-23): es resol des d'aquí, sense reobrir el tema.
 
   ```bash
-  git grep -n "casos-especials" -- '*.qmd' ':!TODO/'
+  git grep -n "casos-especials" -- '*.qmd' ':!TODO.md'
   # A4.qmd:460 (definició) · S4.qmd:228 (referència)
   ```
 
@@ -280,10 +292,10 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | `fig-multinivell-multicore` | — | Cap ancoratge | Xip 4 nuclis L1/L2/L3; LO Draw pendent |
 
   ```bash
-  git grep -n "auto_figs/T7_cd_diagrama\|auto_figs/T7_assoc_conjunts_diagrama" -- '*.qmd' ':!TODO/'
+  git grep -n "auto_figs/T7_cd_diagrama\|auto_figs/T7_assoc_conjunts_diagrama" -- '*.qmd' ':!TODO.md'
   ```
 
-- **`fig-lru-roger` (màquina d'estats LRU)**: decidir si cal figura independent, o si n'hi ha prou amb la que ja va inclosa dins `T7_lru_exemple.svg` (`A7.qmd:460`, `#fig-lru-exemple`). ⚠️ El comentari `<!-- TODO fig-lru-roger: diagrama d'estats -->` que ho registrava al corpus **ja no hi és** (eliminat a la sessió 2 per redundant amb aquesta entrada): `git grep -n "fig-lru-roger" -- '*.qmd' ':!TODO/'` → cap. **Aquesta entrada és ara l'única còpia.**
+- **`fig-lru-roger` (màquina d'estats LRU)**: decidir si cal figura independent, o si n'hi ha prou amb la que ja va inclosa dins `T7_lru_exemple.svg` (`A7.qmd:460`, `#fig-lru-exemple`). ⚠️ El comentari `<!-- TODO fig-lru-roger: diagrama d'estats -->` que ho registrava al corpus **ja no hi és** (eliminat a la sessió 2 per redundant amb aquesta entrada): `git grep -n "fig-lru-roger" -- '*.qmd' ':!TODO.md'` → cap. **Aquesta entrada és ara l'única còpia.**
 
 - **`fig-capacitat-exemple` a HTML**: dues figures separades (primera + segona passada) o figura única combinada? Existeixen totes tres variants a `auto_figs/` (`T7_capacitat_exemple__original_*`, `T7_capacitat_exemple_bucle_primera_passada__original_*`, `..._segona_passada__original_*`). Pendent de decisió.
 
@@ -293,7 +305,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   git ls-files | grep -i "error____"
   # 23_figs_externes/T7_texe_diagrama____error____.svg
   # 23_figs_externes/T7_tres_c_barres_light____error____.svg
-  git grep -n "error____" -- '*.qmd' ':!TODO/'   # cap referència
+  git grep -n "error____" -- '*.qmd' ':!TODO.md'   # cap referència
   ```
 
   ❓ **Pregunta oberta**: l'`__error__` al nom marca una figura **a refer**, o són **descartables**? No s'ha decidit ni tocat res. *(Els altres quatre fitxers amb el mateix patró són a `auto_figs/`, que és a `.gitignore:5`: són derivats regenerables, no entren aquí.)*
@@ -330,7 +342,7 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
   Noteu el desfasament que la renumeració havia de resoldre, i que aquests noms encara reflecteixen: numerats `L0`–`L5` per a sessions que ara són `L1`–`L6`. Es recuperen (buits) amb `git show 3a3aea6:<ruta>`.
 
-- **Cap material explica a l'alumne el punt d'entrada de RARS.** La regla existeix com a **convenció interna** a `13_contrib.qmd:204` («`_start` ha de ser la primera etiqueta de `.text`»), però cap `.qmd` no explica a l'estudiant que RARS comença a executar a la primera instrucció de `.text` i que `_start` no és una etiqueta reconeguda pel simulador. Proposta d'origen: un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. Verificació: `git grep -n "primera instrucció del segment de text" -- '*.qmd' ':!TODO/'` → només `13_contrib.qmd:204`. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
+- **Cap material explica a l'alumne el punt d'entrada de RARS.** La regla existeix com a **convenció interna** a `13_contrib.qmd:204` («`_start` ha de ser la primera etiqueta de `.text`»), però cap `.qmd` no explica a l'estudiant que RARS comença a executar a la primera instrucció de `.text` i que `_start` no és una etiqueta reconeguda pel simulador. Proposta d'origen: un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. Verificació: `git grep -n "primera instrucció del segment de text" -- '*.qmd' ':!TODO.md'` → només `13_contrib.qmd:204`. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
   🔴 **Afectada pel canvi de criteri del 2026-09-23** (vegeu `§Tasques transversals`): si `_start` surt de tot el codi, aquesta entrada **no es pot executar tal com està escrita**, perquè proposava explicar a l'alumne una convenció que deixa d'existir. S'ha de reformular —el que caldrà explicar és que RARS comença per la primera instrucció de `.text`, sense parlar de `_start`— o retirar-se. **No s'executi abans que el canvi de criteri.**
 
@@ -365,7 +377,7 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 - **`22_figs_originals/T4_multiplicador_sequencial.png` (63 KB)**: decidir si s'elimina. Verificat (auditoria, sessió 2): **no el referencia ningú** — `A4.qmd:175,178,182` usen només el `.svg` via `auto_figs/`. És **l'única parella `.png`+`.svg` del directori**, de manera que eliminar-lo també elimina l'excepció al criteri d'un sol format font. No s'ha tocat: és un fitxer binari i la supressió no entrava a l'abast autoritzat.
 
   ```bash
-  git grep -n "T4_multiplicador_sequencial" -- '*.qmd' ':!TODO/'
+  git grep -n "T4_multiplicador_sequencial" -- '*.qmd' ':!TODO.md'
   # A4.qmd:175,178,182 — totes tres al .svg
   ```
 
@@ -424,7 +436,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | `startup.s` — decisió i neteja | Executada (sessió 2): eliminats els 4 blocs comentats i unificats `E9:72`/`S9:201` a `li a7, 93` | El **bolcat de dades d'`A2.qmd:744-810`** es preserva a §Dades preservades, al final |
 | `_start` primera etiqueta de `.text` | **TANCAT** (sessió 2): verificats els 25 blocs de `.text` amb `_start` de L1–L6, **0 infraccions** | Regla consolidada a `13_contrib.qmd:204` |
 | Nota obsoleta a `13_contrib.qmd:204` | Retirada pel mateix tancament: la nota ja no diu «pendent d'aplicar a L3» | — |
-| Plantilles Markdown (`L2.qmd` i resta) | Executada a la passada C (`733b408`). `git grep '```{.markdown' -- '*.qmd' ':!TODO/'` → **cap** | — |
+| Plantilles Markdown (`L2.qmd` i resta) | Executada a la passada C (`733b408`). `git grep '```{.markdown' -- '*.qmd' ':!TODO.md'` → **cap** | — |
 | L2 §«Pseudoinstrucció `la` i `li`» amb cos «TODO» | Omplert per la Fase C. `git grep -n "Pseudoinstrucció" -- 04_laboratori/L2.qmd` → **cap** | — |
 | Referència `@imp-exception-handler` de `#tip-rars-main-multinivell` | El callout es va eliminar amb els blocs de `startup.s`; no hi ha res a verificar | — |
 | Encaix T2↔T3 (caller-saved/callee-saved) | RESOLTA 2026-07-13: remissió afegida a `#nte-registres-proposit-general` d'A2 | `13_contrib.qmd` i el corpus |
@@ -438,14 +450,14 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | `void main()` vs `int main()` | **Decisió presa i executada** a la passada C, bloc 2b (`b3072a6`) | Regla a `13_contrib.qmd:469`, justificació a `:471`, blocs protegits a `:479`. Estat del corpus: 40 `void main` i 4 `int main`, que són els **tres protegits** (`A2:797`, `E3:661`, `S3:685`) més `A2:1960`, que és la nota per a l'alumne, no codi |
 | `index.qmd` — enllaç a `laboratori/L0/TODO.s` | RESOLTA: ja no hi és | — |
 | `index.qmd` — fila duplicada de Toolchain | RESOLTA parcialment; la resta viu a §`index.qmd` | Aquest fitxer |
-| `index.qmd` — enllaç «Còpia local» de `rars1_6.jar` | **Executada (decisió de l'usuari, 2026-09-21)**: el binari es queda **fora del repositori** i l'enllaç primari és la *release* de GitHub. Eliminada l'àncora `<a href="04_laboratori/rars1_6.jar" download>` d'`index.qmd:146`, mantenint la frase i l'enllaç de GitHub. Coherent amb `fbf7c3d` (2026-07-11), que va eliminar el binari perquè ja no era al disc. L'entrada antiga d'aquesta taula («URL de la còpia local: RESOLTA, ja hi és») era la que havia introduït l'àncora | **Cap còpia pendent**: `git grep -n "download>" -- '*.qmd' ':!TODO/'` → cap, i `git grep -n "04_laboratori/rars1_6"` → cap. No queda cap rastre apuntant al fitxer. El `README.md:174` el cita com a descàrrega externa, que és correcte |
+| `index.qmd` — enllaç «Còpia local» de `rars1_6.jar` | **Executada (decisió de l'usuari, 2026-09-21)**: el binari es queda **fora del repositori** i l'enllaç primari és la *release* de GitHub. Eliminada l'àncora `<a href="04_laboratori/rars1_6.jar" download>` d'`index.qmd:146`, mantenint la frase i l'enllaç de GitHub. Coherent amb `fbf7c3d` (2026-07-11), que va eliminar el binari perquè ja no era al disc. L'entrada antiga d'aquesta taula («URL de la còpia local: RESOLTA, ja hi és») era la que havia introduït l'àncora | **Cap còpia pendent**: `git grep -n "download>" -- '*.qmd' ':!TODO.md'` → cap, i `git grep -n "04_laboratori/rars1_6"` → cap. No queda cap rastre apuntant al fitxer. El `README.md:174` el cita com a descàrrega externa, que és correcte |
 | **T1 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T1 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: Fase C executada (`f5e8223`, 2026-07-12) i revisió acabada (`9de6756`, 2026-07-13), tots dos amb «TODO segones passades» a l'assumpte; **cap passada posterior**; declaració prèvia «tancat de facto» del 2026-07-12. Les segones passades que els commits anunciaven queden cobertes pel tancament i **no** s'han de reobrir | Dues coses que només constaven a la fila: (i) la **sincronització amb el remot del 2026-07-13** —`A1.qmd`, `S1.qmd` i les tres figures SVG verificades idèntiques a la versió de Fase C—, detall a `git show a211bbf:TODO/T1_P_tasques.md`; (ii) **SVG-6**, l'etiqueta «Objecte» → «Fitxer objecte» de `T1_flux_compilacio.svg`, que la Fase C va descartar perquè el text no cabia al requadre: **l'usuari ha revisat la figura el 2026-09-23 i la dona per correcta**, de manera que l'etiqueta es queda com és (`22_figs_originals/T1_flux_compilacio.svg`, «Objecte»). No queda cap pendent de T1 |
 | **T2 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T2 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: Fase C acabada (`31f7571`, 2026-07-12), amb «**Falta** segones passades» a l'assumpte i **cap passada posterior**; el registre no declarava cap estat final. Les segones passades queden cobertes pel tancament i **no** s'han de reobrir | ⚠️ **El tancament del tema no tanca els set marcadors vius d'`A2.qmd`**, que és el fitxer amb més marcadors del corpus. Es van comprovar un per un abans de tancar i **tots set ja tenen entrada viva** en aquest fitxer, amb la línia exacta: `:584` i `:609` (format de les taules de pseudoinstruccions) → `§Decisions obertes`; `:692` i `:693` (consens dels criteris de codi C i proposta de *checker*) → `§Decisions obertes`; `:926` i `:964` (taules de memòria → figura estàndard) → `§Decisions obertes`; `:1018` (taula d'alineació contra l'ABI `ilp32`, callout `#cau-memoria-restriccions-alineacio`) → `§T2`. Són decisions i verificacions que **sobreviuen al tancament de la revisió**: es resolen des de les seves entrades, no reobrint T2 |
 | **T3 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T3 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: Fase C acabada (`b55e413`, 2026-07-13) —assumpte **net**, sense cap «falta» ni «TODO»— i **cap passada posterior**; el registre no declarava cap estat final. T3 és l'únic tema amb el trio A/E/S revisat: `E3.qmd` i `S3.qmd` ja constaven amb la revisió interna completada | ⚠️ **Tres entrades vives del `§T3` sobreviuen al tancament** i es resolen des d'allà, sense reobrir el tema: (i) el marcador `A3.qmd:244` (`#cau-boolea-c`, decisió d'Adrià sobre quines expressions no nul·les són certes); (ii) els **retocs manuals de tres figures** (`T3_ba_exemple`, `T3_deps_multi`, `T3_deps_exemple`), pendents de l'usuari; (iii) el criteri «quatre formats nuclears» aplicat a A3 sencer. ⚠️ **Aquesta tercera demana literalment «un xat de revisió interna dedicat a A3.qmd»**: el tancament de T3 **no** la dona per feta, i si s'executa serà com a tasca d'harmonització transversal —l'entrada canònica és a `§Contingut global`—, no com una reobertura de la revisió |
 | **T4 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T4 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: revisió interna acabada (`9faab05`, 2026-07-13) amb «TODO segones passades» a l'assumpte, **cap passada posterior**, i declaració prèvia «quasi tancat» del 2026-07-12. El resum final del registre (`:312`) deia «no queda cap decisió pendent tret de l'ítem 8» | És la fila més verificada de la taula: el Bloc 4c en va auditar els tres ítems que la primera taula del registre donava per oberts i va establir que **el 3 i el 4.2 són aplicats** (`#wrn-mul-modul-2n` a `A4.qmd:323`, referenciat des de `S4.qmd:214`; punter T4→T7 a `13_contrib.qmd:706`). **Cap pendent de T4 no depenia d'aquesta fila**: els tres que arrossega ja són entrades vives i sobreviuen al tancament — l'**ítem 8** (figures *half-adder*/*full-adder*, marcadors `A4.qmd:80,81`) a `§Decisions obertes`, el **`.png` del multiplicador seqüencial** a `§Tasques globals → SVG`, i l'**slug genèric `{#sec-casos-especials}`** a `§T4`. Vegeu també la fila **P3** d'aquesta mateixa taula, que registra el tancament de l'ítem 3 |
 | **T5 · ítem 4.8 — dobles espais en prosa** | **Executada (2026-09-23).** Les tres línies de la llista de registres de `#sol-p6-ops-variancia` que alineaven la fletxa amb espais de farciment (`` - `q`   → ``, `` - `i`   → ``, `` - `m`   → ``) passen a un sol espai, com les altres dues de la mateixa llista. `S5.qmd:739-743`; prosa, no bloc de codi, de manera que hi aplica la regla de `13_contrib.qmd §Commits` | Cap pendent. Verificat: `sed -n '739,743p' 03_solucions/S5.qmd \| grep -cE "[^ ] {2,}[^ ]"` → 0 |
 | **T5 · ítem 4.12 — cursives repetides de *sticky*** | **Executada (2026-09-23).** `E5.qmd:209` repetia `*sticky*` en cursiva quan la primera aparició del fitxer ja és a `:110`; s'hi treu la cursiva. La regla del projecte és cursiva només a la primera aparició per fitxer | Cap pendent. Estat final de les cinc ocurrències: `E5.qmd:110` i `A5.qmd:440` en cursiva (primeres de cada fitxer), `E5.qmd:209`, `A5.qmd:764` i `:789` sense |
-| **T5 · ítem 3.8 — títol de secció «Suma i multiplicació»** | **Decisió presa i executada (usuari, 2026-09-23): «Suma i multiplicació» → «Operacions».** El registre recomanava deixar-ho com estava, i l'usuari decideix el contrari: el títol no cobria el contingut de la secció (hi ha també divisió, conversions i traducció a assemblador). **9 substitucions** en 3 fitxers: les capçaleres `E5.qmd:85` i `S5.qmd:372`, i les **7 files** de la columna de tema de `S_criteris_seleccio.qmd:82-88` | Cap pendent. Verificat abans de tocar res que les capçaleres **no porten etiqueta `{#sec-}`** i que cap `@sec-` no hi apunta (`git grep -nE "sec-suma-i-multiplicacio\|sec-suma-multiplicacio"` → cap), de manera que el canvi no trenca cap referència creuada. Després: `git grep -c "Suma i multiplicació" -- . ':!TODO/'` → cap ocurrència. «Operacions» encaixa amb els altres valors de la columna de `S_criteris_seleccio.qmd` («Multiplicació», «Divisió», «Matrius», «Operacions lògiques i desplaçaments»…) |
+| **T5 · ítem 3.8 — títol de secció «Suma i multiplicació»** | **Decisió presa i executada (usuari, 2026-09-23): «Suma i multiplicació» → «Operacions».** El registre recomanava deixar-ho com estava, i l'usuari decideix el contrari: el títol no cobria el contingut de la secció (hi ha també divisió, conversions i traducció a assemblador). **9 substitucions** en 3 fitxers: les capçaleres `E5.qmd:85` i `S5.qmd:372`, i les **7 files** de la columna de tema de `S_criteris_seleccio.qmd:82-88` | Cap pendent. Verificat abans de tocar res que les capçaleres **no porten etiqueta `{#sec-}`** i que cap `@sec-` no hi apunta (`git grep -nE "sec-suma-i-multiplicacio\|sec-suma-multiplicacio"` → cap), de manera que el canvi no trenca cap referència creuada. Després: `git grep -c "Suma i multiplicació" -- . ':!TODO.md'` → cap ocurrència. «Operacions» encaixa amb els altres valors de la columna de `S_criteris_seleccio.qmd` («Multiplicació», «Divisió», «Matrius», «Operacions lògiques i desplaçaments»…) |
 | **T5 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T5 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: **l'únic tema amb la revisió declarada «parcial»** pel commit mateix (`92345e4` i `b81e3fa`, 2026-07-13) i **cap passada posterior**. ⚠️ **Què volia dir aquell «parcial» ha quedat establert**: l'auditoria del 2026-09-23 va comprovar els **29 ítems** del registre un per un contra el corpus i en va trobar 26 aplicats; els dos d'execució que restaven (4.8, 4.12) i la decisió (3.8) es van executar el mateix dia. **Els 29 ítems del registre són tancats** | Sobreviuen al tancament, i es resolen des de les seves entrades sense reobrir el tema: les decisions **R4-TYPE** i **R5-TYPE** (marcadors `A5.qmd:5,6`, a `§Decisions obertes`) i **P8** (`fcsr` amb dependència cap endavant a `@nte-zicsr` de T9, a `§T5`). Cap de les tres no surt del registre de T5 |
 | **T6 — notació de la tensió d'alimentació a S6** | **Decisió presa i executada (usuari, 2026-09-23): S6 passa sencera a $V_{CC}$.** L'entrada advertia que l'harmonització «s'ha de fer sencera o no fer-se», perquè tota la derivació de `S6.qmd` usava $V$ de manera consistent i canviar-ne només la línia que cita l'equació l'hauria deixada incoherent. **5 substitucions** a `S6.qmd`: `:324` ($P_{din} = C \cdot V_{CC}^2 \cdot f$), `:326` i `:344` (aïllament de $C$), `:334` ($V_{CC,A}$, seguint el subíndex de processador de `C_A`/`f_B`) i `:346` (capçalera de columna de la taula de vuit generacions) | Cap pendent. ⚠️ **Les unitats no s'han tocat**: les cinc ocurrències de `\text{ V}` que queden a `:328`, `:330`, `:361`, `:396` i `:398` són volts, no el símbol. `S6.qmd:394` ja usava $V_{CC}$ abans del canvi, de manera que el fitxer també era incoherent amb si mateix. Notació ara uniforme a `A6.qmd:270-278`, `E6.qmd:192`, `A7.qmd:113`, `S6.qmd` i el glossari `12_sigles_simbols.qmd` |
 | **T6 — revisió interna tancada** (decisió de l'usuari, 2026-09-23) | **Tancat.** L'usuari elimina la fila de T6 de `CLAUDE.md §Estat dels materials`. Estat que tenia en tancar-se: Fase C acabada (`77853ff`, 2026-07-12) amb «Següent segones passades» a l'assumpte, **cap passada posterior**, i declaració prèvia «quasi tancat» del 2026-07-12. El registre declarava les tres seccions (A, B, C) aplicades, amb una verificació per script que cap resultat numèric en `\mathbf{}` de S6 no s'havia alterat (32/32 idèntics) | `A6.qmd` **no tenia cap marcador viu**, i la discrepància de notació E6/S6 —l'únic pendent tècnic del tema— s'ha resolt al mateix commit del tancament (fila anterior). Sobreviu una sola entrada, a `§T6`: les **etiquetes de classe d'instruccions en anglès** («Load», «Store», «Branch») a les taules d'E6/S6, que és una decisió transversal, no pròpia de T6; `13_contrib.qmd:166` hi remet |
@@ -470,12 +482,12 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | Entrada | Comprovació que la retira |
 | :--- | :--- |
 | **A1. Slugs `{#sec-}` a T1, T2 i T5** | Mesurat **per forma**, excloent capçaleres dins de callouts (que l'entrada ja exceptuava): **cap** capçalera `##`–`####` sense etiqueta a **cap dels nou fitxers `A1`–`A9`** — més fort que l'abast de l'entrada, que només parlava de T1, T2 i T5. Coherent amb `CLAUDE.md`, que declara A1–A9 «complet». ⚠️ **Avís per a qui la refaci**: les capçaleres `##` dins d'un callout són títols, no capçaleres de document, i s'han d'excloure. Un comptador que segueixi els `:::` amb un *toggle* es descompensa amb els callouts encastats, que obren amb `::::`: cal comptar **nivells**, normalitzant la tanca amb `lstrip(':')`, no alternar un booleà. Mesura correcta, que dona **0** als nou fitxers: vegeu §Mesura dels slugs, al final |
-| **A2. Identificador duplicat `sec-opt-acces-sequencial`** | `git grep -n "{#sec-opt-acces-sequencial}" -- '*.qmd' ':!TODO/'` → **una sola definició** (`A4.qmd:681`). Les altres 6 ocurrències són referències `@` |
+| **A2. Identificador duplicat `sec-opt-acces-sequencial`** | `git grep -n "{#sec-opt-acces-sequencial}" -- '*.qmd' ':!TODO.md'` → **una sola definició** (`A4.qmd:681`). Les altres 6 ocurrències són referències `@` |
 | **A3. Div sense tancar a `A7.qmd`** | 122 obertures `::: {` i 122 tancaments nus. `make render` de la sessió 2: **cap warning** |
 | **A4. Referències creuades no resoltes** | Cap de les cinc existeix al corpus: `@sec-ecall`, `@sec-operands-memoria`, `@imp-ec-alineacio-pila`, `@imp-exception-handler`, `@sec-politica-reemplacement` → `git grep` sense cap ocurrència |
 | **«ample de banda» → «amplada de banda»** | Única ocurrència a tot el corpus: `13_contrib.qmd:324`, que **és la regla de substitució mateixa** |
 | **Unitats KB/KiB** | 5 ocurrències de `KB`, **totes definitòries**: `A2.qmd:171,178` (la taula que defineix el criteri) i `13_contrib.qmd:266,345` (la convenció) |
-| **`****` sobrants** | `git grep -n '\*\*\*\*' -- '*.qmd' ':!TODO/'` → **cap** |
+| **`****` sobrants** | `git grep -n '\*\*\*\*' -- '*.qmd' ':!TODO.md'` → **cap** |
 
 ### Duplicades
 
@@ -491,7 +503,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 
 ## Dades preservades del bloc eliminat `A2.qmd:744-810`
 
-Aquestes dades **no existien en cap altre lloc del corpus** (`git grep -c "00c000ef" -- . ':!TODO/'` → només A2) i es van copiar aquí **abans** de la supressió, a la sessió 2. Documenten el mecanisme **exclòs** per la decisió del 2026-07-19 (assignatura, tots els professors): només tenen valor si algú reobre mai aquella decisió.
+Aquestes dades **no existien en cap altre lloc del corpus** (`git grep -c "00c000ef" -- . ':!TODO.md'` → només A2) i es van copiar aquí **abans** de la supressió, a la sessió 2. Documenten el mecanisme **exclòs** per la decisió del 2026-07-19 (assignatura, tots els professors): només tenen valor si algú reobre mai aquella decisió.
 
 Bolcat de RARS en carregar un programa amb `startup.s` — les tres primeres instruccions de `.text`:
 

@@ -14,7 +14,7 @@ Aquest document de convencions només està disponible en la versió web:
 
 - S'ha d'actualitzar sempre que es prengui una decisió de format, estil, etc.
 - Per al flux de treball, model d'IA i fase actual del projecte, vegeu `CLAUDE.md`.
-- Per a tasques pendents i decisions obertes, vegeu `TODO/TODO.md`.
+- Per a tasques pendents i decisions obertes, vegeu `TODO.md`.
 
 ## Contingut
 
@@ -562,7 +562,7 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 L'arrel del fitxer `.gv` (`T7_mc_politiques`) i la del SVG
 (`T7_mc_politiques_resum`) **no coincideixen**: el SVG duu `_resum` i el
 `.gv` no. No és una errata d'aquesta taula, sinó una discrepància real al
-repositori; vegeu `TODO/TODO.md §Tasques transversals`. No l'«arregleu»
+repositori; vegeu `TODO.md §Tasques transversals`. No l'«arregleu»
 canviant la taula.
 :::
 
@@ -835,11 +835,17 @@ de pensar. `grep -r` obliga a enumerar exclusions a mà, que és com es perden
 ocurrències: l'escombrada de l'slug `desplacament-arithmetic` es va limitar a
 `01_apunts/` i `04_laboratori/` i va deixar la quarta ocurrència a
 `11_riscv.qmd`, que és contingut inclòs amb `{{< include >}}` i que cau fora de
-les carpetes numerades (`953edca`). Afegiu el pathspec `':!TODO/'` a tota
+les carpetes numerades (`953edca`). Afegiu el pathspec `':!TODO.md'` a tota
 escombrada, o la mesura s'inclou a si mateixa: el compte d'`int main`/`void main` sense el
 pathspec comptava els registres i l'informe que parlava de totes dues formes.
 I **`git grep -c` compta línies, no ocurrències**: per a comptatges,
 `git grep -o … | wc -l`.
+
+L'exclusió era `':!TODO/'` mentre el fitxer vivia al directori `TODO/`; el
+trasllat a l'arrel (2026-09-23) la va deixar sense excloure res, i amb ella
+totes les xifres que el fitxer publica de si mateix. **Una exclusió per ruta
+caduca amb la ruta**: quan un fitxer es mou, les mesures que l'excloïen són
+part del que s'ha de migrar, no un detall del trasllat.
 
 **2. Mesureu per forma, no per nom.** Un patró que busca noms concrets no mesura
 el que la regla defineix. El que RARS rebutja no és cap nom sinó **l'expressió
@@ -909,7 +915,7 @@ digueu-ho. Dos casos amb desenllaç oposat: el comentari `fig-lru-roger` es va
 poder eliminar perquè el `TODO.md` ja en tenia l'entrada (i ara n'és l'única
 còpia, cosa que consta a l'entrada); en canvi el bloc comentat d'`A2.qmd`
 contenia un bolcat de RARS que no existia enlloc més
-(`git grep -c "00c000ef" -- . ':!TODO/'` → cap), i es va copiar al `TODO.md`
+(`git grep -c "00c000ef" -- . ':!TODO.md'` → cap), i es va copiar al `TODO.md`
 **abans** de la supressió, no després: totes dues coses, al mateix commit
 `cef40b1`. L'inventari del que conté un bloc va a
 l'informe abans d'eliminar-lo.
@@ -935,6 +941,26 @@ El límit no va acotar la lectura: va decidir la resposta. És la mateixa famíl
 que la regla 3 —cap afirmació «és l'únic» o «no n'hi ha cap» sense l'ordre
 exacta que la sosté—, i aquí la trampa és que l'ordre **hi era** i semblava
 completa.
+
+**11. Una xifra només és certa respecte del commit on es va mesurar.** Quan
+dues lectures d'un mateix compte discrepen, la primera pregunta és **quan**,
+no **com**: el corpus creix entremig. El cas (2026-09-23): una lectura del
+`TODO.md` deia 19 pathspecs i 11 punters històrics, i la relectura en va
+trobar 26 i 10 — cap de les dues no comptava malament, sinó que el Bloc 4d
+n'havia escrit set de nous i n'havia consolidat un. Es comprova amb
+`git show <commit>:<ruta>`, que retorna el fitxer tal com era:
+
+```bash
+git show 75987cb:TODO/TODO.md | grep -o "':!TODO/'" | wc -l   # 19
+grep -o "':!TODO.md'" TODO.md | wc -l                         # 26
+```
+
+És la regla d'ancoratge de `CLAUDE.md §Flux de treball` —treballar per
+àncora de contingut, no per número de línia— aplicada als **comptes**: una
+xifra publicada sense dir de quan és no es pot verificar, només reproduir, i
+si no reprodueix no se sap si ha caducat o si mai no va ser certa. **Dateu
+les que publiqueu**, com fan ja les entrades d'aquest fitxer amb la data
+entre parèntesis.
 
 Sobre les referències creuades dins dels blocs de codi, vegeu §Blocs de codi:
 no n'hi ha d'haver, i el motiu hi és escrit.

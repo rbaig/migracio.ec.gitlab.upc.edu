@@ -60,28 +60,29 @@ Directori `04_laboratori/`:
 | `styles.css` | Estils CSS addicionals (HTML) |
 | `24_specs/svg.md` | Especificacions d'estil per a les figures SVG |
 | `26_prompts/` | Prompts i plantilles reutilitzables de revisió interna |
-| `TODO/TODO.md` | Llista de tasques pendents (contingut transitori) |
+| `TODO.md` | Llista de tasques pendents (contingut transitori) |
 
 ### Arbre de directoris
 
 ```
 .
+├── .github/                    # Workflow de publicació a GitHub Pages
 ├── .vscode/                    # Diccionari
 ├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
 ├── 02_exercicis/               # Problemes     (`Ex.qmd`, x ∈ [1, 9])
 ├── 03_solucions/               # Solucions     (`Sx.qmd`, x ∈ [1, 9])
 ├── 04_laboratori/              # Laboratori    (`Ly.qmd`, y ∈ [1, 6])
+├── 05_diapositives/            # Reservat (encara sense contingut)
 ├── 21_riscv/                   # Contingut de taules de `.callout-note`
 ├── 22_figs_originals/
 ├── 23_figs_externes/
 ├── 24_specs/
 ├── 25_scripts/
 ├── 26_prompts/                 # Prompts i plantilles de revisió interna
-├── _book                       # Quarto: Directori de sortida
-├── auto_figs/                  # Figures generades per script (s'elimina a cada render)
-├── auto_riscv/                 # Taules generades per script (s'elimina a cada render)
-├── index_files/                # Quarto
-├── TODO/                       # Fitxers de suport a l'edició
+├── _book/                      # Generat · Quarto: directori de sortida
+├── auto_figs/                  # Generat · Figures per script (s'elimina a cada render)
+├── auto_riscv/                 # Generat · Taules per script (s'elimina a cada render)
+├── .gitignore
 ├── 11_riscv.qmd
 ├── 12_sigles_simbols.qmd
 ├── 13_contrib.qmd
@@ -92,7 +93,7 @@ Directori `04_laboratori/`:
 ├── custom_light.scss
 ├── custom.scss
 ├── dark_exclusions.txt
-├── Estructura-de-computadors.tex
+├── Estructura-de-computadors.tex   # Generat · Font LaTeX del PDF (no versionada)
 ├── ieee.csl
 ├── index.qmd
 ├── LICENSE.md
@@ -101,6 +102,7 @@ Directori `04_laboratori/`:
 ├── _quarto.yml
 ├── README.md
 ├── styles.css
+├── TODO.md
 └── _variables.yml
 ```
 

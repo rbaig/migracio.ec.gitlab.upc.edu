@@ -13,7 +13,7 @@ Abans de qualsevol acció, llegeix:
 1. `_quarto.yml` — configuració del projecte.
 2. `index.qmd` — fitxers que componen el llibre.
 3. `13_contrib.qmd` — convencions d'estil, callouts, terminologia, SVG, laboratori i decisions per tema.
-4. `TODO/TODO.md` — tasques pendents i decisions obertes.
+4. `TODO.md` — tasques pendents i decisions obertes.
 
 Per a tasques que impliquin figures SVG, llegeix també:
 
@@ -25,7 +25,10 @@ Repartiment de responsabilitats entre fitxers:
 - `13_contrib.qmd` és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol decisió de format, estil, terminologia o convenció.
 - `CLAUDE.md` (aquest fitxer) recull **només** l'operació a claude.ai. Qualsevol altre aspecte va a `13_contrib.qmd`.
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
-- `TODO/TODO.md` només conté contingut transitori; al final ha de quedar buit.
+- `TODO.md` només conté contingut transitori. El que ha de quedar buit al final
+  és **el fitxer mateix** —és a dir, no hi ha de restar cap entrada viva—, no
+  cap directori: el fitxer viu a l'arrel des del 2026-09-23, i el `TODO/` que
+  el contenia ja no existeix.
 
 Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `12_sigles_simbols.qmd` (glossari de sigles i símbols).
 
