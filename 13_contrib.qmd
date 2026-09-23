@@ -915,7 +915,9 @@ digueu-ho. Dos casos amb desenllaç oposat: el comentari `fig-lru-roger` es va
 poder eliminar perquè el `TODO.md` ja en tenia l'entrada (i ara n'és l'única
 còpia, cosa que consta a l'entrada); en canvi el bloc comentat d'`A2.qmd`
 contenia un bolcat de RARS que no existia enlloc més
-(`git grep -c "00c000ef" -- . ':!TODO.md'` → cap), i es va copiar al `TODO.md`
+(`git grep -c "00c000ef" -- . ':!TODO.md' ':!13_contrib.qmd'` → cap; l'exclusió
+d'aquest fitxer amaga l'única ocurrència que hi queda, **aquesta línia mateixa**),
+i es va copiar al `TODO.md`
 **abans** de la supressió, no després: totes dues coses, al mateix commit
 `cef40b1`. L'inventari del que conté un bloc va a
 l'informe abans d'eliminar-lo.
@@ -961,6 +963,32 @@ xifra publicada sense dir de quan és no es pot verificar, només reproduir, i
 si no reprodueix no se sap si ha caducat o si mai no va ser certa. **Dateu
 les que publiqueu**, com fan ja les entrades d'aquest fitxer amb la data
 entre parèntesis.
+
+**12. Una afirmació d'absència ha d'excloure els fitxers que documenten el
+cas.** Quan una entrada diu «X ja no és al corpus», la comprovació ha
+d'excloure el `TODO.md` i el `13_contrib.qmd`: el primer perquè hi registra la
+tasca, el segon perquè hi escriu la lliçó, i totes dues còpies són **cites, no
+ocurrències**. Si no s'exclouen, documentar una correcció la fa aparèixer com a
+no feta:
+
+```bash
+git grep -c "00c000ef" -- . ':!TODO.md' ':!13_contrib.qmd'
+```
+
+Els tres casos (2026-09-23): `fig-lru-roger`, `04_laboratori/rars1_6` i
+`00c000ef`, els tres citats per aquesta secció mateixa. El d'`00c000ef` és el
+cas pur —l'ordre escrita a la regla 8 era l'única ocurrència que quedava, de
+manera que **es comptava a si mateixa**—; els altres dos els contamina prosa
+veïna que en cita el cas. És la cara complementària de la regla 1: allà
+l'exclusió evita que la **mesura** s'inclogui a si mateixa; aquí evita que
+s'hi inclogui la **lliçó que n'explica el resultat**.
+
+⚠️ **L'exclusió s'explica, no s'amaga.** Cada entrada corregida diu quina
+ocurrència exclou i per què: una exclusió muda és indistingible d'una que tapa
+una ocurrència real. I abans d'afegir-la, comproveu que el que s'exclou és
+efectivament una cita —si l'ordre segueix sense reproduir la xifra publicada,
+hi ha una ocurrència que no s'havia vist, i llavors el que s'ha de corregir és
+l'afirmació, no el pathspec.
 
 Sobre les referències creuades dins dels blocs de codi, vegeu §Blocs de codi:
 no n'hi ha d'haver, i el motiu hi és escrit.
