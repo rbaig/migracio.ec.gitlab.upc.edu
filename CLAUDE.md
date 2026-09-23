@@ -91,11 +91,10 @@ Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prior
 
 Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
 
-**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1**, **T2**, **T3** (2026-09-23).
+**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1**, **T2**, **T3**, **T4** (2026-09-23).
 
 | Tema | Assumpte del commit | Commit | Estat declarat al registre (`T<N>_P_tasques.md`) | Passades posteriors | Declaració de tancament |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| T4 | «revisió interna acabada. TODO segones passades» | `9faab05` (2026-07-13) | Resum **final** (`:312`): «**no queda cap decisió pendent tret de l'ítem 8**» (figures half/full-adder, que romanen com a `<!-- TODO -->` a `A4.qmd:80,81` i són entrada viva del `TODO.md`) | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
 | T5 | «revisió **parcial** acabada» | `b81e3fa` (2026-07-13) | Cap resum de resolució global. **Els 29 ítems (1.1–4.12) comprovats un per un al corpus el 2026-09-23: 26 aplicats, 3 oberts** (4.8, 4.12 i la decisió 3.8), tots tres entrades vives del `TODO.md §T5` | cap | **pendent** |
 | T6 | «Fase C acabada. Següent segones passades» | `77853ff` (2026-07-12) | «totes les accions d'aquest registre (A, B, C) s'han aplicat a la Fase C (2026-07-12)» | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
 | T7 | «T7-PE_T7-PS_T7 Fable raw» ⚠️ **obertura, no estat** | `2206477` (2026-07-11) | **40 ítems ✅**, secció A «errors tècnics ✅ aplicats», tres tandes; tanca: «Pendent a `TODO.md §T7`: **només C3**» | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
