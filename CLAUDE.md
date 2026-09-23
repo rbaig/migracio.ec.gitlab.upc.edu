@@ -103,15 +103,12 @@ El tancament de cada tema —amb l'estat que tenia, el commit que el declarava i
 
 #### Laboratori (`L1`–`L6`)
 
-Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
+✅ **La revisió interna de laboratori és tancada: `L1.qmd`–`L6.qmd`, tots sis, el 2026-09-23** (declaracions de l'usuari, una per fitxer). El tancament de cadascun, amb l'estat que tenia i què en sobreviu, és a `TODO.md §Entrades retirades`.
 
-| Fitxer | Assumpte del commit | Commit | Estat declarat al registre (`L<N>_tasques.md`) | Passades posteriors | Declaració de tancament |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `L6.qmd` | «L6 Fase B» ⚠️ **l'assumpte enganya** | `ca6c01a` (2026-07-21) | «Fase A, B i **C: completades**»; «**Pendent**: res propi de L6» (les troballes cross-file van al `TODO.md`) | cap | **pendent** |
+Dos avisos que el tancament no esborra, perquè descriuen l'historial i seguiran despistant qui el llegeixi:
 
-⚠️ **`ca6c01a` es diu «L6 Fase B» però conté la Fase C sencera**: toca els quatre fitxers que el registre de L6 llistava com a modificats (`L6.qmd`, `A7.qmd`, `13_contrib.qmd` i el registre mateix), i s'hi verifiquen els ítems de Fase C (literals als `.space`, «farciment», l'exercici nou `s6_4_5`, la correcció d'`A7.qmd`). L'assumpte del commit enganya; el contingut, no.
-
-⚠️ **`3cae913` és l'únic commit de revisió que ha tocat mai `L4.qmd`**, i el seu assumpte diu que és *previ* a les passades finals.
+- ⚠️ **`ca6c01a` es diu «L6 Fase B» però conté la Fase C sencera**: toca els quatre fitxers que el registre de L6 llistava com a modificats (`L6.qmd`, `A7.qmd`, `13_contrib.qmd` i el registre mateix), i s'hi verifiquen els ítems de Fase C (literals als `.space`, «farciment», l'exercici nou `s6_4_5`, la correcció d'`A7.qmd`). L'assumpte del commit enganya; el contingut, no.
+- ⚠️ **`3cae913` és l'únic commit de revisió que ha tocat mai `L4.qmd`**, i el seu assumpte diu que és *previ* a les passades finals. L'usuari les va donar per cobertes en tancar L4.
 
 Detalls transversals i decisions obertes: vegeu `TODO.md`.
 
