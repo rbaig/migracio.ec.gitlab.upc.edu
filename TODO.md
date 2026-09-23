@@ -290,7 +290,21 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | :--- | :--- | :--- |
   | Espais de separació | ✅ **Regla fixada** (`13_contrib.qmd:130`: «sense espais», no separador cada 4 nibbles) i **corpus net** | `git grep -nE "0x[0-9A-Fa-f]{4} [0-9A-Fa-f]{4}" -- '*.qmd' ':!TODO.md'` → cap. Les 99 de `L2.qmd` les va convertir la Fase C (`254509b`) |
   | Majúscules/minúscules | ⚠️ **Regla permissiva** (`13_contrib.qmd:267`: preferència per majúscules, «s'admeten minúscules perquè és el criteri de RARS», i diu explícitament que **no cal unificar-ho**) | **534 en majúscules · 36 en minúscules** (`A2` 5, `A3` 5, `L1` 1, `L2` 9 i la resta). La majoria de minúscules són **bolcats reals de RARS**, on la grafia és fidelitat a l'eina |
-  | **Amplada / farciment de zeros** | 🔴 **Sense cap regla** | Conviuen amplades diferents dins d'un mateix fitxer: `A2` 64 de 8 dígits i 4 de 5; `A8` 6 de 8 i 27 de 5; `L2` 175 de 8 i 2 de 7 |
+  | **Amplada / farciment de zeros** | 🔴 **Sense cap regla** | Conviuen amplades diferents dins d'un mateix fitxer: `A2` **61** de 8 dígits i 4 de 5; `A8` 6 de 8 i 27 de 5; `L2` 175 de 8 i 2 de 4. Ordres a sota |
+
+  ```bash
+  for f in 01_apunts/A2.qmd 01_apunts/A8.qmd 04_laboratori/L2.qmd; do
+    for d in 8 5 4; do
+      echo "$f $d: $(git grep -oE "\b0x[0-9A-Fa-f]{$d}\b" -- $f | wc -l)"
+    done
+  done
+  ```
+
+  ⚠️ **La frontera de paraula (`\b`) és deliberada, no un detall del patró.** La fila compara **amplades**, de manera que sense frontera el patró compta «adreces de com a **mínim** N dígits» i enganxa els primers dígits d'un literal més llarg: així és com `A2` publicava **64** de 8 dígits quan en són **61** —els tres de diferència són `0x7766554433221100`, un literal de 16 dígits, a `A2.qmd:1105` i `:1115` (dues vegades)—. És la regla 2 («mesureu per forma») al gra més fi: aquí la forma *és* la mesura.
+
+  ⚠️ **`L2` deia «2 de 7» i no hi ha cap literal de 7 dígits al fitxer**: les amplades de `L2` són 1, 2, 4 i 8, i els dos són `0x0003` (`L2.qmd:395`, `:397`), de **4** dígits. Errata de l'amplada, no del compte.
+
+  📌 **Aquesta era l'única fila de la taula sense ordre publicada**, i per això era l'única amb xifres dolentes: les altres dues (534/36 de majúscules, i els espais de separació) en porten i reprodueixen. Una xifra sense ordre no és comprovable, i acaba sent la que ningú no comprova.
 
   **El que cal decidir és sobretot el tercer**: si les adreces de memòria s'escriuen sempre amb 8 dígits (`0x00400000`) o si s'admet escurçar-les quan no hi ha ambigüitat, i si el criteri val igual per a adreces, per a contingut de registres i per a codificacions d'instrucció. Un cop decidit, ha d'aterrar a `13_contrib.qmd` al costat de les altres dues regles.
 
