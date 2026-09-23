@@ -273,35 +273,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
 
-- ✅ **CANVI DE CRITERI RETIRAT (usuari, 2026-09-23): la directiva `.section` NO s'adopta.** La proposta era fer-la obligatòria a tots els fragments (`.section .data`, `.section .text`) en lloc de les formes nues. El punt (iii) —«comprovar que RARS accepta la forma llarga **abans** de convertir res»— era un tall, i ha tallat: **RARS 1.6 no accepta `.section .data` ni `.section .text`**. La conversió hauria produït 121 fragments que no assemblen.
+- 🟡 **Presentar `.section` a teoria com a forma de GNU** (usuari, 2026-09-23). **Decisió reservada per l'usuari: no s'executi sense que ell la confirmi.**
 
-  **Resultat de l'experiment (2026-09-23, RARS 1.6 `sha256 780f730e…`, Java 21):**
+  El canvi de criteri que volia `.section` **al codi** s'ha retirat per l'experiment (§Entrades retirades → Canvi de criteri `.section`), però **la raó de fons segueix sent bona**: que l'alumne vegi la forma real de GNU, que és la que trobarà en codi compilat i a qualsevol font externa. El que s'ha demostrat impossible és fer-la servir als fragments, no explicar-la.
 
-  | Forma | Resultat |
-  | :--- | :--- |
-  | `.section .data` / `.section .text` | ❌ error dur: `.section must be followed by a section name` |
-  | `.section .rodata` / `.section .sdata` | ⚠️ assembla i **no commuta de segment** (no-op silenciosa) |
-  | `.section .bss` / `data` / `foo` / `".data"` | ⚠️ avís `section name "X" is ignored` |
-  | `.section .data.x` / `.section .text.trap, "ax"` | ✅ assembla (no és *token* de directiva) |
+  **El patró ja existeix al llibre i funciona**: `A9.qmd:399-402` presenta `.section .text.trap, "ax"` dins d'un exemple declarat «il·lustratiu (no executable directament)», amb el text advertint que usa «directives de GNU `as` fora de l'abast de RARS». És exactament la forma que es vol per a `.data` i `.text`: mostrar-la sense proposar-la com a codi executable.
 
-  Motiu: `.data` i `.text` són *tokens* de directiva de l'analitzador lèxic i, darrere de `.section`, es consumeixen com a directiva pròpia sense arribar-hi mai com a operand. Cap grafia no hi arriba (tabulador, doble espai, `.SECTION`, `.DATA`, cometes). El cas greu és el segon: amb `.section .rodata`, dues dades separades per la directiva queden **contigües** (`0x10010000` i `0x10010004`) i, davant d'instruccions, el segment de text queda **buit** sense cap error —el codi desapareix i el programa «drops off the bottom»—. Comprovat amb les adreces del bolcat i contra un control amb la forma nua, no per absència d'error.
+  Contingut a decidir: presentar `.section` com a forma de GNU **amb la nota que RARS no la suporta per a `.data` ni `.text`**. Candidat natural: `A2.qmd` → `#wrn-segments-elf` (§Segments addicionals a l'ABI ELF), que ja fa aquesta feina per a `.rodata` i `.bss` i ja és `#wrn-` (aprofundiment, no avaluable). El fet tècnic a citar-hi és verificat i té registre: vegeu §Entrades retirades.
 
-  **Executat en lloc de la conversió** (opcions 2 i 3, decisió de l'usuari): el criteri s'inverteix **en documentació**, no al codi.
-
-  - `13_contrib.qmd:132` (§T2 i T3) i `:208` (§Convencions globals del laboratori): les dues regles que deien «no s'utilitza» sense dir per què porten ara el **motiu tècnic verificat**. Les regles **no canvien de sentit**: el canvi les reforça.
-  - `A2.qmd` → `#wrn-segments-elf`: paràgraf nou que presenta la forma llarga a l'alumne com a forma d'ELF/`gcc` que RARS no admet. És la **intenció pedagògica conservada sense tocar el codi**.
-
-  ⚠️ **Les 121 directives nues no es toquen.** L'abast mesurat es conserva aquí per si el criteri es reobre amb un altre simulador: **126** nues totals · **121** excloent A4–A6 · repartiment `A2` 34 · `E2` 13 · `L6` 12 · `L2` 11 · `L3` 9 · `A3` 9 · `L5` 8 · `L1` 8 · `L4` 6 · `S5` 4 · `S9` 2 · `S3` 2 · `E3` 2 · `S2` 1 (suma **121**, regla 12 bis).
-
-  ```bash
-  git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO.md' | wc -l   # 126
-  git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO.md' \
-    ':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd' | wc -l          # 121
-  ```
-
-  De les **5 `.section`** del corpus, **només una és una directiva real**: `A9.qmd:402` (`.section .text.trap, "ax"`), dins d'un exemple declarat «il·lustratiu (no executable directament)» i amb la forma GNU amb *flags*, que **sí** que assembla. **No s'ha de tocar.** Les altres quatre són cadena, no ús: les dues regles de `13_contrib.qmd` (`:132`, `:208`), la fila de `21_riscv/RARS_directives.qmd:16` i la prosa d'`A9.qmd:399`. Aquesta comprovació confirma la lectura de la taula de directives: «inclòs per compatibilitat amb `gcc`» vol dir *es parseja*, no *funciona*.
-
-  📌 **El canvi de criteri de `_start` no depèn d'aquest** i es manté: treure les etiquetes no mou el punt d'entrada, perquè RARS comença a la primera instrucció de `.text`.
+  ⚠️ **No és una cosa que es va voler i es va abandonar**: el que s'ha retirat és la conversió dels 121 fragments, no la intenció pedagògica.
 
 - **Homogeneïtzació del format de les adreces** (usuari, 2026-09-23). Revisió transversal del format amb què s'escriuen les adreces i els valors hexadecimals a tot el corpus. `13_contrib.qmd` en fixa avui **dos** aspectes i en deixa la resta sense criteri:
 
@@ -619,6 +599,132 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | T3 T34 (`#cau-boolea-c`) | `§T3` |
 | T7 C3, D1, D2, D3 | `§T7` |
 | T6 C6 (etiquetes de classe) | `§T6` |
+
+### Canvi de criteri `.section` — retirat per l'experiment (2026-09-23)
+
+**Entrada retirada de `§Decisions obertes`.** La proposta (usuari, 2026-09-23)
+era fer `.section` obligatòria a tots els fragments d'assemblador
+(`.section .data`, `.section .text`) en lloc de les formes nues, amb un abast
+mesurat de **121 directives** convertibles (126 menys les 5 d'A4–A6, exclosos
+per la revisió externa). El seu punt (iii) deia: «comprovar que RARS accepta la
+forma llarga en tots els casos, **abans** de convertir res». Era un tall, i ha
+tallat.
+
+**Veredicte: RARS 1.6 no admet la forma llarga. El canvi no s'adopta**, i les
+121 directives nues es queden com són.
+
+#### Formes provades i veredicte de cadascuna
+
+| Forma | Assembla? | Què fa realment |
+| :--- | :---: | :--- |
+| `.section .data`, `.section .text` | ❌ | Error dur: `.section must be followed by a section name` |
+| `.section .rodata`, `.section .sdata` | ✅ | **No commuta de segment, i descarta tot el que la segueix** (vegeu sota) |
+| `.section .bss`, `.section data`, `.section .foo`, `.section ".data"` | ⚠️ | Avís `section name "X" is ignored`; la directiva no fa res i l'assemblador es queda on era |
+| `.section .data.x`, `.section .text.trap, "ax"` | ✅ | Assembla; és la forma d'`A9.qmd:402`, declarada il·lustrativa i no executable |
+| `.rodata`, `.bss`, `.sdata` (nues, sense `.section`) | ⚠️ | `RARS does not recognize the .rodata directive. Ignored.` |
+
+#### El mecanisme
+
+**`.section` no commuta al segment equivocat: no commuta gens**, i l'assemblador
+es queda al segment on ja era. El cas que ho aïlla és `.section .bss`, que dona
+dos missatges alhora:
+
+```
+.section .bss
+x: .word 1
+→ Warning: section name ".bss" is ignored
+→ Error: ".word" directive cannot appear in text segment
+```
+
+L'error diu **text** perquè, ignorada la directiva, l'assemblador seguia al
+segment per defecte; no té res a veure amb `.bss`. Es confirma posant-hi
+`.data` al davant: **el mateix `.section .bss` no dona cap error** i la dada
+cau a `0x10010000`.
+
+La causa de l'error dur de `.data`/`.text` és l'analitzador lèxic: totes dues
+són *tokens* de directiva i, darrere de `.section`, es consumeixen com a
+directiva pròpia sense arribar-hi mai com a operand. Cap grafia no hi arriba
+—tabulador, doble espai, `.SECTION`, `.DATA`, cometes—.
+
+⚠️ **El cas greu: les formes acceptades descarten codi en silenci.** Amb un nom
+que RARS reconeix (`.rodata`, `.sdata`), les instruccions posteriors a la
+directiva **no s'assemblen enlloc** —ni a `.text`, ni a `.data`, ni a cap
+adreça—. Quatre instruccions queden en una, sense cap error ni avís, i el
+programa acaba «dropped off the bottom». La inversió és contraintuïtiva i val
+la pena retenir-la: **`.section .foo`, que no es reconeix, és la forma segura**
+(avisa i conserva les quatre instruccions); les reconegudes són les perilloses.
+
+#### Com reproduir-ho
+
+RARS **no és al repositori** i no s'hi ha de versionar (vegeu
+`13_contrib.qmd §Verificació empírica a RARS`, que en descriu el procediment).
+
+```bash
+cd "$(mktemp -d)"
+curl -sSLO https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar
+sha256sum rars1_6.jar   # 780f730eb457b1ba609e968accc2c8b77d8f92c3d9dbf30cc7fdb3cfb14e8c24
+
+# 1. L'error dur de la forma que el canvi proposava
+printf '.section .data
+x: .word 1
+' > t1.s
+java -jar rars1_6.jar nc t1.s            # → .section must be followed by a section name
+
+# 2. No commuta de segment: les dues dades queden contigües
+printf '.data
+a: .word 0xAA
+.section .rodata
+b: .word 0xBB
+.text
+ la t0,a
+ la t1,b
+ li a7,10
+ ecall
+' > t2.s
+java -jar rars1_6.jar nc t2.s t0 t1      # → t0=0x10010000, t1=0x10010004
+
+# 3. Descarta el codi posterior: 4 instruccions → 1 paraula al bolcat
+printf '.text
+ li t0,0x77
+.section .rodata
+ li t1,0x88
+ li a7,10
+ ecall
+' > t3.s
+java -jar rars1_6.jar nc a t3.s dump .text HexText /dev/stdout   # → només 07700293
+
+# 4. L'assemblador es queda on era (el mateix .bss, amb i sense .data al davant)
+printf '.section .bss
+x: .word 1
+' > t4.s          # → avís + error "text segment"
+printf '.data
+.section .bss
+x: .word 1
+' > t5.s   # → només l'avís, cap error
+```
+
+Xifres de l'abast, que es conserven per si el criteri es reobre mai amb un
+altre simulador: **126** directives nues totals · **121** excloent A4–A6 ·
+repartiment `A2` 34 · `E2` 13 · `L6` 12 · `L2` 11 · `L3` 9 · `A3` 9 · `L5` 8 ·
+`L1` 8 · `L4` 6 · `S5` 4 · `S9` 2 · `S3` 2 · `E3` 2 · `S2` 1 (suma **121**,
+regla 12 bis).
+
+```bash
+git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO.md' | wc -l   # 126
+git grep -oE "^\s*\.(data|text|bss|rodata)\b" -- '*.qmd' ':!TODO.md' \
+  ':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd' | wc -l          # 121
+```
+
+#### Què en sobreviu
+
+- **El motiu, a les dues regles**: `13_contrib.qmd:132` i `:208` deien
+  «`.section`: no s'utilitza» sense dir per què. Ara en porten el motiu tècnic,
+  datat i verificat, perquè una regla sense motiu convida a reobrir-la.
+- **El mètode**, a `13_contrib.qmd §Verificació empírica a RARS`: és la segona
+  vegada que una afirmació sobre RARS s'ha hagut de resoldre executant-lo.
+- **La intenció pedagògica**, que **no** es retira: presentar `.section` a
+  teoria com a forma de GNU és una entrada **viva** a `§Decisions obertes`.
+- `A9.qmd:402` **no es toca**: assembla, i el text ja el declara il·lustratiu.
 
 ---
 

@@ -129,7 +129,10 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Retorn de resultats**: les subrutines retornen com a màxim dos resultats escalars, per `a0` i `a1`. El segon (`a1`) s'usa habitualment per a un codi d'error o un segon valor de retorn. Documentat a `{#nte-abi-pas-parametres}` de T3.
 - **Retorn de subrutines — `ret`**: als exemples s'usa sempre `ret` (pseudoinstrucció estàndard, més llegible), no `jalr x0, 0(ra)`.
 - **Format d'adreces de memòria**: sense espais (`0x10010000`), no amb separador cada 4 nibbles.
-- **`.section`**: no s'utilitza. Només `.data` i `.text`, sense indentar, a columna 0 (vegeu també §Convencions globals del laboratori). **No és una preferència d'estil: RARS 1.6 no accepta `.section .data` ni `.section .text`** (error d'assemblatge `.section must be followed by a section name`). El motiu és l'analitzador lèxic: `.data` i `.text` són *tokens* de directiva i, darrere de `.section`, es consumeixen com a directiva pròpia sense arribar-hi mai com a operand. Cap grafia no hi arriba —tabulador, doble espai, `.SECTION`, `.DATA`, cometes—. I les formes que **sí** que assemblen són pitjors, perquè són **no-ops silencioses**: `.section .rodata` no commuta de segment (dues dades separades per la directiva queden contigües, `0x10010000` i `0x10010004`) i, davant d'instruccions, deixa el segment de text **buit** sense emetre cap error —el codi desapareix i el programa «drops off the bottom»—. Verificat amb RARS 1.6 contra un control amb la forma nua (2026-09-23). La forma amb sufix i *flags* (`.section .text.trap, "ax"`) sí que assembla, i és la que fa servir l'exemple de GNU `as` d'`A9.qmd:402`, declarat no executable. Presentació a l'alumne: `@wrn-segments-elf` de T2.
+- **`.section`**: no s'utilitza. Només `.data` i `.text`, sense indentar, a columna 0 (vegeu també §Convencions globals del laboratori). **No és una preferència d'estil: RARS 1.6 no admet la forma llarga** (verificat executant RARS 1.6, 2026-09-23; procediment a §Verificació empírica a RARS, registre i ordres de reproducció al `TODO.md` §Entrades retirades). Dues fallades, totes dues cares:
+    - `.section .data` i `.section .text` **no assemblen**: error `.section must be followed by a section name`. Ho causa l'analitzador lèxic —`.data` i `.text` són *tokens* de directiva i, darrere de `.section`, es consumeixen com a directiva pròpia sense arribar-hi mai com a operand—, de manera que no hi ha grafia que ho salvi (tabulador, doble espai, `.SECTION`, `.DATA`, cometes).
+    - Les formes que **sí** que assemblen són pitjors, perquè fallen en silenci: **`.section` no commuta al segment equivocat, no commuta gens**, i l'assemblador es queda on ja era. Amb un nom reconegut (`.rodata`, `.sdata`) **descarta a més tot el codi que la segueix**, sense cap error ni avís: quatre instruccions queden en una al bolcat i el programa acaba «dropped off the bottom». Contraintuïtivament, un nom **no** reconegut (`.section .foo`) és la forma segura, perquè avisa i conserva les instruccions.
+    - Excepció legítima: la forma amb sufix i *flags* (`.section .text.trap, "ax"`) sí que assembla, i és la d'`A9.qmd:402`, dins d'un exemple declarat il·lustratiu i no executable. **No s'ha de tocar.**
 
 #### T4
 
@@ -205,7 +208,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **`_start` ha de ser la primera etiqueta de `.text`**: RARS inicia l'execució a la primera instrucció del segment de text, i l'opció «start at main» només reconeix l'etiqueta `main`. `_start` no ha de tenir pròleg ni epíleg, perquè no és callee de ningú i acaba amb la sortida `li a7, 93` + `ecall`; sí que ha d'usar registres segurs per a les dades pròpies que travessen crides. Aplicat a tot el laboratori (L1–L6) i verificat empíricament amb RARS 1.6. **Abast**: la regla és d'ordre intern d'un bloc i només val quan el bloc conté `_start`. Tres blocs del laboratori porten `.text` sense `_start` i en queden fora legítimament: `s2_4_1.s` (`L2.qmd`) és un fragment d'accés a vector, no un programa; `s5_1_1.s` i `s5_2_1.s` (`L5.qmd`) són fitxers de subrutina sola (`abs` i `descompon`), que s'enllacen amb un fitxer `_start` separat. No els «arregleu» afegint-hi un `_start`.
 - **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit2`). No es fa servir `startup.s`.
 - **Expressions aritmètiques als operands**: a la **teoria, els problemes i els exàmens** s'admeten (`.space NF*NC*4`, `li t0, NC*4`, `la t0, vec+8`), perquè fan visible l'estructura del càlcul. Al **laboratori** cal el **literal ja calculat**, amb l'expressió al comentari; i `la rd, etiqueta+desplaçament` se substitueix per la parella `la` + `addi`. Font única: `@imp-ec-operands-expressions` (el cas de `la`, a `@imp-ec-la-offset`).
-- **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0. Al laboratori la regla és **obligatòria per motiu tècnic**, no d'estil: `.section .data` i `.section .text` no assemblen a RARS, i les variants que sí que ho fan no commuten de segment. El detall i la verificació, a §Decisions per tema → T2 i T3.
+- **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0. Al laboratori la regla és **obligatòria per motiu tècnic**, no d'estil: `.section .data` i `.section .text` no assemblen a RARS, i les variants que sí que ho fan no commuten de segment i poden descartar el codi posterior en silenci. Verificat a RARS 1.6 (2026-09-23). El detall és a §Decisions per tema → T2 i T3; el procediment, a §Verificació empírica a RARS.
 - **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
 - **Lliuraments** i **Lectura prèvia**: dues seccions fixes al principi de cada sessió, en aquest ordre. "Lliuraments" porta una taula amb els exercicis i el nom del fitxer de lliurament; "Lectura prèvia" porta una taula amb columnes "Concepte" i "On trobar-ho".
@@ -821,6 +824,60 @@ d'ara; per tenir-lo al dia, `make render-complet` (o `make clean` primer, si
 voleu que la seva absència sigui visible).
 
 - Només es permeten referències sense resoldre cap a seccions, callouts, figures, etc. que encara no s'han creat. Les etiquetes provisionals han de ser descriptives d'on es calcula que ha d'anar la secció referenciada. Afegiu-hi també una descripció com a comentari HTML: `<!-- descripció -->`.
+
+### Verificació empírica a RARS
+
+Quan una afirmació del llibre diu què fa RARS —que una directiva s'accepta, que
+una pseudoinstrucció existeix, que un programa acaba d'una certa manera—, la
+manera de resoldre-la és **executar RARS**. Ja ha passat dues vegades: la
+comprovació que RARS alinea `.dword` a 4 bytes i no a 8 com GCC i MARS
+(`L2.qmd:158`, al corpus des del juliol del 2026 com a molt tard), i
+l'experiment de `.section` (2026-09-23, `TODO.md §Entrades retirades`), que va
+impedir una conversió de 121 directives que no hauria assemblat.
+
+**El `.jar` no és al repositori i no s'hi ha de posar.** Va ser-hi fins a
+`fbf7c3d`, que el va eliminar deliberadament. Es baixa de la *release* que cita
+`README.md:182`, **fora de l'arbre del projecte** —un directori temporal—, i no es
+versiona ni es deixa a cap carpeta del projecte:
+
+```bash
+cd "$(mktemp -d)"
+curl -sSLO https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar
+sha256sum rars1_6.jar   # 780f730eb457b1ba609e968accc2c8b77d8f92c3d9dbf30cc7fdb3cfb14e8c24
+```
+
+S'executa **headless**, sense obrir la GUI. Les opcions que fan falta són
+poques: `nc` (sense la nota de copyright, per a una sortida neta), `a`
+(assembla i no simula), el nom d'un registre (`t0`, `a0`…) per veure'n el
+contingut final, i `dump <segment> <format> <fitxer>` per bolcar memòria:
+
+```bash
+java -jar rars1_6.jar nc prova.s t0 t1                       # executa i mostra t0 i t1
+java -jar rars1_6.jar nc a prova.s dump .text HexText /dev/stdout   # bolca el segment de text
+java -jar rars1_6.jar h                                      # la llista completa d'opcions
+```
+
+⚠️ **Una afirmació sobre el comportament de RARS no es comprova per l'absència
+d'error, sinó per les adreces del bolcat o per l'estat final dels registres.**
+És la regla que justifica tota la secció. A l'experiment de `.section`, **tres
+de les formes provades assemblaven sense queixar-se i no feien el que
+semblava**: una no commutava de segment (es veu només perquè dues dades
+consecutives cauen a `0x10010000` i `0x10010004`, contigües) i dues descartaven
+en silenci el codi posterior a la directiva (es veu només perquè el bolcat de
+`.text` té una paraula on n'hi hauria d'haver quatre). Cap de les tres no
+emetia cap error. Una comprovació que s'hagués aturat a «assembla, doncs va
+bé» hauria donat llum verda a la conversió.
+
+D'aquí, tres hàbits:
+
+- **Compareu sempre contra un control**: el mateix programa amb la forma que ja
+  se sap bona. Un bolcat sol no diu si li falta res; dos, de seguida.
+- **Mesureu el que afirmeu.** Si l'afirmació és sobre on van les dades,
+  comproveu adreces; si és sobre si el codi s'executa, comproveu registres o
+  compteu instruccions al bolcat.
+- **Escriviu al registre el programa mínim sencer**, no la conclusió. Qui ho
+  llegeixi d'aquí a un any ha de poder tornar-ho a córrer sense reconstruir-lo,
+  i la versió del simulador importa: les afirmacions valen per a **RARS 1.6**.
 
 ### Escombrades i verificació del corpus
 
