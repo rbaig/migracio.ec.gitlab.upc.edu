@@ -91,11 +91,10 @@ Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prior
 
 Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
 
-**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1**, **T2**, **T3**, **T4**, **T5**, **T6**, **T7** (2026-09-23).
+**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1**, **T2**, **T3**, **T4**, **T5**, **T6**, **T7**, **T8** (2026-09-23).
 
 | Tema | Assumpte del commit | Commit | Estat declarat al registre (`T<N>_P_tasques.md`) | Passades posteriors | Declaració de tancament |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| T8 | «Fase C acabada» | `ccae7dd` (2026-07-13) | «**Estat: revisió interna de T8 tancada.** Blocs A, B i C íntegrament [executats]» | cap | **pendent** |
 | T9 | «Fable … **(s'ha d'acabar)**» | `87015d2` (2026-07-11) | «Fitxers modificats (**Fase C, execució completa**)» ⚠️ contradiu l'assumpte | cap | **pendent** |
 
 ⚠️ **T7: l'assumpte del commit no és una declaració d'estat.** `2206477` és anterior al refactor de directoris (toca `02_PE/`, `03_PS/`, `07_contrib.qmd`) i és el commit que **crea** `T7_P_tasques.md`: és l'obertura de la revisió. L'estat real de T7 és el de la columna del registre, i és dels més avançats, no el menys.
