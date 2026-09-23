@@ -107,7 +107,6 @@ Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit o
 
 | Fitxer | Assumpte del commit | Commit | Estat declarat al registre (`L<N>_tasques.md`) | Passades posteriors | Declaració de tancament |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `L5.qmd` | «L5 **tres passades fetes**» | `b5ca2f4` (2026-07-21), després d'`a83dc16` | «Fase A, B i C: completades» + «**Revisió final en 3 passades: completada (2026-07-21)**» | — (la passada posterior és aquest mateix commit) | **pendent** |
 | `L6.qmd` | «L6 Fase B» ⚠️ **l'assumpte enganya** | `ca6c01a` (2026-07-21) | «Fase A, B i **C: completades**»; «**Pendent**: res propi de L6» (les troballes cross-file van al `TODO.md`) | cap | **pendent** |
 
 ⚠️ **`ca6c01a` es diu «L6 Fase B» però conté la Fase C sencera**: toca els quatre fitxers que el registre de L6 llistava com a modificats (`L6.qmd`, `A7.qmd`, `13_contrib.qmd` i el registre mateix), i s'hi verifiquen els ítems de Fase C (literals als `.space`, «farciment», l'exercici nou `s6_4_5`, la correcció d'`A7.qmd`). L'assumpte del commit enganya; el contingut, no.
