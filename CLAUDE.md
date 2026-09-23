@@ -91,11 +91,10 @@ Marc: **preparats per a revisió externa** (`A1.qmd`–`A9.qmd`). Segons §Prior
 
 Els registres es recuperen amb `git show a211bbf:TODO/<fitxer>` (últim commit on existien).
 
-**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1**, **T2**, **T3**, **T4**, **T5**, **T6** (2026-09-23).
+**Els temes tancats surten de la taula**, que només llista els que resten oberts. El tancament de cadascun queda registrat a `TODO.md §Entrades retirades`. Tancats fins ara: **T1**, **T2**, **T3**, **T4**, **T5**, **T6**, **T7** (2026-09-23).
 
 | Tema | Assumpte del commit | Commit | Estat declarat al registre (`T<N>_P_tasques.md`) | Passades posteriors | Declaració de tancament |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| T7 | «T7-PE_T7-PS_T7 Fable raw» ⚠️ **obertura, no estat** | `2206477` (2026-07-11) | **40 ítems ✅**, secció A «errors tècnics ✅ aplicats», tres tandes; tanca: «Pendent a `TODO.md §T7`: **només C3**» | cap | **«quasi tancat»** — declaració de l'usuari del 2026-07-12, *pendent de confirmar* |
 | T8 | «Fase C acabada» | `ccae7dd` (2026-07-13) | «**Estat: revisió interna de T8 tancada.** Blocs A, B i C íntegrament [executats]» | cap | **pendent** |
 | T9 | «Fable … **(s'ha d'acabar)**» | `87015d2` (2026-07-11) | «Fitxers modificats (**Fase C, execució completa**)» ⚠️ contradiu l'assumpte | cap | **pendent** |
 
