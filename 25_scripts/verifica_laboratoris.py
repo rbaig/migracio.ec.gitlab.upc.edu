@@ -48,7 +48,7 @@ FRAGMENT_NAMES = {"RV32I", "C", "..."}
 # d'aparició (1-indexat) dins del fitxer, per desambiguar filenames repetits.
 JOINT_COMPILATION = {
     # s5_1_2.s conté el programa principal i ha d'anar primer (vegeu
-    # wrn-arrencada-rars): RARS arrenca a la primera instrucció del primer
+    # nte-rars-ordre-assemblatge): RARS arrenca a la primera instrucció del primer
     # fitxer assemblat.
     ("L5", "s5_1_1.s#1"): ["s5_1_2.s#1", "s5_1_1.s#1"],
     ("L5", "s5_1_2.s#1"): ["s5_1_2.s#1", "s5_1_1.s#1"],
@@ -57,7 +57,7 @@ JOINT_COMPILATION = {
     # (§3), però estructuralment en depèn igual per assemblar. s5_3_1.s ha
     # d'anar primer a la línia de comandes: conté el programa principal i RARS
     # arrenca a la primera instrucció del primer fitxer assemblat (vegeu
-    # wrn-arrencada-rars).
+    # nte-rars-ordre-assemblatge).
     ("L5", "s5_2_1.s#1"): ["s5_3_1.s#2", "s5_2_1.s#1"],
     ("L5", "s5_3_1.s#2"): ["s5_3_1.s#2", "s5_2_1.s#1"],
 }

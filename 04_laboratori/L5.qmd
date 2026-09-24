@@ -49,17 +49,131 @@ Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.gl
 Un cop oberts tots els fitxers i activada l'opció *Assemble all files currently open*, assembleu el projecte. Al panell *Labels* (o *Symbol Table*) de RARS hi apareixeran totes les etiquetes globals dels mòduls. Comproveu que les etiquetes esperades hi són i que les seves adreces s'han resolt correctament.
 :::
 
-::: {#wrn-arrencada-rars .callout-warning collapse="true"}
-## Ordre d'arrencada en assemblar diversos fitxers
+::: {#nte-rars-ordre-assemblatge .callout-note}
+## RARS — Ordre d'assemblatge de diversos fitxers
 
-RARS no cerca cap etiqueta d'entrada: comença sempre a executar la **primera instrucció del segment `.text` combinat**, en l'ordre en què l'assemblador ha processat els fitxers. Amb *Assemble all files currently open*, aquest ordre depèn de quin fitxer té la pestanya activa en el moment d'assemblar: el `.text` d'aquell fitxer s'assembla primer.
+L'execució comença a la primera instrucció del segment `.text` (@sec-programa-segments). Quan s'assemblen **diversos fitxers alhora**, aquell `.text` és el **combinat**, i l'ordre en què s'hi encadenen els mòduls el decideix RARS: amb *Assemble all files currently open*, el primer que s'assembla és el del fitxer que té la **pestanya activa** en prémer `F3`.
 
-Per tant, cal:
+Per tant, **la pestanya activa ha de ser la del fitxer que conté el programa principal**. Si és la d'un fitxer de subrutines, el programa arrenca dins d'una subrutina.
 
-- Assegurar-se que el fitxer que conté el programa principal és el que té la pestanya activa en assemblar (o, si no n'esteu segurs, comprovar al panell *Text Segment* quina és la primera instrucció carregada).
-- Dins d'un mateix fitxer, situar el programa principal al principi del segment `.text`, abans de qualsevol altra subrutina.
+RARS no té enllaçador separat: assembla i resol les referències entre mòduls en una sola passada, de manera que el que es tria aquí és l'**ordre d'assemblatge** (el procés que ho fa en dues fases és a @sec-enllacat).
 
-Si el programa s'atura amb un error d'accés a instrucció just en començar, sense haver executat cap instrucció esperada, la causa més probable és aquesta.
+**Comprovació.** Amb `s5_1_1.s` (la subrutina `abs`) i `s5_1_2.s` (el programa principal), els dos ordres donen aquests segments de text:
+
+::: {.content-visible when-format="html"}
+:::: {.columns}
+::: {.column width="49%"}
+**Correcte** — pestanya activa: `s5_1_2.s`
+
+```
+Address     Code        Basic                    Line  Source
+0x00400000  0xff900513  addi x10,x0,0xfffffff9    6    li   a0, -7
+0x00400004  0x01c000ef  jal x1,0x0000001c         7    jal  ra, abs
+0x00400008  0x0fc10297  auipc x5,0x0000fc10       9    la   t0, resultat
+0x0040000c  0xff828293  addi x5,x5,0xfffffff8
+0x00400010  0x00a2a023  sw x10,0(x5)             10    sw   a0, 0(t0)
+0x00400014  0x05d00893  addi x17,x0,0x0000005d   12    li   a7, 93
+0x00400018  0x00000513  addi x10,x0,0            13    li   a0, 0
+0x0040001c  0x00000073  ecall                    14    ecall
+0x00400020  0x00055463  bge x10,x0,0x00000008     8    bge  a0, zero, positiu
+0x00400024  0x40a00533  sub x10,x0,x10            9    neg  a0, a0
+0x00400028  0x00008067  jalr x0,x1,0             11    ret
+```
+:::
+::: {.column width="2%"}
+:::
+::: {.column width="49%"}
+**Incorrecte** — pestanya activa: `s5_1_1.s`
+
+```
+Address     Code        Basic                    Line  Source
+0x00400000  0x00055463  bge x10,x0,0x00000008     8    bge  a0, zero, positiu
+0x00400004  0x40a00533  sub x10,x0,x10            9    neg  a0, a0
+0x00400008  0x00008067  jalr x0,x1,0             11    ret
+0x0040000c  0xff900513  addi x10,x0,0xfffffff9    6    li   a0, -7
+0x00400010  0xff1ff0ef  jal x1,0xfffffff0         7    jal  ra, abs
+0x00400014  0x0fc10297  auipc x5,0x0000fc10       9    la   t0, resultat
+0x00400018  0xfec28293  addi x5,x5,0xffffffec
+0x0040001c  0x00a2a023  sw x10,0(x5)             10    sw   a0, 0(t0)
+0x00400020  0x05d00893  addi x17,x0,0x0000005d   12    li   a7, 93
+0x00400024  0x00000513  addi x10,x0,0            13    li   a0, 0
+0x00400028  0x00000073  ecall                    14    ecall
+```
+:::
+::::
+:::
+
+::: {.content-visible unless-format="html"}
+Els dos segments de text, un sota l'altre (a la versió HTML es veuen de costat).
+
+**Correcte** — pestanya activa: `s5_1_2.s`
+
+```
+Address     Code        Basic                    Line  Source
+0x00400000  0xff900513  addi x10,x0,0xfffffff9    6    li   a0, -7
+0x00400004  0x01c000ef  jal x1,0x0000001c         7    jal  ra, abs
+0x00400008  0x0fc10297  auipc x5,0x0000fc10       9    la   t0, resultat
+0x0040000c  0xff828293  addi x5,x5,0xfffffff8
+0x00400010  0x00a2a023  sw x10,0(x5)             10    sw   a0, 0(t0)
+0x00400014  0x05d00893  addi x17,x0,0x0000005d   12    li   a7, 93
+0x00400018  0x00000513  addi x10,x0,0            13    li   a0, 0
+0x0040001c  0x00000073  ecall                    14    ecall
+0x00400020  0x00055463  bge x10,x0,0x00000008     8    bge  a0, zero, positiu
+0x00400024  0x40a00533  sub x10,x0,x10            9    neg  a0, a0
+0x00400028  0x00008067  jalr x0,x1,0             11    ret
+```
+
+**Incorrecte** — pestanya activa: `s5_1_1.s`
+
+```
+Address     Code        Basic                    Line  Source
+0x00400000  0x00055463  bge x10,x0,0x00000008     8    bge  a0, zero, positiu
+0x00400004  0x40a00533  sub x10,x0,x10            9    neg  a0, a0
+0x00400008  0x00008067  jalr x0,x1,0             11    ret
+0x0040000c  0xff900513  addi x10,x0,0xfffffff9    6    li   a0, -7
+0x00400010  0xff1ff0ef  jal x1,0xfffffff0         7    jal  ra, abs
+0x00400014  0x0fc10297  auipc x5,0x0000fc10       9    la   t0, resultat
+0x00400018  0xfec28293  addi x5,x5,0xffffffec
+0x0040001c  0x00a2a023  sw x10,0(x5)             10    sw   a0, 0(t0)
+0x00400020  0x05d00893  addi x17,x0,0x0000005d   12    li   a7, 93
+0x00400024  0x00000513  addi x10,x0,0            13    li   a0, 0
+0x00400028  0x00000073  ecall                    14    ecall
+```
+:::
+
+Tres coses que el bolcat no diu tot sol:
+
+1. **Amb l'ordre incorrecte, la primera instrucció de `.text` és de la subrutina `abs`** (`bge a0, zero, positiu`). És allà on RARS posa el PC, de manera que el programa comença pel mig d'`abs`, amb `a0` sense inicialitzar.
+2. **L'assemblatge no falla en cap dels dos casos.** La consola diu `operation completed successfully` tant si l'ordre és bo com si no; l'error només apareix en executar.
+3. **La mateixa instrucció font canvia de codificació.** `jal ra, abs` és `0x01c000ef` en un cas i `0xff1ff0ef` en l'altre —un salt endavant i un enrere—, i el `la t0, resultat` passa d'`addi x5,x5,-8` a `addi x5,x5,-20` per arribar a la mateixa adreça. Són desplaçaments relatius al PC, corregits segons on ha quedat cada mòdul: és la correcció d'adreces de @sec-enllacat, aquí visible en dos bolcats.
+
+**Consola.** L'assemblatge no distingeix els dos casos:
+
+```
+Assemble: assembling s5_1_2.s, s5_1_1.s
+Assemble: operation completed successfully.
+```
+
+```
+Assemble: assembling s5_1_1.s, s5_1_2.s
+Assemble: operation completed successfully.
+```
+
+L'execució, sí:
+
+```
+-- program is finished running (0) --
+```
+
+```
+Go: running s5_1_1.s
+
+Error in : Instruction load access error
+
+Go: execution terminated with errors.
+```
+
+**La primera pista és el nom del fitxer**: `Go: running s5_1_1.s` diu que RARS ha començat pel fitxer de la subrutina, i ho diu **abans** del missatge d'error. Si el programa s'atura amb un error d'accés a instrucció just en començar, mireu aquella línia abans que res.
 :::
 
 ---

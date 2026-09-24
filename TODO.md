@@ -477,15 +477,24 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
   Noteu el desfasament que la renumeració havia de resoldre, i que aquests noms encara reflecteixen: numerats `L0`–`L5` per a sessions que ara són `L1`–`L6`. Es recuperen (buits) amb `git show 3a3aea6:<ruta>`.
 
-- **Cap material explica a l'alumne el punt d'entrada de RARS.** La regla existeix com a **convenció interna** a `13_contrib.qmd:204` («`_start` ha de ser la primera etiqueta de `.text`»), però cap `.qmd` no explica a l'estudiant que RARS comença a executar a la primera instrucció de `.text` i que `_start` no és una etiqueta reconeguda pel simulador. Proposta d'origen: un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. Verificació: `git grep -n "primera instrucció del segment de text" -- '*.qmd' ':!TODO.md'` → només `13_contrib.qmd:204`. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
+- ✅ **EXECUTADA (2026-09-24). Cap material explica a l'alumne el punt d'entrada de RARS.** Deia: la regla existia com a **convenció interna** a `13_contrib.qmd` («`_start` ha de ser la primera etiqueta de `.text`») i cap `.qmd` no ho explicava a l'estudiant. Proposava un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
-  🟡 **La premissa de l'entrada és falsa, i no pel canvi de criteri sinó per un error de mesura (trobat el 2026-09-24).** `L5.qmd` **sí que ho explica a l'alumne**, al callout `#wrn-arrencada-rars`: «RARS no cerca cap etiqueta d'entrada: comença sempre a executar la primera instrucció del segment `.text` combinat». La verificació publicada no el veia perquè buscava la frase literal «primera instrucció del segment de text» i L5 diu «segment `.text` combinat» — **regla 2: mesurar per forma, no per nom**. L'ordre que sí que el troba:
+  **Resolta per separació, no per duplicació**, en dos commits i dos llocs:
+
+  | Part | On ha anat | Commit |
+  | :--- | :--- | :--- |
+  | **El fet general** — RARS comença a la primera instrucció de `.text`, el punt d'entrada no porta etiqueta i el programa principal va abans de les subrutines | `A2.qmd §Segments` (`@sec-programa-segments`), al cos visible de `#nte-segments-memoria`, al costat de la taula d'adreces, **més una línia a `@nte-programa-esquelet`** que hi remet | `5514d08` |
+  | **El que és propi de L5** — l'ordre de la pestanya activa en assemblar diversos fitxers, i el diagnòstic | `L5.qmd` → `@nte-rars-ordre-assemblatge`, amb remissió a `@sec-programa-segments` per al fet general | aquest |
+
+  ⚠️ **La proposta original (un `#nte-` a L1) no s'ha executat, i era la bona de descartar**: `@nte-programa-esquelet` **és** la lectura prèvia obligatòria de L1, de manera que la línia afegida a l'esquelet ja arriba a l'alumne de L1 sense duplicar res. Duplicar-ho a L1 hauria creat una tercera còpia del mateix fet.
+
+  📌 **La premissa de l'entrada era falsa des d'abans, per un error de mesura.** `L5.qmd` ja ho explicava, i la verificació publicada no ho veia perquè buscava la frase literal «primera instrucció del segment de text» quan L5 deia «segment `.text` combinat» — **regla 2: mesurar per forma, no per nom**. L'ordre que sí que el troba, i que ara retorna **cinc** ocurrències (`A2.qmd:398`, `A3.qmd:1894` i `:2054`, `E9.qmd:72`, `L5.qmd:55`):
 
   ```bash
   git grep -n "primera instrucció del segment" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'
   ```
 
-  ⚠️ **Decisió reservada per a l'usuari.** El canvi de criteri (executat el 2026-09-24) ja ha adaptat la redacció d'aquell callout, de manera que el que resta no és escriure res de nou sinó decidir **on ha de viure**: `#wrn-arrencada-rars` és `.callout-warning` (*Aprofundiment*, **no avaluable**) i `collapse="true"`, i és a L5 —la cinquena sessió—, mentre que l'alumne es troba el fet la primera vegada que assembla, a L1. Les opcions són **promoure'l** (canviar-ne el tipus, o treure el `collapse`), **duplicar-lo** a L1/A2 amb una remissió, o **deixar-ho com és**. Cap no s'executa sense que l'usuari la triï.
+  El callout de L5 passa de `#wrn-` (*Aprofundiment*, no avaluable, i `collapse=true` per la convenció de `13_contrib.qmd §Callouts`) a `#nte-rars-` (*RISC-V*, avaluable i visible). **El canvi d'avaluabilitat és volgut** (decisió de l'usuari, 2026-09-24): l'ordre de la pestanya és al camí normal de l'exercici —`L5.qmd` fa activar *Assemble all files currently open*— i, si la pestanya és la dolenta, el programa no arrenca.
 
 - **Expressions aritmètiques als operands: escombrada pendent de `Ex`/`Sx`/`11_riscv.qmd`.** La regla ja és consolidada a `13_contrib.qmd §Convencions globals del laboratori`, amb **exempció explícita** per a teoria, problemes i exàmens (decisió de la sessió 2: l'aritmètica als operands s'hi admet perquè fa visible l'estructura del càlcul; al laboratori cal el literal ja calculat). A4 i S4 van rebre la remissió a `@nte-rars-operands-literals` i **no es toquen**. Queda revisar la resta d'`Ex.qmd`/`Sx.qmd` i `11_riscv.qmd` per detectar casos que siguin realment de laboratori.
 
