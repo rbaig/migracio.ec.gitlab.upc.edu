@@ -305,13 +305,17 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
 
-- 🟡 **Presentar `.section` a teoria com a forma de GNU** (usuari, 2026-09-23). **Decisió reservada per l'usuari: no s'executi sense que ell la confirmi.**
+- ✅ **EXECUTAT (2026-09-24). Presentar `.section` a teoria com a forma de GNU** (usuari, 2026-09-23).
 
   El canvi de criteri que volia `.section` **al codi** s'ha retirat per l'experiment (§Entrades retirades → Canvi de criteri `.section`), però **la raó de fons segueix sent bona**: que l'alumne vegi la forma real de GNU, que és la que trobarà en codi compilat i a qualsevol font externa. El que s'ha demostrat impossible és fer-la servir als fragments, no explicar-la.
 
   **El patró ja existeix al llibre i funciona**: `A9.qmd:399-402` presenta `.section .text.trap, "ax"` dins d'un exemple declarat «il·lustratiu (no executable directament)», amb el text advertint que usa «directives de GNU `as` fora de l'abast de RARS». És exactament la forma que es vol per a `.data` i `.text`: mostrar-la sense proposar-la com a codi executable.
 
-  Contingut a decidir: presentar `.section` com a forma de GNU **amb la nota que RARS no la suporta per a `.data` ni `.text`**. Candidat natural: `A2.qmd` → `#wrn-segments-elf` (§Segments addicionals a l'ABI ELF), que ja fa aquesta feina per a `.rodata` i `.bss` i ja és `#wrn-` (aprofundiment, no avaluable). El fet tècnic a citar-hi és verificat i té registre: vegeu §Entrades retirades.
+  **Resolt: el paràgraf és al cos VISIBLE de `#nte-segments-memoria`** (`A2.qmd §Segments`, `@sec-programa-segments`), no al `#wrn-segments-elf` que es proposava com a candidat. ⚠️ **El motiu de no deixar-lo al `#wrn-` és que aquell callout és `collapse=true`**: `.section` es presenta **conjuntament amb els segments de memòria**, que és on l'alumne aprèn què és una directiva de segment, i un contingut plegat no acompanya la taula que l'ha de contextualitzar. Decisió de l'usuari, ferma (2026-09-24).
+
+  `#wrn-segments-elf` es queda amb el que és seu —`.rodata` i `.bss`— i es llegeix sense el paràgraf. La fila `.section` de `21_riscv/RARS_directives.qmd` remet ara a `@sec-programa-segments` en lloc de `13_contrib.qmd`, perquè el lector d'aquella taula és l'alumne i ara hi ha explicació per a ell.
+
+  Comprovació que ha de seguir valent —**cap `.section` dins de cap bloc plegat a `01_apunts/`**—; es mesura per forma, no per la línia moguda, recorrent l'aniuament dels divs `:::` i marcant els nivells amb `collapse`. Les dues ocurrències legítimes són `A2.qmd` (aquest paràgraf, visible) i `A9.qmd:399-402` (l'exemple il·lustratiu de la RSE, també visible).
 
   ⚠️ **No és una cosa que es va voler i es va abandonar**: el que s'ha retirat és la conversió dels 121 fragments, no la intenció pedagògica.
 

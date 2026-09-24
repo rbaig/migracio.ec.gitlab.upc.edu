@@ -395,6 +395,10 @@ Les directives `.text` i `.data` són **estàndard** de l'assemblador RISC-V (GN
 | Dades | `.data` | `0x10010000` | Variables globals |
 : {tbl-colwidths="[18,18,27,37]" style="width: 60%; margin: auto;"}
 
+**L'execució comença a la primera instrucció del segment `.text`**, és a dir, a l'adreça `0x00400000` de la taula: RARS hi posa el PC en començar i no cerca cap etiqueta d'entrada. Per això, als programes d'aquests apunts, el punt d'entrada **no porta etiqueta** i el `.text` del programa principal va **abans** de qualsevol subrutina. El motiu de fons —que a EC es programa sense sistema operatiu— és a @nte-punt-entrada-etiqueta.
+
+**Forma llarga de la directiva.** L'ABI ELF admet també `.section .data` i `.section .text`, que és la forma que genera `gcc` i la que trobareu en codi real. **A EC s'usa sempre la forma curta** (`.data`, `.text`): RARS no accepta la forma llarga per a aquests dos segments —dona l'error `.section must be followed by a section name`— i, en les variants que sí que assembla, la directiva **no commuta de segment**, de manera que les dades o el codi que la segueixen no van on sembla. És una limitació del simulador, no una diferència de l'arquitectura.
+
 :::: {#wrn-segments-elf .callout-warning collapse=true}
 ## Segments addicionals a l'ABI ELF
 
@@ -408,8 +412,6 @@ En sistemes Linux reals, l'ABI ELF defineix segments addicionals que RARS no sup
 :::
 
 A RARS, tant `.rodata` com `.bss` es substitueixen per `.data`: les constants no estan protegides d'escriptura i les variables no inicialitzades es declaren amb `.space` (@nte-directives-align-space).
-
-L'ABI ELF admet també una **forma llarga** de la directiva de segment, `.section .data` i `.section .text`, que és la que genera `gcc` i la que trobareu en codi real. **A EC s'usa sempre la forma curta** (`.data`, `.text`): RARS no accepta la forma llarga per a aquests dos segments —dona l'error `.section must be followed by a section name`— i, en les variants que sí que assembla, la directiva no commuta de segment. És una limitació del simulador, no una diferència de l'arquitectura.
 ::::
 :::::
 
@@ -779,6 +781,8 @@ L'esquelet mínim d'un programa en assemblador, vàlid per a qualsevol entorn RI
         li      a7, 93          # syscall 93: exit2
         ecall
 ```
+
+El `.text` no porta cap etiqueta d'entrada: l'execució comença a la seva **primera instrucció** (@sec-programa-segments).
 :::
 
 ## Variables escalars {#sec-variables-escalars}

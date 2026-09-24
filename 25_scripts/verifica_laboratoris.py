@@ -47,14 +47,17 @@ FRAGMENT_NAMES = {"RV32I", "C", "..."}
 # Els noms de bloc identifiquen el bloc pel seu filename i número d'ordre
 # d'aparició (1-indexat) dins del fitxer, per desambiguar filenames repetits.
 JOINT_COMPILATION = {
-    # s5_1_2.s conté _start i ha d'anar primer (vegeu wrn-arrencada-rars).
+    # s5_1_2.s conté el programa principal i ha d'anar primer (vegeu
+    # wrn-arrencada-rars): RARS arrenca a la primera instrucció del primer
+    # fitxer assemblat.
     ("L5", "s5_1_1.s#1"): ["s5_1_2.s#1", "s5_1_1.s#1"],
     ("L5", "s5_1_2.s#1"): ["s5_1_2.s#1", "s5_1_1.s#1"],
     # s5_3_1.s (versió final, #sol-compon) crida descompon, definida a
     # s5_2_1.s: no és el cas de compilació separada explícit de l'enunciat
     # (§3), però estructuralment en depèn igual per assemblar. s5_3_1.s ha
-    # d'anar primer a la línia de comandes: conté _start i RARS arrenca a la
-    # primera instrucció del primer fitxer assemblat (vegeu wrn-arrencada-rars).
+    # d'anar primer a la línia de comandes: conté el programa principal i RARS
+    # arrenca a la primera instrucció del primer fitxer assemblat (vegeu
+    # wrn-arrencada-rars).
     ("L5", "s5_2_1.s#1"): ["s5_3_1.s#2", "s5_2_1.s#1"],
     ("L5", "s5_3_1.s#2"): ["s5_3_1.s#2", "s5_2_1.s#1"],
 }
@@ -63,8 +66,9 @@ JOINT_COMPILATION = {
 # provisionals substituïdes explícitament per un bloc posterior al mateix
 # fitxer). Identificats per (laboratori, filename, ordre d'aparició 1-indexat).
 SUPERSEDED = {
-    ("L5", "s5_3_1.s", 1),  # _start provisional dins callout de comprovació;
-                            # substituït pel programa complet a l'ordre 2.
+    ("L5", "s5_3_1.s", 1),  # programa principal provisional dins del callout de
+                            # comprovació; substituït pel programa complet a
+                            # l'ordre 2.
 }
 
 # Blocs "incomplets per disseny": depenen d'una subrutina que l'enunciat
@@ -157,7 +161,7 @@ class Block:
 # ---------------------------------------------------------------------------
 # Comprovacions ESTÀTIQUES (text, no depenen d'assemblar ni executar).
 # S'apliquen a TOTS els blocs .s, inclosos els que RARS no pot processar sol
-# (incomplets per disseny, sense _start, substituïts).
+# (incomplets per disseny, sense programa principal, substituïts).
 # ---------------------------------------------------------------------------
 
 LABEL_RE = re.compile(r'^([A-Za-z_.][\w.]*)\s*:', re.M)
