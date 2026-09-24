@@ -255,7 +255,16 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   **(ii) Eliminar les etiquetes `_start` dels fragments d'assemblador.** Abast mesurat: **96 ocurrències de `_start`** a 9 fitxers del corpus, de les quals **26 són definicions d'etiqueta** (`^_start:`). Repartiment: `L5` 27 · `L4` 19 · `L3` 16 · `L6` 14 · `L2` 8 · `L1` 8 · `A2` 2 · `E9` 1 · `A3` 1 (suma 96).
 
-  ⚠️ **Ancorat: la forma sobre l'arbre de treball retorna zero des d'aquest commit.** El repartiment es mesura a `d51577d`, l'últim commit amb `_start` al corpus, i **hi reprodueix exacte**. Amb un commit al `git grep` la sortida és `<commit>:<ruta>:<coincidència>`, de manera que l'`awk` llegeix `$2` i no `$1` (vegeu `13_contrib.qmd` regla 12 bis).
+  ⚠️ **Ancorat: sobre l'arbre de treball la forma ja no dona el repartiment.** El repartiment es mesura a `d51577d`, l'últim commit amb `_start` al corpus, i **hi reprodueix exacte**. Amb un commit al `git grep` la sortida és `<commit>:<ruta>:<coincidència>`, de manera que l'`awk` llegeix `$2` i no `$1` (vegeu `13_contrib.qmd` regla 12 bis).
+
+  📌 **Al corpus d'avui hi queden 3 ocurrències de `_start`, i no són cap residu**: són `A3.qmd:1890` i `:1892` (dues a la segona línia: l'etiqueta i el `.globl _start`), el callout `@nte-punt-entrada-etiqueta` que **explica la convenció de GNU/Linux** i per què a EC no s'aplica. Hi han de ser: són el contingut, no la convenció. **Cap no és una directiva**: `^_start:` i `^\s*\.globl\s+_start` donen totes dues **0**.
+
+  ```bash
+  X=("--" "*.qmd" ":!TODO.md" ":!13_contrib.qmd")
+  git grep -o "_start" "${X[@]}" | wc -l                    # 3 — les del callout d'A3
+  git grep -cE "^_start:" "${X[@]}" | awk -F: '{s+=$2} END{print s+0}'               # 0 — cap etiqueta
+  git grep -cE "^\s*\.globl\s+_start" "${X[@]}" | awk -F: '{s+=$2} END{print s+0}'  # 0 — cap directiva
+  ```
 
   ```bash
   git grep -o "_start" d51577d -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
@@ -275,7 +284,16 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   📌 **La mateixa avaria s'hi va reproduir en reparar-la.** El bloc `bash` va quedar publicant «26 de 44», un parell on el numerador compta línies i el denominador no compta res: cap forma no dona 44 —`^\.globl` en dona 32, `\.globl` en qualsevol posició 42, amb `13_contrib.qmd` dins 46 i a tot el repositori 62—. Corregit a **26 de 32**, amb l'ordre del denominador al costat de la del numerador perquè totes dues siguin comprovables. **Un quocient és un desglossament de dos termes**: la regla 12 bis li val igual, i les dues parts s'han de mesurar amb la mateixa forma. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
 
-  ⚠️ **Ancorat a `d51577d`.** Sobre l'arbre d'avui les xifres són **0 · 0 · 6 · 0**: les 26 `.globl _start` se n'han anat i **les 6 de símbols reals s'han quedat**, que és per això que el denominador passa de 32 a 6 i no a zero.
+  ⚠️ **Ancorat a `d51577d`.** Sobre l'arbre d'avui les quatre xifres són **3 · 0 · 6 · 0**, i cada una mesura una forma diferent —confondre-les és l'avaria que aquesta entrada mateixa ja va patir dues vegades:
+
+  | Xifra | Forma que mesura | Abans | Avui |
+  | :--- | :--- | ---: | ---: |
+  | 1a | **ocurrències** de `_start`, on sigui | 96 | **3** (el callout d'`A3.qmd`, prosa) |
+  | 2a | **línies** `^_start:` (definicions) | 26 | **0** |
+  | 3a | **línies** `^\s*\.globl` (qualsevol símbol) | 32 | **6** (`suma`, `abs`, `compon`, `descompon`, `g`, `X`) |
+  | 4a | **línies** `^\s*\.globl\s+_start` | 26 | **0** |
+
+  El denominador passa de 32 a **6**, no a zero, perquè les sis de símbols reals s'han quedat. ⚠️ **La 3a xifra compta línies, no ocurrències**: de `.globl` en qualsevol posició n'hi ha **18** al corpus, perquè n'hi ha 12 en prosa que expliquen la directiva (`A2.qmd`, `A3.qmd`, `S3.qmd`, `L5.qmd`, `21_riscv/`) i una al callout nou d'`A3.qmd`. Les dues xifres són certes i no són comparables: la que val per a un esborrat és **la línia**, que és el que s'esborra.
 
   ```bash
   X=("d51577d" "--" "*.qmd" ":!TODO.md" ":!13_contrib.qmd")   # regla 12: fora els fitxers que en parlen
