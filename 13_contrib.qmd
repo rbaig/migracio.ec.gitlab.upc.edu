@@ -888,7 +888,27 @@ en silenci el codi posterior a la directiva (es veu només perquè el bolcat de
 emetia cap error. Una comprovació que s'hagués aturat a «assembla, doncs va
 bé» hauria donat llum verda a la conversió.
 
-D'aquí, tres hàbits:
+**El comportament multifitxer de la interfície es pot verificar per línia
+d'ordres** (2026-09-24). Semblava que no: *Assemble all files currently open*
+depèn de quina pestanya és activa, i una pestanya no té equivalent al terminal.
+El té: **la pestanya activa equival al primer fitxer de la crida**, perquè
+l'ordre dels arguments és l'ordre d'assemblatge.
+
+```bash
+java -jar rars1_6.jar nc a dump .text HexText t.hex s5_1_2.s s5_1_1.s   # correcte
+java -jar rars1_6.jar nc a dump .text HexText t.hex s5_1_1.s s5_1_2.s   # incorrecte
+```
+
+Verificat pels dos camins alhora —a mà a la interfície i per línia d'ordres amb
+el `.jar`—, amb els blocs de `L5.qmd`: els bolcats coincideixen **paraula per
+paraula**, les onze de cada cas (`@nte-rars-ordre-assemblatge`). D'aquí que una
+afirmació sobre la GUI **no s'hagi de donar per no verificable**: abans de dir
+«això només es pot comprovar obrint RARS», busqueu quin argument de la línia
+d'ordres hi correspon. Val per a l'ordre dels fitxers i per a tot el que la GUI
+decideix amb un menú o una casella —`sm` n'és l'altre cas (§Convencions globals
+del laboratori).
+
+D'aquí, quatre hàbits:
 
 - **Compareu sempre contra un control**: el mateix programa amb la forma que ja
   se sap bona. Un bolcat sol no diu si li falta res; dos, de seguida.
