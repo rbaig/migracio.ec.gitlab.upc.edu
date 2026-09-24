@@ -58,7 +58,117 @@ Per tant, **la pestanya activa ha de ser la del fitxer que conté el programa pr
 
 RARS no té enllaçador separat: assembla i resol les referències entre mòduls en una sola passada, de manera que el que es tria aquí és l'**ordre d'assemblatge** (el procés que ho fa en dues fases és a @sec-enllacat).
 
-**Comprovació.** Amb `s5_1_1.s` (la subrutina `abs`) i `s5_1_2.s` (el programa principal), els dos ordres donen aquests segments de text:
+⚠️ **L'assemblatge no falla si l'ordre és el dolent.** La consola diu `operation completed successfully` en tots dos casos, i l'error només apareix en executar:
+
+```
+Assemble: assembling s5_1_2.s, s5_1_1.s
+Assemble: operation completed successfully.
+```
+
+```
+Assemble: assembling s5_1_1.s, s5_1_2.s
+Assemble: operation completed successfully.
+```
+
+L'execució, en canvi, sí que els distingeix:
+
+```
+-- program is finished running (0) --
+```
+
+```
+Go: running s5_1_1.s
+
+Error in : Instruction load access error
+
+Go: execution terminated with errors.
+```
+
+**La primera pista és el nom del fitxer**: `Go: running s5_1_1.s` diu que RARS ha començat pel fitxer de la subrutina, i ho diu **abans** del missatge d'error. Si el programa s'atura amb un error d'accés a instrucció just en començar, mireu aquella línia abans que res.
+
+A la solució de l'exercici hi ha els dos segments de text comparats instrucció per instrucció, per si voleu veure què hi canvia.
+:::
+
+---
+
+::: {#exr-compilacio-separada}
+## `s5_1_1.s` i `s5_1_2.s`
+
+Traduïu a RV32I el programa C següent, repartint el codi en **dos fitxers** tal com s'indica:
+
+- `s5_1_1.s`: conté únicament la subrutina `abs`.
+- `s5_1_2.s`: conté el programa principal, que crida `abs` i emmagatzema el resultat a `resultat`.
+
+```{.c filename="abs.c"}
+int resultat;
+
+int abs(int x) {
+    if (x < 0)
+        return -x;
+    else
+        return x;
+}
+
+void main() {
+    resultat = abs(-7);
+}
+```
+
+Tingueu en compte:
+
+- `abs` és **uninivell**: determineu si cal algun registre segur.
+- El programa principal és **multinivell**: determineu quins valors, si n'hi ha, travessen la crida i cal preservar.
+- Obriu els dos fitxers a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Comproveu que `abs` apareix al panell *Labels*.
+:::
+
+---
+
+::: {#sol-compilacio-separada}
+**Anàlisi de registres segurs.**
+
+`abs` és uninivell: no fa cap crida, de manera que no hi ha cap registre en risc de ser destruït; tots els temporals van a registres `t`. BA buit.
+
+El programa principal és multinivell (crida `abs`), però no necessita cap registre segur ni bloc d'activació: no hi ha cap valor generat abans de la crida que s'usi després (el resultat de `abs` s'usa immediatament en tornar), i com que és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), tampoc cal preservar `ra`. BA buit.
+
+```{.s filename="s5_1_1.s"}
+.globl abs
+
+.text
+
+# abs(int x)
+# a0 = x; retorna |x| a a0
+abs:
+        bge  a0, zero, positiu  # si x >= 0, retorna x directament
+        neg  a0, a0             # a0 = -x
+positiu:
+        ret
+```
+
+```{.s filename="s5_1_2.s"}
+.data
+resultat: .word 0
+
+.text
+
+        li   a0, -7
+        jal  ra, abs            # a0 = abs(-7) = 7
+
+        la   t0, resultat
+        sw   a0, 0(t0)          # resultat = 7
+
+        li   a7, 93
+        li   a0, 0
+        ecall
+```
+
+::: {.callout-tip title="Comprovació pràctica"}
+Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Al panell *Labels* hi ha d'aparèixer `abs` amb la seva adreça: és l'únic símbol declarat `.globl`, i per això és l'únic visible entre mòduls. Comproveu també que el programa acaba amb `7` a `resultat`.
+
+Executeu el programa i comproveu que la variable global `resultat` conté el valor `7`.
+
+Proveu també amb el valor `0`: el resultat ha de ser `0` (per a `0`, el salt `bge` es pren i es retorna el valor directament).
+
+**L'ordre d'assemblatge, vist al segment de text.** Obriu *Memory Dump* (`Ctrl-D`) i compareu els dos ordres de la pestanya activa (@nte-rars-ordre-assemblatge):
 
 ::: {.content-visible when-format="html"}
 :::: {.columns}
@@ -141,119 +251,10 @@ Address     Code        Basic                    Line  Source
 ```
 :::
 
-Tres coses que el bolcat no diu tot sol:
+Dues coses que el bolcat no diu tot sol:
 
 1. **Amb l'ordre incorrecte, la primera instrucció de `.text` és de la subrutina `abs`** (`bge a0, zero, positiu`). És allà on RARS posa el PC, de manera que el programa comença pel mig d'`abs`, amb `a0` sense inicialitzar.
-2. **L'assemblatge no falla en cap dels dos casos.** La consola diu `operation completed successfully` tant si l'ordre és bo com si no; l'error només apareix en executar.
-3. **La mateixa instrucció font canvia de codificació.** `jal ra, abs` és `0x01c000ef` en un cas i `0xff1ff0ef` en l'altre —un salt endavant i un enrere—, i el `la t0, resultat` passa d'`addi x5,x5,-8` a `addi x5,x5,-20` per arribar a la mateixa adreça. Són desplaçaments relatius al PC, corregits segons on ha quedat cada mòdul: és la correcció d'adreces de @sec-enllacat, aquí visible en dos bolcats.
-
-**Consola.** L'assemblatge no distingeix els dos casos:
-
-```
-Assemble: assembling s5_1_2.s, s5_1_1.s
-Assemble: operation completed successfully.
-```
-
-```
-Assemble: assembling s5_1_1.s, s5_1_2.s
-Assemble: operation completed successfully.
-```
-
-L'execució, sí:
-
-```
--- program is finished running (0) --
-```
-
-```
-Go: running s5_1_1.s
-
-Error in : Instruction load access error
-
-Go: execution terminated with errors.
-```
-
-**La primera pista és el nom del fitxer**: `Go: running s5_1_1.s` diu que RARS ha començat pel fitxer de la subrutina, i ho diu **abans** del missatge d'error. Si el programa s'atura amb un error d'accés a instrucció just en començar, mireu aquella línia abans que res.
-:::
-
----
-
-::: {#exr-compilacio-separada}
-## `s5_1_1.s` i `s5_1_2.s`
-
-Traduïu a RV32I el programa C següent, repartint el codi en **dos fitxers** tal com s'indica:
-
-- `s5_1_1.s`: conté únicament la subrutina `abs`.
-- `s5_1_2.s`: conté el programa principal, que crida `abs` i emmagatzema el resultat a `resultat`.
-
-```{.c filename="abs.c"}
-int resultat;
-
-int abs(int x) {
-    if (x < 0)
-        return -x;
-    else
-        return x;
-}
-
-void main() {
-    resultat = abs(-7);
-}
-```
-
-Tingueu en compte:
-
-- `abs` és **uninivell**: determineu si cal algun registre segur.
-- El programa principal és **multinivell**: determineu quins valors, si n'hi ha, travessen la crida i cal preservar.
-- Obriu els dos fitxers a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Comproveu que `abs` apareix al panell *Labels*.
-:::
-
----
-
-::: {#sol-compilacio-separada}
-**Anàlisi de registres segurs.**
-
-`abs` és uninivell: no fa cap crida, de manera que no hi ha cap registre en risc de ser destruït; tots els temporals van a registres `t`. BA buit.
-
-El programa principal és multinivell (crida `abs`), però no necessita cap registre segur ni bloc d'activació: no hi ha cap valor generat abans de la crida que s'usi després (el resultat de `abs` s'usa immediatament en tornar), i com que és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), tampoc cal preservar `ra`. BA buit.
-
-```{.s filename="s5_1_1.s"}
-.globl abs
-
-.text
-
-# abs(int x)
-# a0 = x; retorna |x| a a0
-abs:
-        bge  a0, zero, positiu  # si x >= 0, retorna x directament
-        neg  a0, a0             # a0 = -x
-positiu:
-        ret
-```
-
-```{.s filename="s5_1_2.s"}
-.data
-resultat: .word 0
-
-.text
-
-        li   a0, -7
-        jal  ra, abs            # a0 = abs(-7) = 7
-
-        la   t0, resultat
-        sw   a0, 0(t0)          # resultat = 7
-
-        li   a7, 93
-        li   a0, 0
-        ecall
-```
-
-::: {.callout-tip title="Comprovació pràctica"}
-Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Al panell *Labels* hi ha d'aparèixer `abs` amb la seva adreça: és l'únic símbol declarat `.globl`, i per això és l'únic visible entre mòduls. Comproveu també que el programa acaba amb `7` a `resultat`.
-
-Executeu el programa i comproveu que la variable global `resultat` conté el valor `7`.
-
-Proveu també amb el valor `0`: el resultat ha de ser `0` (per a `0`, el salt `bge` es pren i es retorna el valor directament).
+2. **La mateixa instrucció font canvia de codificació.** `jal ra, abs` és `0x01c000ef` en un cas i `0xff1ff0ef` en l'altre —un salt endavant i un enrere—, i el `la t0, resultat` passa d'`addi x5,x5,-8` a `addi x5,x5,-20` per arribar a la mateixa adreça. Són desplaçaments relatius al PC, corregits segons on ha quedat cada mòdul: és la correcció d'adreces de @sec-enllacat, aquí visible en dos bolcats.
 :::
 :::
 
