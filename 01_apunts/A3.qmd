@@ -1886,6 +1886,16 @@ De vegades, per abús de llenguatge, es diu «compilar» a tot el procés de tra
 Flux de compilació separada: cada mòdul es compila i assembla independentment generant un fitxer objecte (`.o`), que l'enllaçador (`ld`) combina amb les biblioteques per produir l'executable.
 :::
 
+:::: {#nte-punt-entrada-etiqueta .callout-note}
+## El punt d'entrada del programa i l'etiqueta `_start`
+
+En **GNU/Linux**, el punt d'entrada d'un executable es marca amb l'etiqueta **`_start`**, declarada global amb `.globl _start`. El nom no és decoratiu: l'**enllaçador** l'ha de localitzar per escriure'l a la capçalera de l'executable, i el **carregador** del sistema operatiu hi transfereix el control en engegar el procés. Hi ha, doncs, dos agents que llegeixen aquell nom, i per això el símbol ha de ser global i s'ha d'anomenar exactament així.
+
+A **EC** es programa directament sobre el processador (@imp-directe-sobre-processador), en un **entorn autònom** (*bare-metal*, @sec-entorn-autonom-bare-metal): no hi ha ni enllaçador ni carregador, i **cap agent no llegeix el nom del punt d'entrada**. L'execució comença sempre a la **primera instrucció del segment `.text`**, de manera que als programes d'aquests apunts el punt d'entrada **no porta etiqueta**.
+
+No és una peculiaritat de l'assignatura, sinó la diferència entre un entorn **allotjat** (*hosted*) i un **autònom**: en un entorn autònom, la forma i el nom del punt d'entrada són **definits per la implementació**. És el mateix motiu pel qual el C d'aquests apunts declara `void main()` i no `int main` (@cau-void-main): una etiqueta que ningú no resol seria tan fictícia com un `return` que ningú no recull.
+::::
+
 ### Compilació {#sec-compilacio-proces}
 
 El **compilador** pren com a entrada el codi font en C i el tradueix a llenguatge assemblador (fitxer `.s`). Durant aquest procés aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable, i genera les instruccions de la **ISA** de destí.
@@ -2041,7 +2051,7 @@ El **carregador** (*loader*) és un programa del sistema operatiu que llegeix el
 Quan la funció `main` retorna, la rutina de *startup* invoca la crida al sistema `exit`, que allibera tots els recursos assignats al programa (memòria, fitxers oberts, etc.).
 
 ::: {#cau-carrega-ec .callout-caution}
-El mecanisme descrit en aquesta secció és el d'un **sistema real amb SO**. A **EC** no hi ha ni SO ni carregador (@imp-directe-sobre-processador): els programes no reben `argc` ni `argv` i no tornen enlloc en acabar. El punt d'entrada és `_start` i la sortida es fa amb `li a7, 93` + `ecall` (@nte-programa-esquelet).
+El mecanisme descrit en aquesta secció és el d'un **sistema real amb SO**. A **EC** no hi ha ni SO ni carregador (@imp-directe-sobre-processador): els programes no reben `argc` ni `argv` i no tornen enlloc en acabar. El punt d'entrada és la **primera instrucció del segment `.text`**, sense cap etiqueta que l'anomeni (@nte-punt-entrada-etiqueta), i la sortida es fa amb `li a7, 93` + `ecall` (@nte-programa-esquelet).
 
 El `void main()` dels programes en C d'aquests apunts no contradiu res del que s'acaba de dir: és **notació** del programa que traduireu a mà (@cau-void-main), no un punt d'entrada que cap rutina de *startup* no arriba a cridar.
 :::

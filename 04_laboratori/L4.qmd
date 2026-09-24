@@ -61,7 +61,6 @@ Recordeu que en C els elements d'una matriu es guarden per files, i que en RV32I
 
 ::: {#sol-declaracio-matrius}
 ```{.s filename="s4_1_1.s"}
-.globl _start
 
 .eqv NF1, 5
 .eqv NC1, 6
@@ -85,7 +84,6 @@ mat3:   .space 32             # long long mat3[2][2]: NF3*NC3*8 = 32 bytes
 mat4:   .word 2, 3, 1, 2, 4, 3 # int mat4[2][3] inicialitzada per files
 
 .text
-_start:
         li  a7, 93
         li  a0, 0
         ecall
@@ -138,7 +136,7 @@ Per a `mat3`, $T = 8$ perquè cada element és de tipus `long long` (64 bits). L
 ::: {#exr-subr-matrius}
 ## `s4_2_2.md` i `s4_2_2.s`
 
-Traduïu a RV32IM el programa C següent. `_start` crida `subr` dues vegades; `subr` accedeix a `mat1` per índexs variables.
+Traduïu a RV32IM el programa C següent. El programa principal crida `subr` dues vegades; `subr` accedeix a `mat1` per índexs variables.
 
 ```{.c filename="C"}
 int mat1[5][6];
@@ -161,7 +159,7 @@ int subr(int x[][3], int i, int j) {
 Abans d'escriure cap instrucció:
 
 1. Determineu si `subr` és uninivell o multinivell i per què.
-2. Determineu si `_start` fa crides i quines conseqüències té per a la gestió del context. Tingueu en compte que `_start` és el punt d'entrada del programa: no és cridat per cap altra subrutina i acaba amb `ecall` (@sec-multinivell-pila).
+2. Determineu si el programa principal fa crides i quines conseqüències té per a la gestió del context. Tingueu en compte que és el punt d'entrada del programa —és el primer bloc del segment `.text`—: no és cridat per cap altra subrutina i acaba amb `ecall` (@sec-multinivell-pila).
 3. Per a cada funció, identifiqueu quines dades es generen **abans** d'una crida i s'usen **després** (@sec-multinivell-pila). Assigneu-les a registres segurs.
 4. Dibuixeu el bloc d'activació de cada funció amb els desplaçaments de cada element.
 :::
@@ -173,13 +171,13 @@ Abans d'escriure cap instrucció:
 
 `subr` és **uninivell**: no fa cap crida. No cal preservar `ra` ni cap registre segur per a valors que travessen una crida; tots els temporals van a registres `t` i el bloc d'activació queda buit.
 
-**Pas 2. `_start`: gestió del context.**
+**Pas 2. El programa principal: gestió del context.**
 
-`_start` fa dues crides a `subr`, però és el **punt d'entrada** del programa: no és el callee de cap altra subrutina i acaba amb `ecall` (sortida), no amb `ret`. Per tant **no ha de preservar `ra` ni cap registre segur** per a ningú, i no li cal bloc d'activació. Sí que ha d'usar registres **segurs** (`s0`–`s11`) per a les dades pròpies que han de sobreviure a les crides: com que `subr` és responsable de restaurar-los abans de retornar (@cau-regla-registres-segurs), el seu valor es conserva a través de cada crida.
+El programa principal fa dues crides a `subr`, però és el **punt d'entrada**: com que és el primer bloc del segment `.text`, no és el callee de cap altra subrutina, i acaba amb `ecall` (sortida), no amb `ret`. Per tant **no ha de preservar `ra` ni cap registre segur** per a ningú, i no li cal bloc d'activació. Sí que ha d'usar registres **segurs** (`s0`–`s11`) per a les dades pròpies que han de sobreviure a les crides: com que `subr` és responsable de restaurar-los abans de retornar (@cau-regla-registres-segurs), el seu valor es conserva a través de cada crida.
 
-**Pas 3. Registres segurs de `_start`.**
+**Pas 3. Registres segurs del programa principal.**
 
-Entre la primera crida a `subr` i la segona, `_start` necessita les adreces de `mat1` i `mat4`. Com que aquests valors travessen les crides, s'assignen a registres segurs:
+Entre la primera crida a `subr` i la segona, el programa principal necessita les adreces de `mat1` i `mat4`. Com que aquests valors travessen les crides, s'assignen a registres segurs:
 
 | Dada | Registre |
 | :--- | :--- |
@@ -189,10 +187,9 @@ Entre la primera crida a `subr` i la segona, `_start` necessita les adreces de `
 
 **Pas 4. Blocs d'activació.**
 
-Cap de les dues funcions necessita bloc d'activació: `subr` és uninivell i sense variables locals, i `_start` no ha de preservar cap registre. Tots dos BA són buits.
+Cap dels dos blocs no necessita bloc d'activació: `subr` és uninivell i sense variables locals, i el programa principal no ha de preservar cap registre. Tots dos BA són buits.
 
 ```{.s filename="s4_2_2.s"}
-.globl _start
 
 .eqv NF1, 5
 .eqv NC1, 6
@@ -208,7 +205,6 @@ col:    .word  2
 
 .text
 
-_start:
         la   s0, mat1           # s0 = @mat1 (segur: travessa les crides)
         la   s1, mat4           # s1 = @mat4 (segur: travessa les crides)
 
@@ -326,7 +322,7 @@ Abans d'escriure cap instrucció, responeu al fitxer `s4_3_1.md`:
 2. Calculeu l'stride per recórrer la columna 2 (distància en bytes entre `m[i][2]` i `m[i+1][2]`).
 3. Expliqueu per què `p += 6` al codi C correspon, en assemblador, a sumar l'stride calculat a l'apartat anterior (aritmètica de punters).
 4. Determineu si `suma_col` és uninivell o multinivell i assigneu cada variable a un registre.
-5. Determineu si `_start` fa alguna crida i quines conseqüències té per a la gestió del context. Recordeu que `_start` és el punt d'entrada del programa i acaba amb `ecall`.
+5. Determineu si el programa principal fa alguna crida i quines conseqüències té per a la gestió del context. Recordeu que és el punt d'entrada del programa —el primer bloc de `.text`— i que acaba amb `ecall`.
 
 A continuació, traduïu el programa a RV32IM usant la tècnica d'accés seqüencial per recórrer la columna.
 :::
@@ -363,12 +359,11 @@ El registre `t4` es reutilitza abans del bucle com a temporal per calcular la se
 
 Com que el recorregut elimina la variable d'inducció `i` i controla el bucle comparant el punter amb una sentinella (@sec-opt-eliminacio-induccio), la comparació es fa entre **adreces**, que són naturals sense signe: per això s'usa `bgeu`/`bltu` en lloc de `bge`/`blt` (@cau-opt3-eliminacio-induccio).
 
-**Pas 5. Gestió del context de `_start`.**
+**Pas 5. Gestió del context del programa principal.**
 
-`_start` crida `suma_col`, però és el **punt d'entrada** del programa: no és el callee de cap altra subrutina i acaba amb `ecall`. Per tant no ha de preservar `ra` ni cap registre segur, i no li cal bloc d'activació. A més, no hi ha cap valor propi que hagi de travessar la crida (el resultat es desa directament a `resultat` en retornar), de manera que `_start` no necessita cap registre segur.
+El programa principal crida `suma_col`, però és el **punt d'entrada**: com que és el primer bloc del segment `.text`, no és el callee de cap altra subrutina, i acaba amb `ecall`. Per tant no ha de preservar `ra` ni cap registre segur, i no li cal bloc d'activació. A més, no hi ha cap valor propi que hagi de travessar la crida (el resultat es desa directament a `resultat` en retornar), de manera que no necessita cap registre segur.
 
 ```{.s filename="s4_3_1.s"}
-.globl _start
 
 .eqv NF, 4
 .eqv NC, 6
@@ -384,7 +379,6 @@ resultat: .word 0
 
 .text
 
-_start:
         la   a0, mat
         jal  ra, suma_col       # a0 = suma_col(mat)
 

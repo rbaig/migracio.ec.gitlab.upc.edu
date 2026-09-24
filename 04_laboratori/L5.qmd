@@ -42,7 +42,7 @@ RARS reprodueix aquest flux de manera directa: amb l'opció *Settings → Assemb
 ::: {#cau-global-compilacio-separada .callout-caution}
 ## Compilació separada — directiva `.globl`
 
-Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.globl` al fitxer on es defineix. Sense aquesta declaració, l'etiqueta és invisible per als altres mòduls i RARS finalitza amb un error de símbol no resolt. Per convenció es declara global també `_start`, encara que RARS no ho exigeixi (cap altre fitxer hi fa referència): reflecteix el paper del símbol d'entrada en un enllaçador real (@sec-compilacio), que sí que necessita localitzar-lo com a punt d'inici del programa.
+Qualsevol etiqueta referenciada des d'un altre fitxer ha de declarar-se amb `.globl` al fitxer on es defineix. Sense aquesta declaració, l'etiqueta és invisible per als altres mòduls i RARS finalitza amb un error de símbol no resolt. Només s'hi declaren els símbols que altres mòduls necessiten: el programa principal no en porta, perquè cap fitxer no hi fa referència i RARS no el cerca per nom (vegeu l'aprofundiment següent).
 :::
 
 ::: {.callout-tip title="Comprovació pràctica"}
@@ -52,12 +52,12 @@ Un cop oberts tots els fitxers i activada l'opció *Assemble all files currently
 ::: {#wrn-arrencada-rars .callout-warning collapse="true"}
 ## Ordre d'arrencada en assemblar diversos fitxers
 
-RARS no cerca l'etiqueta `_start`: comença sempre a executar la **primera instrucció del segment `.text` combinat**, en l'ordre en què l'assemblador ha processat els fitxers. Amb *Assemble all files currently open*, aquest ordre depèn de quin fitxer té la pestanya activa en el moment d'assemblar: el `.text` d'aquell fitxer s'assembla primer.
+RARS no cerca cap etiqueta d'entrada: comença sempre a executar la **primera instrucció del segment `.text` combinat**, en l'ordre en què l'assemblador ha processat els fitxers. Amb *Assemble all files currently open*, aquest ordre depèn de quin fitxer té la pestanya activa en el moment d'assemblar: el `.text` d'aquell fitxer s'assembla primer.
 
 Per tant, cal:
 
-- Assegurar-se que el fitxer que conté `_start` és el que té la pestanya activa en assemblar (o, si no n'esteu segurs, comprovar al panell *Text Segment* quina és la primera instrucció carregada).
-- Dins d'un mateix fitxer, situar `_start` al principi del segment `.text`, abans de qualsevol altra subrutina.
+- Assegurar-se que el fitxer que conté el programa principal és el que té la pestanya activa en assemblar (o, si no n'esteu segurs, comprovar al panell *Text Segment* quina és la primera instrucció carregada).
+- Dins d'un mateix fitxer, situar el programa principal al principi del segment `.text`, abans de qualsevol altra subrutina.
 
 Si el programa s'atura amb un error d'accés a instrucció just en començar, sense haver executat cap instrucció esperada, la causa més probable és aquesta.
 :::
@@ -70,7 +70,7 @@ Si el programa s'atura amb un error d'accés a instrucció just en començar, se
 Traduïu a RV32I el programa C següent, repartint el codi en **dos fitxers** tal com s'indica:
 
 - `s5_1_1.s`: conté únicament la subrutina `abs`.
-- `s5_1_2.s`: conté `_start`, que crida `abs` i emmagatzema el resultat a `resultat`.
+- `s5_1_2.s`: conté el programa principal, que crida `abs` i emmagatzema el resultat a `resultat`.
 
 ```{.c filename="abs.c"}
 int resultat;
@@ -90,7 +90,7 @@ void main() {
 Tingueu en compte:
 
 - `abs` és **uninivell**: determineu si cal algun registre segur.
-- `_start` és **multinivell**: determineu quins valors, si n'hi ha, travessen la crida i cal preservar.
+- El programa principal és **multinivell**: determineu quins valors, si n'hi ha, travessen la crida i cal preservar.
 - Obriu els dos fitxers a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Comproveu que `abs` apareix al panell *Labels*.
 :::
 
@@ -101,7 +101,7 @@ Tingueu en compte:
 
 `abs` és uninivell: no fa cap crida, de manera que no hi ha cap registre en risc de ser destruït; tots els temporals van a registres `t`. BA buit.
 
-`_start` és multinivell (crida `abs`), però no necessita cap registre segur ni bloc d'activació: no hi ha cap valor generat abans de la crida que s'usi després (el resultat de `abs` s'usa immediatament en tornar), i com que `_start` és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), tampoc cal preservar `ra`. BA buit.
+El programa principal és multinivell (crida `abs`), però no necessita cap registre segur ni bloc d'activació: no hi ha cap valor generat abans de la crida que s'usi després (el resultat de `abs` s'usa immediatament en tornar), i com que és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), tampoc cal preservar `ra`. BA buit.
 
 ```{.s filename="s5_1_1.s"}
 .globl abs
@@ -118,14 +118,11 @@ positiu:
 ```
 
 ```{.s filename="s5_1_2.s"}
-.globl _start
-
 .data
 resultat: .word 0
 
 .text
 
-_start:
         li   a0, -7
         jal  ra, abs            # a0 = abs(-7) = 7
 
@@ -138,7 +135,7 @@ _start:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Al panell *Labels* han d'aparèixer les etiquetes `abs`, `_start` i `resultat` amb les seves adreces.
+Obriu `s5_1_1.s` i `s5_1_2.s` a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Al panell *Labels* hi ha d'aparèixer `abs` amb la seva adreça: és l'únic símbol declarat `.globl`, i per això és l'únic visible entre mòduls. Comproveu també que el programa acaba amb `7` a `resultat`.
 
 Executeu el programa i comproveu que la variable global `resultat` conté el valor `7`.
 
@@ -148,7 +145,7 @@ Proveu també amb el valor `0`: el resultat ha de ser `0` (per a `0`, el salt `b
 
 ## Subrutina `descompon`
 
-En aquesta sessió es desenvolupa un programa que converteix un nombre real codificat en **coma fixa** al format de **coma flotant IEEE 754 de simple precisió** (@sec-ieee754). El programa s'estructura en dues subrutines (`descompon` i `compon`) i un `_start` repartits en dos fitxers, aplicant la compilació separada de la secció anterior.
+En aquesta sessió es desenvolupa un programa que converteix un nombre real codificat en **coma fixa** al format de **coma flotant IEEE 754 de simple precisió** (@sec-ieee754). El programa s'estructura en dues subrutines (`descompon` i `compon`) i un programa principal repartits en dos fitxers, aplicant la compilació separada de la secció anterior.
 
 El **format de coma fixa** que s'usa en aquesta sessió té 32 bits: el bit 31 conté el signe (0 per als positius) i els bits 30–0 representen la magnitud en base 2, amb 19 bits de part entera (bits 30–12) i 12 bits de part fraccionària (bits 11–0):
 
@@ -205,7 +202,7 @@ L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codi
 ::: {#exr-descompon}
 ## `s5_2_1.md` i `s5_2_1.s`
 
-Traduïu a RV32I la subrutina `descompon`. El fitxer `s5_2_1.s` ha de contenir **únicament** la subrutina, sense `_start`.
+Traduïu a RV32I la subrutina `descompon`. El fitxer `s5_2_1.s` ha de contenir **únicament** la subrutina, sense cap programa principal.
 
 Abans d'escriure cap instrucció, responeu al fitxer `s5_2_1.md`:
 
@@ -287,11 +284,9 @@ desa:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Per provar `descompon` de manera aïllada, creeu temporalment un `_start` mínim al fitxer `s5_3_1.s` (que desenvolupareu a la secció següent) que declari les variables globals i faci la crida:
+Per provar `descompon` de manera aïllada, creeu temporalment un programa principal mínim al fitxer `s5_3_1.s` (que desenvolupareu a la secció següent) que declari les variables globals i faci la crida:
 
 ```{.s filename="s5_3_1.s"}
-.globl _start
-
 .data
 signe:    .word 0
 exponent: .word 0
@@ -299,7 +294,6 @@ mantissa: .word 0
 cfixa:    .word 0x87D18A00
 
 .text
-_start:
         la   a0, cfixa
         lw   a0, 0(a0)
         la   a1, signe
@@ -337,13 +331,13 @@ Els tres camps no se solapen (cada un ocupa exclusivament els seus bits), de man
 ::: {#exr-compon}
 ## `s5_3_1.s`
 
-Substituïu el `_start` temporal de la secció anterior pel programa complet. El fitxer `s5_3_1.s` ha de contenir `compon` i `_start`, que crida `descompon` (definida a `s5_2_1.s`) i `compon` en seqüència i emmagatzema el resultat a `cflotant`.
+Substituïu el programa principal temporal de la secció anterior pel programa complet. El fitxer `s5_3_1.s` ha de contenir `compon` i el programa principal, que crida `descompon` (definida a `s5_2_1.s`) i `compon` en seqüència i emmagatzema el resultat a `cflotant`.
 
 Abans d'escriure cap instrucció:
 
 1. Determineu si `compon` és uninivell o multinivell i justifiqueu-ho.
-2. Determineu si `_start` és uninivell o multinivell. Identifiqueu quins valors es generen abans d'una crida i s'usen després, i assigneu-los a registres segurs.
-3. Dibuixeu el bloc d'activació de `_start`.
+2. Determineu si el programa principal és uninivell o multinivell. Identifiqueu quins valors es generen abans d'una crida i s'usen després, i assigneu-los a registres segurs.
+3. Dibuixeu el bloc d'activació del programa principal.
 :::
 
 ---
@@ -353,9 +347,9 @@ Abans d'escriure cap instrucció:
 
 `compon` és **uninivell**: no fa cap crida. Tots els temporals van a registres `t`; BA buit.
 
-**Pas 2. `_start`: registres segurs.**
+**Pas 2. El programa principal: registres segurs.**
 
-`_start` és **multinivell**: crida `descompon` i després `compon`. Els valors generats abans de la primera crida que s'usen després són les adreces de `signe`, `exponent` i `mantissa`, necessàries per carregar els resultats de `descompon` abans de cridar `compon`: cal registres segurs per a elles. `ra`, en canvi, no necessita preservar-se: `_start` és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), de manera que el valor que hi deixa cada `jal ra, ...` es pot sobreescriure lliurement en la crida següent.
+El programa principal és **multinivell**: crida `descompon` i després `compon`. Els valors generats abans de la primera crida que s'usen després són les adreces de `signe`, `exponent` i `mantissa`, necessàries per carregar els resultats de `descompon` abans de cridar `compon`: cal registres segurs per a elles. `ra`, en canvi, no necessita preservar-se: és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), de manera que el valor que hi deixa cada `jal ra, ...` es pot sobreescriure lliurement en la crida següent.
 
 | Dada | Registre |
 | :--- | :--- |
@@ -364,12 +358,11 @@ Abans d'escriure cap instrucció:
 | `@mantissa` | `s2` |
 : {.striped .hover}
 
-**Pas 3. Bloc d'activació de `_start`.**
+**Pas 3. Bloc d'activació del programa principal.**
 
-`_start` no necessita bloc d'activació, tot i usar registres segurs: com que és el punt d'entrada i no torna mai a cap invocant, no hi ha cap valor previ de `s0`–`s2` (ni de `ra`) que calgui preservar i restaurar. BA buit.
+El programa principal no necessita bloc d'activació, tot i usar registres segurs: com que és el punt d'entrada i no torna mai a cap invocant, no hi ha cap valor previ de `s0`–`s2` (ni de `ra`) que calgui preservar i restaurar. BA buit.
 
 ```{.s filename="s5_3_1.s"}
-.globl _start
 .globl compon
 
 .data
@@ -381,7 +374,6 @@ cflotant: .word 0
 
 .text
 
-_start:
         la   s0, signe
         la   s1, exponent
         la   s2, mantissa

@@ -63,10 +63,7 @@ on `^` és la XOR bit a bit i `1 << X` desplaça el valor `1` exactament `X` pos
 
 ::: {#sol-bits-invertir}
 ```{.s filename="s3_1_1.s"}
-.globl _start
-
 .text
-_start:
         li   t0, 1
         sll  t0, t0, s0     # t0 = 1 << X
         addi t0, t0, -1     # t0 = (1 << X) - 1  (màscara dels X bits de menys pes)
@@ -114,14 +111,11 @@ El programa ha de respectar l'avaluació lazy de `&&` i `||` (@imp-ec-lazy-evalu
 
 ::: {#sol-classifica-caracter}
 ```{.s filename="s3_2_1.s"}
-.globl _start
-
 .data
 num:    .byte  '7'
 result: .word  0
 
 .text
-_start:
         la   t1, num
         lb   t0, 0(t1)          # t0 = num
 
@@ -205,13 +199,10 @@ void main() {
 
 ::: {#sol-compta-caracter}
 ```{.s filename="s3_3_1.s"}
-.globl _start
-
 .data
 w: .asciz "4444185720444938167204449251044"
 
 .text
-_start:
         la   t1, w              # t1 = punter al caràcter actual
         li   s0, 0              # s0 = comptador d'aparicions de '4'
         li   t2, '4'            # t2 = caràcter a cercar
@@ -324,7 +315,7 @@ void main() {
 }
 ```
 
-Traduïu `moda` i `_start` a RV32I, al fitxer `s3_4_2.s`. Abans d'escriure cap instrucció, responeu al fitxer `s3_4_2.md`:
+Traduïu `moda` i el programa principal a RV32I, al fitxer `s3_4_2.s`. Abans d'escriure cap instrucció, responeu al fitxer `s3_4_2.md`:
 
 1. Identifiqueu quines dades es generen **abans** de la crida a `update` i s'usen **després** (@sec-multinivell-pila). Assigneu-les a registres segurs.
 2. Dibuixeu el bloc d'activació de `moda` amb els offsets de cada element.
@@ -356,15 +347,12 @@ Dades generades abans de la crida a `update` i usades després: `histo` (adreça
 Mida del BA: 60 bytes (@nte-abi-alineacio-pila).
 
 ```{.s filename="s3_4_2.s"}
-.globl _start
-
 .data
 w:        .asciz "4444185720444938167204449251044"
 resultat: .byte  0
 
 .text
 
-_start:
         la   a0, w
         li   a1, 31
         jal  ra, moda
@@ -489,8 +477,6 @@ void main() {
 La traducció RV32I següent conté **tres errors**, tots dins de `codifica`. La funció `g` és correcta. Identifiqueu cada error, expliqueu per què és incorrecte i escriviu-ne la correcció. Les explicacions van com a comentaris dins del mateix `s3_5_1.s`, a la línia de cada correcció.
 
 ```{.s filename="s3_5_1.s"}
-.globl _start
-
 .data
 alfabet: .asciz "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 w1:      .asciz "ARQUITECTURA"
@@ -498,7 +484,6 @@ w2:      .space 16
 
 .text
 
-_start:
         la   a0, w1
         la   a1, w2
         jal  ra, codifica
@@ -561,9 +546,9 @@ El programa conté tres errors, tots dins de `codifica`: el pròleg i l'epíleg 
 
 **Error 1 — el pròleg no desa `ra` i l'epíleg no el restaura.**
 
-`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap a `_start`. Quan `codifica` executa `ret`, no torna a `_start` sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica`.
+`codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap al programa principal. Quan `codifica` executa `ret`, no torna al programa principal sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica`.
 
-El símptoma observable és immediat: l'epíleg ja ha restaurat `s0` amb el valor que tenia en entrar a `codifica` —el de `_start`, que no l'inicialitza mai i per tant val 0—, de manera que la primera instrucció reexecutada, `sb a0, 0(s0)`, intenta escriure a l'adreça `0x00000000`. RARS avorta amb «`address out of range 0x00000000`».
+El símptoma observable és immediat: l'epíleg ja ha restaurat `s0` amb el valor que tenia en entrar a `codifica` —el del programa principal, que no l'inicialitza mai i per tant val 0—, de manera que la primera instrucció reexecutada, `sb a0, 0(s0)`, intenta escriure a l'adreça `0x00000000`. RARS avorta amb «`address out of range 0x00000000`».
 
 Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
 
@@ -572,7 +557,7 @@ Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
         sw   ra, 12(sp)         # codifica crida g, que sobreescriu ra
 
         # epíleg — afegir:
-        lw   ra, 12(sp)         # recupera l'adreça de retorn cap a _start
+        lw   ra, 12(sp)         # recupera l'adreça de retorn cap al programa principal
 ```
 
 **Error 2 — `mv a1, s1` passa `pfraseout` (`s1`) a `g` en lloc de `pfrasein` (`s0`).**
@@ -629,7 +614,7 @@ fiwhile:
         lw   s0,  0(sp)
         lw   s1,  4(sp)
         lw   s2,  8(sp)
-        lw   ra, 12(sp)         # recupera l'adreça de retorn cap a _start
+        lw   ra, 12(sp)         # recupera l'adreça de retorn cap al programa principal
         addi sp, sp, 16
         ret
 ```

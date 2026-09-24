@@ -249,15 +249,17 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 1 línia a A4, 3 a A5 i 1 a A6.
 
-- 🔴 **CANVI DE CRITERI (usuari, 2026-09-23): `_start` surt de tot el codi del llibre i només es presenta a teoria.** Fins ara la convenció era l'oposada —`13_contrib.qmd:203-204` **exigeix** `_start` com a punt d'entrada i com a primera etiqueta de `.text`—, de manera que això **inverteix una regla consolidada** i s'ha d'executar de dalt a baix, no fitxer a fitxer. Tres parts:
+- ✅ **EXECUTAT (2026-09-24). CANVI DE CRITERI (usuari, 2026-09-23): `_start` surt de tot el codi del llibre i només es presenta a teoria.** Fins ara la convenció era l'oposada —`13_contrib.qmd:203-204` **exigeix** `_start` com a punt d'entrada i com a primera etiqueta de `.text`—, de manera que això **inverteix una regla consolidada** i s'ha d'executar de dalt a baix, no fitxer a fitxer. Tres parts:
 
   **(i) Afegir el callout a teoria.** A `A3.qmd §Compilació separada` (`{#sec-compilacio-separada}`, `A3.qmd:1857`), un `#nte-` amb el contingut: «A EC es programa directament sobre el xip (@sec-entorn-autonom-bare-metal); quan es programa en Linux, el SO exigeix que el punt d'entrada al programa estigui marcat amb l'etiqueta `_start`». Les dues àncores existeixen i resolen (`sec-entorn-autonom-bare-metal` és a `A1.qmd:87`).
 
   **(ii) Eliminar les etiquetes `_start` dels fragments d'assemblador.** Abast mesurat: **96 ocurrències de `_start`** a 9 fitxers del corpus, de les quals **26 són definicions d'etiqueta** (`^_start:`). Repartiment: `L5` 27 · `L4` 19 · `L3` 16 · `L6` 14 · `L2` 8 · `L1` 8 · `A2` 2 · `E9` 1 · `A3` 1 (suma 96).
 
+  ⚠️ **Ancorat: la forma sobre l'arbre de treball retorna zero des d'aquest commit.** El repartiment es mesura a `d51577d`, l'últim commit amb `_start` al corpus, i **hi reprodueix exacte**. Amb un commit al `git grep` la sortida és `<commit>:<ruta>:<coincidència>`, de manera que l'`awk` llegeix `$2` i no `$1` (vegeu `13_contrib.qmd` regla 12 bis).
+
   ```bash
-  git grep -o "_start" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
-    | awk -F: '{print $1}' | sed 's|.*/||' | sort | uniq -c | sort -rn
+  git grep -o "_start" d51577d -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
+    | awk -F: '{print $2}' | sed 's|.*/||' | sort | uniq -c | sort -rn
   ```
 
   ⚠️ El repartiment publicat fins al 2026-09-23 sumava **91** contra un titular de **104**, amb quatre valors dolents. **No era desfasament**: mesurat a `ab494fb`, el commit que el va escriure, el repartiment real ja era el d'avui. El titular ha passat de 104 a **96** perquè l'ordre exclou ara també `13_contrib.qmd` (regla 12): les seves ocurrències són la convenció i la lliçó que en parlen, no codi a convertir, i creixien cada cop que algú hi escrivia. Vegeu-hi les regles 12 i 12 bis de `13_contrib.qmd §Escombrades i verificació del corpus`.
@@ -273,12 +275,14 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   📌 **La mateixa avaria s'hi va reproduir en reparar-la.** El bloc `bash` va quedar publicant «26 de 44», un parell on el numerador compta línies i el denominador no compta res: cap forma no dona 44 —`^\.globl` en dona 32, `\.globl` en qualsevol posició 42, amb `13_contrib.qmd` dins 46 i a tot el repositori 62—. Corregit a **26 de 32**, amb l'ordre del denominador al costat de la del numerador perquè totes dues siguin comprovables. **Un quocient és un desglossament de dos termes**: la regla 12 bis li val igual, i les dues parts s'han de mesurar amb la mateixa forma. Un esborrat per `.globl` sense discriminar el símbol trencaria la compilació separada de T3.
 
+  ⚠️ **Ancorat a `d51577d`.** Sobre l'arbre d'avui les xifres són **0 · 0 · 6 · 0**: les 26 `.globl _start` se n'han anat i **les 6 de símbols reals s'han quedat**, que és per això que el denominador passa de 32 a 6 i no a zero.
+
   ```bash
-  X=("--" "*.qmd" ":!TODO.md" ":!13_contrib.qmd")   # regla 12: fora els fitxers que en parlen
+  X=("d51577d" "--" "*.qmd" ":!TODO.md" ":!13_contrib.qmd")   # regla 12: fora els fitxers que en parlen
   git grep -o "_start" "${X[@]}" | wc -l               # 96
   git grep -oE "^_start:" "${X[@]}" | wc -l            # 26
-  git grep -cE "^\s*\.globl" "${X[@]}" | awk -F: '{s+=$2} END{print s}'          # 32
-  git grep -cE "^\s*\.globl\s+_start" "${X[@]}" | awk -F: '{s+=$2} END{print s}'  # 26 de 32
+  git grep -cE "^\s*\.globl" "${X[@]}" | awk -F: '{s+=$3} END{print s}'          # 32
+  git grep -cE "^\s*\.globl\s+_start" "${X[@]}" | awk -F: '{s+=$3} END{print s}'  # 26 de 32
   ```
 
   ⚠️ **Cal reescriure la regla de `13_contrib.qmd:203-204` abans o al mateix temps**, perquè diu el contrari. Afecta també tres entrades d'aquest fitxer: la de **«Cap material explica el punt d'entrada de RARS»** (`§Laboratori`), que proposava documentar precisament la regla que ara desapareix i que **s'ha de reformular o retirar**; la fila **«`_start` primera etiqueta de `.text`»** de §Entrades retirades, que registra un tancament que aquest canvi deixa obsolet; i **§Dades preservades**, on `_start`/`__start` és el contingut històric i **no s'ha de tocar**.
@@ -453,7 +457,13 @@ Rutes de destí per a les 7 restants: `/auto_figs/T8_*__original_light.svg`.
 
 - **Cap material explica a l'alumne el punt d'entrada de RARS.** La regla existeix com a **convenció interna** a `13_contrib.qmd:204` («`_start` ha de ser la primera etiqueta de `.text`»), però cap `.qmd` no explica a l'estudiant que RARS comença a executar a la primera instrucció de `.text` i que `_start` no és una etiqueta reconeguda pel simulador. Proposta d'origen: un `#nte-` breu a L1 (§Punts d'aturada/execució) o a A2. Verificació: `git grep -n "primera instrucció del segment de text" -- '*.qmd' ':!TODO.md'` → només `13_contrib.qmd:204`. *(Origen: `TODO/L4_tasques.md` D3(ii), fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
-  🔴 **Afectada pel canvi de criteri del 2026-09-23** (vegeu `§Tasques transversals`): si `_start` surt de tot el codi, aquesta entrada **no es pot executar tal com està escrita**, perquè proposava explicar a l'alumne una convenció que deixa d'existir. S'ha de reformular —el que caldrà explicar és que RARS comença per la primera instrucció de `.text`, sense parlar de `_start`— o retirar-se. **No s'executi abans que el canvi de criteri.**
+  🟡 **La premissa de l'entrada és falsa, i no pel canvi de criteri sinó per un error de mesura (trobat el 2026-09-24).** `L5.qmd` **sí que ho explica a l'alumne**, al callout `#wrn-arrencada-rars`: «RARS no cerca cap etiqueta d'entrada: comença sempre a executar la primera instrucció del segment `.text` combinat». La verificació publicada no el veia perquè buscava la frase literal «primera instrucció del segment de text» i L5 diu «segment `.text` combinat» — **regla 2: mesurar per forma, no per nom**. L'ordre que sí que el troba:
+
+  ```bash
+  git grep -n "primera instrucció del segment" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'
+  ```
+
+  ⚠️ **Decisió reservada per a l'usuari.** El canvi de criteri (executat el 2026-09-24) ja ha adaptat la redacció d'aquell callout, de manera que el que resta no és escriure res de nou sinó decidir **on ha de viure**: `#wrn-arrencada-rars` és `.callout-warning` (*Aprofundiment*, **no avaluable**) i `collapse="true"`, i és a L5 —la cinquena sessió—, mentre que l'alumne es troba el fet la primera vegada que assembla, a L1. Les opcions són **promoure'l** (canviar-ne el tipus, o treure el `collapse`), **duplicar-lo** a L1/A2 amb una remissió, o **deixar-ho com és**. Cap no s'executa sense que l'usuari la triï.
 
 - **Expressions aritmètiques als operands: escombrada pendent de `Ex`/`Sx`/`11_riscv.qmd`.** La regla ja és consolidada a `13_contrib.qmd §Convencions globals del laboratori`, amb **exempció explícita** per a teoria, problemes i exàmens (decisió de la sessió 2: l'aritmètica als operands s'hi admet perquè fa visible l'estructura del càlcul; al laboratori cal el literal ja calculat). A4 i S4 van rebre la remissió a `@nte-rars-operands-literals` i **no es toquen**. Queda revisar la resta d'`Ex.qmd`/`Sx.qmd` i `11_riscv.qmd` per detectar casos que siguin realment de laboratori.
 
@@ -545,7 +555,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | Entrada | Motiu | Còpia que en queda |
 | :--- | :--- | :--- |
 | `startup.s` — decisió i neteja | Executada (sessió 2): eliminats els 4 blocs comentats i unificats `E9:72`/`S9:201` a `li a7, 93` | El **bolcat de dades d'`A2.qmd:744-810`** es preserva a §Dades preservades, al final |
-| `_start` primera etiqueta de `.text` | **TANCAT** (sessió 2): verificats els 25 blocs de `.text` amb `_start` de L1–L6, **0 infraccions** | Regla consolidada a `13_contrib.qmd:204` |
+| `_start` primera etiqueta de `.text` | **RETIRADA (2026-09-24): el criteri que la sostenia s'ha invertit.** Deia: «TANCAT (sessió 2): verificats els 25 blocs de `.text` amb `_start` de L1–L6, **0 infraccions**», amb la regla consolidada a `13_contrib.qmd:204`. El punt d'entrada ja no porta etiqueta (`b2c1a4f`), de manera que no hi ha cap ordre a verificar: la comprovació estàtica E1 de l'arnès es va retirar pel mateix motiu (`d51577d`) | **El 25 era correcte i el 26 d'avui també**: el registre comptava els blocs de **L1–L6**, i la 26a definició era `A2.qmd:1083`, fora del laboratori. Les dues xifres es reprodueixen a `d51577d` (`git grep -cE "^_start:" d51577d -- 04_laboratori/` → 25; `-- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'` → 26). La regla nova és a `13_contrib.qmd §Convencions globals del laboratori`; el que en sobreviu és l'exempció dels tres blocs (`s2_4_1.s`, `s5_1_1.s`, `s5_2_1.s`), amb el motiu que no caduca |
 | Nota obsoleta a `13_contrib.qmd:204` | Retirada pel mateix tancament: la nota ja no diu «pendent d'aplicar a L3» | — |
 | Plantilles Markdown (`L2.qmd` i resta) | Executada a la passada C (`733b408`). `git grep '```{.markdown' -- '*.qmd' ':!TODO.md'` → **cap** | — |
 | L2 §«Pseudoinstrucció `la` i `li`» amb cos «TODO» | Omplert per la Fase C. `git grep -n "Pseudoinstrucció" -- 04_laboratori/L2.qmd` → **cap** | — |

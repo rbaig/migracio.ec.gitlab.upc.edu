@@ -1081,10 +1081,25 @@ l'ordre que les reprodueix, com el porta el total. El cas (2026-09-23): el
 repartiment de `_start` sumava **91** contra un titular de **104**, amb quatre
 valors dolents, i el total sí que reproduïa.
 
+⚠️ **L'ordre va ancorada a un commit, perquè el corpus que mesurava ja no
+existeix.** El criteri del punt d'entrada sense etiqueta (§Convencions globals
+del laboratori) ha buidat `_start` del corpus, de manera que la forma sobre
+l'arbre de treball retorna **zero** i no reproduiria res. L'exemple es mesura
+a `b2c1a4f`, l'últim commit on el repartiment era cert, i **hi reprodueix
+exacte** (96 = 27+19+16+14+8+8+2+1+1):
+
 ```bash
-git grep -o "_start" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
-  | awk -F: '{print $1}' | sed 's|.*/||' | sort | uniq -c | sort -rn
+git grep -o "_start" b2c1a4f -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
+  | awk -F: '{print $2}' | sed 's|.*/||' | sort | uniq -c | sort -rn
 ```
+
+📌 **Un commit al `git grep` desplaça els camps**: la sortida passa a ser
+`<commit>:<ruta>:<coincidència>`, de manera que l'`awk` ha de llegir `$2` i no
+`$1`. És l'aplicació de la regla 11 a aquesta secció mateixa —una xifra només
+és certa respecte del commit on es va mesurar—, i el motiu pel qual s'ancora
+en lloc d'actualitzar-se: l'exemple no és el compte de `_start`, és **l'avaria
+del desglossament que no sumava**, i aquella només es pot veure al corpus que
+la tenia.
 
 📌 **Un total correcte no avala les parts**: és precisament el que fa que se'n
 refiï qui les llegeix. Va de bracet amb la regla 11 —el repartiment de `_start`

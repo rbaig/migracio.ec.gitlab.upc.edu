@@ -134,7 +134,6 @@ void main() {
 La traducció a RV32I segueix el patró d'accés seqüencial (@tip-optimitzacio-acces-sequencial), mantenint un punter `t2` que avança 4 bytes a cada iteració:
 
 ```{.s filename="suma_vector.s"}
-.globl _start
 
 .eqv N, 100
 
@@ -143,7 +142,6 @@ vector: .space 400              # int vector[100]
 
 .text
 
-_start:
         mv   t1, zero           # suma = 0
         la   t2, vector         # t2 = @vector[0]
         li   t3, N
@@ -350,7 +348,6 @@ void main() {
 La traducció a RV32I que es fa servir en aquesta secció és la següent:
 
 ```{.s filename="ordenacio.s"}
-.globl _start
 
 .eqv N, 5
 
@@ -359,7 +356,6 @@ vec:    .word 20, -18, 45, 12, -1    # int vec[5]
 
 .text
 
-_start:
         la   t0, vec                 # t0 = @vec[0]
         li   t6, N                   # t6 = N
         li   s0, 0                   # i = 0
@@ -560,7 +556,6 @@ void main() {
 La traducció a RV32I fa servir tres punters que avancen en paral·lel:
 
 ```{.s filename="suma_vectors.s"}
-.globl _start
 
 .eqv N, 128
 
@@ -571,7 +566,6 @@ C:      .space 512              # int C[128]
 
 .text
 
-_start:
         la   t0, A              # t0 = @A[0]
         la   t1, B              # t1 = @B[0]
         la   t2, C              # t2 = @C[0]
@@ -668,7 +662,6 @@ $$\text{taxa d'encerts} = \frac{384 - 96}{384} = \frac{288}{384} = 0{,}75$$
 Per separar els vectors cal que `A`, `B` i `C` es mapin a línies diferents. Com que `A` comença en una adreça alineada a bloc, un farciment de `PAD` bytes (múltiple de 16) desplaça la línia base de `B` en `PAD/16` línies i la de `C` en `2·PAD/16` línies (el doble, perquè `C` acumula els dos farciments). Cal, doncs, que `0`, `PAD/16` i `2·PAD/16` siguin **tres línies diferents mòdul 16**. Compte: no serveix qualsevol valor —per exemple, `PAD = 128` desplaçaria `C` en $2 \times 128 / 16 = 16 \equiv 0$ línies, fent-la coincidir de nou amb `A`. Un farciment d'un sol bloc (`PAD = 16`) porta `A`, `B` i `C` a les línies base 0, 1 i 2, que són diferents, i és suficient:
 
 ```{.s filename="s6_4_2.s"}
-.globl _start
 
 .eqv N, 128
 .eqv PAD, 16                    # 1 bloc de farciment entre vectors
@@ -682,7 +675,6 @@ C:      .space 512              # int C[128]: 512 bytes, línies 2–1 (rotació
 
 .text
 
-_start:
         la   t0, A
         la   t1, B
         la   t2, C
@@ -840,7 +832,6 @@ void main() {
 La traducció a RV32IM de la versió original és:
 
 ```{.s filename="matvec.s"}
-.globl _start
 
 .eqv NI, 16
 .eqv NJ, 16
@@ -855,7 +846,6 @@ V2:     .space 64                 # int V2[16]
 
 .text
 
-_start:
         la   s3, V1             # s3 = @V1[0] (invariant)
         la   s4, M              # s4 = @M[i][0] (punter de fila)
         la   s5, V2             # s5 = @V2[0] (invariant)
@@ -920,7 +910,7 @@ Carregueu `matvec.s` (versió original) a RARS i mesureu amb el *Data Cache Simu
 ::: {#exr-tiling}
 ## `s6_5_1.s`
 
-Traduïu a RV32IM el programa `matvec_tiling.c`. El fitxer `s6_5_1.s` ha de contenir el programa complet amb `_start`.
+Traduïu a RV32IM el programa `matvec_tiling.c`. El fitxer `s6_5_1.s` ha de contenir el programa complet.
 
 Abans d'escriure cap instrucció:
 
@@ -949,7 +939,7 @@ Verifiqueu que el resultat al vector `V1` coincideix amb el del programa origina
 ::: {#sol-tiling}
 **Pas 1. Assignació de registres.**
 
-`_start` és **multinivell** si s'implementa amb subrutines, però en aquest cas el programa és pla (sense crides): tots els registres són `t` tret dels que han de sobreviure als tres nivells de bucle aniuat. Els valors que creuen el bucle interior (`i`, `k`, les adreces base) han de ser en registres que el bucle interior no destrueixi. Com que no hi ha crides, es poden usar registres `t` sempre que el compilador (o el programador) garanteixi que el bucle interior no els sobreescriu. Per claredat i robustesa s'usen `s` per als índexs dels bucles exteriors:
+El programa és **pla**: no fa cap crida, de manera que tot el codi és al bloc principal i no hi ha context que preservar. Tots els registres són `t` tret dels que han de sobreviure als tres nivells de bucle aniuat. Els valors que creuen el bucle interior (`i`, `k`, les adreces base) han de ser en registres que el bucle interior no destrueixi. Com que no hi ha crides, es poden usar registres `t` sempre que el compilador (o el programador) garanteixi que el bucle interior no els sobreescriu. Per claredat i robustesa s'usen `s` per als índexs dels bucles exteriors:
 
 | Variable | Registre | Justificació |
 | :--- | :--- | :--- |
@@ -974,7 +964,6 @@ Verifiqueu que el resultat al vector `V1` coincideix amb el del programa origina
 Al bucle interior (`j` de 0 a 3), `j` varia més ràpidament. L'element accedit és `M[i][k*4 + j]`: per a `i` i `k` fixos, en incrementar `j` en 1 l'adreça avança `4 bytes` (*stride* = 4, elements contigus a la mateixa fila). Es pot usar un punter `t2` que s'inicialitza a `@M[i][k*4]` i s'incrementa 4 bytes a cada iteració del bucle `j`. Anàlogament, `V2[k*4 + j]` avança 4 bytes per iteració de `j`.
 
 ```{.s filename="s6_5_1.s"}
-.globl _start
 
 .eqv NI, 16
 .eqv NJ, 16
@@ -990,7 +979,6 @@ V2:     .space 64                               # int V2[16]
 
 .text
 
-_start:
         la   s3, V1             # s3 = @V1[0]
         la   s4, M              # s4 = @M[0][0]
         la   s5, V2             # s5 = @V2[0]
