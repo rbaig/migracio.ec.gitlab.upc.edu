@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(make render)",
+      "Bash(make render-complet)",
+      "Bash(make taules)",
+      "Bash(quarto render *)",
+      "Bash(git fetch *)",
+      "Bash(25_scripts/escombrada.sh *)",
+      "Bash(python3 25_scripts/lint_prosa.py)",
+      "Bash(python3 25_scripts/lint_prosa.py *)",
+      "Bash(python3 25_scripts/verifica_laboratoris.py)",
+      "Bash(python3 25_scripts/verifica_laboratoris.py *)",
+      "Bash(java -jar *rars1_6.jar *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guarda-git.sh"
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/abans-commit.sh",
+            "timeout": 600
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -788,8 +788,8 @@ Abans de contribuir cal tenir instal·lat:
 - **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/). Extensions recomanades:
     - [Quarto](https://marketplace.visualstudio.com/items?itemName=quarto.quarto)
     - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
-    - [Spell Right](https://marketplace.visualstudio.com/items?itemName=ban.spellright)
-        - L'*spell checker* local (`.vscode/settings.json`) inclou els mnemònics de l'assignatura.
+    - [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker), amb el diccionari [català](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker-catalan)
+        - El corrector ortogràfic local (`.vscode/settings.json`, claus `cSpell.*`) inclou els mnemònics de l'assignatura.
 - **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
 - **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que s'instal·la des de la pròpia CLI de Quarto:
 
@@ -932,7 +932,9 @@ D'aquí, quatre hàbits:
 Una **escombrada** és tota cerca que pretén mesurar el corpus sencer: comptar
 ocurrències d'una forma, localitzar tots els casos d'una convenció o sostenir
 una afirmació sobre el conjunt. Aquestes regles surten totes d'una escombrada
-que va fallar; cadascuna en porta el cas.
+que va fallar; cadascuna en porta el cas. `25_scripts/escombrada.sh` aplica les
+que no demanen judici i escriu el compte, el repartiment per fitxer i l'ordre i
+el commit que ho reprodueixen (`--help` diu quines regles cobreix).
 
 **1. `git grep`, mai `grep -r`.** `git grep` només veu fitxers versionats: cobreix
 l'arrel i `21_riscv/`, i exclou `auto_riscv/` (generat) i `_book/` sense haver-hi
@@ -1221,7 +1223,7 @@ Fix-forward: no es reescriu l'historial.
 
 Co-Authored-By: ...
 ```
-- Abans de fer commit, apliqueu **linting** a la prosa dels fitxers `.qmd` modificats: elimineu dobles espais (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu que no hi ha cometes rectes `"..."` que haurien de ser guillemets `«...»`.
+- Abans de fer commit, apliqueu **linting** a la prosa dels fitxers `.qmd` modificats: elimineu dobles espais (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu que no hi ha cometes rectes `"..."` que haurien de ser guillemets `«...»`. Ho fa `python3 25_scripts/lint_prosa.py`, sobre les línies afegides respecte d'`HEAD`.
 - Abans de fer commit, verifiqueu que el projecte renderitza correctament: `make render` per defecte, i `make render-complet` si el canvi toca res del PDF (vegeu §Verificació de l'entorn).
 
 ### Push directe a `main` (només maintainers)
@@ -1265,6 +1267,25 @@ quarto render             # les dues sortides
 Fitxers obligatoris a passar a les IAs: vegeu `CLAUDE.md §Fitxers de referència obligatòria`.
 
 Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa. El model i l'effortness recomanats per a cada tipus de tasca consten a `CLAUDE.md §Model i effortness`.
+
+#### Claude Code: el directori `.claude/`
+
+El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi troba les mateixes regles. Cada peça aplica una regla d'aquest fitxer o de `CLAUDE.md`; cap no n'afegeix de nova.
+
+| Peça | Què fa | Regla |
+| :--- | :--- | :--- |
+| Hook `guarda-git.sh` | Bloqueja el push al remot `mirror` i les ordres que reescriuen l'historial (`--force`, `rebase`, `--amend`, `reset --hard`, `filter-branch`) | `CLAUDE.md §Flux de treball` |
+| Hook `abans-commit.sh` | Abans de cada `git commit`, `make render`: si falla, no hi ha commit. Després, revisió de prosa de les línies afegides i avís de `make render-complet` si el canvi pot afectar el PDF: en tots dos casos demana confirmació, no bloqueja | §Commits, §Verificació de l'entorn |
+| Skill `escombrada` | Remet a les regles de les escombrades i hi fa servir `25_scripts/escombrada.sh` | §Escombrades i verificació del corpus |
+| Skill `/pas-combinat` | Pas combinat d'un `Ex.qmd` o `Sx.qmd` (`/pas-combinat E4`), amb la plantilla de `26_prompts/` adaptada a Claude Code | `CLAUDE.md §Estat dels materials` |
+| Subagent `auditor-xifres` | Reprodueix les xifres que publica un commit o un rang (Opus, effort alt, només lectura) | §Escombrades i verificació del corpus |
+| Subagent `revisor-linguistic` | Revisió en català normatiu d'un diff (Sonnet, només informa) | §Llenguatge |
+
+Els dos scripts de `25_scripts/` que hi intervenen també es fan servir a mà: `python3 25_scripts/lint_prosa.py` (línies afegides respecte d'`HEAD`, o fitxers sencers si se n'hi donen) i `25_scripts/escombrada.sh --help`.
+
+⚠️ **El hook d'abans del commit fa un `make render` sencer**, que el 2026-09-25 va trigar **2 min 38 s**, i, com qualsevol `make render`, **esborra el PDF de `_book/`** (§Renderitzar el projecte).
+
+Els permisos que no han de demanar confirmació són a `.claude/settings.json`, també versionat. Les aprovacions que Claude Code desa pel seu compte van a `.claude/settings.local.json`, que git ignora: les que hagin de valer per a tothom s'han de passar a mà a `settings.json`.
 
 :::::::::
 <!-- Aquest `div` s'obre a l'inici del fitxer. No esborreu aquest comentari. -->

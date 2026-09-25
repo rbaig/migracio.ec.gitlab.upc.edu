@@ -66,6 +66,7 @@ Directori `04_laboratori/`:
 
 ```
 .
+├── .claude/                    # Claude Code: hooks, skills i subagents (vegeu `13_contrib.qmd §IAs`)
 ├── .github/                    # Workflow de publicació a GitHub Pages
 ├── .vscode/                    # Diccionari
 ├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
