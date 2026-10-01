@@ -87,15 +87,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **R4-TYPE a T5** (`A5.qmd:5`, `<!-- TODO: cal introduir el R4-TYPE? (Harris) -->`): decisió d'abast de contingut. Rellevant perquè `24_specs/registres.toml` ja genera la figura `T5_instruccio_tipus_R4`, avui sense ús. El marcador és a la capçalera del fitxer, abans del `# {{< var tema5 >}}`, fora de cap secció. *(Valoració del grup de treball, 2026-10-01: «Decisió»; la figura existeix i no s'usa, i només té sentit si T5 tracta les instruccions FMA. Vegeu l'entrada «Anotacions de la revisió externa de T4–T6», #5.)*
 
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+  ✅ **Desbloquejat el 2026-10-01**: `temes456` es va fusionar a `main` (`451c3ef`), i A4, A5 i A6 ja es poden tocar (vegeu §Decisions obertes → Branques del remot).
 
 - **R5-TYPE (RISC-V *compressed*) com a aprofundiment** (`A5.qmd:6`): decisió d'abast que **creua dos temes** — el marcador pregunta si aniria al principi de T2. Mateixa ubicació que l'anterior. *(Valoració del grup de treball, 2026-10-01: «No val la pena»; fora de l'abast de T5, i en tot cas a T2. Ibídem, #6.)*
 
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+  ✅ **Desbloquejat el 2026-10-01**: `temes456` es va fusionar a `main` (`451c3ef`), i A4, A5 i A6 ja es poden tocar (vegeu §Decisions obertes → Branques del remot).
 
-- **Figures de half-adder i full-adder (T4)** (`A4.qmd:80`, `:81`): dos marcadors consecutius dins de `#wrn-sobreeiximent-maquinari`. El primer és una **tasca** (afegir la figura d'un *half-adder* i la d'un *full-adder*); el segon és una **decisió**, pel signe d'interrogació: si cal la figura de la seqüència de *full-adders* amb la porta XOR per detectar el sobreeiximent en el darrer. Si es creen, SVG natiu segons `24_specs/svg.md`. *(Valoració del grup de treball, 2026-10-01: totes dues «Factible», en SVG natiu; la cadena amb XOR «sí que cal», perquè il·lustra l'equació del maquinari. Ibídem, #1–#2.)*
+- **Figures de half-adder i full-adder (T4)** (`A4.qmd:79`, `:80`, mesurat a `454a82e`): dos marcadors consecutius dins de `#wrn-sobreeiximent-maquinari`. El primer és una **tasca** (afegir la figura d'un *half-adder* i la d'un *full-adder*); el segon és una **decisió**, pel signe d'interrogació: si cal la figura de la seqüència de *full-adders* amb la porta XOR per detectar el sobreeiximent en el darrer. Si es creen, SVG natiu segons `24_specs/svg.md`. *(Valoració del grup de treball, 2026-10-01: totes dues «Factible», en SVG natiu; la cadena amb XOR «sí que cal», perquè il·lustra l'equació del maquinari. Ibídem, #1–#2.)*
 
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+  ✅ **Desbloquejat el 2026-10-01**: `temes456` es va fusionar a `main` (`451c3ef`), i A4, A5 i A6 ja es poden tocar (vegeu §Decisions obertes → Branques del remot).
 
 - **Taules de memòria de T2 → figura estàndard** (`A2.qmd:964`, `:1002`, mesurat a `ebdf055`): dos marcadors amb la mateixa tasca sobre dues taules diferents — la segona és dins de `#tip-endianness` i afecta `#fig-big-endian`/`#fig-little-endian`. Pendent de figura, no de decisió, però no hi ha secció de figures de T2 en aquest fitxer: hi entra aquí fins que se'n creï una.
 
@@ -113,14 +113,22 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   Avui no trenca res: `25_scripts/verifica_laboratoris.py` només processa `04_laboratori/L*.qmd` (`LAB_DIR` + `L*.qmd`, `:24` i `:279`, mesurat a `ebdf055`), de manera que `A2.qmd` li queda fora d'abast. El risc apareix el dia que l'abast creixi o que algú escombri identificadors a tot el corpus.
 
-- **Branques del remot: la revisió externa de T4–T6 (`temes456`) i de T3 (`contingut/t3-traduccio`) no és a `main`, i les seves MR (`!7`, `!5`) es van tancar sense fusionar el 2026-10-01** (registrada 2026-09-23; T3, les MR i el tancament, 2026-10-01).
+- **Branques del remot: les MR de la revisió externa de T4–T6 (`!7`, `temes456`) i de T3 (`!5`, `contingut/t3-traduccio`) es van tancar sense fusionar el 2026-10-01; `temes456` es va fusionar a `main` el mateix dia (`451c3ef`), i el port de `!5` és pendent** (registrada 2026-09-23; T3, les MR i el tancament, 2026-10-01; la fusió, 2026-10-01).
+
+  ✅ **`temes456` fusionada a `main` el 2026-10-01: `451c3ef`**, commit de fusió sense *rebase* (pares `e3a7cc3` i `661733b`), que conserva l'autoria dels 11 commits. Tres conflictes, resolts amb l'aprovació de l'usuari: `.gitignore` (totes dues línies), `A4.qmd` (`#imp-eqv-dimensions`: la frase del revisor i el paràgraf de `main`) i `A5.qmd` (ULP i RNE: la línia de `main`, amb la marca dels termes anglesos i «de menys pes»). Després, dos commits sobre el que la branca portava sense conflicte: `40396e8` (set errades: `\text{CPI}{i}` sense subíndex, «pot emprat», «ext.ensió»…) i `454a82e` (restaura la marca dels termes anglesos, de les sigles i d'«A **EC**», que el revisor treia contra `13_contrib.qmd`). La resolució sencera: `git show --cc 451c3ef`. Les branques remotes **no s'han esborrat**: és decisió del grup, amb l'etiqueta d'arxiu de `13_contrib.qmd §Convenció de noms de branques`.
+
+  ```bash
+  git merge-base --is-ancestor origin/temes456 origin/main && echo dins || echo fora   # dins, des de 451c3ef
+  ```
 
   📌 **Estat a 2026-10-01, 16:21: totes dues MR tancades sense fusionar**, per `pedro.martinez.ferrer` (`!5` a les 16:20 i `!7` a les 16:21). `!7` tenia `merge_status: cannot_be_merged`, coherent amb els tres conflictes de la fusió de prova de més avall. Les branques continuen al remot, sense cap commit nou: `temes456` a `661733b`, amb 11 commits fora de `main`, i `origin/main` sense cap fusió. **Decisió de l'usuari: s'espera el grup de treball**, que la refarà o la reobrirà, i `A3.qmd`–`A6.qmd` no es toquen. ⚠️ **Substituïda el mateix dia**, després de rebre l'inventari del grup (entrada següent): **la fusió de `temes456` i el port de `!5` els fa una sessió de Claude Code** (decisió de l'usuari), amb la resolució de cada conflicte i els casos dubtosos del port presentats a l'usuari abans del push. La fusió es fa amb un commit de fusió, per conservar l'autoria dels 11 commits; el port porta `Co-authored-by` de l'autor. Es va saber per `glab`, en preparar dues tasques que l'usuari donava per desbloquejades perquè creia que `!7` s'havia fusionat: «tancada» no és «fusionada», i això només ho diu GitLab, no el clon.
 
   ```bash
   glab api 'projects/7916/merge_requests/7' | jq -r '"\(.state) · fusionada: \(.merged_at // "no") · tancada: \(.closed_at // "no")"'
-  git merge-base --is-ancestor origin/temes456 origin/main && echo dins || echo fora   # fora
-  ``` Les branques es registren, **no es toquen**: cap fusió, cap esborrat, i les fusions les farà el grup de treball.
+  git merge-base --is-ancestor origin/temes456 origin/main && echo dins || echo fora   # fora (fins a 451c3ef)
+  ```
+
+  Les branques es registren, **no es toquen**: cap fusió, cap esborrat, i les fusions les farà el grup de treball. ⚠️ **Superat el 2026-10-01** per la decisió de l'usuari del paràgraf anterior: les fusions les fa una sessió de Claude Code; l'esborrat continua sent del grup.
 
   ```bash
   git ls-remote --heads origin           # GitLab: la font de veritat
@@ -206,6 +214,33 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   El pla del grup: (1) acabar la fusió de `temes456`; (2) #12, #9 i #3; (3) una sola passada de render per a #7, #8, #10 i #11; (4) #4 i #1–#2; (5) decisions #5, #6 i l'ampliació de #12; (6) en resoldre cada anotació, esborrar-ne el marcador i actualitzar-ne l'entrada; les de la branca es registren aquí en fusionar-la. És la base de `CLAUDE.md §Pla de treball` des del 2026-10-01. Les #1–#2, #5 i #6 coincideixen amb entrades que ja hi eren (figures de *half-adder* i *full-adder*, R4-TYPE, R5-TYPE), i hi consta la valoració del grup.
 
+  📌 **Marcadors de la branca, a `main` des de la fusió** (`451c3ef`, 2026-10-01; línies mesurades a `454a82e`). Els 10 [br] d'aquesta taula, amb el text literal de cada un abreujat:
+
+  | # | Marcador | Text |
+  | ---: | :--- | :--- |
+  | 3 | `A4.qmd:110` | «Aquest "caution" hauria d'estar més endavant, quan es parla de l'extensió M…» |
+  | 4 | `A4.qmd:181` | «La descripció de l'algorisme no hauria de ser tota en cursives. Els titols del codis no haurien de ser simplemement "pseudocodi".» |
+  | 7 | `A5.qmd:269` | «PM: la paraula denormals de la figura a baix no s'aprecia del tot bé» |
+  | 8 | `A5.qmd:531` | «PM: Check that this formula is well displayed under LaTeX» |
+  | 9 | `A6.qmd:13` | «PM: els exemples són confusos perquè es barreja "temps d'execució" amb "rendiment"…» |
+  | 10 | `A6.qmd:148` | «PM: la legenda de la figura (temps t_c) no s'ha compilat correctament» |
+  | 11 | `A6.qmd:178` | «PM: equació más llarga (cal separar-la en més d'una línia)» |
+  | 12 | `A6.qmd:260` | «PM: l'aprofundiment no hauria de començar abans de la eq. 6.8» |
+  | 12 | `A6.qmd:272` | «PM: aquí s'introdueix la potència després de tota la parrafada anterior…» |
+  | 12 | `A6.qmd:373` | «Aquí és el lloc idoniï per deixar els aprofundiments» |
+
+  ```bash
+  git grep -c '<!-- TODO' -- 01_apunts/A4.qmd 01_apunts/A5.qmd 01_apunts/A6.qmd   # A4 4 · A5 4 · A6 6 = 14 (4 [main] + 10 [br])
+  ```
+
+  ⚠️ «eq. 6.8» (`A6.qmd:260`) és un número d'equació escrit a mà: es refereix a la numeració del render que va veure el revisor, i caduca amb qualsevol equació nova anterior. En resoldre l'anotació #12, cal localitzar l'equació pel contingut, no pel número.
+
+  📌 **Tres coses de la fusió que no són anotacions del grup, però que el grup ha de conèixer** (detectades en revisar-la, 2026-10-01):
+
+  - **El canvi a `22_figs_originals/T5_ieee754_format_registre.svg` (la «S» sense girar, `9bc5f46`) no arriba al llibre.** `A5.qmd:87-94` consumeix `auto_figs/T5_ieee754_format_registre__registre_*.svg`, que genera `25_scripts/gen_regs.py` des de `24_specs/registres.toml`; i `gen_regs.py:270` gira sempre els camps d'1 bit (`use_vertical = (nbits == 1) or …`). Perquè la «S» surti horitzontal cal una opció per camp a `gen_regs.py` i al `.toml`. El canvi del `.toml` de la mateixa branca («Reserved» → «Reservat» a `T5_fcsr`), en canvi, sí que s'hi veu: verificat a `auto_figs/T5_fcsr__registre_light.svg` després del render.
+  - **Contingut que la revisió treu**, sense errada però perquè el grup ho confirmi: A5 treu «A **EC** s'estudia el format de **simple precisió** (32 bits), que correspon al tipus `float` de C» (la correspondència amb `float` es manté a la taula d'`A5.qmd:64`, «Tipus C», i la restricció a la precisió simple a `#imp-ec-simple-precisio`: la frase era redundant) i l'enunciat «Expressa els nombres següents en notació científica normalitzada:» d'un exemple, que queda amb la taula sola; A6 treu la pregunta «Quin té més productivitat?» de dos exemples, però en manté la resposta («B té major productivitat»).
+  - **Notació de CPI**: A6 passa de `$CPI$` a `$\text{CPI}$`. El corpus ja barrejava les dues formes; es resol a l'entrada «Revisió sistemàtica del corpus per nodrir les taules de `Símbols` i `Notació`» (§Tasques transversals).
+
 ---
 
 ## Tasques transversals
@@ -226,11 +261,18 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Revisió sistemàtica del corpus per nodrir les taules de `Símbols` i `Notació` de `12_sigles_simbols.qmd`.** Abast concret verificat, que fins ara no constava: la revisió creuada de T7/T8 va deixar **sense verificar la major part de la taula actual** — tots els símbols exclusius de T1–T6 i T9 que no s'hagin creuat casualment amb T7/T8. Sospitosos prioritaris per la seva similitud notacional (font típica de confusió símbol↔concepte): $CPI$/$CPI_i$/$C_i$, $f_B$/$f_{clock}$, $K$, $m$/$m_d$/$m_i$/$m_{L1}$/$m_{L2}$, $P$/$P_d$/$P_s$/$P_x$, $s_{max}$/$s_x$, $V_{CC}$/$V_{in}$/$V_t$ — **tots de T6, tema no verificat en cap xat anterior**. Cobertura actual de la taula `## Símbols`, per tema: T1 6, T2 2, T3 3, T4 20, T5 17, T6 28, T7 39, T8 9, **T9 cap**. *(Origen: `TODO/12_sigles_simbols__revisio_interna.md:147`, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/12_sigles_simbols__revisio_interna.md`.)*
 
+  📌 **Notació de CPI, barrejada (2026-10-01, mesura a `e3a7cc3`, abans de la fusió de `temes456`):** `$CPI` 22 vegades (A6 9, S6 4, `12_sigles_simbols.qmd` 9) i `\text{CPI}` 28 (A7 14, S7 8, E7 2, L6 2, S3 2). La fusió passa A6 a `\text{CPI}`. Cal triar-ne una i aplicar-la.
+
+  ```bash
+  25_scripts/escombrada.sh -F --cas '$CPI' -- '*.qmd'
+  25_scripts/escombrada.sh -F --cas '\text{CPI}' -- '*.qmd'
+  ```
+
   Hi encaixa també: **`NF`, `NC`, $T$ (mida d'element) i *stride*** apareixen en fórmules de T4 i L4 i **no tenen entrada** al glossari (`git grep -n "NF\|stride" -- 12_sigles_simbols.qmd` → cap). *(Origen: `TODO/L4_tasques.md` D4, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
 
 - **Revisió sistemàtica del corpus per l'aplicació de la regla d'ús `AND`, `OR`, `XOR`, `NOT`--`barra superior`** (enters).
 
-- **Cometes `"..."` → `«...»`: només queda `A4.qmd:122`** («s'ha "donat la volta"»), que espera la fusió de `temes456`. La resta és feta (2026-10-01): **sis línies de prosa** convertides, totes a `A2.qmd` (`:918`, `:1482`, `:1506`, `:1508`, `:1587`, `:1596`, mesurades abans del canvi). El text sencer de l'entrada anterior, amb la història de la xifra: `git show 06df489:TODO.md`.
+- **Cometes `"..."` → `«...»`: només queda `A4.qmd:119`** (mesurat a `454a82e`; abans `:122`) («s'ha "donat la volta"»). `temes456` ja és a `main` (`451c3ef`): es fa a la fase 2 de `CLAUDE.md §Pla de treball`. La resta és feta (2026-10-01): **sis línies de prosa** convertides, totes a `A2.qmd` (`:918`, `:1482`, `:1506`, `:1508`, `:1587`, `:1596`, mesurades abans del canvi). El text sencer de l'entrada anterior, amb la història de la xifra: `git show 06df489:TODO.md`.
 
   Ordre, amb A3–A6 exclosos (regla 12: `13_contrib.qmd` en queda fora perquè hi ha cites, no prosa del llibre):
 
@@ -281,7 +323,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   📌 **La lliçó, germana de la que ja teníem.** Fins ara la regla escrita deia que *un grep massa literal fabrica discrepàncies que no existeixen*. Aquesta entrada mostra l'altra cara: **també se'n deixa de reals**, i aquí ho va fer per les dues bandes alhora — un compte era sensible a majúscules i perdia sis capçaleres; l'altre mirava només els `.qmd` i perdia les nou de les figures. La forma completa de la regla: **el patró ha de cobrir totes les formes del que es mesura (majúscules incloses) i tots els tipus de fitxer on pot viure, no només els que es tenen al cap.**
 
-  ⛔ **A5 i `24_specs/registres.toml` són a `temes456`**: no es toquen fins a la fusió (vegeu §Decisions obertes → Branques del remot).
+  ✅ **Desbloquejat el 2026-10-01**: `temes456` es va fusionar a `main` (`451c3ef`), amb A5 i `24_specs/registres.toml`. El canvi és de la fase 2 de `CLAUDE.md §Pla de treball`.
 
 - **Nova eina disponible: retalls (crops) SVG a partir d'una figura font única** (afegida 2026-07-13, revisió interna T5): `25_scripts/gen_crops.py` + `24_specs/retalls.toml`, integrat al `pre-render` de `_quarto.yml` entre `gen_regs.py` i `gen_dark.py`. Permet definir una figura «detall»/«zoom» com una finestra `(x, y, w, h)` sobre el `viewBox` d'una figura font ja existent, sense duplicar-ne el contingut. Documentat a `13_contrib.qmd §Retalls`. Aplicable només quan el detall és un subconjunt geomètric net de la font (cap connector/etiqueta tallat a mig camí).
 
@@ -319,7 +361,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   *(Origen: `TODO/T4_P_tasques.md:311`, tercera vinyeta del §8 «Pendents heretats que romanen oberts»; fitxer transitori esborrat, mai no va arribar a aquest fitxer fins ara. Es recupera sencer amb `git show a211bbf:TODO/T4_P_tasques.md`. El text original deia: «slug `{#sec-casos-especials}` és genèric; si mai cal desambiguar, `{#sec-casos-especials-divisio}` (ara no es referencia des d'enlloc; canviar-lo no trenca res, però tampoc no urgeix)» — l'última clàusula és la que ha caducat, com diu l'avís de dalt.)*
 
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+  ✅ **Desbloquejat el 2026-10-01**: `temes456` es va fusionar a `main` (`451c3ef`), i A4, A5 i A6 ja es poden tocar (vegeu §Decisions obertes → Branques del remot).
 
 ### T5
 
@@ -450,7 +492,7 @@ Rutes de destí per a les 9: `/auto_figs/T8_*__original_light.svg`.
 
 - **`22_figs_originals/T4_multiplicador_sequencial.png` (63 KB)**: decidir si s'elimina. Verificat (auditoria, sessió 2): **no el referencia ningú** — `A4.qmd:175,178,182` usen només el `.svg` via `auto_figs/`. És **l'única parella `.png`+`.svg` del directori**, de manera que eliminar-lo també elimina l'excepció al criteri d'un sol format font. No s'ha tocat: és un fitxer binari i la supressió no entrava a l'abast autoritzat.
 
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
+  ✅ **Desbloquejat el 2026-10-01**: `temes456` es va fusionar a `main` (`451c3ef`), i A4, A5 i A6 ja es poden tocar (vegeu §Decisions obertes → Branques del remot).
 
   ```bash
   git grep -n "T4_multiplicador_sequencial" -- '*.qmd' ':!TODO.md'
