@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**42 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat»; entra «Tanques de codi fora de la convenció»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**41 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entra «Tanques de codi fora de la convenció»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 11 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 42, regla 12 bis).
+Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 41, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -251,34 +251,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   - **`A2.qmd:1796-1797` no eren prosa**, sinó comentaris C dins d'un bloc `{.c}` (`/* Tipus: "vector de 100 enters" */`). Per la regla de dalt, es deixen.
   - **`A2.qmd:918` no hi era**: té `“camps”`, amb cometes tipogràfiques, i el patró només buscava `"`. És la regla 4 (cobrir totes les formes): ara `25_scripts/lint_prosa.py` també les detecta.
   - **El repartiment d'A3–A6 («1 a A4, 3 a A5 i 1 a A6») no reprodueix a cap commit**. A `bb64329`, a `ebdf055` i avui dona A3 3, A4 1, A5 1, A6 0, i d'aquestes cinc línies **només `A4.qmd:122` és prosa**: `A3.qmd:244` i `A5.qmd:6` són marcadors en comentari HTML, i `A3.qmd:1249-1250` és codi C. El total d'`A2`, que l'entrada donava com a 17, ja era **19** a `ebdf055`.
-
-- **Homogeneïtzació del format de les adreces** (usuari, 2026-09-23). Revisió transversal del format amb què s'escriuen les adreces i els valors hexadecimals a tot el corpus. `13_contrib.qmd` en fixa avui **dos** aspectes i en deixa la resta sense criteri:
-
-  | Aspecte | Estat | Mesura |
-  | :--- | :--- | :--- |
-  | Espais de separació | ✅ **Regla fixada** (`13_contrib.qmd:131`, mesurat a `ebdf055`: «sense espais», no separador cada 4 nibbles) i **corpus net** | `git grep -nE "0x[0-9A-Fa-f]{4} [0-9A-Fa-f]{4}" -- '*.qmd' ':!TODO.md'` → cap. Les 99 de `L2.qmd` les va convertir la Fase C (`254509b`) |
-  | Majúscules/minúscules | ⚠️ **Regla permissiva** (`13_contrib.qmd:290`, mesurat a `ebdf055`: preferència per majúscules, «s'admeten minúscules perquè és el criteri de RARS», i diu explícitament que **no cal unificar-ho**) | **534 en majúscules · 36 en minúscules** (`A2` 5, `A3` 5, `L1` 1, `L2` 9 i la resta). La majoria de minúscules són **bolcats reals de RARS**, on la grafia és fidelitat a l'eina |
-  | **Amplada / farciment de zeros** | 🔴 **Sense cap regla** | Conviuen amplades diferents dins d'un mateix fitxer: `A2` **61** de 8 dígits i 4 de 5; `A8` 6 de 8 i 27 de 5; `L2` 175 de 8 i 2 de 4. Ordres a sota |
-
-  ```bash
-  for f in 01_apunts/A2.qmd 01_apunts/A8.qmd 04_laboratori/L2.qmd; do
-    for d in 8 5 4; do
-      echo "$f $d: $(git grep -oE "\b0x[0-9A-Fa-f]{$d}\b" -- $f | wc -l)"
-    done
-  done
-  ```
-
-  ⚠️ **La frontera de paraula (`\b`) és deliberada, no un detall del patró.** La fila compara **amplades**, de manera que sense frontera el patró compta «adreces de com a **mínim** N dígits» i enganxa els primers dígits d'un literal més llarg: així és com `A2` publicava **64** de 8 dígits quan en són **61** —els tres de diferència són `0x7766554433221100`, un literal de 16 dígits, a `A2.qmd:1141` i `:1151` (dues vegades; línies mesurades a `ebdf055`)—. És la regla 2 («mesureu per forma») al gra més fi: aquí la forma *és* la mesura.
-
-  ⚠️ **`L2` deia «2 de 7» i no hi ha cap literal de 7 dígits al fitxer**: les amplades de `L2` són 1, 2, 4 i 8, i els dos són `0x0003` (`L2.qmd:392`, `:394`, mesurat a `ebdf055`), de **4** dígits. Errata de l'amplada, no del compte.
-
-  📌 **Aquesta era l'única fila de la taula sense ordre publicada**, i per això era l'única amb xifres dolentes: les altres dues (534/36 de majúscules, i els espais de separació) en porten i reprodueixen. Una xifra sense ordre no és comprovable, i acaba sent la que ningú no comprova.
-
-  **El que cal decidir és sobretot el tercer**: si les adreces de memòria s'escriuen sempre amb 8 dígits (`0x00400000`) o si s'admet escurçar-les quan no hi ha ambigüitat, i si el criteri val igual per a adreces, per a contingut de registres i per a codificacions d'instrucció. Un cop decidit, ha d'aterrar a `13_contrib.qmd` al costat de les altres dues regles.
-
-  ⚠️ **Abans d'escombrar, dues cauteles.** (i) La regla de majúscules **exempta explícitament** els bolcats de RARS: una substitució global a majúscules els falsejaria. (ii) Els hexadecimals no són tots adreces —n'hi ha de valors, de màscares i de codificacions d'instrucció—, i el criteri d'amplada no té per què ser el mateix: mesureu **per forma i per rol**, no pel prefix `0x`.
-
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 13 hexadecimals a A5, i cap a A4 ni a A6.
 
 - **Ordre substantiu–adjectiu: «precisió simple/doble» al material de T5.** **Decidit i aplicat fora de T5 el 2026-10-01** (decisió de l'usuari): l'adjectiu classificador va darrere del nom, i la regla, amb les excepcions, és a `13_contrib.qmd §Criteris generals`. Fora de T5 s'han canviat 6 calcs de precisió (`A2.qmd:79`, `S_criteris_seleccio.qmd:81`, `12_sigles_simbols.qmd:135`, `:139`, `:197`, `RARS_directives.qmd:6`) i 5 de «el/la següent X» (`A1.qmd:264`, `:377`; `A2.qmd:1759`, `:1766`; `RARS_directives.qmd:1`). Línies mesurades a `bb12c2b`; el text anterior de l'entrada: `git show bb12c2b:TODO.md`.
 
@@ -594,6 +566,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | **Criteri «quatre formats nuclears d'instrucció» (RISC-V International)** (entrada de §Tasques globals → Contingut global, adoptat a la revisió interna de T2, 2026-07; retirada el 2026-10-01) | **Executada per mesura, sense cap canvi al corpus.** L'entrada demanava ajustar els fitxers que donessin un total de formats («sis formats», «6 formats»). Avui no n'hi ha cap: només `A2.qmd:260` en dona un recompte, i és el bo. La resta són llistes de lletres (`registres.toml`, `gen_regs.py:410`, `A2.qmd:280`) que no afirmen cap total. Patró per forma, sobre tot el versionat amb A3–A6 i sense: `git grep -n -i -E "(un\|dos\|tres\|quatre\|cinc\|sis\|set\|[0-9]+) (formats\|tipus de format)"`, més les llistes `R, I, S` i `R/I/S` (a la taula, les `\|` són barres escapades). ⚠️ **El criteri no era a `13_contrib.qmd`**, només en aquesta entrada i al text d'A2: retirar-la sense moure'l n'hauria perdut l'única còpia normativa. Ara és a `13_contrib.qmd §Decisions per tema → T2 i T3` | La revisió qualitativa d'A3 (com presenta B, J i U) és a l'entrada de `§T3`, que espera el port de `!5`. Text sencer: `git show 4a33a74:TODO.md` |
 | **Expressions aritmètiques als operands: escombrada pendent de `Ex`/`Sx`/`11_riscv.qmd`** (entrada de §Tasques per tema → Laboratori; retirada el 2026-10-01) | **Executada per mesura, sense cap canvi.** La regla (`13_contrib.qmd §Convencions globals del laboratori`) admet expressions a teoria, problemes i exàmens, i només exigeix el literal al laboratori. Mesurat a `b2530c7`: **34 línies** d'assemblador amb un operador aritmètic als operands a `02_exercicis`, `03_solucions`, `11_riscv.qmd` i `21_riscv/`. **27 són de `S4.qmd`**, que l'entrada mateixa excloïa («A4 i S4 [...] no es toquen»). Les 7 restants són enunciats i solucions de problemes: `E2.qmd:73`, `:411`; `E3.qmd:282`; `E4.qmd:375`, `:376`; `S2.qmd:445`, `:630`. Cap no demana executar el codi a RARS, i `E2.qmd:73`, `S2.qmd:445` i `:630` ja porten la nota que a RARS cal `la` + `addi`. `11_riscv.qmd` i `21_riscv/`: cap. ⚠️ **Una primera escombrada en va trobar 32, no 34**: filtrava els blocs per `{.s` i se saltava el d'`E4.qmd:368`, que obre amb una tanca ` ```s ` nua. D'aquí ve l'entrada «Tanques de codi fora de la convenció», de §Tasques transversals | Cap pendent. Ordre que dona 34: `git grep -n -E '^\s*([A-Za-z_]\w*:\s*)?(la\|li\|addi\|\.set\|\.space\|\.word\|\.eqv)\s+[^#]*([A-Za-z_0-9)]\s*([*/+]\|<<\|>>)\|[A-Za-z_)]\s*-)\s*[A-Za-z_0-9(]' -- 02_exercicis 03_solucions 11_riscv.qmd 21_riscv` (dins de la taula, cada `\|` és una barra escapada). Text sencer: `git show b2530c7:TODO.md` |
 | **Grafia «No associativitat» vs «No-associativitat»** (entrada de §Tasques transversals, detectada 2026-09-20; retirada el 2026-10-01) | **Executada (2026-10-01). Decisió de l'usuari: amb guionet**, la forma que l'IEC fixa per a *no* davant d'un nom. El corpus ja era unànime (`A5.qmd:693`, `:719`; `E5.qmd:204`; `S5.qmd:908`, `:911`, `:989`; `S_criteris_seleccio.qmd:89`, `:90`), i l'única forma divergent era la de la convenció, `13_contrib.qmd:160`, que s'ha corregit. La regla general és ara a `13_contrib.qmd §Criteris generals` («No» davant d'un nom). No ha calgut tocar A5 | Cap pendent. `git grep -n -i -E "no (associativ\|distributiv)" -- . ':!TODO.md'` → cap (dins de la taula, cada `\|` és una barra escapada) |
+| **Homogeneïtzació del format de les adreces** (entrada de §Tasques transversals, usuari, 2026-09-23; retirada el 2026-10-01) | **Executada (2026-10-01).** Dels tres aspectes, dos ja estaven resolts: separadors (regla i corpus net) i majúscules (regla permissiva, que no demana unificar). El tercer, l'**amplada**, l'ha decidit l'usuari: **8 dígits per als valors de 32 bits** (adreces, contingut de registres, codificacions), i la resta segons l'amplada del seu rol. La regla és a `13_contrib.qmd §Criteris generals`. Mesurat a `c1bac38`, fora d'A3–A6: els **61 hexadecimals de 5 a 7 dígits** són tots camps, valors o màscares, i cap no és una adreça escurçada: immediats de `lui`/`auipc` de 20 bits (A2, S2), números de bloc i etiquetes de memòria cau (A7, L6), números de pàgina de 20 bits (els 27 d'A8) i màscares de mantissa (L5). On el corpus mostra el contingut d'un registre, ja ho feia amb 8 dígits (`A2.qmd:1394-1421`, `S2.qmd:217`). **Tres canvis**: els comentaris `t1 <- 0x43` i `t2 <- 0x4142` d'`A2.qmd:1087-1088`, a la part correcta d'un bloc de codi deliberadament erroni (les errades són a L14 i L15), i l'adreça `0x100` d'`A1.qmd:267`. A A3–A6 no hi ha res a canviar: A3 només té immediats d'`auipc`, i A5 ho té tot amb 8 dígits | 📌 **Cas límit, deixat com era: les adreces abstractes dels problemes de memòria cau.** `E7.qmd` (`exr-p7-fallades-programa`) i `S7.qmd:401` diuen «a partir de l'adreça `0`», `0x400`, `0x600` i `0x000`–`0x7FF` sense fixar l'amplada de l'adreça, perquè el problema només necessita els índexs de bloc. S'han tractat com a notació pròpia del problema, igual que `0x39` a E7, que és d'una memòria de 64 bytes. Si s'hi vol aplicar la regla, són aquestes línies. Text sencer de l'entrada: `git show c1bac38:TODO.md` |
 
 ### Caduques per mesura
 
