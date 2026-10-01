@@ -113,7 +113,14 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   Avui no trenca res: `25_scripts/verifica_laboratoris.py` només processa `04_laboratori/L*.qmd` (`LAB_DIR` + `L*.qmd`, `:24` i `:279`, mesurat a `ebdf055`), de manera que `A2.qmd` li queda fora d'abast. El risc apareix el dia que l'abast creixi o que algú escombri identificadors a tot el corpus.
 
-- **Branques del remot: la revisió externa és en curs a `temes456` (T4–T6, MR `!7`) i a `contingut/t3-traduccio` (T3, MR `!5`)** (registrada 2026-09-23; T3 i les MR, 2026-10-01). Les branques es registren, **no es toquen**: cap fusió, cap esborrat, i les fusions les farà el grup de treball.
+- **Branques del remot: la revisió externa de T4–T6 (`temes456`) i de T3 (`contingut/t3-traduccio`) no és a `main`, i les seves MR (`!7`, `!5`) es van tancar sense fusionar el 2026-10-01** (registrada 2026-09-23; T3, les MR i el tancament, 2026-10-01).
+
+  📌 **Estat a 2026-10-01, 16:21: totes dues MR tancades sense fusionar**, per `pedro.martinez.ferrer` (`!5` a les 16:20 i `!7` a les 16:21). `!7` tenia `merge_status: cannot_be_merged`, coherent amb els tres conflictes de la fusió de prova de més avall. Les branques continuen al remot, sense cap commit nou: `temes456` a `661733b`, amb 11 commits fora de `main`, i `origin/main` sense cap fusió. **Decisió de l'usuari: s'espera el grup de treball**, que la refarà o la reobrirà, i `A3.qmd`–`A6.qmd` no es toquen. Es va saber per `glab`, en preparar dues tasques que l'usuari donava per desbloquejades perquè creia que `!7` s'havia fusionat: «tancada» no és «fusionada», i això només ho diu GitLab, no el clon.
+
+  ```bash
+  glab api 'projects/7916/merge_requests/7' | jq -r '"\(.state) · fusionada: \(.merged_at // "no") · tancada: \(.closed_at // "no")"'
+  git merge-base --is-ancestor origin/temes456 origin/main && echo dins || echo fora   # fora
+  ``` Les branques es registren, **no es toquen**: cap fusió, cap esborrat, i les fusions les farà el grup de treball.
 
   ```bash
   git ls-remote --heads origin           # GitLab: la font de veritat
