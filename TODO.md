@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**41 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entra «Tanques de codi fora de la convenció»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**42 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren «Tanques de codi fora de la convenció» i «Veu dels enunciats»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 10 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 41, regla 12 bis).
+Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 11 ·
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 42, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -266,6 +266,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   📌 **La lliçó, germana de la que ja teníem.** Fins ara la regla escrita deia que *un grep massa literal fabrica discrepàncies que no existeixen*. Aquesta entrada mostra l'altra cara: **també se'n deixa de reals**, i aquí ho va fer per les dues bandes alhora — un compte era sensible a majúscules i perdia sis capçaleres; l'altre mirava només els `.qmd` i perdia les nou de les figures. La forma completa de la regla: **el patró ha de cobrir totes les formes del que es mesura (majúscules incloses) i tots els tipus de fitxer on pot viure, no només els que es tenen al cap.**
 
   ⛔ **A5 i `24_specs/registres.toml` són a `temes456`**: no es toquen fins a la fusió (vegeu §Decisions obertes → Branques del remot).
+
+- **Veu dels enunciats: 99 imperatius en singular a E1, E2, E3 i E9** (detectada 2026-10-01, en el bloc de terminologia d'E/S). `13_contrib.qmd §Problemari i solucionari` fixa la **2a persona del plural** per als enunciats («Traduïu», «Calculeu»), «aplicat sistemàticament a E6 i E4». Els altres temes no la segueixen:
+
+  ```bash
+  25_scripts/escombrada.sh --cas -w '(Tradueix|Escriu|Calcula|Indica|Determina|Contesta|Explica|Raona|Dibuixa|Completa|Justifica|Suposa|Considera|Codifica|Converteix|Implementa|Omple|Digues|Dona)' -- 02_exercicis
+  # E3 40 · E2 37 · E9 13 · E1 9 → 99 (mesurat a 9dc02f6)
+  ```
+
+  S'ha de revisar cas a cas: la llista de verbs és la que s'ha trobat, no la completa, i a l'inici de frase «Considera» o «Indica» poden ser una 3a persona i no un imperatiu. Cal mirar també els **solucionaris**, que reprenen la veu de l'enunciat. `E3.qmd` es va donar per completat al juliol amb la veu en singular, de manera que la divergència no és d'un fitxer endarrerit, sinó d'una regla que no s'ha escombrat mai.
 
 - **Tanques de codi fora de la convenció** (detectada 2026-10-01, en escombrar les expressions als operands). `13_contrib.qmd §Blocs de codi` fixa la tanca de cada llenguatge amb `filename`: `{.c filename="C"}`, `{.s filename="RV32I"}` (o `RV32IM`, `RV32IF`, `RV32IZicsr`, o el nom del fitxer `.s`). Mesurat a `b2530c7`, **39 tanques nues** no la segueixen:
 
