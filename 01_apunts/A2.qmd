@@ -257,7 +257,7 @@ Idealment, per satisfer els **principis de disseny** de **regularitat** i **simp
 
 [^-extensicompressed]: Amb l'extensió C (Compressed), les instruccions poden ser de 16 bits. L'extensió C defineix versions comprimides de les instruccions més comunes, codificades en 16 bits en lloc de 32, per reduir la mida del codi.
 
-L'arquitectura **RV32I** defineix quatre formats nuclears d'instrucció [@riscv_rv32i]: **R** (Register), **I** (Immediate), **S** (Store) i **U** (Upper). Dos formats addicionals, **B** (Branch) i **J** (Jump), són variants de S i U respectivament: reorganitzen els mateixos bits d'immediat per codificar desplaçaments sempre parells (el bit 0 és implícit), i s'introdueixen a [Tema 3](#sec-tema-traduccio) amb les instruccions de salt (@nte-format-b, @nte-format-j). @nte-instruccions-tipus mostra els **camps de bits** dels tres formats que s'usen en aquest tema (R, I, S); el format U s'introdueix més endavant en aquest mateix tema (@nte-instruccio-lui). El [compendi de referència tècnica](#sec-reftecnica-rv32i-format) (@nte-rv-instruccions-formats-detall) recull tots els formats en una única figura, a mesura que es vagin presentant al llarg del curs.
+L'arquitectura **RV32I** defineix quatre formats nuclears d'instrucció [@riscv_rv32i]: **R** (Register), **I** (Immediate), **S** (Store) i **U** (Upper). Dos formats addicionals, **B** (Branch) i **J** (Jump), són variants de S i U respectivament: reorganitzen els mateixos bits d'immediat per codificar desplaçaments sempre parells (el bit 0 és implícit), i s'introdueixen a [Tema 3](#sec-tema-traduccio) amb les instruccions de salt (@nte-format-b, @nte-format-j). @nte-instruccions-tipus mostra els **camps de bits** dels tres formats que s'usen en aquest tema (R, I, S); el format U s'introdueix més endavant en aquest mateix tema, amb `lui` (@nte-format-u). El [compendi de referència tècnica](#sec-reftecnica-rv32i-format) (@nte-rv-instruccions-formats-detall) recull tots els formats en una única figura, a mesura que es vagin presentant al llarg del curs.
 
 ::: {#nte-instruccions-tipus .callout-note}
 ## RV32I ISA — Tipus de format de les instruccions
@@ -1260,6 +1260,28 @@ Format d'instrucció tipus I, immediat (RV32I).
 ::: {#cau-riscv-signext .callout-caution}
 A **RV32I**, als operands immediats sempre se'ls aplica l'extensió de signe, $SignExt()$, que és la **regla general** a **RISC-V**.
 :::
+
+La instrucció `lui` (@nte-instruccio-lui) també té un operand immediat, però de **20 bits**, i per això no cap al format Tipus-I: és de format **Tipus-U** (@nte-format-u), el quart dels formats nuclears.
+
+:::: {#nte-format-u .callout-note}
+## RV32I ISA — Format Tipus-U
+::: {#fig-typeU}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T2_instruccio_tipus_U__registre_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T2_instruccio_tipus_U__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T2_instruccio_tipus_U__registre_light.svg)
+:::
+Format d'instrucció tipus U, immediat superior (RV32I).
+:::
+
+El camp `imm[31:12]` conté els 20 bits superiors de l'immediat; els 12 bits inferiors del resultat els determina la instrucció concreta (`lui` els posa a `0`). És el format amb l'immediat més gran de tota la ISA, i no té camps `rs1`, `rs2` ni `funct`. L'altra instrucció d'aquest format, `auipc`, es presenta a [Tema 3](#sec-tema-traduccio) amb l'expansió de `la` (@nte-la-auipc).
+::::
 
 ::: {#tip-mode-immediat .callout-tip}
 ## Operands en mode immediat
