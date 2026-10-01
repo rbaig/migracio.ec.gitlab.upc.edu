@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**40 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**41 entrades vives** (recompte del 2026-10-01: entra «Anotacions de la revisió externa de T3», en portar la MR `!5`; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 8 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 40, regla 12 bis).
+Repartiment: `§Decisions obertes` 12 · `§Tasques transversals` 8 ·
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 41, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -113,13 +113,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   Avui no trenca res: `25_scripts/verifica_laboratoris.py` només processa `04_laboratori/L*.qmd` (`LAB_DIR` + `L*.qmd`, `:24` i `:279`, mesurat a `ebdf055`), de manera que `A2.qmd` li queda fora d'abast. El risc apareix el dia que l'abast creixi o que algú escombri identificadors a tot el corpus.
 
-- **Branques del remot: les MR de la revisió externa de T4–T6 (`!7`, `temes456`) i de T3 (`!5`, `contingut/t3-traduccio`) es van tancar sense fusionar el 2026-10-01; `temes456` es va fusionar a `main` el mateix dia (`451c3ef`), i el port de `!5` és pendent** (registrada 2026-09-23; T3, les MR i el tancament, 2026-10-01; la fusió, 2026-10-01).
+- **Branques del remot: les MR de la revisió externa de T4–T6 (`!7`, `temes456`) i de T3 (`!5`, `contingut/t3-traduccio`) es van tancar sense fusionar el 2026-10-01; `temes456` es va fusionar a `main` el mateix dia (`451c3ef`), i `!5` s'hi va portar també el mateix dia (`ab48732`)** (registrada 2026-09-23; T3, les MR i el tancament, 2026-10-01; la fusió, 2026-10-01).
 
   ✅ **`temes456` fusionada a `main` el 2026-10-01: `451c3ef`**, commit de fusió sense *rebase* (pares `e3a7cc3` i `661733b`), que conserva l'autoria dels 11 commits. Tres conflictes, resolts amb l'aprovació de l'usuari: `.gitignore` (totes dues línies), `A4.qmd` (`#imp-eqv-dimensions`: la frase del revisor i el paràgraf de `main`) i `A5.qmd` (ULP i RNE: la línia de `main`, amb la marca dels termes anglesos i «de menys pes»). Després, dos commits sobre el que la branca portava sense conflicte: `40396e8` (set errades: `\text{CPI}{i}` sense subíndex, «pot emprat», «ext.ensió»…) i `454a82e` (restaura la marca dels termes anglesos, de les sigles i d'«A **EC**», que el revisor treia contra `13_contrib.qmd`). La resolució sencera: `git show --cc 451c3ef`. Les branques remotes **no s'han esborrat**: és decisió del grup, amb l'etiqueta d'arxiu de `13_contrib.qmd §Convenció de noms de branques`.
 
   ```bash
   git merge-base --is-ancestor origin/temes456 origin/main && echo dins || echo fora   # dins, des de 451c3ef
   ```
+
+  ✅ **`!5` (`62700c0`) portada a `main` el 2026-10-01: `ab48732`**, amb `Co-authored-by` de Pedro J. Martinez-Ferrer. Fusió a tres bandes per fitxer (base `62700c0^`, la branca i `main`), sobre les rutes actuals (`01_apunts/A3.qmd`, `21_riscv/`). De 46 hunks: 1 ja aplicat (`RV32I_instruccions_comparacio.qmd`), 1 equivalent ja aplicat (A3, «als quals s'escriu»), 6 conflictes resolts conservant tots dos costats, i 2 refusats per l'usuari: «*double-word*» com a variant de `lw`/`sw` (RV32I no en té) i una línia en blanc dins d'un bloc de codi. Ajustos aprovats: la sigla LIFO segueix §Sigles, i els comentaris del revisor porten `TODO: ` (entrada «Anotacions de la revisió externa de T3»). Detall al missatge del commit. `contingut/t3-traduccio` no se n'ha fet ancestre —el port és un commit nou, no una fusió—, de manera que `git merge-base --is-ancestor` hi continuarà dient «fora»: el que ho certifica és `ab48732`.
 
   📌 **Estat a 2026-10-01, 16:21: totes dues MR tancades sense fusionar**, per `pedro.martinez.ferrer` (`!5` a les 16:20 i `!7` a les 16:21). `!7` tenia `merge_status: cannot_be_merged`, coherent amb els tres conflictes de la fusió de prova de més avall. Les branques continuen al remot, sense cap commit nou: `temes456` a `661733b`, amb 11 commits fora de `main`, i `origin/main` sense cap fusió. **Decisió de l'usuari: s'espera el grup de treball**, que la refarà o la reobrirà, i `A3.qmd`–`A6.qmd` no es toquen. ⚠️ **Substituïda el mateix dia**, després de rebre l'inventari del grup (entrada següent): **la fusió de `temes456` i el port de `!5` els fa una sessió de Claude Code** (decisió de l'usuari), amb la resolució de cada conflicte i els casos dubtosos del port presentats a l'usuari abans del push. La fusió es fa amb un commit de fusió, per conservar l'autoria dels 11 commits; el port porta `Co-authored-by` de l'autor. Es va saber per `glab`, en preparar dues tasques que l'usuari donava per desbloquejades perquè creia que `!7` s'havia fusionat: «tancada» no és «fusionada», i això només ho diu GitLab, no el clon.
 
@@ -183,7 +185,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   `contingut/t3-traduccio` (un commit, `62700c0`, 2026-07-06, Pedro J. Martinez-Ferrer) porta **rutes d'abans del refactor de directoris** (`c5d9416`): `01_T/T3.qmd` i `11_riscv/…`, camins que avui no existeixen. **Qualsevol fusió és manual**, perquè git no pot resseguir el canvi de nom a través del refactor.
 
-  ⚠️ **És la revisió externa de T3, amb MR oberta: `!5`, «T3: revisió del tema (canvis i comentaris)», oberta el 2026-07-06 i sense cap comentari a GitLab.** Fins al 2026-10-01 aquesta entrada la registrava com a branca però no com a revisió, i `CLAUDE.md` deia que, fora de T4–T6, la revisió externa «encara no ha començat». Ho va treure a la llum `glab`, no `git`: una branca no diu si té una MR al darrere. **Decisió de l'usuari (2026-10-01): el port a les rutes actuals (`01_apunts/A3.qmd`, `21_riscv/`) el fa l'autor de la MR.** Fins llavors `A3.qmd` no es toca, perquè cada canvi que hi entri és un conflicte més per al port.
+  ⚠️ **És la revisió externa de T3, amb MR oberta: `!5`, «T3: revisió del tema (canvis i comentaris)», oberta el 2026-07-06 i sense cap comentari a GitLab.** Fins al 2026-10-01 aquesta entrada la registrava com a branca però no com a revisió, i `CLAUDE.md` deia que, fora de T4–T6, la revisió externa «encara no ha començat». Ho va treure a la llum `glab`, no `git`: una branca no diu si té una MR al darrere. **Decisió de l'usuari (2026-10-01): el port a les rutes actuals (`01_apunts/A3.qmd`, `21_riscv/`) el fa l'autor de la MR.** Fins llavors `A3.qmd` no es toca, perquè cada canvi que hi entri és un conflicte més per al port. ⚠️ **Substituïda el mateix dia** (el port el fa una sessió de Claude Code), i **executada: `ab48732`**. `A3.qmd` ja es pot tocar.
 
   ```bash
   glab api 'projects/7916/merge_requests?state=opened' | jq -r '.[] | "!\(.iid) \(.source_branch) · \(.author.name) · \(.title)"'
@@ -240,6 +242,27 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   - **El canvi a `22_figs_originals/T5_ieee754_format_registre.svg` (la «S» sense girar, `9bc5f46`) no arriba al llibre.** `A5.qmd:87-94` consumeix `auto_figs/T5_ieee754_format_registre__registre_*.svg`, que genera `25_scripts/gen_regs.py` des de `24_specs/registres.toml`; i `gen_regs.py:270` gira sempre els camps d'1 bit (`use_vertical = (nbits == 1) or …`). Perquè la «S» surti horitzontal cal una opció per camp a `gen_regs.py` i al `.toml`. El canvi del `.toml` de la mateixa branca («Reserved» → «Reservat» a `T5_fcsr`), en canvi, sí que s'hi veu: verificat a `auto_figs/T5_fcsr__registre_light.svg` després del render.
   - **Contingut que la revisió treu**, sense errada però perquè el grup ho confirmi: A5 treu «A **EC** s'estudia el format de **simple precisió** (32 bits), que correspon al tipus `float` de C» (la correspondència amb `float` es manté a la taula d'`A5.qmd:64`, «Tipus C», i la restricció a la precisió simple a `#imp-ec-simple-precisio`: la frase era redundant) i l'enunciat «Expressa els nombres següents en notació científica normalitzada:» d'un exemple, que queda amb la taula sola; A6 treu la pregunta «Quin té més productivitat?» de dos exemples, però en manté la resposta («B té major productivitat»).
   - **Notació de CPI**: A6 passa de `$CPI$` a `$\text{CPI}$`. El corpus ja barrejava les dues formes; es resol a l'entrada «Revisió sistemàtica del corpus per nodrir les taules de `Símbols` i `Notació`» (§Tasques transversals).
+
+- **Anotacions de la revisió externa de T3 (MR `!5`)** (registrada 2026-10-01, en portar la MR a `main`, `ab48732`). Pedro J. Martinez-Ferrer va deixar vuit comentaris a `62700c0`, en la forma `<!-- PM: … -->`; el port els hi ha afegit `TODO: ` al davant (decisió de l'usuari), perquè les escombrades de marcadors els comptin com els de T4–T6. El text és el seu. Ni el grup ni l'usuari no els han valorat encara. Línies mesurades a `ab48732`:
+
+  | Marcador | Text (abreujat) |
+  | :--- | :--- |
+  | `A3.qmd:9` | «Et refereixes a optimitzacions del compilador, de l'estudiant? …» (`#imp-traduccions-literals`) |
+  | `A3.qmd:121` | «Per simplificar, jo faria la distinició entre "natural" (sense signe) i "enter" (amb signe).» |
+  | `A3.qmd:144` | «Vector o matriu. Queda raro perquè els elements són sempre potència de 2 també en el cas de caracters (2^0).» (`#imp-ec-sll-acces-vector`) |
+  | `A3.qmd:184` | «jo no faria servir la paraula "NOT". …» (`#nte-pseudoinstruccio-not`) |
+  | `A3.qmd:327` | «El caràcter "↔" no surt al PDF. Proposo canviar a "inverteix el LSB".» |
+  | `A3.qmd:381` | «Jo faria un merge d'aquests dos callouts» (abans d'`#imp-ec-lazy-evaluation`) |
+  | `A3.qmd:915` | «… deixar les seccions while i do-while consecutives i posar la secció for abans o després …» |
+  | `A3.qmd:1948` | «podríem obviar .global per simplificar el material?» (`#nte-globl`) |
+
+  ```bash
+  git grep -n '<!-- TODO: PM:\|<!-- TODO: El caràcter' -- 01_apunts/A3.qmd | wc -l   # 8
+  ```
+
+  📌 **`A3.qmd:327` és verificat**: al PDF de `make render-complet` (2026-10-01, sobre `bf8b10b` amb el port a l'arbre de treball) el comentari del bloc surt «inverteix 0 1», sense la fletxa (pàgina 92 del llibre); `pdftotext` hi dona U+FFFD. La font monoespaiada del PDF no té el glif. És una tasca, no una decisió: la proposta del revisor ho resol.
+
+  ⚠️ **`A3.qmd:184` i el títol de `#sec-instruccions-logiques-bit-a-bit`**, que el port canvia de «(AND, OR, XOR)» a «(`and`, `or` i `xor`)», toquen la regla d'`AND`/`OR` de la fase 2 de `CLAUDE.md §Pla de treball` (entrada «Revisió sistemàtica del corpus per l'aplicació de la regla d'ús `AND`, `OR`, `XOR`, `NOT`»). El quart marcador de `A3.qmd`, `:249` (`#cau-boolea-c`), no és d'aquesta revisió: té entrada pròpia a §Tasques per tema → T3.
 
 ---
 
@@ -341,9 +364,9 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ### T3
 
-- **Criteri «quatre formats nuclears» aplicat a A3 sencer**: el criteri és a `13_contrib.qmd §Decisions per tema → T2 i T3` des del 2026-10-01, quan es va retirar l'entrada global de §Contingut global (§Entrades retirades). A3 és l'únic fitxer que en queda, i espera el port de la MR `!5`. A3 ja s'hi ha ajustat parcialment (referències creuades cap a T2 als callouts `#nte-format-b`, `#nte-format-j`, `#nte-format-u`), però cal revisar-lo sencer per aplicar el criteri de manera estricta i coherent a tot el tema. **La revisió interna de T3 es va tancar el 2026-09-23 sense aquesta passada**: es fa com a tasca d'harmonització transversal en un xat dedicat a `A3.qmd`, que no reobre la revisió del tema.
+- **Criteri «quatre formats nuclears» aplicat a A3 sencer**: el criteri és a `13_contrib.qmd §Decisions per tema → T2 i T3` des del 2026-10-01, quan es va retirar l'entrada global de §Contingut global (§Entrades retirades). A3 és l'únic fitxer que en queda; el port de la MR `!5` ja és a `main` (`ab48732`), i es fa a la fase 2 de `CLAUDE.md §Pla de treball`. A3 ja s'hi ha ajustat parcialment (referències creuades cap a T2 als callouts `#nte-format-b`, `#nte-format-j`, `#nte-format-u`), però cal revisar-lo sencer per aplicar el criteri de manera estricta i coherent a tot el tema. **La revisió interna de T3 es va tancar el 2026-09-23 sense aquesta passada**: es fa com a tasca d'harmonització transversal en un xat dedicat a `A3.qmd`, que no reobre la revisió del tema.
 
-- **Decisió de contingut a `#cau-boolea-c`** (`A3.qmd:244`, pendent d'Adrià, obert des de la revisió de T3): el text diu que «unes expressions no nul·les s'interpreten com a certes» sense dir **quines**. Cal indicar com s'identifiquen les que sí i les que no. Afecta el rigor tècnic. El marcador segueix al corpus perquè la decisió és viva i no la pot prendre Claude Code.
+- **Decisió de contingut a `#cau-boolea-c`** (`A3.qmd:249`, mesurat a `ab48732`, pendent d'Adrià, obert des de la revisió de T3): el text diu que «unes expressions no nul·les s'interpreten com a certes» sense dir **quines**. Cal indicar com s'identifiquen les que sí i les que no. Afecta el rigor tècnic. El marcador segueix al corpus perquè la decisió és viva i no la pot prendre Claude Code.
 
 - Retocs manuals pendents (Roger) a les figures:
   - `auto_figs/T3_ba_exemple__original_light.svg`
