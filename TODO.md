@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**37 entrades vives** (recompte del 2026-10-01: entra «Anotacions de la revisió externa de T3», en portar la MR `!5`, i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**38 entrades vives** (recompte del 2026-10-01: entren «Anotacions de la revisió externa de T3», en portar la MR `!5`, i «Tres SVG orfes de T5», i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,7 +16,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
 ```
 
 Repartiment: `§Decisions obertes` 12 · `§Tasques transversals` 5 ·
-`§Tasques per tema` 12 · `§Tasques globals` 8 (suma 37, regla 12 bis).
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 38, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -330,6 +330,18 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ✅ **Desbloquejat el 2026-10-01**: `temes456` es va fusionar a `main` (`451c3ef`), i A4, A5 i A6 ja es poden tocar (vegeu §Decisions obertes → Branques del remot).
 
 ### T5
+
+- **Tres SVG orfes de T5** (registrats 2026-10-01, a petició de l'usuari, que segurament els eliminarà). Versionats a `22_figs_originals/` i sense cap referència en cap `.qmd`, `.yml` ni `.toml`:
+
+  ```bash
+  for f in T5_recta_global__org T5_recta_zoom_zero__org T5_coma_flotant_racionals__drawio; do
+    echo "$f: $(git grep -l "$f" -- . ':!TODO.md' | wc -l) referències"; done   # 0 · 0 · 0
+  ```
+
+  - `T5_recta_global__org.svg` (32 línies) i `T5_recta_zoom_zero__org.svg` (34): esborranys de les rectes de T5, actualitzats igualment a «precisió simple» el 2026-10-01 (`2693ec3`, decisió de l'usuari).
+  - `T5_coma_flotant_racionals__drawio.svg` (7 465 línies): l'esborrany original de totes dues rectes, en estil drawio. L'entrada «Nova eina disponible: retalls (crops)…» de §Tasques transversals el va valorar i descartar com a font de retalls.
+
+  ⚠️ Si s'eliminen, cal actualitzar aquella entrada de retalls, que en parla.
 
 - **P8** — `fcsr` té dependència cap endavant amb `@nte-zicsr` (T9). Tenir-ho present. *(No retirar sense actualitzar `13_contrib.qmd:729` —mesurat a `ebdf055`—, que hi remet explícitament: «T5 → T9: `fcsr` → `@nte-zicsr` (vegeu `TODO.md §T5 P8`)».)*
 
