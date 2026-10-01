@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**43 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, i les expressions als operands d'E/S; entra «Tanques de codi fora de la convenció»). Una entrada = una vinyeta de primer nivell (`^- `) per
+**42 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat»; entra «Tanques de codi fora de la convenció»). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 11 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 43, regla 12 bis).
+Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 10 ·
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 42, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -256,17 +256,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ```
 
   Mecànic i de volum considerable: candidat clar per a Claude Code.
-
-- **Grafia «No associativitat» vs «No-associativitat»** (detectada 2026-09-20, sessió B de la recuperació de diffs). Cal decidir quina és la canònica i harmonitzar-la. Afecta també «No distributivitat»/«No-distributivitat». Estat mesurat: el **corpus és unànime amb guionet** (5 ocurrències) i el fitxer de convencions és l'únic divergent:
-
-  | Forma | On |
-  | :--- | :--- |
-  | «No-associativitat» | `A5.qmd:693` (títol de secció), `E5.qmd:204`, `S5.qmd:908`, `S_criteris_seleccio.qmd:89`, `:90` |
-  | «No associativitat» | `13_contrib.qmd:159` (la convenció; línia mesurada a `ebdf055`) |
-
-  El commit `92345e4` («A5-E5-S5 revisió interna parcial») va introduir la forma amb guionet al solucionari, de manera que la del fitxer de convencions és l'anterior.
-
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
 - **`S_criteris_seleccio.qmd` — taula de T1 incompleta** (auditoria, sessió 2, 2026-09-21). La taula de `## {{< var tema1 >}}` té **una sola fila** (`@exr-p1-enters-taules`, `:23`) i ha de recollir la resta de problemes seleccionats de `S1.qmd`. El marcador «TODO» que ho registrava era contingut destinat a l'alumne i es va substituir per la nota neutra de `:19` («*Taula provisional: recull els problemes de `S1.qmd` seleccionats fins ara.*»); **aquesta entrada és ara l'únic registre de la tasca**. El fitxer és comentat a `_quarto.yml:95`, de manera que avui no es renderitza.
 
@@ -614,6 +603,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | **Terminologia anglesa a la prosa d'E/S** (entrada de §Tasques transversals, registrada i retirada el 2026-10-01; era l'antiga «tasca prèvia opcional» de `CLAUDE.md`, `879f3e7`) | **Executada (2026-10-01): 27 substitucions en 9 fitxers**, segons `13_contrib.qmd §Substitucions obligatòries`: *string* → «cadena de caràcters» (o «cadena», a E2, que en parla sovint), *padding* → «**farciment** (*padding*)» la primera vegada i després «farciment», *offset* → «desplaçament», *jump table* → «taula de salts» després de la primera aparició, *overflow*/*underflow* → «sobreeiximent»/«subdesbordament» a `E5.qmd:177`, que són els termes d'A5. A `S7.qmd:64-66`, «desplaçament» segons el criteri que A7 fa servir a la prosa; les fórmules de S7 conserven $\text{offset}$, com les d'A7. ⚠️ **La classificació publicada en registrar l'entrada era incompleta**: comptava les cel·les de taula com a «codi o atributs» i acceptava qualsevol cursiva com a primera aparició. N'hi havia **11 més**: 6 en taules (`S2.qmd:310`, `S3.qmd:621`, `S5.qmd:751` i tres a `S_criteris_seleccio.qmd`) i 5 en cursiva sense el terme català al davant (`E5.qmd:177` dues, `S2.qmd:308`, `S3.qmd:246`, `:279`, `S7.qmd:432`) | De 99 ocurrències en queden 73, i cap no és feina d'aquesta entrada: 33 identificadors, 18 de codi, 4 de fórmules, 6 cursives en la forma admesa («sobreeiximent (*overflow*)», «taula de salts (*jump table*)») i **12 «branch» a E6/S6**, que són de l'entrada de §T6. Ordre: `25_scripts/escombrada.sh -w 'hardware\|software\|cache\|offset\|overflow\|underflow\|branch\|jump\|string\|padding\|aliasing\|event' -- 02_exercicis 03_solucions` (dins de la taula, cada `\|` és una barra escapada), que dona 73. Text sencer de l'entrada: `git show da35dfe:TODO.md` |
 | **Criteri «quatre formats nuclears d'instrucció» (RISC-V International)** (entrada de §Tasques globals → Contingut global, adoptat a la revisió interna de T2, 2026-07; retirada el 2026-10-01) | **Executada per mesura, sense cap canvi al corpus.** L'entrada demanava ajustar els fitxers que donessin un total de formats («sis formats», «6 formats»). Avui no n'hi ha cap: només `A2.qmd:260` en dona un recompte, i és el bo. La resta són llistes de lletres (`registres.toml`, `gen_regs.py:410`, `A2.qmd:280`) que no afirmen cap total. Patró per forma, sobre tot el versionat amb A3–A6 i sense: `git grep -n -i -E "(un\|dos\|tres\|quatre\|cinc\|sis\|set\|[0-9]+) (formats\|tipus de format)"`, més les llistes `R, I, S` i `R/I/S` (a la taula, les `\|` són barres escapades). ⚠️ **El criteri no era a `13_contrib.qmd`**, només en aquesta entrada i al text d'A2: retirar-la sense moure'l n'hauria perdut l'única còpia normativa. Ara és a `13_contrib.qmd §Decisions per tema → T2 i T3` | La revisió qualitativa d'A3 (com presenta B, J i U) és a l'entrada de `§T3`, que espera el port de `!5`. Text sencer: `git show 4a33a74:TODO.md` |
 | **Expressions aritmètiques als operands: escombrada pendent de `Ex`/`Sx`/`11_riscv.qmd`** (entrada de §Tasques per tema → Laboratori; retirada el 2026-10-01) | **Executada per mesura, sense cap canvi.** La regla (`13_contrib.qmd §Convencions globals del laboratori`) admet expressions a teoria, problemes i exàmens, i només exigeix el literal al laboratori. Mesurat a `b2530c7`: **34 línies** d'assemblador amb un operador aritmètic als operands a `02_exercicis`, `03_solucions`, `11_riscv.qmd` i `21_riscv/`. **27 són de `S4.qmd`**, que l'entrada mateixa excloïa («A4 i S4 [...] no es toquen»). Les 7 restants són enunciats i solucions de problemes: `E2.qmd:73`, `:411`; `E3.qmd:282`; `E4.qmd:375`, `:376`; `S2.qmd:445`, `:630`. Cap no demana executar el codi a RARS, i `E2.qmd:73`, `S2.qmd:445` i `:630` ja porten la nota que a RARS cal `la` + `addi`. `11_riscv.qmd` i `21_riscv/`: cap. ⚠️ **Una primera escombrada en va trobar 32, no 34**: filtrava els blocs per `{.s` i se saltava el d'`E4.qmd:368`, que obre amb una tanca ` ```s ` nua. D'aquí ve l'entrada «Tanques de codi fora de la convenció», de §Tasques transversals | Cap pendent. Ordre que dona 34: `git grep -n -E '^\s*([A-Za-z_]\w*:\s*)?(la\|li\|addi\|\.set\|\.space\|\.word\|\.eqv)\s+[^#]*([A-Za-z_0-9)]\s*([*/+]\|<<\|>>)\|[A-Za-z_)]\s*-)\s*[A-Za-z_0-9(]' -- 02_exercicis 03_solucions 11_riscv.qmd 21_riscv` (dins de la taula, cada `\|` és una barra escapada). Text sencer: `git show b2530c7:TODO.md` |
+| **Grafia «No associativitat» vs «No-associativitat»** (entrada de §Tasques transversals, detectada 2026-09-20; retirada el 2026-10-01) | **Executada (2026-10-01). Decisió de l'usuari: amb guionet**, la forma que l'IEC fixa per a *no* davant d'un nom. El corpus ja era unànime (`A5.qmd:693`, `:719`; `E5.qmd:204`; `S5.qmd:908`, `:911`, `:989`; `S_criteris_seleccio.qmd:89`, `:90`), i l'única forma divergent era la de la convenció, `13_contrib.qmd:160`, que s'ha corregit. La regla general és ara a `13_contrib.qmd §Criteris generals` («No» davant d'un nom). No ha calgut tocar A5 | Cap pendent. `git grep -n -i -E "no (associativ\|distributiv)" -- . ':!TODO.md'` → cap (dins de la taula, cada `\|` és una barra escapada) |
 
 ### Caduques per mesura
 
