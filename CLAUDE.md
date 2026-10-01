@@ -59,20 +59,20 @@ Els PDFs originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas
 
 ## Revisió interna
 
-El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (S2–S8) ja està generat. **La revisió interna de teoria i de laboratori és tancada** —T1–T9 i L1–L6, per declaració de l'usuari del 2026-09-23 (vegeu §Estat dels materials)—; el que en resta obert són els enunciats i els solucionaris, que segueixen el pas combinat descrit a §Estat dels materials.
+El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (S2–S8) ja està generat. ✅ **La revisió interna és tancada sencera**, per declaracions de l'usuari: teoria i laboratori el 2026-09-23, enunciats i solucionaris el 2026-10-01 (vegeu §Estat dels materials).
 
-**El projecte és, doncs, en dues fases alhora.** La revisió interna que queda la fa **només l'usuari**; la **revisió externa, amb altres professors de l'assignatura, ja ha començat** per T4, T5 i T6 a la branca `temes456` —des del 21 de juliol del 2026—, i el detall és al 📌 de §Estat dels materials → Teoria, que no cal repetir aquí. Per a la resta de temes encara no ha començat.
+**El projecte és, doncs, a la fase de revisió externa**, que fan altres professors de l'assignatura. És en curs per a **T3** (MR `!5`, des del 6 de juliol del 2026) i per a **T4, T5 i T6** (MR `!7`, branca `temes456`, des del 21 de juliol); el detall és al 📌 de §Estat dels materials → Teoria. Per a la resta del material encara no ha començat. L'ordre de la feina que queda és a §Pla de treball.
 
 ### Prioritats de la revisió
 
 - Prioritats màximes: **coherència pedagògica** i **rigor tècnic** en tot el contingut.
 - Revisió tècnica profunda i revisió lingüística en **català normatiu**.
 - Solucionaris: detall **pas a pas**, excepte els passos trivials.
-- **Harmonització abans de la revisió externa**: «Preparat per a revisió externa» no vol dir tancat a canvis profunds, especialment els d'harmonització (terminologia, estil, convencions transversals). Tot el que es pugui detectar i corregir abans que la revisió externa arribi a un fitxer s'ha de fer ara, encara que impliqui tocar fitxers ja marcats com a preparats: amb altres professors ja dins de la revisió, qualsevol canvi transversal té un cost de coordinació molt més alt. ⚠️ Per a **T4, T5 i T6 això ja ha passat**: la revisió externa hi és en curs (§Estat dels materials → Teoria), de manera que un canvi transversal que els toqui s'ha de coordinar amb el grup de treball, no aplicar-hi pel davant. Si detectes una inconsistència que afecta múltiples fitxers (per exemple, terminologia o notació aplicada de manera desigual), proposa'n la correcció sistemàtica encara que surti de l'abast estricte del xat en curs.
+- **Harmonització abans de la revisió externa**: «Preparat per a revisió externa» no vol dir tancat a canvis profunds, especialment els d'harmonització (terminologia, estil, convencions transversals). Tot el que es pugui detectar i corregir abans que la revisió externa arribi a un fitxer s'ha de fer ara, encara que impliqui tocar fitxers ja marcats com a preparats: amb altres professors ja dins de la revisió, qualsevol canvi transversal té un cost de coordinació molt més alt. ⚠️ Per a **T3, T4, T5 i T6 això ja ha passat**: la revisió externa hi és en curs (§Estat dels materials → Teoria), de manera que un canvi transversal que els toqui s'ha de coordinar amb els revisors, no aplicar-hi pel davant. Abans de tocar qualsevol fitxer que una branca de revisió també toqui —no només `A3.qmd`–`A6.qmd`—, feu-ne una fusió de prova (`TODO.md §Decisions obertes → Branques del remot`): `980434b` va afegir un conflicte a `.gitignore` per no haver-la feta. Si detectes una inconsistència que afecta múltiples fitxers (per exemple, terminologia o notació aplicada de manera desigual), proposa'n la correcció sistemàtica encara que surti de l'abast estricte del xat en curs.
 
 ### Estat dels materials
 
-*Actualitzat el 2026-09-23. Secció única: hi és fusionada l'antiga §Seqüència de revisió pendent, que duplicava aquesta amb un marcador de progrés per tema.*
+*Actualitzat el 2026-10-01. Secció única: hi és fusionada l'antiga §Seqüència de revisió pendent, que duplicava aquesta amb un marcador de progrés per tema. La seqüència de la feina que queda és a §Pla de treball.*
 
 El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
@@ -84,7 +84,7 @@ El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
    ⚠️ **No citeu cap resum d'un registre: citeu la secció pròpia de l'ítem i comproveu-la al corpus.** Un registre pot portar **diversos resums escrits en moments diferents**, i cap marca no diu quin és vigent —ni el titular, ni l'ordre al fitxer—. El cas (2026-09-23): a `T4_P_tasques.md`, el titular diu «✅ FASE C COMPLETADA + DECISIONS FINALS RESOLTES», la taula «Decisions que resten obertes per a tu» (`:24`) llista els ítems 3, 4.2 i 8 com a pendents, i el resum final (`:312`) diu «no queda cap decisió pendent tret de l'ítem 8». **El vigent és el segon resum**, i el corpus ho confirma: `#wrn-mul-modul-2n` és a `A4.qmd:323` i el punter T4→T7 a `13_contrib.qmd:706`. Citar la taula de dalt hauria registrat com a pendents dues coses fetes des de juliol.
 3. **És una declaració de l'usuari** — va a la columna «declaració de tancament», i només ell la pot omplir.
 
-«Fase C executada» **no** vol dir «revisió interna acabada». Entre les dues hi ha les *passades finals* (vegeu `TODO.md §Tasques transversals → Passades finals pendents`), i el tancament es declara per separat per a les tres revisions —**pedagògica, tècnica i lingüística**—, tal com les pregunta `26_prompts/Lx__revisio_interna__plantilla.md`.
+«Fase C executada» **no** volia dir «revisió interna acabada». Entre les dues hi havia les *passades finals*, i el tancament es declarava per separat per a les tres revisions —**pedagògica, tècnica i lingüística**—. Amb la revisió interna tancada, la distinció queda com a registre: com es va tancar cada ítem és a `TODO.md §Entrades retirades → Executades` («Passades finals pendents»), i la plantilla que feia les tres preguntes, a l'historial (`git show 980434b:26_prompts/Lx__revisio_interna__plantilla.md`). Val igual per a la revisió externa: que una MR es fusioni no vol dir que el revisor doni el tema per tancat.
 
 ⚠️ **Una declaració de l'usuari no es verifica: es registra.** Demanar-li el commit que la sosté és un error de categoria —equival a demanar el commit que demostra una decisió— i esborrar-la per «no verificable» destrueix l'única còpia del que algú va declarar. Val tant per al punt 3 del protocol de sanejament (§Flux de treball) com per a qualsevol fusió de seccions: **abans de treure una secció, se'n registren els pendents i també les declaracions**.
 
@@ -100,13 +100,20 @@ El tancament de cada tema —amb l'estat que tenia, el commit que el declarava i
 
 ⚠️ **Tancar la revisió d'un tema no tanca el que hi queda registrat.** Els marcadors del corpus, les figures pendents i les decisions obertes **sobreviuen** al tancament i es resolen des de les seves entrades del `TODO.md`, sense reobrir cap tema: els set marcadors d'`A2.qmd`, les figures de T7 i T8, les decisions R4-TYPE i R5-TYPE d'A5, `#cau-boolea-c` d'A3, l'ítem 8 de T4 i la resta.
 
-📌 **T4, T5 i T6: la revisió externa ja és en curs, a `temes456`.** El grup de treball hi revisa `A4.qmd`, `A5.qmd` i `A6.qmd` des del 21 de juliol; darrer commit, **2026-08-07**. És l'etapa que segueix la interna, i el tancament de la interna declarat més amunt n'és la **condició prèvia**: les dues coses són coherents. Les fusions les farà el grup de treball. Estat de la branca, autors i el que la fusió haurà de resoldre fitxer per fitxer: `TODO.md §Decisions obertes → Branques del remot`.
+📌 **T3, T4, T5 i T6: la revisió externa ja és en curs.** És l'etapa que segueix la interna, i el tancament de la interna declarat més amunt n'és la **condició prèvia**: les dues coses són coherents.
+
+- **T4, T5 i T6, a `temes456` (MR `!7`).** El grup de treball hi revisa `A4.qmd`, `A5.qmd` i `A6.qmd` des del 21 de juliol; darrer commit, **2026-08-07**. Les fusions les farà el grup de treball. Una fusió de prova (2026-10-01) dona tres conflictes: `A4.qmd`, `A5.qmd` i `.gitignore`.
+- **T3, a `contingut/t3-traduccio` (MR `!5`, Pedro J. Martinez-Ferrer, 2026-07-06).** Un sol commit, amb rutes d'abans de la reorganització de directoris, que git no pot fusionar. Qui el porta a les rutes actuals es decideix amb el revisor (usuari, 2026-10-01). Fins al 2026-10-01 constava al `TODO.md` com a branca, però no com a revisió externa de T3.
+
+Estat de les branques, autors i el que cada fusió haurà de resoldre fitxer per fitxer: `TODO.md §Decisions obertes → Branques del remot`.
 
 #### Enunciats (`Ex.qmd`) i Solucionaris (`Sx.qmd`)
 
-- **`E3.qmd` i `S3.qmd`** — revisió interna completada. Encaix T2↔T3 en terminologia caller-saved/callee-saved (vegeu `TODO.md §T3`).
-- **La resta de fitxers** (`E1.qmd`–`E2.qmd`, `E4.qmd`–`E9.qmd` i `S1.qmd`–`S2.qmd`, `S4.qmd`–`S9.qmd`) estan pendents d'un **pas combinat**: adaptació als `Ax.qmd` resultants de la revisió interna + revisió interna pròpia. Es fa en un sol xat per fitxer, en ordre temàtic. Tasques vives pendents: vegeu `TODO.md`.
-- Tasca prèvia opcional (Claude Code): substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web.
+✅ **La revisió interna d'enunciats i solucionaris és tancada: `E1.qmd`–`E9.qmd` i `S1.qmd`–`S9.qmd`, el 2026-10-01.** Declaració de l'usuari, literal: «les revisions internes es poden donar per acabades». Amb ella queda tancada tota la revisió interna. (`E3.qmd` i `S3.qmd` ja hi constaven com a completats des del 2026-07-12, `614f576`.)
+
+⚠️ **Fins al 2026-10-01, aquesta subsecció deia que els altres setze fitxers eren «pendents d'un pas combinat», i des del juliol no era cert.** La frase es va escriure el 2026-06-19 (`879f3e7`), quan els fitxers encara es deien `PE_Tx` i `PS_Tx`; `614f576` només en va canviar els noms. Les revisions de tema de juliol ja eren A-E-S conjuntes: els nou registres declaren E<x> i S<x> com a abast (`git show a211bbf:TODO/T<x>_P_tasques.md`, al títol o a «Fitxers objectiu»), i els de T6 i T7 diuen literalment «pas combinat E6+S6» i «E7+S7 (adaptació + revisió pròpia)». La declaració de l'usuari i l'historial coincideixen. La skill `/pas-combinat` (`980434b`), feta sobre aquella frase sense preguntar a l'historial, es va retirar amb ella.
+
+Els pendents d'E/S que sobreviuen al tancament són al `TODO.md`: «Exercicis → Problemes», les expressions aritmètiques als operands d'`Ex`/`Sx`, la taula de T1 de `S_criteris_seleccio.qmd` i la terminologia anglesa a la prosa, que és l'antiga «tasca prèvia opcional» d'aquesta subsecció i que, mesurada, no està feta.
 
 #### Laboratori (`L1`–`L6`)
 
@@ -118,6 +125,19 @@ Dos avisos que el tancament no esborra, perquè descriuen l'historial i seguiran
 - ⚠️ **`3cae913` és l'únic commit de revisió que ha tocat mai `L4.qmd`**, i el seu assumpte diu que és *previ* a les passades finals. L'usuari les va donar per cobertes en tancar L4.
 
 Detalls transversals i decisions obertes: vegeu `TODO.md`.
+
+### Pla de treball
+
+*2026-10-01, en tancar-se la revisió interna. Substitueix la seqüència per fitxer del pas combinat.* Cada línia remet a les entrades del `TODO.md` pel seu títol; el detall, les ordres i els ⛔ de cada entrada són allà.
+
+| Ordre | Línia de treball | Què hi entra |
+| :---: | :--- | :--- |
+| 1 | **Integrar la revisió externa que ja ha arribat** | MR `!7` (T4–T6): la fusió la fa el grup de treball, amb la llista de conflictes de §Branques del remot. MR `!5` (T3): portar-la a `A3.qmd` i `21_riscv/`; qui ho fa es decideix amb el revisor. |
+| 2 | **Harmonitzacions transversals, abans d'obrir la revisió externa de la resta** | §Tasques transversals del `TODO.md`: cometes `"…"` → `«…»`, format de les adreces, «simple precisió» (§Decisions obertes), «No associativitat», «Exercicis → Problemes», operadors `AND`/`OR`, `Símbols` i `Notació`, terminologia anglesa a la prosa d'E/S; i, d'altres seccions, el criteri dels quatre formats nuclears i les expressions aritmètiques als operands. `A4.qmd`–`A6.qmd` en queden fora fins que es fusioni `temes456`, i `A3.qmd` s'ha de coordinar amb `!5`. |
+| 3 | **Obrir la revisió externa de la resta** | T1, T2 i T7–T9; els enunciats i solucionaris de tots els temes; el laboratori. Una branca per grup, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). Els grups i el calendari els decideix l'usuari. |
+| 4 | **En paral·lel, sense bloquejar res** | Decisions de contingut que poden anar com a preguntes als revisors (R4-TYPE, R5-TYPE, `#cau-boolea-c`, criteris de codi C, half-adder i full-adder); figures pendents (T7, T8, T9, BA i mapa de memòria); eines (`verifica_laboratoris.py`, figures centrades al PDF, protocol de gestió d'errades, taula de referències d'`index.qmd`). |
+
+La línia 2 va abans de la 3 per §Prioritats de la revisió: un canvi transversal costa poc mentre ningú més no és dins del fitxer, i molt quan hi ha revisors treballant-hi. Les eines per fer-la són la skill `escombrada` i el subagent `auditor-xifres` (`13_contrib.qmd §IAs`).
 
 ### Etiquetes `{#sec-}` a les capçaleres
 
