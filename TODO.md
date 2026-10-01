@@ -183,7 +183,25 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ## Tasques transversals
 
-- **Exercicis → Problemes: l'etiqueta visible.** El llibre etiqueta els enunciats com a «Exercici 11.1», «Exercici 11.10»… (el prefix per defecte de Quarto per a `#exr-`, que `_quarto.yml §language` no redefineix), mentre que la part del llibre es diu «Problemes». **Cal decidir** si l'etiqueta passa a «Problema» (`crossref-exr-prefix` i `callout`/`title` corresponents) i, si escau, la de les solucions. És la part «callout header» del títol original d'aquesta entrada.
+- **Exercicis → Problemes: l'etiqueta visible. Decidit, però l'HTML i el PDF no es poden fer igual de la mateixa manera.** El llibre etiqueta els enunciats com a «Exercici 11.1», «Exercici 11.10»… (el prefix per defecte de Quarto per a `#exr-`), en una part del llibre que es diu «Problemes». **Decisió de l'usuari (2026-10-01): «Problema», però només a Problemes i Solucions**, perquè el laboratori també fa servir `#exr-` (43 definicions, 48 referències) i la seva prosa en diu «exercici» (24 vegades).
+
+  **A l'HTML, resolt i provat** (2026-10-01, no confirmat al repositori): a la capçalera dels 19 fitxers `E1`–`E9`, `S1`–`S9` i `S_criteris_seleccio`,
+
+  ```yaml
+  language:
+    crossref-exr-title: "Problema"
+    crossref-exr-prefix: "Problema"
+  ```
+
+  dona «Problema 11.x» a les definicions i a les referències, «Exercici 30.x» al laboratori, cap avís, i els callouts d'E/S conserven «RISC-V» i «Essencial». ⚠️ **No s'ha de fer amb un bloc `crossref:` al fitxer**: substitueix la configuració de capítols que el llibre hi injecta, la numeració perd el capítol («Problema 9») i `@sec-tema-introduccio-solucions` (S2 → S1) deixa de resoldre. La prova amb un sol fitxer semblava bona, i només el llibre complet ho va mostrar.
+
+  **Al PDF no hi arriba.** El PDF és un sol document LaTeX, l'entorn és `\newtheorem{exercise}{Exercici}[chapter]`, definit una sola vegada, i les metadades de cada fitxer no el canvien: el PDF va donar 390 «Exercici» i cap «Problema». Amb la solució de l'HTML, les dues sortides dirien coses diferents, i per això no s'ha confirmat. Opcions, pendents de l'usuari:
+
+  | Opció | Cost | Resultat |
+  | :--- | :--- | :--- |
+  | Macro LaTeX: `\exercisename` a `preamble.tex`, `exr-title` només per al PDF, i un `\renewcommand` en LaTeX pur al començament de les parts Problemes i Laboratori | Cal provar-ho (un `make render-complet` per intent), i és maquinària nova en dos llocs | HTML i PDF iguals, amb el laboratori a «Exercici» |
+  | «Problema» a tot el llibre, a `_quarto.yml` | Una línia | HTML i PDF iguals; el laboratori diria «Problema 30.1» mentre la seva prosa diu «exercici» |
+  | Només l'HTML | La capçalera de dalt | El PDF continua dient «Exercici» a tot arreu |
 
   ✅ **La part dels identificadors és feta (2026-10-01)**, per decisió de l'usuari: `p<N>-` → `t<N>-`, amb el número del tema del fitxer. **503 substitucions** en 22 fitxers, que són totes les ocurrències del prefix antic: 498 als `.qmd` (la xifra que publicava l'entrada) i 5 a `TODO.md` i `CLAUDE.md`. No hi ha hagut cap col·lisió: les 296 definicions mapen a 296 identificadors nous diferents, i cada parella `exr`/`sol` és al mateix tema. Les 201 referències `@` resolen, i el render HTML no dona cap referència sense resoldre. La convenció és a `13_contrib.qmd §Problemari i solucionari`. El text anterior de l'entrada, amb la taula de prefixos per tema: `git show 7d78615:TODO.md`.
 
