@@ -107,12 +107,6 @@ executat `add t2, t0, t1` (la negació bit a bit es fa amb la pseudoinstrucció
 ```
 :::
 
-<!-- TODO: Aquest "caution" hauria d'estar més endavant, quan es parla de l'extensió M i no pas al principi d'introducció de les multiplicacions -->
-
-::: {#cau-sobreeiximent-extensio-m .callout-caution}
-El criteri vist per a la suma i la resta (@cau-ec-no-overflow) s'aplica a tota l'aritmètica entera de RISC-V, inclosa l'extensió M: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció, si cal, és responsabilitat del programari (@sec-sobreeiximent-programari).
-:::
-
 ::: {#wrn-sobreeiximent-naturals .callout-warning collapse=true}
 ## Sobreeiximent en naturals
 
@@ -283,6 +277,10 @@ Suposant que `a`, `b` i `c` ocupen `t0`, `t1` i `t2`:
 ### Sobreeiximent en la multiplicació {#sec-sobreeiximent-en-la-multiplicacio}
 
 El producte de dos enters de 32 bits pot tenir fins a 64 bits de resultat exacte. `mul` retorna només els **32 bits de menys pes**, que corresponen al resultat truncat. Si el resultat exacte no és representable amb 32 bits, **es produeix sobreeiximent i el valor retornat per `mul` no és correcte**.
+
+::: {#cau-sobreeiximent-extensio-m .callout-caution}
+El criteri vist per a la suma i la resta (@cau-ec-no-overflow) s'aplica a tota l'aritmètica entera de RISC-V, inclosa l'extensió M: el resultat es trunca silenciosament als 32 bits de menys pes, sense excepció ni indicador. La detecció, si cal, és responsabilitat del programari (@sec-sobreeiximent-programari).
+:::
 
 Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters amb signe) o `mulhu` (naturals sense signe), que retornen els **32 bits de més pes**. A partir d'aquests es pot detectar el sobreeiximent:
 

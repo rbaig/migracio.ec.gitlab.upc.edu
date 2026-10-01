@@ -203,7 +203,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | ---: | :--- | :--- | :--- |
   | 1 | T4 | [main] Figures del *half-adder* i del *full-adder* (`#wrn-sobreeiximent-maquinari`); en SVG natiu, juntament amb la #2 | Factible |
   | 2 | T4 | [main] Figura de la cadena de *full-adders* amb una XOR per al sobreeiximent: sí que cal, perquè il·lustra l'equació del maquinari | Factible |
-  | 3 | T4 | [br] Moure `#cau-sobreeiximent-extensio-m` a §Sobreeiximent en la multiplicació | Important |
+  | 3 | T4 | [br] Moure `#cau-sobreeiximent-extensio-m` a §Sobreeiximent en la multiplicació | Important. ✅ **Resolta (2026-10-01, fase 3)**: el callout, literal, és ara a §Sobreeiximent en la multiplicació, després del paràgraf que presenta el truncament de `mul`. No tenia cap remissió entrant, i les dues que conté apunten enrere. Marcador esborrat. |
   | 4 | T4 | [br] Algorismes en cursiva i blocs titulats només «Pseudocodi» (multiplicació i divisió): cal fixar-ne una convenció a `13_contrib.qmd` | Factible. **Convenció escrita (2026-10-01, `13_contrib.qmd §Blocs de codi`) i títols aplicats** als quatre blocs (`A4.qmd:186`, `:386`, `:749`; `S4.qmd:804`). **Queda la cursiva**, que és del PDF: `\theoremstyle{plain}` per a `theorem` al `.tex` generat; va a la passada de render (fase 4). El marcador `A4.qmd:181` es manté fins llavors. |
   | 5 | T5 | [main] Introduir el R4-TYPE? La figura existeix i no s'usa; només té sentit si el tema tracta les instruccions FMA | Decisió |
   | 6 | T5 | [main] R5-TYPE (*compressed*) com a aprofundiment: fora de l'abast de T5; en tot cas, a T2 | No val la pena |
@@ -220,7 +220,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   | # | Marcador | Text |
   | ---: | :--- | :--- |
-  | 3 | `A4.qmd:110` | «Aquest "caution" hauria d'estar més endavant, quan es parla de l'extensió M…» |
+  | 3 | ~~`A4.qmd:110`~~ | «Aquest "caution" hauria d'estar més endavant, quan es parla de l'extensió M…» — esborrat, resolta |
   | 4 | `A4.qmd:181` | «La descripció de l'algorisme no hauria de ser tota en cursives. Els titols del codis no haurien de ser simplemement "pseudocodi".» |
   | 7 | `A5.qmd:269` | «PM: la paraula denormals de la figura a baix no s'aprecia del tot bé» |
   | 8 | `A5.qmd:531` | «PM: Check that this formula is well displayed under LaTeX» |
