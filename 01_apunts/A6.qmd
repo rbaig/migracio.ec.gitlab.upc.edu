@@ -251,24 +251,6 @@ $$s_{max} = \lim_{s_{x} \to \infty} s = \frac{1}{1-P_{x}}$$ {#eq-amdahl}
 
 ## Potència {#sec-potencia}
 
-L'any 1965 Gordon Moore (co-fundador d'Intel) va predir que **la densitat de transistors al xip es podria duplicar cada 2 anys** (a la pràctica, durant moltes dècades va passar cada any i mig aproximadament). Aquesta predicció es coneix com a **llei de Moore** (tot i que en realitat és un principi). Durant dècades, aquesta duplicació de transistors va alimentar dos grans motors de rendiment: l'augment de la freqüència de rellotge i el creixement de les memòries cau ([Tema 7](#sec-tema-mc)).
-
-La miniaturització que fa possible la llei de Moore permet reduir el temps de commutació dels transistors i, per tant, augmentar la freqüència de rellotge. Però a mesura que la freqüència creixia, també ho feia la **dissipació de potència**, ja que l'energia consumida es converteix en calor que cal dissipar per evitar superar els llindars de tolerància del circuit. A això cal afegir-hi la gran demanda de dispositius mòbils (telèfons intel·ligents, tauletes, portàtils ultraprims) que disposen d'un espai molt limitat per a dissipadors i que necessiten un consum molt baix per preservar l'autonomia de la bateria. El resultat és que el creixement de la freqüència de rellotge es va estancar cap a principis dels anys 2000. L'explicació de fons la proporciona l'**escalat de Dennard**.
-
-<!-- TODO: PM: l'aprofundiment no hauria de començar abans de la eq. 6.8 -->
-
-::: {#wrn-dennard .callout-warning collapse=true}
-## L'escalat de Dennard i la fi del creixement de freqüència
-
-Durant dècades, la reducció de la mida dels transistors no sols permetia encabir-ne més al xip (llei de Moore) sinó que, gràcies a l'escalat de Robert Dennard (IBM), també mantenia la **densitat de potència constant**: transistors més petits consumien proporcionalment menys energia, de manera que duplicar-ne la quantitat no disparava el consum total. Això permetia augmentar la freqüència de rellotge sense problemes tèrmics.
-
-Cap al 2003–2005, però, l'escalat de Dennard va deixar de funcionar. En arribar a dimensions de transistor molt petites, els **corrents paràsits** ($P_s$ a la @eq-potencia) ja no eren negligibles i creixien amb cada nova generació, tot i que la freqüència no augmentés. A partir d'aquí, augmentar la freqüència implicava disparar la potència total per sobre dels límits tèrmics tolerables. La freqüència dels processadors va tocar sostre als 3–4 GHz i s'hi ha mantingut des d'aleshores.
-
-La resposta de la indústria va ser el **disseny multinucli** (*multicore*): en lloc d'un sol nucli molt ràpid, es van integrar múltiples nuclis de freqüència moderada en un mateix xip, mantenint la potència total sota control mentre es continuava augmentant el rendiment total (productivitat). Això explica que avui dia un portàtil d'oficina i un servidor de centre de dades tinguin freqüències de rellotge similars (3–4 GHz), però el servidor tingui molts més nuclis. La distribució física d'aquests nuclis en un xip modern es pot apreciar al [Tema 7](#sec-tema-mc) (@fig-i9-13900k-die).
-:::
-
-<!-- TODO: PM: aquí s'introdueix la potència després de tota la parrafada anterior. Això s'hauria de canviar per començar per aquí i deixar al final els aprofundiments i/o curiositats... -->
-
 La potència ($P$) és l'energia dissipada per unitat de temps per la circulació de corrents elèctrics en el circuit:
 
 $$P = P_{d} + P_{s}$$ {#eq-potencia}
@@ -366,6 +348,20 @@ Donada la tensió d'alimentació $V_{CC}$ i el corrent de fuita agregat de tot e
 
 $$P_{s} = V_{CC} \cdot I_{fuita}$$ {#eq-potencia-estatica}
 
-A diferència de la potència dinàmica (@eq-potencia-dinamica), la potència estàtica no depèn de la freqüència de rellotge: un circuit alimentat però inactiu continua dissipant $P_{s}$. A més, $I_{fuita}$ creix amb la temperatura i amb la miniaturització dels transistors, de manera que la seva contribució a la potència total ha anat guanyant pes en cada nova generació. Aquest creixement dels corrents de fuita és precisament el que va posar fi a l'escalat de Dennard i va estancar la freqüència de rellotge (@wrn-dennard).
+A diferència de la potència dinàmica (@eq-potencia-dinamica), la potència estàtica no depèn de la freqüència de rellotge: un circuit alimentat però inactiu continua dissipant $P_{s}$. A més, $I_{fuita}$ creix amb la temperatura i amb la miniaturització dels transistors, de manera que la seva contribució a la potència total ha anat guanyant pes en cada nova generació.
 
-<!-- TODO: Aquí és el lloc idoniï per deixar els aprofundiments -->
+### Miniaturització i límit tèrmic {#sec-miniaturitzacio-i-limit-termic}
+
+L'any 1965 Gordon Moore (co-fundador d'Intel) va predir que **la densitat de transistors al xip es podria duplicar cada 2 anys** (a la pràctica, durant moltes dècades va passar cada any i mig aproximadament). Aquesta predicció es coneix com a **llei de Moore** (tot i que en realitat és un principi). Durant dècades, aquesta duplicació de transistors va alimentar dos grans motors de rendiment: l'augment de la freqüència de rellotge i el creixement de les memòries cau ([Tema 7](#sec-tema-mc)).
+
+La miniaturització que fa possible la llei de Moore permet reduir el temps de commutació dels transistors i, per tant, augmentar la freqüència de rellotge. Però a mesura que la freqüència creixia, també ho feia la **dissipació de potència** (@eq-potencia-dinamica), ja que l'energia consumida es converteix en calor que cal dissipar per evitar superar els llindars de tolerància del circuit. A això cal afegir-hi la gran demanda de dispositius mòbils (telèfons intel·ligents, tauletes, portàtils ultraprims) que disposen d'un espai molt limitat per a dissipadors i que necessiten un consum molt baix per preservar l'autonomia de la bateria. El resultat és que el creixement de la freqüència de rellotge es va estancar cap a principis dels anys 2000: el creixement dels corrents de fuita (@sec-potencia-estatica) va posar fi a l'**escalat de Dennard** (@wrn-dennard).
+
+::: {#wrn-dennard .callout-warning collapse=true}
+## L'escalat de Dennard i la fi del creixement de freqüència
+
+Durant dècades, la reducció de la mida dels transistors no sols permetia encabir-ne més al xip (llei de Moore) sinó que, gràcies a l'escalat de Robert Dennard (IBM), també mantenia la **densitat de potència constant**: transistors més petits consumien proporcionalment menys energia, de manera que duplicar-ne la quantitat no disparava el consum total. Això permetia augmentar la freqüència de rellotge sense problemes tèrmics.
+
+Cap al 2003–2005, però, l'escalat de Dennard va deixar de funcionar. En arribar a dimensions de transistor molt petites, els **corrents de fuita** ($I_{fuita}$, @eq-potencia-estatica) ja no eren negligibles i creixien amb cada nova generació, tot i que la freqüència no augmentés. A partir d'aquí, augmentar la freqüència implicava disparar la potència total per sobre dels límits tèrmics tolerables. La freqüència dels processadors va tocar sostre als 3–4 GHz i s'hi ha mantingut des d'aleshores.
+
+La resposta de la indústria va ser el **disseny multinucli** (*multicore*): en lloc d'un sol nucli molt ràpid, es van integrar múltiples nuclis de freqüència moderada en un mateix xip, mantenint la potència total sota control mentre es continuava augmentant la productivitat. Això explica que avui dia un portàtil d'oficina i un servidor de centre de dades tinguin freqüències de rellotge similars (3–4 GHz), però el servidor tingui molts més nuclis. La distribució física d'aquests nuclis en un xip modern es pot apreciar al [Tema 7](#sec-tema-mc) (@fig-i9-13900k-die).
+:::

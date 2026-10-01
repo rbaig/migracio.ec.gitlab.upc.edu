@@ -212,7 +212,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | 9 | T6 | [br] Els exemples de §Definicions barregen temps d'execució i rendiment: cal enunciar abans la relació | Important. ✅ **Resolta (2026-10-01, fase 3)**: `#eq-rendiment` («A EC, el rendiment es mesura amb el temps d'execució») i el bloc «Quina diferència hi ha entre temps d'execució i rendiment?» passen davant dels dos exemples, i la resposta dels exemples diu que A té més rendiment. Les subseccions es diuen ara «Temps d'execució, rendiment i productivitat» i «Guany de rendiment» (cap dels dos slugs antics no tenia remissions). A més, decisió de l'usuari: la definició de rendiment com a «quant de treball per unitat de temps», que era la de productivitat, passa a «quantes vegades es pot executar la tasca per unitat de temps, l'una darrere l'altra». Marcador esborrat. |
   | 10 | T6 | [br] La llegenda de $t_c$ a `#fig-tc-tc-prima` no es renderitza | Render |
   | 11 | T6 | [br] Equació massa llarga a `#tip-comparacio-cpua-cpub`: cal partir-la | Factible |
-  | 12 | T6 | [br] Reordenar §Potència (tres anotacions): definició i equació primer, Moore i Dennard al final de §Potència estàtica. Ampliació possible: miniaturització i reducció del consum (`7dc4746`) | Important (ordre); Decisió (ampliació) |
+  | 12 | T6 | [br] Reordenar §Potència (tres anotacions): definició i equació primer, Moore i Dennard al final de §Potència estàtica. Ampliació possible: miniaturització i reducció del consum (`7dc4746`) | Important (ordre); Decisió (ampliació). ✅ **Ordre resolt (2026-10-01, fase 3)**: §Potència comença per la definició i `#eq-potencia`; el paràgraf de Moore, el de miniaturització i `#wrn-dennard` són ara a una subsecció nova, `### Miniaturització i límit tèrmic` (`#sec-miniaturitzacio-i-limit-termic`), darrere de §Potència estàtica (decisió de l'usuari: capçalera pròpia, perquè no és potència estàtica). La frase que tancava §Potència estàtica amb Dennard es fusiona amb la que tanca el paràgraf de miniaturització; `#wrn-dennard` remet ara als corrents de fuita (`#eq-potencia-estatica`), no als «corrents paràsits» de `#eq-potencia`, i hi diu «augmentar la productivitat» en lloc de «rendiment total (productivitat)», coherent amb la definició de la #9. `A7.qmd:58` i `E6.qmd:159` no canvien de destí. Tres marcadors esborrats. **L'ampliació segueix oberta** (fase 6); la subsecció nova n'és el lloc natural. |
 
   El pla del grup: (1) acabar la fusió de `temes456`; (2) #12, #9 i #3; (3) una sola passada de render per a #7, #8, #10 i #11; (4) #4 i #1–#2; (5) decisions #5, #6 i l'ampliació de #12; (6) en resoldre cada anotació, esborrar-ne el marcador i actualitzar-ne l'entrada; les de la branca es registren aquí en fusionar-la. És la base de `CLAUDE.md §Pla de treball` des del 2026-10-01. Les #1–#2, #5 i #6 coincideixen amb entrades que ja hi eren (figures de *half-adder* i *full-adder*, R4-TYPE, R5-TYPE), i hi consta la valoració del grup.
 
@@ -227,15 +227,18 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | 9 | ~~`A6.qmd:13`~~ | «PM: els exemples són confusos perquè es barreja "temps d'execució" amb "rendiment"…» — esborrat, resolta |
   | 10 | `A6.qmd:148` | «PM: la legenda de la figura (temps t_c) no s'ha compilat correctament» |
   | 11 | `A6.qmd:178` | «PM: equació más llarga (cal separar-la en més d'una línia)» |
-  | 12 | `A6.qmd:260` | «PM: l'aprofundiment no hauria de començar abans de la eq. 6.8» |
-  | 12 | `A6.qmd:272` | «PM: aquí s'introdueix la potència després de tota la parrafada anterior…» |
-  | 12 | `A6.qmd:373` | «Aquí és el lloc idoniï per deixar els aprofundiments» |
+  | 12 | ~~`A6.qmd:260`~~ | «PM: l'aprofundiment no hauria de començar abans de la eq. 6.8» — esborrat, resolta |
+  | 12 | ~~`A6.qmd:272`~~ | «PM: aquí s'introdueix la potència després de tota la parrafada anterior…» — esborrat, resolta |
+  | 12 | ~~`A6.qmd:373`~~ | «Aquí és el lloc idoniï per deixar els aprofundiments» — esborrat, resolta |
 
   ```bash
-  git grep -c '<!-- TODO' -- 01_apunts/A4.qmd 01_apunts/A5.qmd 01_apunts/A6.qmd   # A4 4 · A5 4 · A6 6 = 14 (4 [main] + 10 [br])
+  git grep -c '<!-- TODO' -- 01_apunts/A4.qmd 01_apunts/A5.qmd 01_apunts/A6.qmd   # a 454a82e: A4 4 · A5 4 · A6 6 = 14 (4 [main] + 10 [br])
+  git grep -o -I -F -e '<!-- TODO' -- 01_apunts/A4.qmd 01_apunts/A5.qmd 01_apunts/A6.qmd ':!TODO.md' ':!13_contrib.qmd' | wc -l   # després de la fase 3 (2026-10-01): A4 3 · A5 4 · A6 2 = 9 (4 [main] + 5 [br])
   ```
 
-  ⚠️ «eq. 6.8» (`A6.qmd:260`) és un número d'equació escrit a mà: es refereix a la numeració del render que va veure el revisor, i caduca amb qualsevol equació nova anterior. En resoldre l'anotació #12, cal localitzar l'equació pel contingut, no pel número.
+  ⚠️ «eq. 6.8» (`A6.qmd:260`) és un número d'equació escrit a mà: es refereix a la numeració del render que va veure el revisor, i caduca amb qualsevol equació nova anterior. En resoldre l'anotació #12, cal localitzar l'equació pel contingut, no pel número. *(Fet, 2026-10-01: és `#eq-potencia`, la vuitena equació etiquetada d'A6, comptada sobre `6915e05`.)*
+
+  📌 **Freqüència de sostre: A6 i A7 no diuen el mateix** (detectat a la fase 3, 2026-10-01, en revisar la remissió entrant de `#wrn-dennard`). `#wrn-dennard` diu que la freqüència «va tocar sostre als 3–4 GHz» i que un portàtil i un servidor tenen «freqüències de rellotge similars (3–4 GHz)»; `A7.qmd:58` (`#sec-fi-escalat-dennard`) diu que «s'ha estancat entre els 3 i els 5 GHz, amb pics puntuals de fins a 6 GHz en mode *turbo*». No es contradiuen del tot, però el lector veu dues xifres per al mateix fet. Cal triar-ne una i escriure-la als dos llocs; A7 no era de l'abast de la fase 3, i per això només es registra.
 
   📌 **Tres coses de la fusió que no són anotacions del grup, però que el grup ha de conèixer** (detectades en revisar-la, 2026-10-01):
 
