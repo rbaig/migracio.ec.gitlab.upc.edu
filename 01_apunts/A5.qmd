@@ -56,10 +56,10 @@ Els únics casos en què el bit ocult no s'aplica són els nombres denormals i e
 Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de coma flotant, amb decisions diverses sobre el nombre de bits de mantissa i exponent, i fins i tot sobre la base de la potència. La incompatibilitat entre sistemes dificultava l'intercanvi de dades i la portabilitat del programari. El 1985, l'Institut d'Enginyers Elèctrics i Electrònics (***Institute of Electrical and Electronics Engineers***, **IEEE**) va publicar l'**estàndard IEEE 754**, que no sols defineix el format de representació sinó també les operacions aritmètiques, l'arrodoniment i el tractament de les excepcions. L'estàndard s'ha revisat i ampliat posteriorment (la darrera revisió és de 2019).
 
 ::: {#nte-ieee754-formats .callout-note}
-## IEEE 754 — Formats de simple i doble precisió
+## IEEE 754 — Formats de precisió simple i doble
 
 ::: {style="width: 70%; margin: auto;"}
-| | Simple precisió | Doble precisió |
+| | Precisió simple | Precisió doble |
 | :--- | :---: | :---: |
 | Tipus C | `float` | `double` |
 | Mida total | 32 bits | 64 bits |
@@ -75,10 +75,10 @@ Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de
 :::
 
 ::: {#imp-ec-simple-precisio .callout-important}
-A **EC**, s'usa exclusivament el **format de simple precisió**. Totes les operacions, exemples i problemes fan referència a aquest format llevat que s'indiqui explícitament el contrari.
+A **EC**, s'usa exclusivament el **format de precisió simple**. Totes les operacions, exemples i problemes fan referència a aquest format llevat que s'indiqui explícitament el contrari.
 :::
 
-Els tres camps de bits del format de simple precisió s'organitzen de la manera següent:
+Els tres camps de bits del format de precisió simple s'organitzen de la manera següent:
 
 $$\underbrace{S}_{1}\;\underbrace{E_7 E_6 \ldots E_0}_{8}\;\underbrace{F_{22} F_{21} \ldots F_0}_{23}$$
 
@@ -95,7 +95,7 @@ $$\underbrace{S}_{1}\;\underbrace{E_7 E_6 \ldots E_0}_{8}\;\underbrace{F_{22} F_
 ![](/auto_figs/T5_ieee754_format_registre__registre_light.svg)
 :::
 
-Disposició dels camps S, E i F en el format IEEE 754 de simple precisió (32 bits).
+Disposició dels camps S, E i F en el format IEEE 754 de precisió simple (32 bits).
 
 :::
 
@@ -147,9 +147,9 @@ Correspondència entre l'exponent emmagatzemat $E_u$ (0–255) i l'exponent real
 :::
 
 ::: {#tip-ieee754-codificacio .callout-tip}
-## Conversió a IEEE 754 de simple precisió
+## Conversió a IEEE 754 de precisió simple
 
-Codifica el nombre $v = -1029{,}68$ en format IEEE 754 de simple precisió i calcula l'error de representació.
+Codifica el nombre $v = -1029{,}68$ en format IEEE 754 de precisió simple i calcula l'error de representació.
 
 **a) Part entera a binari** (divisions successives):
 
@@ -216,7 +216,7 @@ $$\varepsilon = 5{,}371 \times 10^{-5}$$
 :::
 
 ::: {#tip-ieee754-decodificacio .callout-tip}
-## Conversió des de IEEE 754 de simple precisió a base 10
+## Conversió des de IEEE 754 de precisió simple a base 10
 
 Converteix a decimal el nombre `0x45814140`.
 
@@ -252,18 +252,18 @@ $$v = 4136{,}15625$$
 
 ### Rang i precisió {#sec-rang-precisio}
 
-El **rang** de la representació és l'interval $[-v_{\max},\ +v_{\max}]$, on $v_{\max}$ és el nombre positiu més gran representable. S'obté amb la màxima fracció (tots els bits a 1) i el màxim exponent ($e = 127$ en simple precisió):
+El **rang** de la representació és l'interval $[-v_{\max},\ +v_{\max}]$, on $v_{\max}$ és el nombre positiu més gran representable. S'obté amb la màxima fracció (tots els bits a 1) i el màxim exponent ($e = 127$ en precisió simple):
 
 $$v_{\max} = (2 - 2^{-23}) \times 2^{127} \approx 3{,}4 \times 10^{38}$$
 
 Si el resultat d'una operació té un exponent $e > 127$, no és representable i es produeix una excepció de sobreeiximent (*overflow*).
 
-La **precisió** d'una representació és el seu nombre de bits significatius. En simple precisió, la mantissa normalitzada té 24 bits significatius (23 bits de fracció emmagatzemats més el bit ocult), de manera que la precisió és de 24 bits.
+La **precisió** d'una representació és el seu nombre de bits significatius. En precisió simple, la mantissa normalitzada té 24 bits significatius (23 bits de fracció emmagatzemats més el bit ocult), de manera que la precisió és de 24 bits.
 
 ::: {#cau-compromis-rang-precisio .callout-caution}
 ## Compromís rang–precisió
 
-Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redueix el rang (menys bits d'exponent) i viceversa. El format de simple precisió (8 bits d'exponent i 23 de fracció) és el compromís adoptat per l'estàndard IEEE 754 per a aplicacions de propòsit general.
+Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redueix el rang (menys bits d'exponent) i viceversa. El format de precisió simple (8 bits d'exponent i 23 de fracció) és el compromís adoptat per l'estàndard IEEE 754 per a aplicacions de propòsit general.
 :::
 
 <!-- TODO: PM: la paraula denormals de la figura a baix no s'aprecia del tot bé -->
@@ -280,7 +280,7 @@ Donat un nombre fix de bits, augmentar la precisió (més bits de fracció) redu
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T5_recta_global__original_light.svg){width=100%}
 :::
-Recta de la coma flotant IEEE 754 (simple precisió): $\pm\infty$ i NaN als extrems ($E=255$) i les potències de 2 equiespaiades, ja que l'exponent és lineal.
+Recta de la coma flotant IEEE 754 (precisió simple): $\pm\infty$ i NaN als extrems ($E=255$) i les potències de 2 equiespaiades, ja que l'exponent és lineal.
 :::
 
 ### Error de representació i subdesbordament {#sec-error-representacio}
@@ -325,7 +325,7 @@ Aquesta fita és independent de $e$ i de $m$: l'error relatiu de representació 
 
 ### Codificacions especials {#sec-codificacions-especials}
 
-L'estàndard IEEE 754 reserva dos valors del camp d'exponent per a codificacions especials: $E = 0000\,0000_2$ (tot zeros) i $E = 1111\,1111_2$ (tot uns). Per tant, el **rang efectiu** de l'exponent queda reduït a $[-126,\ +127]$ en simple precisió.
+L'estàndard IEEE 754 reserva dos valors del camp d'exponent per a codificacions especials: $E = 0000\,0000_2$ (tot zeros) i $E = 1111\,1111_2$ (tot uns). Per tant, el **rang efectiu** de l'exponent queda reduït a $[-126,\ +127]$ en precisió simple.
 
 ::: {#imp-ieee754-codificacions-especials .callout-important}
 ## IEEE 754 — Taula de codificacions
@@ -354,7 +354,7 @@ L'estàndard IEEE 754 reserva dos valors del camp d'exponent per a codificacions
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T5_taula_codificacions__original_light.svg)
 :::
-Mapa de codificacions IEEE 754 de simple precisió: els eixos $E$ i $F$ determinen unívocament la interpretació de cada patró de bits.
+Mapa de codificacions IEEE 754 de precisió simple: els eixos $E$ i $F$ determinen unívocament la interpretació de cada patró de bits.
 :::
 
 #### Zero {#sec-codificacio-zero-cf}
@@ -375,7 +375,7 @@ $$\varepsilon_{\max} < 2^{-149}$$
 
 L'**error relatiu creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com a **subdesbordament gradual** (*gradual underflow*).
 
-En simple precisió, la fita d'error relatiu és $2^{-23}$ a l'extrem superior de l'interval $(0,\ 2^{-126})$ i creix progressivament fins a $2^0 = 1$ a mesura que $v$ s'acosta a zero i la mantissa no-normalitzada perd dígits significatius.
+En precisió simple, la fita d'error relatiu és $2^{-23}$ a l'extrem superior de l'interval $(0,\ 2^{-126})$ i creix progressivament fins a $2^0 = 1$ a mesura que $v$ s'acosta a zero i la mantissa no-normalitzada perd dígits significatius.
 
 ::: {#cau-cardinalitat-codificacions .callout-caution}
 Per a cada exponent normalitzat $E \in [1, 254]$, la fracció $F$ pren els $2^{23}$ valors possibles $\{0, 1, \ldots, 2^{23}-1\}$. Per exemple, $F = 0$ correspon a la potència de 2 exacta $(\pm 1{,}0 \times 2^e)$, un nombre normalitzat vàlid.
@@ -526,7 +526,7 @@ $$z \approx 1{,}002 \times 10^2$$
 :::
 
 ::: {#tip-suma-ieee754 .callout-tip}
-## Suma en coma flotant, simple precisió
+## Suma en coma flotant, precisió simple
 
 <!-- TODO: PM: Check that this formula is well displayed under LaTeX -->
 
@@ -614,7 +614,7 @@ $$z \approx -1{,}942 \times 10^6$$
 :::
 
 ::: {#tip-multiplicacio-ieee754 .callout-tip}
-## Multiplicació en coma flotant, simple precisió
+## Multiplicació en coma flotant, precisió simple
 
 Calcula $z = x \times y$ amb $x=$ `0x3F600000` i $y=$ `0xBED00002`.
 
@@ -662,7 +662,7 @@ $$z = 1\;|\;0111\,1101\;|\;011\,0110\,0000\,0000\,0000\,0010_2 = \texttt{0xBEB60
 :::
 
 ::: {#tip-divisio-ieee754 .callout-tip}
-## Divisió en coma flotant, simple precisió
+## Divisió en coma flotant, precisió simple
 
 Calcula $z = x / y$ amb $x=$ `0x41000000` i $y=$ `0x40400000`.
 
@@ -844,7 +844,7 @@ sub:
 
 ### Instruccions {#sec-instruccions-rvf}
 
-Totes les instruccions de coma flotant de simple precisió porten el sufix **`.s`**. Tots els operands han de ser en registres de coma flotant, sense cap excepció. **No hi ha operands immediats flotants** ni instruccions que combinin registres enters i flotants en una mateixa operació aritmètica. Les instruccions de càrrega i emmagatzemament usen un registre enter com a base d'adreça.
+Totes les instruccions de coma flotant de precisió simple porten el sufix **`.s`**. Tots els operands han de ser en registres de coma flotant, sense cap excepció. **No hi ha operands immediats flotants** ni instruccions que combinin registres enters i flotants en una mateixa operació aritmètica. Les instruccions de càrrega i emmagatzemament usen un registre enter com a base d'adreça.
 
 ::: {#nte-instruccions-flw-fsw .callout-note}
 ## RV32F ISA — Càrrega i emmagatzemament

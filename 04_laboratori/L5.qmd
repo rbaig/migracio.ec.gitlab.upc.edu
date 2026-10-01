@@ -22,7 +22,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 
 | Concepte | On trobar-ho |
 | :--- | :--- |
-| Format IEEE 754 de simple precisió: signe, exponent esbiaixat, fracció | @sec-ieee754, @nte-ieee754-formats |
+| Format IEEE 754 de precisió simple: signe, exponent esbiaixat, fracció | @sec-ieee754, @nte-ieee754-formats |
 | El bit ocult | @cau-bit-ocult |
 | Codificació i decodificació de nombres en coma flotant | @tip-ieee754-codificacio, @tip-ieee754-decodificacio |
 | Modes d'arrodoniment | @sec-arrodoniment |
@@ -260,13 +260,13 @@ Dues coses que el bolcat no diu tot sol:
 
 ## Subrutina `descompon`
 
-En aquesta sessió es desenvolupa un programa que converteix un nombre real codificat en **coma fixa** al format de **coma flotant IEEE 754 de simple precisió** (@sec-ieee754). El programa s'estructura en dues subrutines (`descompon` i `compon`) i un programa principal repartits en dos fitxers, aplicant la compilació separada de la secció anterior.
+En aquesta sessió es desenvolupa un programa que converteix un nombre real codificat en **coma fixa** al format de **coma flotant IEEE 754 de precisió simple** (@sec-ieee754). El programa s'estructura en dues subrutines (`descompon` i `compon`) i un programa principal repartits en dos fitxers, aplicant la compilació separada de la secció anterior.
 
 El **format de coma fixa** que s'usa en aquesta sessió té 32 bits: el bit 31 conté el signe (0 per als positius) i els bits 30–0 representen la magnitud en base 2, amb 19 bits de part entera (bits 30–12) i 12 bits de part fraccionària (bits 11–0):
 
 $$\text{valor}(A) = (-1)^{A_{31}} \times \sum_{i=0}^{30} A_i \cdot 2^{i-12}$$
 
-El **format de coma flotant IEEE 754 de simple precisió** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent esbiaixat amb biaix 127 (bits 30–23) i 23 bits de fracció (bits 22–0), amb bit ocult implícit (@cau-bit-ocult).
+El **format de coma flotant IEEE 754 de precisió simple** (@nte-ieee754-formats) té 32 bits: 1 bit de signe (bit 31), 8 bits d'exponent esbiaixat amb biaix 127 (bits 30–23) i 23 bits de fracció (bits 22–0), amb bit ocult implícit (@cau-bit-ocult).
 
 El programa de conversió s'organitza en dos passos:
 
@@ -431,7 +431,7 @@ Obriu `s5_2_1.s` i `s5_3_1.s` a RARS amb *Assemble all files currently open* i e
 
 ## Subrutina `compon` i programa complet
 
-La subrutina `compon` fa el pas invers: rep els tres camps separats i els combina en un únic valor de 32 bits en format IEEE 754 de simple precisió. El signe s'ha de desplaçar al bit 31, l'exponent als bits 30–23, i la fracció (paràmetre `mantissa`) ja ocupa els bits 22–0:
+La subrutina `compon` fa el pas invers: rep els tres camps separats i els combina en un únic valor de 32 bits en format IEEE 754 de precisió simple. El signe s'ha de desplaçar al bit 31, l'exponent als bits 30–23, i la fracció (paràmetre `mantissa`) ja ocupa els bits 22–0:
 
 ```{.c filename="compon.c"}
 int compon(int signe, int exponent, int mantissa) {
@@ -516,7 +516,7 @@ cflotant: .word 0
 
 # compon(int signe, int exponent, int mantissa)
 # a0 = signe, a1 = exponent, a2 = mantissa
-# retorna el valor IEEE 754 de simple precisió a a0
+# retorna el valor IEEE 754 de precisió simple a a0
 compon:
         slli t0, a0, 31         # t0 = signe << 31
         slli t1, a1, 23         # t1 = exponent << 23
@@ -560,7 +560,7 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 
 4. Quin dels quatre modes d'arrodoniment (@sec-arrodoniment) aplica aquest programa de conversió? Justifiqueu-ho.
 
-5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE 754 de simple precisió però fora del rang del format de coma fixa. Indiqueu també quin és el menor nombre potència de 2 que compleix aquesta condició.
+5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE 754 de precisió simple però fora del rang del format de coma fixa. Indiqueu també quin és el menor nombre potència de 2 que compleix aquesta condició.
 :::
 
 ---
@@ -568,7 +568,7 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 ::: {#sol-precisio}
 **Pregunta 1.**
 
-El format de coma fixa té 31 bits de magnitud; el format IEEE 754 de simple precisió té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menys pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes per caure en aquest rang un cop normalitzada.
+El format de coma fixa té 31 bits de magnitud; el format IEEE 754 de precisió simple té 24 bits significatius (23 de fracció més el bit ocult). Després de la normalització, l'operació `cf >> 8` descarta els **8 bits de menys pes** de la mantissa normalitzada (posicions 0–7). Es produeix pèrdua de precisió quan algun d'aquests 8 bits és significatiu (és a dir, val `1`), cosa que passa sempre que la magnitud original tingui bits significatius en posicions prou baixes per caure en aquest rang un cop normalitzada.
 
 De manera equivalent i exacta: sigui $b_{\text{alt}}$ la posició del bit `1` de més pes de la magnitud i $b_{\text{baix}}$ la posició del bit `1` de menys pes. Es produeix pèrdua de precisió si i només si $b_{\text{alt}} - b_{\text{baix}} + 1 \geq 25$, és a dir, si la magnitud «ocupa» 25 bits o més entre el seu bit significatiu més alt i el més baix (només 24 d'aquests bits caben al format IEEE 754: el bit ocult més els 23 de fracció).
 
@@ -592,7 +592,7 @@ El programa aplica el mode d'**arrodoniment a zero** (*round toward zero*): el d
 
 **Pregunta 5.**
 
-El rang del format de coma fixa d'aquesta sessió és aproximadament $[-(2^{19}-2^{-12}),\ +(2^{19}-2^{-12})]$, és a dir, el valor positiu màxim és lleugerament inferior a $2^{19} = 524288$. Qualsevol nombre positiu $\geq 2^{19}$ és dins del rang IEEE 754 de simple precisió però fora del rang de coma fixa. El menor nombre potència de 2 que compleix aquesta condició és:
+El rang del format de coma fixa d'aquesta sessió és aproximadament $[-(2^{19}-2^{-12}),\ +(2^{19}-2^{-12})]$, és a dir, el valor positiu màxim és lleugerament inferior a $2^{19} = 524288$. Qualsevol nombre positiu $\geq 2^{19}$ és dins del rang IEEE 754 de precisió simple però fora del rang de coma fixa. El menor nombre potència de 2 que compleix aquesta condició és:
 
 $$2^{19} = 524288$$
 :::
