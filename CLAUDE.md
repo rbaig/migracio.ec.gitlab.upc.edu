@@ -61,7 +61,7 @@ Els PDFs originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas
 
 El contingut de teoria (T1–T9), laboratori (L1–L6) i solucionari (S2–S8) ja està generat. ✅ **La revisió interna és tancada sencera**, per declaracions de l'usuari: teoria i laboratori el 2026-09-23, enunciats i solucionaris el 2026-10-01 (vegeu §Estat dels materials).
 
-**El projecte és, doncs, a la fase de revisió externa**, que fan altres professors de l'assignatura. Ha començat per a **T3** (branca `contingut/t3-traduccio`, des del 6 de juliol del 2026) i per a **T4, T5 i T6** (branca `temes456`, des del 21 de juliol), però **el 2026-10-01 les dues MR (`!5` i `!7`) es van tancar sense fusionar**, i la revisió d'aquests temes encara no és a `main`; el detall és al 📌 de §Estat dels materials → Teoria. Per a la resta del material encara no ha començat. L'ordre de la feina que queda és a §Pla de treball.
+**El projecte és, doncs, a la fase de revisió externa**, que fan altres professors de l'assignatura. Ha començat per a **T3** (branca `contingut/t3-traduccio`, des del 6 de juliol del 2026) i per a **T4, T5 i T6** (branca `temes456`, des del 21 de juliol), però **el 2026-10-01 les dues MR (`!5` i `!7`) es van tancar sense fusionar**, i la revisió d'aquests temes encara no és a `main`. La integrarà una sessió de Claude Code (§Pla de treball, fase 1); el detall és al 📌 de §Estat dels materials → Teoria. Per a la resta del material encara no ha començat. L'ordre de la feina que queda és a §Pla de treball.
 
 ### Prioritats de la revisió
 
@@ -102,8 +102,8 @@ El tancament de cada tema —amb l'estat que tenia, el commit que el declarava i
 
 📌 **T3, T4, T5 i T6: la revisió externa ja és en curs.** És l'etapa que segueix la interna, i el tancament de la interna declarat més amunt n'és la **condició prèvia**: les dues coses són coherents.
 
-- **T4, T5 i T6, a `temes456` (MR `!7`).** El grup de treball hi va revisar `A4.qmd`, `A5.qmd` i `A6.qmd` del 21 de juliol al 7 d'agost (11 commits). Una fusió de prova (2026-10-01) donava tres conflictes: `A4.qmd`, `A5.qmd` i `.gitignore`. **La MR es va tancar sense fusionar el 2026-10-01** (`pedro.martinez.ferrer`, 16:21; GitLab la marcava `cannot_be_merged`), i la branca continua amb els seus 11 commits fora de `main`. **Decisió de l'usuari (2026-10-01): s'espera el grup de treball**, que la refarà o la reobrirà; fins llavors, `A4.qmd`–`A6.qmd` no es toquen.
-- **T3, a `contingut/t3-traduccio` (MR `!5`, Pedro J. Martinez-Ferrer, 2026-07-06).** Un sol commit, amb rutes d'abans de la reorganització de directoris, que git no pot fusionar. **El port a les rutes actuals el fa l'autor de la MR** (decisió de l'usuari, 2026-10-01). **La MR es va tancar sense fusionar el 2026-10-01** (16:20, el mateix autor), i el port encara no ha arribat: `A3.qmd` no es toca.
+- **T4, T5 i T6, a `temes456` (MR `!7`).** El grup de treball hi va revisar `A4.qmd`, `A5.qmd` i `A6.qmd` del 21 de juliol al 7 d'agost (11 commits). Una fusió de prova (2026-10-01) donava tres conflictes: `A4.qmd`, `A5.qmd` i `.gitignore`. **La MR es va tancar sense fusionar el 2026-10-01** (`pedro.martinez.ferrer`, 16:21; GitLab la marcava `cannot_be_merged`), i la branca continua amb els seus 11 commits fora de `main`. Decisió de l'usuari (2026-10-01, al vespre, substituint la d'esperar el grup): **la fusió la fa una sessió de Claude Code**, amb l'aprovació de l'usuari de cada conflicte resolt abans del push (§Pla de treball, fase 1). Fins llavors, `A4.qmd`–`A6.qmd` no es toquen.
+- **T3, a `contingut/t3-traduccio` (MR `!5`, Pedro J. Martinez-Ferrer, 2026-07-06).** Un sol commit, amb rutes d'abans de la reorganització de directoris, que git no pot fusionar. **El port a les rutes actuals el fa l'autor de la MR** (decisió de l'usuari, 2026-10-01). **La MR es va tancar sense fusionar el 2026-10-01** (16:20, el mateix autor). Decisió de l'usuari (al vespre): **el port el fa una sessió de Claude Code**, hunk a hunk i amb `Co-authored-by` de l'autor (§Pla de treball, fase 1). Fins llavors, `A3.qmd` no es toca.
 
 Estat de les branques, autors i el que cada fusió haurà de resoldre fitxer per fitxer: `TODO.md §Decisions obertes → Branques del remot`.
 
@@ -128,16 +128,22 @@ Detalls transversals i decisions obertes: vegeu `TODO.md`.
 
 ### Pla de treball
 
-*2026-10-01, en tancar-se la revisió interna. Substitueix la seqüència per fitxer del pas combinat.* Cada línia remet a les entrades del `TODO.md` pel seu títol; el detall, les ordres i els ⛔ de cada entrada són allà.
+*Refet el 2026-10-01, sobre l'inventari del grup de treball de T4–T6 (`TODO.md §Decisions obertes → Anotacions de la revisió externa de T4–T6`). Substitueix el pla del matí del mateix dia, en què la línia 1 era «esperar el grup de treball».* Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ són allà. **Una sessió nova per fase o per grup de fases**, amb el model de la columna: aquesta taula és la que ho decideix, no el nom de la tasca.
 
-| Ordre | Línia de treball | Què hi entra |
-| :---: | :--- | :--- |
-| 1 | **Integrar la revisió externa que ja ha arribat** | **En espera del grup de treball** (decisió de l'usuari, 2026-10-01): les MR `!7` (T4–T6) i `!5` (T3) es van tancar el 2026-10-01 sense fusionar, i les branques continuen fora de `main`. El port de T3 el fa l'autor. Fins que arribin, `A3.qmd`–`A6.qmd` no es toquen. |
-| 2 | **Harmonitzacions transversals, abans d'obrir la revisió externa de la resta** | **Fetes el 2026-10-01** (`TODO.md §Entrades retirades`): cometes `"…"` → `«…»` (en queda `A4.qmd:122`), terminologia anglesa a la prosa d'E/S, quatre formats nuclears, expressions aritmètiques als operands, grafia de «no-» davant de nom, ordre substantiu–adjectiu fora de T5, amplada dels hexadecimals, identificadors `exr`/`sol` de `p<N>-` a `t<N>-`, tanques de codi, veu dels enunciats en plural, etiqueta «Problema» a Problemes i Solucions. **Queden, en espera de la revisió de T4–T6** (línia 1): «precisió simple» al material de T5 i operadors `AND`/`OR` (la regla no està escrita i la major part de l'ús és a A4). `Símbols` i `Notació` és una revisió de contingut, per a una sessió pròpia. `A3.qmd`–`A6.qmd` en queden fora fins al port de `!5` i la fusió de `temes456`. |
-| 3 | **Obrir la revisió externa de la resta** | T1, T2 i T7–T9; els enunciats i solucionaris de tots els temes; el laboratori. Una branca per grup, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). Els grups i el calendari els decideix l'usuari. |
-| 4 | **En paral·lel, sense bloquejar res** | Decisions de contingut que poden anar com a preguntes als revisors (R4-TYPE, R5-TYPE, `#cau-boolea-c`, criteris de codi C, half-adder i full-adder); figures pendents (T7, T8, T9, BA i mapa de memòria); eines (`verifica_laboratoris.py`, figures centrades al PDF, protocol de gestió d'errades, taula de referències d'`index.qmd`). |
+| Fase | Què | Sessió | Model i effort |
+| :---: | :--- | :--- | :--- |
+| 1 | **Integració de la revisió externa** (decisions de l'usuari, 2026-10-01). Fusionar `temes456` amb un commit de fusió, sense *rebase*, per conservar l'autoria dels 11 commits, i resoldre els 3 conflictes (`A4.qmd`, `A5.qmd`, `.gitignore`) conservant alhora els canvis dels revisors i les harmonitzacions de `main`. Portar `!5` a `A3.qmd` i `21_riscv/` hunk a hunk, amb `Co-authored-by` de l'autor. **Abans del push, presentar a l'usuari la resolució de cada conflicte i els casos dubtosos del port.** Registrar al `TODO.md` les 10 anotacions [br] i fer `make render-complet`. | A | Opus, High |
+| 2 | **Harmonitzacions pendents a A3–A6**: tornar a passar totes les escombrades del 2026-10-01 (la branca porta text d'abans): cometes (`A4.qmd:122`), «precisió simple» al material de T5, «l'X següent», amplada dels hexadecimals, tanques i quatre formats a A3. Fixar la regla d'`AND`/`OR` (decisió de l'usuari) i aplicar-la. Escriure la convenció de l'anotació #4 (algorismes, blocs «Pseudocodi»). | A, si hi cap | Opus, Medium–High |
+| 3 | **Estructura pedagògica**: anotacions #12 (reordenar §Potència), #9 (temps i rendiment a §Definicions) i #3 (moure `#cau-sobreeiximent-extensio-m`). | B | Opus, High |
+| 4 | **Una sola passada de render** (HTML clar i fosc, i PDF): anotacions #7, #8, #10 i #11. | B, o una altra | Sonnet, Low–Medium |
+| 5 | **Figures** #1 i #2 (*half-adder*, *full-adder*, cadena amb XOR), en SVG natiu segons `24_specs/svg.md`. | B, o una altra | Opus, Medium |
+| 6 | **Decisions per als revisors**: #5 R4-TYPE, #6 R5-TYPE i l'ampliació de #12. No bloquegen res. | — | — |
+| 7 | **Símbols i Notació** (`12_sigles_simbols.qmd`), després de les fases 1 i 2, perquè llegeix A3–A6. | C | Opus, High |
+| 8 | **Obrir la revisió externa de la resta**: T1, T2 i T7–T9, els enunciats i solucionaris, i el laboratori, amb una branca per grup, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). Els grups i el calendari els decideix l'usuari. | — | — |
 
-La línia 2 va abans de la 3 per §Prioritats de la revisió: un canvi transversal costa poc mentre ningú més no és dins del fitxer, i molt quan hi ha revisors treballant-hi. Les eines per fer-la són la skill `escombrada` i el subagent `auditor-xifres` (`13_contrib.qmd §IAs`).
+Sense fase pròpia, quan hi hagi ocasió i sense bloquejar res: els criteris de codi C, `#cau-boolea-c`, les figures pendents de T7, T8 i T9, i les eines (`verifica_laboratoris.py`, figures centrades al PDF, protocol de gestió d'errades, taula de referències d'`index.qmd`). Ja fet el 2026-10-01, fora d'A3–A6: les harmonitzacions de la línia 2 de l'antic pla (`TODO.md §Entrades retirades`).
+
+Les fases 1 i 2 van abans que les altres per §Prioritats de la revisió: mentre la revisió de T3–T6 no sigui a `main`, cada canvi que hi entri és un conflicte més. Les eines són a `13_contrib.qmd §IAs` (skill `escombrada`, subagents `auditor-xifres` i `revisor-linguistic`).
 
 ### Etiquetes `{#sec-}` a les capçaleres
 

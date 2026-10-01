@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**39 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**40 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 8 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 39, regla 12 bis).
+Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 8 ·
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 40, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -85,15 +85,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Figures portades d'extern: afegir-ne la font.** Dels PDF originals n'hi ha que són del Patterson (p. ex. T7 MC). Abast actual verificat: dues figures de T7 encara es consumeixen en versió `__extern_` (export de PDF, no nativa) — `A7.qmd:365,368,372` (`T7_assoc_conjunts_diagrama__extern_*`) i `A7.qmd:303,306,310` (`T7_cd_diagrama__extern_*`). Enllaça amb `§Contingut global → Figures externes (llicències)`.
 
-- **R4-TYPE a T5** (`A5.qmd:5`, `<!-- TODO: cal introduir el R4-TYPE? (Harris) -->`): decisió d'abast de contingut. Rellevant perquè `24_specs/registres.toml` ja genera la figura `T5_instruccio_tipus_R4`, avui sense ús. El marcador és a la capçalera del fitxer, abans del `# {{< var tema5 >}}`, fora de cap secció.
+- **R4-TYPE a T5** (`A5.qmd:5`, `<!-- TODO: cal introduir el R4-TYPE? (Harris) -->`): decisió d'abast de contingut. Rellevant perquè `24_specs/registres.toml` ja genera la figura `T5_instruccio_tipus_R4`, avui sense ús. El marcador és a la capçalera del fitxer, abans del `# {{< var tema5 >}}`, fora de cap secció. *(Valoració del grup de treball, 2026-10-01: «Decisió»; la figura existeix i no s'usa, i només té sentit si T5 tracta les instruccions FMA. Vegeu l'entrada «Anotacions de la revisió externa de T4–T6», #5.)*
 
   ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
-- **R5-TYPE (RISC-V *compressed*) com a aprofundiment** (`A5.qmd:6`): decisió d'abast que **creua dos temes** — el marcador pregunta si aniria al principi de T2. Mateixa ubicació que l'anterior.
+- **R5-TYPE (RISC-V *compressed*) com a aprofundiment** (`A5.qmd:6`): decisió d'abast que **creua dos temes** — el marcador pregunta si aniria al principi de T2. Mateixa ubicació que l'anterior. *(Valoració del grup de treball, 2026-10-01: «No val la pena»; fora de l'abast de T5, i en tot cas a T2. Ibídem, #6.)*
 
   ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
-- **Figures de half-adder i full-adder (T4)** (`A4.qmd:80`, `:81`): dos marcadors consecutius dins de `#wrn-sobreeiximent-maquinari`. El primer és una **tasca** (afegir la figura d'un *half-adder* i la d'un *full-adder*); el segon és una **decisió**, pel signe d'interrogació: si cal la figura de la seqüència de *full-adders* amb la porta XOR per detectar el sobreeiximent en el darrer. Si es creen, SVG natiu segons `24_specs/svg.md`.
+- **Figures de half-adder i full-adder (T4)** (`A4.qmd:80`, `:81`): dos marcadors consecutius dins de `#wrn-sobreeiximent-maquinari`. El primer és una **tasca** (afegir la figura d'un *half-adder* i la d'un *full-adder*); el segon és una **decisió**, pel signe d'interrogació: si cal la figura de la seqüència de *full-adders* amb la porta XOR per detectar el sobreeiximent en el darrer. Si es creen, SVG natiu segons `24_specs/svg.md`. *(Valoració del grup de treball, 2026-10-01: totes dues «Factible», en SVG natiu; la cadena amb XOR «sí que cal», perquè il·lustra l'equació del maquinari. Ibídem, #1–#2.)*
 
   ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
@@ -115,7 +115,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Branques del remot: la revisió externa de T4–T6 (`temes456`) i de T3 (`contingut/t3-traduccio`) no és a `main`, i les seves MR (`!7`, `!5`) es van tancar sense fusionar el 2026-10-01** (registrada 2026-09-23; T3, les MR i el tancament, 2026-10-01).
 
-  📌 **Estat a 2026-10-01, 16:21: totes dues MR tancades sense fusionar**, per `pedro.martinez.ferrer` (`!5` a les 16:20 i `!7` a les 16:21). `!7` tenia `merge_status: cannot_be_merged`, coherent amb els tres conflictes de la fusió de prova de més avall. Les branques continuen al remot, sense cap commit nou: `temes456` a `661733b`, amb 11 commits fora de `main`, i `origin/main` sense cap fusió. **Decisió de l'usuari: s'espera el grup de treball**, que la refarà o la reobrirà, i `A3.qmd`–`A6.qmd` no es toquen. Es va saber per `glab`, en preparar dues tasques que l'usuari donava per desbloquejades perquè creia que `!7` s'havia fusionat: «tancada» no és «fusionada», i això només ho diu GitLab, no el clon.
+  📌 **Estat a 2026-10-01, 16:21: totes dues MR tancades sense fusionar**, per `pedro.martinez.ferrer` (`!5` a les 16:20 i `!7` a les 16:21). `!7` tenia `merge_status: cannot_be_merged`, coherent amb els tres conflictes de la fusió de prova de més avall. Les branques continuen al remot, sense cap commit nou: `temes456` a `661733b`, amb 11 commits fora de `main`, i `origin/main` sense cap fusió. **Decisió de l'usuari: s'espera el grup de treball**, que la refarà o la reobrirà, i `A3.qmd`–`A6.qmd` no es toquen. ⚠️ **Substituïda el mateix dia**, després de rebre l'inventari del grup (entrada següent): **la fusió de `temes456` i el port de `!5` els fa una sessió de Claude Code** (decisió de l'usuari), amb la resolució de cada conflicte i els casos dubtosos del port presentats a l'usuari abans del push. La fusió es fa amb un commit de fusió, per conservar l'autoria dels 11 commits; el port porta `Co-authored-by` de l'autor. Es va saber per `glab`, en preparar dues tasques que l'usuari donava per desbloquejades perquè creia que `!7` s'havia fusionat: «tancada» no és «fusionada», i això només ho diu GitLab, no el clon.
 
   ```bash
   glab api 'projects/7916/merge_requests/7' | jq -r '"\(.state) · fusionada: \(.merged_at // "no") · tancada: \(.closed_at // "no")"'
@@ -186,6 +186,26 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   📌 **`build` existeix només al mirall de GitHub, i no s'ha de tocar.** No és a `origin` (GitLab). El seu únic commit és `6d5d2cf` (2026-09-19), d'autor `github-actions[bot]` i assumpte «Render de 38f0ebc»: és **sortida de CI generada a GitHub**, que per això no arriba a GitLab —i el `38f0ebc` que cita no resol en aquest clon, per la mateixa raó—. El `publish.yml` actual ja no l'escriu: desplega amb `upload-pages-artifact` i `deploy-pages` (`:81`, `:94`). No és residu del `d4086cd` de juliol ni feina de ningú.
 
   ⚠️ **Mesureu les branques amb `git ls-remote`, i digueu de quin remot parleu** (regla 13 de `13_contrib.qmd §Escombrades i verificació del corpus`). En registrar aquesta entrada, `git branch -r` va fer declarar `build` inexistent —ho és a GitLab, no al mirall— i va fer registrar `T3-review-adria` i `to-trash` com a existents, quan eren **referències de seguiment obsoletes** d'aquest clon: ja no són a cap dels dos remots, i `git fetch mirror --prune` les ha tretes.
+
+- **Anotacions de la revisió externa de T4–T6: inventari i pla del grup de treball** (document lliurat a l'usuari el 2026-10-01, generat pel grup amb Claude Code; aquesta entrada n'és l'única còpia al repositori). Verificat contra el repositori el mateix dia: `5a737f2` (2026-07-21) és la fusió de `!6`, i ja és a `main`; queden 11 commits de `temes456` fora de `main` (`fc14bea`…`661733b`), entre ells `7dc4746`; hi ha 4 marcadors a `main` (A4 2, A5 2) i 14 a la branca; les cinc àncores de les anotacions [br] existeixen tant a `main` com a la branca. **[main]** vol dir que el marcador ja és a `main`, i **[br]** que només és a la branca, tot i que el problema que descriu també és a `main`.
+
+  | # | Tema | Anotació | Valoració del grup |
+  | ---: | :--- | :--- | :--- |
+  | 1 | T4 | [main] Figures del *half-adder* i del *full-adder* (`#wrn-sobreeiximent-maquinari`); en SVG natiu, juntament amb la #2 | Factible |
+  | 2 | T4 | [main] Figura de la cadena de *full-adders* amb una XOR per al sobreeiximent: sí que cal, perquè il·lustra l'equació del maquinari | Factible |
+  | 3 | T4 | [br] Moure `#cau-sobreeiximent-extensio-m` a §Sobreeiximent en la multiplicació | Important |
+  | 4 | T4 | [br] Algorismes en cursiva i blocs titulats només «Pseudocodi» (multiplicació i divisió): cal fixar-ne una convenció a `13_contrib.qmd` | Factible |
+  | 5 | T5 | [main] Introduir el R4-TYPE? La figura existeix i no s'usa; només té sentit si el tema tracta les instruccions FMA | Decisió |
+  | 6 | T5 | [main] R5-TYPE (*compressed*) com a aprofundiment: fora de l'abast de T5; en tot cas, a T2 | No val la pena |
+  | 7 | T5 | [br] «denormals» no es llegeix bé a `#fig-recta-global` | Render |
+  | 8 | T5 | [br] Fórmules de `#tip-suma-ieee754`: les mantisses llargues poden sortir del marge al PDF | Render |
+  | 9 | T6 | [br] Els exemples de §Definicions barregen temps d'execució i rendiment: cal enunciar abans la relació | Important |
+  | 10 | T6 | [br] La llegenda de $t_c$ a `#fig-tc-tc-prima` no es renderitza | Render |
+  | 11 | T6 | [br] Equació massa llarga a `#tip-comparacio-cpua-cpub`: cal partir-la | Factible |
+  | 12 | T6 | [br] Reordenar §Potència (tres anotacions): definició i equació primer, Moore i Dennard al final de §Potència estàtica. Ampliació possible: miniaturització i reducció del consum (`7dc4746`) | Important (ordre); Decisió (ampliació) |
+
+  El pla del grup: (1) acabar la fusió de `temes456`; (2) #12, #9 i #3; (3) una sola passada de render per a #7, #8, #10 i #11; (4) #4 i #1–#2; (5) decisions #5, #6 i l'ampliació de #12; (6) en resoldre cada anotació, esborrar-ne el marcador i actualitzar-ne l'entrada; les de la branca es registren aquí en fusionar-la. És la base de `CLAUDE.md §Pla de treball` des del 2026-10-01. Les #1–#2, #5 i #6 coincideixen amb entrades que ja hi eren (figures de *half-adder* i *full-adder*, R4-TYPE, R5-TYPE), i hi consta la valoració del grup.
+
 ---
 
 ## Tasques transversals
