@@ -288,22 +288,24 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Revisió sistemàtica del corpus per l'aplicació de la regla d'ús `AND`, `OR`, `XOR`, `NOT`--`barra superior`** (enters).
 
-- **Cometes `"..."` → `«...»`**: substitució global. Abast mesurat per forma (cometes rectes que envolten text amb lletres, descartats els atributs `clau="valor"`): **57 línies candidates en 13 fitxers** — `A2` 17, `A7` 9, `A8` 9, `L3` 5, `A1` 4, `A3` 3, `RARS_directives` 3, `L1` 2, `A4` 1, `A5` 1, `A9` 1, `S4` 1, `index` 1 (suma 57).
+- **Cometes `"..."` → `«...»`: només queda `A4.qmd:122`** («s'ha "donat la volta"»), que espera la fusió de `temes456`. La resta és feta (2026-10-01): **sis línies de prosa** convertides, totes a `A2.qmd` (`:918`, `:1482`, `:1506`, `:1508`, `:1587`, `:1596`, mesurades abans del canvi). El text sencer de l'entrada anterior, amb la història de la xifra: `git show 06df489:TODO.md`.
+
+  Ordre, amb A3–A6 exclosos (regla 12: `13_contrib.qmd` en queda fora perquè hi ha cites, no prosa del llibre):
 
   ```bash
   git grep -nP '(?<![-\w=])"[^"]*\p{L}[^"]*"' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
-    | grep -vP '\w+="'
+    ':!01_apunts/A3.qmd' ':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd' \
+    | grep -vP '\w+="' | wc -l      # 54 a 06df489, 49 després: tot codi, YAML o comentari HTML
+  git grep -c "“" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'   # cap
   ```
 
-  ⚠️ **`13_contrib.qmd` en queda fora, i no per higiene de mesura.** Les seves línies **no eren candidates**: el que hi ha entre cometes són **cites d'exemples**, no prosa del llibre —`:234` («Capçaleres de "Lliuraments" i "Lectura prèvia"»), `:287` («"5 V", "8 bits", "12 bits"»), `:417` («Extensió "M", Extensió "Zicsr"»), a més de valors TOML i ordres de shell; línies mesurades a `ebdf055`—. Convertir-les no arreglaria res, i a `:291` **falsejaria la lliçó**, que cita literalment les dues formes per contrastar-les («Sempre: "Cal verificar…" (no "hem de verificar")»). Eren soroll comptat com a feina. És la regla 12 aplicada a una substitució: el fitxer que documenta el cas no és corpus a convertir.
+  Les **49 que queden no són feina**: codi C i pseudocodi, directives (`.asciz "…"`), missatges de RARS i de GCC dins de `` ` ``, el YAML d'`index.qmd` i comentaris HTML que no es renderitzen (les especificacions de figures d'`A7` i `A8`, la nota de `L1.qmd:8`). **Els comentaris dins dels blocs de codi es deixen com són**: `13_contrib.qmd` no en diu res, i la regla de §Commits parla de prosa.
 
-  📌 **Per què la xifra no es podia estabilitzar.** Amb `13_contrib.qmd` dins, el compte creixia cada cop que algú hi escrivia una lliçó: 18 al commit que el va publicar (`bb64329`), 23 el 2026-09-23 i **24 dins del mateix commit** que ho mesurava, perquè la regla 12 bis que s'hi acabava d'escriure hi afegia una línia.
+  ⚠️ **Tres correccions a l'entrada anterior**, que la mesura d'avui no reprodueix:
 
-  ⚠️ **El valor d'`A2` era fals en néixer**, no desfasat: publicava 12 quan a `bb64329` ja n'hi havia **17**, que són les d'avui. Els altres dotze valors reprodueixen exacte. És la regla 12 bis.
-
-  **Bona part són codi C i directives legítimes** (`printf("%d", x)`, `.asciz "cadena"`), que no s'han de tocar: el discriminador ha de ser cas a cas. Casos reals de prosa ja identificats (línies mesurades a `ebdf055`): `A2.qmd:1482` («punter a», «multiplicació», «desreferència/indirecció»), `:1506` («adreça de»), `:1508` («ampersand»), `:1596` («variable de tipus punter al \<tipus\>»), `:1796-1797` («vector de 100 enters»).
-
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 1 línia a A4, 3 a A5 i 1 a A6.
+  - **`A2.qmd:1796-1797` no eren prosa**, sinó comentaris C dins d'un bloc `{.c}` (`/* Tipus: "vector de 100 enters" */`). Per la regla de dalt, es deixen.
+  - **`A2.qmd:918` no hi era**: té `“camps”`, amb cometes tipogràfiques, i el patró només buscava `"`. És la regla 4 (cobrir totes les formes): ara `25_scripts/lint_prosa.py` també les detecta.
+  - **El repartiment d'A3–A6 («1 a A4, 3 a A5 i 1 a A6») no reprodueix a cap commit**. A `bb64329`, a `ebdf055` i avui dona A3 3, A4 1, A5 1, A6 0, i d'aquestes cinc línies **només `A4.qmd:122` és prosa**: `A3.qmd:244` i `A5.qmd:6` són marcadors en comentari HTML, i `A3.qmd:1249-1250` és codi C. El total d'`A2`, que l'entrada donava com a 17, ja era **19** a `ebdf055`.
 
 - **Homogeneïtzació del format de les adreces** (usuari, 2026-09-23). Revisió transversal del format amb què s'escriuen les adreces i els valors hexadecimals a tot el corpus. `13_contrib.qmd` en fixa avui **dos** aspectes i en deixa la resta sense criteri:
 

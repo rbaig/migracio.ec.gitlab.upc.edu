@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Revisió de la prosa dels .qmd: dobles espais i cometes rectes.
+"""Revisió de la prosa dels .qmd: dobles espais i cometes rectes o tipogràfiques.
 
 Aplica la regla de 13_contrib.qmd §Commits: «abans de fer commit, apliqueu
 linting a la prosa dels fitxers .qmd modificats: elimineu dobles espais
@@ -108,6 +108,8 @@ def check(path, only_lines=None):
             findings.append((path, n, 'doble espai'))
         if '"' in line:
             findings.append((path, n, 'cometa recta (cal «…»?)'))
+        if '“' in line or '”' in line:
+            findings.append((path, n, 'cometa tipogràfica (cal «…»?)'))
     return findings
 
 
