@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**40 entrades vives** (recompte del 2026-10-01: entra «Anotacions de la revisió externa de T3», en portar la MR `!5`, i es retira la regla d'ús d'`AND`/`OR`, executada; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**39 entrades vives** (recompte del 2026-10-01: entra «Anotacions de la revisió externa de T3», en portar la MR `!5`, i es retiren la regla d'ús d'`AND`/`OR` i les cometes, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 12 · `§Tasques transversals` 7 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 40, regla 12 bis).
+Repartiment: `§Decisions obertes` 12 · `§Tasques transversals` 6 ·
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 39, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -292,25 +292,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ```
 
   Hi encaixa també: **`NF`, `NC`, $T$ (mida d'element) i *stride*** apareixen en fórmules de T4 i L4 i **no tenen entrada** al glossari (`git grep -n "NF\|stride" -- 12_sigles_simbols.qmd` → cap). *(Origen: `TODO/L4_tasques.md` D4, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/L4_tasques.md`.)*
-
-- **Cometes `"..."` → `«...»`: només queda `A4.qmd:119`** (mesurat a `454a82e`; abans `:122`) («s'ha "donat la volta"»). `temes456` ja és a `main` (`451c3ef`): es fa a la fase 2 de `CLAUDE.md §Pla de treball`. La resta és feta (2026-10-01): **sis línies de prosa** convertides, totes a `A2.qmd` (`:918`, `:1482`, `:1506`, `:1508`, `:1587`, `:1596`, mesurades abans del canvi). El text sencer de l'entrada anterior, amb la història de la xifra: `git show 06df489:TODO.md`.
-
-  Ordre, amb A3–A6 exclosos (regla 12: `13_contrib.qmd` en queda fora perquè hi ha cites, no prosa del llibre):
-
-  ```bash
-  git grep -nP '(?<![-\w=])"[^"]*\p{L}[^"]*"' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \
-    ':!01_apunts/A3.qmd' ':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd' \
-    | grep -vP '\w+="' | wc -l      # 54 a 06df489, 49 després: tot codi, YAML o comentari HTML
-  git grep -c "“" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'   # cap
-  ```
-
-  Les **49 que queden no són feina**: codi C i pseudocodi, directives (`.asciz "…"`), missatges de RARS i de GCC dins de `` ` ``, el YAML d'`index.qmd` i comentaris HTML que no es renderitzen (les especificacions de figures d'`A7` i `A8`, la nota de `L1.qmd:8`). **Els comentaris dins dels blocs de codi es deixen com són**: `13_contrib.qmd` no en diu res, i la regla de §Commits parla de prosa.
-
-  ⚠️ **Tres correccions a l'entrada anterior**, que la mesura d'avui no reprodueix:
-
-  - **`A2.qmd:1796-1797` no eren prosa**, sinó comentaris C dins d'un bloc `{.c}` (`/* Tipus: "vector de 100 enters" */`). Per la regla de dalt, es deixen.
-  - **`A2.qmd:918` no hi era**: té `“camps”`, amb cometes tipogràfiques, i el patró només buscava `"`. És la regla 4 (cobrir totes les formes): ara `25_scripts/lint_prosa.py` també les detecta.
-  - **El repartiment d'A3–A6 («1 a A4, 3 a A5 i 1 a A6») no reprodueix a cap commit**. A `bb64329`, a `ebdf055` i avui dona A3 3, A4 1, A5 1, A6 0, i d'aquestes cinc línies **només `A4.qmd:122` és prosa**: `A3.qmd:244` i `A5.qmd:6` són marcadors en comentari HTML, i `A3.qmd:1249-1250` és codi C. El total d'`A2`, que l'entrada donava com a 17, ja era **19** a `ebdf055`.
 
 - **Ordre substantiu–adjectiu: «precisió simple/doble» al material de T5.** **Decidit i aplicat fora de T5 el 2026-10-01** (decisió de l'usuari): l'adjectiu classificador va darrere del nom, i la regla, amb les excepcions, és a `13_contrib.qmd §Criteris generals`. Fora de T5 s'han canviat 6 calcs de precisió (`A2.qmd:79`, `S_criteris_seleccio.qmd:81`, `12_sigles_simbols.qmd:135`, `:139`, `:197`, `RARS_directives.qmd:6`) i 5 de «el/la següent X» (`A1.qmd:264`, `:377`; `A2.qmd:1759`, `:1766`; `RARS_directives.qmd:1`). Línies mesurades a `bb12c2b`; el text anterior de l'entrada: `git show bb12c2b:TODO.md`.
 
@@ -618,6 +599,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | **Veu dels enunciats: 99 imperatius en singular a E1, E2, E3 i E9** (entrada de §Tasques transversals, detectada i retirada el 2026-10-01; confirmada per l'usuari) | **Executada: 151 formes passen al plural**, de les quals 131 són imperatius a l'inici de frase o d'apartat i 20 dins de la frase. La xifra registrada (99) es quedava curta per tres motius: la llista de verbs era incompleta (faltaven «Efectua», «Respon», «Assumeix», «Desassembla», «Il·lustra-ho» i l'indicatiu «Pots»), l'escombrada només mirava majúscules, i **E4, E6 i E8 també en tenien**, dins de la frase (`E4.qmd:530` barrejava «Apliqueu», «usa» i «Escriviu» en una sola línia). Les terceres persones («el bucle que calcula», «que converteix», «s'executa») i els noms («**Nota**», «Crida al sistema») es deixen. **Les solucions no hi entren**: són a `.callout-tip`, que segons `13_contrib.qmd §Criteris generals` fa servir la 2a persona del singular | Cap pendent. La nota de `13_contrib.qmd §Problemari i solucionari`, que deia «aplicat sistemàticament a E6 i E4», diu ara que s'aplica a E1–E9. Escombrada amb la llista ampliada de verbs (`25_scripts/escombrada.sh --cas -w '(Tradueix\|Escriu\|…\|Pots\|Programa)' -- 02_exercicis`; dins de la taula, `\|` és una barra escapada) → 0 |
 | **Exercicis → Problemes** (entrada de §Tasques transversals; identificadors fets a `9dc02f6` i `1c9aae5`, etiqueta feta i entrada retirada el 2026-10-01) | **Executada.** «Problema» a Problemes i Solucions i «Exercici» al laboratori, en tots dos formats (decisions de l'usuari: només en aquestes parts, i macro LaTeX per al PDF). HTML: `language:` a la capçalera dels 19 E/S. PDF: «⁂» com a títol i prefix (`_quarto.yml`), expandit a `\exercisename` (`preamble.tex`), amb un `\renewcommand` a l'inici d'E1 i de L1. Verificat amb `make render-complet`: al PDF, 299 «Problema» i 91 «Exercici», que sumen els 390 d'abans; les referències de les solucions diuen «Problema»; cap `⁂` ni `\exercisename` literal; els prefixos dels callouts es mantenen. A l'HTML, «Problema 11.x» a E2 i S2 i «Exercici 30.x» a L3 | Cap pendent. El mecanisme, i les dues formes que es van provar i no funcionen (bloc `crossref:` al fitxer; `\exercisename` directament al prefix), són a `13_contrib.qmd §Problemari i solucionari`. Història de l'entrada: `git show 171cf18:TODO.md` |
 | **Regla d'ús `AND`, `OR`, `XOR`, `NOT`–barra superior (enters)** (entrada de §Tasques transversals, d'una sola línia, de `9faab05`, 2026-07-13; retirada el 2026-10-01) | **Executada.** La regla no era escrita enlloc. Mesurat a `41ce419` (`git grep -o -P`, sense `TODO.md` ni `13_contrib.qmd`), el corpus ja la seguia gairebé sencer: a les fórmules, `\land` 5, `\lor` 3, `\oplus` 17 i `\overline` 21 (més 1 de període decimal); a la prosa, AND/OR/XOR/NOT en majúscules i sense format; a les instruccions, minúscula i `` ` ``. Decisió de l'usuari: s'escriu tal com és, amb les taules ISA dins de la regla (opció A), a `13_contrib.qmd §Codi, matemàtiques i cursiva`. S'hi alineen les 15 línies que se'n desviaven: 12 files de taula ISA a `21_riscv/` amb `\text{ and }`/`or`/`xor`/`and not` (lògiques 6, Zicsr 6), `A2.qmd:1269` (`ori`) i els dos $\sim$ (`RV32I_pseudo_not.qmd:1`, `S5.qmd:37`). També, a petició de l'usuari, parèntesis a la fórmula del *carry-out* d'`A4.qmd:75`, que barrejava $\land$ i $\lor$ sense. Ordre que ho comprova (15 abans, a `41ce419`; cap després): `git grep -n -I -F -e '\text{ and' -e '\text{ or' -e '\text{ xor' -e '\sim' -e '\neg' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'` → cap. Fora d'abast i viu: el marcador del revisor `A3.qmd:184` (no fer servir «NOT»), a §Decisions obertes → Anotacions de la revisió externa de T3. | `git show 41ce419:TODO.md` |
+| **Cometes `"..."` → `«...»`** (entrada de §Tasques transversals, retirada el 2026-10-01) | **Executada.** Les sis línies de prosa d'A2 es van fer a `da35dfe`; l'última, `A4.qmd:119` («s'ha «donat la volta»»), en repassar A3–A6 després de la fusió de `temes456` (fase 2). A A3–A6, la resta de casos de l'ordre són comentaris HTML (marcadors) i codi C. Ordre, ara sense exclusions: `git grep -nP '(?<![-\w=])"[^"]*\p{L}[^"]*"' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'` i treure'n les línies amb atributs `x="…"` (`grep -vP '\w+="'`); `lint_prosa.py` ja no en troba cap. | `git show c4c247a:TODO.md` |
 
 ### Caduques per mesura
 
