@@ -10,16 +10,25 @@ number-sections: true
 
 El disseny de computadors aspira a millorar-ne contínuament el rendiment. Cal, per tant, definir amb precisió aquest concepte a fi de ser capaços de mesurar si els nous dissenys aporten millores o no.
 
-<!-- TODO: PM: els exemples són confusos perquè es barreja "temps d'execució" amb "rendiment" sense aclarir del tot la relació entre un i l'altre. De fet, es veu a la propera secció. -->
-
-#### Temps d'execució i productivitat {#sec-temps-dexecucio-i-productivitat}
+#### Temps d'execució, rendiment i productivitat {#sec-temps-dexecucio-rendiment-i-productivitat}
 
 El terme «rendiment» s'empra per a referir-se a dos conceptes diferents:
 
-- **Temps d'execució o de resposta** ($t_{exe}$): Temps transcorregut, mesurat en segons ($[s]$), entre l'inici i el final d'una tasca. És el temps que experimenta l'usuari. El rendiment és l'invers d'aquest temps.
+- **Temps d'execució o de resposta** ($t_{exe}$): Temps transcorregut, mesurat en segons ($[s]$), entre l'inici i el final d'una tasca. És el temps que experimenta l'usuari.
     - En un programa consisteix en la suma de diversos temps: Temps de CPU + temps d'espera d'E/S + temps en cua mentre s'executen altres programes (concurrència).
     - **A EC es considera exclusivament el temps de CPU**, ja que és el que depèn més directament del disseny de la CPU.
 - **Productivitat** (*throughput*): Nombre de tasques completades per unitat de temps. S'usa sovint per quantificar el rendiment en centres de processament de dades (servidors d'aplicacions, bases de dades, etc.).
+
+**A EC, el rendiment es mesura amb el temps d'execució**, i n'és l'**invers**:
+
+$$\text{Rendiment} = \frac{1}{t_{exe}} \qquad (\text{s}^{-1})$$ {#eq-rendiment}
+
+Quina **diferència** hi ha entre **temps d'execució** i **rendiment**?
+
+- El temps d'execució és una mesura de «quant de temps» triga una tasca.
+- El rendiment n'és l'invers: quantes vegades es pot executar la tasca per unitat de temps, l'una darrere l'altra. La productivitat, en canvi, compta també les execucions en paral·lel.
+
+Com que el temps d'execució es mesura en segons ([s]), el rendiment es mesura en tasques per segon (o instruccions per segon, o operacions per segon, etc.) ($[\text{s}^{-1}]$).
 
 ::: {#tip-rendiment-avio .callout-tip}
 ## Rendiment i productivitat de dos avions
@@ -27,7 +36,7 @@ Un avió A porta 100 passatgers a 1200 km/h. Un avió B porta 500 passatgers a 1
 
 **Pregunta**: Quin té més rendiment?
 
-**Resposta**: A té menor temps d'execució. B té major productivitat.
+**Resposta**: A té menor temps d'execució i, per tant, més rendiment (@eq-rendiment). B té major productivitat.
 :::
 
 ::: {#tip-rendiment-cpu .callout-tip}
@@ -36,7 +45,7 @@ Un computador A té 1 CPU que tarda $10\ \mu\text{s}$. B té 200 CPUs que tarden
 
 **Pregunta**: Quin té més rendiment?
 
-**Resposta**: A té menor temps d'execució. B té major productivitat.
+**Resposta**: A té menor temps d'execució i, per tant, més rendiment (@eq-rendiment). B té major productivitat.
 :::
 
 Quina **relació** hi ha entre **productivitat** i **temps d'execució**?
@@ -44,22 +53,11 @@ Quina **relació** hi ha entre **productivitat** i **temps d'execució**?
 - **Sempre**: A menor temps d'execució, major productivitat.
 - **Només en cas de congestió**: Augmentar la productivitat pot disminuir el temps d'execució, ja que es redueix el temps que romanen les tasques encuades (com en el cas d'un centre de dades). Però si el sistema no està congestionat, augmentar la productivitat no té cap efecte sobre el temps d'execució.
 
-#### Rendiment i guany de rendiment {#sec-rendiment-i-guany-de-rendiment}
+#### Guany de rendiment {#sec-guany-de-rendiment}
 
-- El **rendiment** és la **inversa del temps d'execució**:
-
-$$\text{Rendiment} = \frac{1}{t_{exe}} \qquad (\text{s}^{-1})$$ {#eq-rendiment}
-
-- El **guany de rendiment** o simplement **guany** (*speedup*), denotat pel símbol $s$, és la **relació** (adimensional) entre el rendiment d'un sistema **nou** i el d'un sistema de **referència** (original, inicial, etc.):
+El **guany de rendiment** o simplement **guany** (*speedup*), denotat pel símbol $s$, és la **relació** (adimensional) entre el rendiment d'un sistema **nou** i el d'un sistema de **referència** (original, inicial, etc.):
 
 $$\text{Guany} = s = \frac{\text{Rendiment}_{nou}}{\text{Rendiment}_{referència}} = \frac{t_{referència}}{t_{nou}}$$
-
-Quina **diferència** hi ha entre **temps d'execució** i **rendiment**?
-
-- El temps d'execució és una mesura de «quant de temps» triga una tasca.
-- El rendiment és una mesura de «quant de treball» es pot fer per unitat de temps.
-
-Com que el temps d'execució es mesura en segons ([s]), el rendiment es mesura en tasques per segon (o instruccions per segon, o operacions per segon, etc.) ($[\text{s}^{-1}]$).
 
 ::: {#tip-guany .callout-tip}
 ## Interpretació del guany

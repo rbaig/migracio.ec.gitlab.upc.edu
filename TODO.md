@@ -209,7 +209,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | 6 | T5 | [main] R5-TYPE (*compressed*) com a aprofundiment: fora de l'abast de T5; en tot cas, a T2 | No val la pena |
   | 7 | T5 | [br] «denormals» no es llegeix bé a `#fig-recta-global` | Render |
   | 8 | T5 | [br] Fórmules de `#tip-suma-ieee754`: les mantisses llargues poden sortir del marge al PDF | Render |
-  | 9 | T6 | [br] Els exemples de §Definicions barregen temps d'execució i rendiment: cal enunciar abans la relació | Important |
+  | 9 | T6 | [br] Els exemples de §Definicions barregen temps d'execució i rendiment: cal enunciar abans la relació | Important. ✅ **Resolta (2026-10-01, fase 3)**: `#eq-rendiment` («A EC, el rendiment es mesura amb el temps d'execució») i el bloc «Quina diferència hi ha entre temps d'execució i rendiment?» passen davant dels dos exemples, i la resposta dels exemples diu que A té més rendiment. Les subseccions es diuen ara «Temps d'execució, rendiment i productivitat» i «Guany de rendiment» (cap dels dos slugs antics no tenia remissions). A més, decisió de l'usuari: la definició de rendiment com a «quant de treball per unitat de temps», que era la de productivitat, passa a «quantes vegades es pot executar la tasca per unitat de temps, l'una darrere l'altra». Marcador esborrat. |
   | 10 | T6 | [br] La llegenda de $t_c$ a `#fig-tc-tc-prima` no es renderitza | Render |
   | 11 | T6 | [br] Equació massa llarga a `#tip-comparacio-cpua-cpub`: cal partir-la | Factible |
   | 12 | T6 | [br] Reordenar §Potència (tres anotacions): definició i equació primer, Moore i Dennard al final de §Potència estàtica. Ampliació possible: miniaturització i reducció del consum (`7dc4746`) | Important (ordre); Decisió (ampliació) |
@@ -224,7 +224,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | 4 | `A4.qmd:181` | «La descripció de l'algorisme no hauria de ser tota en cursives. Els titols del codis no haurien de ser simplemement "pseudocodi".» |
   | 7 | `A5.qmd:269` | «PM: la paraula denormals de la figura a baix no s'aprecia del tot bé» |
   | 8 | `A5.qmd:531` | «PM: Check that this formula is well displayed under LaTeX» |
-  | 9 | `A6.qmd:13` | «PM: els exemples són confusos perquè es barreja "temps d'execució" amb "rendiment"…» |
+  | 9 | ~~`A6.qmd:13`~~ | «PM: els exemples són confusos perquè es barreja "temps d'execució" amb "rendiment"…» — esborrat, resolta |
   | 10 | `A6.qmd:148` | «PM: la legenda de la figura (temps t_c) no s'ha compilat correctament» |
   | 11 | `A6.qmd:178` | «PM: equació más llarga (cal separar-la en més d'una línia)» |
   | 12 | `A6.qmd:260` | «PM: l'aprofundiment no hauria de començar abans de la eq. 6.8» |
