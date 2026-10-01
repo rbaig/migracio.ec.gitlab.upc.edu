@@ -6,10 +6,10 @@ number-sections: true
 
 ## Excepcions i interrupcions
 
-::: {#sol-p9-exc-conceptes .callout-tip}
+::: {#sol-t9-exc-conceptes .callout-tip}
 ## Solució: conceptes bàsics d'excepcions i interrupcions
 
-**Enunciat**: @exr-p9-exc-conceptes.
+**Enunciat**: @exr-t9-exc-conceptes.
 
 **a)** Una **excepció** és un esdeveniment causat per l'execució d'una instrucció (origen intern): per exemple, un accés a memòria amb adreça no alineada o una instrucció il·legal. Una **interrupció** és un esdeveniment causat per un dispositiu extern (origen extern): per exemple, un teclat que notifica que s'ha premut una tecla.
 
@@ -26,10 +26,10 @@ number-sections: true
 **d)** La RSE ha de salvar **tots** els registres generals (`x1`–`x31`) sense excepció. A diferència d'una subrutina normal, el programa interromput no ha cedit el control voluntàriament i no pot saber quins registres modificarà la RSE. Les convencions ABI (registres salvats vs. temporals) no s'apliquen.
 :::
 
-::: {#sol-p9-exc-rse .callout-tip}
+::: {#sol-t9-exc-rse .callout-tip}
 ## Solució: RSE mínima en assemblador
 
-**Enunciat**: @exr-p9-exc-rse. *Vegeu l'estructura general de la RSE a @sec-ei-rse.*
+**Enunciat**: @exr-t9-exc-rse. *Vegeu l'estructura general de la RSE a @sec-ei-rse.*
 
 ```{.s filename="RV32I"}
 rse:
@@ -132,10 +132,10 @@ Observacions:
 - El salt `j` és una pseudoinstrucció equivalent a `jal x0, offset`.
 :::
 
-::: {#sol-p9-exc-mepc-mtvec .callout-tip}
+::: {#sol-t9-exc-mepc-mtvec .callout-tip}
 ## Solució: `mepc`, `mtvec` i ajust de retorn
 
-**Enunciat**: @exr-p9-exc-mepc-mtvec.
+**Enunciat**: @exr-t9-exc-mepc-mtvec.
 
 **a)** La instrucció `lw t0, 0(t1)` a `0x80001000` genera una excepció en executar-se (adreça no alineada). La instrucció s'avorta sense completar-se i el PC no s'incrementa. El maquinari guarda l'adreça de la instrucció causant:
 
@@ -166,10 +166,10 @@ $$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
 
 ## Crides al sistema
 
-::: {#sol-p9-syscall-basic .callout-tip}
+::: {#sol-t9-syscall-basic .callout-tip}
 ## Solució: crides al sistema bàsiques a RARS
 
-**Enunciat**: @exr-p9-syscall-basic. *Els codis de servei de RARS són a @nte-ecall-taula-rars.*
+**Enunciat**: @exr-t9-syscall-basic. *Els codis de servei de RARS són a @nte-ecall-taula-rars.*
 
 **a)** Imprimir l'enter de `t0`:
 
@@ -208,10 +208,10 @@ $$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
 
 ## Entrada/Sortida
 
-::: {#sol-p9-io-conceptes .callout-tip}
+::: {#sol-t9-io-conceptes .callout-tip}
 ## Solució: conceptes d'entrada/sortida
 
-**Enunciat**: @exr-p9-io-conceptes.
+**Enunciat**: @exr-t9-io-conceptes.
 
 **a)** En la **sincronització per enquesta** (*polling*), el processador consulta repetidament el registre d'estat del dispositiu fins que l'operació acaba. És simple però desaprofita el processador durant l'espera. En la **sincronització per interrupcions**, el dispositiu notifica el processador quan ha acabat, i el processador pot fer feina útil entremig. És més eficient però requereix configurar els permisos d'interrupció i escriure una RSE.
 
@@ -233,10 +233,10 @@ $$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
 **c)** El bit `MIE` (bit 3 de `mstatus`) és el **permís global**: si val 0, cap interrupció no s'atén, independentment de la resta de bits. El bit `MTIE` (bit 7 de `mie`) és la **màscara específica** de les interrupcions de temporitzador en mode M: si val 0, les interrupcions de temporitzador queden inhibides fins i tot quan `MIE = 1`. Cal que tots dos valguin 1 (i el bit corresponent de `mip` estigui actiu) perquè una interrupció de temporitzador sigui atesa.
 :::
 
-::: {#sol-p9-exc-interrupcions-io .callout-tip}
+::: {#sol-t9-exc-interrupcions-io .callout-tip}
 ## Solució: RSE per a interrupcions de teclat
 
-**Enunciat**: @exr-p9-exc-interrupcions-io.
+**Enunciat**: @exr-t9-exc-interrupcions-io.
 
 **a)** Cal activar `MEIE` (bit 11 de `mie`) i `MIE` (bit 3 de `mstatus`):
 
@@ -357,10 +357,10 @@ rse_ret_teclat:
 
 ## Fallada de pàgina
 
-::: {#sol-p9-exc-tlb-miss .callout-tip}
+::: {#sol-t9-exc-tlb-miss .callout-tip}
 ## Solució: fallada de pàgina i TLB gestionat per programari
 
-**Enunciat**: @exr-p9-exc-tlb-miss, apartats a–b.
+**Enunciat**: @exr-t9-exc-tlb-miss, apartats a–b.
 
 **a)** Una fallada de pàgina escriu a `mcause` (@nte-mcause-mes-rellevants):
 
