@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**42 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat»; entra «Tanques de codi fora de la convenció»). Una entrada = una vinyeta de primer nivell (`^- `) per
+**42 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat»; entra «Tanques de codi fora de la convenció»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,7 +15,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 10 ·
+Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 11 ·
 `§Tasques per tema` 13 · `§Tasques globals` 8 (suma 42, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
@@ -112,50 +112,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   📌 **Argument nou a favor de la fila pròpia (2026-09-24): el marcador també serveix per excloure el bloc de les escombrades del corpus.** El quart bloc és el contraexemple d'`@nte-rars-noms-reservats`, que conté a posta un `.eqv B, 16` amb un nom reservat. Sense marca, una escombrada d'identificadors el compta com a **xoc real** (17 símbols `.eqv`, amb `B` a `A2.qmd:437`, mesurat a `ebdf055`) i, per la regla d'aturada, obliga a parar-se a decidir si ho és — a l'exemple escrit precisament per ensenyar el xoc. Amb la marca al `filename`, l'exclusió es pot fer **per forma** (`codi_erroni` a la tanca) i no amb una llista de línies que caduca: el compte torna a 16 i a zero xocs. Un marcador que és alhora senyal per al lector i predicat per a les eines és un argument que no es veia amb els tres blocs anteriors, cap dels quals no conté identificadors que cap escombrada miri.
 
   Avui no trenca res: `25_scripts/verifica_laboratoris.py` només processa `04_laboratori/L*.qmd` (`LAB_DIR` + `L*.qmd`, `:24` i `:279`, mesurat a `ebdf055`), de manera que `A2.qmd` li queda fora d'abast. El risc apareix el dia que l'abast creixi o que algú escombri identificadors a tot el corpus.
-
-- **Ordre substantiu–adjectiu: «simple precisió» vs «precisió simple».** Són **dues tasques i en aquest ordre**; si s'executa la segona sense la primera, qui la faci donarà per fixat un criteri que ningú no ha fixat.
-
-  **(i) Decidir la forma canònica i registrar-la a `13_contrib.qmd`.** Avui **no hi ha cap regla d'ordre substantiu–adjectiu** al fitxer de convencions: `grep -niP "substantiu|adjectiu|anteposa" 13_contrib.qmd` → cap resultat. (`13_contrib.qmd:147` —mesurat a `ebdf055`— parla d'«esbiaixat»/«biaix» i només fa servir l'ordre bo dins del títol d'una font citada; no fixa cap criteri.) La regla lingüística de fons: en català normatiu els adjectius **classificadors** van darrere del substantiu, i anteposar-los és un calc de l'anglès. Amb excepcions que la decisió ha de recollir: ordinals, quantificadors i indefinits, «mateix», «propi», «altre», adjectius valoratius idiomàtics, i **«simple» en sentit de «mer»** («un simple error tipogràfic»), que sí que va anteposat.
-
-  **(ii) L'escombrada.** Asimetria mesurada sobre tot el versionat, exclòs aquest `TODO.md`, **insensible a majúscules**:
-
-  | Forma | Ocurrències | Repartiment |
-  | :--- | ---: | :--- |
-  | «simple precisió» (calc) | **52** | 43 als `.qmd` + 9 fora |
-  | «precisió simple» | **6** | tots als `.qmd` |
-  | «doble precisió» (calc) | **10** | tots als `.qmd` |
-  | «precisió doble» | **0** | — |
-
-  ```bash
-  git grep -oi "simple precisió" -- . ':!TODO.md' | wc -l    # 52
-  git grep -oi "precisió simple" -- . ':!TODO.md' | wc -l    #  6
-  git grep -oi "doble precisió"  -- . ':!TODO.md' | wc -l    # 10
-  git grep -oi "precisió doble"  -- . ':!TODO.md' | wc -l    #  0
-  ```
-
-  ⚠️ **Dues trampes que l'execució ha d'evitar, totes dues comprovades:**
-
-  **1. L'escombrada ha de ser insensible a majúscules** (`-i`). Sis ocurrències són capitalitzades perquè encapçalen columna o paràgraf, i un patró en minúscules se les deixa totes:
-
-  ```bash
-  git grep -n "Simple precisió\|Doble precisió" -- . ':!TODO.md'
-  # A5.qmd:63 (dues, capçaleres de columna) · S5.qmd:296, :309, :338, :351
-  ```
-
-  **2. L'abast no és només de prosa**: 9 ocurrències són fora dels `.qmd`, en sis fitxers. **Abans de tocar-ne cap cal saber quin és font i quin és generat**, perquè el tractament és oposat:
-
-  | Fitxer | Naturalesa | Com s'hi canvia el text |
-  | :--- | :--- | :--- |
-  | `24_specs/registres.toml` (`:133`, `:136`) | **Font de veritat** (`CLAUDE.md §Fitxers de referència obligatòria`) | Editar-hi el `title` i **regenerar**: `gen_regs.py` produeix `auto_figs/T5_ieee754_format_registre__registre_{light,dark}.svg`, que és el que `A5.qmd:87,90,94` consumeix |
-  | `22_figs_originals/T5_ieee754_format_registre.svg` | Font versionada, però **el corpus no en consumeix la variant `__original_`** | Comprovar si encara cal: hi ha **dues còpies del mateix text**, la del `.toml` i la d'aquest SVG |
-  | `T5_recta_global.svg`, `T5_recta_zoom_zero.svg` | **Fonts natives** (`A5.qmd:268-275` i `:381-388` en consumeixen la variant `__original_`) | Editar l'SVG directament |
-  | `T5_recta_global__org.svg`, `T5_recta_zoom_zero__org.svg` | **Esborranys versionats**, no referenciats per cap `.qmd`, `.yml` ni `.toml` | Decidir si es mantenen abans de perdre-hi temps |
-
-  📌 **La lliçó, germana de la que ja teníem.** Fins ara la regla escrita deia que *un grep massa literal fabrica discrepàncies que no existeixen*. Aquesta entrada mostra l'altra cara: **també se'n deixa de reals**, i aquí ho va fer per les dues bandes alhora — un compte era sensible a majúscules i perdia sis capçaleres; l'altre mirava només els `.qmd` i perdia les nou de les figures. La forma completa de la regla: **el patró ha de cobrir totes les formes del que es mesura (majúscules incloses) i tots els tipus de fitxer on pot viure, no només els que es tenen al cap.**
-
-  L'altre patró que el registre d'origen citava («el següent exemple» → «l'exemple següent») és **residual**: 6 ocurrències del calc contra 244 de la forma bona. *(Origen: `TODO/substantiu_adjectiu.md`, fitxer transitori esborrat; es recupera sencer amb `git show a211bbf:TODO/substantiu_adjectiu.md`.)*
-
-  ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot).
 
 - **Branques del remot: la revisió externa és en curs a `temes456` (T4–T6, MR `!7`) i a `contingut/t3-traduccio` (T3, MR `!5`)** (registrada 2026-09-23; T3 i les MR, 2026-10-01). Les branques es registren, **no es toquen**: cap fusió, cap esborrat, i les fusions les farà el grup de treball.
 
@@ -323,6 +279,40 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ⚠️ **Abans d'escombrar, dues cauteles.** (i) La regla de majúscules **exempta explícitament** els bolcats de RARS: una substitució global a majúscules els falsejaria. (ii) Els hexadecimals no són tots adreces —n'hi ha de valors, de màscares i de codificacions d'instrucció—, i el criteri d'amplada no té per què ser el mateix: mesureu **per forma i per rol**, no pel prefix `0x`.
 
   ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 13 hexadecimals a A5, i cap a A4 ni a A6.
+
+- **Ordre substantiu–adjectiu: «precisió simple/doble» al material de T5.** **Decidit i aplicat fora de T5 el 2026-10-01** (decisió de l'usuari): l'adjectiu classificador va darrere del nom, i la regla, amb les excepcions, és a `13_contrib.qmd §Criteris generals`. Fora de T5 s'han canviat 6 calcs de precisió (`A2.qmd:79`, `S_criteris_seleccio.qmd:81`, `12_sigles_simbols.qmd:135`, `:139`, `:197`, `RARS_directives.qmd:6`) i 5 de «el/la següent X» (`A1.qmd:264`, `:377`; `A2.qmd:1759`, `:1766`; `RARS_directives.qmd:1`). Línies mesurades a `bb12c2b`; el text anterior de l'entrada: `git show bb12c2b:TODO.md`.
+
+  **Queda el material de T5, que es canvia en coordinació amb el grup de treball de `temes456`** (decisió de l'usuari): A5 és a la branca, i canviar-ne els E, els S i les figures abans faria que el tema digués una cosa a la teoria i una altra als problemes. **56 ocurrències**:
+
+  ```bash
+  25_scripts/escombrada.sh '(simple|doble) precisió' -- 01_apunts/A5.qmd 02_exercicis/E5.qmd \
+    03_solucions/S5.qmd 04_laboratori/L5.qmd 22_figs_originals 24_specs
+  # A5 21 · S5 10 · L5 8 · E5 8 · registres.toml 2 · SVG de T5 7 (3 en esborranys __org)
+  ```
+
+  Fora d'aquests fitxers, la mateixa forma ja no surt enlloc: `git grep -n -i -E "(simple|doble) precisió" -- . ':!TODO.md' ':!13_contrib.qmd'` amb aquests fitxers exclosos → cap.
+
+  ⚠️ **Dues trampes que l'execució ha d'evitar, totes dues comprovades:**
+
+  **1. L'escombrada ha de ser insensible a majúscules** (`-i`). Sis ocurrències són capitalitzades perquè encapçalen columna o paràgraf, i un patró en minúscules se les deixa totes:
+
+  ```bash
+  git grep -n "Simple precisió\|Doble precisió" -- . ':!TODO.md'
+  # A5.qmd:63 (dues, capçaleres de columna) · S5.qmd:296, :309, :338, :351
+  ```
+
+  **2. L'abast no és només de prosa**: a T5, 9 ocurrències són fora dels `.qmd`, en sis fitxers. **Abans de tocar-ne cap cal saber quin és font i quin és generat**, perquè el tractament és oposat:
+
+  | Fitxer | Naturalesa | Com s'hi canvia el text |
+  | :--- | :--- | :--- |
+  | `24_specs/registres.toml` (`:133`, `:136`) | **Font de veritat** (`CLAUDE.md §Fitxers de referència obligatòria`) | Editar-hi el `title` i **regenerar**: `gen_regs.py` produeix `auto_figs/T5_ieee754_format_registre__registre_{light,dark}.svg`, que és el que `A5.qmd:87,90,94` consumeix |
+  | `22_figs_originals/T5_ieee754_format_registre.svg` | Font versionada, però **el corpus no en consumeix la variant `__original_`** | Comprovar si encara cal: hi ha **dues còpies del mateix text**, la del `.toml` i la d'aquest SVG |
+  | `T5_recta_global.svg`, `T5_recta_zoom_zero.svg` | **Fonts natives** (`A5.qmd:268-275` i `:381-388` en consumeixen la variant `__original_`) | Editar l'SVG directament |
+  | `T5_recta_global__org.svg`, `T5_recta_zoom_zero__org.svg` | **Esborranys versionats**, no referenciats per cap `.qmd`, `.yml` ni `.toml` | Decidir si es mantenen abans de perdre-hi temps |
+
+  📌 **La lliçó, germana de la que ja teníem.** Fins ara la regla escrita deia que *un grep massa literal fabrica discrepàncies que no existeixen*. Aquesta entrada mostra l'altra cara: **també se'n deixa de reals**, i aquí ho va fer per les dues bandes alhora — un compte era sensible a majúscules i perdia sis capçaleres; l'altre mirava només els `.qmd` i perdia les nou de les figures. La forma completa de la regla: **el patró ha de cobrir totes les formes del que es mesura (majúscules incloses) i tots els tipus de fitxer on pot viure, no només els que es tenen al cap.**
+
+  ⛔ **A5 i `24_specs/registres.toml` són a `temes456`**: no es toquen fins a la fusió (vegeu §Decisions obertes → Branques del remot).
 
 - **Tanques de codi fora de la convenció** (detectada 2026-10-01, en escombrar les expressions als operands). `13_contrib.qmd §Blocs de codi` fixa la tanca de cada llenguatge amb `filename`: `{.c filename="C"}`, `{.s filename="RV32I"}` (o `RV32IM`, `RV32IF`, `RV32IZicsr`, o el nom del fitxer `.s`). Mesurat a `b2530c7`, **39 tanques nues** no la segueixen:
 
