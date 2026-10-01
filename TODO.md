@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**40 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**39 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 9 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 40, regla 12 bis).
+Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 8 ·
+`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 39, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -182,37 +182,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ---
 
 ## Tasques transversals
-
-- **Exercicis → Problemes: l'etiqueta visible. Decidit, però l'HTML i el PDF no es poden fer igual de la mateixa manera.** El llibre etiqueta els enunciats com a «Exercici 11.1», «Exercici 11.10»… (el prefix per defecte de Quarto per a `#exr-`), en una part del llibre que es diu «Problemes». **Decisió de l'usuari (2026-10-01): «Problema», però només a Problemes i Solucions**, perquè el laboratori també fa servir `#exr-` (43 definicions, 48 referències) i la seva prosa en diu «exercici» (24 vegades).
-
-  **A l'HTML, resolt i provat** (2026-10-01, no confirmat al repositori): a la capçalera dels 19 fitxers `E1`–`E9`, `S1`–`S9` i `S_criteris_seleccio`,
-
-  ```yaml
-  language:
-    crossref-exr-title: "Problema"
-    crossref-exr-prefix: "Problema"
-  ```
-
-  dona «Problema 11.x» a les definicions i a les referències, «Exercici 30.x» al laboratori, cap avís, i els callouts d'E/S conserven «RISC-V» i «Essencial». ⚠️ **No s'ha de fer amb un bloc `crossref:` al fitxer**: substitueix la configuració de capítols que el llibre hi injecta, la numeració perd el capítol («Problema 9») i `@sec-tema-introduccio-solucions` (S2 → S1) deixa de resoldre. La prova amb un sol fitxer semblava bona, i només el llibre complet ho va mostrar.
-
-  **Al PDF no hi arriba.** El PDF és un sol document LaTeX, l'entorn és `\newtheorem{exercise}{Exercici}[chapter]`, definit una sola vegada, i les metadades de cada fitxer no el canvien: el PDF va donar 390 «Exercici» i cap «Problema». Amb la solució de l'HTML, les dues sortides dirien coses diferents, i per això no s'ha confirmat. Opcions, pendents de l'usuari:
-
-  | Opció | Cost | Resultat |
-  | :--- | :--- | :--- |
-  | Macro LaTeX: `\exercisename` a `preamble.tex`, `exr-title` només per al PDF, i un `\renewcommand` en LaTeX pur al començament de les parts Problemes i Laboratori | Cal provar-ho (un `make render-complet` per intent), i és maquinària nova en dos llocs | HTML i PDF iguals, amb el laboratori a «Exercici» |
-  | «Problema» a tot el llibre, a `_quarto.yml` | Una línia | HTML i PDF iguals; el laboratori diria «Problema 30.1» mentre la seva prosa diu «exercici» |
-  | Només l'HTML | La capçalera de dalt | El PDF continua dient «Exercici» a tot arreu |
-
-  ✅ **La part dels identificadors és feta (2026-10-01)**, per decisió de l'usuari: `p<N>-` → `t<N>-`, amb el número del tema del fitxer. **503 substitucions** en 22 fitxers, que són totes les ocurrències del prefix antic: 498 als `.qmd` (la xifra que publicava l'entrada) i 5 a `TODO.md` i `CLAUDE.md`. No hi ha hagut cap col·lisió: les 296 definicions mapen a 296 identificadors nous diferents, i cada parella `exr`/`sol` és al mateix tema. Les 201 referències `@` resolen, i el render HTML no dona cap referència sense resoldre. La convenció és a `13_contrib.qmd §Problemari i solucionari`. El text anterior de l'entrada, amb la taula de prefixos per tema: `git show 7d78615:TODO.md`.
-
-  ```bash
-  git grep -c -E "(exr|sol)-p[0-9]+-" -- . ':!TODO.md'      # cap
-  git grep -o -E "\{#(exr|sol)-t[0-9]+-" -- '*.qmd' | wc -l   # 296 definicions
-  ```
-
-  ⚠️ Els enllaços externs a les àncores publicades amb el prefix antic (`…/E2.html#exr-p3-…`) van deixar de funcionar.
-
-  ⚠️ **El mapa de `9dc02f6` només cobria `exr-` i `sol-`**, i se'n van escapar dos identificadors amb la mateixa numeració MIPS sota un altre prefix de tipus: els callouts `#nte-p3-remissio-enters` (E2) i `#nte-p3-remissio-enters-solucions` (S2), sense cap referència. Passen a `nte-t2-` (2026-10-01). Ho va trobar l'escombrada per forma (`[#@]<tipus>-p<N>-`, qualsevol tipus), no la del nom: és la regla 6. Comprovació: `git grep -n -E '[#@][a-z]+-p[0-9]+-' -- . ':!TODO.md'` → cap.
 
 - **`S_criteris_seleccio.qmd` — taula de T1 incompleta** (auditoria, sessió 2, 2026-09-21). La taula de `## {{< var tema1 >}}` té **una sola fila** (`@exr-t1-enters-taules`, `:23`) i ha de recollir la resta de problemes seleccionats de `S1.qmd`. El marcador «TODO» que ho registrava era contingut destinat a l'alumne i es va substituir per la nota neutra de `:19` («*Taula provisional: recull els problemes de `S1.qmd` seleccionats fins ara.*»); **aquesta entrada és ara l'únic registre de la tasca**. El fitxer és comentat a `_quarto.yml:95`, de manera que avui no es renderitza.
 
@@ -557,6 +526,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | **Homogeneïtzació del format de les adreces** (entrada de §Tasques transversals, usuari, 2026-09-23; retirada el 2026-10-01) | **Executada (2026-10-01).** Dels tres aspectes, dos ja estaven resolts: separadors (regla i corpus net) i majúscules (regla permissiva, que no demana unificar). El tercer, l'**amplada**, l'ha decidit l'usuari: **8 dígits per als valors de 32 bits** (adreces, contingut de registres, codificacions), i la resta segons l'amplada del seu rol. La regla és a `13_contrib.qmd §Criteris generals`. Mesurat a `c1bac38`, fora d'A3–A6: els **61 hexadecimals de 5 a 7 dígits** són tots camps, valors o màscares, i cap no és una adreça escurçada: immediats de `lui`/`auipc` de 20 bits (A2, S2), números de bloc i etiquetes de memòria cau (A7, L6), números de pàgina de 20 bits (els 27 d'A8) i màscares de mantissa (L5). On el corpus mostra el contingut d'un registre, ja ho feia amb 8 dígits (`A2.qmd:1394-1421`, `S2.qmd:217`). **Tres canvis**: els comentaris `t1 <- 0x43` i `t2 <- 0x4142` d'`A2.qmd:1087-1088`, a la part correcta d'un bloc de codi deliberadament erroni (les errades són a L14 i L15), i l'adreça `0x100` d'`A1.qmd:267`. A A3–A6 no hi ha res a canviar: A3 només té immediats d'`auipc`, i A5 ho té tot amb 8 dígits | 📌 **Cas límit, resolt el 2026-10-01: el format reduït és correcte, i s'explicita.** Decisió de l'usuari: on un problema escriu adreces de 32 bits sense els zeros de l'esquerra perquè només en calen els bits de menys pes, el format hi és correcte, i es diu amb una «**Nota**:» a l'enunciat. En porten `exr-t7-fallades-programa` (on «l'adreça `0`» passa a `0x000`, com a S7) i `exr-t8-mv-proteccio`, que són els dos únics problemes amb hexadecimals curts sense amplada definida. No en porten els que defineixen la mida de la màquina (`exr-t7-cache-adreces`, 64 bytes; `exr-t8-mv-matriu-lru`, 64 KiB), on l'amplada surt de l'enunciat, ni els que escriuen adreces en decimal («a partir de l'adreça 0»: `exr-t7-cache-matriu`, `exr-t7-assoc-versions`, `exr-t8-mv-cache-tlb`). La regla, amb l'excepció, és a `13_contrib.qmd §Criteris generals`. Text sencer de l'entrada: `git show c1bac38:TODO.md` |
 | **Tanques de codi fora de la convenció** (entrada de §Tasques transversals, detectada i retirada el 2026-10-01; confirmada per l'usuari) | **Executada: 40 tanques** passen a la forma de `13_contrib.qmd §Blocs de codi`. Les 33 ` ```c ` (E4 28, E5 3, A7 2) passen a `{.c filename="C"}`; les 6 ` ```s ` d'E4, a `{.s filename="RV32I"}`, tret de la d'`E4.qmd:218`, que conté `mul` i passa a `RV32IM`; i el fragment de C amb buits d'`E4.qmd:437`, que no tenia cap llenguatge, a `{.c filename="C"}`. Obertures i tancaments quadren a tots tres fitxers, i el render és net. ⚠️ **La xifra de tanques sense llenguatge que publicava l'entrada era falsa: 24, quan en són 19.** Les 5 d'`A2.qmd` eren **tancaments** de blocs que obren dins d'un element de llista (`- ```{.c …}`), que l'escàner no reconeixia com a obertura. És la regla 4 (cobrir totes les formes), aplicada a l'eina de mesura mateixa | Les 19 sense llenguatge es deixen: són sortida de RARS (`L5` 8), disposicions aritmètiques en binari (`A1` 7) i 3 a `A3`, que espera el port de `!5`. També es deixen els 3 `{.default}` sense `filename` (`L2.qmd:304`, un bolcat de RARS, i un a A4 i un altre a A5, a `temes456`). Ordre: `git grep -h -E '^\s*[`]{3}[cs]\s*$' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' \| wc -l` → 0 (dins de la taula, `\|` és una barra escapada) |
 | **Veu dels enunciats: 99 imperatius en singular a E1, E2, E3 i E9** (entrada de §Tasques transversals, detectada i retirada el 2026-10-01; confirmada per l'usuari) | **Executada: 151 formes passen al plural**, de les quals 131 són imperatius a l'inici de frase o d'apartat i 20 dins de la frase. La xifra registrada (99) es quedava curta per tres motius: la llista de verbs era incompleta (faltaven «Efectua», «Respon», «Assumeix», «Desassembla», «Il·lustra-ho» i l'indicatiu «Pots»), l'escombrada només mirava majúscules, i **E4, E6 i E8 també en tenien**, dins de la frase (`E4.qmd:530` barrejava «Apliqueu», «usa» i «Escriviu» en una sola línia). Les terceres persones («el bucle que calcula», «que converteix», «s'executa») i els noms («**Nota**», «Crida al sistema») es deixen. **Les solucions no hi entren**: són a `.callout-tip`, que segons `13_contrib.qmd §Criteris generals` fa servir la 2a persona del singular | Cap pendent. La nota de `13_contrib.qmd §Problemari i solucionari`, que deia «aplicat sistemàticament a E6 i E4», diu ara que s'aplica a E1–E9. Escombrada amb la llista ampliada de verbs (`25_scripts/escombrada.sh --cas -w '(Tradueix\|Escriu\|…\|Pots\|Programa)' -- 02_exercicis`; dins de la taula, `\|` és una barra escapada) → 0 |
+| **Exercicis → Problemes** (entrada de §Tasques transversals; identificadors fets a `9dc02f6` i `1c9aae5`, etiqueta feta i entrada retirada el 2026-10-01) | **Executada.** «Problema» a Problemes i Solucions i «Exercici» al laboratori, en tots dos formats (decisions de l'usuari: només en aquestes parts, i macro LaTeX per al PDF). HTML: `language:` a la capçalera dels 19 E/S. PDF: «⁂» com a títol i prefix (`_quarto.yml`), expandit a `\exercisename` (`preamble.tex`), amb un `\renewcommand` a l'inici d'E1 i de L1. Verificat amb `make render-complet`: al PDF, 299 «Problema» i 91 «Exercici», que sumen els 390 d'abans; les referències de les solucions diuen «Problema»; cap `⁂` ni `\exercisename` literal; els prefixos dels callouts es mantenen. A l'HTML, «Problema 11.x» a E2 i S2 i «Exercici 30.x» a L3 | Cap pendent. El mecanisme, i les dues formes que es van provar i no funcionen (bloc `crossref:` al fitxer; `\exercisename` directament al prefix), són a `13_contrib.qmd §Problemari i solucionari`. Història de l'entrada: `git show 171cf18:TODO.md` |
 
 ### Caduques per mesura
 
