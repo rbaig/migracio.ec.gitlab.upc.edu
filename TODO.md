@@ -212,7 +212,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   `contingut/t3-traduccio` (un commit, `62700c0`, 2026-07-06, Pedro J. Martinez-Ferrer) porta **rutes d'abans del refactor de directoris** (`c5d9416`): `01_T/T3.qmd` i `11_riscv/…`, camins que avui no existeixen. **Qualsevol fusió és manual**, perquè git no pot resseguir el canvi de nom a través del refactor.
 
-  ⚠️ **És la revisió externa de T3, amb MR oberta: `!5`, «T3: revisió del tema (canvis i comentaris)», oberta el 2026-07-06 i sense cap comentari a GitLab.** Fins al 2026-10-01 aquesta entrada la registrava com a branca però no com a revisió, i `CLAUDE.md` deia que, fora de T4–T6, la revisió externa «encara no ha començat». Ho va treure a la llum `glab`, no `git`: una branca no diu si té una MR al darrere. **Decisió de l'usuari (2026-10-01): es registra, i qui la porta a les rutes actuals (`01_apunts/A3.qmd`, `21_riscv/`) es decideix amb el revisor.**
+  ⚠️ **És la revisió externa de T3, amb MR oberta: `!5`, «T3: revisió del tema (canvis i comentaris)», oberta el 2026-07-06 i sense cap comentari a GitLab.** Fins al 2026-10-01 aquesta entrada la registrava com a branca però no com a revisió, i `CLAUDE.md` deia que, fora de T4–T6, la revisió externa «encara no ha començat». Ho va treure a la llum `glab`, no `git`: una branca no diu si té una MR al darrere. **Decisió de l'usuari (2026-10-01): el port a les rutes actuals (`01_apunts/A3.qmd`, `21_riscv/`) el fa l'autor de la MR.** Fins llavors `A3.qmd` no es toca, perquè cada canvi que hi entri és un conflicte més per al port.
 
   ```bash
   glab api 'projects/7916/merge_requests?state=opened' | jq -r '.[] | "!\(.iid) \(.source_branch) · \(.author.name) · \(.title)"'

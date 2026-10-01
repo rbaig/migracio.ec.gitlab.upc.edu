@@ -103,7 +103,7 @@ El tancament de cada tema —amb l'estat que tenia, el commit que el declarava i
 📌 **T3, T4, T5 i T6: la revisió externa ja és en curs.** És l'etapa que segueix la interna, i el tancament de la interna declarat més amunt n'és la **condició prèvia**: les dues coses són coherents.
 
 - **T4, T5 i T6, a `temes456` (MR `!7`).** El grup de treball hi revisa `A4.qmd`, `A5.qmd` i `A6.qmd` des del 21 de juliol; darrer commit, **2026-08-07**. Les fusions les farà el grup de treball. Una fusió de prova (2026-10-01) dona tres conflictes: `A4.qmd`, `A5.qmd` i `.gitignore`.
-- **T3, a `contingut/t3-traduccio` (MR `!5`, Pedro J. Martinez-Ferrer, 2026-07-06).** Un sol commit, amb rutes d'abans de la reorganització de directoris, que git no pot fusionar. Qui el porta a les rutes actuals es decideix amb el revisor (usuari, 2026-10-01). Fins al 2026-10-01 constava al `TODO.md` com a branca, però no com a revisió externa de T3.
+- **T3, a `contingut/t3-traduccio` (MR `!5`, Pedro J. Martinez-Ferrer, 2026-07-06).** Un sol commit, amb rutes d'abans de la reorganització de directoris, que git no pot fusionar. **El port a les rutes actuals el fa l'autor de la MR** (decisió de l'usuari, 2026-10-01). Fins al 2026-10-01 constava al `TODO.md` com a branca, però no com a revisió externa de T3.
 
 Estat de les branques, autors i el que cada fusió haurà de resoldre fitxer per fitxer: `TODO.md §Decisions obertes → Branques del remot`.
 
@@ -132,7 +132,7 @@ Detalls transversals i decisions obertes: vegeu `TODO.md`.
 
 | Ordre | Línia de treball | Què hi entra |
 | :---: | :--- | :--- |
-| 1 | **Integrar la revisió externa que ja ha arribat** | MR `!7` (T4–T6): la fusió la fa el grup de treball, amb la llista de conflictes de §Branques del remot. MR `!5` (T3): portar-la a `A3.qmd` i `21_riscv/`; qui ho fa es decideix amb el revisor. |
+| 1 | **Integrar la revisió externa que ja ha arribat** | MR `!7` (T4–T6): la fusió la fa el grup de treball, amb la llista de conflictes de §Branques del remot. MR `!5` (T3): l'autor la porta a `A3.qmd` i `21_riscv/` (decisió de l'usuari, 2026-10-01); fins llavors, `A3.qmd` no es toca. |
 | 2 | **Harmonitzacions transversals, abans d'obrir la revisió externa de la resta** | §Tasques transversals del `TODO.md`: cometes `"…"` → `«…»`, format de les adreces, «simple precisió» (§Decisions obertes), «No associativitat», «Exercicis → Problemes», operadors `AND`/`OR`, `Símbols` i `Notació`, terminologia anglesa a la prosa d'E/S; i, d'altres seccions, el criteri dels quatre formats nuclears i les expressions aritmètiques als operands. `A4.qmd`–`A6.qmd` en queden fora fins que es fusioni `temes456`, i `A3.qmd` s'ha de coordinar amb `!5`. |
 | 3 | **Obrir la revisió externa de la resta** | T1, T2 i T7–T9; els enunciats i solucionaris de tots els temes; el laboratori. Una branca per grup, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). Els grups i el calendari els decideix l'usuari. |
 | 4 | **En paral·lel, sense bloquejar res** | Decisions de contingut que poden anar com a preguntes als revisors (R4-TYPE, R5-TYPE, `#cau-boolea-c`, criteris de codi C, half-adder i full-adder); figures pendents (T7, T8, T9, BA i mapa de memòria); eines (`verifica_laboratoris.py`, figures centrades al PDF, protocol de gestió d'errades, taula de referències d'`index.qmd`). |
