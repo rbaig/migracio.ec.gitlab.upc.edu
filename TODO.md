@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**45 entrades vives** (recompte del 2026-10-01: es retira «Passades finals pendents», perquè es tanca tota la revisió interna, i entra «Terminologia anglesa a la prosa d'E/S», que només constava a `CLAUDE.md`). Una entrada = una vinyeta de primer nivell (`^- `) per
+**44 entrades vives** (recompte del 2026-10-01: es retiren «Passades finals pendents», perquè es tanca tota la revisió interna, i «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -15,8 +15,8 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
   TODO.md | grep -cE '^- '
 ```
 
-Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 11 ·
-`§Tasques per tema` 14 · `§Tasques globals` 9 (suma 45, regla 12 bis).
+Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 10 ·
+`§Tasques per tema` 14 · `§Tasques globals` 9 (suma 44, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -335,27 +335,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ⛔ **A4, A5 i A6 en queden fora** fins que el grup de treball hagi fusionat `temes456` (revisió externa en curs: vegeu §Decisions obertes → Branques del remot). A l'escombrada, afegiu-hi `':!01_apunts/A4.qmd' ':!01_apunts/A5.qmd' ':!01_apunts/A6.qmd'`; avui hi ha 13 hexadecimals a A5, i cap a A4 ni a A6.
 
-- **Terminologia anglesa a la prosa d'E/S** (registrada 2026-10-01). És l'antiga «tasca prèvia opcional» de `CLAUDE.md §Estat dels materials → Enunciats i Solucionaris`, escrita el 2026-06-19 (`879f3e7`): «substitució global de terminologia revisada als fitxers PE/PS abans de la revisió web». Fins avui **només constava allà**, i es registra aquí abans de treure-la d'allà. Mesurada, **no està feta**: la taula de `13_contrib.qmd §Substitucions obligatòries` hi té 16 ocurrències a la prosa nua.
-
-  Mesurat a `980434b`. Les **formes no normatives** de la taula (`fallo`, `anidat`, `empotrat`, `promig`, `tamany`, `lliurable`, `mapeig`, `mapejar`, «ample de banda») no hi són:
-
-  ```bash
-  25_scripts/escombrada.sh -w 'fallos?|anida(t|ts|da|des|ment|ments)|empotra(t|ts|da|des)|promig|tamanys?|lliurables?|mapeig|mapej[a-z]*|ample de banda' -- 02_exercicis 03_solucions
-  # total: 0
-  25_scripts/escombrada.sh -w 'hardware|software|cache|offset|overflow|underflow|branch|jump|string|padding|aliasing|event' -- 02_exercicis 03_solucions
-  # total: 99
-  ```
-
-  Els **termes anglesos** són 99, que no són tots feina. Classificats amb `lint_prosa.prose_lines` (el que no és prosa és codi, matemàtiques, taules o atributs) i a mà: 55 dins de codi o d'atributs, 11 en cursiva —la primera aparició que la taula admet— i 33 a la prosa nua. D'aquests 33, **10 són identificadors** de referència (`@exr-p5-sr-overflow-…`, `@exr-p7-cache-…`, `@exr-p8-mv-cache-tlb`, `@eq-sobreeiximent-software`, `@sec-ei-flux-hardware-accions`, `@imp-ec-la-offset`), que són de l'entrada «Exercicis → Problemes» si mai es reanomenen, i **7 són «branch» a `E6.qmd`/`S6.qmd`**, de l'entrada de §T6 sobre les etiquetes de classe d'instruccions. **Queden 16**, que s'han de revisar cas a cas:
-
-  | Terme | Substitució | Línies (mesurades a `980434b`) |
-  | :--- | :--- | :--- |
-  | *string* | cadena de caràcters | `E2.qmd:595`, `:614`; `E9.qmd:61`; `S2.qmd:687` (capçalera); `S9.qmd:190` |
-  | *padding* | farciment | `S2.qmd:323`, `:325`, `:328`, `:336` |
-  | *offset* | desplaçament | `S3.qmd:669`, `:715`, `:717`; `S5.qmd:827`; `S7.qmd:64`, `:65`, `:66` |
-
-  ⚠️ **No és una substitució mecànica.** `S7.qmd:64-66` usen «offset» com a nom del camp de l'adreça, al costat d'«etiqueta» i «índex». `A7.qmd` hi fa servir **dues formes segons el lloc**: «desplaçament» a la prosa (`:157`, amb ***offset*** a la primera aparició) i $\text{offset}$ a les fórmules (`:164`, `:175`). Aquelles tres línies són al límit entre totes dues, i el criteri l'ha de fixar A7, no la taula. `E3.qmd` i `S3.qmd`, declarats completats des del juliol, també en tenen (`S3.qmd:669-717`): la feina no és d'un tema, sinó d'aplicar la convenció.
-
 - **Nova eina disponible: retalls (crops) SVG a partir d'una figura font única** (afegida 2026-07-13, revisió interna T5): `25_scripts/gen_crops.py` + `24_specs/retalls.toml`, integrat al `pre-render` de `_quarto.yml` entre `gen_regs.py` i `gen_dark.py`. Permet definir una figura «detall»/«zoom» com una finestra `(x, y, w, h)` sobre el `viewBox` d'una figura font ja existent, sense duplicar-ne el contingut. Documentat a `13_contrib.qmd §Retalls`. Aplicable només quan el detall és un subconjunt geomètric net de la font (cap connector/etiqueta tallat a mig camí).
 
   **Cap ús real encara**: `24_specs/retalls.toml` té 23 línies, **totes comentari**, i cap retall definit. S'ha valorat dues vegades per a les figures de T5 i descartat totes dues: (1) `T5_recta_zoom_zero` com a retall de `T5_recta_global` — `T5_recta_zoom_zero` mostra informació pròpia dels denormals (hexadecimals concrets) que la global no té espai per representar; (2) totes dues com a retalls de `T5_coma_flotant_racionals__drawio.svg` (figura orfe a `22_figs_originals/`, no referenciada per cap `.qmd`, que sembla l'esborrany original) — el drawio (7465 línies, estil amb fletxes i icones pròpies) no comparteix coordenades ni disseny amb les figures actuals en estil pla.
@@ -400,7 +379,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ### T6
 
-- **Etiquetes de classe d'instruccions en anglès** a les taules d'E6/S6 («Load», «Store», «Branch», «L/S»…): decidir si es mantenen com a etiquetes de columna/fila (opció actual) o es tradueixen («Lectura», «Escriptura», «Salt»), coherentment amb les substitucions obligatòries de prosa. *(No retirar sense actualitzar `13_contrib.qmd:170` —mesurat a `ebdf055`—, que hi remet: «pendent una decisió transversal … (vegeu `TODO.md §T6`)».)*
+- **Etiquetes de classe d'instruccions en anglès** a les taules d'E6/S6 («Load», «Store», «Branch», «L/S»…): decidir si es mantenen com a etiquetes de columna/fila (opció actual) o es tradueixen («Lectura», «Escriptura», «Salt»), coherentment amb les substitucions obligatòries de prosa. **La decisió també afecta 7 usos en prosa**, on l'etiqueta funciona com a nom de la classe: `E6.qmd:66` («les branch 2 cicles»), `:104`; `S6.qmd:167`, `:177` (dues), `:185`, `:195` (mesurat 2026-10-01; l'entrada «Terminologia anglesa a la prosa d'E/S» els va deixar aquí). *(No retirar sense actualitzar `13_contrib.qmd:170` —mesurat a `ebdf055`—, que hi remet: «pendent una decisió transversal … (vegeu `TODO.md §T6`)».)*
 
 ### T7
 
@@ -623,6 +602,7 @@ Cada entrada, amb el motiu i on en queda còpia. **Cap no s'ha retirat sense com
 | **Punt d'entrada de RARS: cap material no l'explicava a l'alumne** (entrada de §Laboratori, retirada el 2026-09-25; origen `TODO/L4_tasques.md` D3(ii), `git show a211bbf:TODO/L4_tasques.md`) | **Executada (2026-09-24) per separació, no per duplicació.** El fet general —RARS comença a la primera instrucció de `.text`, el punt d'entrada no porta etiqueta i el programa principal va abans de les subrutines— és a `A2.qmd §Segments`, al cos visible de `#nte-segments-memoria`, més una línia a `@nte-programa-esquelet` que hi remet (`5514d08`). El que és propi de L5 —l'ordre de la pestanya activa en assemblar diversos fitxers, i el diagnòstic— és a `@nte-rars-ordre-assemblatge` (`d6fb588`), amb els bolcats traslladats a la solució (`ebdf055`). Aquell callout passa de `#wrn-` (*Aprofundiment*, no avaluable, plegat) a `#nte-rars-` (avaluable, visible): **el canvi d'avaluabilitat és volgut (decisió de l'usuari, 2026-09-24)**, perquè l'ordre de la pestanya és al camí normal de l'exercici i, si és la dolenta, el programa no arrenca | Cap pendent. **La proposta original (un `#nte-` a L1) es va descartar amb motiu**: `@nte-programa-esquelet` és la lectura prèvia obligatòria de L1, de manera que la línia afegida a l'esquelet ja hi arriba; duplicar-ho hauria creat una tercera còpia del mateix fet. ⚠️ **La premissa de l'entrada era falsa des d'abans per un error de mesura** (regla 2): `L5.qmd` ja ho explicava («segment `.text` combinat») i la verificació buscava la frase literal. L'ordre per forma, `git grep -n "primera instrucció del segment" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'`, dona a `ebdf055` **cinc** ocurrències: `A2.qmd:398`, `A3.qmd:1894` i `:2054`, `E9.qmd:72`, `L5.qmd:55`. Text sencer: `git show ebdf055:TODO.md` |
 | **`.gitignore`: `*.tex` s'empassaria `preamble.tex`** (entrada de §Tasques globals → Eines, retirada el 2026-09-25) | **Executada (2026-09-25) per decisió de l'usuari: excepció pel nom.** `.gitignore:15` diu `!preamble.tex`, just després del `*.tex` de `:14`. Es descarta l'alternativa de restringir `*.tex` a l'artefacte generat perquè el patró general és el que atrapa els `.tex` que Quarto genera amb un títol anterior: `Estructura-de-comput.tex`, del 2026-09-22, n'era un a l'arrel, i s'ha esborrat en la mateixa neteja. Comprovació, sense l'índex perquè `preamble.tex` és versionat: `git check-ignore --no-index -v preamble.tex` → `.gitignore:15:!preamble.tex`; `git check-ignore --no-index -v prova.tex` → `.gitignore:14:*.tex` | Cap pendent. Text sencer de l'entrada: `git show 043b985:TODO.md` |
 | **Passades finals pendents: la Fase C no és el tancament de la revisió interna** (entrada de §Tasques transversals, del 2026-09-23; retirada el 2026-10-01) | **Retirada perquè es compleix la condició de retirada que ella mateixa fixava**: «es retirarà quan la revisió interna sigui tancada del tot». El 2026-09-25 no es complia perquè `CLAUDE.md` deixava 16 fitxers E/S pendents del pas combinat. El 2026-10-01 l'usuari declara: «les revisions internes es poden donar per acabades». L'historial ho sosté: els nou registres de tema (`git show a211bbf:TODO/T<x>_P_tasques.md`) ja tenien E i S com a abast, i la línia del pas combinat era del 2026-06-19 (`879f3e7`), sense actualitzar des del juliol | La taula de commits que declaraven les passades (T1 `f5e8223` i `9de6756`, T2 `31f7571`, T4 `9faab05`, T6 `77853ff`, L4 `3cae913`, L5 `a83dc16` → `b5ca2f4`), tots tancats el 2026-09-23, i el text sencer: `git show 980434b:TODO.md`. La definició de l'etapa (Fase C ≠ tancament; el tancament és una declaració) queda a `CLAUDE.md §Estat dels materials` |
+| **Terminologia anglesa a la prosa d'E/S** (entrada de §Tasques transversals, registrada i retirada el 2026-10-01; era l'antiga «tasca prèvia opcional» de `CLAUDE.md`, `879f3e7`) | **Executada (2026-10-01): 27 substitucions en 9 fitxers**, segons `13_contrib.qmd §Substitucions obligatòries`: *string* → «cadena de caràcters» (o «cadena», a E2, que en parla sovint), *padding* → «**farciment** (*padding*)» la primera vegada i després «farciment», *offset* → «desplaçament», *jump table* → «taula de salts» després de la primera aparició, *overflow*/*underflow* → «sobreeiximent»/«subdesbordament» a `E5.qmd:177`, que són els termes d'A5. A `S7.qmd:64-66`, «desplaçament» segons el criteri que A7 fa servir a la prosa; les fórmules de S7 conserven $\text{offset}$, com les d'A7. ⚠️ **La classificació publicada en registrar l'entrada era incompleta**: comptava les cel·les de taula com a «codi o atributs» i acceptava qualsevol cursiva com a primera aparició. N'hi havia **11 més**: 6 en taules (`S2.qmd:310`, `S3.qmd:621`, `S5.qmd:751` i tres a `S_criteris_seleccio.qmd`) i 5 en cursiva sense el terme català al davant (`E5.qmd:177` dues, `S2.qmd:308`, `S3.qmd:246`, `:279`, `S7.qmd:432`) | De 99 ocurrències en queden 73, i cap no és feina d'aquesta entrada: 33 identificadors, 18 de codi, 4 de fórmules, 6 cursives en la forma admesa («sobreeiximent (*overflow*)», «taula de salts (*jump table*)») i **12 «branch» a E6/S6**, que són de l'entrada de §T6. Ordre: `25_scripts/escombrada.sh -w 'hardware\|software\|cache\|offset\|overflow\|underflow\|branch\|jump\|string\|padding\|aliasing\|event' -- 02_exercicis 03_solucions` (dins de la taula, cada `\|` és una barra escapada), que dona 73. Text sencer de l'entrada: `git show da35dfe:TODO.md` |
 
 ### Caduques per mesura
 

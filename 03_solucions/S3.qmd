@@ -243,7 +243,7 @@ fiswitch:
 
 **Implementació 2: taula de salts (*jump table*)**
 
-Les constants `0`–`3` formen un rang dens, cosa que fa la *jump table* eficient.
+Les constants `0`–`3` formen un rang dens, cosa que fa la taula de salts eficient.
 
 ```{.s filename="RV32I"}
 .data
@@ -276,7 +276,7 @@ fiswitch:
 
 **Quan és preferible cada enfocament?**
 
-La cadena de `if-then-else` és preferible quan el nombre de casos és petit (fins a 3–4) o quan les constants no formen un rang dens (per exemple, `case 0`, `case 100`, `case 1000`). La *jump table* és preferible quan les constants formen un rang dens i el nombre de casos és gran: l'accés és $\mathcal{O}(1)$ independentment del nombre de casos, mentre que la cadena té cost $\mathcal{O}(n)$ en el pitjor cas.
+La cadena de `if-then-else` és preferible quan el nombre de casos és petit (fins a 3–4) o quan les constants no formen un rang dens (per exemple, `case 0`, `case 100`, `case 1000`). La taula de salts és preferible quan les constants formen un rang dens i el nombre de casos és gran: l'accés és $\mathcal{O}(1)$ independentment del nombre de casos, mentre que la cadena té cost $\mathcal{O}(n)$ en el pitjor cas.
 :::
 
 ::: {#sol-p4-bucles-for .callout-tip}
@@ -618,7 +618,7 @@ Mida del BA: 10 bytes, arrodonit a múltiple de 4 → **12 bytes**.
 
 `A` és **uninivell** (no fa cap crida a cap altra subrutina): no cal desar `ra`.
 
-| Offset des de `sp` | Contingut | Mida |
+| Desplaçament des de `sp` | Contingut | Mida |
 | :---: | :--- | :--- |
 | `+0`–`+9` | `r[0]`–`r[9]` | 10 bytes |
 | `+10`–`+11` | alineació | 2 bytes |
@@ -666,7 +666,7 @@ on `offset = @symbol − PC` és la distància entre la instrucció `auipc` i el
 
 **Per què en calen dues?** Un desplaçament de 32 bits no cap en cap immediat de RV32I: el més gran és el de 20 bits del format U. Calen dues instruccions per construir els 32 bits: `auipc` aporta els 20 bits superiors (sumats al PC) i `addi` els 12 bits inferiors. Com en l'expansió de `li` amb `lui` + `addi`, si el bit 11 de `lo_12` val 1 cal incrementar `hi_20` en 1 per compensar l'extensió de signe d'`addi` (el mecanisme detallat és a @exr-p3-immediats-luiaddi).
 
-**Limitació del desplaçament**: l'expansió codifica un offset de 32 bits amb signe, $[-2^{31}, 2^{31}-1]$, de manera que el símbol ha de ser dins d'un rang de **±2 GiB** respecte al PC. En RV32I, on l'espai d'adreces és de 32 bits (4 GiB) i l'aritmètica d'adreces és mòdul $2^{32}$, aquest rang cobreix a la pràctica tot l'espai d'adreces; en arquitectures de 64 bits, en canvi, és una limitació real que obliga a usar altres mecanismes per a símbols més llunyans.
+**Limitació del desplaçament**: l'expansió codifica un desplaçament de 32 bits amb signe, $[-2^{31}, 2^{31}-1]$, de manera que el símbol ha de ser dins d'un rang de **±2 GiB** respecte al PC. En RV32I, on l'espai d'adreces és de 32 bits (4 GiB) i l'aritmètica d'adreces és mòdul $2^{32}$, aquest rang cobreix a la pràctica tot l'espai d'adreces; en arquitectures de 64 bits, en canvi, és una limitació real que obliga a usar altres mecanismes per a símbols més llunyans.
 :::
 
 ::: {#sol-p4-compilacio-relocacio .callout-tip}
@@ -712,7 +712,7 @@ En RV32I, les adreces de 32 bits no caben en un únic immediat de 12 bits. La ps
         addi    t0, t0, lo_12(offset) # t0 ← t0 + lo_12(offset)
 ```
 
-on `offset = @x − PC` és la distància entre la instrucció `auipc` i el símbol `x`. `auipc` usa els 20 bits superiors de l'offset i `addi` afegeix els 12 bits inferiors. D'aquesta manera es pot referenciar qualsevol adreça dins d'un rang de ±2 GiB respecte al PC.
+on `offset = @x − PC` és la distància entre la instrucció `auipc` i el símbol `x`. `auipc` usa els 20 bits superiors del desplaçament i `addi` afegeix els 12 bits inferiors. D'aquesta manera es pot referenciar qualsevol adreça dins d'un rang de ±2 GiB respecte al PC.
 
-La raó d'usar `auipc` (relatiu al PC) en lloc de `lui` (adreça absoluta) és que en un fitxer objecte reubicable les adreces absolutes no es coneixen fins a l'enllaçat. Amb adreces relatives al PC, l'offset entre la instrucció i el símbol és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació.
+La raó d'usar `auipc` (relatiu al PC) en lloc de `lui` (adreça absoluta) és que en un fitxer objecte reubicable les adreces absolutes no es coneixen fins a l'enllaçat. Amb adreces relatives al PC, el desplaçament entre la instrucció i el símbol és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació.
 :::
