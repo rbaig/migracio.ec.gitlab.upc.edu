@@ -73,11 +73,23 @@ CHAR_H_PER_FS       = 1.20
 # Patró per detectar entrades de formats d'instrucció al TOML
 INSTRUCCIO_PREFIX = 'instruccio_tipus_'
 
-# Ordre canònic per al compendi (sufixos després del prefix)
-INSTRUCCIO_ORDER = ['R', 'I', 'S', 'B', 'U', 'J', 'R4']
-
-# Nom del fitxer de sortida del compendi (sense sufix ni extensió)
-COMPENDI_FNAME = 'compendi_registres'
+# Compendis de formats d'instrucció: nom del fitxer de sortida (sense sufix ni
+# extensió) → (formats en ordre canònic, títol, descripció). El complet és el
+# del compendi de referència (11_riscv.qmd); el de R, I i S és el d'A2
+# (#nte-instruccions-tipus), perquè cap format no es presenta abans del seu
+# lloc (13_contrib.qmd §T2 i T3, «Formats d'instrucció de RV32I»).
+COMPENDIS = {
+    'compendi_registres': (
+        ['R', 'I', 'S', 'B', 'U', 'J', 'R4'],
+        "Compendi dels formats d'instrucció RV32I/M/F",
+        "Formats d'instrucció R, I, S, B, U, J i R4 de RISC-V RV32 en un sol diagrama.",
+    ),
+    'compendi_registres_RIS': (
+        ['R', 'I', 'S'],
+        "Formats d'instrucció RV32I R, I i S",
+        "Formats d'instrucció R, I i S de RISC-V RV32I en un sol diagrama.",
+    ),
+}
 
 # Geometria pròpia dels formats d'instrucció
 INS_W_TOTAL  = 680
@@ -378,14 +390,14 @@ def make_svg_instruccio(fname: str, fields_raw: list, title_ca: str, desc_ca: st
 # Generació SVG per al compendi de formats d'instrucció
 # ═══════════════════════════════════════════════════════════
 
-def make_svg_compendi(registers: dict) -> str:
+def make_svg_compendi(registers: dict, formats: list, title_ca: str, desc_ca: str) -> str:
     """
-    Genera automàticament la figura combinada de tots els formats d'instrucció
-    en l'ordre canònic INSTRUCCIO_ORDER. La figura no té entrada al TOML.
+    Genera automàticament la figura combinada dels formats d'instrucció de
+    `formats`, en aquest ordre (vegeu COMPENDIS). La figura no té entrada al TOML.
     """
     # Recull els registres d'instrucció en ordre canònic
     ordered: list[tuple[str, str, list]] = []  # (tipus, title, fields_raw)
-    for tipus in INSTRUCCIO_ORDER:
+    for tipus in formats:
         # Cerca l'entrada al TOML que contingui el tipus
         for fname, spec in registers.items():
             if not _is_instruccio(fname):
@@ -406,8 +418,8 @@ def make_svg_compendi(registers: dict) -> str:
     lines = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{INS_W_TOTAL}" height="{H_est}" '
         f'viewBox="0 0 {INS_W_TOTAL} {H_est}" role="img">',
-        '<title>Compendi dels formats d\'instrucció RV32I/M/F</title>',
-        '<desc>Formats d\'instrucció R, I, S, B, U, J i R4 de RISC-V RV32 en un sol diagrama.</desc>',
+        f'<title>{title_ca}</title>',
+        f'<desc>{desc_ca}</desc>',
     ]
 
     # Numeració de bits superior (unió de tots els límits)
@@ -468,10 +480,11 @@ def make_svg_compendi(registers: dict) -> str:
             f'fill="{COLORS["B"]["text"]}">{tipus}-Type</text>'
         )
 
-    # Bits inferiors (referència: R4, la descomposició més fina)
+    # Bits inferiors (referència: el format de descomposició més fina, la
+    # primera fila amb més camps; R4 al compendi complet, R al de R, I i S)
     y_bottom = y_first + n_rows * INS_ROW_H + 2
-    _, _, fields_raw_r4 = ordered[-1]  # R4 és l'últim en ordre canònic
-    for name, hi, lo, ckey in _ins_fields_with_bits(fields_raw_r4):
+    _, _, fields_raw_ref = max(ordered, key=lambda o: len(o[2]))
+    for name, hi, lo, ckey in _ins_fields_with_bits(fields_raw_ref):
         n  = hi - lo + 1
         fw = _ins_field_w(hi, lo, bw_comb)
         cx = _ins_field_cx(hi, lo, bw_comb)
@@ -719,15 +732,17 @@ def main() -> None:
             print(f'[gen-regs] ERROR {out_path.name}: {exc}', file=sys.stderr)
             errors += 1
 
-    # Compendi automàtic (sempre que hi hagi almenys un format d'instrucció)
+    # Compendis automàtics (sempre que hi hagi almenys un format d'instrucció)
     has_instruccio = any(_is_instruccio(f) for f in registers)
-    if has_instruccio:
-        compendi_path = output_dir / (COMPENDI_FNAME + output_suffix + '.svg')
+    for compendi_fname, (formats, title_ca, desc_ca) in COMPENDIS.items():
+        if not has_instruccio:
+            break
+        compendi_path = output_dir / (compendi_fname + output_suffix + '.svg')
         regenerate = args.force or not compendi_path.exists() or \
             compendi_path.stat().st_mtime <= script_mtime
         if regenerate:
             try:
-                svg = make_svg_compendi(registers)
+                svg = make_svg_compendi(registers, formats, title_ca, desc_ca)
                 if svg:
                     compendi_path.write_text(svg, encoding='utf-8')
                     generated += 1
