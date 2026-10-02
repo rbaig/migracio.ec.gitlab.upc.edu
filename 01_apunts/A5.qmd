@@ -2,7 +2,6 @@
 number-sections: true
 ---
 
-<!-- TODO: cal introduir el R4-TYPE? (Harris) -->
 
 # {{< var tema5 >}} {#sec-tema-coma-flotant}
 
@@ -863,6 +862,37 @@ Totes les instruccions de coma flotant de precisió simple porten el sufix **`.s
 | :--- | :--- | :--- | :--- | :---: |
 {{< include ../21_riscv/RV32F_instruccions_aritmetiques.qmd >}}
 : {tbl-colwidths="[8,18,35,30,9]" .striped}
+:::
+
+::: {#wrn-instruccions-fusionades .callout-warning collapse=true}
+## Instruccions fusionades i format R4
+
+L'extensió F inclou quatre instruccions **fusionades** (*fused multiply-add*, FMA), que calculen un producte i una suma en una sola instrucció (@nte-extensio-f-instruccions-llista). La bàsica és `fmadd.s`:
+
+```{.s filename="RV32IF"}
+        fmadd.s ft0, ft1, ft2, ft3    # ft0 <- ft1 * ft2 + ft3
+```
+
+Les altres tres només canvien els signes: `fmsub.s` calcula $rs1 \times rs2 - rs3$; `fnmadd.s`, $-(rs1 \times rs2) - rs3$, i `fnmsub.s`, $-(rs1 \times rs2) + rs3$.
+
+Com que necessiten **tres registres font**, no caben al format R i en tenen un de propi, el **R4** (@fig-format-r4): el camp `rs3` (`fs3` a la figura, perquè és un registre de coma flotant) ocupa els bits $[31{:}27]$, on el format R té la part alta de `funct7`; `funct2` (bits $[26{:}25]$) indica la precisió (`00` per a la precisió simple), i `funct3` conté el mode d'arrodoniment.
+
+::: {#fig-format-r4}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T5_instruccio_tipus_R4__registre_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T5_instruccio_tipus_R4__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T5_instruccio_tipus_R4__registre_light.svg)
+:::
+Format d'instrucció R4 (RV32F), el de les instruccions fusionades.
+:::
+
+La diferència amb la seqüència `fmul.s` + `fadd.s` no és només de velocitat. `fmadd.s` calcula $rs1 \times rs2 + rs3$ com si tingués precisió infinita i **arrodoneix una sola vegada**, al final (@sec-arrodoniment); la seqüència de dues instruccions arrodoneix dues vegades, el producte i la suma. Per això el resultat de `fmadd.s` és, en general, més precís, i pot no coincidir amb el de la seqüència: com a la @sec-no-associativitat, la manera d'agrupar les operacions canvia el resultat.
 :::
 
 ::: {#nte-instruccions-moviment-f .callout-note}
