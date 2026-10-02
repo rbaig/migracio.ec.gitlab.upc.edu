@@ -365,3 +365,15 @@ Cap al 2003–2005, però, l'escalat de Dennard va deixar de funcionar. En arrib
 
 La resposta de la indústria va ser el **disseny multinucli** (*multicore*): en lloc d'un sol nucli molt ràpid, es van integrar múltiples nuclis de freqüència moderada en un mateix xip, mantenint la potència total sota control mentre es continuava augmentant la productivitat. Això explica que avui dia un portàtil d'oficina i un servidor de centre de dades tinguin freqüències de rellotge similars (3–4 GHz), però el servidor tingui molts més nuclis. La distribució física d'aquests nuclis en un xip modern es pot apreciar al [Tema 7](#sec-tema-mc) (@fig-i9-13900k-die).
 :::
+
+::: {#wrn-reduccio-consum .callout-warning collapse=true}
+## Tècniques de reducció del consum
+
+Les equacions de la potència (@eq-potencia-dinamica i @eq-potencia-estatica) diuen on es pot actuar per reduir el consum. Els processadors actuals combinen tres tècniques, cadascuna dirigida a un terme diferent:
+
+- **Escalat dinàmic de tensió i freqüència** (*dynamic voltage and frequency scaling*, DVFS): quan la càrrega de treball és baixa, el processador redueix la freqüència de rellotge $f_{clock}$ i, amb ella, la tensió d'alimentació $V_{CC}$, que es pot rebaixar perquè a menor freqüència els transistors disposen de més temps per commutar. Com que $P_{d}$ és proporcional a $V_{CC}^{2} \cdot f_{clock}$, reduir totes dues alhora redueix la potència dinàmica més que proporcionalment: amb un 15% menys de tensió i de freqüència, la potència dinàmica queda multiplicada per $0{,}85^{3} \approx 0{,}61$, gairebé un 40% menys.
+- **Inhibició del rellotge** (*clock gating*): s'atura el senyal de rellotge de les unitats que no s'usen en un moment donat (per exemple, la unitat de coma flotant mentre el programa només opera amb enters). Les seves portes deixen de commutar, i es redueix el factor d'activitat $\alpha$.
+- **Desconnexió de l'alimentació** (*power gating*): es talla l'alimentació de les unitats inactives durant períodes llargs. És l'única de les tres que redueix la potència estàtica, perquè sense tensió no hi ha corrents de fuita ($I_{fuita}$).
+
+Cap d'aquestes tècniques no és gratuïta. Reduir la freqüència allarga el temps d'execució (@eq-texe1), i reactivar una unitat desconnectada costa temps i energia. Pel que fa a l'energia que consumeix una tasca (@eq-energia), reduir només la freqüència no n'estalvia: la potència dinàmica baixa en la mateixa proporció en què augmenta el temps. L'estalvi d'energia del DVFS ve de la reducció de la tensió.
+:::
