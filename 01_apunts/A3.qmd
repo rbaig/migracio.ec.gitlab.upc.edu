@@ -773,7 +773,7 @@ Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor 
 **Nota**: El `break` al final de cada `case` s'ha de traduir amb un salt incondicional `j` a l'etiqueta que marca el final del `switch`. Si no hi ha `break`, l'execució continua (*fall-through*) al codi del `case` següent, sense necessitat de cap instrucció addicional.
 :::
 
-## Sentències iteratives: `while`, `for` i `do-while` {#sec-bucles}
+## Sentències iteratives: `while`, `do-while` i `for` {#sec-bucles}
 
 ### Sentència `while` {#sec-while}
 
@@ -797,9 +797,9 @@ bucle:
 fibucle:
 ```
 ::: {#imp-bucle-vs-while-for .callout-important}
-En aquesta secció s'usa l'etiqueta `bucle:` tant per al `while` com per al `for` i el `do-while` per fer explícit que tots tres tipus de bucles tenen la mateixa estructura bàsica de control de flux, i per poder parlar d'optimitzacions de bucle de manera genèrica.
+En aquesta secció s'usa l'etiqueta `bucle:` tant per al `while` com per al `do-while` i el `for` per fer explícit que tots tres tipus de bucles tenen la mateixa estructura bàsica de control de flux, i per poder parlar d'optimitzacions de bucle de manera genèrica.
 
-En la pràctica, s'usen etiquetes més descriptives (per exemple, `while:`, `fiwhile:`, `for:`, `fifor:`, `do:`) per facilitar la lectura i el manteniment del codi.
+En la pràctica, s'usen etiquetes més descriptives (per exemple, `while:`, `fiwhile:`, `do:`, `for:`, `fifor:`) per facilitar la lectura i el manteniment del codi.
 :::
 
 ::: {#tip-traduccio-while .callout-tip}
@@ -857,6 +857,53 @@ fibucle:
 ```
 :::
 
+### Sentència `do-while` {#sec-do-while}
+
+La sentència `do-while` executa el cos **sempre almenys una vegada**, i la condició s'avalua al final de cada iteració.
+
+```{.c filename="C"}
+do
+    sentencia_cos;
+while (condició);
+```
+
+El patró de traducció és més senzill que el del `while` perquè no cal comprovació inicial: el cos s'executa primer i el salt condicional al final decideix si tornar a iterar:
+
+```{.s filename="RV32I"}
+bucle:
+        # traducció de sentencia_cos
+        # avaluar condició
+        # salt si és certa a bucle
+```
+
+És el mateix patró que deixa l'avaluació de la condició al final d'un `while` (@tip-optimitzacio-bucle-2-avaluacio-condicio-final), sense la comprovació d'entrada.
+
+::: {#tip-traduccio-do-while .callout-tip}
+## `do-while`: validació d'un valor dins d'un rang
+
+```{.c filename="C"}
+int n;
+do {
+    n = v[i];
+    i++;
+} while (n < 0);
+```
+
+Suposant que `n`, `i` ocupen `t0`, `t1` i `v` és un vector global d'enters:
+
+```{.s filename="RV32I"}
+        la      t2, v               # adreça base de v
+bucle:
+        slli    t3, t1, 2           # i * 4
+        add     t3, t2, t3          # @v[i]
+        lw      t0, 0(t3)           # n = v[i]
+        addi    t1, t1, 1           # i++
+        bltz    t0, bucle           # n < 0: torna a iterar
+```
+
+El bucle avança per `v` fins a trobar el primer element no negatiu. La condició s'avalua després d'executar el cos, de manera que sempre es llegeix almenys un element.
+:::
+
 ### Sentència `for` {#sec-for}
 
 Al bucle `for`, el més habitual és que `sentència1` inicialitzi la variable de control del bucle (típicament un comptador) i que `sentència2` l'actualitzi després de cada iteració.
@@ -902,53 +949,6 @@ bucle:
         j       bucle
 fibucle:
 ```
-:::
-
-<!-- TODO: PM: Crec que té més sentit deixar les seccións while i do-while consecutives i posar la secció for abans o després d'introduir aquestes dues-->
-
-### Sentència `do-while` {#sec-do-while}
-
-La sentència `do-while` executa el cos **sempre almenys una vegada**, i la condició s'avalua al final de cada iteració.
-
-```{.c filename="C"}
-do
-    sentencia_cos;
-while (condició);
-```
-
-El patró de traducció és més senzill que el del `while` perquè no cal comprovació inicial: el cos s'executa primer i el salt condicional al final decideix si tornar a iterar:
-
-```{.s filename="RV32I"}
-bucle:
-        # traducció de sentencia_cos
-        # avaluar condició
-        # salt si és certa a bucle
-```
-
-::: {#tip-traduccio-do-while .callout-tip}
-## `do-while`: validació d'un valor dins d'un rang
-
-```{.c filename="C"}
-int n;
-do {
-    n = v[i];
-    i++;
-} while (n < 0);
-```
-
-Suposant que `n`, `i` ocupen `t0`, `t1` i `v` és un vector global d'enters:
-
-```{.s filename="RV32I"}
-        la      t2, v               # adreça base de v
-bucle:
-        slli    t3, t1, 2           # i * 4
-        add     t3, t2, t3          # @v[i]
-        lw      t0, 0(t3)           # n = v[i]
-        addi    t1, t1, 1           # i++
-        bltz    t0, bucle           # n < 0: torna a iterar
-```
-
-El bucle avança per `v` fins a trobar el primer element no negatiu. La condició s'avalua després d'executar el cos, de manera que sempre es llegeix almenys un element.
 :::
 
 ::: {#tip-optimitzacio-eliminacio-variable-induccio .callout-tip}
