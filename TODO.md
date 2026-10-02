@@ -243,7 +243,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | Marcador | Text (abreujat) |
   | :--- | :--- |
   | ~~`A3.qmd:9`~~ | «Et refereixes a optimitzacions del compilador, de l'estudiant? …» (`#imp-traduccions-literals`) — ✅ **Resolt** (usuari, 2026-10-02, fase 3b; valoració: Important, criteri de l'assignatura): el criteri diu ara què vol dir «literal» (l'ordre del programa, sense les transformacions d'un compilador optimitzador) i que literal no vol dir ineficient. Marcador esborrat |
-  | `A3.qmd:121` | «Per simplificar, jo faria la distinició entre "natural" (sense signe) i "enter" (amb signe).» |
+  | ~~`A3.qmd:121`~~ | «Per simplificar, jo faria la distinició entre "natural" (sense signe) i "enter" (amb signe).» — ✅ **Resolt** (usuari, 2026-10-02, fase 3b; valoració: Factible, transversal): regla escrita a `13_contrib.qmd §Anglicismes i terminologia obligatòria` («enter» vol dir amb signe; «natural», sense signe) i escombrada del corpus. Patró (cobreix també paraules intercalades, com «enter decimal amb signe»; l'ordre és al bloc de sota): 21 a `f66932f` (A1 1, A2 3, A3 6, A4 6, A5 1, L4 1, `21_riscv/` 3), 0 després. Es conserven tres glosses entre parèntesis, que la regla admet: «naturals (sense signe)» a la presentació de `lhu`/`lbu` (`A2.qmd:1434`) i les definicions de $x_s$ i $x_u$ (`12_sigles_simbols.qmd:204`, `:205`). Marcador esborrat |
   | ~~`A3.qmd:144`~~ | «Vector o matriu. Queda raro perquè els elements són sempre potència de 2 també en el cas de caracters (2^0).» (`#imp-ec-sll-acces-vector`) — ✅ **Resolt** (usuari, 2026-10-02, fase 3b; valoració: Factible): el criteri parla ara de vectors i matrius, i diu que a EC les mides dels elements són sempre potències de 2 (no hi ha `struct`, `#wrn-c-tuples` d'A2); amb elements d'1 byte no cal desplaçar. `A4.qmd:243` hi continua remetent. Marcador esborrat |
   | ~~`A3.qmd:184`~~ | «jo no faria servir la paraula "NOT". …» (`#nte-pseudoinstruccio-not`) — ✅ **Resolt** (usuari, 2026-10-02, fase 3b; valoració: Factible): «(NOT)» tret de `#nte-pseudoinstruccio-not` i «(NOT bit a bit)» → «(negació bit a bit)» a §Traducció de la negació booleana; era redundant amb «negació bit a bit». La regla d'`AND`/`OR` de `13_contrib.qmd` no canvia. Marcador esborrat |
   | `A3.qmd:327` | «El caràcter "↔" no surt al PDF. Proposo canviar a "inverteix el LSB".» |
@@ -253,6 +253,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ```bash
   git grep -n '<!-- TODO: PM:\|<!-- TODO: El caràcter' -- 01_apunts/A3.qmd | wc -l   # 8
+  # A3.qmd:121 (enter/natural), 21 a f66932f, 0 després de la fase 3b:
+  git grep -o -I -E -i -e '(enter|natural)s?( [[:alpha:]]+){0,2} (amb|sense) signe|(amb|sense) signe \((enter|natural)' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' | wc -l
   ```
 
   📌 **`A3.qmd:327` és verificat**: al PDF de `make render-complet` (2026-10-01, sobre `bf8b10b` amb el port a l'arbre de treball) el comentari del bloc surt «inverteix 0 1», sense la fletxa (pàgina 92 del llibre); `pdftotext` hi dona U+FFFD. La font monoespaiada del PDF no té el glif. És una tasca, no una decisió: la proposta del revisor ho resol.

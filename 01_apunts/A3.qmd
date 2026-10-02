@@ -115,15 +115,13 @@ No existeix la instrucció ~~`sla`~~ ni la ~~`slai`~~.
 
 ### Traducció dels operadors C `<<` i `>>` {#sec-traduccio-desplacament-c}
 
-L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix amb `srl`/`srli` si l'operand és de tipus `unsigned` (natural), o amb `sra`/`srai` si és un enter amb signe.
-
-<!-- TODO: PM: Per simplificar, jo faria la distinició entre "natural" (sense signe) i "enter" (amb signe).-->
+L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix amb `srl`/`srli` si l'operand és un natural (de tipus `unsigned`), o amb `sra`/`srai` si és un enter.
 
 ::: {#tip-traduccio-desplacament-c .callout-tip}
 ## Traducció de `<<` i `>>`
 
 ```{.c filename="C"}
-a = (a << b) >> 2;   /* a i b són enters amb signe */
+a = (a << b) >> 2;   /* a i b són enters (int) */
 ```
 
 Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
@@ -250,7 +248,7 @@ En C, unes expressions no nul·les s'interpreten com a certes **sense ser iguals
 
 ### Instruccions de comparació: `slt` i `sltu` {#sec-instruccions-comparacio-slt}
 
-La instrucció `slt` compara dos enters amb signe i **posa a** `1` al registre destinació (LSB a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
+La instrucció `slt` compara dos enters i **posa a** `1` al registre destinació (LSB a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
 
 ::: {#nte-instruccions-comparacio .callout-note}
 ## RV32I ISA — Instruccions de comparació
@@ -266,7 +264,7 @@ Per a les comparacions freqüents amb zero, RISC-V també defineix pseudoinstruc
 
 ::: {#tip-traduccio-igualtat .callout-tip}
 ## Traducció de `==` i `!=`
-Si `t0`, `t1` i `t2` són enters amb signe:
+Si `t0`, `t1` i `t2` són enters:
 
 **Comparació amb zero**:
 
@@ -310,7 +308,7 @@ La negació booleana no es pot traduir amb `xori rd, rs, -1` (negació bit a bit
 
 ::: {#tip-traduccio-negacio .callout-tip}
 ## Traducció de `!`
-Si `t0` i `t1` són enters amb signe:
+Si `t0` i `t1` són enters:
 
 ```{.c filename="C"}
 t1 = !t0;               /* equival a: t1 = (t0 == 0) */
@@ -332,7 +330,7 @@ t1 = !t0;               /* equival a: t1 = (t0 == 0) */
 ::: {#tip-traduccio-comparacions .callout-tip}
 ## Traducció de `<`, `>`, `<=`, `>=`
 
-Si `t0`, `t1` i `t2` són enters amb signe:
+Si `t0`, `t1` i `t2` són enters:
 
 ```{.c filename="C"}
         t2 = (t0 < t1);
