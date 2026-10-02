@@ -242,7 +242,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   | Marcador | Text (abreujat) |
   | :--- | :--- |
-  | `A3.qmd:9` | «Et refereixes a optimitzacions del compilador, de l'estudiant? …» (`#imp-traduccions-literals`) |
+  | ~~`A3.qmd:9`~~ | «Et refereixes a optimitzacions del compilador, de l'estudiant? …» (`#imp-traduccions-literals`) — ✅ **Resolt** (usuari, 2026-10-02, fase 3b; valoració: Important, criteri de l'assignatura): el criteri diu ara què vol dir «literal» (l'ordre del programa, sense les transformacions d'un compilador optimitzador) i que literal no vol dir ineficient. Marcador esborrat |
   | `A3.qmd:121` | «Per simplificar, jo faria la distinició entre "natural" (sense signe) i "enter" (amb signe).» |
   | `A3.qmd:144` | «Vector o matriu. Queda raro perquè els elements són sempre potència de 2 també en el cas de caracters (2^0).» (`#imp-ec-sll-acces-vector`) |
   | `A3.qmd:184` | «jo no faria servir la paraula "NOT". …» (`#nte-pseudoinstruccio-not`) |
