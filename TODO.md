@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**37 entrades vives** (recompte del 2026-10-02: es retira «R5-TYPE (RISC-V *compressed*) com a aprofundiment», decidida «no» a la fase 6, i «R4-TYPE a T5», decidida «sí, com a aprofundiment» i executada; entra a §T2 «La figura de `#nte-instruccions-tipus` mostra els set formats». Recompte del 2026-10-01: entren «Anotacions de la revisió externa de T3», en portar la MR `!5`, i «Tres SVG orfes de T5», i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**39 entrades vives** (recompte del 2026-10-02: entren a §Tasques globals → Eines «Identificador del commit a la data de publicació» i «Valorar si les taules de `21_riscv/` haurien de passar a `.json`», per al futur; es retira «R5-TYPE (RISC-V *compressed*) com a aprofundiment», decidida «no» a la fase 6, i «R4-TYPE a T5», decidida «sí, com a aprofundiment» i executada; entra a §T2 «La figura de `#nte-instruccions-tipus` mostra els set formats». Recompte del 2026-10-01: entren «Anotacions de la revisió externa de T3», en portar la MR `!5`, i «Tres SVG orfes de T5», i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,7 +16,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
 ```
 
 Repartiment: `§Decisions obertes` 10 · `§Tasques transversals` 5 ·
-`§Tasques per tema` 14 · `§Tasques globals` 8 (suma 37, regla 12 bis).
+`§Tasques per tema` 14 · `§Tasques globals` 10 (suma 39, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -498,6 +498,10 @@ Rutes de destí per a les 9: `/auto_figs/T8_*__original_light.svg`.
   - **`#exr-depuracio` no hi és**, i és el mateix cas per un altre camí: té tres errors a posta. Un bloc pot ser no autònom **per omissió** (falta codi) o **per incorrecció deliberada** (el codi hi és i està malament a propòsit).
 
   Cal una noció de **bloc no autònom** derivada del contingut. *(Origen: `TODO/decisions__informe.md`, informe transitori esborrat per `87f2853`; es recupera sencer amb `git show 87f2853^:TODO/decisions__informe.md`.)*
+
+- **Identificador del commit a la data de publicació** (petició de l'usuari, 2026-10-02, per al futur): afegir el hash curt del commit renderitzat, entre parèntesis, després de la data de «Publicat» de l'HTML i a la portada del PDF, si no és massa complicat tècnicament. Avui la data surt de `book.date: last-modified` (`_quarto.yml`), i el render es fa des del `Makefile` (local) i des de `.github/workflows/publish.yml` (CI del mirall, que té el mateix hash que GitLab). Punts que cal resoldre en valorar-ho, no verificats encara: (i) si Quarto accepta un text lliure al camp `date` o si cal un camp a part (el `date` es formata com a data); (ii) d'on surt el hash —`-M` a `quarto render` des del `Makefile` i del CI, o una variable a `_variables.yml` escrita abans del render; el `pre-render` no serveix per al que Quarto llegeix en l'escaneig de configuració, que s'executa abans (vegeu-ne el cas a `25_scripts/gen_taules_auto.py`)—, i (iii) què s'hi escriu si l'arbre té canvis no confirmats (p. ex. `-dirty`).
+
+- **Valorar si les taules de `21_riscv/` haurien de passar a `.json`** (petició de l'usuari, 2026-10-02, per al futur). Avui són 44 fragments `.qmd` (`git ls-files 21_riscv | grep -c "\.qmd$"`, a `4658e90`) amb files de taula *pipe*, inclosos amb `{{< include >}}` als callouts dels temes i a `11_riscv.qmd`; les taules que combinen fragments es fusionen amb `25_scripts/gen_taules_auto.py` i `24_specs/taules_fusio.toml`, que s'han d'executar a mà abans del render. Una font estructurada permetria generar les taules (i les fusions) per script i validar-ne el contingut; el cost és un generador nou i una dependència més del render. Cal valorar-ho abans de decidir res.
 
 ### `index.qmd`
 
