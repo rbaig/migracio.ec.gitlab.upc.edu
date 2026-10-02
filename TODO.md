@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**37 entrades vives** (recompte del 2026-10-02: es retira «R5-TYPE (RISC-V *compressed*) com a aprofundiment», decidida «no» a la fase 6. Recompte del 2026-10-01: entren «Anotacions de la revisió externa de T3», en portar la MR `!5`, i «Tres SVG orfes de T5», i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**38 entrades vives** (recompte del 2026-10-02: es retira «R5-TYPE (RISC-V *compressed*) com a aprofundiment», decidida «no» a la fase 6, i entra a §T2 «La figura de `#nte-instruccions-tipus` mostra els set formats». Recompte del 2026-10-01: entren «Anotacions de la revisió externa de T3», en portar la MR `!5`, i «Tres SVG orfes de T5», i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,7 +16,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
 ```
 
 Repartiment: `§Decisions obertes` 11 · `§Tasques transversals` 5 ·
-`§Tasques per tema` 13 · `§Tasques globals` 8 (suma 37, regla 12 bis).
+`§Tasques per tema` 14 · `§Tasques globals` 8 (suma 38, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -305,6 +305,14 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### T2
 
 - **Verificació tècnica de la taula de restriccions d'alineació** (`A2.qmd:1056`, mesurat a `ebdf055`; callout `#cau-memoria-restriccions-alineacio`): comprovar que la informació de la taula és correcta i coincideix amb l'**ABI `ilp32`**, i que **no hi ha col·lisió amb l'alineació a 16 del Bloc d'Activació** que fixa l'ABI de RISC-V. Afecta el rigor tècnic i no consta en cap registre anterior (detectat a l'auditoria, sessió 1). És la taula que la Fase C de L2 va corregir, de manera que la verificació ha de cobrir totes dues. El marcador segueix al corpus fins que la verificació es faci. **Sobreviu al tancament de la revisió interna de T2** (2026-09-23): es resol des d'aquí, sense reobrir el tema.
+
+- **La figura de `#nte-instruccions-tipus` mostra els set formats, no R, I i S** (detectat 2026-10-02, en analitzar l'anotació #5, R4-TYPE; mesurat a `48f0f06`). El callout d'A2 (§Format de les instruccions RV32I, `A2.qmd:262`) inclou `compendi_registres` (`:268`, `:271`, `:275`), i el peu diu «Formats d'instrucció RV32I (tipus R, I i S)»; el text que el precedeix (`:260`) diu també que mostra «els tres formats que s'usen en aquest tema (R, I, S)». Però `compendi_registres` es genera a partir de **totes** les entrades `instruccio_tipus_*` del `24_specs/registres.toml` (`25_scripts/gen_regs.py`, `INSTRUCCIO_ORDER`), i conté R, I, S, B, U, J i R4. Contradiu la decisió «cap variant abans del seu format nuclear» (`13_contrib.qmd §T2 i T3`, «Formats d'instrucció de RV32I»): B i J surten a T2. Ve del refactor `c5d9416` (`git log -S"Formats d'instrucció RV32I (tipus R, I i S)" -- 01_apunts/A2.qmd`). Comprovació:
+
+  ```bash
+  grep -o "<text[^>]*>[^<]*</text>" auto_figs/compendi_registres__registre_light.svg | grep -c "Type"   # 7 (després de make render)
+  ```
+
+  **Va a la fase 4** de `CLAUDE.md §Pla de treball` (decisió de l'usuari, 2026-10-02). Via preferent: un retall del compendi a `24_specs/retalls.toml` (`13_contrib.qmd §Retalls`), si és net; si no, una variant del compendi a `gen_regs.py`, que ja és canviar una eina i s'ha de consultar. La figura del compendi de `11_riscv.qmd` (`#nte-rv-instruccions-formats-detall`) és correcta amb els set i no s'ha de tocar.
 
 ### T3
 
