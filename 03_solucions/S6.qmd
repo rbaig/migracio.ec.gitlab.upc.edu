@@ -94,9 +94,9 @@ Amb el 40% de CF **sí val la pena** afegir la unitat de coma flotant (millora d
 | Tipus | Instruccions | CPI | Cicles |
 | :--- | :---: | :---: | :---: |
 | Aritmètiques | 500 | 1 | 500 |
-| Store | 50 | 5 | 250 |
-| Load | 100 | 5 | 500 |
-| Branch | 50 | 2 | 100 |
+| Escriptura | 50 | 5 | 250 |
+| Lectura | 100 | 5 | 500 |
+| Salt | 50 | 2 | 100 |
 | **Total** | **700** | | **1 350** |
 
 $$t_{exe} = 1350 \text{ cicles} \cdot 1 \text{ ns/cicle} = \mathbf{1{,}35} \ \mu\text{s}$$
@@ -105,7 +105,7 @@ $$t_{exe} = 1350 \text{ cicles} \cdot 1 \text{ ns/cicle} = \mathbf{1{,}35} \ \mu
 
 $$\text{CPI} = \frac{1350 \text{ cicles}}{700 \text{ instruccions}} \approx 1{,}93$$
 
-**c)** Amb 50 instruccions load (en comptes de 100):
+**c)** Amb 50 instruccions de lectura (en comptes de 100):
 
 $$\text{Cicles}_{opt} = 500 + 250 + 50 \cdot 5 + 100 = 1100$$
 
@@ -167,7 +167,7 @@ La freqüència mínima acceptable és aproximadament 1,06 GHz, força per sota 
 
 **Enunciat**: @exr-t6-rendiment-temps.
 
-**Cas a** ($t_{orig} = 200$ s: CF = 35 s, Enters = 85 s, L/S = 50 s, Branch = 30 s)
+**Cas a** ($t_{orig} = 200$ s: CF = 35 s, Enters = 85 s, lectura/escriptura (L/E) = 50 s, Salt = 30 s)
 
 **a)** Reduïm el temps de CF un 20% ($35 \text{ s} \to 28 \text{ s}$):
 
@@ -177,7 +177,7 @@ $$t_{nou} = 200 - 35 + 28 = 193 \text{ s} \qquad s = \frac{200}{193} \approx 1{,
 
 $$t_{Enters,nou} = 166{,}7 - 115 = 51{,}7 \text{ s} \quad \Rightarrow \quad \text{reducció} = \frac{85 - 51{,}7}{85} \approx \mathbf{39{,}2\%}$$
 
-**c)** El *speedup* màxim possible millorant únicament branch (fins a branch = 0) és:
+**c)** El *speedup* màxim possible millorant únicament els salts (fins a reduir-ne el temps a 0) és:
 
 $$s_{max} = \frac{200}{200 - 30} = \frac{200}{170} \approx 1{,}18 \times$$
 
@@ -185,7 +185,7 @@ Com que $1{,}18 < 1{,}25$ (reduir un 20% equival a $s = 1{,}25$), **no és possi
 
 ---
 
-**Cas b** ($t_{orig} = 210$ s: CF = 50 s, Enters = 80 s, L/S = 50 s, Branch = 30 s)
+**Cas b** ($t_{orig} = 210$ s: CF = 50 s, Enters = 80 s, L/E = 50 s, Salt = 30 s)
 
 **a)** CF un 20% més ràpid ($50 \text{ s} \to 40 \text{ s}$):
 
@@ -195,7 +195,7 @@ $$t_{nou} = 210 - 50 + 40 = 200 \text{ s} \qquad s = \frac{210}{200} = 1{,}05 \t
 
 $$t_{Enters,nou} = 175 - 130 = 45 \text{ s} \quad \Rightarrow \quad \text{reducció} = \frac{80 - 45}{80} = \mathbf{43{,}75\%}$$
 
-**c)** $s_{max}$ per branch:
+**c)** $s_{max}$ per als salts:
 
 $$s_{max} = \frac{210}{210 - 30} = \frac{210}{180} \approx 1{,}17 \times < 1{,}25$$
 
@@ -295,7 +295,7 @@ Amb instruccions CF infinitament ràpides, el guany tendiria a 1,54× sense pode
 
 **a)** El nombre de cicles totals és la suma per tipus d'instruccions:
 
-| | CF | Enters | L/S | Branch | Total |
+| | CF | Enters | L/E | Salt | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | Proc. A | 90·2 = 180 | 240·1,5 = 360 | 150·6 = 900 | 120·3 = 360 | **1800** |
 | Proc. B | 45·3 = 135 | 225·1 = 225 | 135·5 = 675 | 45·2 = 90 | **1125** |
@@ -310,11 +310,11 @@ $$\frac{N_A \cdot \text{CPI}_A}{f_A} = \frac{N_B \cdot \text{CPI}_B}{f_B} \impli
 
 El processador A ha de funcionar a una freqüència 1,6 vegades superior a la de B per igualar el seu temps d'execució.
 
-**c)** Si les instruccions L/S del processador A s'executessin en 0 cicles, els cicles totals serien $1800 - 900 = 900$:
+**c)** Si les instruccions L/E del processador A s'executessin en 0 cicles, els cicles totals serien $1800 - 900 = 900$:
 
 $$s = \frac{1800}{900} = \mathbf{2{,}0} \times$$
 
-Equivalent a aplicar la llei d'Amdahl amb $P_{L/S} = 900/1800 = 50\%$ del temps i $s_{L/S} \to \infty$: $s_{max} = 1/(1 - 0{,}5) = 2\times$.
+Equivalent a aplicar la llei d'Amdahl amb $P_{L/E} = 900/1800 = 50\%$ del temps i $s_{L/E} \to \infty$: $s_{max} = 1/(1 - 0{,}5) = 2\times$.
 :::
 
 ## Potència
