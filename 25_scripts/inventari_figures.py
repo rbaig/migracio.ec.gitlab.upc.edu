@@ -1,0 +1,376 @@
+#!/usr/bin/env python3
+"""
+inventari_figures.py — Inventari de les figures del llibre, mesurat pel contingut.
+
+    python3 25_scripts/inventari_figures.py [--sortida 24_specs/figures.md]
+    make inventari
+
+Escriu una taula per figura (cada `#fig-` i cada imatge sense etiqueta) i una
+per fitxer font (`22_figs_originals/`, `23_figs_externes/` i les entrades de
+`24_specs/registres.toml`), i una llista d'avisos. Tot es mesura sobre els
+fitxers versionats de l'arbre de treball, i la capçalera del resultat diu el
+commit.
+
+Mesura pel contingut, no pel nom (`13_contrib.qmd §Escombrades i verificació
+del corpus`, regla 2): l'origen surt de l'SVG (marques d'Inkscape, LO Draw,
+draw.io, Graphviz) i de les taules de `24_specs/svg.md §15` i `§16`; els
+duplicats, del hash; i el placeholder, del contingut de `TODO.svg`.
+
+Comprovacions que fa (secció «Avisos»):
+
+- fitxers font que cap `.qmd` no consumeix (orfes), i duplicats byte a byte;
+- figures que consumeixen el placeholder, una exportació (`__extern_`) o un ràster;
+- SVG consumits sense `<title>` o sense `<desc>`, i `<desc>` idèntic al peu
+  (el `<desc>` és el text alternatiu, i no ha de repetir el peu: decisió de
+  l'usuari, 2026-10-03, fase 7c);
+- peus que no acaben en punt; figures del cos del text sense cap remissió `@`;
+  figures o taules amb etiqueta dins d'un callout `#nte-`;
+- `textLength` (rsvg-convert, el del PDF, no l'implementa), text en gris de
+  traç (`#adb5bd`) i colors fora de la paleta de `svg.md §10` i `§16`.
+
+Només fa servir la biblioteca estàndard. No forma part del pre-render: el
+resultat es versiona i es regenera amb `make inventari`.
+"""
+import argparse
+import collections
+import hashlib
+import importlib.util
+import re
+import subprocess
+import sys
+import tomllib
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+ROOT = Path(subprocess.run(['git', 'rev-parse', '--show-toplevel'],
+                           capture_output=True, text=True, check=True).stdout.strip())
+DIRS = ('22_figs_originals', '23_figs_externes')
+EXCLOSOS = ('TODO.md', '13_contrib.qmd')          # hi registren o hi expliquen casos
+GRIS_TRAC = '#adb5bd'
+COLOR = re.compile(r'#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b')
+SENSE_COLOR = {'namedview', 'grid', 'metadata', 'RDF', 'Work', 'format', 'type'}
+
+
+def git(*a):
+    return subprocess.run(['git', *a], capture_output=True, text=True, cwd=ROOT).stdout
+
+
+def norm_color(c):
+    c = c.lower()
+    return '#' + ''.join(ch * 2 for ch in c[1:]) if len(c) == 4 else c
+
+
+def paleta():
+    """Colors de svg.md §10 i §16, i els grisos neutres i el blanc."""
+    md = (ROOT / '24_specs/svg.md').read_text(encoding='utf-8')
+    s10 = md.split('## 10.')[1].split('## 11.')[0]
+    s16 = md.split('## 16.')[1] if '## 16.' in md else ''
+    pal = {c.lower() for c in re.findall(r'#[0-9a-fA-F]{6}', s10 + s16)}
+    return pal | {'#ffffff', '#343a40', '#6c757d', '#adb5bd', '#f8f9fa'}, md
+
+
+def origens_declarats(md):
+    """Noms de figura de les taules de svg.md §15 (extretes de PDF) i §16 (script)."""
+    dec = {}
+    s15 = md.split('## 15.')[1].split('## 16.')[0] if '## 15.' in md else ''
+    for m in re.finditer(r'^\| `(T\w+)` \|', s15, re.M):
+        dec[m.group(1)] = 'extreta de PDF'
+    s16 = md.split('## 16.')[1] if '## 16.' in md else ''
+    for m in re.finditer(r'^\| `(T\w+)` \| `25_scripts/([\w.]+)`', s16, re.M):
+        dec[m.group(1)] = f'script ({m.group(2)})'
+    return dec
+
+
+def info_svg(path, pal, declarats):
+    raw = path.read_text(encoding='utf-8', errors='replace')
+    root = ET.fromstring(raw)
+    d = {'sha': hashlib.sha256(raw.encode()).hexdigest()[:12], 'textos': [], 'colors': set(),
+         'title': '', 'desc': '', 'gris': 0, 'paths': 0, 'imatges': 0}
+    vb = (root.get('viewBox') or '').split()
+    d['amplada'] = vb[2] if len(vb) == 4 else (root.get('width') or '')
+    for e in root.iter():
+        t = e.tag.split('}')[-1]
+        if t in SENSE_COLOR:
+            continue
+        txt = ''.join(e.itertext()).strip()
+        if t == 'title' and not d['title']:
+            d['title'] = txt
+        elif t == 'desc' and not d['desc']:
+            d['desc'] = txt
+        elif t == 'text' and txt:
+            d['textos'].append(txt)
+        d['paths'] += t == 'path'
+        d['imatges'] += t == 'image'
+        estil = ''
+        for k, v in e.attrib.items():
+            if k.split('}')[-1] in ('fill', 'stroke', 'stop-color', 'style', 'color'):
+                estil += v + ';'
+                d['colors'].update(norm_color(c) for c in COLOR.findall(v))
+        if t in ('text', 'tspan') and txt and GRIS_TRAC in estil.lower():
+            d['gris'] += 1
+    for st in re.findall(r'<style[^>]*>(.*?)</style>', raw, re.S):
+        d['colors'].update(norm_color(c) for c in COLOR.findall(st))
+    d['fora'] = sorted(c for c in d['colors'] if c not in pal)
+    d['textLength'] = raw.count('textLength')
+    nom = path.stem
+    if nom in declarats:
+        d['origen'] = declarats[nom]
+    elif 'Generated by graphviz' in raw:
+        d['origen'] = 'Graphviz'
+    elif 'mxfile' in raw or 'draw.io' in raw:
+        d['origen'] = 'draw.io'
+    elif re.search(r'ooo:|ClipPathGroup|TextShape|presentation', raw[:200000]):
+        d['origen'] = 'exportació LO Draw'
+    elif 'inkscape' in raw[:4000].lower():
+        d['origen'] = 'Inkscape'
+    else:
+        d['origen'] = 'SVG natiu'
+    return d
+
+
+def registres():
+    """Entrades de registres.toml i compendis de gen_regs.py (COMPENDIS), que no tenen entrada al TOML."""
+    toml = tomllib.loads((ROOT / '24_specs/registres.toml').read_text(encoding='utf-8'))
+    regs = {n: (r.get('title', ''), r.get('desc', ''), 'gen_regs.py') for n, r in toml.get('registers', {}).items()}
+    sys.dont_write_bytecode = True                  # cap __pycache__ dins de 25_scripts/
+    spec = importlib.util.spec_from_file_location('gen_regs', ROOT / '25_scripts/gen_regs.py')
+    gen_regs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gen_regs)
+    for n, (_, title, desc) in gen_regs.COMPENDIS.items():
+        regs[n] = (title, desc, 'gen_regs.py (COMPENDIS)')
+    return {n: {'title': t, 'desc': d, 'origen': o, 'sha': '', 'fora': [], 'textLength': 0, 'gris': 0,
+                'textos': [], 'amplada': ''} for n, (t, d, o) in regs.items()}
+
+
+def font_de(nom):
+    """Ruta d'una imatge del .qmd → clau del fitxer font."""
+    m = re.match(r'/?auto_figs/(.+)__(original|extern|registre)_(light|dark)\.svg$', nom)
+    if m:
+        return {'original': '22_figs_originals/{}.svg', 'extern': '23_figs_externes/{}.svg',
+                'registre': 'registres.toml:{}'}[m.group(2)].format(m.group(1))
+    m = re.match(r'/?auto_figs/(compendi_registres\w*)__registre_(light|dark)\.svg$', nom)
+    if m:
+        return f'registres.toml:{m.group(1)}'
+    return nom.lstrip('/')
+
+
+def consumidors():
+    """Per a cada imatge dels .qmd: font, fitxer:línia, etiqueta #fig- i callout que la conté."""
+    qmds = [q for q in git('ls-files', '*.qmd').split() if q not in EXCLOSOS]
+    usos, figs, textos = [], {}, {}
+    for q in qmds:
+        linies = (ROOT / q).read_text(encoding='utf-8').split('\n')
+        textos[q] = '\n'.join(linies)
+        pila, codi = [], False
+        for i, l in enumerate(linies, 1):
+            if re.match(r'\s*(```|~~~)', l):
+                codi = not codi
+                continue
+            if codi:
+                continue
+            m = re.match(r'\s*:{3,}\s*\{([^}]*)\}', l)
+            if m:
+                ident = (re.search(r'#([\w-]+)', m.group(1)) or [None, ''])[1]
+                pila.append((ident, i))
+                if ident.startswith('fig-'):
+                    figs[ident] = {'qmd': q, 'linia': i, 'pila': [p[0] for p in pila[:-1]]}
+                continue
+            if re.match(r'\s*:{3,}\s*$', l):
+                if pila:
+                    pila.pop()
+                continue
+            for mm in re.finditer(r'!\[[^\]]*\]\(([^)\s]+)', l):
+                fig = next((p[0] for p in reversed(pila) if p[0].startswith('fig-')), '')
+                callout = next((p[0] for p in reversed(pila)
+                                if p[0].startswith(('nte-', 'tip-', 'wrn-', 'cau-', 'imp-'))), '')
+                usos.append({'font': font_de(mm.group(1)), 'qmd': q, 'linia': i, 'fig': fig,
+                             'callout': callout, 'variant': 'fosc' if '_dark' in mm.group(1) else 'clar'})
+            for mm in re.finditer(r'\{#((?:fig|tbl)-[\w-]+)', l):
+                if mm.group(1).startswith('fig-') and mm.group(1) not in figs:
+                    figs[mm.group(1)] = {'qmd': q, 'linia': i, 'pila': [p[0] for p in pila]}
+    return usos, figs, textos
+
+
+def peu(text, fid):
+    """Peu d'una figura: el darrer paràgraf del div `#fig-` que no és cap imatge ni cap div."""
+    linies = text.split('\n')
+    for i, l in enumerate(linies):
+        if re.match(r'\s*:{3,}\s*\{#' + re.escape(fid) + r'[\s}]', l):
+            prof = 0
+            for j in range(i, len(linies)):
+                if re.match(r'\s*:{3,}\s*\{', linies[j]):
+                    prof += 1
+                elif re.match(r'\s*:{3,}\s*$', linies[j]):
+                    prof -= 1
+                    if prof == 0:
+                        k, par = j - 1, []
+                        while k > i and not linies[k].strip():
+                            k -= 1
+                        while k > i and linies[k].strip() and not re.match(r'\s*(:{3,}|!\[|\|)', linies[k]):
+                            par.insert(0, linies[k].strip())
+                            k -= 1
+                        return ' '.join(par)
+    return ''
+
+
+def pla(s):
+    s = re.sub(r'[`*$\\{}]', '', s)
+    return re.sub(r'\s+', ' ', s).strip().rstrip('.').lower()
+
+
+def cel(s, n=None):
+    s = (s or '').replace('|', '\\|').replace('\n', ' ')
+    return s if n is None or len(s) <= n else s[:n - 1] + '…'
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split('\n')[1])
+    ap.add_argument('--sortida', default='24_specs/figures.md')
+    args = ap.parse_args()
+
+    pal, md = paleta()
+    declarats = origens_declarats(md)
+    fonts = {}
+    for f in sorted(git('ls-files', *DIRS).split()):
+        p = ROOT / f
+        if f.endswith('.svg'):
+            fonts[f] = info_svg(p, pal, declarats)
+        else:
+            fonts[f] = {'sha': hashlib.sha256(p.read_bytes()).hexdigest()[:12], 'origen': 'ràster',
+                        'title': '', 'desc': '', 'fora': [], 'textLength': 0, 'gris': 0, 'textos': [], 'amplada': ''}
+    for n, r in registres().items():
+        fonts[f'registres.toml:{n}'] = r
+    placeholder = fonts.get('22_figs_originals/TODO.svg', {}).get('sha')
+
+    usos, figs, textos = consumidors()
+    corpus = '\n'.join(textos.values())
+    consumides = collections.defaultdict(list)
+    for u in usos:
+        consumides[u['font']].append(u)
+    per_sha = collections.defaultdict(list)
+    for f, i in fonts.items():
+        if i['sha']:
+            per_sha[i['sha']].append(f)
+
+    commit = git('rev-parse', '--short', 'HEAD').strip()
+    data = git('log', '-1', '--format=%cs').strip()
+    brut = bool(git('status', '--porcelain', '--', *DIRS, '24_specs/registres.toml', '24_specs/svg.md',
+                    '*.qmd', *(f':!{x}' for x in EXCLOSOS)).strip())
+    avisos = collections.defaultdict(list)
+
+    # ---- taula per figura
+    files_fig = []
+    figs_amb_imatge = set()
+    for fid, f in sorted(figs.items(), key=lambda kv: (kv[1]['qmd'], kv[1]['linia'])):
+        us = [u for u in usos if u['fig'] == fid]
+        figs_amb_imatge |= {fid} if us else set()
+        font = us[0]['font'] if us else '(taula Markdown)'
+        inf = fonts.get(font, {})
+        callout = next((p for p in reversed(f['pila']) if p.startswith(('nte-', 'tip-', 'wrn-', 'cau-', 'imp-'))), '')
+        refs = len(re.findall(r'@' + re.escape(fid) + r'(?![\w-])', corpus))
+        cap = peu(textos[f['qmd']], fid)
+        lloc = f"{f['qmd'].split('/')[-1]}:{f['linia']}"
+        files_fig.append((fid, lloc, font, inf.get('origen', '—'), callout, refs, cap, inf.get('desc', '')))
+        if not cap:
+            avisos['Figures sense peu'].append(f'`{fid}` ({lloc})')
+        elif not cap.rstrip().endswith('.'):
+            avisos['Peus que no acaben en punt'].append(f'`{fid}` ({lloc})')
+        if not refs and not callout:
+            avisos['Figures del cos del text sense cap remissió `@`'].append(f'`{fid}` ({lloc})')
+        if callout.startswith('nte-'):
+            avisos['Etiquetes `#fig-` dins d\'un callout `#nte-`'].append(f'`{fid}` ({lloc}, `{callout}`)')
+        if inf.get('desc') and cap and pla(inf['desc']) == pla(cap):
+            avisos['`<desc>` idèntic al peu'].append(f'`{fid}` ({font})')
+    vistos = set()
+    for u in usos:
+        clau = (u['qmd'], u['font'], u['callout'])
+        if not u['fig'] and u['variant'] == 'clar' and clau not in vistos:
+            vistos.add(clau)
+            files_fig.append(('—', f"{u['qmd'].split('/')[-1]}:{u['linia']}", u['font'],
+                              fonts.get(u['font'], {}).get('origen', '—'), u['callout'], 0, '', ''))
+    for q, t in textos.items():
+        pila, codi = [], False
+        for i, l in enumerate(t.split('\n'), 1):
+            if re.match(r'\s*(```|~~~)', l):
+                codi = not codi
+                continue
+            if codi:
+                continue
+            m = re.match(r'\s*:{3,}\s*\{([^}]*)\}', l)
+            if m:
+                pila.append((re.search(r'#([\w-]+)', m.group(1)) or [None, ''])[1])
+                continue
+            if re.match(r'\s*:{3,}\s*$', l):
+                if pila:
+                    pila.pop()
+                continue
+            if any(p.startswith('nte-') for p in pila):
+                for mm in re.finditer(r'\{#(tbl-[\w-]+)', l):
+                    avisos['Etiquetes `#tbl-` dins d\'un callout `#nte-`'].append(f'`{mm.group(1)}` ({q.split("/")[-1]}:{i})')
+
+    # ---- avisos per fitxer font
+    for f, i in fonts.items():
+        us = consumides.get(f, [])
+        if not us:
+            if not f.startswith('registres.toml:'):
+                avisos['Fitxers font orfes (cap `.qmd` no els consumeix)'].append(f'`{f}`')
+            continue
+        if placeholder and i['sha'] == placeholder:
+            avisos['Figures que consumeixen el placeholder (`TODO.svg`)'].append(f'`{f}`')
+        if f.startswith('23_figs_externes/') and f.endswith('.svg'):
+            avisos['Figures consumides com a exportació (`__extern_`)'].append(f'`{f}`')
+        if i['origen'] == 'ràster' and 'by-nc-sa' not in f:
+            avisos['Figures ràster'].append(f'`{f}`')
+        if f.endswith('.svg') or f.startswith('registres.toml:'):
+            if not i['title']:
+                avisos['SVG consumits sense `<title>`'].append(f'`{f}`')
+            if not i['desc']:
+                avisos['SVG consumits sense `<desc>` (el text alternatiu)'].append(f'`{f}`')
+        if i['textLength']:
+            avisos['`textLength` (rsvg-convert no l\'implementa)'].append(f"`{f}` ({i['textLength']})")
+        if i['gris']:
+            avisos['Text en gris de traç (`#adb5bd`)'].append(f"`{f}` ({i['gris']})")
+        if i['fora']:
+            avisos['Colors fora de la paleta (`svg.md §10` i `§16`)'].append(f"`{f}`: {' '.join(i['fora'])}")
+    for s, fs in per_sha.items():
+        if len(fs) > 1:
+            avisos['Duplicats byte a byte'].append(' = '.join(f'`{x}`' for x in fs))
+
+    # ---- sortida
+    o = ['# Inventari de figures', '',
+         f'Generat per `25_scripts/inventari_figures.py` sobre `{commit}` ({data})'
+         + (', amb canvis no confirmats a l\'arbre de treball' if brut else '') + '. **No l\'editeu a mà**: '
+         '`make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l\'script.', '']
+    n_cons = sum(1 for f in fonts if consumides.get(f) and not f.startswith('registres.toml:'))
+    n_fit = sum(1 for f in fonts if not f.startswith('registres.toml:'))
+    o += [f'- **{len(figs)}** etiquetes `#fig-` ({len(figs_amb_imatge)} amb imatge; la resta són taules Markdown), '
+          f'i **{len(vistos)}** imatges sense etiqueta (les del compendi i la de la llicència).',
+          f'- **{n_fit}** fitxers a `22_figs_originals/` i `23_figs_externes/`: {n_cons} consumits i {n_fit - n_cons} orfes. '
+          f'A més, **{sum(1 for f in fonts if f.startswith("registres.toml:") and consumides.get(f))}** figures generades per `gen_regs.py`.', '']
+    o += ['## Figures', '', '| Etiqueta | Lloc | Font | Origen | Callout | @ | Peu | `<desc>` |',
+          '| :--- | :--- | :--- | :--- | :--- | ---: | :--- | :--- |']
+    for fid, lloc, font, orig, callout, refs, cap, desc in files_fig:
+        o.append(f"| `{fid}` | `{lloc}` | `{font}` | {orig} | {('`' + callout + '`') if callout else ''} | {refs} | "
+                 f"{cel(cap, 90)} | {cel(desc, 60)} |")
+    o += ['', '## Fitxers font', '', '| Fitxer | Ús | Origen | Amplada | `<title>` | `<desc>` | Textos | Fora de paleta | Duplicat de |',
+          '| :--- | :--- | :--- | ---: | :---: | :---: | ---: | :--- | :--- |']
+    for f, i in fonts.items():
+        us = consumides.get(f, [])
+        llocs = sorted({f"{u['qmd'].split('/')[-1]}:{u['linia']}" for u in us if u['variant'] == 'clar'})
+        dup = ' '.join(f'`{x}`' for x in per_sha.get(i['sha'], []) if x != f) if i['sha'] else ''
+        o.append(f"| `{f}` | {', '.join(llocs[:2]) + (' …' if len(llocs) > 2 else '') if llocs else '**orfe**'} | {i['origen']} | "
+                 f"{i['amplada']} | {'sí' if i['title'] else 'no'} | {'sí' if i['desc'] else 'no'} | {len(i['textos'])} | "
+                 f"{' '.join(i['fora'])} | {dup} |")
+    o += ['', '## Avisos', '']
+    for k in sorted(avisos):
+        o.append(f'### {k} ({len(avisos[k])})')
+        o.append('')
+        o += [f'- {x}' for x in avisos[k]]
+        o.append('')
+    (ROOT / args.sortida).write_text('\n'.join(o).rstrip() + '\n', encoding='utf-8')
+    print(f'[inventari] {args.sortida}: {len(figs)} etiquetes, {n_fit} fitxers ({n_fit - n_cons} orfes), '
+          f'{sum(len(v) for v in avisos.values())} avisos en {len(avisos)} categories.')
+
+
+if __name__ == '__main__':
+    main()

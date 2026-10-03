@@ -304,6 +304,41 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   Precedents a la mà: `25_scripts/gen_T4_sumador.py` i `24_specs/svg.md §16` (fase 5), `25_scripts/gen_regs.py` i `24_specs/registres.toml`, `25_scripts/gen_crops.py` (entrada «Nova eina disponible: retalls», més avall, que té el mateix objectiu de font única per a T5).
 
+  📌 **Fase 7c (2026-10-03): pas 1 fet, i decisions de l'usuari per als passos 2–5.** L'inventari és `24_specs/figures.md`, generat per `25_scripts/inventari_figures.py` (`make inventari`), que mesura pel contingut: l'origen (marques de l'editor i taules de `svg.md §15` i `§16`), qui consumeix cada fitxer, els duplicats per hash, el placeholder, `<title>` i `<desc>`, els colors fora de paleta, `textLength`, el text en gris de traç, els peus i les remissions. Sobre `722c522`: 78 `#fig-` (75 amb imatge i 3 taules d'A2) i 9 imatges sense etiqueta; 92 fitxers a `22_figs_originals/` i `23_figs_externes/`, dels quals 59 consumits i 33 orfes; i 18 figures de `gen_regs.py`. La variant fosca es va verificar a ull sobre el render de `rsvg-convert` (el del PDF) de totes les variants: totes bé, tret de `fig-assoc-conjunts-diagrama`, que és un ràster incrustat i surt blanc també en fosc. La mesura preliminar de més amunt dona 15 SVG «sense cap .qmd que les citi», i són 29 (33 fitxers amb els quatre ràsters): cercava el nom base, i el nom base d'una exportació orfe de `23_figs_externes/` és el mateix que el de la nativa consumida (l'ordre encara dona 15 a `722c522`).
+
+  ```bash
+  make inventari   # 78 etiquetes, 92 fitxers (33 orfes), sobre 722c522
+  ```
+
+  Mesurat pel contingut i no pel nom (regla 2), l'inventari troba:
+
+  - `fig-assoc-conjunts-diagrama` és la figura del Patterson & Hennessy, en ràster i en anglès, amb la signatura de l'autor retallada al peu: és un problema de llicència, no només d'estil.
+  - `22_figs_originals/T7_cd_diagrama.svg` no és natiu: és, byte a byte, l'exportació de LO Draw de `23_figs_externes/`.
+  - Noms que no diuen el contingut: `23_figs_externes/T7_mc_exemple_descomposicio_32bits.svg` és una taula de MC (la de `fig-mc-organitzacio`, en LO Draw); `23_figs_externes/T7_multinivell_diagrama.svg` és una jerarquia amb capacitats, no el diagrama (a)–(c) que especifica A7; i els dos `____error____` són retalls equivocats (una pàgina de text i una taula de definicions).
+  - `22_figs_originals/T7_mc_descomposicio_bits.svg`, orfe, il·lustra exactament `#tip-mc-numbloc` (§T7, fila `fig-mc-exemple-descomposicio-32bits`).
+  - `22_figs_originals/T5_ieee754_format_registre.svg`, orfe: la figura surt de `registres.toml`, i el canvi del revisor «S sense girar» (`9bc5f46`) només és en aquest fitxer (§Decisions obertes → Anotacions de la revisió externa de T4–T6).
+  - `T7_lru_exemple.svg` porta el `<title>` i el `<desc>` d'`estat_inicial`; els placeholders, els de «Raspberry Pi Pico 2…»; i 20 títols diuen «(mode clar)», també a la variant fosca.
+  - Al render de `rsvg-convert`: el requadre «Exponent en IEEE 754» de `T5_exponent` surt tallat per la dreta; a `T9_cicle_interrupcio`, la línia discontínua trepitja «(detecció)» i la fletxa vermella trepitja «Execució normal»; a `T3_deps_*`, les fletxes travessen el codi; i a `T4_multiplicador_arbre`, «Z · producte (2n bits)» toca les vores de la caixa, i hi ha «desplacats» i «nomes».
+  - Les figures de T7 porten «Load/Store», «Hit/Miss» i «Cold/Capacity/Conflict Miss» (també dos peus), contra `13_contrib.qmd §Substitucions obligatòries`.
+  - `24_specs/svg.md §9` escriu les adreces amb espais («0x1001 0000»), contra `13_contrib.qmd §T2 i T3` («sense espais»).
+  - L'especificació de `fig-texe-diagrama` (comentari d'A7) diu `addu`, que és de MIPS.
+
+  **Decisions de l'usuari (2026-10-03, a proposta de Claude Code):**
+
+  1. Model de generació: (b) per a les famílies i (a) per a les figures soltes, amb una comprovació que l'SVG versionat coincideix amb el que genera l'script.
+  2. Pilot de T7: la família «estat de la MC» (taules i seqüències d'accessos, que el generador simula), la descomposició de l'adreça, els diagrames de blocs de la lectura (correspondència directa, associativa per conjunts i completament associativa, amb les portes de `svg.md §16` en una biblioteca compartida) i les figures soltes (`texe`, multinivell i multicore). Hi entren les set de §T7.
+  3. Les set figures de §T7, que aquest fitxer assignava a LO Draw (Roger), i els retocs de T3 (§T3) els fa Claude Code, en SVG natiu.
+  4. Figures dinàmiques: fotogrames i un navegador de passos amb JS propi sobre els `<img>` clar i fosc de sempre; el PDF porta la seqüència estàtica, generada pel mateix script. Prototip: `#fig-lru-exemple`. L'usuari tem que les seqüències del PDF surtin massa llargues: cal estudiar-ho sobre el resultat.
+  5. Es retiren els orfes i els duplicats (llista a l'inventari), i `gen_regs.py` rep una opció d'orientació per camp, per a la «S» de T5.
+  6. Text alternatiu: el `<desc>` de l'SVG n'és la font de veritat, i un filtre Lua el copia a l'`alt` en renderitzar; si no és viable, `fig-alt` al `.qmd`. El peu (*caption*) es queda al `.qmd` i no es desa a l'SVG: les escombrades, `lint_prosa.py` i `revisor-linguistic` llegeixen els `.qmd`, el peu és Markdown, una mateixa imatge pot anar amb peus diferents (les de registres, amb peu a T2 o T9 i sense al compendi), i l'`alt` no ha de repetir el peu. L'inventari avisa quan un `<desc>` falta o és idèntic al peu.
+  7. Etiquetes dins dels `#nte-`: es treuen les 17 (§Decisions obertes).
+  8. Remissió obligatòria per a les figures del cos del text, que al PDF poden flotar (24 sense cap `@`), però no per a les dels callouts. Cal canviar `13_contrib.qmd §Referències creuades`, que avui diu que no cal.
+  9. Text de figura en gris de text (`#6c757d`), també els rètols de nivell de T4 (§Tasques globals → SVG).
+  10. Adreces sense espais també a les figures (`svg.md §9`).
+  11. Terminologia catalana a les figures de T7: «Lectura», «Escriptura», «Encert», «Fallada» i fallades «obligatòries», «de capacitat» i «de conflicte».
+  12. L'inventari, a `24_specs/figures.md`, generat.
+  13. La migració del canvas dels BA queda per a una família de memòria futura (§Tasques globals → SVG); les taules de memòria de T2 entren ara, amb un generador mínim de «memòria per bytes».
+
 - **Confirmar al Termcat «semisumador» (*half-adder*) i «sumador complet» (*full-adder*)** (registrada 2026-10-03, fase 5). Són els termes que fan servir A4 (`#wrn-sobreeiximent-maquinari`) i les figures del sumador, i ja són a la taula de `13_contrib.qmd §Substitucions obligatòries`, marcats «pendent de confirmar». L'usuari no els ha pogut trobar a la interfície nova del Termcat; només hi consta *adder* → «sumador». Si el Termcat en dona uns altres, cal canviar la taula, el text d'A4 i els rètols dels SVG (`git grep -n -i 'semisumador\|sumador complet'`).
 
 - **`S_criteris_seleccio.qmd` — taula de T1 incompleta** (auditoria, sessió 2, 2026-09-21). La taula de `## {{< var tema1 >}}` té **una sola fila** (`@exr-t1-enters-taules`, `:23`) i ha de recollir la resta de problemes seleccionats de `S1.qmd`. El marcador «TODO» que ho registrava era contingut destinat a l'alumne i es va substituir per la nota neutra de `:19` («*Taula provisional: recull els problemes de `S1.qmd` seleccionats fins ara.*»); **aquesta entrada és ara l'únic registre de la tasca**. El fitxer és comentat a `_quarto.yml:95`, de manera que avui no es renderitza.
@@ -382,7 +417,7 @@ Cap entrada viva des del 2026-10-03 (l'última, les etiquetes de classe d'instru
 
 ### T7
 
-- **Figures pendents de reconstrucció com a natives** (requereixen LO Draw de Roger).
+- **Figures pendents de reconstrucció com a natives** (requereixen LO Draw de Roger). ⚠️ **Decisió de l'usuari (2026-10-03, fase 7c): les fa Claude Code, en SVG natiu**, dins del pilot de T7 (§Tasques transversals → «Revisió general de les figures i generació per script»).
 
   ⚠️ **Descripció corregida (auditoria, sessió 3).** La versió anterior d'aquesta taula marcava quatre figures amb «🔴 Referència trencada». **Cap ho és**: les quatre tenen el div definit i la referència resol — la verificació de la sessió 2 (`make render` sense warnings, 0 `?@` als 39 HTML) ho confirma. El que està pendent és **reconstruir-les com a natives**, perquè avui es consumeixen com a exports (`__extern_`) o amb figura provisional. L'única ocurrència de `?@` al `_book/` d'avui és dins de `site_libs/quarto-html/anchor.min.js` (JavaScript minificat de Quarto), no una referència.
 
@@ -395,6 +430,8 @@ Cap entrada viva des del 2026-10-03 (l'última, les etiquetes de classe d'instru
   | `fig-mc-exemple-descomposicio-32bits` | — | Cap ancoratge al corpus | Export LO Draw a `23_figs_externes`; reconstruir com a natiu |
   | `fig-multinivell-diagrama` | — | Cap ancoratge | CPU→L1→L2→MP; LO Draw pendent |
   | `fig-multinivell-multicore` | — | Cap ancoratge | Xip 4 nuclis L1/L2/L3; LO Draw pendent |
+
+  ⚠️ **Tres files corregides pel contingut (2026-10-03, fase 7c; `24_specs/figures.md`).** `fig-assoc-conjunts-diagrama` no és cap exportació pròpia: és la figura del Patterson & Hennessy, en ràster incrustat a l'SVG, en anglès i amb la signatura de l'autor retallada al peu; i en fosc surt blanca. `fig-mc-exemple-descomposicio-32bits` ja existeix en natiu, orfe: `22_figs_originals/T7_mc_descomposicio_bits.svg` descompon l'adreça `0x100100F8` en número de bloc i desplaçament, que és l'exemple de `#tip-mc-numbloc`; el fitxer de `23_figs_externes/` amb aquest nom és en realitat una taula de MC (la de `fig-mc-organitzacio`, en LO Draw). I `23_figs_externes/T7_multinivell_diagrama.svg` no és el diagrama (a)–(c) de l'especificació (`A7.qmd`, comentari `fig-multinivell-diagrama`), sinó una jerarquia CPU–MC–MP–disc amb capacitats; la de `T7_multinivell_multicore.svg` sí que correspon a la seva especificació. Totes dues especificacions són al corpus com a comentari, no com a `div`: d'aquí el «Cap ancoratge».
 
   ```bash
   git grep -n "auto_figs/T7_cd_diagrama\|auto_figs/T7_assoc_conjunts_diagrama" -- '*.qmd' ':!TODO.md'
@@ -454,7 +491,7 @@ Rutes de destí per a les 9: `/auto_figs/T8_*__original_light.svg`.
 
 ### T9
 
-- **F/G — Figures SVG**: diferides a una fase posterior. Estat actual: A9 consumeix 24 vegades `auto_figs/`, totes de la mateixa figura (`T9_cicle_interrupcio`).
+- **F/G — Figures SVG**: diferides a una fase posterior. Estat actual: A9 consumeix 24 vegades `auto_figs/`, totes de la mateixa figura (`T9_cicle_interrupcio`). ✅ **Executada, i la xifra era equivocada** (comprovat el 2026-10-03, fase 7c). F/G era «Registres → diagrames de camps» (`git show aab3b22^:T9_tasques.md`, §7), i les set figures de registres de T9 ja les genera `gen_regs.py` des de `registres.toml` (`T9_mcause`, `T9_mepc`, `T9_mstatus`, `T9_mtvec`, `T9_mip`, `T9_mie`, `T9_satp`). Les 24 rutes `auto_figs/` d'A9 no són d'una sola figura: són 8 figures per 3 rutes cadascuna (clara, fosca i PDF), la del cicle d'interrupció i les set de registres (`24_specs/figures.md`). Es retira en tancar la fase 7c.
 
 ### Laboratori
 

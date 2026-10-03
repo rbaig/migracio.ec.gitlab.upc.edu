@@ -7,8 +7,11 @@ render: taules          # bucle diari: només HTML (segons)
 render-complet: taules  # HTML + PDF (~5 min aquí, ~7 al CI)
 	quarto render
 
+inventari:              # inventari de figures (24_specs/figures.md)
+	python3 25_scripts/inventari_figures.py
+
 clean:
 	rm -rf _book *_files
 	rm -f *.html *.log Estructura-de-computadors.tex
 
-.PHONY: render render-complet taules clean
+.PHONY: render render-complet taules inventari clean
