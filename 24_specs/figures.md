@@ -1,9 +1,9 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `1f5f006` (2026-10-03), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `fae2066` (2026-10-03), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **78** etiquetes `#fig-` (75 amb imatge; la resta són taules Markdown), i **9** imatges sense etiqueta (les del compendi i la de la llicència).
-- **63** fitxers a `22_figs_originals/` i `23_figs_externes/`: 59 consumits i 4 orfes. A més, **18** figures generades per `gen_regs.py`.
+- **62** fitxers a `22_figs_originals/` i `23_figs_externes/`: 59 consumits i 3 orfes. A més, **18** figures generades per `gen_regs.py`.
 
 ## Figures
 
@@ -127,7 +127,6 @@ Generat per `25_scripts/inventari_figures.py` sobre `1f5f006` (2026-10-03), amb 
 | `22_figs_originals/T4_sumador_propagacio_rossec.svg` | A4.qmd:104, A4.qmd:97 | script (gen_T4_sumador.py) | 750 | sí | sí | 28 |  |  |
 | `22_figs_originals/T5_exponent.svg` | A5.qmd:135, A5.qmd:142 | Inkscape | 740 | no | no | 24 | #000000 |  |
 | `22_figs_originals/T5_grs_esquema.svg` | A5.qmd:435, A5.qmd:442 | SVG natiu | 620 | sí | sí | 20 | #000000 |  |
-| `22_figs_originals/T5_ieee754_format_registre.svg` | **orfe** | SVG natiu | 708 | sí | sí | 8 |  |  |
 | `22_figs_originals/T5_recta_global.svg` | A5.qmd:270, A5.qmd:277 | SVG natiu | 950 | sí | no | 86 | #000000 |  |
 | `22_figs_originals/T5_recta_zoom_zero.svg` | A5.qmd:385, A5.qmd:392 | Inkscape | 900 | sí | no | 74 | #000000 |  |
 | `22_figs_originals/T5_taula_codificacions.svg` | A5.qmd:344, A5.qmd:351 | exportació LO Draw | 11509.377 | no | no | 12 | #000000 |  |
@@ -289,9 +288,8 @@ Generat per `25_scripts/inventari_figures.py` sobre `1f5f006` (2026-10-03), amb 
 
 - `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg`
 
-### Fitxers font orfes (cap `.qmd` no els consumeix) (4)
+### Fitxers font orfes (cap `.qmd` no els consumeix) (3)
 
-- `22_figs_originals/T5_ieee754_format_registre.svg`
 - `22_figs_originals/T7_mc_descomposicio_bits.svg`
 - `22_figs_originals/TODO.svg`
 - `23_figs_externes/T7_multinivell_multicore.svg`
@@ -351,11 +349,6 @@ Generat per `25_scripts/inventari_figures.py` sobre `1f5f006` (2026-10-03), amb 
 - `22_figs_originals/T9_cicle_interrupcio.svg`
 - `23_figs_externes/T7_assoc_conjunts_diagrama.svg`
 - `23_figs_externes/T7_cd_diagrama.svg`
-
-### Text en gris de traç (`#adb5bd`) (2)
-
-- `22_figs_originals/T4_multiplicador_arbre.svg` (3)
-- `22_figs_originals/T5_recta_zoom_zero.svg` (2)
 
 ### `textLength` (rsvg-convert no l'implementa) (5)
 

@@ -233,7 +233,8 @@ def _canvas_w(total_bits: int) -> int:
     return MARGIN_L + total_bits * PX_PER_BIT + MARGIN_R
 
 
-def _generate_row(fields, row_y: int, total_bits: int, bit_msb_of_row: int) -> str:
+def _generate_row(fields, row_y: int, total_bits: int, bit_msb_of_row: int,
+                  horitzontals: frozenset = frozenset()) -> str:
     lines = []
     box_y = row_y + BIT_NUM_H
     box_h = ROW_H
@@ -279,7 +280,8 @@ def _generate_row(fields, row_y: int, total_bits: int, bit_msb_of_row: int) -> s
 
         fs_h = _fs_horizontal(name, w)
         fs_v = _fs_vertical(name, box_h)
-        use_vertical = (nbits == 1) or (fs_h < fs_v)
+        # Els camps d'un bit van girats, tret dels que el TOML declara a `horitzontals`.
+        use_vertical = name not in horitzontals and ((nbits == 1) or (fs_h < fs_v))
 
         if use_vertical:
             fs = round(fs_v, 2)
@@ -302,7 +304,8 @@ def _generate_row(fields, row_y: int, total_bits: int, bit_msb_of_row: int) -> s
     return '\n'.join(lines)
 
 
-def make_svg(fname: str, rows_data: list, title_ca: str, desc_ca: str) -> str:
+def make_svg(fname: str, rows_data: list, title_ca: str, desc_ca: str,
+             horitzontals: frozenset = frozenset()) -> str:
     total_bits = sum(nb for _, nb, _ in rows_data[0][0])
     n_rows     = len(rows_data)
     cw         = _canvas_w(total_bits)
@@ -316,7 +319,7 @@ def make_svg(fname: str, rows_data: list, title_ca: str, desc_ca: str) -> str:
     ]
     for idx, (fields, bit_msb) in enumerate(rows_data):
         row_y = idx * (ROW_H + BIT_NUM_H)
-        lines.append(_generate_row(fields, row_y, total_bits, bit_msb))
+        lines.append(_generate_row(fields, row_y, total_bits, bit_msb, horitzontals))
     lines.append('</svg>')
     return '\n'.join(lines)
 
@@ -538,6 +541,7 @@ def _load_registers(specs_path: Path) -> dict:
             'rows':  rows,
             'title': spec['title'],
             'desc':  spec['desc'],
+            'horitzontals': frozenset(spec.get('horitzontals', [])),
         }
     return registers
 
@@ -723,7 +727,7 @@ def main() -> None:
                     spec['desc'],
                 )
             else:
-                svg = make_svg(fname, spec['rows'], spec['title'], spec['desc'])
+                svg = make_svg(fname, spec['rows'], spec['title'], spec['desc'], spec['horitzontals'])
             out_path.write_text(svg, encoding='utf-8')
             generated += 1
             if verbosity >= 2:

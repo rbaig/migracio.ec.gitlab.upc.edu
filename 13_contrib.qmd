@@ -566,6 +566,7 @@ L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que
 - Generades automàticament pel pre-render (`25_scripts/gen_regs.py`).
 - Inclou formats d'instrucció (R, I, S, B, U, J, R4) i dos compendis, generats automàticament a partir de les entrades `instruccio_tipus_*` del TOML, sense entrada pròpia: `compendi_registres`, amb els set formats (el del compendi de referència, `11_riscv.qmd`), i `compendi_registres_RIS`, amb R, I i S (el d'A2, `#nte-instruccions-tipus`; vegeu §T2 i T3, «Formats d'instrucció de RV32I»). Quins formats porta cada compendi ho diu `COMPENDIS`, a `gen_regs.py`.
 - Figures de registres CSR: `T5_fcsr`, `T9_mstatus`, `T9_mtvec`, `T9_mepc`, `T9_mcause`, `T9_mip`, `T9_mie`, `T9_satp`.
+- El nom d'un camp d'un bit va girat, perquè no hi cap; la clau `horitzontals` d'un registre en llista els que no s'han de girar (la «S» de `T5_ieee754_format_registre`, a petició de la revisió externa de T5). Afegida el 2026-10-03 (fase 7c).
 
 **Flux de pre-render** (`_quarto.yml`):
 
@@ -593,13 +594,13 @@ Els diagrames d'arbre i grafs senzills es generen amb **Graphviz** (`dot -Tsvg`)
 
 **Fitxers:**
 
-- Font: `22_figs_originals/T<N>_nom_figura.gv`
-- Sortida: `auto_figs/T<N>_nom_figura_light.svg` (generat manualment; la variant dark la genera `gen_dark.py` automàticament)
+- Font: `24_specs/T<N>_nom_figura__graphviz.gv`, amb la mateixa arrel que l'SVG.
+- Sortida: `22_figs_originals/T<N>_nom_figura__graphviz.svg`, generat a mà amb `dot` i el post-procés de més avall, i versionat; el pre-render en fa les variants `__original_light` i `__original_dark` com amb qualsevol altra figura de `22_figs_originals/`.
 
 **Comanda de generació:**
 
 ```bash
-dot -Tsvg 22_figs_originals/T<N>_nom_figura.gv -o /tmp/raw.svg
+dot -Tsvg 24_specs/T<N>_nom_figura__graphviz.gv -o /tmp/raw.svg
 ```
 
 Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `.gv` per a un exemple complet):
@@ -614,17 +615,9 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 
 | Fitxer font | SVG a `22_figs_originals/` | Figures generades a `auto_figs/` | Contingut |
 | :--- | :--- | :--- | :--- |
-| `24_specs/T7_mc_politiques__graphviz.gv` | `T7_mc_politiques_resum__graphviz.svg` | `T7_mc_politiques_resum__graphviz__original_light.svg` i `…__original_dark.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
+| `24_specs/T7_mc_politiques_resum__graphviz.gv` | `T7_mc_politiques_resum__graphviz.svg` | `T7_mc_politiques_resum__graphviz__original_light.svg` i `…__original_dark.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
 
-::: {.callout-note}
-## Discrepància de noms coneguda
-
-L'arrel del fitxer `.gv` (`T7_mc_politiques`) i la del SVG
-(`T7_mc_politiques_resum`) **no coincideixen**: el SVG duu `_resum` i el
-`.gv` no. No és una errata d'aquesta taula, sinó una discrepància real al
-repositori; vegeu `TODO.md §Tasques transversals`. No l'«arregleu»
-canviant la taula.
-:::
+Fins al 2026-10-03 (fase 7c), el `.gv` es deia `T7_mc_politiques__graphviz.gv`, sense el `_resum` de l'SVG, i aquesta secció ho advertia com a discrepància coneguda. Es va resoldre reanomenant el `.gv`, que no referencia cap script ni cap `.qmd`; reanomenar l'SVG hauria trencat les rutes d'`A7.qmd`.
 
 #### Retalls (crops) d'una figura font única
 
