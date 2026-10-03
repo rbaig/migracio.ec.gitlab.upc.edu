@@ -580,7 +580,7 @@ El programa assemblador, seguint les recomanacions de l'especificació de RISC-V
 
 La pseudoinstrucció `mv` (***move***) copia el valor d'un registre a un altre:
 
-| Pseudoinstrucció | Operació | Expansió (ISA) |
+| Pseudoinstrucció | Operació | Expansió |
 | :--- | :--- | :--- |
 {{< include ../21_riscv/RV32I_pseudo_mv.qmd >}}
 
@@ -617,10 +617,9 @@ On $hi_{20}(\texttt{imm32})$ són els 20 bits superiors i $lo_{12}(\texttt{imm32
 
 La pseudoinstrucció **`la`** (***load address***) inicialitza un registre amb una adreça de memòria constant, expressada com una etiqueta.
 
-<!-- TODO Roger unificar format taules pseudoinstruccions -->
-```{.s filename="RV32I"}
-        la      rd, label
-```
+| Pseudoinstrucció | Operació | Expansió |
+| :--- | :--- | :--- |
+{{< include ../21_riscv/RV32I_pseudo_la.qmd >}}
 
 ```{.s filename="RV32I"}
 .data
@@ -635,17 +634,16 @@ y:      .word 14, -1   # Es suposa que y està a l'adreça 0x10010024
 ::: {#wrn-rars-expansio-la .callout-warning collapse=true}
 ## RARS — Expansió de `la`
 
-L'expansió de `la` es tracta a @nte-la-auipc.
+La instrucció `auipc` de l'expansió, i per què s'hi fa servir en lloc de `lui` (adreces relatives al PC), es tracten a @nte-la-auipc.
 :::
 ::::
 
 ::: {#imp-ec-la-offset .callout-important}
 Cas particular d'@imp-ec-operands-expressions. A **EC**, a la teoria i problemes i als exàmens, si no s'indica explícitament el contrari, s'admet la sintaxi més llegible següent:
 
-<!-- TODO Roger unificar format taules pseudoinstruccions -->
-```{.s filename="RV32I"}
-        la      rd, label+offset
-```
+| Notació EC | Operació | Equivalent a RARS (laboratori) |
+| :--- | :--- | :--- |
+| `la rd, label+offset` | $rd \leftarrow @label + offset$ | `la rd, label`<br/>`addi rd, rd, offset` |
 
 Però **RARS no la suporta**. Per tant, al **laboratori** cal substituir-la per `la` + `addi`:
 
