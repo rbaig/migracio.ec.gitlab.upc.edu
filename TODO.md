@@ -83,6 +83,12 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Criteris de codi C: completar.** Dos marcadors vius al corpus ho registren (línies mesurades a `ebdf055`): `A2.qmd:728` (`<!-- TODO hi ha consens? -->`, just abans de `#imp-codi-format-criteris`) pregunta si els criteris de format de codi tenen consens entre professors, i `A2.qmd:729` (`<!-- TODO Miquel: podríem fer un checker -->`) proposa una eina de verificació de format, relacionada amb `25_scripts/verifica_laboratoris.py`, que ja existeix. Els dos marcadors segueixen al corpus fins que la decisió es prengui.
 
+  📌 **Estat a 2026-10-03.** El marcador del *checker* (`A2.qmd:729`) s'ha esborrat: l'eina és `25_scripts/verifica_format_codi.py` (decisió de l'usuari). Decidit i aplicat el mateix dia: «tabulat» → «8 espais» al callout, i les 101 línies d'instrucció o dada sense els 8 espais (E2 73, S2 19, E4 5, A1 2, A5 2), indentades. **Queden dues decisions**: (1) el marcador «hi ha consens?», i (2) si s'afegeix al callout l'alineació dels operands en columna, que l'usuari va acceptar sobre una xifra que Claude Code havia mesurat malament: va donar 1 179 línies alineades contra 605 amb un sol espai, i la regla F5 del *checker*, que compta totes les formes (també les directives i les línies amb etiqueta), en troba **849 fora de columna** de 2 768 línies de codi, un cop indentades les 101 de dalt; el 61% són als laboratoris (L3 169, L6 161, L2 71, L4 60, L5 57). Aplicar-la vol dir reformatar aquestes 849 línies.
+
+  ```bash
+  python3 25_scripts/verifica_format_codi.py            # F3 0 i F5 849 a l'arbre de treball sobre 8e19383
+  ```
+
 - **Figures portades d'extern: afegir-ne la font.** Dels PDF originals n'hi ha que són del Patterson (p. ex. T7 MC). Abast actual verificat: dues figures de T7 encara es consumeixen en versió `__extern_` (export de PDF, no nativa) — `A7.qmd:365,368,372` (`T7_assoc_conjunts_diagrama__extern_*`) i `A7.qmd:303,306,310` (`T7_cd_diagrama__extern_*`). Enllaça amb `§Contingut global → Figures externes (llicències)`.
 
 - **Taules de memòria de T2 → figura estàndard** (`A2.qmd:964`, `:1002`, mesurat a `ebdf055`): dos marcadors amb la mateixa tasca sobre dues taules diferents — la segona és dins de `#tip-endianness` i afecta `#fig-big-endian`/`#fig-little-endian`. Pendent de figura, no de decisió, però no hi ha secció de figures de T2 en aquest fitxer: hi entra aquí fins que se'n creï una.

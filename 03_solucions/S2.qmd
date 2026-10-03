@@ -21,9 +21,9 @@ Variables: `f`→`t0`, `g`→`t1`, `h`→`t2`, `i`→`t3`, `j`→`t4`.
 Calen tres `add` encadenats; no existeix cap `add` de quatre operands:
 
 ```{.s filename="RV32I"}
-add  t0, t1, t2     # t0 = g + h
-add  t0, t0, t3     # t0 = g + h + i
-add  t0, t0, t4     # f  = g + h + i + j
+        add  t0, t1, t2     # t0 = g + h
+        add  t0, t0, t3     # t0 = g + h + i
+        add  t0, t0, t4     # f  = g + h + i + j
 ```
 
 **b)** `g = f + (h + 5) - i`
@@ -31,9 +31,9 @@ add  t0, t0, t4     # f  = g + h + i + j
 Es calcula primer `h + 5` (amb `addi`), s'afegeix `f` i finalment es resta `i`:
 
 ```{.s filename="RV32I"}
-addi t5, t2, 5      # t5 = h + 5
-add  t5, t0, t5     # t5 = f + (h + 5)
-sub  t1, t5, t3     # g  = f + (h + 5) - i
+        addi t5, t2, 5      # t5 = h + 5
+        add  t5, t0, t5     # t5 = f + (h + 5)
+        sub  t1, t5, t3     # g  = f + (h + 5) - i
 ```
 
 Cal usar un registre temporal (`t5`) per no sobreescriure `f` (`t0`) ni `h` (`t2`) abans d'acabar el càlcul.
@@ -47,10 +47,10 @@ Cal usar un registre temporal (`t5`) per no sobreescriure `f` (`t0`) ni `h` (`t2
 **a)**
 
 ```{.s filename="RV32I"}
-add  t0, t1, t2
-add  t1, t3, t4
-add  t1, t1, t1
-add  t0, t0, t1
+        add  t0, t1, t2
+        add  t1, t3, t4
+        add  t1, t1, t1
+        add  t0, t0, t1
 ```
 
 Instrucció per instrucció:
@@ -67,11 +67,11 @@ Instrucció per instrucció:
 **b)**
 
 ```{.s filename="RV32I"}
-add  t1, t1, t2
-add  t3, t3, t4
-add  t0, t1, t3
-addi t0, t0, 2
-add  t0, t0, t0
+        add  t1, t1, t2
+        add  t3, t3, t4
+        add  t0, t1, t3
+        addi t0, t0, 2
+        add  t0, t0, t0
 ```
 
 Instrucció per instrucció:
@@ -107,8 +107,8 @@ El bit 11 de `lo12` val 1, de manera que `addi` aplicarà extensió de signe i r
 - `lo12` com a enter de 12 bits amb signe: `0xEEF - 0x1000 = -273`
 
 ```{.s filename="RV32I"}
-lui   t0, 0xDEADC      # t0 = 0xDEADC000
-addi  t0, t0, -273     # t0 = 0xDEADC000 - 273 = 0xDEADBEEF
+        lui   t0, 0xDEADC      # t0 = 0xDEADC000
+        addi  t0, t0, -273     # t0 = 0xDEADC000 - 273 = 0xDEADBEEF
 ```
 
 Comprovació: `0xDEADC000 - 0x111 = 0xDEADBEEF` ✓
@@ -271,8 +271,8 @@ Extensió **per zero**: `t1 = 0x0000DDCC`.
 **b)** Execució seqüencial:
 
 ```{.s filename="RV32I"}
-lb   t1, 2(t0)      # t1 = SignExt(0xCC) = 0xFFFFFFCC
-sb   t1, 1(t0)      # M[0x10010001] <- byte LSB de t1 = 0xCC
+        lb   t1, 2(t0)      # t1 = SignExt(0xCC) = 0xFFFFFFCC
+        sb   t1, 1(t0)      # M[0x10010001] <- byte LSB de t1 = 0xCC
 ```
 
 `sb` escriu **només el byte menys significatiu** del registre font (0xCC), sense extensió de cap mena.
