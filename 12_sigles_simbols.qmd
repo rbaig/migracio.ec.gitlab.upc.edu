@@ -6,7 +6,7 @@
 | | | |
 | :--- | :--- | :--- |
 | **ABI** | *Application Binary Interface* | |
-| **AC** | Arquitectura de computadors (assignatura del GEI) | |
+| **AC** | Avaluació continuada (del laboratori) | |
 | **ADC** | *Analog-to-Digital Converter* | |
 | **AMAT** | *Average Memory Access Time* | Equivalent anglès de TAM; només apareix en prosa, no en fórmules |
 | **ALU** | *Arithmetic Logic Unit* | |
@@ -28,6 +28,7 @@
 | **DVFS** | *Dynamic voltage and frequency scaling* | |
 | **EC** | Estructura de computadors (assignatura del GEI) | |
 | **EF** | Examen final | |
+| **EL** | Examen de laboratori | |
 | **ELF** | *Executable and Linkable Format* | |
 | **EP** | Examen parcial | |
 | **E/S** | Entrada/sortida | |
@@ -52,7 +53,7 @@
 | **LSB** | *Least Significant Byte* | |
 | **LSb** | *Least Significant bit* | |
 | **MARS** | *MIPS Assembler and Runtime Simulator* | |
-| **MC** | Memòria cau | |
+| **MC** | Memòria cau | Apareix també dins de fórmules (T7); vegeu $\text{MC}_i$, $\text{MC}_d$ a Símbols |
 | **MIPS** | *Microprocessor without Interlocked Pipeline Stages* | |
 | **MMU** | *Memory Management Unit* | |
 | **MP** | Memòria principal | |
@@ -61,7 +62,10 @@
 | **MSb** | *Most Significant bit* | |
 | **MV** | Memòria virtual | |
 | **NaN** | *Not a Number* | |
+| **NF** | Nota final | A T4, $\texttt{NF}$ és el nombre de files d'una matriu (vegeu Símbols) |
+| **NL** | Nota de laboratori | |
 | **NMOS** | *n-channel metal–oxide–semiconductor* | |
+| **NT** | Nota de teoria i problemes | |
 | **NVMe** | *Non-Volatile Memory Express* | |
 | **OPT** | Algorisme de reemplaçament òptim | |
 | **PC** | *Program counter* | |
@@ -104,19 +108,21 @@
 
 ## Símbols
 
-Recull dels símbols i variables usats a les fórmules, amb el tema on s'introdueixen. Quan un símbol té significats diferents segons el tema, s'indica a la columna «Observacions».
+Recull dels símbols i variables usats a les fórmules, amb el tema on s'introdueixen. Quan un símbol té significats diferents segons el tema, s'indica a la columna «Observacions». Les sigles que fan de variable van en lletra dreta ($\text{CPI}$, $\text{TAM}$), i les constants d'un programa, en lletra de codi ($\texttt{NF}$).
 
 | Símbol | Significat | Tema | Observacions |
 | :--- | :--- | :--- | :--- |
 | $a$ | Associativitat | T7, T8 | Introduït a T7; reutilitzat a T8 en la condició d'equivalència VIPT-PIPT |
-| $a_i$ | Bit $i$-èsim d'un dels sumands | T4 | Sumador de $n$ bits: $s_i = a_i \oplus b_i \oplus c_i$ |
+| $a$, $b$ | Operands enters de la suma i la resta | T1, T4, T5 | $s = a + b$, $d = a - b$; vegeu $A$, $B$ per a les cadenes de bits que els representen |
+| $a_i$ | Bit $i$-èsim d'un dels sumands | T4 | Sumador de $n$ bits: $s_i = a_i \oplus b_i \oplus c_i$. És el mateix bit que $A_i$: el sumador fa servir la minúscula habitual dels circuits |
 | $A$ | Adreça (de la dada a la memòria principal) | T7 | |
-| $A$, $A_{n-1}$ | Operand de la suma / bit de més pes de l'operand $A$ (cadena de bits) | T4 | $S_n = A_{n-1} = B_{n-1}$ (condició de mateix signe) |
+| $A$, $A_i$, $A_{n-1}$ | Cadena de bits de l'operand $a$ / bit $i$-èsim / bit de més pes | T4 | $S_n = A_{n-1} = B_{n-1}$ (condició de mateix signe) |
 | $b$ | Nombre de bits del desplaçament (*offset*) dins un bloc | T7 | Vegeu $t$ per al desplaçament dins una pàgina (T8) |
 | $b_i$ | Bit $i$-èsim d'un dels sumands | T4 | Anàleg a $a_i$ |
 | $b_i$ | Bit $i$-èsim d'una adreça lògica | T8 | Descomposició $b_{n-1}\cdots b_t \mid b_{t-1}\cdots b_0$ (VPN i desplaçament); no confondre amb el $b$ sol de T7 |
+| $b_{-i}$ | Bit de la fracció de pes $2^{-i}$ | T5 | $v = \pm 1{,}b_{-1}b_{-2}\ldots b_{-(p-1)} \times 2^e$; l'índex negatiu el distingeix de $b_i$ (T4, T8) |
 | $B$ | Mida del bloc (en mots o bytes) | T7 | |
-| $B$, $B_{n-1}$ | Operand de la suma / bit de més pes de l'operand $B$ (cadena de bits) | T4 | Anàleg a $A$, $A_{n-1}$ |
+| $B$, $B_i$, $B_{n-1}$ | Cadena de bits de l'operand $b$ / bit $i$-èsim / bit de més pes | T4 | Anàleg a $A$, $A_i$, $A_{n-1}$ |
 | $c_i$ | Bit de ròssec d'entrada (*carry-in*) del sumador $i$ | T4 | $c_{i+1}$ n'és el ròssec de sortida (*carry-out*); $c_{n-1}$/$c_n$ són el darrer ròssec d'entrada/de sortida de la cadena |
 | $C$ | Capacitat (de la memòria cau) | T7, T8 | Reutilitzat a T8 en la condició d'equivalència VIPT-PIPT |
 | $C$ | Capacitància agregada del circuit (farads) | T6 | **No confondre amb la capacitat (bytes) de la memòria cau (T7/T8)**: concepte físic diferent malgrat compartir símbol |
@@ -126,88 +132,95 @@ Recull dels símbols i variables usats a les fórmules, amb el tema on s'introdu
 | $\text{CPI}_{ideal}$ | CPI sense penalització per fallades de memòria cau | T7 | |
 | $\text{CPI}_{penal}$ | Terme de penalització del CPI degut a fallades de memòria cau | T7 | $\text{CPI}_{penal} = t_p \cdot m \cdot n_r$ |
 | $d$ | Diferència (resta de dos operands) | T4 | $d = a - b$ |
-| $d$ | Divisor | T4 | **Significat diferent dins del mateix tema (T4)**: a la resta és la diferència; a la divisió és el divisor ($D = d \cdot q + r$) |
 | $D$ | Bit de modificació (*dirty bit*) | T7, T8 | Introduït a T7 (línia de MC); reutilitzat a T8 (PTE i TLB) amb el mateix significat |
-| $D$ | Dividend | T4 | $D = d \cdot q + r$; també nom del registre del divisor al pseudocodi de la divisió seqüencial amb restauració |
-| $e$ | Exponent (representació IEEE 754) | T5 | |
-| $E$ | Exponent esbiaixat | T5 | Ús puntual; el símbol habitual per a l'exponent emmagatzemat és $E_u$ |
+| $e$ | Exponent (valor enter) | T5 | $v = \pm 1{,}F \times 2^e$, i també a la notació científica decimal ($v = m \times 10^e$); $e = E_u - 127$ |
+| $E$, $E_i$ | Camp d'exponent (8 bits en precisió simple) / bit $i$-èsim | T5 | El seu valor natural és $E_u$; a les codificacions especials ($E = 0$, $E = 255$) el camp i el seu valor s'usen indistintament |
 | $E$ | Energia dissipada | T6 | $E = P \cdot t$ |
 | $E_{min}$ | Exponent mínim normalitzat | T5 | $2^{E_{min}} = 2^{-126}$ en precisió simple |
-| $E_u$ | Exponent emmagatzemat (natural, en excés a 127) | T5 | $e = E_u - 127 \Leftrightarrow E_u = e + 127$ |
-| $f_A$, $f_B$ | Freqüència de rellotge dels computadors A i B (exemple comparatiu) | T6 | |
-| $f_B$, $f_{clock}$ | Freqüència (de bus, de rellotge) | T6 | |
-| $F$ | Camp de fracció (23 bits en precisió simple) | T5 | $v = (-1)^S \times 1{,}F \times 2^{E_u-127}$ |
+| $E_u$ | Valor natural del camp d'exponent (exponent esbiaixat, en excés a 127) | T5 | $e = E_u - 127 \Leftrightarrow E_u = e + 127$ |
+| $f$ | Freqüència de rellotge (abreviatura de $f_{clock}$) | T6 | Als exemples i problemes, un cop definida $f_{clock}$ |
+| $f_A$, $f_B$ | Freqüència de rellotge dels computadors A i B (exemples comparatius) | T6 | |
+| $f_{clock}$ | Freqüència de rellotge | T6 | $f_{clock} = 1/t_{clock}$ |
+| $F$, $F_i$ | Camp de fracció (23 bits en precisió simple) / bit $i$-èsim | T5 | $v = (-1)^S \times 1{,}F \times 2^{E_u-127}$ |
 | $G$ | Bit de guarda (*guard bit*) | T5 | Regla RNE amb $G$, $R$, $S$ |
 | $h$ | Taxa d'encerts (*hit rate*) | T7 | $h = \dfrac{\text{núm. encerts}}{\text{núm. referències}} = 1 - m$ |
 | $i$ | Índex (genèric: d'instrucció, d'iteració, de bit) | T1, T4, T6, T7 | Ús transversal com a índex de sumatori o de bit |
 | $I$ | Corrent elèctric | T6 | $I = \sum q_i / t_{clock}$ |
-| $I_{fuita}$ | Corrent de fuita | T6 | |
-| $K$ | Excés/biaix (representació en excés) | T1 | Reutilitzat a T5 com a cas particular ($K = 2^{n-1}-1$, biaix IEEE 754) |
-| $m$ | Mantissa (T5); Taxa de fallades (*miss rate*) (T7); Nombre de tipus diferents d'instruccions (T6) | T5, T6, T7 | **Significats diferents segons el tema**: a T5 és la mantissa; a T6 és el nombre de tipus d'instrucció al sumatori del CPI ponderat; a T7 és la taxa de fallades |
+| $I_{fuita}$ | Corrent de fuita | T6 | $P_s = V_{CC} \cdot I_{fuita}$ |
+| $K$ | Excés (representació en excés) | T1 | L'elecció habitual és $K = 2^{n-1}-1$; a T5, l'exponent IEEE 754 fa servir aquest mateix valor (127 en precisió simple), que s'anomena **biaix** i no porta símbol |
+| $m$ | Nombre de bits de la representació ampliada (T1); mantissa (T5); nombre de tipus diferents d'instruccions (T6); taxa de fallades (*miss rate*) (T7) | T1, T5, T6, T7 | **Significats diferents segons el tema**: a T1, l'extensió de $n$ a $m > n$ bits; a T5, la mantissa; a T6, el nombre de tipus d'instrucció al sumatori del CPI ponderat; a T7, la taxa de fallades |
 | $m_d$, $m_i$ | Taxa de fallades de dades / d'instruccions | T7 | |
 | $m_{L1}$, $m_{L2}$ | Taxa de fallades de L1 / L2 | T7 | Notació multinivell |
+| $\text{MC}_i$, $\text{MC}_d$ | Memòria cau d'instruccions / de dades | T7 | Vegeu «MC» a Sigles |
 | $n$ | Nombre de bits (T1, transversal); Número de bloc (instància concreta, T7); Nombre de bits d'una adreça lògica (T8) | T1, T5, T7, T8 | Ús molt transversal; el significat concret depèn del context immediat |
-| $n_A$, $n_B$ | Nombre de cicles dels computadors A i B (exemple comparatiu) | T6 | $f_A = n_A/t_A$ |
-| $n_c$ | Nombre de cicles (T6, T7, contextos de rendiment); Nombre de bits d'índex de conjunt, $N_C = 2^{n_c}$ (T7, contextos d'organització de la MC) | T6, T7 | **Significats diferents dins del mateix tema (T7)**: cal distingir pel context (fórmules de rendiment vs. descomposició de bits de l'adreça) |
+| $n_A$, $n_B$ | Nombre de cicles dels computadors A i B (exemple comparatiu) | T6 | $n_A = t_A \cdot f_A$ |
+| $n_c$ | Nombre de bits d'índex de conjunt, $N_C = 2^{n_c}$ | T7 | No és el nombre de cicles, que és $n_{cicles}$ (T6) |
 | $n_i$ | Nombre d'instruccions del tipus $i$ | T6 | Sumatori del CPI ponderat: $\text{CPI} = \frac{1}{n_{ins}}\sum n_i \cdot \text{CPI}_i$ |
 | $n_l$ | Nombre de bits d'índex de línia, $N_L = 2^{n_l}$ (correspondència directa) | T7 | |
-| $n_{cicles}$ | Nombre de cicles (forma explícita) | T6 | |
+| $n_{cicles}$ | Nombre de cicles de rellotge d'una execució | T6 | $t_{exe} = n_{cicles} \cdot t_{clock}$ |
 | $n_{dat}$, $n_{ins}$ | Nombre d'accessos a dades / a instruccions | T7 | A T6, $n_{ins}$ és el nombre total d'instruccions executades d'un programa; a T7 coincideix amb el nombre d'accessos a la MC d'instruccions |
 | $n_{fallades}$ | Nombre total de fallades de memòria cau | T7 | $\text{CPI}_{penal} = t_p \cdot n_{fallades}/n_{ins}$ |
 | $n_r$ | Nombre de referències a memòria per instrucció | T7 | $n_r = n_{refs}/n_{ins} \geq 1$ |
 | $n_{refs}$ | Nombre total de referències a memòria | T7 | $n_{refs} = n_{ins} + n_{dat}$ |
+| $N$ | Nombre d'instruccions executades (abreviatura de $n_{ins}$) | T6 | Als exemples i problemes, un cop definit $n_{ins}$; **a T7, $N$ és el grau d'associativitat** |
 | $N$ | Grau d'associativitat (nombre de vies) | T7 | |
 | $N_C$ | Nombre de conjunts | T7 | |
 | $N_L$ | Nombre de línies (blocs) de la memòria cau | T7 | |
-| $p$ | Precisió (nombre de bits de la mantissa) (T5); Nombre de bits del PPN (*physical page number*) (T8) | T5, T8 | Significats diferents segons el tema |
+| $\texttt{NC}$, $\texttt{NF}$ | Nombre de columnes / de files d'una matriu | T4 | Constants del programa (`#define` en C, `.eqv` en assemblador): per això en lletra de codi. $@\texttt{mat[i][j]} = @\texttt{mat[0][0]} + (i \cdot \texttt{NC} + j) \cdot T$. A Sigles, NF és la nota final |
+| $p$ | Precisió (nombre de bits de la mantissa) (T5); Nombre de bits del PPN (*physical page number*) (T8) | T5, T8 | Significats diferents segons el tema. A T5, $p$ inclou el bit ocult: la fracció en té $p-1$ |
 | $p_e$, $p_m$ | Probabilitat d'encert / de fallada | T7 | |
-| $P$ | Potència | T6 | |
-| $P_d$, $P_s$ | Potència dinàmica / estàtica | T6, T7 | Fórmula reutilitzada a T7 en l'anàlisi energètica de la memòria cau |
-| $P_x$ | Fracció del temps total ocupada pel component optimitzat (llei d'Amdahl) | T6, T7 | **No és una potència** malgrat la lletra $P$: és una fracció de temps. Reutilitzat a T7 ($P_x = t_{proc}/(t_{proc}+t_{acc})$) |
-| $q$ | Quocient | T4 | $q = x \div y$ |
+| $P$ | Potència | T6 | $P = P_d + P_s$ |
+| P, MD, MR; R, D, Q | Registres dels circuits seqüencials de multiplicació (producte, multiplicand, multiplicador) i de divisió (dividend i residu, divisor, quocient) | T4 | Noms de maquinari, no variables: al text, en rodona; a les fórmules, només amb el seu valor o un bit ($P = 10000010_2$, $R_{2n-1}$) |
+| $P_d$, $P_s$ | Potència dinàmica / estàtica | T6, T7 | $P_d$ es reutilitza a T7 en l'anàlisi energètica de la memòria cau |
+| $P_x$ | Fracció del temps total ocupada pel component optimitzat (llei d'Amdahl) | T6, T7 | **No és una potència** malgrat la lletra $P$: és una fracció de temps. Amb diversos components, $\sum_x P_x/s_x$. Reutilitzat a T7 ($P_x = t_{proc}/(t_{proc}+t_{acc})$) |
+| $q$ | Quocient | T4 | $q = x \div y$; $x = y \cdot q + r$ |
 | $q_i$ | Bit $i$-èsim del quocient | T4 | Pseudocodi de divisió seqüencial |
 | $q_i$ | Càrrega elèctrica transferida en commutar la porta $i$ | T6 | $q_i = C_i \cdot V_{CC}$; **no confondre amb $q_i$ de T4** (bit de quocient) |
-| $r$ | Residu | T4 | $D = d \cdot q + r$ |
+| $r$ | Residu | T4 | $r = x \bmod y$; $x = y \cdot q + r$, amb $0 \leq r < y$ |
 | $R$ | Bit d'arrodoniment (*round bit*) | T5 | Regla RNE amb $G$, $R$, $S$ |
-| $R$ | Resistència equivalent del circuit RC | T6 | $V(t) = V_{CC}(1 - e^{-t/RC})$; **col·lisió notacional** amb $R$ de T4/T5 (registre del dividend al pseudocodi seqüencial) |
-| $s$ | Valor exacte de la suma (abans de truncar) | T4 | $S'$ n'és la cadena de bits truncada |
-| $s$ | Guany de rendiment (*speedup*) | T6 | Relació entre el rendiment del sistema nou i el de referència |
-| $s_i$ | Bit de suma del sumador $i$ | T4 | $s_i = a_i \oplus b_i \oplus c_i$ |
-| $s_{max}$, $s_x$ | Speedup màxim / d'un component $x$ (llei d'Amdahl) | T6, T7 | Reutilitzat a T7 en l'anàlisi de rendiment amb memòria cau |
+| $R$ | Resistència equivalent del circuit RC | T6 | $V(t) = V_{CC}(1 - e^{-t/RC})$; **no confondre** amb el bit d'arrodoniment $R$ (T5) ni amb el registre R del divisor seqüencial (T4) |
+| $s$ | Valor exacte de la suma (abans de truncar) | T4 | $s = a + b$; $S'$ n'és la cadena de bits truncada |
+| $s$ | Guany de rendiment (*speedup*) | T6 | $s = t_{referència}/t_{nou}$: relació entre el rendiment del sistema nou i el de referència |
+| $s_i$ | Bit de suma del sumador $i$ | T4 | $s_i = a_i \oplus b_i \oplus c_i$; és el mateix bit que $S_i$ de la cadena de la suma |
+| $s_{max}$, $s_x$ | Guany màxim / guany del component $x$ (llei d'Amdahl) | T6, T7 | $s_{max} = 1/(1 - P_x)$; reutilitzat a T7 en l'anàlisi de rendiment amb memòria cau |
+| $\text{stride}$ | Distància en bytes entre les adreces de dos elements consecutius d'un recorregut | T4 | $\text{stride} = @X_{i+1} - @X_i$; per a una columna d'una matriu, $\texttt{NC} \cdot T$ |
 | $S$ | Bit de signe (representació IEEE 754) | T5 | $v = (-1)^S \times 1{,}F \times 2^{E_u-127}$ |
 | $S$ | Bit *sticky* | T5 | **Significat diferent dins del mateix tema (T5)**: a la representació és el bit de signe; als bits de guarda ($G$, $R$, $S$) és el bit *sticky* |
 | $S$, $S_i$, $S'$, $S_n$ | Cadena de bits de la suma (completa / bit $i$-èsim / truncada / bit addicional) | T4 | $S' = S_{n-1}\ldots S_0$ és la cadena truncada; correcta si $S_{n-1} = S_n$ |
 | $t$ | Temps genèric, base dels símbols compostos $t_{xxx}$ (T6, T7); Nombre de bits del desplaçament dins una pàgina (T8) | T6, T7, T8 | **Significats diferents segons el tema**: a T6/T7 és la base temporal ($t_h$, $t_p$…); a T8 és un nombre de bits ($T = 2^t$), anàleg a $b$ per als blocs a T7 |
 | $t_0$, $t_1$ | Temps original / temps després de l'optimització (llei d'Amdahl) | T6 | $s = t_0/t_1$ |
+| $t_A$, $t_B$ | Temps d'execució dels computadors A i B (exemple comparatiu) | T6 | |
 | $t_{acc}$ | Temps d'accés | T7 | Vegeu TAM a Sigles per a la mitjana ponderada |
 | $t_{bloc}$ | Temps de transferència d'un bloc | T7 | |
-| $t_c$ | Període de rellotge | T7 | Forma abreujada; vegeu $t_{clock}$ (T6) per a la forma completa |
+| $t_c$ | Període de rellotge (abreviatura de $t_{clock}$) | T6, T7 | Als exemples i problemes, un cop definit $t_{clock}$ |
 | $t_{clock}$ | Període de rellotge | T6 | |
 | $t_{exe}$ | Temps d'execució | T6 | Reutilitzat a T7 en el context del càlcul de rendiment amb memòria cau |
 | $t_h$ | Temps d'encert (*hit time*) | T7 | |
 | $t_{h_{L1}}$, $t_{h_{L2}}$ | Temps d'encert de L1 / L2 | T7 | Notació multinivell, anàloga a $m_{L1}$/$m_{L2}$ |
+| $t_{nou}$, $t_{referència}$ | Temps d'execució del sistema nou / de referència | T6 | $s = t_{referència}/t_{nou}$; a les solucions, el de referència també és $t_{orig}$ |
 | $t_p$ | Temps de penalització per fallada | T7 | |
 | $t_{pd}$, $t_{pi}$ | Temps de processament de dades / d'instruccions | T7 | |
 | $t_{proc}$ | Temps de la resta d'operacions d'una instrucció (sense accés a memòria) | T7 | |
 | $T$ | Mida de la pàgina (en bytes) | T8 | |
 | $T$ | Mida en bytes d'un element d'un vector o matriu | T2, T4 | $@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot T$ |
+| $\text{TAM}$ | Temps d'accés mitjà | T7 | Vegeu «TAM» a Sigles; $\text{TAM} = t_h + m \cdot t_p$ |
+| $\text{ULP}$ | Valor d'un sol bit a 1 a la posició de menys pes de la mantissa | T5 | Vegeu «ULP» a Sigles; s'usa com a unitat: $\eta_{max} < 2^{-23} = 1\ \text{ULP}$ |
 | $v$ | Valor representat (IEEE 754) | T5 | |
 | $v$ | Bit de sobreeiximent del sumador | T4 | $v = c_{n-1} \oplus c_n$ |
 | $v_0$, $v_1$ | Valors representables adjacents més propers a un valor exacte $v$ | T5 | $v_0 < v < v_1$ |
 | $v_{max}$ | Valor positiu més gran representable | T5 | $v_{max} = (2-2^{-23})\times 2^{127}$ en precisió simple |
+| $V$ | Codificació (cadena de 32 bits) d'un valor $v$ en coma flotant | T5 | Majúscula per a la cadena i minúscula per al valor, com $X$ i $x_u$ a T1 |
 | $V$ | Bit de validesa (*valid bit*) | T7, T8 | |
-| $V$ | Tensió | T7 | Reutilitzat de la fórmula de potència dinàmica de T6 ($P_d = \alpha \cdot C \cdot V^2 \cdot f_{clock}$) en l'anàlisi energètica de la memòria cau |
-| $V_{CC}$, $V_{in}$, $V_t$ | Tensió d'alimentació / d'entrada / llindar | T6 | |
+| $V(t)$ | Tensió de sortida d'una porta en funció del temps | T6 | $V(t) = V_{CC}(1 - e^{-t/RC})$ en la càrrega i $V_{CC} \cdot e^{-t/RC}$ en la descàrrega |
+| $V_{CC}$, $V_{in}$, $V_t$ | Tensió d'alimentació / d'entrada / llindar | T6, T7 | $V_{CC}$ es reutilitza a T7 en la potència dinàmica de la memòria cau ($P_d = \alpha \cdot C \cdot V_{CC}^2 \cdot f_{clock}$) |
 | $w$ | Nombre de bits d'una adreça | T7 | El nombre de bits de l'etiqueta ($w - n_c - b$) no té símbol propi |
-| $w$ | Residu de la divisió seqüencial | T4 | Nom del registre al pseudocodi |
-| $x$, $y$, $z$ | Multiplicand, multiplicador, resultat (multiplicació seqüencial); dividend, divisor, quocient (divisió seqüencial) | T4 | El rol concret depèn de l'algorisme (multiplicació o divisió) |
+| $x$, $y$, $z$ | Multiplicand, multiplicador i producte ($z = x \times y$); dividend i divisor ($x = y \cdot q + r$) (T4); operands i resultat d'una operació en coma flotant ($z = x + y$) (T5) | T4, T5 | A la divisió, el quocient i el residu són $q$ i $r$ |
 | $x_s$ | Valor enter (amb signe) representat | T1, T3 | $x_s \in [-2^{n-1},\ 2^{n-1}-1]$ |
 | $x_u$ | Valor natural (sense signe) representat | T1, T3 | $x_u \in [0,\ 2^n-1]$ |
-| $X$, $X_i$, $X_{n-1}$ | Cadena de bits / bit $i$-èsim / bit de més pes (signe en Ca2) | T1, T3 | |
+| $X$, $X_i$, $X_{n-1}$ | Cadena de bits / bit $i$-èsim / bit de més pes (signe en Ca2) | T1, T3 | A T4 (@eq-stride), $@X_i$ és l'adreça de l'element $i$-èsim d'un recorregut, no un bit |
 | $\alpha$ | Factor d'activitat (model de potència dinàmica) | T6 | |
-| $\varepsilon$ | Error absolut de representació | T5 | $\varepsilon = \lvert v - v_0 \rvert$ |
-| $\eta$ | Error relatiu de representació | T5 | $\eta = \varepsilon / \lvert v \rvert$ |
-| $\mathcal{O}(1)$ | Cost constant (accés aleatori) | T2, T4 | |
+| $\varepsilon$, $\varepsilon_{max}$ | Error absolut de representació / error absolut màxim | T5 | $\varepsilon = \lvert v - v_0 \rvert$ |
+| $\eta$, $\eta_{max}$ | Error relatiu de representació / error relatiu màxim | T5 | $\eta = \varepsilon / \lvert v \rvert$; $\eta_{max} < 2^{-23}$ en precisió simple |
 : {tbl-colwidths="[12,38,15,35]" .borderless}
 
 ## Notació
@@ -224,15 +237,25 @@ columna «Observacions».
 | $>>$ | Desplaçament a la dreta | | **Lògic o aritmètic segons el context**: en C es distingeix pel tipus de l'operand (`unsigned` o amb signe), no per un símbol diferent |
 | $>>>$ | Desplaçament aritmètic a la dreta (`sra`/`srai`) | | A les taules ISA d'instruccions (@sec-desplacament-aritmetic-dreta); **no coincideix** amb la notació `>>` de C, que distingeix lògic/aritmètic pel tipus de l'operand en lloc d'un símbol propi |
 | $\lfloor x \rfloor$ | Part entera (truncament cap avall) | | |
+| $\lceil x \rceil$ | Arrodoniment cap amunt (enter més petit que no és menor que $x$) | | |
+| $\lvert x \rvert$ | Valor absolut | | |
 | $\bmod$ | Operador mòdul (resta de la divisió entera) | | |
 | $\div$ | Divisió entera | | |
 | $\oplus$ | O-exclusiva (XOR) bit a bit | | |
 | $\land$ | Conjunció lògica (AND) bit a bit | | |
 | $\lor$ | Disjunció lògica (OR) bit a bit | | |
 | $\overline{X}$ | Negació / complement bit a bit | | Usat en Ca1 |
+| $<_u$ | Comparació sense signe (dels valors naturals) | | P. ex. $S <_u A$; a les taules ISA, la mateixa distinció es marca amb $(\mathbb{N})$ |
+| $(\mathbb{Z})$, $(\mathbb{N})$ | La comparació interpreta els operands com a enters (amb signe) / com a naturals (sense signe) | T3 | A les taules ISA de comparació i de salt condicional (`slt`/`sltu`, `blt`/`bltu`) |
 | $\equiv \pmod{m}$ | Congruència mòdul $m$ | | Aritmètica en Ca2 |
+| $\text{Ca2}(x)$ | Representació en Ca2 de $x$ | T1 | P. ex. $\text{Ca2}(a) + \text{Ca2}(b) \pmod{2^n}$ |
+| $x_{2}$, $x_{10}$ | Base de numeració, en subíndex | | P. ex. $1011_2 = 11_{10}$; en hexadecimal, el prefix `0x` del codi |
 | `@`*etiqueta* | Adreça de l'element o etiqueta indicada | | P. ex. $@\texttt{vec[i]}$, $@\text{etiqueta}$ |
-| `[a:b]` | Rang de bits d'un registre o cadena, del bit $a$ al bit $b$ (inclusius) | | P. ex. `R[2n-1:n]`, `lo_12[11]` |
+| `[a:b]` | Rang de bits d'un registre o cadena, del bit $a$ al bit $b$ (inclusius) | | P. ex. `R[2n-1:n]`, `lo_12[11]`, $rs2[4:0]$ |
+| $\mathcal{O}(1)$ | Cost constant (accés aleatori) | T2, T4 | |
+| $rd \leftarrow x$ | Assignació: el destí rep el valor $x$ | T2 | Notació de transferència de registres de les taules ISA, on registres i camps van en cursiva ($rd$, $rs1$, $PC$, $mepc$) |
+| $M_w[a]$, $M_h[a]$, $M_b[a]$ | Paraula / mitja paraula / byte de la memòria a l'adreça $a$ | T2 | P. ex. $rd \leftarrow M_w[rs1 + SignExt(offset)]$ |
+| $c \,?\, x : y$ | Si es compleix la condició $c$, $x$; si no, $y$ | T3 | P. ex. $rd \leftarrow (rs1 < rs2) \,?\, 1 : 0$ |
 | $SignExt()$ | Extensió de signe: replica el bit de signe cap a l'esquerra | T2 | |
 | $ZeroExt()$ | Extensió per zero: afegeix zeros cap a l'esquerra | T2 | |
 | $hi_{20}()$ | 20 bits superiors d'un immediat de 32 bits | T2 | |
