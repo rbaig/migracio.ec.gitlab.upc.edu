@@ -6,7 +6,7 @@ informes de l'auditoria i els registres de tasques del `TODO/`. Cada
 entrada porta la comprovació que la sosté. Les entrades retirades són al
 §Entrades retirades del final, amb el motiu i la còpia que en queda.
 
-**37 entrades vives** (recompte del 2026-10-02: es retira de §Decisions obertes «Anotacions de la revisió externa de T3», amb els vuit comentaris resolts; es retira de §T2 «La figura de `#nte-instruccions-tipus` mostra els set formats», executada a la fase 4; entren a §Tasques globals → Eines «Identificador del commit a la data de publicació» i «Valorar si les taules de `21_riscv/` haurien de passar a `.json`», per al futur; es retira «R5-TYPE (RISC-V *compressed*) com a aprofundiment», decidida «no» a la fase 6, i «R4-TYPE a T5», decidida «sí, com a aprofundiment» i executada; entra a §T2 «La figura de `#nte-instruccions-tipus` mostra els set formats». Recompte del 2026-10-01: entren «Anotacions de la revisió externa de T3», en portar la MR `!5`, i «Tres SVG orfes de T5», i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
+**39 entrades vives** (recompte del 2026-10-03: entren a §T2 «La taula de l'exemple `#tip-codificacio-instruccions` surt del callout al PDF» i a §Tasques globals → SVG «Text de figura en gris de traç», totes dues detectades a la fase 4. Recompte del 2026-10-02: es retira de §Decisions obertes «Anotacions de la revisió externa de T3», amb els vuit comentaris resolts; es retira de §T2 «La figura de `#nte-instruccions-tipus` mostra els set formats», executada a la fase 4; entren a §Tasques globals → Eines «Identificador del commit a la data de publicació» i «Valorar si les taules de `21_riscv/` haurien de passar a `.json`», per al futur; es retira «R5-TYPE (RISC-V *compressed*) com a aprofundiment», decidida «no» a la fase 6, i «R4-TYPE a T5», decidida «sí, com a aprofundiment» i executada; entra a §T2 «La figura de `#nte-instruccions-tipus` mostra els set formats». Recompte del 2026-10-01: entren «Anotacions de la revisió externa de T3», en portar la MR `!5`, i «Tres SVG orfes de T5», i es retiren la regla d'ús d'`AND`/`OR`, les cometes i l'ordre substantiu–adjectiu de T5 i els quatre formats a A3, executades; es retiren «Passades finals pendents», perquè es tanca tota la revisió interna; «Terminologia anglesa a la prosa d'E/S», que va entrar i es va executar el mateix dia; el criteri global dels quatre formats nuclears, les expressions als operands d'E/S i la grafia de «No-associativitat» i el format de les adreces; entren i s'executen «Tanques de codi fora de la convenció» i «Veu dels enunciats»; es retira «Exercicis → Problemes»; entra l'inventari del grup de treball de T4–T6; «Ordre substantiu–adjectiu» passa de §Decisions obertes a §Tasques transversals, perquè ja està decidit). Una entrada = una vinyeta de primer nivell (`^- `) per
 sobre de `## Entrades retirades`; les vinyetes indentades en són sub-ítems i no
 compten. Ordre que ho mesura:
 
@@ -16,7 +16,7 @@ head -n $(($(grep -n "^## Entrades retirades" TODO.md | cut -d: -f1) - 1)) \
 ```
 
 Repartiment: `§Decisions obertes` 9 · `§Tasques transversals` 5 ·
-`§Tasques per tema` 13 · `§Tasques globals` 10 (suma 37, regla 12 bis).
+`§Tasques per tema` 14 · `§Tasques globals` 11 (suma 39, regla 12 bis).
 Ordre que el mesura, secció per secció:
 
 ```bash
@@ -282,6 +282,12 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Verificació tècnica de la taula de restriccions d'alineació** (`A2.qmd:1056`, mesurat a `ebdf055`; callout `#cau-memoria-restriccions-alineacio`): comprovar que la informació de la taula és correcta i coincideix amb l'**ABI `ilp32`**, i que **no hi ha col·lisió amb l'alineació a 16 del Bloc d'Activació** que fixa l'ABI de RISC-V. Afecta el rigor tècnic i no consta en cap registre anterior (detectat a l'auditoria, sessió 1). És la taula que la Fase C de L2 va corregir, de manera que la verificació ha de cobrir totes dues. El marcador segueix al corpus fins que la verificació es faci. **Sobreviu al tancament de la revisió interna de T2** (2026-09-23): es resol des d'aquí, sense reobrir el tema.
 
+- **La taula de l'exemple `#tip-codificacio-instruccions` surt del callout al PDF** (detectat 2026-10-02, a la fase 4; mesurat al PDF de `make render-complet` sobre `62b4d27`, pàgina 49 del fitxer). És la taula «Associació als camps de bits de la codificació de les instruccions» d'A2 (§Format de les instruccions RV32I, `tbl-colwidths="[9,26,9,9,9,9,9,8,12]"`): la darrera columna, «`funct7` / `imm`», porta `offset[11:0]` (fila de `lw`) fins a x = 549,4 pt, més enllà del marge del cos (la prosa justificada acaba a x ≈ 538,6 pt), i la vora dreta del callout travessa la cel·la. No ve de cap canvi recent. Possibles vies: redistribuir `tbl-colwidths` (la columna «Operands», amb 26, és la més ampla), escurçar la cel·la o reduir la mida de la lletra de la taula al PDF. Ordre que ho mesura:
+
+  ```bash
+  pdftotext -f 49 -l 49 -bbox _book/Estructura-de-computadors.pdf - | grep -F '>offset[11:0]<'   # xMax="549.385267" a 62b4d27
+  ```
+
 ### T3
 
 - **Decisió de contingut a `#cau-boolea-c`** (`A3.qmd:249`, mesurat a `ab48732`, pendent d'Adrià, obert des de la revisió de T3): el text diu que «unes expressions no nul·les s'interpreten com a certes» sense dir **quines**. Cal indicar com s'identifiquen les que sí i les que no. Afecta el rigor tècnic. El marcador segueix al corpus perquè la decisió és viva i no la pot prendre Claude Code.
@@ -450,6 +456,12 @@ Rutes de destí per a les 9: `/auto_figs/T8_*__original_light.svg`.
   ```bash
   git grep -n "T4_multiplicador_sequencial" -- '*.qmd' ':!TODO.md'
   # A4.qmd:175,178,182 — totes tres al .svg
+  ```
+
+- **Text de figura en gris de traç (`#adb5bd`) en lloc del gris de text neutre (`#6c757d`)** (detectat 2026-10-02, en resoldre l'anotació #7 de T4–T6; mesurat a `62b4d27`). A la paleta de `24_specs/svg.md`, `#adb5bd` és el gris de traç neutre i `#6c757d` el de text neutre; al fosc, `gen_dark.py` els converteix en `#888888` i `#adb5bd`. El «denormals» de `#fig-recta-global` era en `#adb5bd`, i el revisor el va trobar poc llegible: l'anotació #7 es va resoldre passant-lo a `#6c757d` (`70865b6`). Queden 5 textos amb el mateix gris: «normalitzats», dues vegades, a `T5_recta_zoom_zero.svg` (`#fig-recta-zoom-zero`, A5), i «nivell 1», «nivell 2» i «nivell 3» a `T4_multiplicador_arbre.svg` (`#fig-multiplicador-arbre`, A4). Al zoom de T5 és el mateix cas que #7: l'etiqueta fa el paper de «denormals» a la figura germana. A T4 pot ser una tria de disseny (etiquetes de nivell atenuades al marge), i cal decidir-ho. Ordre que ho mesura (5 a `62b4d27`); mira el `fill` i l'`style` de cada `<text>` o `<tspan>`, no el color heretat d'un `<g>`:
+
+  ```bash
+  python3 -c "import subprocess,xml.etree.ElementTree as E;print(sum(1 for p in subprocess.run(['git','ls-files','22_figs_originals/*.svg','23_figs_externes/*.svg'],capture_output=True,text=True).stdout.split() for e in E.parse(p).iter() if e.tag.split('}')[-1] in('text','tspan') and '#adb5bd' in ((e.get('fill') or '')+(e.get('style') or '')).lower() and ''.join(e.itertext()).strip()))"
   ```
 
 ### Contingut global
