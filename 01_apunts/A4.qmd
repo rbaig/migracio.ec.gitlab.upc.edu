@@ -63,18 +63,18 @@ Per a la diferència $d = a - b$, es pot aplicar la mateixa regla a l'expressió
 
 ### Detecció del sobreeiximent per maquinari {#sec-deteccio-del-sobreeiximent-per-maquinari}
 
-En un sumador amb propagació d'**arrossegament** (*carry*) de $n$ bits, es produeix sobreeiximent quan l'arrossegament d'entrada al bit de més pes difereix de l'arrossegament de sortida:
+En un sumador amb propagació del **ròssec** (*carry*) de $n$ bits, es produeix sobreeiximent quan el ròssec d'entrada al bit de més pes difereix del ròssec de sortida:
 
 $$
 v = c_{n-1} \oplus c_n
 $$ {#eq-sobreeiximent-hardware}
 
 ::: {#wrn-sobreeiximent-maquinari .callout-warning collapse=true}
-## Detecció de sobreeiximent per maquinari — el sumador amb propagació de l'arrossegament
+## Detecció de sobreeiximent per maquinari — el sumador amb propagació del ròssec
 
-Un sumador de $n$ bits es construeix amb una cadena de $n$ **sumadors complets** (*full-adders*). Cada sumador complet rep el bit $a_i$, el bit $b_i$ i el bit d'arrossegament d'entrada (*carry-in*) $c_i$, i produeix el bit de suma $s_i = a_i \oplus b_i \oplus c_i$ i el bit d'arrossegament de sortida (*carry-out*) $c_{i+1} = \big((a_i \oplus b_i) \land c_i\big) \lor (a_i \land b_i)$.
+Un sumador de $n$ bits es construeix amb una cadena de $n$ **sumadors complets** (*full-adders*). Cada sumador complet rep el bit $a_i$, el bit $b_i$ i el bit de ròssec d'entrada (*carry-in*) $c_i$, i produeix el bit de suma $s_i = a_i \oplus b_i \oplus c_i$ i el bit de ròssec de sortida (*carry-out*) $c_{i+1} = \big((a_i \oplus b_i) \land c_i\big) \lor (a_i \land b_i)$.
 
-Al darrer sumador complet (bit de més pes), el *carry-in* és $c_{n-1}$ i el *carry-out* és $c_n$. El sobreeiximent es detecta amb una sola porta lògica afegida al darrer sumador: $v = c_{n-1} \oplus c_n$.
+Al darrer sumador complet (bit de més pes), el ròssec d'entrada és $c_{n-1}$ i el de sortida és $c_n$. El sobreeiximent es detecta amb una sola porta lògica afegida al darrer sumador: $v = c_{n-1} \oplus c_n$.
 
 <!-- TODO: Afegir la figura d'un half-adder i la d'un full-adder -->
 <!-- TODO: Afegir la figura de la seqüència de full-adders amb la porta XOR per detectar el sobreeiximent en el darrer? -->
@@ -110,7 +110,7 @@ executat `add t2, t0, t1` (la negació bit a bit es fa amb la pseudoinstrucció
 ::: {#wrn-sobreeiximent-naturals .callout-warning collapse=true}
 ## Sobreeiximent en naturals
 
-Per als naturals, el rang de representació amb $n$ bits és $[0,\ 2^n-1]$, i es produeix sobreeiximent quan el resultat exacte supera aquest rang. La condició és més simple que en el cas dels enters: en un sumador amb propagació d'arrossegament, n'hi ha prou d'observar l'arrossegament de sortida del bit de més pes ($c_n = 1$). Per detectar-lo per programari, n'hi ha prou de comparar el resultat amb qualsevol dels dos operands: si la suma ha produït sobreeiximent, el resultat serà necessàriament menor que cadascun dels operands (ja que s'ha «donat la volta» al rang).
+Per als naturals, el rang de representació amb $n$ bits és $[0,\ 2^n-1]$, i es produeix sobreeiximent quan el resultat exacte supera aquest rang. La condició és més simple que en el cas dels enters: en un sumador amb propagació del ròssec, n'hi ha prou d'observar el ròssec de sortida del bit de més pes ($c_n = 1$). Per detectar-lo per programari, n'hi ha prou de comparar el resultat amb qualsevol dels dos operands: si la suma ha produït sobreeiximent, el resultat serà necessàriament menor que cadascun dels operands (ja que s'ha «donat la volta» al rang).
 
 En llenguatges com C, l'estàndard especifica que el sobreeiximent de naturals produeix un truncament a mòdul $2^n$ (*wrapping around*). Per a tipus de dades de menys de 32 bits, el compilador ha de generar instruccions addicionals per truncar el resultat al rang corresponent.
 :::

@@ -243,6 +243,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ## Tasques transversals
 
+- **Confirmar al Termcat «semisumador» (*half-adder*) i «sumador complet» (*full-adder*)** (registrada 2026-10-03, fase 5). Són els termes que fan servir A4 (`#wrn-sobreeiximent-maquinari`) i les figures del sumador, i ja són a la taula de `13_contrib.qmd §Substitucions obligatòries`, marcats «pendent de confirmar». L'usuari no els ha pogut trobar a la interfície nova del Termcat; només hi consta *adder* → «sumador». Si el Termcat en dona uns altres, cal canviar la taula, el text d'A4 i els rètols dels SVG (`git grep -n -i 'semisumador\|sumador complet'`).
+
 - **`S_criteris_seleccio.qmd` — taula de T1 incompleta** (auditoria, sessió 2, 2026-09-21). La taula de `## {{< var tema1 >}}` té **una sola fila** (`@exr-t1-enters-taules`, `:23`) i ha de recollir la resta de problemes seleccionats de `S1.qmd`. El marcador «TODO» que ho registrava era contingut destinat a l'alumne i es va substituir per la nota neutra de `:19` («*Taula provisional: recull els problemes de `S1.qmd` seleccionats fins ara.*»); **aquesta entrada és ara l'únic registre de la tasca**. El fitxer és comentat a `_quarto.yml:95`, de manera que avui no es renderitza.
 
 - **`L2.qmd:153-166` — alineació de `.dword` a RARS** (marcador `<!-- TODO Alineació de `long long` a RARS` a `:153`, mesurat a `ebdf055`) (registrat 2026-09-20; **no tocat** per la sessió 2, que el va declarar decisió viva). RARS alinea `.dword` a 4 bytes (no a 8, com fan GCC/MARS) i el solucionari presenta **les dues versions alhora**. Decisió pedagògica pendent: mantenir les dues, quedar-se només amb la de RARS (que és la que l'alumne observarà al laboratori), o explicitar millor per què se'n donen dues.

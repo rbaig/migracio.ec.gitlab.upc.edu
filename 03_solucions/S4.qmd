@@ -58,7 +58,7 @@ Codificació: $-25 =$ `1110 0111`, $-34 =$ `1101 1110`.
   1110 0111   (-25)
 + 1101 1110   (-34)
 -----------
-1 1100 0101   (descartant el carry de sortida: 0xC5)
+1 1100 0101   (descartant el ròssec de sortida: 0xC5)
 ```
 
 El resultat truncat a 8 bits és `1100 0101` = $-59_{10}$ en Ca2. Els dos operands són negatius i el resultat també és negatiu: **no hi ha sobreeiximent**. El resultat és correcte: $-25 + (-34) = -59$.
@@ -71,7 +71,7 @@ Codificació: $-25 =$ `1110 0111`, $+34 =$ `0010 0010`.
   1110 0111   (-25)
 + 0010 0010   (+34)
 -----------
-1 0000 1001   (descartant el carry de sortida: 0x09)
+1 0000 1001   (descartant el ròssec de sortida: 0x09)
 ```
 
 Resultat: `0000 1001` = $+9_{10}$. Els operands tenen signes oposats: **no hi ha sobreeiximent**. Correcte: $-25 + 34 = +9$.
@@ -104,11 +104,11 @@ Resultat: `1001 0100` = $-108_{10}$ en Ca2. Els operands tenien signes oposats: 
 :::
 
 ::: {#sol-t4-sr-overflow-deteccio-natural .callout-tip}
-## Solució: detecció d'arrossegament sense salts
+## Solució: detecció del ròssec sense salts
 
 **Enunciat**: @exr-t4-sr-overflow-deteccio-natural.
 
-En sumar dos naturals de 32 bits, el resultat es trunca mòdul $2^{32}$. Si hi ha arrossegament ($c = 1$), el valor retornat és $S = A + B - 2^{32}$ i, com que $B < 2^{32}$, es compleix $S < A$ (i, simètricament, $S < B$). Si no n'hi ha, $S = A + B \geq A$. Per tant:
+En sumar dos naturals de 32 bits, el resultat es trunca mòdul $2^{32}$. Si hi ha ròssec (*carry*, $c = 1$), el valor retornat és $S = A + B - 2^{32}$ i, com que $B < 2^{32}$, es compleix $S < A$ (i, simètricament, $S < B$). Si no n'hi ha, $S = A + B \geq A$. Per tant:
 
 $$c = 1 \iff S <_u A$$
 
@@ -116,7 +116,7 @@ que és exactament la indicació de l'enunciat. La comparació sense signe es fa
 
 ```{.s filename="RV32I"}
         add     t0, t1, t2      # t0 = t1 + t2  (truncat a 32 bits)
-        sltu    t3, t0, t1      # t3 = 1 si t0 < t1 (sense signe): hi ha carry
+        sltu    t3, t0, t1      # t3 = 1 si t0 < t1 (sense signe): hi ha ròssec
 ```
 
 Dues instruccions en total. Comparar el resultat amb qualsevol dels dos sumands és equivalent; s'ha triat `t1`.
