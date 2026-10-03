@@ -1,9 +1,9 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `722c522` (2026-10-03). **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `1f5f006` (2026-10-03), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **78** etiquetes `#fig-` (75 amb imatge; la resta són taules Markdown), i **9** imatges sense etiqueta (les del compendi i la de la llicència).
-- **92** fitxers a `22_figs_originals/` i `23_figs_externes/`: 59 consumits i 33 orfes. A més, **18** figures generades per `gen_regs.py`.
+- **63** fitxers a `22_figs_originals/` i `23_figs_externes/`: 59 consumits i 4 orfes. A més, **18** figures generades per `gen_regs.py`.
 
 ## Figures
 
@@ -114,7 +114,6 @@ Generat per `25_scripts/inventari_figures.py` sobre `722c522` (2026-10-03). **No
 | `22_figs_originals/T3_deps_exemple.svg` | A3.qmd:1716, A3.qmd:1723 | SVG natiu | 560 | no | no | 5 |  |  |
 | `22_figs_originals/T3_deps_multi.svg` | A3.qmd:1619, A3.qmd:1626 | SVG natiu | 520 | no | no | 3 |  |  |
 | `22_figs_originals/T3_flux_gcc_complet.svg` | A3.qmd:2051, A3.qmd:2058 | SVG natiu | 490 | sí | sí | 21 |  |  |
-| `22_figs_originals/T3_func_multinivell_pila.png` | **orfe** | ràster |  | no | no | 0 |  |  |
 | `22_figs_originals/T3_func_uninivell_pila.svg` | A3.qmd:1387, A3.qmd:1394 | SVG natiu | 310 | no | no | 19 |  |  |
 | `22_figs_originals/T3_mapa_memoria.svg` | A3.qmd:1026, A3.qmd:1033 | Inkscape | 326 | no | no | 19 | #4d4d4d |  |
 | `22_figs_originals/T3_pila_crides_aniuades.svg` | A3.qmd:1508, A3.qmd:1515 | SVG natiu | 450 | no | no | 34 |  |  |
@@ -123,36 +122,27 @@ Generat per `25_scripts/inventari_figures.py` sobre `722c522` (2026-10-03). **No
 | `22_figs_originals/T4_matriu_offset_ij.svg` | A4.qmd:562, A4.qmd:569 | SVG natiu | 680 | sí | sí | 12 | #dee2e6 |  |
 | `22_figs_originals/T4_matriu_recorreguts_strides.svg` | A4.qmd:849, A4.qmd:856 | SVG natiu | 680 | sí | sí | 8 |  |  |
 | `22_figs_originals/T4_multiplicador_arbre.svg` | A4.qmd:252, A4.qmd:259 | SVG natiu | 440 | sí | sí | 22 |  |  |
-| `22_figs_originals/T4_multiplicador_sequencial.png` | **orfe** | ràster |  | no | no | 0 |  |  |
 | `22_figs_originals/T4_multiplicador_sequencial.svg` | A4.qmd:190, A4.qmd:197 | SVG natiu | 420 | sí | sí | 15 |  |  |
 | `22_figs_originals/T4_semisumador_sumador_complet.svg` | A4.qmd:80, A4.qmd:87 | script (gen_T4_sumador.py) | 590 | sí | sí | 24 |  |  |
 | `22_figs_originals/T4_sumador_propagacio_rossec.svg` | A4.qmd:104, A4.qmd:97 | script (gen_T4_sumador.py) | 750 | sí | sí | 28 |  |  |
-| `22_figs_originals/T5_coma_flotant_exponent__drawio.svg` | **orfe** | Inkscape | 740 | no | no | 24 | #000000 #ff0000 |  |
-| `22_figs_originals/T5_coma_flotant_racionals__drawio.svg` | **orfe** | Inkscape | 1640 | no | no | 170 | #000000 |  |
 | `22_figs_originals/T5_exponent.svg` | A5.qmd:135, A5.qmd:142 | Inkscape | 740 | no | no | 24 | #000000 |  |
 | `22_figs_originals/T5_grs_esquema.svg` | A5.qmd:435, A5.qmd:442 | SVG natiu | 620 | sí | sí | 20 | #000000 |  |
 | `22_figs_originals/T5_ieee754_format_registre.svg` | **orfe** | SVG natiu | 708 | sí | sí | 8 |  |  |
 | `22_figs_originals/T5_recta_global.svg` | A5.qmd:270, A5.qmd:277 | SVG natiu | 950 | sí | no | 86 | #000000 |  |
-| `22_figs_originals/T5_recta_global__org.svg` | **orfe** | SVG natiu | 1820 | sí | no | 93 | #000000 |  |
 | `22_figs_originals/T5_recta_zoom_zero.svg` | A5.qmd:385, A5.qmd:392 | Inkscape | 900 | sí | no | 74 | #000000 |  |
-| `22_figs_originals/T5_recta_zoom_zero__org.svg` | **orfe** | SVG natiu | 1360 | sí | no | 56 | #000000 |  |
 | `22_figs_originals/T5_taula_codificacions.svg` | A5.qmd:344, A5.qmd:351 | exportació LO Draw | 11509.377 | no | no | 12 | #000000 |  |
 | `22_figs_originals/T6_amdahl.svg` | A6.qmd:217, A6.qmd:224 | extreta de PDF | 220 | no | no | 38 | #000000 #999999 |  |
-| `22_figs_originals/T6_amdahl_mod.svg` | **orfe** | Inkscape | 220 | no | no | 42 | #000000 #999999 |  |
 | `22_figs_originals/T6_not_0_1.svg` | A6.qmd:326, A6.qmd:333 | extreta de PDF | 386 | no | no | 14 | #000000 |  |
 | `22_figs_originals/T6_not_1_0.svg` | A6.qmd:309, A6.qmd:316 | extreta de PDF | 386 | no | no | 14 | #000000 |  |
 | `22_figs_originals/T6_not_cmos.svg` | A6.qmd:290, A6.qmd:297 | extreta de PDF | 360 | no | no | 8 | #000000 |  |
 | `22_figs_originals/T6_tc_tc_prima.svg` | A6.qmd:149, A6.qmd:156 | extreta de PDF | 284 | no | no | 10 | #000000 #b3b3b3 |  |
 | `22_figs_originals/T7_assoc_conjunts_taula.svg` | A7.qmd:346, A7.qmd:353 | Inkscape | 800 | sí | sí | 76 | #000000 |  |
 | `22_figs_originals/T7_ca_diagrama.svg` | A7.qmd:396, A7.qmd:403 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_texe_diagrama.svg` `22_figs_originals/T8_mv_flux_traduccio.svg` `22_figs_originals/TODO.svg` |
-| `22_figs_originals/T7_capacitat_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 392 |  |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg` | A7.qmd:903, A7.qmd:910 | Inkscape | 800 | sí | sí | 235 |  |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg` | A7.qmd:918, A7.qmd:925 | Inkscape | 800 | sí | sí | 266 |  |  |
 | `22_figs_originals/T7_cd_descomposicio_bits.svg` | A7.qmd:269, A7.qmd:276 | Inkscape | 545 | sí | sí | 19 |  |  |
-| `22_figs_originals/T7_cd_diagrama.svg` | **orfe** | exportació LO Draw | 14155.209 | no | no | 9 | #000000 #0000ff #ccffcc #ff0000 #ff8080 #ffe9e2 #fff0ec | `23_figs_externes/T7_cd_diagrama.svg` |
 | `22_figs_originals/T7_conflicte_exemple.svg` | A7.qmd:866, A7.qmd:873 | Inkscape | 800 | sí | sí | 120 | #000000 |  |
 | `22_figs_originals/T7_escriptura_dirty_bit.svg` | A7.qmd:495, A7.qmd:502 | Inkscape | 520 | sí | sí | 20 |  |  |
-| `22_figs_originals/T7_escriptura_dirty_bit__.svg` | **orfe** | Inkscape | 400 | sí | sí | 7 |  |  |
 | `22_figs_originals/T7_escriptura_estat_inicial.svg` | A7.qmd:554, A7.qmd:561 | Inkscape | 800 | sí | sí | 167 | #000000 |  |
 | `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg` | A7.qmd:577, A7.qmd:584 | Inkscape | 800 | sí | sí | 101 | #000000 |  |
 | `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg` | A7.qmd:601, A7.qmd:608 | Inkscape | 800 | sí | sí | 100 | #000000 |  |
@@ -165,33 +155,14 @@ Generat per `25_scripts/inventari_figures.py` sobre `722c522` (2026-10-03). **No
 | `22_figs_originals/T7_mc_fallada.svg` | A7.qmd:231, A7.qmd:238 | Inkscape | 575 | sí | sí | 48 | #000000 #0b449a #7d6d6c |  |
 | `22_figs_originals/T7_mc_organitzacio.svg` | A7.qmd:145, A7.qmd:152 | SVG natiu | 520 | sí | sí | 15 |  |  |
 | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | A7.qmd:646, A7.qmd:653 | Graphviz | 459 | sí | no | 19 |  |  |
-| `22_figs_originals/T7_tecnologies_memoria.svg` | **orfe** | SVG natiu | 680 | sí | sí | 24 |  |  |
 | `22_figs_originals/T7_texe_diagrama.svg` | A7.qmd:786, A7.qmd:793 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_ca_diagrama.svg` `22_figs_originals/T8_mv_flux_traduccio.svg` `22_figs_originals/TODO.svg` |
 | `22_figs_originals/T8_mv_flux_traduccio.svg` | A8.qmd:270, A8.qmd:277 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_ca_diagrama.svg` `22_figs_originals/T7_texe_diagrama.svg` `22_figs_originals/TODO.svg` |
 | `22_figs_originals/T9_cicle_interrupcio.svg` | A9.qmd:733, A9.qmd:740 | Inkscape | 680 | no | no | 17 |  |  |
 | `22_figs_originals/TODO.svg` | **orfe** | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_ca_diagrama.svg` `22_figs_originals/T7_texe_diagrama.svg` `22_figs_originals/T8_mv_flux_traduccio.svg` |
 | `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1004 | ràster |  | no | no | 0 |  |  |
-| `23_figs_externes/T7_assoc_conjunts_diagrama.png` | **orfe** | ràster |  | no | no | 0 |  |  |
 | `23_figs_externes/T7_assoc_conjunts_diagrama.svg` | A7.qmd:365, A7.qmd:372 | exportació LO Draw | 10583.334 | no | no | 0 |  |  |
-| `23_figs_externes/T7_assoc_conjunts_diagrama__net__.png` | **orfe** | ràster |  | no | no | 0 |  |  |
-| `23_figs_externes/T7_assoc_conjunts_taula.svg` | **orfe** | exportació LO Draw | 14287.501 | no | no | 40 | #000000 #0000ff #8080ff #fff0ec |  |
-| `23_figs_externes/T7_capacitat_exemple.svg` | **orfe** | exportació LO Draw | 14287.501 | no | no | 209 | #000000 #0000ff #00ff00 #8080ff #90c490 #b3b3b3 #b3b3ff #ff0000 #ff8080 #ffe0d1 #ffff80 |  |
-| `23_figs_externes/T7_cd_diagrama.svg` | A7.qmd:303, A7.qmd:310 | exportació LO Draw | 14155.209 | no | no | 9 | #000000 #0000ff #ccffcc #ff0000 #ff8080 #ffe9e2 #fff0ec | `22_figs_originals/T7_cd_diagrama.svg` |
-| `23_figs_externes/T7_conflicte_exemple.svg` | **orfe** | exportació LO Draw | 14287.501 | no | no | 87 | #000000 #0000ff #00ff00 #8080ff #90c490 #b3b3b3 #b3b3ff #ff8080 #ffe0d1 #ffff80 |  |
-| `23_figs_externes/T7_escriptura_dirty_bit.svg` | **orfe** | exportació LO Draw | 11641.668 | no | no | 4 | #000000 #fff0ec |  |
-| `23_figs_externes/T7_escriptura_estat_inicial.svg` | **orfe** | exportació LO Draw | 14287.5 | no | no | 114 | #000000 #8080ff #80ff80 #ff8080 #ffff00 #ffff80 |  |
-| `23_figs_externes/T7_escriptura_immediata_amb_assignacio.svg` | **orfe** | exportació LO Draw | 14287.501 | no | no | 59 | #000000 #8080ff #80ff80 #ffff00 #ffff80 | `23_figs_externes/T7_escriptura_immediata_assignacio.svg` |
-| `23_figs_externes/T7_escriptura_immediata_assignacio.svg` | **orfe** | exportació LO Draw | 14287.501 | no | no | 59 | #000000 #8080ff #80ff80 #ffff00 #ffff80 | `23_figs_externes/T7_escriptura_immediata_amb_assignacio.svg` |
-| `23_figs_externes/T7_escriptura_immediata_sense_assignacio.svg` | **orfe** | exportació LO Draw | 14287.5 | no | no | 66 | #000000 #8080ff #80ff80 #ffff00 #ffff80 |  |
-| `23_figs_externes/T7_escriptura_retardada.svg` | **orfe** | exportació LO Draw | 14287.5 | no | no | 124 | #000000 #8080ff #80ff80 #ff8080 #ffff00 #ffff80 |  |
-| `23_figs_externes/T7_lru_exemple.svg` | **orfe** | exportació LO Draw | 14287.5 | no | no | 167 | #000000 #0000ff #8080ff #80ff80 #ff8080 #ffff80 |  |
-| `23_figs_externes/T7_lru_roger___drawio.svg` | **orfe** | draw.io | 765 | no | no | 0 | #000000 #121212 #2eff2e #ff6666 |  |
-| `23_figs_externes/T7_mc_exemple_descomposicio_32bits.svg` | **orfe** | exportació LO Draw | 13229.168 | no | no | 13 | #000000 #fff0ec |  |
-| `23_figs_externes/T7_multinivell_diagrama.svg` | **orfe** | exportació LO Draw | 14022.917 | no | no | 24 | #000000 #ffebe0 |  |
+| `23_figs_externes/T7_cd_diagrama.svg` | A7.qmd:303, A7.qmd:310 | exportació LO Draw | 14155.209 | no | no | 9 | #000000 #0000ff #ccffcc #ff0000 #ff8080 #ffe9e2 #fff0ec |  |
 | `23_figs_externes/T7_multinivell_multicore.svg` | **orfe** | exportació LO Draw | 14287.5 | no | no | 26 | #000000 #0000ff #d3e8d3 #ffebe0 |  |
-| `23_figs_externes/T7_texe_diagrama____error____.svg` | **orfe** | exportació LO Draw | 12964.584 | no | no | 53 | #000000 #d3e8d3 |  |
-| `23_figs_externes/T7_tipus_fallades_percentage____no_inclosa_pero_interessant____.svg` | **orfe** | exportació LO Draw | 13229.167 | no | no | 14 | #000000 #2b5190 #4273c5 #dfecf7 #ff0000 #ffff9a |  |
-| `23_figs_externes/T7_tres_c_barres_light____error____.svg` | **orfe** | exportació LO Draw | 15081.25 | no | no | 29 | #000000 |  |
 | `23_figs_externes/by-nc-sa.eu.png` | 14_LICENSE.qmd:5 | ràster |  | no | no | 0 |  |  |
 | `registres.toml:T2_instruccio_tipus_R` | A2.qmd:1187, A2.qmd:1194 | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:T2_instruccio_tipus_I` | A2.qmd:1249, A2.qmd:1256 | gen_regs.py |  | sí | sí | 0 |  |  |
@@ -249,11 +220,9 @@ Generat per `25_scripts/inventari_figures.py` sobre `722c522` (2026-10-03). **No
 - `22_figs_originals/T8_mv_flux_traduccio.svg`: #ff0000
 - `23_figs_externes/T7_cd_diagrama.svg`: #000000 #0000ff #ccffcc #ff0000 #ff8080 #ffe9e2 #fff0ec
 
-### Duplicats byte a byte (3)
+### Duplicats byte a byte (1)
 
 - `22_figs_originals/T7_ca_diagrama.svg` = `22_figs_originals/T7_texe_diagrama.svg` = `22_figs_originals/T8_mv_flux_traduccio.svg` = `22_figs_originals/TODO.svg`
-- `22_figs_originals/T7_cd_diagrama.svg` = `23_figs_externes/T7_cd_diagrama.svg`
-- `23_figs_externes/T7_escriptura_immediata_amb_assignacio.svg` = `23_figs_externes/T7_escriptura_immediata_assignacio.svg`
 
 ### Etiquetes `#fig-` dins d'un callout `#nte-` (15)
 
@@ -320,41 +289,12 @@ Generat per `25_scripts/inventari_figures.py` sobre `722c522` (2026-10-03). **No
 
 - `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg`
 
-### Fitxers font orfes (cap `.qmd` no els consumeix) (33)
+### Fitxers font orfes (cap `.qmd` no els consumeix) (4)
 
-- `22_figs_originals/T3_func_multinivell_pila.png`
-- `22_figs_originals/T4_multiplicador_sequencial.png`
-- `22_figs_originals/T5_coma_flotant_exponent__drawio.svg`
-- `22_figs_originals/T5_coma_flotant_racionals__drawio.svg`
 - `22_figs_originals/T5_ieee754_format_registre.svg`
-- `22_figs_originals/T5_recta_global__org.svg`
-- `22_figs_originals/T5_recta_zoom_zero__org.svg`
-- `22_figs_originals/T6_amdahl_mod.svg`
-- `22_figs_originals/T7_capacitat_exemple.svg`
-- `22_figs_originals/T7_cd_diagrama.svg`
-- `22_figs_originals/T7_escriptura_dirty_bit__.svg`
 - `22_figs_originals/T7_mc_descomposicio_bits.svg`
-- `22_figs_originals/T7_tecnologies_memoria.svg`
 - `22_figs_originals/TODO.svg`
-- `23_figs_externes/T7_assoc_conjunts_diagrama.png`
-- `23_figs_externes/T7_assoc_conjunts_diagrama__net__.png`
-- `23_figs_externes/T7_assoc_conjunts_taula.svg`
-- `23_figs_externes/T7_capacitat_exemple.svg`
-- `23_figs_externes/T7_conflicte_exemple.svg`
-- `23_figs_externes/T7_escriptura_dirty_bit.svg`
-- `23_figs_externes/T7_escriptura_estat_inicial.svg`
-- `23_figs_externes/T7_escriptura_immediata_amb_assignacio.svg`
-- `23_figs_externes/T7_escriptura_immediata_assignacio.svg`
-- `23_figs_externes/T7_escriptura_immediata_sense_assignacio.svg`
-- `23_figs_externes/T7_escriptura_retardada.svg`
-- `23_figs_externes/T7_lru_exemple.svg`
-- `23_figs_externes/T7_lru_roger___drawio.svg`
-- `23_figs_externes/T7_mc_exemple_descomposicio_32bits.svg`
-- `23_figs_externes/T7_multinivell_diagrama.svg`
 - `23_figs_externes/T7_multinivell_multicore.svg`
-- `23_figs_externes/T7_texe_diagrama____error____.svg`
-- `23_figs_externes/T7_tipus_fallades_percentage____no_inclosa_pero_interessant____.svg`
-- `23_figs_externes/T7_tres_c_barres_light____error____.svg`
 
 ### Peus que no acaben en punt (2)
 
