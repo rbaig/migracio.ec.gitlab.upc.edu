@@ -240,7 +240,7 @@ Aquest circuit tarda un mínim de 33 cicles per obtenir el producte (32 iteracio
 
 Una alternativa al circuit seqüencial és un **circuit combinacional** que calcula tots els productes parcials en paral·lel i els suma amb una cadena de sumadors:
 
-$$Z = X \cdot y_0 + (X \cdot y_1) \ll 1 + \ldots + (X \cdot y_{31}) \ll 31$$
+$$z = (x \cdot y_0) + \big((x \cdot y_1) << 1\big) + \ldots + \big((x \cdot y_{31}) << 31\big)$$
 
 Això requereix 31 sumadors disposats en sèrie (de 33 a 63 bits). El retard total és aproximadament la suma dels retards dels 31 sumadors, cosa que no representa una millora substancial respecte del circuit seqüencial.
 
@@ -354,8 +354,8 @@ L'algorisme per calcular el quocient $q = x \div y$ i el residu $r = x \bmod y$ 
 3. Si els operands tenen signes diferents, canviar el signe del quocient.
 4. Si el dividend és negatiu, canviar el signe del residu.
 
-La divisió del dividend $D$ entre el divisor $d$ consisteix a trobar el quocient $q$ i el residu $r$ naturals tals que $D = d \cdot q + r$, amb
-$0 \leq r < d$.
+La divisió del dividend $x$ entre el divisor $y$ consisteix a trobar el quocient $q$ i el residu $r$ naturals tals que $x = y \cdot q + r$, amb
+$0 \leq r < y$.
 
 L'algorisme treballa els bits del quocient de més pes a menys pes. A cada pas $i$ (de $n-1$ a $0$), es compara el dividend parcial amb el divisor
 desplaçat $i$ posicions a l'esquerra: si el dividend parcial és major o igual, el bit $q_i = 1$ i el divisor desplaçat es resta del dividend
@@ -364,7 +364,7 @@ parcial; si no, $q_i = 0$ i el dividend parcial no canvia.
 ::: {#tip-divisio-naturals .callout-tip}
 ## Algorisme de divisió de naturals en base 2
 
-Dividir $D = 1011_2$ ($11_{10}$) entre $d = 0010_2$ ($2_{10}$):
+Dividir $x = 1011_2$ ($11_{10}$) entre $y = 0010_2$ ($2_{10}$):
 
 | Pas | Divisor desplaçat | Comparació | $q_i$ | Residu parcial |
 | :---: | :---: | :--- | :---: | :---: |
@@ -404,7 +404,7 @@ Circuit divisor seqüencial amb restauració.
 :::
 
 ::: {#thm-divisio-sequencial-restauracio}
-Divisió seqüencial de naturals de $n$ bits amb algorisme de restauració, on $x$ és el dividend, $y$ el divisor, $z$ el quocient i $w$ el residu.
+Divisió seqüencial de naturals de $n$ bits amb algorisme de restauració, on $x$ és el dividend, $y$ el divisor, $q$ el quocient i $r$ el residu.
 
 ```{.default filename="Pseudocodi: divisió amb restauració"}
 // Inicialització
@@ -421,8 +421,8 @@ per i = 1 fins a n:
         R = R + D
         Q = Q << 1
 
-z = Q           // quocient
-w = R[n-1:0]    // residu
+q = Q           // quocient
+r = R[n-1:0]    // residu
 ```
 :::
 
@@ -459,7 +459,7 @@ L'extensió M proporciona quatre instruccions de divisió entera:
 escriuen el residu.
 
 ::: {#cau-divisio-enters-semantica .callout-caution}
-Les instruccions `div` i `rem` segueixen la **semàntica de C**: el residu té el mateix signe que el dividend, i $|r| < |d|$. Aquesta és la mateixa semàntica que s'obté dividint els valors absoluts i ajustant el signe (algorisme de la @sec-divisio-entera).
+Les instruccions `div` i `rem` segueixen la **semàntica de C**: el residu té el mateix signe que el dividend, i $|r| < |y|$. Aquesta és la mateixa semàntica que s'obté dividint els valors absoluts i ajustant el signe (algorisme de la @sec-divisio-entera).
 
 Això **difereix de la divisió euclidiana**, on el residu és sempre no negatiu. Vegeu la diferència amb `sra` a @cau-sra-divisio.
 :::

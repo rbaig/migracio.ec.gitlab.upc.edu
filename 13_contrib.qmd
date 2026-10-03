@@ -141,6 +141,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Optimització #1**: Accés seqüencial.
 - **Optimització #2**: Avaluació de la condició al final.
 - **Optimització #3**: Eliminació de la variable d'inducció.
+- **Notació de la multiplicació i la divisió**: $z = x \times y$ (multiplicand $x$, multiplicador $y$, producte $z$) i $x = y \cdot q + r$ (dividend $x$, divisor $y$, quocient $q$, residu $r$), a l'algorisme, als exemples i al pseudocodi dels circuits seqüencials. Els registres dels circuits (P, MD i MR; R, D i Q) són noms de maquinari, no variables: a la prosa, en rodona, i a les fórmules només amb el seu valor o un bit ($P = 10000010_2$, $R_{2n-1}$). Fins al 2026-10-03 (fase 7 de `CLAUDE.md §Pla de treball`), la divisió tenia tres notacions a A4 —$x$/$y$/$q$/$r$, $D$/$d$/$q$/$r$ i $x$/$y$/$z$/$w$—, i $D$ era el dividend mentre que el registre D és el divisor.
 
 #### T1 i T5
 
@@ -151,7 +152,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### T5
 
 - **`quartet`** (no `nibble`): terme preferit per als grups de 4 bits.
-- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació.
+- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació. La **precisió** $p$ compta els bits significatius de la mantissa, bit ocult inclòs: la fracció en té $p-1$ ($b_{-1} \ldots b_{-(p-1)}$), i l'exponent és $e$ tant en base 2 com en la notació científica decimal ($v = m \times 10^e$). Fins al 2026-10-03, `A5.qmd §Representació binària` donava $p$ bits a la fracció, i §Notació científica normalitzada deia $n$ a l'exponent.
 - **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des del LSB.
 - **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`).
 - **Solucionari (PS)**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
