@@ -5,7 +5,10 @@
 #   2. Revisió de prosa de les línies afegides (25_scripts/lint_prosa.py).
 #   3. Si el canvi toca el PDF, `make render-complet` és obligatori
 #      (13_contrib.qmd §Verificació de l'entorn), i un render HTML no ho exercita.
-# Els punts 2 i 3 no bloquegen: demanen confirmació a l'usuari («ask») amb el motiu.
+# Els punts 2 i 3 no bloquegen ni pregunten: els avisos arriben a Claude
+# (additionalContext) i a l'usuari, a la pantalla (systemMessage). Fins al
+# 2026-10-03 demanaven confirmació («ask»); decisió de l'usuari: el flux ja fa
+# `make render-complet` abans de cada push (CLAUDE.md §Flux de treball).
 #
 # Es mira l'arbre de treball sencer respecte d'HEAD (més els fitxers nous no
 # versionats), no només el que ja és a l'índex: el hook s'executa abans de
@@ -58,6 +61,6 @@ fi
 
 if [ -n "$avisos" ]; then
   jq -n --arg r "$avisos" \
-    '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "ask", permissionDecisionReason: $r}}'
+    '{systemMessage: ("Avisos d'"'"'abans del commit:\n" + $r), hookSpecificOutput: {hookEventName: "PreToolUse", additionalContext: $r}}'
 fi
 exit 0
