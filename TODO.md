@@ -829,6 +829,34 @@ __start:
 
 ---
 
+## Dades preservades del comentari eliminat de `L2.qmd` (`#sol-mapa-memoria`)
+
+Copiat aquí el 2026-10-03, al mateix commit que l'esborra (fase 7b, decisió D de l'usuari: una sola solució, la de l'ABI, amb `.align 3` a la solució de `s2_1_1.s`). L'entrada «`L2.qmd:153-166` — alineació de `.dword` a RARS» demanava preservar-ne la fila MARS, l'única que no existia enlloc més del corpus. **Des d'aquest commit sí que hi existeix**: amb `.align 3` davant de `cc:`, RARS 1.6 dona exactament aquell bolcat, i és el que mostra ara `#exr-rars-vista-memoria`. La fila RARS, que era el bolcat antic de `s2_1_3`, és la que ja no hi és. Text literal del comentari:
+
+```
+<!-- TODO Alineació de `long long` a RARS
+
+⚠️ Problema: RARS alinea `.dword` a 4 bytes en lloc de 8, a diferència de GCC real i MARS.
+Això fa que la solució del mapa de memòria sigui diferent segons el simulador:
+- Solució correcta (GCC/MARS): cc s'alinea a 0x10010008 (4 bytes de padding entre bb i cc).
+- Solució RARS: cc s'alinea a 0x10010004 (0 bytes de padding entre bb i cc).
+Cal decidir quina versió presentar als alumnes i si s'ha d'afegir
+una nota sobre aquest comportament. De moment es presenten les dues versions. 
+
+                                                                  xxxx xxxxxxxxxx
+MARS 0xfea800fb 0x00000000 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x00000000
+RARS 0xfea800fb 0xfffffffd 0xffffffff 0x000000a0 0x000016a7 0x0000ffff 0x00000000 0x00000000
+
+-->
+```
+
+```bash
+git grep -nE "0xfea800fb +0x00000000 +0xfffffffd" -- . ':!TODO.md'   # L2.qmd, el bolcat de #exr-rars-vista-memoria
+git grep -nE "0xfea800fb +0xfffffffd" -- . ':!TODO.md'               # cap: la fila RARS només és aquí
+```
+
+⚠️ «A diferència de GCC real» no és exacte: l'assemblador GNU no alinea cap directiva de dades per si sol (verificat amb clang 19: `.byte` seguit de `.word` deixa la paraula a l'adreça 1), i és el compilador el que emet `.p2align 3` davant d'un `long long`. La nota d'A2 ho evita parlant només de RARS i de l'ABI.
+
 ## Mesura dels slugs `{#sec-}` a les capçaleres
 
 L'ordre que sosté l'entrada retirada «A1. Slugs `{#sec-}`». Compta **nivells**

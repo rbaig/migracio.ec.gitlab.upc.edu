@@ -1107,7 +1107,7 @@ No respectar l'alineació:
 
 ### Directives d'alineació de memòria {#sec-directives-alineacio-memoria}
 
-RARS té les **directives** de @nte-directives-alineacio-inicialitzacio per gestionar les restriccions d'alineació de memòria. Aquestes directives apliquen automàticament la restricció d'alineació, descartant tantes posicions de memòria com sigui necessari. Opcionalment, la directiva pot anar **precedida** d'una **etiqueta** amb el **nom de la variable**, la qual representa de forma simbòlica l'adreça inicial de la dada definida.[^etiqueta]
+RARS té les **directives** de @nte-directives-alineacio-inicialitzacio per gestionar les restriccions d'alineació de memòria. Aquestes directives apliquen automàticament la restricció d'alineació, descartant tantes posicions de memòria com sigui necessari, tret de `.dword` (vegeu-ne la nota a @nte-directives-alineacio-inicialitzacio). Opcionalment, la directiva pot anar **precedida** d'una **etiqueta** amb el **nom de la variable**, la qual representa de forma simbòlica l'adreça inicial de la dada definida.[^etiqueta]
 
 [^etiqueta]: L'assemblador, quan pot (@sec-compilacio), substitueix totes les etiquetes (variables, funcions, destinacions de salts, etc.) per adreces de memòria. 
 
@@ -1123,6 +1123,8 @@ RARS té les **directives** de @nte-directives-alineacio-inicialitzacio per gest
 :::
 
 Cal especificar almenys un operand; per inicialitzar a zero s'usa p. ex. `.word 0`.
+
+A **RARS**, `.dword` només s'alinea a **4 bytes**, no a 8: per a un `long long` o un `double`, que l'ABI alinea a 8 (@nte-restriccions-alineacio), cal la directiva `.align 3` al davant.
 
 (Vegeu també @nte-directives-align-space)
 ::::
@@ -1146,6 +1148,7 @@ b:      .half 13                    # short b = 13;
 c:      .byte -1                    # char c = -1;
 d:      .byte 10                    # char d = 10;
 e:      .word 0x10AA00FF            # int e = 0x10AA00FF;
+        .align 3                    # long long: alineació a 8
 f:      .dword 0x7766554433221100   # long long f = 0x7766554433221100;
 ```
 :::
