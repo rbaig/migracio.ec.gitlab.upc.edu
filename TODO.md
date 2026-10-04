@@ -455,7 +455,7 @@ Cap entrada viva des del 2026-10-03 (l'última, les etiquetes de classe d'instru
   | `fig-assoc-conjunts-diagrama` | `A7.qmd:362` | Consumeix `T7_assoc_conjunts_diagrama__extern_{light,dark}` | Reconstruir com a nativa |
   | `fig-ca-diagrama` | `A7.qmd:393` | Placeholder de `7410a51`: `22_figs_originals/T7_ca_diagrama.svg` és idèntic byte a byte a `TODO.svg` | Cal crear-la |
   | `fig-texe-diagrama` | `A7.qmd:783` | Placeholder de `7410a51`: `22_figs_originals/T7_texe_diagrama.svg` és idèntic byte a byte a `TODO.svg`. Referència: PDF pàg. 24 | Cal crear-la |
-  | `fig-mc-exemple-descomposicio-32bits` | — | Cap ancoratge al corpus | Export LO Draw a `23_figs_externes`; reconstruir com a natiu |
+  | `fig-mc-exemple-descomposicio-32bits` | — | Cap ancoratge al corpus | Export LO Draw a `23_figs_externes`; reconstruir com a natiu. ✅ **Fet (2026-10-04, fase 7c)**: la nativa que ja existia, `T7_mc_descomposicio_bits.svg`, és ara `#fig-mc-numbloc-descomposicio`, dins de `#tip-mc-numbloc`, que és l'exemple que il·lustra |
   | `fig-multinivell-diagrama` | — | Cap ancoratge | CPU→L1→L2→MP; LO Draw pendent |
   | `fig-multinivell-multicore` | — | Cap ancoratge | Xip 4 nuclis L1/L2/L3; LO Draw pendent |
 
