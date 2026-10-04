@@ -1345,12 +1345,12 @@ a = f?(*p);         /* (5) */
 
 ### Variables locals: el bloc d'activació (el registre `sp`) {#sec-variables-locals}
 
-Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen **visibilitat local** i **durada temporal**: es creen cada cop que s'executa la subrutina i deixen d'existir quan retorna. Per això, l'espai de les que resideixen en memòria es reserva **dinàmicament**, en temps d'execució, i s'allibera en retornar.
+Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen visibilitat local i durada temporal: es creen cada cop que s'executa la subrutina i deixen d'existir quan retorna. Per això, l'espai de les que resideixen en memòria es reserva **dinàmicament**, en temps d'execució, i s'allibera en retornar.
 
 ::: {#nte-bloc-activacio .callout-note}
 ## RV32I ABI — El bloc d'activació — Registre de pila `sp`
 
-Per conveni —i com a criteri seguit a EC—, les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux al caller. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
+Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux al caller. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
 La reserva i l'alliberament d'espai de memòria per al BA es fa mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
 
@@ -1364,9 +1364,11 @@ Per fer la **reserva** d'espai, cal **decrementar** `sp` la mida del bloc i, per
 ::: {#nte-abi-alineacio-pila .callout-note}
 ## RV32I ABI — Alineació de la pila
 
-A **EC**, la mida del bloc d'activació i el valor de `sp` han de ser sempre **múltiples de 4 bytes**.
+L'ABI estàndard de RV32I exigeix que la mida del bloc d'activació i el valor de `sp` siguin múltiples de **16 bytes**.
+:::
 
-L'ABI estàndard de RV32I exigeix múltiples de **16 bytes**, però a EC s'adopta la relaxació a 4 per simplificar els exemples i exercicis.
+::: {#imp-abi-alineacio-pila .callout-important}
+A **EC**, la mida del bloc d'activació i el valor de `sp` han de ser sempre **múltiples de 4 bytes**: és una relaxació de l'ABI (@nte-abi-alineacio-pila) que simplifica els exemples i els exercicis.
 
 Amb aquesta relaxació, `sp` només garanteix l'alineació a 4 bytes (el fons de pila de RARS, `0x7FFFEFFC`, ja només és múltiple de 4: @nte-rars-fons-pila). N'hi ha prou per a les variables locals dels exemples i exercicis d'EC, però no per a les de 8 bytes (`long long`, `double`), que l'ABI alinea a 8 (@nte-restriccions-alineacio).
 :::
