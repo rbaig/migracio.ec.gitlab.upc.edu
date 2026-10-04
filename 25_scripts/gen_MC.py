@@ -39,6 +39,10 @@ import sys
 import tomllib
 from pathlib import Path
 
+sys.dont_write_bytecode = True       # cap __pycache__ dins de 25_scripts/
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import figlib  # noqa: E402
+
 SANS = "'Liberation Sans', Arial, Helvetica, sans-serif"
 MONO = "'Liberation Mono', 'Courier New', Courier, monospace"
 INK, GRIS, TRAC, NEUTRE, BLANC = "#343a40", "#6c757d", "#adb5bd", "#f8f9fa", "#ffffff"
@@ -458,6 +462,149 @@ def traca(spec):
     return w, y + 10, o
 
 
+# ═══════════════════════════════════════════════════════════
+# Estil «lectura»: diagrama de blocs del maquinari d'una lectura
+# ═══════════════════════════════════════════════════════════
+
+def lectura(spec):
+    """Diagrama de blocs d'una lectura: l'adreça partida en camps, les vies (o les línies) en
+    paral·lel amb el seu comparador i la seva AND amb V, la OR que dona l'encert, el multiplexor
+    que tria la via i el que tria la dada pel desplaçament. `organitzacio`: "directa",
+    "conjunts" o "completa" (completament associativa: un sol conjunt, cada línia és una via)."""
+    org = spec['organitzacio']
+    ink, blau_f, blau = figlib.INK, COLORS[0][0], COLORS[0][1]
+    dec = org != 'completa'
+    nvies = 1 if org == 'directa' else 3                       # vies dibuixades: 0, 1 i l'última
+    noms_vies = [''] if org == 'directa' else (['via 0', 'via 1', 'via N−1'] if org == 'conjunts'
+                                                else ['línia 0', 'línia 1', 'línia N<tspan dy="3" font-size="8">L</tspan><tspan dy="-3">−1</tspan>'])
+    files = (['0', '1', '⋮', 'i', '⋮', 'N<tspan dy="3" font-size="8">L</tspan><tspan dy="-3">−1</tspan>'] if org == 'directa' else
+             ['0', '⋮', 'i', '⋮', 'N<tspan dy="3" font-size="8">C</tspan><tspan dy="-3">−1</tspan>'] if org == 'conjunts' else [''])
+    sel = files.index('i') if 'i' in files else 0
+    wv, we, wd = 22, 64, (110 if org == 'directa' else 96)
+    ww = wv + we + wd
+    gap, ell = 18, 44
+    x_l = 150 if dec else 90                                    # on comença la primera via
+    xs = [x_l] if nvies == 1 else [x_l, x_l + ww + gap, x_l + 2 * ww + gap + ell]
+    rh = 20 if dec else 26
+    y_reg, y_cap, y_a = 30, 112, 128
+    y_b = y_a + len(files) * rh
+    y_bus = y_b + 16
+    y_c = y_b + 44
+    y_and = y_c + 40
+    y_or = y_and + 56
+    y_sel = y_or + 34 if nvies > 1 else y_and
+    y_m1 = y_sel + 22
+    y_m2 = (y_m1 + 50) if nvies > 1 else y_and + 46
+    x_fi = xs[-1] + ww
+    camps = [('etiqueta', 170), ('índex', 100), ('desplaçament', 120)] if dec else [('etiqueta', 270), ('desplaçament', 120)]
+    x_hit_max = (x_fi + 30 + 40) if nvies > 1 else (xs[0] + ww)
+    w = max(x_l + sum(c[1] for c in camps), x_fi + (24 if dec else 0), x_hit_max + 20 + 70) + 40
+    o = []
+    # registre d'adreça
+    x = x_l
+    pos = {}
+    o.append(text(x_l, y_reg - 7, 'Adreça', 12, ink, anchor='start', bold=True))
+    for nom, wc in camps:
+        o.append(rect(x, y_reg, wc, 26, NEUTRE, ink, 1))
+        o.append(text(x + wc / 2, y_reg + 17, nom, 11, ink))
+        pos[nom] = (x, x + wc)
+        x += wc
+    # vies
+    for k, xv in enumerate(xs):
+        if noms_vies[k]:
+            o.append(text(xv + ww / 2, y_cap - 18, noms_vies[k], 12, ink, bold=True))
+        for nom, cx, wc in [('V', xv, wv), ('Etiqueta', xv + wv, we), ('Dades (bloc)', xv + wv + we, wd)]:
+            o.append(text(cx + wc / 2, y_cap + 8, nom, 10, ink, bold=True))
+        for r, f in enumerate(files):
+            yy = y_a + r * rh
+            seleccionada = (r == sel)
+            fill, stroke = (blau_f, blau) if seleccionada else (NEUTRE, TRAC)
+            if f == '⋮':
+                for cx, wc in [(xv, wv), (xv + wv, we), (xv + wv + we, wd)]:
+                    o.append(f'<line x1="{cx}" y1="{yy}" x2="{cx}" y2="{yy + rh}" stroke="{TRAC}" stroke-width="0.75" stroke-dasharray="3,3"/>')
+                o.append(f'<line x1="{xv + ww}" y1="{yy}" x2="{xv + ww}" y2="{yy + rh}" stroke="{TRAC}" stroke-width="0.75" stroke-dasharray="3,3"/>')
+                continue
+            for cx, wc in [(xv, wv), (xv + wv, we), (xv + wv + we, wd)]:
+                o.append(rect(cx, yy, wc, rh, fill, stroke, 0.75))
+        if k == 1 and nvies > 1:
+            o.append(text(xv + ww + gap + ell / 2 - gap / 2, y_a + (len(files) * rh) / 2 + 4, '· · ·', 14, GRIS))
+    # etiquetes de fila (conjunt o línia), a la dreta de l'última via
+    if dec:
+        o.append(text(x_fi + 6, y_cap + 8, 'línia' if org == 'directa' else 'conjunt', 9, GRIS, anchor='start'))
+        for r, f in enumerate(files):
+            if f != '⋮':
+                o.append(f'<text x="{x_fi + 6}" y="{y_a + r * rh + 14}" font-family="{SANS}" font-size="10" fill="{GRIS}" text-anchor="start" font-style="{"italic" if f not in "01" else "normal"}">{f}</text>')
+    # descodificador
+    if dec:
+        x_d0, x_d1 = 62, 104
+        o.append(f'<path d="M{x_d0},{y_a + 12} L{x_d1},{y_a} L{x_d1},{y_b} L{x_d0},{y_b - 12} z" fill="{NEUTRE}" stroke="{ink}" stroke-width="1.5"/>')
+        o.append(f'<text transform="rotate(-90,{(x_d0 + x_d1) / 2 + 4},{(y_a + y_b) / 2})" x="{(x_d0 + x_d1) / 2 + 4}" y="{(y_a + y_b) / 2}" font-family="{SANS}" font-size="10" fill="{ink}" text-anchor="middle">descodificador</text>')
+        for r, f in enumerate(files):
+            if f == '⋮':
+                continue
+            yy = y_a + r * rh + rh / 2
+            o.append(figlib.line([(x_d1, yy), (x_l, yy)], blau if r == sel else TRAC, 1.5 if r == sel else 0.75))
+        xi = (pos['índex'][0] + pos['índex'][1]) / 2
+        o.append(figlib.line([(xi, y_reg + 26), (xi, y_reg + 46), (44, y_reg + 46), (44, (y_a + y_b) / 2), (x_d0, (y_a + y_b) / 2)]))
+    # bus de l'etiqueta de l'adreça
+    x_t = 24
+    o.append(figlib.line([(pos['etiqueta'][0], y_reg + 13), (x_t, y_reg + 13), (x_t, y_bus), (xs[-1] + wv + we / 2 - 18, y_bus)]))
+    # per via: comparador, AND amb V
+    sortides = []
+    for k, xv in enumerate(xs):
+        x_cmp = xv + wv + we / 2
+        o.append(figlib.line([(x_cmp, y_b), (x_cmp, y_c - 12)]))                     # etiqueta guardada
+        o.append(figlib.line([(x_cmp - 18, y_bus), (x_cmp - 18, y_c), (x_cmp - 12, y_c)]))  # etiqueta de l'adreça
+        if k < len(xs) - 1:
+            o.append(figlib.dot(x_cmp - 18, y_bus))
+        o.append(f'<circle cx="{x_cmp}" cy="{y_c}" r="12" fill="#ffffff" stroke="{ink}" stroke-width="1.5"/>')
+        o.append(text(x_cmp, y_c + 5, '=', 14, ink, bold=True))
+        x_and = xv + ww - 40
+        o.append(figlib.line([(x_cmp, y_c + 12), (x_cmp, y_and - 8), (x_and + 3, y_and - 8)]))
+        x_vv = xv + wv / 2
+        o.append(figlib.line([(x_vv, y_b), (x_vv, y_and + 8), (x_and + 3, y_and + 8)]))
+        o.append(figlib.and_gate(x_and, y_and))
+        sortides.append((x_and + 36, y_and))
+    # encert: OR (o la sortida de l'AND, si només hi ha una via)
+    if nvies > 1:
+        x_or = x_fi + 30
+        ys = [y_or - 10, y_or, y_or + 10]
+        for (xo, yo), yi in zip(sortides, ys):
+            o.append(figlib.line([(xo, yo), (xo + 8, yo), (xo + 8, yi), (x_or + 3, yi)]))
+        o.append(figlib.or_gate(x_or, y_or))
+        x_hit, y_hit = x_or + 40, y_or
+    else:
+        x_hit, y_hit = sortides[0]
+    o.append(figlib.line([(x_hit, y_hit), (x_hit + 20, y_hit)], ENCERT))
+    o.append(figlib.term(x_hit + 20, y_hit, ENCERT))
+    o.append(text(x_hit + 28, y_hit + 4, 'Encert', 12, ENCERT, anchor='start', bold=True))
+    # dades: multiplexor de via (N:1) i multiplexor del desplaçament
+    xds = [xv + wv + we + wd / 2 for xv in xs]
+    if nvies > 1:
+        x_m0, x_m1 = xds[0] - 30, xds[-1] + 30
+        for xd in xds:
+            o.append(figlib.line([(xd, y_b), (xd, y_m1)]))
+        o.append(f'<path d="M{x_m0},{y_m1} L{x_m1},{y_m1} L{x_m1 - 30},{y_m1 + 26} L{x_m0 + 30},{y_m1 + 26} z" fill="{NEUTRE}" stroke="{ink}" stroke-width="1.5"/>')
+        o.append(text((x_m0 + x_m1) / 2, y_m1 + 17, 'multiplexor de via', 10, ink))
+        o.append(figlib.line([(x_m0 - 30, y_m1 + 13), (x_m0 + 15, y_m1 + 13)], GRIS, 1))
+        o.append(text(x_m0 - 34, y_m1 + 11, 'selecció: la via', 9, GRIS, anchor='end', italic=True))
+        o.append(text(x_m0 - 34, y_m1 + 22, 'amb encert', 9, GRIS, anchor='end', italic=True))
+        x_md = (x_m0 + x_m1) / 2
+        o.append(figlib.line([(x_md, y_m1 + 26), (x_md, y_m2)]))
+    else:
+        x_md = xds[0]
+        o.append(figlib.line([(x_md, y_b), (x_md, y_m2)]))
+    o.append(f'<path d="M{x_md - 50},{y_m2} L{x_md + 50},{y_m2} L{x_md + 30},{y_m2 + 26} L{x_md - 30},{y_m2 + 26} z" fill="{NEUTRE}" stroke="{ink}" stroke-width="1.5"/>')
+    o.append(text(x_md, y_m2 + 17, 'multiplexor', 10, ink))
+    x_off = pos['desplaçament'][1]
+    x_ctl = w - 14
+    o.append(figlib.line([(x_off, y_reg + 13), (x_ctl, y_reg + 13), (x_ctl, y_m2 + 13), (x_md + 40, y_m2 + 13)]))
+    o.append(figlib.line([(x_md, y_m2 + 26), (x_md, y_m2 + 48)]))
+    o.append(figlib.term(x_md, y_m2 + 48))
+    o.append(text(x_md + 10, y_m2 + 52, 'Dada', 12, ink, anchor='start', bold=True))
+    return w, y_m2 + 64, o
+
+
 def svg(spec, w, h, cos):
     return '\n'.join([f'<svg width="100%" viewBox="0 0 {round(w)} {round(h)}" xmlns="http://www.w3.org/2000/svg" role="img">',
                       f'<title>{esc(spec["title"])}</title>', f'<desc>{esc(spec["desc"])}</desc>', *cos, '</svg>']) + '\n'
@@ -475,7 +622,7 @@ def main():
     for nom, spec in dades.items():
         try:
             estil = spec.get('estil', 'sequencia')
-            w, h, cos = traca(spec) if estil == 'traca' else sequencia(spec)
+            w, h, cos = traca(spec) if estil == 'traca' else (lectura(spec) if estil == 'lectura' else sequencia(spec))
             (args.output_dir / f'{nom}{args.sufix}.svg').write_text(svg(spec, w, h, cos), encoding='utf-8')
             n += 1
             if spec.get('fotogrames'):

@@ -19,6 +19,8 @@ import argparse
 import os
 import sys
 
+import figlib
+
 
 SANS = "'Liberation Sans', Arial, Helvetica, sans-serif"
 INK = "#343a40"      # fils i portes
@@ -29,16 +31,15 @@ out = []
 
 
 def line(pts, color=INK):
-    d = " ".join(f"{x},{y}" for x, y in pts)
-    out.append(f'<polyline points="{d}" fill="none" stroke="{color}" stroke-width="{W}" stroke-linejoin="round"/>')
+    out.append(figlib.line(pts, color))
 
 
 def dot(x, y, color=INK):
-    out.append(f'<circle cx="{x}" cy="{y}" r="2.5" fill="{color}"/>')
+    out.append(figlib.dot(x, y, color))
 
 
 def term(x, y, color=INK):
-    out.append(f'<circle cx="{x}" cy="{y}" r="2.5" fill="#ffffff" stroke="{color}" stroke-width="{W}"/>')
+    out.append(figlib.term(x, y, color))
 
 
 def sig(x, y, parts, size=13, color=INK, anchor="start", weight=None):
@@ -68,18 +69,18 @@ def sig(x, y, parts, size=13, color=INK, anchor="start", weight=None):
 
 
 def and_gate(x, cy):
-    out.append(f'<path d="M{x},{cy-16} h20 a16,16 0 0 1 0,32 h-20 z" fill="none" stroke="{INK}" stroke-width="{W}" stroke-linejoin="round"/>')
+    out.append(figlib.and_gate(x, cy))
     return x + 36
 
 
 def or_gate(x, cy, color=INK, fill="none"):
-    out.append(f'<path d="M{x},{cy-16} Q{x+10},{cy} {x},{cy+16} Q{x+28},{cy+16} {x+40},{cy} Q{x+28},{cy-16} {x},{cy-16} z" fill="{fill}" stroke="{color}" stroke-width="{W}" stroke-linejoin="round"/>')
+    out.append(figlib.or_gate(x, cy, color, fill))
     return x + 40
 
 
 def xor_gate(x, cy, color=INK, fill="none"):
-    out.append(f'<path d="M{x},{cy-16} Q{x+10},{cy} {x},{cy+16}" fill="none" stroke="{color}" stroke-width="{W}"/>')
-    return or_gate(x + 6, cy, color, fill)
+    out.append(figlib.xor_gate(x, cy, color, fill))
+    return x + 46
 
 
 def box(x, y, w, h, ports):

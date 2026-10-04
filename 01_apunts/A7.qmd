@@ -309,20 +309,19 @@ $$A = \underbrace{0001\,0000\,0000\,0001\,0000\,0000\,1}_{\text{etiqueta}}\,
 \underbrace{1000}_{\text{offset}=8}$$
 :::
 
-El diagrama de blocs de la @fig-cd-diagrama mostra el maquinari necessari per a una lectura. Els bits d'índex de l'adreça seleccionen una línia mitjançant un **decodificador**. Es llegeixen simultàniament l'etiqueta guardada, el bit de validesa i el bloc de dades. Els bits d'etiqueta de l'adreça es comparen amb l'etiqueta guardada: si coincideixen i $V=1$, es produeix un encert i el **multiplexor** selecciona la dada indicada pel desplaçament.
+El diagrama de blocs de la @fig-cd-diagrama mostra el maquinari necessari per a una lectura. Els bits d'índex de l'adreça seleccionen una línia mitjançant un **descodificador**. Es llegeixen simultàniament l'etiqueta guardada, el bit de validesa i el bloc de dades. Els bits d'etiqueta de l'adreça es comparen amb l'etiqueta guardada: si coincideixen i $V=1$, es produeix un encert i el **multiplexor** selecciona la dada indicada pel desplaçament.
 
-<!-- fig-cd-diagrama: diagrama de blocs d'una lectura en una memòria cau de correspondència directa, amb: adreça dividida en etiqueta/índex/offset, decodificador connectat als bits d'índex, taula de línies (V, Etiqueta, Dades), comparador entre etiqueta de l'adreça i etiqueta guardada, porta AND amb V, senyal Hit, i multiplexor seleccionat per l'offset que produeix la Dada cap a la CPU. Basada en la Figura 6.13 del PDF. Caption: "Diagrama de blocs d'una lectura en una memòria cau de correspondència directa." -->
 ::: {#fig-cd-diagrama}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_cd_diagrama__extern_light.svg)
+![](/auto_figs/T7_cd_diagrama__MC_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_cd_diagrama__extern_dark.svg)
+![](/auto_figs/T7_cd_diagrama__MC_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_cd_diagrama__extern_light.svg)
+![](/auto_figs/T7_cd_diagrama__MC_light.svg)
 :::
 Diagrama de blocs d'una lectura en una memòria cau de correspondència directa.
 :::
@@ -370,21 +369,20 @@ $$A = \underbrace{0000}_{\text{etiqueta}}\,
 Organització d'una memòria cau associativa per conjunts de 4 conjunts i 3 vies: el bloc de l'adreça `0b00000100` es mapa al conjunt 1 i pot ocupar qualsevol de les seves 3 vies.
 :::
 
-El diagrama de blocs de la @fig-assoc-conjunts-diagrama mostra que els bits d'índex seleccionen el conjunt mitjançant un **decodificador** (com a la correspondència directa), però dins del conjunt hi ha **$N$ comparadors en paral·lel**, un per via. Si alguna via té la mateixa etiqueta i $V=1$, una porta OR genera el senyal d'encert i un **multiplexor $N$:1** selecciona les dades de la via guanyadora, que el segon multiplexor (controlat pel desplaçament)
+El diagrama de blocs de la @fig-assoc-conjunts-diagrama mostra que els bits d'índex seleccionen el conjunt mitjançant un **descodificador** (com a la correspondència directa), però dins del conjunt hi ha **$N$ comparadors en paral·lel**, un per via. Si alguna via té la mateixa etiqueta i $V=1$, una porta OR genera el senyal d'encert i un **multiplexor $N$:1** selecciona les dades de la via guanyadora, que el segon multiplexor (controlat pel desplaçament)
 usa per extreure la dada sol·licitada.
 
-<!-- fig-assoc-conjunts-diagrama: diagrama de blocs d'una lectura en una memòria cau associativa per conjunts, amb: adreça dividida en etiqueta/índex/offset, decodificador per als bits d'índex, N vies en paral·lel cadascuna amb (V, Etiqueta, Dades), N comparadors simultanis entre l'etiqueta de l'adreça i les etiquetes guardades, porta OR que genera Hit, multiplexor N:1 que selecciona la via amb encert, i multiplexor final controlat per l'offset que produeix la Dada. Basada en la Figura 6.24 del PDF. Caption: "Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de N vies." -->
 ::: {#fig-assoc-conjunts-diagrama}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_assoc_conjunts_diagrama__extern_light.svg)
+![](/auto_figs/T7_assoc_conjunts_diagrama__MC_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_assoc_conjunts_diagrama__extern_dark.svg)
+![](/auto_figs/T7_assoc_conjunts_diagrama__MC_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_assoc_conjunts_diagrama__extern_light.svg)
+![](/auto_figs/T7_assoc_conjunts_diagrama__MC_light.svg)
 :::
 Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de $N$ vies.
 :::
@@ -402,20 +400,19 @@ $$A = \underbrace{\cdots}_{\text{etiqueta}} \;
 
 L'etiqueta és el número de bloc sencer. El nombre de línies no cal que sigui potència de 2.
 
-El diagrama de blocs de la @fig-ca-diagrama mostra que ara tots els comparadors operen sobre totes les línies alhora: no hi ha decodificador. Una porta OR sobre totes les sortides dels comparadors genera el senyal d'encert, i un multiplexor $N_L$:1 selecciona la línia amb encert. El cost en maquinari creix **linealment** amb el nombre de línies $N_L$, cosa que fa que les memòries cau completament associatives pràctiques tinguin pocs centenars de línies com a màxim.
+El diagrama de blocs de la @fig-ca-diagrama mostra que ara tots els comparadors operen sobre totes les línies alhora: no hi ha descodificador. Una porta OR sobre totes les sortides dels comparadors genera el senyal d'encert, i un multiplexor $N_L$:1 selecciona la línia amb encert. El cost en maquinari creix **linealment** amb el nombre de línies $N_L$, cosa que fa que les memòries cau completament associatives pràctiques tinguin pocs centenars de línies com a màxim.
 
-<!-- fig-ca-diagrama: diagrama de blocs d'una lectura en una memòria cau completament associativa, amb: adreça dividida en etiqueta i offset (sense índex), N_L línies cadascuna amb (V, Etiqueta, Dades) i el seu comparador, porta OR sobre totes les sortides dels comparadors que genera Hit, multiplexor N_L:1 que selecciona la línia amb encert, i multiplexor final controlat per l'offset. Caption: "Diagrama de blocs d'una lectura en una memòria cau completament associativa: cal comparar l'etiqueta amb totes les línies en paral·lel." -->
 ::: {#fig-ca-diagrama}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_ca_diagrama__original_light.svg)
+![](/auto_figs/T7_ca_diagrama__MC_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_ca_diagrama__original_dark.svg)
+![](/auto_figs/T7_ca_diagrama__MC_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_ca_diagrama__original_light.svg)
+![](/auto_figs/T7_ca_diagrama__MC_light.svg)
 :::
 Diagrama de blocs d'una lectura en una memòria cau completament associativa: cal comparar l'etiqueta amb totes les línies en paral·lel.
 :::
@@ -811,7 +808,6 @@ $$t_{exe} = (\text{CPI}_{ideal} + t_p \cdot m \cdot n_r) \cdot n_{ins}
 
 on $t_c$ és el període de rellotge. La @fig-texe-diagrama il·lustra com les fallades de memòria cau s'insereixen com a temps extra en el flux d'execució de les instruccions.
 
-<!-- fig-texe-diagrama: diagrama de línies de temps mostrant l'execució de tres instruccions (lw, addu, lw) en dos escenaris: memòria cau ideal (tots encerts) i memòria cau real (fallada al segon lw). Les etapes Fetch/Decode/ ReadReg/ALU/Mem/WriteReg apareixen en blanc per als encerts i l'etapa de penalització apareix ombrejada. Basada en la Figura del PDF de la pàg. 24. Caption: "Impacte d'una fallada de memòria cau en el temps d'execució: els cicles de penalització (ombrejats) s'afegeixen als cicles ideals (blancs)." -->
 ::: {#fig-texe-diagrama}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
@@ -834,28 +830,55 @@ De l'expressió @eq-texe s'extreuen dues conclusions pràctiques:
 
 ## Tipologia de les fallades {#sec-tipologia-fallades}
 
-Les fallades de memòria cau es classifiquen en tres categories, conegudes com les **tres C**. Aquesta classificació permet identificar la causa de cada fallada i raonar sobre quines mesures de disseny poden reduir-la.
+Les fallades de memòria cau es classifiquen segons la seva causa en tres categories, conegudes com les **tres C** (de l'anglès *compulsory*, *conflict* i *capacity*). Classificar-les permet raonar sobre per què es produeixen i sobre quines mesures de disseny poden reduir cadascuna.
 
-**Cold-start** (o **obligatòries**): es produeixen el primer cop que s'accedeix a un bloc. Per definició, cap memòria cau pot tenir un bloc que no s'ha accedit mai, de manera que aquestes fallades són **inevitables** independentment de la política d'emplaçament, del grau d'associativitat o de la capacitat de la memòria cau. El nombre total de fallades obligatòries d'un programa és igual al nombre de blocs diferents que accedeix.
+**Fallades d'arrencada en fred** (***cold-start***), també anomenades **obligatòries** (***compulsory***) o **de primera referència** (***first-reference***): es produeixen el primer cop que s'accedeix a un bloc. Cap memòria cau no pot tenir un bloc que encara no s'ha accedit mai, de manera que aquestes fallades **no depenen** de la política d'emplaçament, del grau d'associativitat ni de la capacitat de la memòria cau: n'hi ha tantes com blocs diferents accedeix el programa. Només les redueixen els blocs més grans, perquè cada fallada porta més dades veïnes a la memòria cau (localitat espacial).
 
-**Conflicte** (o **col·lisió**): es produeixen quan dos o més blocs que s'accedeixen alternament es mapen al mateix conjunt i s'expulsen mútuament, tot i que hi ha línies lliures en altres conjunts. Són **exclusives de les memòries cau amb indexació** (correspondència directa i associativa per conjunts): en una memòria cau completament associativa, per definició, no hi pot haver conflictes. Augmentar el grau d'associativitat redueix les fallades de conflicte.
+**Fallades de conflicte** (o **de col·lisió**, ***conflict***): es produeixen quan dos o més blocs que s'accedeixen alternament es mapen al mateix conjunt i s'expulsen mútuament, encara que hi hagi línies lliures en altres conjunts. Només n'hi ha en les memòries cau amb indexació (correspondència directa i associativa per conjunts): **una fallada de conflicte seria un encert en una memòria cau completament associativa de la mateixa capacitat**. Augmentar el grau d'associativitat les redueix.
 
-**Capacitat**: es produeixen perquè la memòria cau no és prou gran per contenir tots els blocs que el programa necessita simultàniament (el ***working set***). Quan el working set supera la capacitat de la memòria cau, alguns blocs s'expulsen i, quan es tornen a necessitar, fallen de nou. Aquestes fallades **no es poden eliminar augmentant l'associativitat**: l'única solució és augmentar la capacitat de la memòria cau.
+**Fallades de capacitat** (***capacity***): es produeixen perquè la memòria cau no és prou gran per contenir tots els blocs que el programa necessita alhora, el ***working set***: un bloc expulsat per manca d'espai torna a fallar quan es torna a necessitar. **També fallaria en una memòria cau completament associativa de la mateixa capacitat**, i per això no s'elimina augmentant l'associativitat, sinó només augmentant la capacitat.
 
-<!-- figura: gràfica de barres apilades que mostra el percentatge de cada tipus de fallada (cold-start, conflicte, capacitat) en funció del grau d'associativitat (correspondència directa, 2 vies, 4 vies, completament associativa) per a diverses mides de memòria cau. Basada en la Figura 6.27 del PDF. Caption: "Distribució dels tres tipus de fallades en funció del grau d'associativitat i la mida de la memòria cau." -->
+Els dos criteris en negreta donen un mètode per classificar qualsevol fallada que no sigui d'arrencada en fred: es repeteix la mateixa seqüència d'accessos en una memòria cau completament associativa de la mateixa capacitat, amb reemplaçament LRU, i si l'accés també hi falla, la fallada és de capacitat; si hi encerta, és de conflicte.
 
-::: {#cau-tres-c .callout-caution}
-## Les tres C i les seves solucions
+La @fig-tipus-fallades il·lustra la relació entre els tres tipus, el grau d'associativitat i la mida de la memòria cau per a un programa donat. Les fallades d'arrencada en fred no varien, perquè només depenen dels blocs que accedeix el programa. Per a una mida donada (la línia discontínua), les de conflicte disminueixen a mesura que augmenta l'associativitat, i en una memòria cau completament associativa no n'hi ha. Les de capacitat, en canvi, només disminueixen si augmenta la mida de la memòria cau, sigui quin sigui el grau d'associativitat.
 
-| Tipus | Causa | Solució |
-| :--- | :--- | :--- |
-| Cold-start | Primer accés al bloc | Cap (inevitables) |
-| Conflicte | Competència per un conjunt | Augmentar l'associativitat |
-| Capacitat | Working set > capacitat | Augmentar la capacitat |
-: {#tbl-tres-c tbl-colwidths="[20,40,40]" .striped}
+::: {#fig-tipus-fallades}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T7_tipus_fallades__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T7_tipus_fallades__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T7_tipus_fallades__original_light.svg)
+:::
+Taxa de fallades segons la mida de la memòria cau i el grau d'associativitat, per a un programa donat (gràfica qualitativa).
 :::
 
-### Exemple: fallades de conflicte i cold-start {#sec-exemple-conflicte}
+::: {#cau-tres-c .callout-caution}
+## Les tres C
+
+| Tipus | Causa | Què les redueix |
+| :--- | :--- | :--- |
+| Arrencada en fred (obligatòries) | Primer accés a un bloc | Blocs més grans; no depenen de la capacitat ni de l'associativitat |
+| Conflicte (col·lisió) | Blocs que competeixen pel mateix conjunt | Més associativitat |
+| Capacitat | *Working set* més gran que la memòria cau | Més capacitat |
+: {#tbl-tres-c tbl-colwidths="[28,32,40]" .striped}
+
+Una fallada que no és d'arrencada en fred és **de conflicte** si encertaria en una memòria cau **completament associativa** de la mateixa capacitat, i **de capacitat** si també hi fallaria.
+:::
+
+::: {#wrn-fallades-coherencia .callout-warning collapse=true}
+## Fallades de coherència: la quarta C
+
+En els processadors multinucli, cada nucli té la seva memòria cau privada (@sec-multinivell-actuals), i n'hi ha un quart tipus. La classificació passa a ser de les **quatre C**.
+
+**Fallades de coherència** (o **d'invalidació**, *coherence*): quan un nucli modifica una dada, les còpies d'aquell bloc a les memòries cau privades dels altres nuclis s'invaliden, perquè tots vegin el mateix valor. El pròxim accés d'un altre nucli a aquell bloc falla, i n'ha de tornar a portar la còpia actualitzada. Aquestes fallades no depenen de la capacitat ni de l'associativitat de cap memòria cau, sinó de les dades que comparteixen els nuclis.
+:::
+
+### Exemple: fallades de conflicte i d'arrencada en fred {#sec-exemple-conflicte}
 
 Considerem la funció C següent, executada en un processador RV32I amb blocs
 de 8 bytes (2 words per bloc, $b = 3$):
@@ -958,7 +981,20 @@ En un sistema amb dos nivells de memòria cau, **L1** i **L2**, el flux d'un acc
 2. Si hi ha fallada a L1, s'accedeix a **L2**. Si hi ha encert a L2, la penalització és $t_{h_{L2}}$, molt menor que el temps d'accés a la memòria principal.
 3. Només si el bloc falla a L2 cal accedir a la memòria principal, pagant la penalització completa $t_p$.
 
-<!-- fig-multinivell-diagrama: diagrama de blocs amb tres configuracions en vertical: (a) CPU connectada directament a MP (problema: t_accés llarg); (b) CPU → L1 → MP (solució parcial: fallades de L1 paguen t_p); (c) CPU → L1 → L2 → MP (solució: fallades de L1 que encerten a L2 paguen t_{h_L2}). Basada en la Figura 6.25 del PDF. Caption: "Les memòria caus multinivell redueixen la penalització de les fallades de L1: aquelles que encerten a L2 paguen t_{h_L2} en lloc de t_p." -->
+::: {#fig-multinivell-diagrama}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T7_multinivell_diagrama__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T7_multinivell_diagrama__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T7_multinivell_diagrama__original_light.svg)
+:::
+Les memòries cau multinivell redueixen la penalització de les fallades de L1: les que encerten a L2 paguen $t_{h_{L2}}$ en lloc de $t_p$. (a) Sense memòria cau, cada accés paga el temps de la MP; (b) amb una MC, només les fallades; (c) amb L1 i L2, les fallades de L1 que també fallen a L2.
+:::
 
 Les fallades de L1 que encerten a L2 paguen una penalització $t_{h_{L2}}$, molt menor que $t_p$. Només les fallades que arriben a la memòria principal paguen la penalització completa. El temps d'accés mitjà queda:
 
@@ -1010,7 +1046,20 @@ A partir de L2, les memòries cau acostumen a ser **unificades** (instruccions i
 
 L'augment en el nombre de nuclis (*cores*) integrats en un mateix xip ha incrementat el tràfic sobre la memòria principal fins a saturar l'amplada de banda de la interconnexió. Per reduir aquest tràfic, les arquitectures actuals incorporen un tercer nivell **L3**, compartit entre tots els nuclis i integrat dins del mateix xip:
 
-<!-- fig-multinivell-multicore: diagrama de blocs d'un xip multiprocessador amb 4 nuclis, cadascun amb L1i, L1d i L2 privades, tots compartint una L3 comuna, connectada a la memòria principal (DRAM) fora del xip. Basada en la Figura 6.26 del PDF. Caption: "Jerarquia de memòries cau en un processador multicore: L1 i L2 són privades per nucli; L3 és compartida entre tots els nuclis." -->
+::: {#fig-multinivell-multicore}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T7_multinivell_multicore__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T7_multinivell_multicore__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T7_multinivell_multicore__original_light.svg)
+:::
+Jerarquia de memòries cau en un processador multinucli: L1 i L2 són privades de cada nucli, i L3 és compartida entre tots. L1i i L1d són les memòries cau de primer nivell d'instruccions i de dades, separades (@sec-multinivell-split).
+:::
 
 Cada nucli disposa de L1i, L1d i L2 privades, orientades a minimitzar la latència per a aquell nucli. La L3 compartida actua com a darrer filtre abans de la memòria principal: redueix el nombre d'accessos a la DRAM i, per tant, el tràfic sobre el bus de memòria.
 
