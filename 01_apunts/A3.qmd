@@ -1106,8 +1106,8 @@ Per tal que una subrutina i el codi que la **crida** puguin ser programats en ll
 ::: {#cau-multinivell-vs-uninivell .callout-caution}
 Una subrutina és:
 
-- **Uninivell**, si el seu codi no conté cap crida a una altra subrutina.
-- **Multinivell**, si el seu codi conté alguna crida a una altra subrutina.
+- **Uninivell** o **fulla** (*leaf*), si el seu codi no conté cap crida a una altra subrutina.
+- **Multinivell** o **no fulla** (*non-leaf*), si el seu codi conté alguna crida a una altra subrutina (les subrutines recursives en són un cas particular).
 :::
 
 ### Crida i retorn (el registre `ra`) {#sec-crida-retorn}
@@ -1351,6 +1351,8 @@ a = f?(*p);         /* (5) */
 
 ### Variables locals: el bloc d'activació (el registre `sp`) {#sec-variables-locals}
 
+Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen **visibilitat local** i **durada temporal**: es creen cada cop que s'executa la subrutina i deixen d'existir quan retorna. Per això, l'espai de les que resideixen en memòria es reserva **dinàmicament**, en temps d'execució, i s'allibera en retornar.
+
 ::: {#nte-bloc-activacio .callout-note}
 ## RV32I ABI — El bloc d'activació — Registre de pila `sp`
 
@@ -1376,7 +1378,7 @@ Amb aquesta relaxació, `sp` només garanteix l'alineació a 4 bytes (el fons de
 :::
 
 :::: {#tip-func-uninivell-bloc-activacio .callout-tip}
-## Evolució del bloc d'activació durant la crida i retorn d'una funció
+## Evolució del bloc d'activació durant la crida i retorn d'una funció uninivell
 
 ```{.c filename="C"}
 void funcB() { sentB; }
@@ -1393,7 +1395,7 @@ void funcB() { sentB; }
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T3_pila_uninivell__original_light.svg)
 :::
-Evolució de la pila durant la crida i retorn de la funció `funcB`. El registre `sp` decreix en reservar el bloc d'activació de la funció i recupera el valor anterior en alliberar-lo.
+Evolució del registre `sp` durant la crida i el retorn de la funció fulla `funcB`: decreix en reservar el bloc d'activació de la funció i recupera el valor anterior en alliberar-lo.
 :::
 ::::
 
@@ -1485,7 +1487,7 @@ func:
 
 ### Subrutines multinivell: la pila del programa (els registres `s0`--`s11`) {#sec-multinivell-pila}
 
-Una subrutina és multinivell (*non-leaf*) si el seu codi conté alguna crida a una altra subrutina (les subrutines recursives en són un cas particular). Anàlogament, diem que una subrutina és uninivell (*leaf*) si no conté cap crida.
+Una subrutina multinivell en pot cridar una altra, que al seu torn en pot cridar una altra, i així successivament. En aquest cas, el bloc d'activació de cada subrutina s'apila sobre el de la subrutina que l'ha cridada.
 
 La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política d'«última en entrar, primera en sortir» (***last in, first out***, **LIFO**), la qual s'implementa mitjançant el registre de pila `sp`.
 
@@ -1495,14 +1497,14 @@ A RARS, la regió de pila arriba fins a `0x7FFFFFFC`, però l'entorn reserva l'e
 :::
 
 ::: {#tip-exemple-pila-multinivell .callout-tip}
-## Evolució de la pila durant crides aniuades
+## Evolució del registre `sp` durant la crida i retorn d'una funció multinivell
 
 ```{.c filename="C"}
 void funcA() { sentA1; funcB(); sentA2; }
 void funcB() { sentB; }
 ```
 
-::: {#fig-pila-crides-aniuades}
+::: {#fig-pila-crides-multinivell}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
 ![](/auto_figs/T3_pila_multinivell__original_light.svg)
@@ -1514,7 +1516,7 @@ void funcB() { sentB; }
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T3_pila_multinivell__original_light.svg)
 :::
-Evolució de la pila durant les crides i retorns de la funció `funcA` i la funció aniuada `funcB`. El registre `sp` decreix en reservar el bloc d'activació de cada funció i recupera el valor anterior en alliberar-lo.
+Evolució del registre `sp` durant la crida i el retorn de la funció multinivell `funcA` i de la funció fulla `funcB`: decreix en reservar el bloc d'activació de cada funció i recupera el valor anterior en alliberar-lo.
 :::
 :::
 

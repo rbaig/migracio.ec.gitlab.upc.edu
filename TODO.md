@@ -3,7 +3,7 @@
 --- 
 ## Entrades manuals
 
-- `T3_pila_func_multinivell.svg` i `T3_pila_func_uninivell.svg` no respecten paleta: gris clar memòria lliure
+- `T3_pila_multinivell.svg` i `T3_pila_uninivell.svg` no respecten paleta: gris clar memòria lliure
 
 ---
 
