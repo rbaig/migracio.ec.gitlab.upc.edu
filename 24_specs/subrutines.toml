@@ -1,0 +1,116 @@
+# subrutines.toml — Definicions de les figures de dependències de dades de les subrutines.
+#
+# Font de veritat de les figures `auto_figs/<nom>__subrutina_{light,dark}.svg`,
+# que genera `25_scripts/gen_subrutines.py` al pre-render (`_quarto.yml`). Cada
+# figura mostra el codi C de la subrutina, amb les crides en franges grises, i
+# una barra per dada, de l'última escriptura a l'últim ús: blava si travessa
+# alguna crida (va a un registre segur) i grisa si no. Al peu de cada barra, el
+# registre que li assigna el text.
+#
+# Format de cada figura:
+#
+#   [subrutina.<nom>]               # nom del fitxer, sense sufix ni extensió
+#   title   = "…"                   # <title> de l'SVG
+#   desc    = "…"                   # <desc> de l'SVG: és el text alternatiu de la figura
+#   amplada = 600                   # amplada del viewBox, en px
+#   codi    = ["…", "…"]            # línies del codi C, amb el sagnat en espais
+#   crides  = [[fila, "funció"]]    # files (des de 0) que contenen una crida
+#
+#   [[subrutina.<nom>.dades]]       # una barra per dada, en l'ordre en què es dibuixen
+#   nom        = "c"
+#   escriptura = 0                  # fila de l'última escriptura (la signatura, per als paràmetres)
+#   resultat   = false              # true si el valor és el resultat de la crida de la fila d'escriptura
+#   us         = 4                  # fila de l'últim ús
+#   registre   = "s0"
+#
+# Una dada travessa una crida si alguna crida cau entre l'escriptura i l'últim
+# ús: la de la fila de l'escriptura compta si el valor és d'abans de la crida
+# (`resultat = false`), i la de la fila de l'ús, sempre (els arguments
+# s'avaluen abans de la crida).
+
+[subrutina.T3_deps_multi]
+title   = "Dependències de dades de la subrutina multi"
+desc    = "Codi C de la subrutina multi, amb la crida a mcm marcada com a franja. Barres de vida, de l'última escriptura a l'últim ús: c (paràmetre) i d (d = a + b) travessen la crida i van als registres segurs s0 i s1; e, que s'escriu amb el resultat de la crida, no la travessa i va a t0."
+amplada = 600
+codi = [
+  "int multi(int a, int b, int c) {",
+  "    int d, e;",
+  "    d = a + b;",
+  "    e = mcm(c, d);",
+  "    return c + d + e;",
+  "}",
+]
+crides = [[3, "mcm"]]
+
+[[subrutina.T3_deps_multi.dades]]
+nom = "c"
+escriptura = 0
+resultat = false
+us = 4
+registre = "s0"
+
+[[subrutina.T3_deps_multi.dades]]
+nom = "d"
+escriptura = 2
+resultat = false
+us = 4
+registre = "s1"
+
+[[subrutina.T3_deps_multi.dades]]
+nom = "e"
+escriptura = 3
+resultat = true
+us = 4
+registre = "t0"
+
+[subrutina.T3_deps_exemple]
+title   = "Dependències de dades de la subrutina exemple"
+desc    = "Codi C de la subrutina exemple, amb les crides a f i a g marcades com a franges. Barres de vida, de l'última escriptura a l'últim ús: c, d i res_f travessen alguna crida i van als registres segurs s0, s1 i s2; res_g i e no en travessen cap i van a a0 i a t0."
+amplada = 600
+codi = [
+  "char exemple(int a, int b, int c) {",
+  "    int d, e, q;",
+  "    char v[18], w[20];",
+  "    d = a + b;",
+  "    res_f = f(d, &q);",
+  "    res_g = g(v, w);",
+  "    e = res_f + res_g;",
+  "    return v[e + q] + w[d + c];",
+  "}",
+]
+crides = [[4, "f"], [5, "g"]]
+
+[[subrutina.T3_deps_exemple.dades]]
+nom = "c"
+escriptura = 0
+resultat = false
+us = 7
+registre = "s0"
+
+[[subrutina.T3_deps_exemple.dades]]
+nom = "d"
+escriptura = 3
+resultat = false
+us = 7
+registre = "s1"
+
+[[subrutina.T3_deps_exemple.dades]]
+nom = "res_f"
+escriptura = 4
+resultat = true
+us = 6
+registre = "s2"
+
+[[subrutina.T3_deps_exemple.dades]]
+nom = "res_g"
+escriptura = 5
+resultat = true
+us = 6
+registre = "a0"
+
+[[subrutina.T3_deps_exemple.dades]]
+nom = "e"
+escriptura = 6
+resultat = false
+us = 7
+registre = "t0"

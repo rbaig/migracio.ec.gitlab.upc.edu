@@ -70,13 +70,12 @@ def paleta():
 
 
 def origens_declarats(md):
-    """Noms de figura de les taules de svg.md §15 (extretes de PDF) i §16 (script)."""
+    """Noms de figura de les taules de svg.md §15 (extretes de PDF) i de les dels generadors (§16, §17)."""
     dec = {}
     s15 = md.split('## 15.')[1].split('## 16.')[0] if '## 15.' in md else ''
     for m in re.finditer(r'^\| `(T\w+)` \|', s15, re.M):
         dec[m.group(1)] = 'extreta de PDF'
-    s16 = md.split('## 16.')[1] if '## 16.' in md else ''
-    for m in re.finditer(r'^\| `(T\w+)` \| `25_scripts/([\w.]+)`', s16, re.M):
+    for m in re.finditer(r'^\| `(T\w+)` \| `25_scripts/([\w.]+)`', md, re.M):
         dec[m.group(1)] = f'script ({m.group(2)})'
     return dec
 
@@ -128,30 +127,42 @@ def info_svg(path, pal, declarats):
     return d
 
 
-def registres():
-    """Entrades de registres.toml i compendis de gen_regs.py (COMPENDIS), que no tenen entrada al TOML."""
-    toml = tomllib.loads((ROOT / '24_specs/registres.toml').read_text(encoding='utf-8'))
-    regs = {n: (r.get('title', ''), r.get('desc', ''), 'gen_regs.py') for n, r in toml.get('registers', {}).items()}
+# Generadors del pre-render (model (b)): sufix a auto_figs/ → (definició, taula del TOML, script)
+GENERADORS = {
+    'registre':  ('24_specs/registres.toml', 'registers', 'gen_regs.py'),
+    'BA':        ('24_specs/ba.toml', 'ba', 'gen_BA.py'),
+    'subrutina': ('24_specs/subrutines.toml', 'subrutina', 'gen_subrutines.py'),
+}
+
+
+def generades():
+    """Figures dels generadors del pre-render, amb la clau `<fitxer TOML>:<nom>`, i els compendis
+    de gen_regs.py (COMPENDIS), que no tenen entrada al TOML."""
+    regs = {}
+    for toml_path, taula, script in GENERADORS.values():
+        toml = tomllib.loads((ROOT / toml_path).read_text(encoding='utf-8'))
+        for n, r in toml.get(taula, {}).items():
+            regs[f'{Path(toml_path).name}:{n}'] = (r.get('title', ''), r.get('desc', ''), script)
     sys.dont_write_bytecode = True                  # cap __pycache__ dins de 25_scripts/
     spec = importlib.util.spec_from_file_location('gen_regs', ROOT / '25_scripts/gen_regs.py')
     gen_regs = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gen_regs)
     for n, (_, title, desc) in gen_regs.COMPENDIS.items():
-        regs[n] = (title, desc, 'gen_regs.py (COMPENDIS)')
+        regs[f'registres.toml:{n}'] = (title, desc, 'gen_regs.py (COMPENDIS)')
     return {n: {'title': t, 'desc': d, 'origen': o, 'sha': '', 'fora': [], 'textLength': 0, 'gris': 0,
                 'textos': [], 'amplada': ''} for n, (t, d, o) in regs.items()}
 
 
 def font_de(nom):
     """Ruta d'una imatge del .qmd → clau del fitxer font."""
-    m = re.match(r'/?auto_figs/(.+)__(original|extern|registre)_(light|dark)\.svg$', nom)
-    if m:
-        return {'original': '22_figs_originals/{}.svg', 'extern': '23_figs_externes/{}.svg',
-                'registre': 'registres.toml:{}'}[m.group(2)].format(m.group(1))
-    m = re.match(r'/?auto_figs/(compendi_registres\w*)__registre_(light|dark)\.svg$', nom)
-    if m:
-        return f'registres.toml:{m.group(1)}'
-    return nom.lstrip('/')
+    m = re.match(r'/?auto_figs/(.+)__(original|extern|' + '|'.join(GENERADORS) + r')_(light|dark)\.svg$', nom)
+    if not m:
+        return nom.lstrip('/')
+    if m.group(2) == 'original':
+        return f'22_figs_originals/{m.group(1)}.svg'
+    if m.group(2) == 'extern':
+        return f'23_figs_externes/{m.group(1)}.svg'
+    return f'{Path(GENERADORS[m.group(2)][0]).name}:{m.group(1)}'
 
 
 def consumidors():
@@ -238,8 +249,7 @@ def main():
         else:
             fonts[f] = {'sha': hashlib.sha256(p.read_bytes()).hexdigest()[:12], 'origen': 'ràster',
                         'title': '', 'desc': '', 'fora': [], 'textLength': 0, 'gris': 0, 'textos': [], 'amplada': ''}
-    for n, r in registres().items():
-        fonts[f'registres.toml:{n}'] = r
+    fonts.update(generades())
     placeholder = fonts.get('22_figs_originals/TODO.svg', {}).get('sha')
 
     usos, figs, textos = consumidors()
@@ -254,17 +264,19 @@ def main():
 
     commit = git('rev-parse', '--short', 'HEAD').strip()
     data = git('log', '-1', '--format=%cs').strip()
-    brut = bool(git('status', '--porcelain', '--', *DIRS, '24_specs/registres.toml', '24_specs/svg.md',
+    brut = bool(git('status', '--porcelain', '--', *DIRS, *(t for t, _, _ in GENERADORS.values()), '24_specs/svg.md',
                     '*.qmd', *(f':!{x}' for x in EXCLOSOS)).strip())
     avisos = collections.defaultdict(list)
 
     # ---- taula per figura
     files_fig = []
     figs_amb_imatge = set()
+    subfigs = {fid for fid, f in figs.items() if any(p.startswith('fig-') for p in f['pila'])}
+    pares = {p for fid in subfigs for p in figs[fid]['pila'] if p.startswith('fig-')}
     for fid, f in sorted(figs.items(), key=lambda kv: (kv[1]['qmd'], kv[1]['linia'])):
         us = [u for u in usos if u['fig'] == fid]
         figs_amb_imatge |= {fid} if us else set()
-        font = us[0]['font'] if us else '(taula Markdown)'
+        font = us[0]['font'] if us else ('(subfigures)' if fid in pares else '(taula Markdown)')
         inf = fonts.get(font, {})
         callout = next((p for p in reversed(f['pila']) if p.startswith(('nte-', 'tip-', 'wrn-', 'cau-', 'imp-'))), '')
         refs = len(re.findall(r'@' + re.escape(fid) + r'(?![\w-])', corpus))
@@ -275,7 +287,7 @@ def main():
             avisos['Figures sense peu'].append(f'`{fid}` ({lloc})')
         elif not cap.rstrip().endswith('.'):
             avisos['Peus que no acaben en punt'].append(f'`{fid}` ({lloc})')
-        if not refs and not callout:
+        if not refs and not callout and fid not in subfigs:
             avisos['Figures del cos del text sense cap remissió `@`'].append(f'`{fid}` ({lloc})')
         if callout.startswith('nte-'):
             avisos['Etiquetes `#fig-` dins d\'un callout `#nte-`'].append(f'`{fid}` ({lloc}, `{callout}`)')
@@ -312,8 +324,12 @@ def main():
     for f, i in fonts.items():
         us = consumides.get(f, [])
         if not us:
-            if not f.startswith('registres.toml:'):
-                avisos['Fitxers font orfes (cap `.qmd` no els consumeix)'].append(f'`{f}`')
+            if ':' not in f:
+                tija = Path(f).stem
+                if any(k.endswith(':' + tija) and consumides.get(k) for k in fonts):
+                    avisos['Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives)'].append(f'`{f}`')
+                else:
+                    avisos['Fitxers font orfes (cap `.qmd` no els consumeix)'].append(f'`{f}`')
             continue
         if placeholder and i['sha'] == placeholder:
             avisos['Figures que consumeixen el placeholder (`TODO.svg`)'].append(f'`{f}`')
@@ -321,7 +337,7 @@ def main():
             avisos['Figures consumides com a exportació (`__extern_`)'].append(f'`{f}`')
         if i['origen'] == 'ràster' and 'by-nc-sa' not in f:
             avisos['Figures ràster'].append(f'`{f}`')
-        if f.endswith('.svg') or f.startswith('registres.toml:'):
+        if f.endswith('.svg') or ':' in f:
             if not i['title']:
                 avisos['SVG consumits sense `<title>`'].append(f'`{f}`')
             if not i['desc']:
@@ -341,12 +357,15 @@ def main():
          f'Generat per `25_scripts/inventari_figures.py` sobre `{commit}` ({data})'
          + (', amb canvis no confirmats a l\'arbre de treball' if brut else '') + '. **No l\'editeu a mà**: '
          '`make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l\'script.', '']
-    n_cons = sum(1 for f in fonts if consumides.get(f) and not f.startswith('registres.toml:'))
-    n_fit = sum(1 for f in fonts if not f.startswith('registres.toml:'))
-    o += [f'- **{len(figs)}** etiquetes `#fig-` ({len(figs_amb_imatge)} amb imatge; la resta són taules Markdown), '
+    n_cons = sum(1 for f in fonts if consumides.get(f) and ':' not in f)
+    n_fit = sum(1 for f in fonts if ':' not in f)
+    o += [f'- **{len(figs)}** etiquetes `#fig-`: {len(figs_amb_imatge)} amb imatge, {len(subfigs)} d\'elles subfigures de {len(pares)} figures, '
+          f'i {len(figs) - len(figs_amb_imatge) - len(pares)} taules Markdown; '
           f'i **{len(vistos)}** imatges sense etiqueta (les del compendi i la de la llicència).',
-          f'- **{n_fit}** fitxers a `22_figs_originals/` i `23_figs_externes/`: {n_cons} consumits i {n_fit - n_cons} orfes. '
-          f'A més, **{sum(1 for f in fonts if f.startswith("registres.toml:") and consumides.get(f))}** figures generades per `gen_regs.py`.', '']
+          f'- **{n_fit}** fitxers a `22_figs_originals/` i `23_figs_externes/`: {n_cons} consumits i {n_fit - n_cons} sense consumir.',
+          '- Figures generades al pre-render: ' + ', '.join(
+              f'**{sum(1 for f in fonts if f.startswith(Path(t).name + ":") and consumides.get(f))}** de `{sc}` (`__{suf}`)'
+              for suf, (t, _, sc) in GENERADORS.items()) + '.', '']
     o += ['## Figures', '', '| Etiqueta | Lloc | Font | Origen | Callout | @ | Peu | `<desc>` |',
           '| :--- | :--- | :--- | :--- | :--- | ---: | :--- | :--- |']
     for fid, lloc, font, orig, callout, refs, cap, desc in files_fig:

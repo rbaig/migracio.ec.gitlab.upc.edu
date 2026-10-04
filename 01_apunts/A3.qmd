@@ -1613,7 +1613,8 @@ int multi(int a, int b, int c) {
 
 **Pas 1. Registres segurs.** Identificació de les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). S'assignen els registres segurs `s0` i `s1`, respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
 
-::: {#fig-deps-multi}
+:::::: {#fig-deps-multi layout-ncol=1}
+::::: {#fig-deps-multi-fletxes}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
 ![](/auto_figs/T3_deps_multi__original_light.svg)
@@ -1625,8 +1626,24 @@ int multi(int a, int b, int c) {
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T3_deps_multi__original_light.svg)
 :::
-Dependències de dades de la subrutina `multi`. La línia de punts separa el codi anterior i posterior a la crida a `mcm`. Les fletxes indiquen les dades `c` i `d` que travessen la frontera i que s'han de guardar en registres segurs.
+Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el posterior a la crida.
+:::::
+::::: {#fig-deps-multi-barres}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T3_deps_multi__subrutina_light.svg)
 :::
+::: {.dark-content}
+![](/auto_figs/T3_deps_multi__subrutina_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T3_deps_multi__subrutina_light.svg)
+:::
+Amb barres de vida, de l'última escriptura a l'últim ús. La franja grisa és la crida.
+:::::
+Dependències de dades de la subrutina `multi`, en dues representacions. Les dades `c` i `d` travessen la crida a `mcm` i s'han de guardar en registres segurs; `e`, no.
+::::::
 
 **Pas 2. Bloc d'activació.** No hi ha variables locals a la pila (totes són escalars). Cal desar `s0`, `s1` i `ra`: 3 words = 12 bytes.
 
@@ -1639,14 +1656,14 @@ Dependències de dades de la subrutina `multi`. La línia de punts separa el cod
 ::: {#fig-ba-multi}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T3_ba_multi__original_light.svg)
+![](/auto_figs/T3_ba_multi__BA_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T3_ba_multi__original_dark.svg)
+![](/auto_figs/T3_ba_multi__BA_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T3_ba_multi__original_light.svg)
+![](/auto_figs/T3_ba_multi__BA_light.svg)
 :::
 Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i `ra` desats als offsets `+0`, `+4` i `+8` respectivament.
 :::
@@ -1710,7 +1727,8 @@ e = res_f + res_g;
 
 Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS) són: `c`, `d` i `res_f`. S'assignen a `s0`, `s1` i `s2` respectivament. La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0` i `a1`.
 
-::: {#fig-deps-exemple}
+:::::: {#fig-deps-exemple layout-ncol=1}
+::::: {#fig-deps-exemple-fletxes}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
 ![](/auto_figs/T3_deps_exemple__original_light.svg)
@@ -1722,9 +1740,24 @@ Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS) s�
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T3_deps_exemple__original_light.svg)
 :::
-Dependències de dades de la subrutina `exemple`. Les línies de punts separen el codi anterior i posterior a cada crida. Les fletxes indiquen les dades `c`, `d` i `res_f` que travessen fronteres de crides i s'han de
-guardar en registres segurs `s0`, `s1` i `s2` respectivament.
+Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el posterior a cada crida.
+:::::
+::::: {#fig-deps-exemple-barres}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T3_deps_exemple__subrutina_light.svg)
 :::
+::: {.dark-content}
+![](/auto_figs/T3_deps_exemple__subrutina_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T3_deps_exemple__subrutina_light.svg)
+:::
+Amb barres de vida, de l'última escriptura a l'últim ús. Les franges grises són les crides.
+:::::
+Dependències de dades de la subrutina `exemple`, en dues representacions. Les dades `c`, `d` i `res_f` travessen alguna crida i s'han de guardar en registres segurs, `s0`, `s1` i `s2` respectivament; `res_g` i `e`, no.
+::::::
 
 Anotació de registres sobre el codi:
 
@@ -1756,14 +1789,14 @@ char exemple(int a, int b, int c) { /* a → a0, b → a1, c → s0 */
 ::: {#fig-ba-exemple}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T3_ba_exemple__original_light.svg)
+![](/auto_figs/T3_ba_exemple__BA_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T3_ba_exemple__original_dark.svg)
+![](/auto_figs/T3_ba_exemple__BA_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T3_ba_exemple__original_light.svg)
+![](/auto_figs/T3_ba_exemple__BA_light.svg)
 :::
 Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i `w` als offsets `+0`, `+4` i `+22`, alineació als bytes `+42`–`+43`, i registres desats `s0`, `s1`, `s2`, `ra` als offsets `+44`, `+48`, `+52` i `+56`.
 :::

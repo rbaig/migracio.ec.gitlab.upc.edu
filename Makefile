@@ -10,8 +10,11 @@ render-complet: taules  # HTML + PDF (~5 min aquí, ~7 al CI)
 inventari:              # inventari de figures (24_specs/figures.md)
 	python3 25_scripts/inventari_figures.py
 
+comprova-figures:       # els SVG versionats dels generadors de model (a) coincideixen amb el que generen
+	python3 25_scripts/gen_T4_sumador.py --comprova
+
 clean:
 	rm -rf _book *_files
 	rm -f *.html *.log Estructura-de-computadors.tex
 
-.PHONY: render render-complet taules inventari clean
+.PHONY: render render-complet taules inventari comprova-figures clean

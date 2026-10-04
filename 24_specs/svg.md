@@ -535,3 +535,24 @@ Convenció fixada a la fase 5 (2026-10-03, decisió de l'usuari) amb les figures
 | `T4_sumador_propagacio_rossec` | `25_scripts/gen_T4_sumador.py` | Cadena de sumadors complets i XOR del sobreeiximent |
 
 Els SVG generats es versionen a `22_figs_originals/`: el generador no forma part del pre-render. Si es canvia, cal regenerar-los (`25_scripts/gen_T4_sumador.py`) i versionar-ne el resultat.
+
+---
+
+## 17. Figures generades per script
+
+Model de generació de la fase 7c (2026-10-03, decisió de l'usuari):
+
+- **Model (b), per a les famílies**: la definició és el font, en un TOML de `24_specs/`, i un script del pre-render (`_quarto.yml`) n'escriu les figures a `auto_figs/`, amb un sufix propi; l'SVG no es versiona. Retocar una figura és canviar-ne la definició, i una convenció nova s'aplica a tota la família d'un sol cop.
+- **Model (a), per a les figures soltes**: el font és l'SVG versionat a `22_figs_originals/`, i un script el regenera. L'script té l'opció `--comprova`, que compara el que generaria amb l'SVG versionat sense escriure res, i `make comprova-figures` les passa totes: un SVG retocat a mà i no a l'script hi surt com a diferència.
+
+Generadors del pre-render (model (b)). El sufix de cada un és a la taula de sufixos de `13_contrib.qmd §Convencions SVG`:
+
+| Definició | Generador | Sufix | Figures |
+|:---|:---|:---|:---|
+| `24_specs/registres.toml` | `25_scripts/gen_regs.py` | `__registre` | Registres de bits i formats d'instrucció (T2, T3, T5, T9) |
+| `24_specs/ba.toml` | `25_scripts/gen_BA.py` | `__BA` | Blocs d'activació, amb les zones de §3–§11 (T3) |
+| `24_specs/subrutines.toml` | `25_scripts/gen_subrutines.py` | `__subrutina` | Dependències de dades d'una subrutina: el codi, les crides en franges i una barra de vida per dada (T3) |
+
+Figures de model (a): les del sumador de T4 (taula de §16).
+
+Una mateixa figura pot tenir alhora una versió original i una de generada, amb el mateix nom i un sufix diferent: les dependències de `multi` i d'`exemple` (A3) són a `22_figs_originals/` (amb fletxes) i a `subrutines.toml` (amb barres de vida), i A3 les mostra totes dues, com a subfigures (a) i (b); dels BA de `multi` i d'`exemple`, A3 consumeix la generada, i els originals es conserven (p. ex. per a les diapositives). Decisions de l'usuari (2026-10-04).

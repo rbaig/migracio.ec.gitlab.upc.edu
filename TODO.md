@@ -347,6 +347,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ✅ **Arranjaments petits** (2026-10-03): la «S» de T5, horitzontal des de `registres.toml` (§Decisions obertes → Anotacions de T4–T6), i l'SVG orfe, retirat; el gris del text (§Tasques globals → SVG); el requadre tallat de `T5_exponent.svg` (ara de 138 px, dins del `viewBox`); a `T9_cicle_interrupcio.svg`, la línia discontínua comença sota «(detecció)», «Execució normal» es desplaça a l'esquerra de la fletxa de la petició, i la «t» de l'eix surt de sobre la punta de fletxa; i el `.gv` de Graphviz, reanomenat (§Tasques transversals → «Discrepància de noms…»). El `<title>` i el `<desc>` equivocats de `T7_lru_exemple.svg` no es toquen: el pilot regenera la figura.
 
+  ✅ **Primers generadors del model (b)** (2026-10-04): `gen_BA.py` (`24_specs/ba.toml`, sufix `__BA`) i `gen_subrutines.py` (`24_specs/subrutines.toml`, sufix `__subrutina`), al pre-render; i la taula de sufixos d'origen, revisada i escrita a `13_contrib.qmd §Convencions SVG` (a l'arbre només n'hi havia tres, `__original`, `__extern` i `__registre`, i el `__graphviz` del nom d'un font). Detall a §T3 («Retocs manuals…») i a §Tasques globals → SVG («Generador de BA…»). `make comprova-figures` compara els SVG versionats del model (a) amb el que generen els seus scripts.
+
 - **Confirmar al Termcat «semisumador» (*half-adder*) i «sumador complet» (*full-adder*)** (registrada 2026-10-03, fase 5). Són els termes que fan servir A4 (`#wrn-sobreeiximent-maquinari`) i les figures del sumador, i ja són a la taula de `13_contrib.qmd §Substitucions obligatòries`, marcats «pendent de confirmar». L'usuari no els ha pogut trobar a la interfície nova del Termcat; només hi consta *adder* → «sumador». Si el Termcat en dona uns altres, cal canviar la taula, el text d'A4 i els rètols dels SVG (`git grep -n -i 'semisumador\|sumador complet'`).
 
 - **`S_criteris_seleccio.qmd` — taula de T1 incompleta** (auditoria, sessió 2, 2026-09-21). La taula de `## {{< var tema1 >}}` té **una sola fila** (`@exr-t1-enters-taules`, `:23`) i ha de recollir la resta de problemes seleccionats de `S1.qmd`. El marcador «TODO» que ho registrava era contingut destinat a l'alumne i es va substituir per la nota neutra de `:19` («*Taula provisional: recull els problemes de `S1.qmd` seleccionats fins ara.*»); **aquesta entrada és ara l'únic registre de la tasca**. El fitxer és comentat a `_quarto.yml:95`, de manera que avui no es renderitza.
@@ -389,6 +391,14 @@ Cap entrada viva des del 2026-10-03 (les dues últimes, la verificació de la ta
   - `auto_figs/T3_ba_exemple__original_light.svg`
   - `auto_figs/T3_deps_multi__original_light.svg`
   - `auto_figs/T3_deps_exemple__original_light.svg`
+
+  📌 **Estat a 2026-10-04 (fase 7c): dues de les tres figures tenen errors de contingut, i les esmenes dels originals les fa l'usuari.** Ho va trobar Claude Code en preparar els retocs (decisió de l'usuari 3, que després es va concretar així). `T3_ba_exemple` dibuixa `w` com a `int` de 80 bytes, quan el codi diu `char w[20]` (20 bytes), i rotula `v[0]` la subfranja de `v[17]`. `T3_deps_exemple` posa fletxes a `a` i `b`, que no travessen cap crida, i hi diu `e = res_g + res_f`, quan el text diu `res_f + res_g`. `T3_deps_multi` és correcta. Decisions de l'usuari (2026-10-04):
+
+  - **Els originals es conserven i els esmena l'usuari**, a `22_figs_originals/`; també els vol per a les diapositives.
+  - **Dependències de dades: les dues representacions.** A3 mostra `#fig-deps-multi` i `#fig-deps-exemple` com a dues subfigures: (a) l'original, amb fletxes, i (b) la generada per `25_scripts/gen_subrutines.py` des de `24_specs/subrutines.toml` (sufix `__subrutina`), amb les crides en franges grises i una barra de vida per dada, blava si travessa alguna crida i grisa si no, i el registre al peu. Fins que l'usuari esmeni l'original de `exemple`, la subfigura (a) d'aquesta conserva els dos errors de dalt.
+  - **BA: A3 consumeix la versió generada** per `25_scripts/gen_BA.py` des de `24_specs/ba.toml` (sufix `__BA`), per a `exemple` i per a `multi`; la d'`exemple` ja no té els errors, i porta rotulats el primer i el darrer element de cada vector, amb les vores entre elements fines. Els dos originals es conserven a `22_figs_originals/` sense que cap `.qmd` els consumeixi; l'inventari els llista a part dels orfes.
+
+  Queda viva per a les esmenes de l'usuari a `T3_deps_exemple.svg` i `T3_ba_exemple.svg` (originals).
 
 ### T4
 
@@ -540,7 +550,7 @@ Rutes de destí per a les 9: `/auto_figs/T8_*__original_light.svg`.
   | `T3_ba_general` | **326** (`0 0 326 580`) |
   | `T3_ba_func` | **326** (`0 0 326 540`) |
   | `T3_ba_multi` | **326** (`0 0 326 260`) |
-  | `T3_ba_exemple` | **316** (`0 0 316 620`) |
+  | `T3_ba_exemple` | **316** (`0 0 316 620`); des del 2026-10-04, A3 consumeix la versió de `gen_BA.py`, de **326** (l'original es conserva) |
   | `T3_func_uninivell_pila` | **310** (`0 0 310 240`) |
   | `T3_pila_crides_aniuades` | **450** (`0 0 450 280`) |
 
@@ -549,6 +559,25 @@ Rutes de destí per a les 9: `/auto_figs/T8_*__original_light.svg`.
   ```
 
   📌 **Conseqüència: `24_specs/svg.md` ha quedat desfasat.** Les línies `:70` («`w_rect=230 px`; `W=316 px`») i `:76` («els valors numèrics … corresponen al canvas actual … `W=316 px`») fixen com a «canvas actual» un valor que **sis de les set figures no compleixen**. La migració ha de corregir també l'especificació, no només les figures. **No s'ha tocat**: és corpus, i l'auditoria no en modifica.
+
+- **Generador de BA (`gen_BA.py`): on es pot fer servir, i pla d'aplicació** (registrada el 2026-10-04, fase 7c, a petició de l'usuari). `25_scripts/gen_BA.py` i `24_specs/ba.toml` generen avui `T3_ba_exemple` i `T3_ba_multi` (A3). Llocs mesurats on es podria fer servir (sobre `2dbf236`, amb el treball de la fase 7c sense confirmar):
+
+  | Lloc | Avui | Què caldria a `gen_BA.py` |
+  | :--- | :--- | :--- |
+  | `#fig-ba-func` (A3, `T3_ba_func`) | SVG original | Res: és un `char[10]`, alineació i un `int[10]` |
+  | `#fig-ba-general` (A3, `T3_ba_general`) | SVG original | Zones amb text lliure (no dades concretes) |
+  | `#sol-moda` (`L3.qmd`) | Taula «Offset des de `sp`» | Res; caldria decidir si la figura substitueix la taula o l'acompanya |
+  | Solució de la funció `A` (`S3.qmd`, §Subrutines: context i bloc d'activació) | Taula «Desplaçament des de `sp`» | Ídem |
+  | Taules de `#tip-exemple-multi` i `#tip-exemple-exemple` (A3) | Taula al costat de la figura | Opció d'offsets a la columna esquerra (`svg.md §9`); amb ella, la taula sobraria |
+  | `#fig-func-uninivell-pila`, `#fig-pila-crides-aniuades` (A3) | SVG original | Una altra disposició: diverses piles petites en fila, amb `sp` a cada pas |
+  | `#fig-mapa-memoria` (A3) | SVG original | Una altra disposició: regions amb adreces (`svg.md §9`, sense espais per la decisió 10) i fletxes de creixement (§11) |
+
+  ```bash
+  git grep -n -i -E "^\| *(offset|desplaçament) des de \`?sp\`? *\|" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'   # 4: A3 (2), L3 (1), S3 (1)
+  git grep -n -o -E "auto_figs/T3_(ba|func|pila|mapa)[a-z_]*__[a-zA-Z]+_light" -- '*.qmd' | sort -u
+  ```
+
+  **Pla proposat**, per fer-lo amb la família de memòria de la decisió 13 de la fase 7c (§Tasques transversals → «Revisió general de les figures…»), juntament amb la migració del canvas dels BA (entrada anterior): (1) a `gen_BA.py`, zones de text lliure i opció d'offsets; (2) `T3_ba_func` i `T3_ba_general`, generats; (3) decidir si les solucions de L3 i S3 porten la figura, i si les taules d'A3 se'n van; (4) un generador germà per a les piles en fila i el mapa de memòria, amb les mateixes primitives; i (5) la classe `estreta` de `svg.md §2`, que llavors és un paràmetre. A3 és en revisió externa: cal coordinar-ho amb el grup.
 
 - **`22_figs_originals/T4_multiplicador_sequencial.png` (63 KB)**: decidir si s'elimina. Verificat (auditoria, sessió 2): **no el referencia ningú** — `A4.qmd:175,178,182` usen només el `.svg` via `auto_figs/`. És **l'única parella `.png`+`.svg` del directori**, de manera que eliminar-lo també elimina l'excepció al criteri d'un sol format font. No s'ha tocat: és un fitxer binari i la supressió no entrava a l'abast autoritzat. ✅ **Retirat a la fase 7c (2026-10-03, decisió de l'usuari 5)**; es recupera amb `git show 1f5f006:<ruta>`, l'últim commit on hi era. Es retira en tancar la fase.
 

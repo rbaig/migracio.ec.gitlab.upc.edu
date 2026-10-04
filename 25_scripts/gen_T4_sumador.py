@@ -2,7 +2,7 @@
 """
 gen_T4_sumador.py — Genera les figures del sumador de T4 (A4, #wrn-sobreeiximent-maquinari).
 
-    25_scripts/gen_T4_sumador.py [--output-dir 22_figs_originals]
+    25_scripts/gen_T4_sumador.py [--output-dir 22_figs_originals] [--comprova]
 
 Escriu dos SVG natius a `22_figs_originals/`:
 
@@ -17,6 +17,7 @@ operadors): `24_specs/svg.md §16`.
 """
 import argparse
 import os
+import sys
 
 
 SANS = "'Liberation Sans', Arial, Helvetica, sans-serif"
@@ -219,9 +220,19 @@ FIGURES = {
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--output-dir", default="22_figs_originals")
+    ap.add_argument("--comprova", action="store_true",
+                    help="compara amb els SVG versionats; no escriu res")
     args = ap.parse_args()
+    dif = 0
     for name, fig in FIGURES.items():
         path = os.path.join(args.output_dir, name)
+        if args.comprova:
+            actual = open(path).read() if os.path.exists(path) else None
+            if actual != fig():
+                print(f"DIFEREIX: {path}", file=sys.stderr)
+                dif += 1
+            continue
         with open(path, "w") as f:
             f.write(fig())
         print(path)
+    sys.exit(1 if dif else 0)
