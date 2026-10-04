@@ -460,16 +460,16 @@ requereix conèixer els accessos futurs. La seva utilitat pràctica és establir
 ::: {#fig-lru-exemple}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_lru_exemple__original_light.svg){width="95%"}
+![](/auto_figs/T7_lru_exemple__MC_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_lru_exemple__original_dark.svg){width="95%"}
+![](/auto_figs/T7_lru_exemple__MC_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_lru_exemple__original_light.svg)
+![](/auto_figs/T7_lru_exemple__MC_light.svg)
 :::
-Evolució de la memòria cau associativa per conjunts de 2 vies amb algorisme LRU per a la seqüència d'accessos `@4`, `@38`, `@6`, `@52`. Tots els accessos van al conjunt 1; els conjunts 0, 2 i 3 resten buits.
+Evolució de la memòria cau associativa per conjunts de 2 vies amb reemplaçament LRU per a la seqüència de lectures `@4`, `@38`, `@6`, `@52`. Tots els accessos van al conjunt 1; els conjunts 0, 2 i 3 resten buits. La columna LRU diu, per a cada conjunt ple, quina via es reemplaçaria.
 :::
 :::
 
@@ -540,48 +540,65 @@ Els exemples següents usen una memòria cau de correspondència directa molt se
 
 Es parteix sempre de l'estat de la memòria cau després d'executar la seqüència inicial de 5 lectures:
 
-- `lh @0` (bloc 0, índex 0) → **Fallada**, copia bloc 0 a línia 0.
-- `lh @2` (bloc 0, índex 0) → **Encert**.
-- `lh @4` (bloc 1, índex 1) → **Fallada**, copia bloc 1 a línia 1.
-- `lh @6` (bloc 1, índex 1) → **Encert**.
-- `lh @8` (bloc 2, índex 0) → **Fallada**, reemplaça bloc 0 a línia 0.
+- `lb @0` (bloc 0, índex 0) → **Fallada**, copia bloc 0 a línia 0.
+- `lb @2` (bloc 0, índex 0) → **Encert**.
+- `lb @4` (bloc 1, índex 1) → **Fallada**, copia bloc 1 a línia 1.
+- `lb @6` (bloc 1, índex 1) → **Encert**.
+- `lb @8` (bloc 2, índex 0) → **Fallada**, reemplaça bloc 0 a línia 0.
 
 Estat resultant: línia 0 conté el bloc 2 (`@8`–`@11`), línia 1 conté el bloc 1 (`@4`–`@7`).
 
-::: {#fig-escriptura-estat-inicial}
+:::::: {#fig-escriptura-estat-inicial layout-ncol=1}
+::::: {#fig-escriptura-estat-inicial-sequencia}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_escriptura_estat_inicial__original_light.svg){width="100%"}
+![](/auto_figs/T7_escriptura_estat_inicial__MC_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_escriptura_estat_inicial__original_dark.svg){width="100%"}
+![](/auto_figs/T7_escriptura_estat_inicial__MC_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_escriptura_estat_inicial__original_light.svg)
+![](/auto_figs/T7_escriptura_estat_inicial__MC_light.svg)
 :::
-Estat de la memòria cau al final de la seqüència inicial de 5 lectures, partint d'una MC buida. La línia 0 conté el bloc 2 (`@8`–`@11`) i la línia 1 conté el bloc 1 (`@4`–`@7`).
+Pas a pas: la MP, cada lectura i l'estat de la MC després de l'accés.
+:::::
+::::: {#fig-escriptura-estat-inicial-traca}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T7_escriptura_estat_inicial_traca__MC_light.svg){width="60%"}
 :::
+::: {.dark-content}
+![](/auto_figs/T7_escriptura_estat_inicial_traca__MC_dark.svg){width="60%"}
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T7_escriptura_estat_inicial_traca__MC_light.svg){width="60%"}
+:::
+En forma de traça: una fila per lectura, amb el bloc que conté cada línia de la MC després de l'accés; en color, el que acaba de canviar, i amb la vora gruixuda, la línia a què s'ha accedit.
+:::::
+Estat de la memòria cau al final de la seqüència inicial de 5 lectures, partint d'una MC buida, en les dues formes que fa servir aquest tema. La línia 0 conté el bloc 2 (`@8`–`@11`) i la línia 1 conté el bloc 1 (`@4`–`@7`).
+::::::
 
 ::: {#tip-escriptura-immediata-assignacio .callout-tip}
 ## Exemple 1: escriptura immediata amb assignació
 
 Partint de l'estat inicial, s'executen dues escriptures:
 
-- `sh @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal simultàniament.
-- `sh @252` (bloc 63, índex 1) → **Fallada**: es copia primer el bloc 63 de la memòria principal a la línia 1 (reemplaçant el bloc 1), i després s'escriu a la MC i a la memòria principal.
+- `sb @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal simultàniament.
+- `sb @252` (bloc 63, índex 1) → **Fallada**: es copia primer el bloc 63 de la memòria principal a la línia 1 (reemplaçant el bloc 1), i després s'escriu a la MC i a la memòria principal.
 
 ::: {#fig-escriptura-immediata-assignacio}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_escriptura_immediata_amb_assignacio__original_light.svg){width="100%"}
+![](/auto_figs/T7_escriptura_immediata_amb_assignacio__MC_light.svg){width="100%"}
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_escriptura_immediata_amb_assignacio__original_dark.svg){width="100%"}
+![](/auto_figs/T7_escriptura_immediata_amb_assignacio__MC_dark.svg){width="100%"}
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_escriptura_immediata_amb_assignacio__original_light.svg)
+![](/auto_figs/T7_escriptura_immediata_amb_assignacio__MC_light.svg){width="100%"}
 :::
 Escriptura immediata amb assignació: en cas d'encert s'escriu a MC i MP simultàniament; en cas de fallada, es copia primer el bloc a MC i després s'escriu a MC i MP.
 :::
@@ -592,20 +609,20 @@ Escriptura immediata amb assignació: en cas d'encert s'escriu a MC i MP simult�
 
 Partint del mateix estat inicial, les mateixes dues escriptures:
 
-- `sh @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal (igual que amb assignació).
-- `sh @252` (bloc 63, índex 1) → **Fallada**: s'escriu **únicament a la memòria principal**. La memòria cau no s'altera.
+- `sb @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal (igual que amb assignació).
+- `sb @252` (bloc 63, índex 1) → **Fallada**: s'escriu **únicament a la memòria principal**. La memòria cau no s'altera.
 
 ::: {#fig-escriptura-immediata-sense-assignacio}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_escriptura_immediata_sense_assignacio__original_light.svg){width="100%"}
+![](/auto_figs/T7_escriptura_immediata_sense_assignacio__MC_light.svg){width="100%"}
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_escriptura_immediata_sense_assignacio__original_dark.svg){width="100%"}
+![](/auto_figs/T7_escriptura_immediata_sense_assignacio__MC_dark.svg){width="100%"}
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_escriptura_immediata_sense_assignacio__original_light.svg)
+![](/auto_figs/T7_escriptura_immediata_sense_assignacio__MC_light.svg){width="100%"}
 :::
 Escriptura immediata sense assignació: en cas d'encert s'escriu a MC i MP; en cas de fallada, s'escriu directament a la MP sense modificar la MC.
 :::
@@ -616,21 +633,21 @@ Escriptura immediata sense assignació: en cas d'encert s'escriu a MC i MP; en c
 
 En aquest cas la memòria cau incorpora el bit $D$. Partint del mateix estat inicial (amb $D = 0$ a totes les línies), s'executen una escriptura, una lectura i una altra escriptura:
 
-- `sh @10` (bloc 2, índex 0) → **Encert**: s'escriu **únicament a la MC** i es posa $D = 1$ a la línia 0.
-- `lh @0` (bloc 0, índex 0) → **Fallada** amb $D = 1$ a la línia 0: cal primer copiar el bloc 2 (modificat) a la memòria principal, i després copiar el bloc 0 a la línia 0 ($D \leftarrow 0$).
-- `sh @252` (bloc 63, índex 1) → **Fallada** amb $D = 0$ a la línia 1: es copia el bloc 63 a la línia 1 (reemplaça el bloc 1) i s'escriu a la MC ($D \leftarrow 1$).
+- `sb @10` (bloc 2, índex 0) → **Encert**: s'escriu **únicament a la MC** i es posa $D = 1$ a la línia 0.
+- `lb @0` (bloc 0, índex 0) → **Fallada** amb $D = 1$ a la línia 0: cal primer copiar el bloc 2 (modificat) a la memòria principal, i després copiar el bloc 0 a la línia 0 ($D \leftarrow 0$).
+- `sb @252` (bloc 63, índex 1) → **Fallada** amb $D = 0$ a la línia 1: es copia el bloc 63 a la línia 1 (reemplaça el bloc 1) i s'escriu a la MC ($D \leftarrow 1$).
 
 ::: {#fig-escriptura-retardada}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_escriptura_retardada__original_light.svg){width="100%"}
+![](/auto_figs/T7_escriptura_retardada__MC_light.svg){width="100%"}
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_escriptura_retardada__original_dark.svg){width="100%"}
+![](/auto_figs/T7_escriptura_retardada__MC_dark.svg){width="100%"}
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_escriptura_retardada__original_light.svg)
+![](/auto_figs/T7_escriptura_retardada__MC_light.svg){width="100%"}
 :::
 Escriptura retardada amb assignació: en cas d'encert s'escriu únicament a la MC i es posa $D\leftarrow 1$; en cas de fallada, si el bloc expulsat té $D=1$, cal copiar-lo primer a la MP.
 :::
@@ -863,16 +880,16 @@ El patró es repeteix per a les parelles $i = 4,5$ i $i = 6,7$. En total: **8 fa
 ::: {#fig-conflicte-exemple}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_conflicte_exemple__original_light.svg)
+![](/auto_figs/T7_conflicte_exemple__MC_light.svg){width="80%"}
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_conflicte_exemple__original_dark.svg)
+![](/auto_figs/T7_conflicte_exemple__MC_dark.svg){width="80%"}
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_conflicte_exemple__original_light.svg)
+![](/auto_figs/T7_conflicte_exemple__MC_light.svg){width="80%"}
 :::
-Fallades de conflicte en el recorregut paral·lel de dos vectors amb una memòria cau de correspondència directa de 4 línies.
+Fallades de conflicte en el recorregut paral·lel de dos vectors amb una memòria cau de correspondència directa de 4 línies, en forma de traça: una fila per accés, amb el bloc que conté cada línia després de l'accés. `A[i]` i `B[i]` van sempre a la mateixa línia: a les $i$ parelles, les dues lectures són fallades obligatòries; a les senars, de conflicte. Fallen els 16 accessos.
 :::
 
 Una memòria cau associativa per conjunts de 2 vies eliminaria completament les fallades de conflicte d'aquest exemple: els blocs de `A` i `B` podrien coexistir a les dues vies del mateix conjunt.
@@ -897,34 +914,19 @@ El vector `V` ocupa 8 blocs de 2 words cadascun. La memòria cau, amb 4 línies,
 
 Augmentar l'associativitat no resoldria res: les fallades es produeixen perquè el working set (8 blocs) supera la capacitat de la memòria cau (4 línies), no per cap conflicte d'índex. L'única solució seria una memòria cau de 8 o més línies.
 
-::: {#fig-capacitat-exemple-bucle-primera-passada}
+::: {#fig-capacitat-exemple}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T7_capacitat_exemple_bucle_primera_passada__original_light.svg)
+![](/auto_figs/T7_capacitat_exemple__MC_light.svg){width="80%"}
 :::
 ::: {.dark-content}
-![](/auto_figs/T7_capacitat_exemple_bucle_primera_passada__original_dark.svg)
+![](/auto_figs/T7_capacitat_exemple__MC_dark.svg){width="80%"}
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_capacitat_exemple_bucle_primera_passada__original_light.svg)
+![](/auto_figs/T7_capacitat_exemple__MC_light.svg){width="80%"}
 :::
-Fallades de capacitat — primera passada ($i=0\ldots6$): Cold Miss fins que la MC queda plena al final de $i=6$.
-:::
-
-::: {#fig-capacitat-exemple-bucle-segona-passada}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/auto_figs/T7_capacitat_exemple_bucle_segona_passada__original_light.svg)
-:::
-::: {.dark-content}
-![](/auto_figs/T7_capacitat_exemple_bucle_segona_passada__original_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/auto_figs/T7_capacitat_exemple_bucle_segona_passada__original_light.svg)
-:::
-Fallades de capacitat — segona passada: Cold Miss continuades ($i=7\ldots15$) i Capacity Miss sistemàtiques al segon bucle.
+Fallades de capacitat en una memòria cau completament associativa de 4 línies amb reemplaçament LRU, en forma de traça. Al primer bucle, cada bloc nou entra amb una fallada obligatòria i, a partir del cinquè, expulsa el més antic; al segon, els blocs de `V[0]` a `V[7]` ja no hi són i tornen a fallar, ara amb fallades de capacitat.
 :::
 
 ## Memòries cau multinivell {#sec-multinivell}

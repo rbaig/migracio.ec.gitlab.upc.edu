@@ -1,10 +1,10 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `6b42c73` (2026-10-04), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
-- **67** etiquetes `#fig-`: 62 amb imatge, 4 d'elles subfigures de 2 figures, i 3 taules Markdown; i **24** imatges sense etiqueta (les del compendi i la de la llicència).
-- **62** fitxers a `22_figs_originals/` i `23_figs_externes/`: 57 consumits i 5 sense consumir.
-- Figures generades al pre-render: **18** de `gen_regs.py` (`__registre`), **2** de `gen_BA.py` (`__BA`), **2** de `gen_subrutines.py` (`__subrutina`).
+- **68** etiquetes `#fig-`: 62 amb imatge, 6 d'elles subfigures de 3 figures, i 3 taules Markdown; i **24** imatges sense etiqueta (les del compendi i la de la llicència).
+- **62** fitxers a `22_figs_originals/` i `23_figs_externes/`: 49 consumits i 13 sense consumir.
+- Figures generades al pre-render: **18** de `gen_regs.py` (`__registre`), **2** de `gen_BA.py` (`__BA`), **2** de `gen_subrutines.py` (`__subrutina`), **8** de `gen_MC.py` (`__MC`).
 
 ## Figures
 
@@ -63,18 +63,19 @@ Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb 
 | `fig-assoc-conjunts-taula` | `A7.qmd:343` | `22_figs_originals/T7_assoc_conjunts_taula.svg` | Inkscape |  | 0 | Organització d'una memòria cau associativa per conjunts de 4 conjunts i 3 vies: el bloc d… | Estructura d'una MC associativa per conjunts de 4 conjunts … |
 | `fig-assoc-conjunts-diagrama` | `A7.qmd:362` | `23_figs_externes/T7_assoc_conjunts_diagrama.svg` | exportació LO Draw |  | 1 | Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de $N$ vies. |  |
 | `fig-ca-diagrama` | `A7.qmd:393` | `22_figs_originals/T7_ca_diagrama.svg` | Inkscape |  | 1 | Diagrama de blocs d'una lectura en una memòria cau completament associativa: cal comparar… | Tres diagrames en una sola figura: configuració física (Hos… |
-| `fig-lru-exemple` | `A7.qmd:460` | `22_figs_originals/T7_lru_exemple.svg` | Inkscape | `tip-lru-exemple` | 0 | Evolució de la memòria cau associativa per conjunts de 2 vies amb algorisme LRU per a la … | Seqüència de 5 Load des d'una MC inicialment buida. Misses … |
+| `fig-lru-exemple` | `A7.qmd:460` | `mc.toml:T7_lru_exemple` | gen_MC.py | `tip-lru-exemple` | 0 | Evolució de la memòria cau associativa per conjunts de 2 vies amb reemplaçament LRU per a… | MC de 4 conjunts de 2 vies amb blocs de 4 bytes, inicialmen… |
 | `fig-escriptura-dirty-bit` | `A7.qmd:492` | `22_figs_originals/T7_escriptura_dirty_bit.svg` | Inkscape |  | 0 | Estructura d'una línia de memòria cau amb escriptura retardada: el bit de modificació $D$… | Taula d'una memòria cau amb 4 línies, mostrant les columnes… |
-| `fig-escriptura-estat-inicial` | `A7.qmd:551` | `22_figs_originals/T7_escriptura_estat_inicial.svg` | Inkscape |  | 0 | Estat de la memòria cau al final de la seqüència inicial de 5 lectures, partint d'una MC … | Seqüència de 5 Load des d'una MC inicialment buida. Misses … |
-| `fig-escriptura-immediata-assignacio` | `A7.qmd:574` | `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg` | Inkscape | `tip-escriptura-immediata-assignacio` | 0 | Escriptura immediata amb assignació: en cas d'encert s'escriu a MC i MP simultàniament; e… | Write-through amb write-allocate. Accés 1 (Store byte 10): … |
-| `fig-escriptura-immediata-sense-assignacio` | `A7.qmd:598` | `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg` | Inkscape | `tip-escriptura-immediata-sense-assignacio` | 0 | Escriptura immediata sense assignació: en cas d'encert s'escriu a MC i MP; en cas de fall… | Write-through sense write-allocate. Hit: escriu en MP i MC.… |
-| `fig-escriptura-retardada` | `A7.qmd:623` | `22_figs_originals/T7_escriptura_retardada.svg` | Inkscape | `tip-escriptura-retardada` | 0 | Escriptura retardada amb assignació: en cas d'encert s'escriu únicament a la MC i es posa… | Write-back amb write-allocate. Mostra el bit dirty (D) i el… |
-| `fig-mc-politiques-resum` | `A7.qmd:643` | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | Graphviz |  | 1 | Resum de les polítiques de memòria cau. |  |
-| `fig-texe-diagrama` | `A7.qmd:783` | `22_figs_originals/T7_texe_diagrama.svg` | Inkscape |  | 1 | Impacte d'una fallada de memòria cau en el temps d'execució: els cicles de penalització s… | Tres diagrames en una sola figura: configuració física (Hos… |
-| `fig-conflicte-exemple` | `A7.qmd:863` | `22_figs_originals/T7_conflicte_exemple.svg` | Inkscape |  | 0 | Fallades de conflicte en el recorregut paral·lel de dos vectors amb una memòria cau de co… | Figura 6.28. Els arrays A i B mapegen al mateix conjunt (ín… |
-| `fig-capacitat-exemple-bucle-primera-passada` | `A7.qmd:900` | `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg` | Inkscape |  | 0 | Fallades de capacitat — primera passada ($i=0\ldots6$): Cold Miss fins que la MC queda pl… | Primera passada del bucle sobre V[0..15]. Cold Miss i Hits … |
-| `fig-capacitat-exemple-bucle-segona-passada` | `A7.qmd:915` | `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg` | Inkscape |  | 0 | Fallades de capacitat — segona passada: Cold Miss continuades ($i=7\ldots15$) i Capacity … | Continuació: Cold Miss fins omplir la MC amb blocs 4-7, i C… |
-| `fig-i9-13900k-die` | `A7.qmd:1002` | `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | ràster |  | 1 | Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 20… |  |
+| `fig-escriptura-estat-inicial` | `A7.qmd:551` | `(subfigures)` | — |  | 0 | Estat de la memòria cau al final de la seqüència inicial de 5 lectures, partint d'una MC … |  |
+| `fig-escriptura-estat-inicial-sequencia` | `A7.qmd:552` | `mc.toml:T7_escriptura_estat_inicial` | gen_MC.py |  | 0 | Pas a pas: la MP, cada lectura i l'estat de la MC després de l'accés. | MC de correspondència directa de 2 línies amb blocs de 4 by… |
+| `fig-escriptura-estat-inicial-traca` | `A7.qmd:566` | `mc.toml:T7_escriptura_estat_inicial_traca` | gen_MC.py |  | 0 | En forma de traça: una fila per lectura, amb el bloc que conté cada línia de la MC despré… | Taula amb una fila per lectura (bytes 0, 2, 4, 6 i 8): bloc… |
+| `fig-escriptura-immediata-assignacio` | `A7.qmd:591` | `mc.toml:T7_escriptura_immediata_amb_assignacio` | gen_MC.py | `tip-escriptura-immediata-assignacio` | 0 | Escriptura immediata amb assignació: en cas d'encert s'escriu a MC i MP simultàniament; e… | Partint de l'estat inicial (línia 0: bloc 2; línia 1: bloc … |
+| `fig-escriptura-immediata-sense-assignacio` | `A7.qmd:615` | `mc.toml:T7_escriptura_immediata_sense_assignacio` | gen_MC.py | `tip-escriptura-immediata-sense-assignacio` | 0 | Escriptura immediata sense assignació: en cas d'encert s'escriu a MC i MP; en cas de fall… | Partint de l'estat inicial (línia 0: bloc 2; línia 1: bloc … |
+| `fig-escriptura-retardada` | `A7.qmd:640` | `mc.toml:T7_escriptura_retardada` | gen_MC.py | `tip-escriptura-retardada` | 0 | Escriptura retardada amb assignació: en cas d'encert s'escriu únicament a la MC i es posa… | Partint de l'estat inicial amb D = 0 a les dues línies. Esc… |
+| `fig-mc-politiques-resum` | `A7.qmd:660` | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | Graphviz |  | 1 | Resum de les polítiques de memòria cau. |  |
+| `fig-texe-diagrama` | `A7.qmd:800` | `22_figs_originals/T7_texe_diagrama.svg` | Inkscape |  | 1 | Impacte d'una fallada de memòria cau en el temps d'execució: els cicles de penalització s… | Tres diagrames en una sola figura: configuració física (Hos… |
+| `fig-conflicte-exemple` | `A7.qmd:880` | `mc.toml:T7_conflicte_exemple` | gen_MC.py |  | 0 | Fallades de conflicte en el recorregut paral·lel de dos vectors amb una memòria cau de co… | Taula de traça dels 16 accessos de f(A, B) en una MC de cor… |
+| `fig-capacitat-exemple` | `A7.qmd:917` | `mc.toml:T7_capacitat_exemple` | gen_MC.py |  | 0 | Fallades de capacitat en una memòria cau completament associativa de 4 línies amb reempla… | Taula de traça de g(V) en una MC completament associativa d… |
+| `fig-i9-13900k-die` | `A7.qmd:1004` | `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | ràster |  | 1 | Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 20… |  |
 | `fig-mv-flux-traduccio` | `A8.qmd:267` | `22_figs_originals/T8_mv_flux_traduccio.svg` | Inkscape |  | 1 | Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual. | Tres diagrames en una sola figura: configuració física (Hos… |
 | `fig-cicle-interrupcio` | `A9.qmd:714` | `22_figs_originals/T9_cicle_interrupcio.svg` | Inkscape |  | 0 | Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucc… |  |
 | `—` | `A2.qmd:267` | `registres.toml:compendi_registres_RIS` | gen_regs.py (COMPENDIS) | `nte-instruccions-tipus` | 0 |  |  |
@@ -142,28 +143,28 @@ Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb 
 | `22_figs_originals/T6_tc_tc_prima.svg` | A6.qmd:149, A6.qmd:156 | extreta de PDF | 284 | no | no | 10 | #000000 #b3b3b3 |  |
 | `22_figs_originals/T7_assoc_conjunts_taula.svg` | A7.qmd:346, A7.qmd:353 | Inkscape | 800 | sí | sí | 76 | #000000 |  |
 | `22_figs_originals/T7_ca_diagrama.svg` | A7.qmd:396, A7.qmd:403 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_texe_diagrama.svg` `22_figs_originals/T8_mv_flux_traduccio.svg` `22_figs_originals/TODO.svg` |
-| `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg` | A7.qmd:903, A7.qmd:910 | Inkscape | 800 | sí | sí | 235 |  |  |
-| `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg` | A7.qmd:918, A7.qmd:925 | Inkscape | 800 | sí | sí | 266 |  |  |
+| `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 235 |  |  |
+| `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 266 |  |  |
 | `22_figs_originals/T7_cd_descomposicio_bits.svg` | A7.qmd:269, A7.qmd:276 | Inkscape | 545 | sí | sí | 19 |  |  |
-| `22_figs_originals/T7_conflicte_exemple.svg` | A7.qmd:866, A7.qmd:873 | Inkscape | 800 | sí | sí | 120 | #000000 |  |
+| `22_figs_originals/T7_conflicte_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 120 | #000000 |  |
 | `22_figs_originals/T7_escriptura_dirty_bit.svg` | A7.qmd:495, A7.qmd:502 | Inkscape | 520 | sí | sí | 20 |  |  |
-| `22_figs_originals/T7_escriptura_estat_inicial.svg` | A7.qmd:554, A7.qmd:561 | Inkscape | 800 | sí | sí | 167 | #000000 |  |
-| `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg` | A7.qmd:577, A7.qmd:584 | Inkscape | 800 | sí | sí | 101 | #000000 |  |
-| `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg` | A7.qmd:601, A7.qmd:608 | Inkscape | 800 | sí | sí | 100 | #000000 |  |
-| `22_figs_originals/T7_escriptura_retardada.svg` | A7.qmd:626, A7.qmd:633 | Inkscape | 800 | sí | sí | 163 | #000000 |  |
+| `22_figs_originals/T7_escriptura_estat_inicial.svg` | **orfe** | Inkscape | 800 | sí | sí | 167 | #000000 |  |
+| `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 101 | #000000 |  |
+| `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 100 | #000000 |  |
+| `22_figs_originals/T7_escriptura_retardada.svg` | **orfe** | Inkscape | 800 | sí | sí | 163 | #000000 |  |
 | `22_figs_originals/T7_gap_processador_memoria.svg` | A7.qmd:34, A7.qmd:41 | SVG natiu | 620 | sí | sí | 17 | #dee2e6 |  |
 | `22_figs_originals/T7_jerarquia_piramide.svg` | A7.qmd:106, A7.qmd:99 | SVG natiu | 580 | sí | sí | 7 |  |  |
-| `22_figs_originals/T7_lru_exemple.svg` | A7.qmd:463, A7.qmd:470 | Inkscape | 800 | sí | sí | 237 | #000000 |  |
+| `22_figs_originals/T7_lru_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 237 | #000000 |  |
 | `22_figs_originals/T7_mc_descomposicio_bits.svg` | **orfe** | Inkscape | 590 | sí | sí | 18 |  |  |
 | `22_figs_originals/T7_mc_encert.svg` | A7.qmd:208, A7.qmd:215 | Inkscape | 575 | sí | sí | 29 | #000000 |  |
 | `22_figs_originals/T7_mc_fallada.svg` | A7.qmd:231, A7.qmd:238 | Inkscape | 575 | sí | sí | 48 | #000000 #0b449a #7d6d6c |  |
 | `22_figs_originals/T7_mc_organitzacio.svg` | A7.qmd:145, A7.qmd:152 | SVG natiu | 520 | sí | sí | 15 |  |  |
-| `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | A7.qmd:646, A7.qmd:653 | Graphviz | 459 | sí | no | 19 |  |  |
-| `22_figs_originals/T7_texe_diagrama.svg` | A7.qmd:786, A7.qmd:793 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_ca_diagrama.svg` `22_figs_originals/T8_mv_flux_traduccio.svg` `22_figs_originals/TODO.svg` |
+| `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | A7.qmd:663, A7.qmd:670 | Graphviz | 459 | sí | no | 19 |  |  |
+| `22_figs_originals/T7_texe_diagrama.svg` | A7.qmd:803, A7.qmd:810 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_ca_diagrama.svg` `22_figs_originals/T8_mv_flux_traduccio.svg` `22_figs_originals/TODO.svg` |
 | `22_figs_originals/T8_mv_flux_traduccio.svg` | A8.qmd:270, A8.qmd:277 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_ca_diagrama.svg` `22_figs_originals/T7_texe_diagrama.svg` `22_figs_originals/TODO.svg` |
 | `22_figs_originals/T9_cicle_interrupcio.svg` | A9.qmd:717, A9.qmd:724 | Inkscape | 680 | no | no | 17 |  |  |
 | `22_figs_originals/TODO.svg` | **orfe** | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T7_ca_diagrama.svg` `22_figs_originals/T7_texe_diagrama.svg` `22_figs_originals/T8_mv_flux_traduccio.svg` |
-| `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1004 | ràster |  | no | no | 0 |  |  |
+| `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1006 | ràster |  | no | no | 0 |  |  |
 | `23_figs_externes/T7_assoc_conjunts_diagrama.svg` | A7.qmd:365, A7.qmd:372 | exportació LO Draw | 10583.334 | no | no | 0 |  |  |
 | `23_figs_externes/T7_cd_diagrama.svg` | A7.qmd:303, A7.qmd:310 | exportació LO Draw | 14155.209 | no | no | 9 | #000000 #0000ff #ccffcc #ff0000 #ff8080 #ffe9e2 #fff0ec |  |
 | `23_figs_externes/T7_multinivell_multicore.svg` | **orfe** | exportació LO Draw | 14287.5 | no | no | 26 | #000000 #0000ff #d3e8d3 #ffebe0 |  |
@@ -188,12 +189,20 @@ Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb 
 | `ba.toml:T3_ba_multi` | A3.qmd:1659, A3.qmd:1666 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `subrutines.toml:T3_deps_multi` | A3.qmd:1634, A3.qmd:1641 | gen_subrutines.py |  | sí | sí | 0 |  |  |
 | `subrutines.toml:T3_deps_exemple` | A3.qmd:1748, A3.qmd:1755 | gen_subrutines.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_escriptura_estat_inicial` | A7.qmd:555, A7.qmd:562 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_escriptura_estat_inicial_traca` | A7.qmd:569, A7.qmd:576 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_escriptura_immediata_amb_assignacio` | A7.qmd:594, A7.qmd:601 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_escriptura_immediata_sense_assignacio` | A7.qmd:618, A7.qmd:625 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_escriptura_retardada` | A7.qmd:643, A7.qmd:650 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_lru_exemple` | A7.qmd:463, A7.qmd:470 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_conflicte_exemple` | A7.qmd:883, A7.qmd:890 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_capacitat_exemple` | A7.qmd:920, A7.qmd:927 | gen_MC.py |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres` | 11_riscv.qmd:40, 11_riscv.qmd:47 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres_RIS` | A2.qmd:267, A2.qmd:274 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 
 ## Avisos
 
-### Colors fora de la paleta (`svg.md §10` i `§16`) (34)
+### Colors fora de la paleta (`svg.md §10` i `§16`) (28)
 
 - `22_figs_originals/T1_flux_compilacio.svg`: #1a5276 #4a90b8 #e8f4f8
 - `22_figs_originals/T1_picopi_fases.svg`: #888780
@@ -217,13 +226,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb 
 - `22_figs_originals/T6_tc_tc_prima.svg`: #000000 #b3b3b3
 - `22_figs_originals/T7_assoc_conjunts_taula.svg`: #000000
 - `22_figs_originals/T7_ca_diagrama.svg`: #ff0000
-- `22_figs_originals/T7_conflicte_exemple.svg`: #000000
-- `22_figs_originals/T7_escriptura_estat_inicial.svg`: #000000
-- `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg`: #000000
-- `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg`: #000000
-- `22_figs_originals/T7_escriptura_retardada.svg`: #000000
 - `22_figs_originals/T7_gap_processador_memoria.svg`: #dee2e6
-- `22_figs_originals/T7_lru_exemple.svg`: #000000
 - `22_figs_originals/T7_mc_encert.svg`: #000000
 - `22_figs_originals/T7_mc_fallada.svg`: #000000 #0b449a #7d6d6c
 - `22_figs_originals/T7_texe_diagrama.svg`: #ff0000
@@ -239,7 +242,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb 
 - `23_figs_externes/T7_assoc_conjunts_diagrama.svg`
 - `23_figs_externes/T7_cd_diagrama.svg`
 
-### Figures del cos del text sense cap remissió `@` (24)
+### Figures del cos del text sense cap remissió `@` (23)
 
 - `fig-von-neumann` (A1.qmd:358)
 - `fig-mapa-memoria` (A3.qmd:1017)
@@ -261,9 +264,8 @@ Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb 
 - `fig-assoc-conjunts-taula` (A7.qmd:343)
 - `fig-escriptura-dirty-bit` (A7.qmd:492)
 - `fig-escriptura-estat-inicial` (A7.qmd:551)
-- `fig-conflicte-exemple` (A7.qmd:863)
-- `fig-capacitat-exemple-bucle-primera-passada` (A7.qmd:900)
-- `fig-capacitat-exemple-bucle-segona-passada` (A7.qmd:915)
+- `fig-conflicte-exemple` (A7.qmd:880)
+- `fig-capacitat-exemple` (A7.qmd:917)
 - `fig-cicle-interrupcio` (A9.qmd:714)
 
 ### Figures que consumeixen el placeholder (`TODO.svg`) (3)
@@ -282,10 +284,18 @@ Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb 
 - `22_figs_originals/TODO.svg`
 - `23_figs_externes/T7_multinivell_multicore.svg`
 
-### Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives) (2)
+### Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives) (10)
 
 - `22_figs_originals/T3_ba_exemple.svg`
 - `22_figs_originals/T3_ba_multi.svg`
+- `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg`
+- `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg`
+- `22_figs_originals/T7_conflicte_exemple.svg`
+- `22_figs_originals/T7_escriptura_estat_inicial.svg`
+- `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg`
+- `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg`
+- `22_figs_originals/T7_escriptura_retardada.svg`
+- `22_figs_originals/T7_lru_exemple.svg`
 
 ### Peus que no acaben en punt (2)
 

@@ -132,6 +132,7 @@ GENERADORS = {
     'registre':  ('24_specs/registres.toml', 'registers', 'gen_regs.py'),
     'BA':        ('24_specs/ba.toml', 'ba', 'gen_BA.py'),
     'subrutina': ('24_specs/subrutines.toml', 'subrutina', 'gen_subrutines.py'),
+    'MC':        ('24_specs/mc.toml', 'mc', 'gen_MC.py'),
 }
 
 
@@ -326,7 +327,9 @@ def main():
         if not us:
             if ':' not in f:
                 tija = Path(f).stem
-                if any(k.endswith(':' + tija) and consumides.get(k) for k in fonts):
+                # una figura generada amb la mateixa arrel, o amb una arrel que n'és el començament
+                # (T7_capacitat_exemple aplega les dues passades de T7_capacitat_exemple_bucle_*)
+                if any(':' in k and tija.startswith(k.split(':', 1)[1]) and consumides.get(k) for k in fonts):
                     avisos['Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives)'].append(f'`{f}`')
                 else:
                     avisos['Fitxers font orfes (cap `.qmd` no els consumeix)'].append(f'`{f}`')

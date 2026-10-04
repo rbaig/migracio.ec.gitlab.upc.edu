@@ -1,0 +1,152 @@
+# mc.toml — Definicions de les figures de memòria cau (T7).
+#
+# Font de veritat de les figures `auto_figs/<nom>__MC_{light,dark}.svg`, que
+# genera `25_scripts/gen_MC.py` al pre-render (`_quarto.yml`). El generador
+# simula la MC sobre la seqüència d'accessos: els encerts, les fallades, el
+# tipus de fallada, el bloc expulsat, el bit D i la via LRU surten de la
+# simulació, no d'aquest fitxer.
+#
+# Format de cada figura:
+#
+#   [mc.<nom>]                     # nom del fitxer, sense sufix ni extensió
+#   title, desc                    # <title> i <desc> de l'SVG (el <desc> és el text alternatiu)
+#   estil       = "sequencia"      # "sequencia" (MP, accessos i MC a cada pas) o "traca" (una fila per accés)
+#   adreca_bits = 8                # amplada de l'adreça; si n'hi ha, la MP mostra l'adreça en binari
+#   bloc        = 4                # bytes per bloc
+#   linies      = 2                # línies de la MC
+#   vies        = 1                # 1: correspondència directa; = linies: completament associativa
+#   escriptura  = "immediata"      # "immediata" o "retardada" (amb bit D)
+#   assignacio  = true             # escriptura amb assignació o sense
+#   unitat      = 1                # bytes per cel·la de dades (1: bytes; 4: paraules)
+#   vectors     = [{nom="V", base=0, n=16, mida=4}]   # rètols de les cel·les (V[i]) en lloc de «byte k»
+#   color       = "bloc"           # "bloc" (un color per bloc) o "vector" (un color per vector)
+#   classifica  = false            # el resultat diu el tipus de fallada (obligatòria, de capacitat, de conflicte)
+#   mp          = [[0, 2], [63, 63]]                 # rangs de blocs que es mostren a la MP
+#   mostra_mp   = true             # estil "sequencia": columna de la MP
+#   inicial     = [{op="L", adr=0}, …]               # accessos previs, que no es dibuixen
+#   fila_inicial = true            # estil "traca": fila «Estat inicial» encara que no hi hagi accessos previs
+#   accessos    = [{op="L", adr=0, grup="i = 0", nota="…"}, …]
+#                                  # op: "L" (lectura) o "E" (escriptura); grup: rètol d'un grup d'accessos;
+#                                  # nota: substitueix l'explicació automàtica del pas
+#
+# Les seqüències són les d'A7 (§Exemples de les polítiques d'escriptura,
+# #tip-lru-exemple, §Exemple: fallades de conflicte, §Exemple: fallades de
+# capacitat). Els accessos d'un byte (`lb`/`sb`) dels exemples d'escriptura
+# són els d'A7 des del 2026-10-04.
+
+# ── Polítiques d'escriptura (A7 §Exemples): MC de 2 línies i blocs de 4 bytes ──
+
+[mc.T7_escriptura_estat_inicial]
+title = "Estat inicial de la memòria cau: seqüència de 5 lectures"
+desc  = "MC de correspondència directa de 2 línies amb blocs de 4 bytes, inicialment buida. Lectures dels bytes 0, 2, 4, 6 i 8: fallada (bloc 0 a la línia 0), encert, fallada (bloc 1 a la línia 1), encert i fallada (el bloc 2 expulsa el bloc 0 de la línia 0). Al final, la línia 0 conté el bloc 2 i la línia 1, el bloc 1."
+adreca_bits = 8
+bloc = 4
+linies = 2
+mp = [[0, 2]]
+accessos = [{op="L", adr=0}, {op="L", adr=2}, {op="L", adr=4}, {op="L", adr=6}, {op="L", adr=8}]
+
+[mc.T7_escriptura_estat_inicial_traca]
+title = "Estat inicial de la memòria cau: seqüència de 5 lectures, en forma de traça"
+desc  = "Taula amb una fila per lectura (bytes 0, 2, 4, 6 i 8): bloc, línia, resultat i el bloc que conté cada línia de la MC després de l'accés. Al final, la línia 0 conté el bloc 2 i la línia 1, el bloc 1."
+estil = "traca"
+adreca_bits = 8
+bloc = 4
+linies = 2
+mp = [[0, 2]]
+fila_inicial = true
+accessos = [{op="L", adr=0}, {op="L", adr=2}, {op="L", adr=4}, {op="L", adr=6}, {op="L", adr=8}]
+
+[mc.T7_escriptura_immediata_amb_assignacio]
+title = "Escriptura immediata amb assignació: dues escriptures"
+desc  = "Partint de l'estat inicial (línia 0: bloc 2; línia 1: bloc 1). Escriptura del byte 10: encert, s'escriu a la MC i a la MP. Escriptura del byte 252: fallada, es copia el bloc 63 a la línia 1 (expulsa el bloc 1) i s'escriu a la MC i a la MP."
+adreca_bits = 8
+bloc = 4
+linies = 2
+escriptura = "immediata"
+assignacio = true
+mp = [[0, 2], [63, 63]]
+inicial = [{op="L", adr=0}, {op="L", adr=2}, {op="L", adr=4}, {op="L", adr=6}, {op="L", adr=8}]
+accessos = [{op="E", adr=10}, {op="E", adr=252}]
+
+[mc.T7_escriptura_immediata_sense_assignacio]
+title = "Escriptura immediata sense assignació: dues escriptures"
+desc  = "Partint de l'estat inicial (línia 0: bloc 2; línia 1: bloc 1). Escriptura del byte 10: encert, s'escriu a la MC i a la MP. Escriptura del byte 252: fallada, s'escriu només a la MP i la MC no canvia."
+adreca_bits = 8
+bloc = 4
+linies = 2
+escriptura = "immediata"
+assignacio = false
+mp = [[0, 2], [63, 63]]
+inicial = [{op="L", adr=0}, {op="L", adr=2}, {op="L", adr=4}, {op="L", adr=6}, {op="L", adr=8}]
+accessos = [{op="E", adr=10}, {op="E", adr=252}]
+
+[mc.T7_escriptura_retardada]
+title = "Escriptura retardada amb assignació: tres accessos"
+desc  = "Partint de l'estat inicial amb D = 0 a les dues línies. Escriptura del byte 10: encert, s'escriu només a la MC i D passa a 1. Lectura del byte 0: fallada; el bloc 2 de la línia 0 és modificat i s'escriu a la MP abans de copiar-hi el bloc 0 (D = 0). Escriptura del byte 252: fallada; es copia el bloc 63 a la línia 1 (expulsa el bloc 1, no modificat) i s'hi escriu (D = 1)."
+adreca_bits = 8
+bloc = 4
+linies = 2
+escriptura = "retardada"
+assignacio = true
+mp = [[0, 2], [63, 63]]
+inicial = [{op="L", adr=0}, {op="L", adr=2}, {op="L", adr=4}, {op="L", adr=6}, {op="L", adr=8}]
+accessos = [{op="E", adr=10}, {op="L", adr=0}, {op="E", adr=252}]
+
+# ── LRU (A7 #tip-lru-exemple): 4 conjunts de 2 vies, blocs de 4 bytes ──
+
+[mc.T7_lru_exemple]
+title = "Reemplaçament LRU en una memòria cau associativa per conjunts de 2 vies"
+desc  = "MC de 4 conjunts de 2 vies amb blocs de 4 bytes, inicialment buida. Lectures dels bytes 4, 38, 6 i 52, totes al conjunt 1: fallada (bloc 1 a la via 0), fallada (bloc 9 a la via 1; la via LRU passa a ser la 0), encert a la via 0 (la LRU passa a ser la 1) i fallada (el bloc 13 reemplaça el bloc 9 de la via 1, que era la LRU)."
+adreca_bits = 8
+bloc = 4
+linies = 8
+vies = 2
+mostra_mp = false      # el text de cada accés ja diu el bloc i el conjunt; sense la MP, la figura és prou estreta per al PDF
+mp = [[1, 1], [9, 9], [13, 13]]
+accessos = [{op="L", adr=4}, {op="L", adr=38}, {op="L", adr=6}, {op="L", adr=52}]
+
+# ── Fallades de conflicte (A7 §Exemple: fallades de conflicte): 4 línies, blocs de 8 bytes ──
+
+[mc.T7_conflicte_exemple]
+title = "Fallades de conflicte en el recorregut paral·lel de dos vectors"
+desc  = "Taula de traça dels 16 accessos de f(A, B) en una MC de correspondència directa de 4 línies amb blocs de 8 bytes. Per a cada i, A[i] i B[i] van a la mateixa línia amb etiquetes diferents i s'expulsen mútuament: a les i parelles, les dues lectures són fallades obligatòries; a les senars, fallades de conflicte. Els 16 accessos fallen."
+estil = "traca"
+bloc = 8
+unitat = 4
+linies = 4
+classifica = true
+color = "vector"
+mp = [[0, 7]]
+vectors = [{nom="A", base=0, n=8, mida=4}, {nom="B", base=32, n=8, mida=4}]
+accessos = [
+  {op="L", adr=0,  grup="i = 0"}, {op="L", adr=32},
+  {op="L", adr=4,  grup="i = 1"}, {op="L", adr=36},
+  {op="L", adr=8,  grup="i = 2"}, {op="L", adr=40},
+  {op="L", adr=12, grup="i = 3"}, {op="L", adr=44},
+  {op="L", adr=16, grup="i = 4"}, {op="L", adr=48},
+  {op="L", adr=20, grup="i = 5"}, {op="L", adr=52},
+  {op="L", adr=24, grup="i = 6"}, {op="L", adr=56},
+  {op="L", adr=28, grup="i = 7"}, {op="L", adr=60},
+]
+
+# ── Fallades de capacitat (A7 §Exemple: fallades de capacitat): completament associativa de 4 línies ──
+
+[mc.T7_capacitat_exemple]
+title = "Fallades de capacitat en una memòria cau completament associativa de 4 línies"
+desc  = "Taula de traça de g(V) en una MC completament associativa de 4 línies, amb blocs de 8 bytes i reemplaçament LRU. Al primer bucle, els 8 blocs de V entren amb fallades obligatòries, una per bloc, i a partir del cinquè cada bloc expulsa el més antic. Al segon bucle, els blocs de V[0] a V[7] ja no hi són: cada bloc torna a fallar, ara amb una fallada de capacitat."
+estil = "traca"
+bloc = 8
+unitat = 4
+linies = 4
+vies = 4
+classifica = true
+mp = [[0, 7]]
+vectors = [{nom="V", base=0, n=16, mida=4}]
+accessos = [
+  {op="L", adr=0, grup="Primer bucle"}, {op="L", adr=4}, {op="L", adr=8}, {op="L", adr=12},
+  {op="L", adr=16}, {op="L", adr=20}, {op="L", adr=24}, {op="L", adr=28},
+  {op="L", adr=32}, {op="L", adr=36}, {op="L", adr=40}, {op="L", adr=44},
+  {op="L", adr=48}, {op="L", adr=52}, {op="L", adr=56}, {op="L", adr=60},
+  {op="L", adr=0, grup="Segon bucle, de V[0] a V[7]"}, {op="L", adr=4}, {op="L", adr=8}, {op="L", adr=12},
+  {op="L", adr=16}, {op="L", adr=20}, {op="L", adr=24}, {op="L", adr=28},
+]

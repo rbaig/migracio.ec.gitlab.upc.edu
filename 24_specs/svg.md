@@ -552,7 +552,10 @@ Generadors del pre-render (model (b)). El sufix de cada un és a la taula de suf
 | `24_specs/registres.toml` | `25_scripts/gen_regs.py` | `__registre` | Registres de bits i formats d'instrucció (T2, T3, T5, T9) |
 | `24_specs/ba.toml` | `25_scripts/gen_BA.py` | `__BA` | Blocs d'activació, amb les zones de §3–§11 (T3) |
 | `24_specs/subrutines.toml` | `25_scripts/gen_subrutines.py` | `__subrutina` | Dependències de dades d'una subrutina: el codi, les crides en franges i una barra de vida per dada (T3) |
+| `24_specs/mc.toml` | `25_scripts/gen_MC.py` | `__MC` | Memòria cau (T7): simula la MC sobre una seqüència d'accessos i en dibuixa la seqüència pas a pas o la taula de traça |
 
 Figures de model (a): les del sumador de T4 (taula de §16).
+
+**Figures de memòria cau (`gen_MC.py`).** Dos estils, de la mateixa simulació: `sequencia` (la MP, cada accés amb l'explicació que en calcula l'script, i l'estat de la MC després de cada accés) i `traca` (una fila per accés, amb el bloc que conté cada línia després de l'accés; en color, el que acaba de canviar, i amb vora gruixuda, la línia accedida). Decisió de l'usuari (2026-10-04): al PDF, la seqüència per als exemples curts (estat inicial, polítiques d'escriptura, LRU) i la traça per als llargs (conflicte, capacitat); l'estat inicial, en totes dues, com a subfigures, perquè l'alumne faci la transició d'una a l'altra. A l'HTML hi anirà la figura dinàmica (fotogrames de l'estil `sequencia`). Els colors són un per bloc, en l'ordre en què surten a la MP, o un per vector (`color = "vector"`), i la terminologia és la de la decisió 11 de la fase 7c: «Lectura», «Escriptura», «Encert», «Fallada» i fallades «obligatòria», «de capacitat» i «de conflicte».
 
 Una mateixa figura pot tenir alhora una versió original i una de generada, amb el mateix nom i un sufix diferent: les dependències de `multi` i d'`exemple` (A3) són a `22_figs_originals/` (amb fletxes) i a `subrutines.toml` (amb barres de vida), i A3 les mostra totes dues, com a subfigures (a) i (b); dels BA de `multi` i d'`exemple`, A3 consumeix la generada, i els originals es conserven (p. ex. per a les diapositives). Decisions de l'usuari (2026-10-04).
