@@ -635,6 +635,31 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 
 Fins al 2026-10-03 (fase 7c), el `.gv` es deia `T7_mc_politiques__graphviz.gv`, sense el `_resum` de l'SVG, i aquesta secció ho advertia com a discrepància coneguda. Es va resoldre reanomenant el `.gv`, que no referencia cap script ni cap `.qmd`; reanomenar l'SVG hauria trencat les rutes d'`A7.qmd`.
 
+#### Figures dinàmiques
+
+Una figura que mostra una seqüència (els accessos a una memòria cau, per exemple) pot ser **dinàmica a l'HTML**: un navegador de passos («◀ Anterior», «Següent ▶», «Veure-ho tot») que en mostra un sol pas cada vegada. **Al PDF sempre hi va la seqüència estàtica**, generada pel mateix script i a partir de la mateixa definició, perquè els dos formats no divergeixin (decisió de l'usuari 4 de la fase 7c). El generador n'escriu els fotogrames (a `gen_MC.py`, `fotogrames = true`), i el navegador és `figures_dinamiques.html`, que `_quarto.yml` inclou a totes les pàgines HTML. Els fotogrames només els cita el JavaScript, i per això són a `resources:`. Sense JavaScript, es veu la figura estàtica. Marcatge, al bloc HTML de la figura:
+
+``` code
+::::: {#fig-nom}
+:::: {.content-visible when-format="html"}
+::: {.fig-dinamica data-passos="5"}
+::: {.light-content}
+![](/auto_figs/Tx_nom__MC_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/Tx_nom__MC_dark.svg)
+:::
+:::
+::::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/Tx_nom__MC_light.svg)
+:::
+Peu.
+:::::
+```
+
+`data-passos` és el nombre de fotogrames (els accessos més l'estat inicial); el navegador en dedueix les rutes de la imatge estàtica, perquè el lloc es pot publicar en un subdirectori.
+
 #### Retalls (crops) d'una figura font única
 
 Quan una figura "detall" o "zoom" ha de mostrar literalment un **subconjunt geomètric** d'una figura més gran ja existent (mateixes coordenades, mateix contingut, sense redibuixar ni afegir informació), es defineix com a **retall** a `24_specs/retalls.toml` en lloc de duplicar-lo com a SVG independent, evitant mantenir dues fonts sincronitzades manualment.

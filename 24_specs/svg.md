@@ -554,7 +554,16 @@ Generadors del pre-render (model (b)). El sufix de cada un és a la taula de suf
 | `24_specs/subrutines.toml` | `25_scripts/gen_subrutines.py` | `__subrutina` | Dependències de dades d'una subrutina: el codi, les crides en franges i una barra de vida per dada (T3) |
 | `24_specs/mc.toml` | `25_scripts/gen_MC.py` | `__MC` | Memòria cau (T7): simula la MC sobre una seqüència d'accessos i en dibuixa la seqüència pas a pas o la taula de traça |
 
-Figures de model (a): les del sumador de T4 (taula de §16).
+Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
+
+| Figura | Generador | Contingut |
+|:---|:---|:---|
+| `T7_texe_diagrama` | `25_scripts/gen_T7.py` | Tres instruccions etapa per etapa, amb una MC ideal i amb una fallada |
+| `T7_multinivell_diagrama` | `25_scripts/gen_T7.py` | CPU–MP, CPU–MC–MP i CPU–L1–L2–MP, amb els temps de cada enllaç |
+| `T7_multinivell_multicore` | `25_scripts/gen_T7.py` | Xip de quatre nuclis amb L1i, L1d i L2 privades i L3 compartida |
+| `T7_tipus_fallades` | `25_scripts/gen_T7.py` | Taxa de fallades segons la mida i l'associativitat (qualitativa) |
+
+**Figures dinàmiques (només a l'HTML).** Amb `fotogrames = true`, `gen_MC.py` escriu també un fotograma per pas, `<nom>_pas<k>__MC_{light,dark}.svg`, tots de la mateixa mida, i `figures_dinamiques.html` (inclòs a l'HTML per `_quarto.yml`) converteix la figura en un navegador de passos. El PDF hi porta la figura estàtica del mateix script i de la mateixa definició, de manera que els dos formats no poden divergir. Prototip: `#fig-lru-exemple` (bloc 9 de la fase 7c, 2026-10-04); el marcatge és a `13_contrib.qmd §Figures dinàmiques`.
 
 **Figures de memòria cau (`gen_MC.py`).** Dos estils, de la mateixa simulació: `sequencia` (la MP, cada accés amb l'explicació que en calcula l'script, i l'estat de la MC després de cada accés) i `traca` (una fila per accés, amb el bloc que conté cada línia després de l'accés; en color, el que acaba de canviar, i amb vora gruixuda, la línia accedida). Decisió de l'usuari (2026-10-04): al PDF, la seqüència per als exemples curts (estat inicial, polítiques d'escriptura, LRU) i la traça per als llargs (conflicte, capacitat); l'estat inicial, en totes dues, com a subfigures, perquè l'alumne faci la transició d'una a l'altra. A l'HTML hi anirà la figura dinàmica (fotogrames de l'estil `sequencia`). Els colors són un per bloc, en l'ordre en què surten a la MP, o un per vector (`color = "vector"`), i la terminologia és la de la decisió 11 de la fase 7c: «Lectura», «Escriptura», «Encert», «Fallada» i fallades «obligatòria», «de capacitat» i «de conflicte».
 

@@ -331,7 +331,10 @@ def sequencia(spec, pas=None):
     def alcada(k, a, r):
         text_h = 20 if k == 'inicial' else 46 + 13 * len(notes(k, a, r))
         return max(g.NC * H, text_h) + 26
-    h_total = y0 + sum(alcada(k, a, r) for k, a, _, r, _ in sel) + 10
+    if pas is None:
+        h_total = y0 + sum(alcada(k, a, r) for k, a, _, r, _ in sel) + 10
+    else:                      # fotogrames: tots de la mateixa alçada, la del pas més alt
+        h_total = y0 + max(alcada(k, a, r) for k, a, _, r, _ in passos) + 10
     o = []
     y_mp_fi = dibuixa_mp(o, g, x_mp, y0) if spec.get('mostra_mp', True) else 0
     o.append(text(x_seq + w_seq / 2, y0 - 34 - (14 if g.N > 1 else 0), "Seqüència d'accessos", 14, INK, bold=True))
@@ -369,7 +372,7 @@ def sequencia(spec, pas=None):
             for j, tros in enumerate(notes(k, a, r)):
                 o.append(text(x_seq, ty + 46 + j * 13, esc(tros), 10, GRIS, anchor='start', italic=True))
         y += alcada(k, a, r)
-    h_total = max(h_total, y_mp_fi + 10, y + 4)
+    h_total = max(h_total, y_mp_fi + 10, (y + 4) if pas is None else 0)
     return w, h_total, o
 
 
