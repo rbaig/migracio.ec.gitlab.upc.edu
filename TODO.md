@@ -1,5 +1,12 @@
 # TODO
 
+--- 
+## Entrades manuals
+
+- `T3_pila_func_multinivell.svg` i `T3_pila_func_uninivell.svg` no respecten paleta: gris clar memòria lliure
+
+---
+
 Reescrit el 2026-09-21 (auditoria, sessió 3) a partir d'un inventari complet:
 les 58 entrades del `TODO.md` anterior, els 29 marcadors del corpus, els quatre
 informes de l'auditoria i els registres de tasques del `TODO/`. Cada

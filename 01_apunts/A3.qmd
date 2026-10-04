@@ -1384,16 +1384,16 @@ void funcB() { sentB; }
 ::: {#fig-func-uninivell-pila}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T3_func_uninivell_pila__original_light.svg)
+![](/auto_figs/T3_pila_uninivell__original_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T3_func_uninivell_pila__original_dark.svg)
+![](/auto_figs/T3_pila_uninivell__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T3_func_uninivell_pila__original_light.svg)
+![](/auto_figs/T3_pila_uninivell__original_light.svg)
 :::
-Evolució de l'`sp` durant la crida i retorn de `funcB`. Reserva i alliberament del BA (decrement i increment d'`sp`, respectivament).
+Evolució de la pila durant la crida i retorn de la funció `funcB`. El registre `sp` decreix en reservar el bloc d'activació de la funció i recupera el valor anterior en alliberar-lo.
 :::
 ::::
 
@@ -1485,7 +1485,7 @@ func:
 
 ### Subrutines multinivell: la pila del programa (els registres `s0`--`s11`) {#sec-multinivell-pila}
 
-En un programa multinivell, una subrutina pot cridar una altra subrutina, que al seu torn pot cridar una altra, i així successivament. En aquest cas, el bloc d'activació de cada subrutina s'apila sobre el de la subrutina que la va cridar.
+Una subrutina és multinivell (*non-leaf*) si el seu codi conté alguna crida a una altra subrutina (les subrutines recursives en són un cas particular). Anàlogament, diem que una subrutina és uninivell (*leaf*) si no conté cap crida.
 
 La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política d'«última en entrar, primera en sortir» (***last in, first out***, **LIFO**), la qual s'implementa mitjançant el registre de pila `sp`.
 
@@ -1505,16 +1505,16 @@ void funcB() { sentB; }
 ::: {#fig-pila-crides-aniuades}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
-![](/auto_figs/T3_pila_crides_aniuades__original_light.svg)
+![](/auto_figs/T3_pila_multinivell__original_light.svg)
 :::
 ::: {.dark-content}
-![](/auto_figs/T3_pila_crides_aniuades__original_dark.svg)
+![](/auto_figs/T3_pila_multinivell__original_dark.svg)
 :::
 :::
 ::: {.content-visible when-format="pdf"}
-![](/auto_figs/T3_pila_crides_aniuades__original_light.svg)
+![](/auto_figs/T3_pila_multinivell__original_light.svg)
 :::
-Evolució de la pila durant les crides aniuades de `funcA` i `funcB`. El registre `sp` decreix en reservar el bloc d'activació de cada funció i recupera el valor anterior en alliberar-lo.
+Evolució de la pila durant les crides i retorns de la funció `funcA` i la funció aniuada `funcB`. El registre `sp` decreix en reservar el bloc d'activació de cada funció i recupera el valor anterior en alliberar-lo.
 :::
 :::
 
@@ -1532,7 +1532,9 @@ sub:
 
 #### Preservació del context {#sec-preservacio-context}
 
-Els registres són compartits per totes les subrutines. Per tant, hi ha d'haver algun mecanisme per garantir que el valor d'un registre que s'usa després d'una crida a una subrutina filla no es perdi per sobreescriptura. Aquest és el problema de preservar el context.
+El **context** d’execució d’una subrutina és el conjunt de totes les seves dades locals (incloent-hi paràmetres, adreça de retorn, punter de pila i càlculs intermedis), tant les que es guarden a la pila com en registres. En general, el context d’una subrutina no és visible, ni per tant accessible, a cap altra part del programa, excepte en el cas que la subrutina passi com a paràmetre a una altra subrutina un punter apuntant a una d’aquestes dades.
+
+Els registres, però, són compartits per totes les subrutines. Per tant, hi ha d'haver algun mecanisme per garantir que el valor d'un registre que s'usa després d'una crida a una subrutina filla no es perdi per sobreescriptura. Aquest és el problema de preservar el context.
 
 L'**ABI** de RV32I resol aquest problema mitjançant una solució elegant i eficient, però que pot semblar contraintuïtiva a primera vista.
 
