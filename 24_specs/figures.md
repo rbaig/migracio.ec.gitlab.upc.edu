@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `53068e6` (2026-10-04), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `3bf711c` (2026-10-04), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **67** etiquetes `#fig-`: 62 amb imatge, 4 d'elles subfigures de 2 figures, i 3 taules Markdown; i **24** imatges sense etiqueta (les del compendi i la de la llicència).
 - **62** fitxers a `22_figs_originals/` i `23_figs_externes/`: 57 consumits i 5 sense consumir.
@@ -19,20 +19,20 @@ Generat per `25_scripts/inventari_figures.py` sobre `53068e6` (2026-10-04), amb 
 | `fig-endianness-regla-pi` | `A2.qmd:1033` | `22_figs_originals/T2_endianness_regla_pi.svg` | Inkscape | `wrn-endianness-regla-pi` | 0 | Regla mnemotècnica de la lletra grega pi (Π) per recordar l'ordenació dels bytes Little-e… |  |
 | `fig-acces-vector` | `A2.qmd:1887` | `22_figs_originals/T2_acces_vector.svg` | SVG natiu | `tip-load-store-word` | 0 | Accés a un element d'un vector. |  |
 | `fig-mapa-memoria` | `A3.qmd:1017` | `22_figs_originals/T3_mapa_memoria.svg` | Inkscape |  | 0 | Mapa de memòria de RARS: regions `.text`, `.data`, heap i pila, amb les adreces d'inici d… |  |
-| `fig-func-uninivell-pila` | `A3.qmd:1380` | `22_figs_originals/T3_pila_uninivell.svg` | Inkscape | `tip-func-uninivell-bloc-activacio` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció fulla `funcB`: decrei… |  |
-| `fig-ba-general` | `A3.qmd:1421` | `22_figs_originals/T3_ba_general.svg` | Inkscape |  | 0 | Estructura general del bloc d'activació: variables locals al cim de la pila i registres d… |  |
-| `fig-ba-func` | `A3.qmd:1450` | `22_figs_originals/T3_ba_func.svg` | Inkscape | `tip-exemple-variables-pila` | 0 | Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocup… |  |
-| `fig-pila-crides-multinivell` | `A3.qmd:1501` | `22_figs_originals/T3_pila_multinivell.svg` | Inkscape | `tip-exemple-pila-multinivell` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció multinivell `funcA` i… |  |
-| `fig-deps-multi` | `A3.qmd:1614` | `(subfigures)` | — | `tip-exemple-multi` | 0 | Dependències de dades de la subrutina `multi`, en dues representacions. Les dades `c` i `… |  |
-| `fig-deps-multi-fletxes` | `A3.qmd:1615` | `22_figs_originals/T3_deps_multi.svg` | Inkscape | `tip-exemple-multi` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… |  |
-| `fig-deps-multi-barres` | `A3.qmd:1629` | `subrutines.toml:T3_deps_multi` | gen_subrutines.py | `tip-exemple-multi` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. La franja grisa és la crida. | Codi C de la subrutina multi, amb la crida a mcm marcada co… |
-| `fig-ba-multi` | `A3.qmd:1654` | `ba.toml:T3_ba_multi` | gen_BA.py | `tip-exemple-multi` | 0 | Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i `ra` desats als offse… | Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes… |
-| `fig-deps-exemple` | `A3.qmd:1728` | `(subfigures)` | — | `tip-exemple-exemple` | 0 | Dependències de dades de la subrutina `exemple`, en dues representacions. Les dades `c`, … |  |
-| `fig-deps-exemple-fletxes` | `A3.qmd:1729` | `22_figs_originals/T3_deps_exemple.svg` | Inkscape | `tip-exemple-exemple` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… |  |
-| `fig-deps-exemple-barres` | `A3.qmd:1743` | `subrutines.toml:T3_deps_exemple` | gen_subrutines.py | `tip-exemple-exemple` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. Les franges grises són les cride… | Codi C de la subrutina exemple, amb les crides a f i a g ma… |
-| `fig-ba-exemple` | `A3.qmd:1787` | `ba.toml:T3_ba_exemple` | gen_BA.py | `tip-exemple-exemple` | 0 | Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i `w` als offsets `… | Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes… |
-| `fig-compilacio-separada` | `A3.qmd:1885` | `22_figs_originals/T3_compilacio_separada.svg` | Inkscape |  | 0 | Flux de compilació separada: cada mòdul es compila i assembla independentment generant un… | Diagrama que mostra el flux de compilació separada: p1.c i … |
-| `fig-flux-gcc-complet` | `A3.qmd:2079` | `22_figs_originals/T3_flux_gcc_complet.svg` | SVG natiu | `wrn-flux-gcc-complet` | 0 | El flux de generació complet. | Diagrama del flux complet de generació d'un executable amb … |
+| `fig-func-uninivell-pila` | `A3.qmd:1382` | `22_figs_originals/T3_pila_uninivell.svg` | Inkscape | `tip-func-uninivell-bloc-activacio` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció fulla `funcB`: decrei… |  |
+| `fig-ba-general` | `A3.qmd:1423` | `22_figs_originals/T3_ba_general.svg` | Inkscape |  | 0 | Estructura general del bloc d'activació: variables locals al cim de la pila i registres d… |  |
+| `fig-ba-func` | `A3.qmd:1452` | `22_figs_originals/T3_ba_func.svg` | Inkscape | `tip-exemple-variables-pila` | 0 | Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocup… |  |
+| `fig-pila-crides-multinivell` | `A3.qmd:1503` | `22_figs_originals/T3_pila_multinivell.svg` | Inkscape | `tip-exemple-pila-multinivell` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció multinivell `funcA` i… |  |
+| `fig-deps-multi` | `A3.qmd:1616` | `(subfigures)` | — | `tip-exemple-multi` | 0 | Dependències de dades de la subrutina `multi`, en dues representacions. Les dades `c` i `… |  |
+| `fig-deps-multi-fletxes` | `A3.qmd:1617` | `22_figs_originals/T3_deps_multi.svg` | Inkscape | `tip-exemple-multi` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… |  |
+| `fig-deps-multi-barres` | `A3.qmd:1631` | `subrutines.toml:T3_deps_multi` | gen_subrutines.py | `tip-exemple-multi` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. La franja grisa és la crida. | Codi C de la subrutina multi, amb la crida a mcm marcada co… |
+| `fig-ba-multi` | `A3.qmd:1656` | `ba.toml:T3_ba_multi` | gen_BA.py | `tip-exemple-multi` | 0 | Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i `ra` desats als offse… | Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes… |
+| `fig-deps-exemple` | `A3.qmd:1730` | `(subfigures)` | — | `tip-exemple-exemple` | 0 | Dependències de dades de la subrutina `exemple`, en dues representacions. Les dades `c`, … |  |
+| `fig-deps-exemple-fletxes` | `A3.qmd:1731` | `22_figs_originals/T3_deps_exemple.svg` | Inkscape | `tip-exemple-exemple` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… |  |
+| `fig-deps-exemple-barres` | `A3.qmd:1745` | `subrutines.toml:T3_deps_exemple` | gen_subrutines.py | `tip-exemple-exemple` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. Les franges grises són les cride… | Codi C de la subrutina exemple, amb les crides a f i a g ma… |
+| `fig-ba-exemple` | `A3.qmd:1789` | `ba.toml:T3_ba_exemple` | gen_BA.py | `tip-exemple-exemple` | 0 | Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i `w` als offsets `… | Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes… |
+| `fig-compilacio-separada` | `A3.qmd:1887` | `22_figs_originals/T3_compilacio_separada.svg` | Inkscape |  | 0 | Flux de compilació separada: cada mòdul es compila i assembla independentment generant un… | Diagrama que mostra el flux de compilació separada: p1.c i … |
+| `fig-flux-gcc-complet` | `A3.qmd:2081` | `22_figs_originals/T3_flux_gcc_complet.svg` | SVG natiu | `wrn-flux-gcc-complet` | 0 | El flux de generació complet. | Diagrama del flux complet de generació d'un executable amb … |
 | `fig-semisumador-sumador-complet` | `A4.qmd:77` | `22_figs_originals/T4_semisumador_sumador_complet.svg` | script (gen_T4_sumador.py) | `wrn-sobreeiximent-maquinari` | 1 | Semisumador i sumador complet: (a) el semisumador, amb una XOR per al bit de suma i una A… | (a) Semisumador: una porta XOR dona el bit de suma s = a xo… |
 | `fig-sumador-propagacio-rossec` | `A4.qmd:94` | `22_figs_originals/T4_sumador_propagacio_rossec.svg` | script (gen_T4_sumador.py) | `wrn-sobreeiximent-maquinari` | 1 | Sumador de $n$ bits amb propagació del ròssec. El ròssec avança de dreta a esquerra, del … | Cadena de n sumadors complets, del bit de més pes (n-1, a l… |
 | `fig-multiplicador-sequencial` | `A4.qmd:187` | `22_figs_originals/T4_multiplicador_sequencial.svg` | SVG natiu |  | 0 | Circuit multiplicador seqüencial. | Esquema del circuit multiplicador seqüencial: el registre M… |
@@ -112,16 +112,16 @@ Generat per `25_scripts/inventari_figures.py` sobre `53068e6` (2026-10-04), amb 
 | `22_figs_originals/T2_acces_vector.svg` | A2.qmd:1890, A2.qmd:1897 | SVG natiu | 260 | no | no | 13 |  |  |
 | `22_figs_originals/T2_endianness_regla_pi.svg` | A2.qmd:1036, A2.qmd:1043 | Inkscape | 680 | no | no | 15 |  |  |
 | `22_figs_originals/T3_ba_exemple.svg` | **orfe** | Inkscape | 316 | no | no | 20 |  |  |
-| `22_figs_originals/T3_ba_func.svg` | A3.qmd:1453, A3.qmd:1460 | Inkscape | 326 | no | no | 11 | #333333 #4d4d4d |  |
-| `22_figs_originals/T3_ba_general.svg` | A3.qmd:1424, A3.qmd:1431 | Inkscape | 326 | no | no | 12 | #4d4d4d |  |
+| `22_figs_originals/T3_ba_func.svg` | A3.qmd:1455, A3.qmd:1462 | Inkscape | 326 | no | no | 11 | #333333 #4d4d4d |  |
+| `22_figs_originals/T3_ba_general.svg` | A3.qmd:1426, A3.qmd:1433 | Inkscape | 326 | no | no | 12 | #4d4d4d |  |
 | `22_figs_originals/T3_ba_multi.svg` | **orfe** | Inkscape | 326 | no | no | 7 |  |  |
-| `22_figs_originals/T3_compilacio_separada.svg` | A3.qmd:1888, A3.qmd:1895 | Inkscape | 610 | sí | sí | 13 |  |  |
-| `22_figs_originals/T3_deps_exemple.svg` | A3.qmd:1732, A3.qmd:1739 | Inkscape | 340 | no | no | 5 |  |  |
-| `22_figs_originals/T3_deps_multi.svg` | A3.qmd:1618, A3.qmd:1625 | Inkscape | 290 | no | no | 3 |  |  |
-| `22_figs_originals/T3_flux_gcc_complet.svg` | A3.qmd:2082, A3.qmd:2089 | SVG natiu | 490 | sí | sí | 21 |  |  |
+| `22_figs_originals/T3_compilacio_separada.svg` | A3.qmd:1890, A3.qmd:1897 | Inkscape | 610 | sí | sí | 13 |  |  |
+| `22_figs_originals/T3_deps_exemple.svg` | A3.qmd:1734, A3.qmd:1741 | Inkscape | 340 | no | no | 5 |  |  |
+| `22_figs_originals/T3_deps_multi.svg` | A3.qmd:1620, A3.qmd:1627 | Inkscape | 290 | no | no | 3 |  |  |
+| `22_figs_originals/T3_flux_gcc_complet.svg` | A3.qmd:2084, A3.qmd:2091 | SVG natiu | 490 | sí | sí | 21 |  |  |
 | `22_figs_originals/T3_mapa_memoria.svg` | A3.qmd:1020, A3.qmd:1027 | Inkscape | 326 | no | no | 19 | #4d4d4d |  |
-| `22_figs_originals/T3_pila_multinivell.svg` | A3.qmd:1504, A3.qmd:1511 | Inkscape | 510 | no | no | 30 | #e6e9ec |  |
-| `22_figs_originals/T3_pila_uninivell.svg` | A3.qmd:1383, A3.qmd:1390 | Inkscape | 310 | no | no | 18 | #e6e9ec |  |
+| `22_figs_originals/T3_pila_multinivell.svg` | A3.qmd:1506, A3.qmd:1513 | Inkscape | 510 | no | no | 30 | #e6e9ec |  |
+| `22_figs_originals/T3_pila_uninivell.svg` | A3.qmd:1385, A3.qmd:1392 | Inkscape | 310 | no | no | 18 | #e6e9ec |  |
 | `22_figs_originals/T4_divisor_sequencial.svg` | A4.qmd:394, A4.qmd:401 | SVG natiu | 440 | sí | sí | 16 |  |  |
 | `22_figs_originals/T4_matriu_emmagatzematge.svg` | A4.qmd:521, A4.qmd:528 | SVG natiu | 680 | sí | sí | 50 | #dee2e6 |  |
 | `22_figs_originals/T4_matriu_offset_ij.svg` | A4.qmd:562, A4.qmd:569 | SVG natiu | 680 | sí | sí | 12 | #dee2e6 |  |
@@ -184,10 +184,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `53068e6` (2026-10-04), amb 
 | `registres.toml:T9_mip` | 11_riscv.qmd:472, 11_riscv.qmd:479 … | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:T9_mie` | 11_riscv.qmd:484, 11_riscv.qmd:491 … | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:T9_satp` | 11_riscv.qmd:529, 11_riscv.qmd:536 … | gen_regs.py |  | sí | sí | 0 |  |  |
-| `ba.toml:T3_ba_exemple` | A3.qmd:1790, A3.qmd:1797 | gen_BA.py |  | sí | sí | 0 |  |  |
-| `ba.toml:T3_ba_multi` | A3.qmd:1657, A3.qmd:1664 | gen_BA.py |  | sí | sí | 0 |  |  |
-| `subrutines.toml:T3_deps_multi` | A3.qmd:1632, A3.qmd:1639 | gen_subrutines.py |  | sí | sí | 0 |  |  |
-| `subrutines.toml:T3_deps_exemple` | A3.qmd:1746, A3.qmd:1753 | gen_subrutines.py |  | sí | sí | 0 |  |  |
+| `ba.toml:T3_ba_exemple` | A3.qmd:1792, A3.qmd:1799 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `ba.toml:T3_ba_multi` | A3.qmd:1659, A3.qmd:1666 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `subrutines.toml:T3_deps_multi` | A3.qmd:1634, A3.qmd:1641 | gen_subrutines.py |  | sí | sí | 0 |  |  |
+| `subrutines.toml:T3_deps_exemple` | A3.qmd:1748, A3.qmd:1755 | gen_subrutines.py |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres` | 11_riscv.qmd:40, 11_riscv.qmd:47 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres_RIS` | A2.qmd:267, A2.qmd:274 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 
@@ -243,8 +243,8 @@ Generat per `25_scripts/inventari_figures.py` sobre `53068e6` (2026-10-04), amb 
 
 - `fig-von-neumann` (A1.qmd:358)
 - `fig-mapa-memoria` (A3.qmd:1017)
-- `fig-ba-general` (A3.qmd:1421)
-- `fig-compilacio-separada` (A3.qmd:1885)
+- `fig-ba-general` (A3.qmd:1423)
+- `fig-compilacio-separada` (A3.qmd:1887)
 - `fig-multiplicador-sequencial` (A4.qmd:187)
 - `fig-divisor-sequencial` (A4.qmd:391)
 - `fig-matriu-emmagatzematge` (A4.qmd:518)

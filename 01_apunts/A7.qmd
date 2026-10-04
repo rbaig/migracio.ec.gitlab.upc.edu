@@ -540,11 +540,11 @@ Els exemples següents usen una memòria cau de correspondència directa molt se
 
 Es parteix sempre de l'estat de la memòria cau després d'executar la seqüència inicial de 5 lectures:
 
-- `lw @0` (bloc 0, índex 0) → **Fallada**, copia bloc 0 a línia 0.
-- `lw @2` (bloc 0, índex 0) → **Encert**.
-- `lw @4` (bloc 1, índex 1) → **Fallada**, copia bloc 1 a línia 1.
-- `lw @6` (bloc 1, índex 1) → **Encert**.
-- `lw @8` (bloc 2, índex 0) → **Fallada**, reemplaça bloc 0 a línia 0.
+- `lh @0` (bloc 0, índex 0) → **Fallada**, copia bloc 0 a línia 0.
+- `lh @2` (bloc 0, índex 0) → **Encert**.
+- `lh @4` (bloc 1, índex 1) → **Fallada**, copia bloc 1 a línia 1.
+- `lh @6` (bloc 1, índex 1) → **Encert**.
+- `lh @8` (bloc 2, índex 0) → **Fallada**, reemplaça bloc 0 a línia 0.
 
 Estat resultant: línia 0 conté el bloc 2 (`@8`–`@11`), línia 1 conté el bloc 1 (`@4`–`@7`).
 
@@ -568,8 +568,8 @@ Estat de la memòria cau al final de la seqüència inicial de 5 lectures, parti
 
 Partint de l'estat inicial, s'executen dues escriptures:
 
-- `sw @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal simultàniament.
-- `sw @252` (bloc 63, índex 1) → **Fallada**: es copia primer el bloc 63 de la memòria principal a la línia 1 (reemplaçant el bloc 1), i després s'escriu a la MC i a la memòria principal.
+- `sh @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal simultàniament.
+- `sh @252` (bloc 63, índex 1) → **Fallada**: es copia primer el bloc 63 de la memòria principal a la línia 1 (reemplaçant el bloc 1), i després s'escriu a la MC i a la memòria principal.
 
 ::: {#fig-escriptura-immediata-assignacio}
 ::: {.content-visible when-format="html"}
@@ -592,8 +592,8 @@ Escriptura immediata amb assignació: en cas d'encert s'escriu a MC i MP simult�
 
 Partint del mateix estat inicial, les mateixes dues escriptures:
 
-- `sw @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal (igual que amb assignació).
-- `sw @252` (bloc 63, índex 1) → **Fallada**: s'escriu **únicament a la memòria principal**. La memòria cau no s'altera.
+- `sh @10` (bloc 2, índex 0) → **Encert**: s'escriu a la MC i a la memòria principal (igual que amb assignació).
+- `sh @252` (bloc 63, índex 1) → **Fallada**: s'escriu **únicament a la memòria principal**. La memòria cau no s'altera.
 
 ::: {#fig-escriptura-immediata-sense-assignacio}
 ::: {.content-visible when-format="html"}
@@ -616,9 +616,9 @@ Escriptura immediata sense assignació: en cas d'encert s'escriu a MC i MP; en c
 
 En aquest cas la memòria cau incorpora el bit $D$. Partint del mateix estat inicial (amb $D = 0$ a totes les línies), s'executen una escriptura, una lectura i una altra escriptura:
 
-- `sw @10` (bloc 2, índex 0) → **Encert**: s'escriu **únicament a la MC** i es posa $D = 1$ a la línia 0.
-- `lw @0` (bloc 0, índex 0) → **Fallada** amb $D = 1$ a la línia 0: cal primer copiar el bloc 2 (modificat) a la memòria principal, i després copiar el bloc 0 a la línia 0 ($D \leftarrow 0$).
-- `sw @252` (bloc 63, índex 1) → **Fallada** amb $D = 0$ a la línia 1: es copia el bloc 63 a la línia 1 (reemplaça el bloc 1) i s'escriu a la MC ($D \leftarrow 1$).
+- `sh @10` (bloc 2, índex 0) → **Encert**: s'escriu **únicament a la MC** i es posa $D = 1$ a la línia 0.
+- `lh @0` (bloc 0, índex 0) → **Fallada** amb $D = 1$ a la línia 0: cal primer copiar el bloc 2 (modificat) a la memòria principal, i després copiar el bloc 0 a la línia 0 ($D \leftarrow 0$).
+- `sh @252` (bloc 63, índex 1) → **Fallada** amb $D = 0$ a la línia 1: es copia el bloc 63 a la línia 1 (reemplaça el bloc 1) i s'escriu a la MC ($D \leftarrow 1$).
 
 ::: {#fig-escriptura-retardada}
 ::: {.content-visible when-format="html"}
