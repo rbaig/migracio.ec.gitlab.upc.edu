@@ -134,6 +134,21 @@ Per poder traduir una adreça lògica cal saber en quin marc de pàgina (PPN) es
 
 La taula de pàgines s'indexa pel VPN (@fig-mv-taula-pagines): cada fila correspon a una pàgina virtual i s'anomena **entrada de la taula de pàgines** (*page table entry* o **PTE**). El nombre d'entrades és igual al nombre de pàgines virtuals de l'espai d'adreçament ($2^{20}$ entrades en l'exemple de 32 bits amb pàgines de 4 KiB).
 
+::: {#fig-mv-taula-pagines}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_taula_pagines__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_taula_pagines__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_taula_pagines__original_light.svg)
+:::
+Donat un VPN, la taula de pàgines indica si la pàgina és a la memòria física (bit V) i en quin marc de pàgina (PPN) es troba; el PPN, juntament amb el desplaçament, forma l'adreça física. El registre de taula de pàgines (@sec-mv-registre-tp) en conté l'adreça base, i cada entrada (PTE) conté, a més, els bits D i E.
+:::
+
 ### Estructura d'una entrada (PTE) {#sec-mv-pte}
 
 Cada PTE conté els camps següents:
@@ -163,21 +178,6 @@ Quan V = 0, el camp PPN no té validesa: la pàgina no és a la memòria física
 Aquests apunts anomenen **`V`** (*valid*) el bit de validesa de la PTE, com fan la ISA de RISC-V (esquema Sv32) i Harris & Harris. Alguns textos i els exàmens anteriors d'EC l'anomenen **`P`** (*present*), com fa l'arquitectura x86; en consultar-los, cal tenir en compte aquesta diferència de notació.
 
 El bit **`E`**, en canvi, és una simplificació d'aquests apunts: una PTE real de Sv32 no té cap bit `E`, sinó tres bits de permís, **`R`** (lectura), **`W`** (escriptura) i **`X`** (execució), a més dels bits **`U`** (accessible en mode usuari), **`G`** (traducció global, comuna a tots els processos) i **`A`** (*accessed*, pàgina accedida). El bit `E` d'EC correspon al bit `W` de Sv32; la resta de permisos no es tracten en aquest tema. Pel que fa a `V`, Sv32 només estableix que, amb V = 0, la PTE és invàlida i qualsevol accés provoca una fallada de pàgina: que la pàgina sigui al disc o que l'adreça no pertanyi al procés és informació que gestiona el sistema operatiu, no el maquinari.
-:::
-
-::: {#fig-mv-taula-pagines}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/auto_figs/T8_mv_taula_pagines__original_light.svg)
-:::
-::: {.dark-content}
-![](/auto_figs/T8_mv_taula_pagines__original_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/auto_figs/T8_mv_taula_pagines__original_light.svg)
-:::
-Donat un VPN, la taula de pàgines indica si la pàgina és a la memòria física (bit V) i en quin marc de pàgina (PPN) es troba; el PPN, juntament amb el desplaçament, forma l'adreça física. El registre de taula de pàgines (@sec-mv-registre-tp) en conté l'adreça base, i cada entrada (PTE) conté, a més, els bits D i E.
 :::
 
 La @fig-mv-traduccio-exemple mostra com es faria la traducció de l'adreça lògica `0x00001801` mitjançant la taula de pàgines del procés 2 de la @fig-mv-pagines-marcs. Amb pàgines de 4 KiB, el VPN són els 20 bits de més pes de l'adreça (VPN = 1) i el desplaçament, els 12 de menys pes (`0x801`). L'entrada 1 de la taula té V = 1, de manera que la pàgina és a la memòria física, al marc PPN = 2 (`10` en binari). L'adreça física s'obté reemplaçant el VPN pel PPN i conservant el desplaçament: `10` `1000 0000 0001` = `0x2801`. Com que la memòria física és de 16 KiB, l'adreça física té 14 bits: 2 de PPN i 12 de desplaçament.
