@@ -328,39 +328,62 @@ def adreca_exemple():
 # ── Pàgines i marcs ──────────────────────────────────────────
 
 def pagines_marcs():
+    """Com la figura 7.3 del tema antic, amb el format dels espais lògics de `espais`: les dues columnes
+    senceres (de 0x00000000 a 0xFFFFFFFF) amb VPN 0 i VPN 1 de cada procés, la memòria física de 16 KiB amb
+    les adreces de cada marc i el PPN, i el disc, on només hi ha la pàgina que no és a la memòria."""
     o = []
-    dx = 15
-    X, XM = 80 + dx, 420 + dx
-    for p, y0, (f, s) in (('1', 36, (P1_F, P1_S)), ('2', 156, (P2_F, P2_S))):
-        o.append(t(X + 50, y0 - 10, f'Procés {p}', 12, s, bold=True))
+    H = 26
+    Y0 = 56
+    files = {0: Y0, 1: Y0 + H, 'ultima': Y0 + 2 * H + 44}
+    H_COL = files['ultima'] + H - Y0
+    adreces = {0: ('0x00000000', '0x00000FFF'), 1: ('0x00001000', '0x00001FFF'),
+               'ultima': ('0xFFFFF000', '0xFFFFFFFF')}
+    for p, x, (f, sk), costat in (('1', 110, (P1_F, P1_S), 'end'), ('2', 500, (P2_F, P2_S), 'start')):
+        cx = x + 45
+        o.append(t(cx, 22, f'Procés {p}', 12, sk, bold=True))
+        o.append(t(cx, 36, 'espai lògic', 10, GRIS, italic=True))
+        o.append(cel(x, Y0, 90, H_COL, NEUTRE, TRAC))
+        for fila, (ini, fi) in adreces.items():
+            y = files[fila]
+            o.append(f'<line x1="{x}" y1="{y}" x2="{x + 90}" y2="{y}" stroke="{TRAC}" stroke-width="1"/>')
+            o.append(f'<line x1="{x}" y1="{y + H}" x2="{x + 90}" y2="{y + H}" stroke="{TRAC}" stroke-width="1"/>')
+            xa = x - 6 if costat == 'end' else x + 96
+            o.append(t(xa, y + 8, ini, 8, GRIS, costat, mono=True))
+            o.append(t(xa, y + H - 2, fi, 8, GRIS, costat, mono=True))
+        o.append(t(cx, files[1] + H + 28, '⋮', 14, GRIS))
         for k in range(2):
-            o.append(cel(X, y0 + k * 26, 100, 26, f, s, f'VPN {k}', s, 11, mono=False))
-        o.append(t(X + 50, y0 + 68, '⋮', 14, GRIS))
-    o.append(t(XM + 50, 26, 'Memòria física', 12, INK, bold=True))
+            o.append(cel(x, files[k], 90, H, f, sk, f'VPN {k}', sk, 11, mono=False))
+    # Memòria física de 16 KiB: quatre marcs amb les adreces i el PPN.
+    XM, YM = 290, Y0 + 8
+    o.append(t(XM + 50, YM - 10, 'Memòria física', 12, INK, bold=True))
     marcs = [('P2 · VPN 0', P2_F, P2_S), ('P1 · VPN 0', P1_F, P1_S), ('P2 · VPN 1', P2_F, P2_S), None]
     for k, m in enumerate(marcs):
-        y = 36 + k * 26
+        y = YM + k * H
         if m:
-            o.append(cel(XM, y, 100, 26, m[1], m[2], m[0], m[2], 10, mono=False))
+            o.append(cel(XM, y, 100, H, m[1], m[2], m[0], m[2], 10, mono=False))
         else:
-            o.append(cel(XM, y, 100, 26, NEUTRE, TRAC))
+            o.append(cel(XM, y, 100, H, NEUTRE, TRAC))
             o.append(t(XM + 50, y + 17, 'lliure', 10, GRIS, italic=True))
-        o.append(t(XM + 108, y + 17, f'PPN {k}', 10, GRIS, 'start', mono=True))
-    o.append(disc(XM, 170, 100, 70))
-    # Al disc només es dibuixa la pàgina que no és a la memòria física.
-    o.append(cel(XM + 12, 200, 76, 22, P1_F, P1_S, 'P1 · VPN 1', P1_S, 10, mono=False))
-    o.append(t(XM + 108, 215, 'Disc', 12, INK, 'start', bold=True))
-    xa, xb = X + 100, XM - 2
-    o.append(cami([(xa, 49), (xb, 75)], P1_S))
-    o.append(cami([(xa, 75), (XM + 10, 211)], P1_S, dash='5,3'))
-    o.append(cami([(xa, 169), (xb, 49)], P2_S))
-    o.append(cami([(xa, 195), (xb, 101)], P2_S))
-    return svg(680, 256, 'Pàgines i marcs de pàgina',
-               "A l'esquerra, les pàgines VPN 0 i VPN 1 del procés 1, en blau, i del procés 2, en verd, amb punts "
-               "suspensius per a la resta. A la dreta, la memòria física, amb quatre marcs, de PPN 0 a PPN 3, i el "
-               "disc a sota. Les fletxes assignen VPN 0 del procés 1 a PPN 1, VPN 0 del procés 2 a PPN 0 i VPN 1 del "
-               "procés 2 a PPN 2; PPN 3 és lliure. VPN 1 del procés 1 no és a la memòria física: una fletxa "
-               "discontínua la porta al disc, on és l'única pàgina dibuixada.", o)
+        o.append(t(XM - 6, y + 8, f'0x{k:X}000', 8, GRIS, 'end', mono=True))
+        o.append(t(XM - 6, y + H - 2, f'0x{k:X}FFF', 8, GRIS, 'end', mono=True))
+        o.append(t(XM + 106, y + H - 3, f'PPN {k}', 9, GRIS, 'start', mono=True))
+    # Disc: només la pàgina que no és a la memòria física.
+    YD = YM + 4 * H + 30
+    o.append(disc(XM, YD, 100, 66))
+    o.append(cel(XM + 12, YD + 26, 76, 22, P1_F, P1_S, 'P1 · VPN 1', P1_S, 10, mono=False))
+    o.append(t(XM + 108, YD + 40, 'Disc', 12, INK, 'start', bold=True))
+    # Fletxes: VPN 0 de P1 → PPN 1; VPN 0 de P2 → PPN 0; VPN 1 de P2 → PPN 2; VPN 1 de P1 → disc.
+    o.append(cami([(200, files[0] + H / 2), (XM - 2, YM + 1 * H + H / 2)], P1_S))
+    o.append(cami([(500, files[0] + H / 2), (XM + 102, YM + 0 * H + H / 2)], P2_S))
+    o.append(cami([(500, files[1] + H / 2), (XM + 102, YM + 2 * H + H / 2)], P2_S))
+    o.append(cami([(200, files[1] + H / 2), (216, files[1] + H / 2), (216, YD + 37), (XM - 2, YD + 37)], P1_S, dash='5,3'))
+    return svg(680, YD + 80, 'Pàgines i marcs de pàgina',
+               "A banda i banda, l'espai lògic de dos processos, de 0x00000000 a 0xFFFFFFFF, amb l'adreça inicial i "
+               "final de cada pàgina de 4 KiB; el procés 1, en blau, i el procés 2, en verd, fan servir VPN 0 i VPN 1 "
+               "cadascun. Al centre, la memòria física de 16 KiB, amb quatre marcs de 0x0000 a 0x3FFF i els seus "
+               "PPN: PPN 0 conté VPN 0 del procés 2, PPN 1 conté VPN 0 del procés 1, PPN 2 conté VPN 1 del procés 2 "
+               "i PPN 3 és lliure. A sota, el disc, amb VPN 1 del procés 1, que no és a la memòria física i hi arriba "
+               "amb una fletxa discontínua que baixa per l'esquerra de la memòria.", o)
 
 
 # ── Taula de pàgines ─────────────────────────────────────────
