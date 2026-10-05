@@ -4,8 +4,8 @@ gen_T8.py — Genera les figures de T8 (A8): memòria virtual.
 
     python3 25_scripts/gen_T8.py [--output-dir 22_figs_originals] [--comprova]
 
-Escriu nou SVG natius a `22_figs_originals/`, un per especificació
-`<!-- fig-mv-… -->` d'A8:
+Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
+(i els fotogrames de la figura dinàmica):
 
 - `T8_mv_espais.svg` (`#fig-mv-espais`): els espais lògics de dos processos,
   la MMU, la memòria física i el disc.
@@ -23,6 +23,15 @@ Escriu nou SVG natius a `22_figs_originals/`, un per especificació
   apunten al mateix marc.
 - `T8_mv_pipt.svg` i `T8_mv_vipt.svg` (`#fig-mv-pipt`, `#fig-mv-vipt`): la
   integració del TLB i la memòria cau, en sèrie i en paral·lel.
+- `T8_mv_exemple_tlb.svg` (`#fig-mv-tlb-exemple`): la traça dels cinc accessos
+  de `#tip-mv-tlb-exemple`, simulats per `simula_exemple()`, i els fotogrames
+  `T8_mv_exemple_tlb_pas<k>.svg` (k = 0, l'estat inicial) de la figura
+  dinàmica de l'HTML (`figures_dinamiques.html`), amb el TLB, la taula de
+  pàgines i la memòria física després de cada accés.
+
+El model del TLB és el del tema (RISC-V, `A8.qmd §Traducció ràpida: el TLB`):
+el TLB només conté PTE vàlides, la fallada de TLB la resol la MMU i, en
+expulsar una pàgina, el SO n'invalida l'entrada del TLB.
 
 Les dades són les dels exemples d'A8: la taula de pàgines i el TLB de
 `#tip-mv-tlb-exemple`, i la compartició de `#tip-mv-comparticio`. Colors de
@@ -59,11 +68,15 @@ TAULA = [('0x00000', '1', '0', '1', '0x01'),
          ('0x00001', '0', '0', '1', '—'),
          ('0x00002', '1', '0', '1', '0x02'),
          ('0x00003', '1', '1', '1', '0x00'),
-         ('0x00004', '0', '0', '1', '—')]
-TLB = [('0x00003', '1', '1', '1', '0x00'),
-       ('0x00000', '1', '0', '1', '0x01'),
-       ('0x00002', '1', '0', '1', '0x02'),
-       ('0x0AFB3', '0', '0', '0', '—')]
+         ('0x00004', '0', '0', '1', '—'),
+         ('0x00005', '0', '0', '1', '—')]
+# Entrades del TLB: (V, VPN, D, E, PPN). La quarta és lliure (V = 0): el TLB només conté PTE vàlides.
+TLB = [('1', '0x00003', '1', '1', '0x00'),
+       ('1', '0x00000', '0', '1', '0x01'),
+       ('1', '0x00002', '0', '1', '0x02'),
+       ('0', '—', '—', '—', '—')]
+# Accessos de l'exemple (#tip-mv-tlb-exemple): (L/E, adreça lògica).
+EX_ACCESSOS = [('E', 0x00002A0B), ('L', 0x00001F21), ('L', 0x0000420C), ('L', 0x00003001), ('L', 0x00005120)]
 
 
 # ── Primitives ───────────────────────────────────────────────
@@ -231,20 +244,28 @@ def pagines_marcs():
             o.append(cel(XM, y, 100, 26, NEUTRE, TRAC))
             o.append(t(XM + 50, y + 17, 'lliure', 10, GRIS, italic=True))
         o.append(t(XM + 108, y + 17, f'PPN {k}', 10, GRIS, 'start', mono=True))
-    o.append(disc(XM, 170, 100, 70))
-    o.append(cel(XM + 12, 200, 76, 22, P1_F, P1_S, 'P1 · VPN 1', P1_S, 10, mono=False))
-    o.append(t(XM + 108, 215, 'Disc', 12, INK, 'start', bold=True))
+    o.append(disc(XM - 20, 170, 140, 78))
+    # El disc conté una còpia de totes les pàgines (model del tema); la de P1 · VPN 1 només és al disc.
+    disc_pags = [('P1 · VPN 0', P1_F, P1_S, False), ('P1 · VPN 1', P1_F, P1_S, True),
+                 ('P2 · VPN 0', P2_F, P2_S, False), ('P2 · VPN 1', P2_F, P2_S, False)]
+    for k, (nom, f, sk, nomes_disc) in enumerate(disc_pags):
+        x = XM - 12 + (k % 2) * 64
+        y = 196 + (k // 2) * 22
+        o.append(cel(x, y, 60, 18, f if nomes_disc else NEUTRE, sk if nomes_disc else TRAC, nom,
+                     sk if nomes_disc else GRIS, 9, mono=False, sw=1.5 if nomes_disc else 1))
+    o.append(t(XM + 128, 215, 'Disc', 12, INK, 'start', bold=True))
     xa, xb = X + 100, XM - 2
     o.append(cami([(xa, 49), (xb, 75)], P1_S))
-    o.append(cami([(xa, 75), (XM + 10, 211)], P1_S, dash='5,3'))
+    o.append(cami([(xa, 75), (XM + 50, 196)], P1_S, dash='5,3'))
     o.append(cami([(xa, 169), (xb, 49)], P2_S))
     o.append(cami([(xa, 195), (xb, 101)], P2_S))
-    return svg(680, 256, 'Pàgines i marcs de pàgina',
+    return svg(680, 262, 'Pàgines i marcs de pàgina',
                "A l'esquerra, les pàgines VPN 0 i VPN 1 del procés 1, en blau, i del procés 2, en verd, amb punts "
                "suspensius per a la resta. A la dreta, la memòria física, amb quatre marcs, de PPN 0 a PPN 3, i el "
                "disc a sota. Les fletxes assignen VPN 0 del procés 1 a PPN 1, VPN 0 del procés 2 a PPN 0 i VPN 1 del "
-               "procés 2 a PPN 2; PPN 3 és lliure. VPN 1 del procés 1 no és a la memòria física: una fletxa "
-               "discontínua la porta al disc.", o)
+               "procés 2 a PPN 2; PPN 3 és lliure. El disc conté una còpia de les quatre pàgines; les tres que també "
+               "són a la memòria física hi apareixen en gris, i VPN 1 del procés 1, que només és al disc, en blau, "
+               "amb una fletxa discontínua des de l'espai lògic.", o)
 
 
 # ── Taula de pàgines ─────────────────────────────────────────
@@ -276,7 +297,7 @@ def taula_pagines():
              f'text-anchor="start">2<tspan dy="-5" font-size="8">20</tspan><tspan dx="3" dy="5">entrades</tspan></text>')
     return svg(680, yb + 20, 'La taula de pàgines',
                "Una taula de columnes V, D, E i PPN, indexada pel VPN, que s'escriu a fora, a l'esquerra, de 0x00000 "
-               "a 0x00004, punts suspensius i 0xFFFFF, amb una cota de 2 elevat a 20 entrades. Les entrades 0x00000, "
+               "a 0x00005, punts suspensius i 0xFFFFF, amb una cota de 2 elevat a 20 entrades. Les entrades 0x00000, "
                "0x00002 i 0x00003 tenen V = 1 i un PPN, 0x01, 0x02 i 0x00, i són en blau; les altres tenen V = 0, sense "
                "PPN, en gris. El registre de taula de pàgines, a dalt a l'esquerra, apunta amb una fletxa a l'inici "
                "de la taula: l'adreça base.", o)
@@ -346,101 +367,114 @@ def tlb_estructura():
     o.append(t(XP + 79, 22, 'Taula de pàgines', 12, INK, bold=True))
     o.append(t(XP + 79, 36, '(a la memòria principal)', 10, GRIS))
     XT = 400
-    ftlb = [((vpn, v, d, e, ppn), TLB_F if v == '1' else NEUTRE, TLB_S if v == '1' else TRAC)
-            for vpn, v, d, e, ppn in TLB]
-    o += taula(XT, Y, [('VPN', 76)] + cols, ftlb)
+    ftlb = [((v, vpn if v == '1' else '', d, e, ppn), TLB_F if v == '1' else NEUTRE, TLB_S if v == '1' else TRAC)
+            for v, vpn, d, e, ppn in TLB]
+    ctlb = [('V', 34), ('VPN', 76), ('D', 34), ('E', 34), ('PPN', 56)]
+    o += taula(XT, Y, ctlb, ftlb)
     o.append(t(XT + 117, 22, 'TLB', 12, INK, bold=True))
     o.append(t(XT + 117, 36, '(a la MMU)', 10, GRIS))
+    o.append(t(XT + 72, Y + 3 * 22 + 15, 'lliure', 10, GRIS, italic=True))
     xa, xb = XP + 158, XT - 2
     fila = {vpn: k for k, (vpn, *_) in enumerate(TAULA)}
-    for k, (vpn, *_r) in enumerate(TLB):
+    for k, (v, vpn, *_r) in enumerate(TLB):
         if vpn in fila:
             o.append(cami([(xa, Y + fila[vpn] * 22 + 11), (xb, Y + k * 22 + 11)], TLB_S, dash='5,3'))
     o.append(t((xa + xb) / 2, 54, 'còpia', 10, GRIS, italic=True))
     return svg(680, Y + len(files) * 22 + 20, 'La taula de pàgines i el TLB',
                "A l'esquerra, la taula de pàgines, a la memòria principal, amb columnes V, D, E i PPN i el VPN a fora "
-               "com a índex, de 0x00000 a 0x00004 i 0xFFFFF; les entrades vàlides, en blau. A la dreta, el TLB, a la "
-               "MMU, amb quatre entrades i una columna VPN més: 0x00003, 0x00000 i 0x00002, vàlides i en groc, i "
-               "0x0AFB3, amb V = 0, en gris. Tres fletxes discontínues porten cada PTE vàlida de la taula a l'entrada "
-               "del TLB que n'és còpia. Són les dades de l'exemple de traducció amb TLB.", o)
+               "com a índex, de 0x00000 a 0x00005 i 0xFFFFF; les entrades vàlides, en blau. A la dreta, el TLB, a la "
+               "MMU, amb quatre entrades i columnes V, VPN, D, E i PPN: tres entrades vàlides, en groc, amb els VPN "
+               "0x00003, 0x00000 i 0x00002, i una quarta entrada lliure, amb V = 0, en gris. Tres fletxes "
+               "discontínues porten cada PTE vàlida de la taula a l'entrada del TLB que n'és còpia. Són les dades "
+               "inicials de l'exemple de traducció amb TLB.", o)
 
 
 # ── Diagrama de flux de la traducció ─────────────────────────
 
 def flux():
+    """Flux de la traducció al model del tema (RISC-V): a l'esquerra, l'encert de TLB; al centre, la fallada
+    de TLB, que resol la MMU sense interrompre el programa; a la dreta, la fallada de pàgina, que és una
+    excepció i la resol el SO. Els dos camins que no acaben a la dada tornen a la cerca al TLB."""
     o = []
-    L, C, R, S = 150, 440, 690, 870
-    r = [50, 130, 210, 290, 370, 450, 530, 610]
+    C, L, R = 300, 560, 790          # columnes: encert, fallada de TLB, fallada de pàgina
+    E = 95                           # sortides laterals de l'encert (excepció de protecció, bit D)
+    r = [50, 130, 210, 290, 370, 440, 510, 580, 650, 720]
+    yl = r[4] + 50                   # el retorn de la fallada de TLB passa per sota de l'accés a la dada
     ab_f, ab_s = NEUTRE, GRIS
     # Fletxes primer, perquè els nodes les tapin.
-    o.append(cami([(C, 72), (C, 97)]))
-    o.append(cami([(C, 162), (C, 177)]))
-    o.append(cami([(345, r[1]), (267, r[1])]))
-    o.append(cami([(L, 163), (L, 187)]))
-    o.append(cami([(L - 115, r[2]), (15, r[2]), (15, r[0]), (328, r[0])], TLB_S))
-    o.append(cami([(C, 242), (C, 257)]))
-    o.append(cami([(535, r[2]), (603, r[2])]))
-    o.append(cami([(345, r[3]), (267, r[3])]))
-    o.append(cami([(C, 322), (C, 337)]))
-    o.append(cami([(345, r[4]), (267, r[4])]))
-    o.append(cami([(C, 402), (C, 427)]))
-    o.append(cami([(L, 392), (L, r[5]), (308, r[5])]))
-    o.append(cami([(775, r[2]), (803, r[2])]))
-    o.append(cami([(R, 242), (R, 257)]))
-    o.append(cami([(775, r[3]), (803, r[3])]))
-    o.append(cami([(R, 322), (R, 427)]))
-    o.append(cami([(S, 318), (S, 337)]))
-    o.append(cami([(805, r[4]), (R, r[4])], cap=False))
-    o.append(figlib.dot(R, r[4]))
-    o.append(cami([(S, 402), (S, 421)]))
-    o.append(cami([(805, r[5]), (777, r[5])]))
-    o.append(cami([(R, 472), (R, 507)]))
-    o.append(cami([(R, 552), (R, 587)]))
-    o.append(cami([(775, r[7]), (948, r[7]), (948, r[0]), (552, r[0])], MISS_S))
+    o.append(cami([(C, 72), (C, 97)]))                                     # cerca → encert?
+    o.append(cami([(C, 162), (C, 177)]))                                   # encert? sí → E = 0?
+    o.append(cami([(395, r[1]), (443, r[1])]))                              # encert? no → llegeix la PTE
+    o.append(cami([(205, r[2]), (172, r[2])]))                              # E = 0? sí → excepció de protecció
+    o.append(cami([(C, 242), (C, 257)]))                                   # E = 0? no → D = 0?
+    o.append(cami([(205, r[3]), (172, r[3])]))                              # D = 0? sí → posa D = 1
+    o.append(cami([(E, r[3] + 22), (E, r[4]), (168, r[4])]))                # posa D = 1 → accés a la dada
+    o.append(cami([(C, 322), (C, 347)]))                                   # D = 0? no → accés a la dada
+    o.append(cami([(L, 163), (L, 177)]))                                   # llegeix la PTE → V = 1?
+    o.append(cami([(L, 242), (L, 257)]))                                   # V = 1? sí → copia la PTE al TLB
+    o.append(cami([(655, r[2]), (713, r[2])]))                              # V = 1? no → adreça vàlida?
+    o.append(cami([(L, r[3] + 33), (L, yl), (15, yl), (15, r[0]), (188, r[0])], TLB_S))  # → cerca
+    o.append(cami([(865, r[2]), (872, r[2])]))                              # adreça vàlida? no → el SO avorta
+    o.append(cami([(R, 242), (R, 257)]))                                   # adreça vàlida? sí → marc lliure?
+    o.append(cami([(715, r[3]), (690, r[3]), (690, r[7]), (703, r[7])]))    # marc lliure? sí → carrega
+    o.append(cami([(R, 322), (R, 341)]))                                   # marc lliure? no → tria la víctima
+    o.append(cami([(R, r[4] + 29), (R, r[5] - 33)]))                        # víctima → D = 1?
+    o.append(cami([(R, r[5] + 32), (R, r[6] - 23)]))                        # D = 1? sí → escriu al disc
+    ym = (r[6] + r[7]) / 2
+    o.append(cami([(865, r[5]), (895, r[5]), (895, ym), (R, ym)], cap=False))  # D = 1? no → carrega
+    o.append(figlib.dot(R, ym))
+    o.append(cami([(R, r[6] + 22), (R, r[7] - 23)]))                        # escriu → carrega
+    o.append(cami([(R, r[7] + 22), (R, r[8] - 23)]))                        # carrega → actualitza la PTE
+    o.append(cami([(R, r[8] + 22), (R, r[9] - 23)]))                        # actualitza → reexecuta
+    o.append(cami([(875, r[9]), (955, r[9]), (955, r[0]), (412, r[0])], MISS_S))  # reexecuta → cerca
     # Rètols de les branques.
-    for x, y, s, a in ((C + 6, 174, 'sí', 'start'), (306, r[1] - 6, 'no', 'middle'),
-                       (C + 6, 254, 'sí', 'start'), (569, r[2] - 6, 'no', 'middle'),
-                       (306, r[3] - 6, 'sí', 'middle'), (C + 6, 334, 'no', 'start'),
-                       (306, r[4] - 6, 'sí', 'middle'), (C + 6, 418, 'no', 'start'),
-                       (789, r[2] - 6, 'no', 'middle'), (R + 6, 254, 'sí', 'start'),
-                       (789, r[3] - 6, 'no', 'middle'), (R + 6, 340, 'sí', 'start'),
-                       (797, r[4] - 6, 'no', 'end'), (S + 6, 416, 'sí', 'start')):
+    for x, y, s, a in ((C + 6, 174, 'sí', 'start'), (419, r[1] - 6, 'no', 'middle'),
+                       (188, r[2] - 6, 'sí', 'middle'), (C + 6, 254, 'no', 'start'),
+                       (188, r[3] - 6, 'sí', 'middle'), (C + 6, 338, 'no', 'start'),
+                       (L + 6, 254, 'sí', 'start'), (684, r[2] - 6, 'no', 'middle'),
+                       (R + 6, 254, 'sí', 'start'), (868, r[2] - 6, 'no', 'end'),
+                       (702, r[3] - 6, 'sí', 'middle'), (R + 6, 336, 'no', 'start'),
+                       (R + 6, r[5] + 43, 'sí', 'start'), (880, r[5] - 6, 'no', 'middle')):
         o.append(t(x, y, s, 12, INK, a, italic=True))
     # Nodes.
     o.append(node(C, r[0], 220, 44, ['Cerca el VPN al TLB'], HIT_F, HIT_S))
     o.append(node(C, r[1], 190, 64, ['Encert de TLB?'], HIT_F, HIT_S, 'rombe'))
-    o.append(node(C, r[2], 190, 64, ['V = 1?'], HIT_F, HIT_S, 'rombe'))
-    o.append(node(C, r[3], 190, 64, ['Escriptura', 'i E = 0?'], HIT_F, HIT_S, 'rombe'))
-    o.append(node(C, r[4], 190, 64, ['Escriptura', 'i D = 0?'], HIT_F, HIT_S, 'rombe'))
-    o.append(node(C, r[5], 260, 44, ["Accés a la dada amb l'adreça", 'física (PPN i desplaçament)'],
+    o.append(node(C, r[2], 190, 64, ['Escriptura', 'i E = 0?'], HIT_F, HIT_S, 'rombe'))
+    o.append(node(C, r[3], 190, 64, ['Escriptura', 'i D = 0?'], HIT_F, HIT_S, 'rombe'))
+    o.append(node(C, r[4], 260, 44, ["Accés a la dada amb l'adreça", 'física (PPN i desplaçament)'],
                   HIT_F, HIT_S, 'terminal'))
-    o.append(node(L, r[1], 230, 66, ['Llegeix la PTE de la taula', 'de pàgines i copia-la al TLB',
-                                     ('(a una entrada amb V = 0 o,', 10, GRIS),
-                                     ('si no n’hi ha, a la LRU)', 10, GRIS)],
-                  TLB_F, TLB_S))
-    o.append(node(L, r[2], 230, 44, ["Reintenta l'accés"], TLB_F, TLB_S))
-    o.append(node(L, r[3], 230, 44, ['El SO avorta', 'el procés'], ab_f, ab_s, 'terminal'))
-    o.append(node(L, r[4], 230, 44, ['Posa D = 1 al TLB i a la PTE'], HIT_F, HIT_S))
-    o.append(node(R, r[2], 170, 64, ['Adreça', 'vàlida?'], MISS_F, MISS_S, 'rombe'))
-    o.append(node(S, r[2], 130, 44, ['El SO avorta', 'el procés'], ab_f, ab_s, 'terminal'))
-    o.append(node(R, r[3], 170, 64, ['Hi ha cap', 'marc lliure?'], MISS_F, MISS_S, 'rombe'))
-    o.append(node(S, r[3], 130, 56, ['Tria una pàgina', 'víctima (LRU):', 'V = 0 a la PTE'], MISS_F, MISS_S))
-    o.append(node(S, r[4], 130, 64, ['D = 1?'], MISS_F, MISS_S, 'rombe'))
-    o.append(node(S, r[5], 130, 56, ['Escriu la', 'víctima al disc'], MISS_F, MISS_S))
-    o.append(node(R, r[5], 170, 44, ['Carrega la pàgina', 'del disc al marc'], MISS_F, MISS_S))
-    o.append(node(R, r[6], 170, 44, ['Actualitza la PTE', '(V = 1 i PPN)'], MISS_F, MISS_S))
-    o.append(node(R, r[7], 170, 44, ['Reexecuta', 'la instrucció'], MISS_F, MISS_S))
-    o.append(t(L, 88, 'Fallada de TLB', 13, TLB_S, bold=True))
-    o.append(t(780, 166, 'Fallada de pàgina (la gestiona el SO)', 13, MISS_S, bold=True))
-    return svg(960, 650, "Flux complet de traducció d'una adreça",
-               "Diagrama de flux en tres columnes. Al centre, en verd, el camí de l'encert: es cerca el VPN al TLB; si "
-               "hi és i V = 1, es comprova si és una escriptura amb E = 0, que fa que el SO avorti el procés, i si és "
-               "una escriptura amb D = 0, que posa D = 1 al TLB i a la PTE; s'acaba accedint a la dada amb l'adreça "
-               "física. A l'esquerra, en groc, la fallada de TLB: es llegeix la PTE, es copia al TLB i es reintenta "
-               "l'accés. A la dreta, en vermell, la fallada de pàgina, quan V = 0: si l'adreça no és vàlida, el SO "
-               "avorta el procés; si ho és i no hi ha cap marc lliure, es tria una víctima, que s'escriu al disc si "
-               "D = 1; després es carrega la pàgina, s'actualitza la PTE i es reexecuta la instrucció. El reintent i "
-               "la reexecució tornen a la cerca al TLB.", o)
+    o.append(node(E, r[2], 150, 56, ['Excepció de', 'protecció: el SO', 'avorta el procés'], ab_f, ab_s, 'terminal', 12))
+    o.append(node(E, r[3], 150, 44, ['Posa D = 1 al', 'TLB i a la PTE'], HIT_F, HIT_S))
+    o.append(node(L, r[1], 230, 66, ['Llegeix la PTE de la', 'taula de pàgines',
+                                     ('(recorregut per maquinari,', 10, GRIS),
+                                     ('sense interrompre el programa)', 10, GRIS)], TLB_F, TLB_S))
+    o.append(node(L, r[2], 190, 64, ['V = 1?'], TLB_F, TLB_S, 'rombe'))
+    o.append(node(L, r[3], 230, 66, ['Copia la PTE al TLB', ('(a una entrada lliure o,', 10, GRIS),
+                                     ('si no n’hi ha, a la LRU)', 10, GRIS)], TLB_F, TLB_S))
+    o.append(node(R, r[2], 150, 64, ['Adreça', 'vàlida?'], MISS_F, MISS_S, 'rombe'))
+    o.append(node(912, r[2], 78, 44, ['El SO avorta', 'el procés'], ab_f, ab_s, 'terminal', 10))
+    o.append(node(R, r[3], 150, 64, ['Hi ha cap', 'marc lliure?'], MISS_F, MISS_S, 'rombe'))
+    o.append(node(R, r[4], 170, 58, ['Tria la víctima (LRU):', 'V = 0 a la seva PTE', 'i invalida-la del TLB'],
+                  MISS_F, MISS_S, size=12))
+    o.append(node(R, r[5], 150, 64, ['D = 1?'], MISS_F, MISS_S, 'rombe'))
+    o.append(node(R, r[6], 170, 44, ['Escriu la víctima', 'al disc'], MISS_F, MISS_S))
+    o.append(node(R, r[7], 170, 44, ['Carrega la pàgina', 'del disc al marc'], MISS_F, MISS_S))
+    o.append(node(R, r[8], 170, 44, ['Actualitza la PTE', '(V = 1, D = 0 i PPN)'], MISS_F, MISS_S))
+    o.append(node(R, r[9], 170, 44, ['Reexecuta', 'la instrucció'], MISS_F, MISS_S))
+    o.append(t(L, 86, 'Fallada de TLB (la resol la MMU)', 13, TLB_S, bold=True))
+    o.append(t(R, 166, 'Fallada de pàgina (la resol el SO)', 13, MISS_S, bold=True))
+    o.append(t(C, 20, 'Encert de TLB', 13, HIT_S, bold=True))
+    return svg(960, r[9] + 50, "Flux complet de traducció d'una adreça",
+               "Diagrama de flux en tres columnes. A l'esquerra, en verd, el camí de l'encert: es cerca el VPN al "
+               "TLB; si hi és, es comprova si és una escriptura amb E = 0, que provoca una excepció de protecció i "
+               "el SO avorta el procés, i si és una escriptura amb D = 0, que posa D = 1 al TLB i a la PTE; s'acaba "
+               "accedint a la dada amb l'adreça física. Al centre, en groc, la fallada de TLB, que resol la MMU: "
+               "llegeix la PTE de la taula de pàgines i, si V = 1, la copia al TLB i torna a la cerca, que ara "
+               "encerta. A la dreta, en vermell, la fallada de pàgina, quan la PTE té V = 0, que resol el SO: si "
+               "l'adreça no és vàlida, avorta el procés; si ho és i no hi ha cap marc lliure, tria una víctima, "
+               "posa V = 0 a la seva PTE i n'invalida l'entrada del TLB, i l'escriu al disc si D = 1; després "
+               "carrega la pàgina, actualitza la PTE amb V = 1, D = 0 i el PPN, i reexecuta la instrucció, que "
+               "torna a la cerca al TLB.", o)
 
 
 # ── Compartició ──────────────────────────────────────────────
@@ -562,6 +596,236 @@ def vipt():
                "A sota, el cronograma: el TLB i la MC alhora, i després la comparació.", o)
 
 
+# ── Exemple de traducció amb TLB: simulació i figures ───────
+
+def simula_exemple():
+    """Simula els accessos de #tip-mv-tlb-exemple al model del tema: TLB completament associatiu amb LRU
+    que només conté PTE vàlides, recorregut per maquinari, i invalidació de l'entrada del TLB de la pàgina
+    víctima. Retorna els estats (inicial i després de cada accés) amb l'esdeveniment que els ha produït."""
+    import copy
+    t_bits = 12
+    tp = {0: dict(v=1, d=0, ppn=1), 1: dict(v=0, d=0, ppn=None), 2: dict(v=1, d=0, ppn=2),
+          3: dict(v=1, d=1, ppn=0), 4: dict(v=0, d=0, ppn=None), 5: dict(v=0, d=0, ppn=None)}
+    tlb = [dict(v=1, vpn=3, d=1, ppn=0), dict(v=1, vpn=0, d=0, ppn=1), dict(v=1, vpn=2, d=0, ppn=2),
+           dict(v=0, vpn=None, d=0, ppn=None)]
+    marcs = {0: 3, 1: 0, 2: 2, 3: None}
+    lru_pag = [3, 0, 2]          # de més antic a més recent
+    lru_tlb = [3, 0, 2]
+
+    def foto(k, ev):
+        return dict(k=k, ev=ev, tp=copy.deepcopy(tp), tlb=copy.deepcopy(tlb), marcs=dict(marcs),
+                    lru=list(lru_pag))
+    estats = [foto(0, None)]
+    for k, (op, adr) in enumerate(EX_ACCESSOS, 1):
+        vpn, off = adr >> t_bits, adr & ((1 << t_bits) - 1)
+        ev = dict(op=op, adr=adr, vpn=vpn, tlb_miss=False, pf=False, victima=None, disc=False, d=False,
+                  canvi_tlb=set(), canvi_tp=set(), canvi_marcs=set())
+        hit = any(e['v'] and e['vpn'] == vpn for e in tlb)
+        if not hit:
+            ev['tlb_miss'] = True
+            if not tp[vpn]['v']:                       # fallada de pàgina: la resol el SO
+                ev['pf'] = True
+                lliures = [p for p, v in marcs.items() if v is None]
+                if lliures:
+                    ppn = lliures[0]
+                else:
+                    victima = lru_pag.pop(0)
+                    ppn = tp[victima]['ppn']
+                    ev['victima'], ev['disc'] = victima, tp[victima]['d'] == 1
+                    tp[victima] = dict(v=0, d=0, ppn=None)
+                    ev['canvi_tp'].add(victima)
+                    for n, e in enumerate(tlb):        # invalidació de l'entrada del TLB de la víctima
+                        if e['v'] and e['vpn'] == victima:
+                            tlb[n] = dict(v=0, vpn=None, d=0, ppn=None)
+                            ev['canvi_tlb'].add(n)
+                    lru_tlb.remove(victima)
+                marcs[ppn] = vpn
+                tp[vpn] = dict(v=1, d=0, ppn=ppn)
+                ev['canvi_tp'].add(vpn)
+                ev['canvi_marcs'].add(ppn)
+            # Recorregut per maquinari: la PTE (ara vàlida) es copia al TLB.
+            n = next((n for n, e in enumerate(tlb) if not e['v']), None)
+            if n is None:
+                vell = lru_tlb.pop(0)
+                n = next(n for n, e in enumerate(tlb) if e['v'] and e['vpn'] == vell)
+            tlb[n] = dict(v=1, vpn=vpn, d=tp[vpn]['d'], ppn=tp[vpn]['ppn'])
+            ev['canvi_tlb'].add(n)
+        if op == 'E' and tp[vpn]['d'] == 0:            # primera escriptura: D = 1 al TLB i a la PTE
+            tp[vpn]['d'] = 1
+            for n, e in enumerate(tlb):
+                if e['v'] and e['vpn'] == vpn:
+                    e['d'] = 1
+                    ev['canvi_tlb'].add(n)
+            ev['canvi_tp'].add(vpn)
+            ev['d'] = True
+        lru_pag = [x for x in lru_pag if x != vpn] + [vpn]
+        lru_tlb = [x for x in lru_tlb if x != vpn] + [vpn]
+        ev['ppn'] = tp[vpn]['ppn']
+        ev['fisica'] = (ev['ppn'] << t_bits) | off
+        estats.append(foto(k, ev))
+    return estats
+
+
+def ex_text(ev):
+    """Les línies d'explicació d'un accés, per a la traça i els fotogrames."""
+    op = 'Escriptura' if ev['op'] == 'E' else 'Lectura'
+    l1 = f"{op} a 0x{ev['adr']:08X} → VPN 0x{ev['vpn']:05X}"
+    if not ev['tlb_miss']:
+        l2 = 'Encert de TLB.' + (' Primera escriptura: D = 1 al TLB i a la PTE.' if ev['d'] else '')
+    elif not ev['pf']:
+        l2 = 'Fallada de TLB; la PTE té V = 1 i es copia al TLB.'
+    elif ev['victima'] is None:
+        l2 = 'Fallada de TLB i de pàgina: es carrega la pàgina al marc lliure.'
+    else:
+        l2 = (f"Fallada de TLB i de pàgina: víctima VPN {ev['victima']}"
+              + (', escrita al disc (D = 1)' if ev['disc'] else ' (D = 0, no cal escriure-la)')
+              + '; se n’invalida l’entrada del TLB.')
+    l3 = f"PPN 0x{ev['ppn']:02X} → adreça física 0x{ev['fisica']:04X}"
+    return l1, l2, l3
+
+
+def ex_tlb(o, x, y, est, cols_vpn=True, h=20, canvis=()):
+    """El TLB d'un estat: columnes V, VPN, D, (E,) PPN; les entrades canviades en aquest pas, amb vora gruixuda."""
+    cols = [('V', 24), ('VPN', 64), ('D', 24)] + ([('E', 24)] if cols_vpn else []) + [('PPN', 44)]
+    files = []
+    for n, e in enumerate(est['tlb']):
+        if e['v']:
+            vals = ['1', f"0x{e['vpn']:05X}", str(e['d'])] + (['1'] if cols_vpn else []) + [f"0x{e['ppn']:02X}"]
+            files.append((tuple(vals), TLB_F, TLB_S))
+        else:
+            files.append((('0', '', '—') + (('—',) if cols_vpn else ()) + ('—',), NEUTRE, TRAC))
+    o += taula(x, y, cols, files, h=h)
+    w = sum(wc for _, wc in cols)
+    for n, e in enumerate(est['tlb']):
+        if not e['v']:
+            o.append(t(x + 24 + 32, y + n * h + h / 2 + 4, 'lliure', 10, GRIS, italic=True))
+        if n in canvis:
+            o.append(f'<rect x="{x}" y="{y + n * h}" width="{w}" height="{h}" fill="none" stroke="{INK}" stroke-width="2"/>')
+    return w
+
+
+def ex_tp(o, x, y, est, h=20, canvis=()):
+    """La taula de pàgines d'un estat (VPN 0 a 5), amb l'índex a fora."""
+    cols = [('V', 24), ('D', 24), ('E', 24), ('PPN', 44)]
+    files, index = [], []
+    for vpn in range(6):
+        e = est['tp'][vpn]
+        if e['v']:
+            files.append((('1', str(e['d']), '1', f"0x{e['ppn']:02X}"), P1_F, P1_S))
+        else:
+            files.append((('0', '0', '1', '—'), NEUTRE, TRAC))
+        index.append(f'0x{vpn:05X}')
+    o += taula(x, y, cols, files, h=h, index=index, cap='VPN')
+    w = sum(wc for _, wc in cols)
+    for vpn in canvis:
+        o.append(f'<rect x="{x}" y="{y + vpn * h}" width="{w}" height="{h}" fill="none" stroke="{INK}" stroke-width="2"/>')
+    return w
+
+
+def ex_marcs(o, x, y, est, h=20, canvis=(), w=96):
+    """La memòria física d'un estat: quatre marcs amb la pàgina que contenen i si és modificada."""
+    o.append(t(x + w / 2, y - 8, 'Memòria física', 11, INK, bold=True))
+    for ppn in range(4):
+        vpn = est['marcs'][ppn]
+        yy = y + ppn * h
+        if vpn is None:
+            o.append(cel(x, yy, w, h, NEUTRE, TRAC))
+            o.append(t(x + w / 2, yy + h / 2 + 4, 'lliure', 10, GRIS, italic=True))
+        else:
+            d = est['tp'][vpn]['d']
+            o.append(cel(x, yy, w, h, P1_F, P1_S, f'VPN {vpn}' + (' · D = 1' if d else ''), P1_S, 10, mono=False))
+        o.append(t(x - 6, yy + h / 2 + 4, f'0x{ppn:02X}', 10, GRIS, 'end', mono=True))
+        if ppn in canvis:
+            o.append(f'<rect x="{x}" y="{yy}" width="{w}" height="{h}" fill="none" stroke="{INK}" stroke-width="2"/>')
+    o.append(t(x - 6, y - 8, 'PPN', 10, GRIS, 'end', bold=True))
+
+
+def ex_lru(est):
+    return 'Ordre LRU (de més antic a més recent): ' + ', '.join(f'VPN {v}' for v in est['lru'])
+
+
+def exemple_tlb_pas(k):
+    """Fotograma k de la figura dinàmica: l'estat després de l'accés k (0 = estat inicial)."""
+    estats = simula_exemple()
+    est = estats[k]
+    o = []
+    H = 22
+    if k == 0:
+        o.append(t(20, 24, 'Estat inicial', 14, INK, 'start', bold=True))
+        o.append(t(20, 44, 'Tres pàgines residents, un marc lliure i una entrada del TLB lliure.', 11, GRIS, 'start'))
+        canvis_tlb, canvis_tp, canvis_marcs = (), (), ()
+    else:
+        ev = est['ev']
+        l1, l2, l3 = ex_text(ev)
+        o.append(t(20, 24, f'Accés {k}: {l1}', 14, INK, 'start', bold=True))
+        o.append(t(20, 44, l2, 11, INK, 'start'))
+        o.append(t(20, 60, l3, 11, INK, 'start'))
+        canvis_tlb, canvis_tp, canvis_marcs = ev['canvi_tlb'], ev['canvi_tp'], ev['canvi_marcs']
+    Y = 112
+    o.append(t(20 + 90, Y - 26, 'TLB', 11, INK, bold=True))
+    ex_tlb(o, 20, Y, est, True, H, canvis_tlb)
+    o.append(t(290 + 58, Y - 26, 'Taula de pàgines', 11, INK, bold=True))
+    ex_tp(o, 290, Y, est, H, canvis_tp)
+    ex_marcs(o, 500, Y, est, H, canvis_marcs, w=110)
+    o.append(t(20, Y + 6 * H + 26, ex_lru(est), 11, GRIS, 'start', italic=True))
+    desc = ('Estat inicial del TLB, la taula de pàgines i la memòria física de l’exemple de traducció amb TLB.'
+            if k == 0 else f'Accés {k} de l’exemple: {l1}. {l2} {l3}.')
+    return svg(680, Y + 6 * H + 40, f'Exemple de traducció amb TLB, pas {k}', desc, o)
+
+
+def exemple_tlb():
+    """Figura estàtica (PDF i sense JavaScript): l’estat inicial i la traça dels cinc accessos, amb l’estat del
+    TLB i de la memòria física després de cadascun."""
+    estats = simula_exemple()
+    o = []
+    H = 18
+    y = 30
+    o.append(t(20, y, 'Estat inicial', 13, INK, 'start', bold=True))
+    o.append(t(20, y + 16, ex_lru(estats[0]), 10, GRIS, 'start', italic=True))
+    o.append(t(360 + 90, y - 2, 'TLB', 10, INK, bold=True))
+    ex_tlb(o, 360, y + 22, estats[0], True, H)
+    ex_marcs(o, 590, y + 22, estats[0], H, w=80)
+    y += 22 + 4 * H + 26
+    for est in estats[1:]:
+        ev = est['ev']
+        l1, l2, l3 = ex_text(ev)
+        o.append(f'<line x1="20" y1="{y - 14}" x2="660" y2="{y - 14}" stroke="{TRAC}" stroke-width="1"/>')
+        o.append(t(20, y, f'Accés {ev["k"] if "k" in ev else est["k"]}: {l1}', 12, INK, 'start', bold=True))
+        for n, lin in enumerate(parteix(l2, 62)):
+            o.append(t(20, y + 16 + 13 * n, lin, 10, INK, 'start'))
+        nl = len(parteix(l2, 62))
+        o.append(t(20, y + 16 + 13 * nl, l3, 10, INK, 'start'))
+        o.append(t(20, y + 30 + 13 * nl, ex_lru(est), 9, GRIS, 'start', italic=True))
+        ex_tlb(o, 360, y + 4, est, True, H, ev['canvi_tlb'])
+        ex_marcs(o, 590, y + 4, est, H, ev['canvi_marcs'], w=80)
+        y += 4 + 4 * H + 30
+    return svg(680, y, 'Exemple de traducció amb TLB: traça dels cinc accessos',
+               "A dalt, l'estat inicial: el TLB, amb tres entrades vàlides (VPN 3, 0 i 2) i una de lliure, i la "
+               "memòria física, amb VPN 3 (modificada) al marc 0x00, VPN 0 al 0x01, VPN 2 al 0x02 i el marc 0x03 "
+               "lliure. A sota, una fila per accés, amb l'explicació a l'esquerra i, a la dreta, el TLB i la memòria "
+               "física després de l'accés, amb les entrades i els marcs que han canviat amb vora gruixuda. "
+               "Accés 1: escriptura a 0x00002A0B, encert de TLB, D = 1 a VPN 2, adreça física 0x2A0B. Accés 2: "
+               "lectura a 0x00001F21, fallada de TLB i de pàgina, VPN 1 al marc lliure 0x03, adreça 0x3F21. Accés 3: "
+               "lectura a 0x0000420C, fallada de TLB i de pàgina, víctima VPN 3, escrita al disc, VPN 4 al marc 0x00, "
+               "adreça 0x020C. Accés 4: lectura a 0x00003001, víctima VPN 0 sense escriptura al disc, VPN 3 al marc "
+               "0x01, adreça 0x1001. Accés 5: lectura a 0x00005120, víctima VPN 2, escrita al disc, VPN 5 al marc "
+               "0x02, adreça 0x2120.", o)
+
+
+def parteix(text, n):
+    """Parteix un text en línies de com a màxim n caràcters, per espais."""
+    linies, actual = [], ''
+    for mot in text.split():
+        if len(actual) + len(mot) + 1 > n and actual:
+            linies.append(actual)
+            actual = mot
+        else:
+            actual = f'{actual} {mot}'.strip()
+    if actual:
+        linies.append(actual)
+    return linies
+
+
 FIGURES = {
     'T8_mv_espais.svg': espais,
     'T8_mv_pagines_marcs.svg': pagines_marcs,
@@ -572,7 +836,11 @@ FIGURES = {
     'T8_mv_comparticio.svg': comparticio,
     'T8_mv_pipt.svg': pipt,
     'T8_mv_vipt.svg': vipt,
+    'T8_mv_exemple_tlb.svg': exemple_tlb,
 }
+# Fotogrames de la figura dinàmica de l'exemple (figures_dinamiques.html): <nom>_pas<k>.svg, k = 0 l'estat inicial.
+for _k in range(len(EX_ACCESSOS) + 1):
+    FIGURES[f'T8_mv_exemple_tlb_pas{_k}.svg'] = (lambda k: lambda: exemple_tlb_pas(k))(_k)
 
 
 def main():

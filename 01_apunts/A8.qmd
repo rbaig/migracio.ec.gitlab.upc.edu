@@ -364,7 +364,7 @@ La @fig-mv-flux-traduccio resumeix totes les situacions possibles durant la trad
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T8_mv_flux_traduccio__original_light.svg)
 :::
-Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual. Al centre, l'encert de TLB; a l'esquerra, la fallada de TLB, i a la dreta, la fallada de pàgina, que gestiona el sistema operatiu.
+Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual. A l'esquerra, l'encert de TLB; al centre, la fallada de TLB, que resol la MMU sense interrompre el programa, i a la dreta, la fallada de pàgina, una excepció que resol el sistema operatiu.
 :::
 
 ::: {#wrn-mv-tlb-shootdown .callout-warning collapse="true"}
@@ -433,8 +433,25 @@ Fallada de TLB i fallada de pàgina. La víctima LRU és VPN 2 (al marc `0x02`),
 | L | `0x00005120` | `0x00005` | sí | sí | `0x00002` | sí (VPN 2) | `0x02` | `0x2120` |
 : Resum dels cinc accessos {.striped tbl-colwidths="[5,16,11,10,10,16,12,8,12]"}
 
-En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x02`) i VPN 1 (`0x03`), totes amb D = 0, i el TLB té exactament aquestes quatre traduccions. Observeu que, amb tants marcs com entrades de TLB, el reemplaçament LRU del TLB no arriba a actuar mai: cada fallada de pàgina allibera una entrada del TLB abans que la pàgina nova la necessiti. El reemplaçament del TLB només entra en joc quan hi ha més pàgines residents que entrades, com a @exr-t8-tlb-estat.
+En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x02`) i VPN 1 (`0x03`), totes amb D = 0, i el TLB té exactament aquestes quatre traduccions. Observeu que, amb tants marcs com entrades de TLB, el reemplaçament LRU del TLB no arriba a actuar mai: cada fallada de pàgina allibera una entrada del TLB abans que la pàgina nova la necessiti. El reemplaçament del TLB només entra en joc quan hi ha més pàgines residents que entrades, com a @exr-t8-tlb-estat. La @fig-mv-tlb-exemple mostra l'estat del TLB i de la memòria física després de cada accés.
 :::
+
+::::: {#fig-mv-tlb-exemple}
+:::: {.content-visible when-format="html"}
+::: {.fig-dinamica data-passos="6"}
+::: {.light-content}
+![](/auto_figs/T8_mv_exemple_tlb__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_exemple_tlb__original_dark.svg)
+:::
+:::
+::::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_exemple_tlb__original_light.svg)
+:::
+Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el TLB i la memòria física després de resoldre'l, amb les entrades i els marcs que han canviat amb vora gruixuda. A l'HTML, el navegador de passos mostra també la taula de pàgines i l'ordre LRU després de cada accés.
+:::::
 
 ## Protecció i compartició {#sec-mv-proteccio}
 
