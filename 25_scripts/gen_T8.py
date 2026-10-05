@@ -177,50 +177,83 @@ def llegenda(x, y, items):
 # ── Espais d'adreçament ──────────────────────────────────────
 
 def espais():
+    """Com la figura 7.1 del tema antic: els espais lògics de dos processos amb l'adreça inicial i final de
+    cada pàgina, la MMU, una memòria física de 16 KiB (quatre marcs, amb les adreces) i el disc, on només es
+    dibuixen les pàgines que no són a la memòria física. Mateixa assignació que `pagines_marcs`."""
     o = []
-    Y0, H = 56, 240
-    pagines = {'1': [('A', 76), ('B', 146), ('C', 236)], '2': [('X', 96), ('Y', 206)]}
-    for p, x, (f, s) in (('1', 60, (P1_F, P1_S)), ('2', 530, (P2_F, P2_S))):
+    H = 26                                   # alçada d'una pàgina o d'un marc
+    # Pàgines de cada procés: (lletra, fila), amb fila 0 i 1 les dues primeres i 'ultima' la darrera.
+    pagines = {'1': [('A', 0), ('B', 1), ('C', 'ultima')], '2': [('X', 0), ('Y', 1)]}
+    marcs = [('X', '2'), ('A', '1'), ('Y', '2'), ('C', '1')]        # PPN 0 a 3
+    nomes_disc = [('B', '1')]
+    Y0 = 56
+    files = {0: Y0, 1: Y0 + H, 'ultima': Y0 + 2 * H + 44}          # y de cada fila de pàgina
+    H_COL = files['ultima'] + H - Y0
+    adreces = {0: ('0x00000000', '0x00000FFF'), 1: ('0x00001000', '0x00001FFF'),
+               'ultima': ('0xFFFFF000', '0xFFFFFFFF')}
+    for p, x, (f, sk), costat in (('1', 110, (P1_F, P1_S), 'end'), ('2', 500, (P2_F, P2_S), 'start')):
         cx = x + 45
-        o.append(t(cx, 20, f'Procés {p}', 12, s, bold=True))
-        o.append(t(cx, 34, 'espai lògic', 10, GRIS, italic=True))
-        o.append(t(cx, Y0 - 6, '0x00000000', 10, GRIS, mono=True))
-        o.append(t(cx, Y0 + H + 14, '0xFFFFFFFF', 10, GRIS, mono=True))
-        o.append(cel(x, Y0, 90, H, NEUTRE, TRAC))
-        for lletra, y in pagines[p]:
-            o.append(cel(x, y, 90, 20, f, s, lletra, s, 12, mono=False))
-    o.append(caixa(280, Y0, 120, 44, NEUTRE, GRIS, 'MMU', 13))
-    o.append(fletxa(156, 78, 278, 78, INK, doble=False))
-    o.append(fletxa(524, 78, 402, 78, INK, doble=False))
-    o.append(t(216, 70, 'adreça lògica', 10, GRIS))
-    o.append(t(464, 70, 'adreça lògica', 10, GRIS))
-    o.append(fletxa(340, 100, 340, 128, INK, doble=False))
-    o.append(t(348, 119, 'adreça física', 10, GRIS, 'start'))
-    marcs = [('A', '1'), ('Y', '2'), None, ('B', '1'), ('X', '2'), None, None]
-    for k, m in enumerate(marcs):
-        y = 130 + k * 20
-        if m:
-            f, s = (P1_F, P1_S) if m[1] == '1' else (P2_F, P2_S)
-            o.append(cel(290, y, 100, 20, f, s, m[0], s, 12, mono=False))
-        else:
-            o.append(cel(290, y, 100, 20, NEUTRE, TRAC))
-    o.append(t(400, 204, 'Memòria física', 12, INK, 'start', bold=True))
-    o.append(fletxa(340, 274, 340, 298, INK))
-    o.append(t(348, 290, 'pàgines', 10, GRIS, 'start'))
-    o.append(disc(280, 300, 120, 74))
-    o.append(t(410, 344, 'Disc', 12, INK, 'start', bold=True))
-    for k, (lletra, p) in enumerate([('A', '1'), ('B', '1'), ('C', '1'), ('X', '2'), ('Y', '2')]):
-        f, s = (P1_F, P1_S) if p == '1' else (P2_F, P2_S)
-        o.append(cel(291 + k * 20, 334, 18, 18, f, s, lletra, s, 10, mono=False))
-    o += llegenda(60, 402, [(P1_F, P1_S, 'pàgina del procés 1'), (P2_F, P2_S, 'pàgina del procés 2'),
-                            (NEUTRE, TRAC, 'espai sense ús o marc lliure')])
-    return svg(680, 414, "Espais d'adreçament lògic i físic",
-               "A banda i banda, l'espai lògic de dos processos, cadascun de 0x00000000 a 0xFFFFFFFF, amb poques "
-               "pàgines en ús: A, B i C del procés 1 i X i Y del procés 2. Totes dues columnes envien adreces "
-               "lògiques a la MMU, al centre, que en tradueix cadascuna en una adreça física. A sota de la MMU, la "
-               "memòria física, més petita, té set marcs: A, Y, B i X ocupen quatre marcs, en un ordre que no és el "
-               "dels espais lògics, i tres són lliures. A sota, el disc conté les cinc pàgines; C només hi és al "
-               "disc.", o)
+        o.append(t(cx, 22, f'Procés {p}', 12, sk, bold=True))
+        o.append(t(cx, 36, 'espai lògic', 10, GRIS, italic=True))
+        o.append(cel(x, Y0, 90, H_COL, NEUTRE, TRAC))
+        # Les tres files de pàgines (amb buit i punts suspensius entre la segona i la darrera).
+        for fila, (ini, fi) in adreces.items():
+            y = files[fila]
+            o.append(f'<line x1="{x}" y1="{y}" x2="{x + 90}" y2="{y}" stroke="{TRAC}" stroke-width="1"/>')
+            o.append(f'<line x1="{x}" y1="{y + H}" x2="{x + 90}" y2="{y + H}" stroke="{TRAC}" stroke-width="1"/>')
+            xa = x - 6 if costat == 'end' else x + 96
+            o.append(t(xa, y + 8, ini, 8, GRIS, costat, mono=True))
+            o.append(t(xa, y + H - 2, fi, 8, GRIS, costat, mono=True))
+        o.append(t(cx, files[1] + H + 28, '⋮', 14, GRIS))
+        for lletra, fila in pagines[p]:
+            o.append(cel(x, files[fila], 90, H, f, sk, lletra, sk, 12, mono=False))
+    # MMU i memòria física.
+    o.append(caixa(290, Y0, 100, 40, NEUTRE, GRIS, 'MMU', 13))
+    o.append(fletxa(201, Y0 + 20, 288, Y0 + 20, INK, doble=False))
+    o.append(fletxa(499, Y0 + 20, 392, Y0 + 20, INK, doble=False))
+    o.append(t(245, Y0 + 12, 'adreça lògica', 9, GRIS))
+    o.append(t(445, Y0 + 12, 'adreça lògica', 9, GRIS))
+    YM = Y0 + 70
+    o.append(fletxa(340, Y0 + 40, 340, YM - 18, INK, doble=False))
+    o.append(t(334, Y0 + 54, 'adreça física', 9, GRIS, 'end'))
+    o.append(t(340, YM - 5, 'Memòria física', 11, INK, bold=True))
+    for k, (lletra, p) in enumerate(marcs):
+        y = YM + k * H
+        f, sk = (P1_F, P1_S) if p == '1' else (P2_F, P2_S)
+        o.append(cel(290, y, 100, H, f, sk, lletra, sk, 12, mono=False))
+        o.append(t(284, y + 8, f'0x{k:X}000', 8, GRIS, 'end', mono=True))
+        o.append(t(284, y + H - 2, f'0x{k:X}FFF', 8, GRIS, 'end', mono=True))
+        o.append(t(396, y + H / 2 + 3, f'PPN {k}', 9, GRIS, 'start', mono=True))
+    # Disc: només les pàgines que no són a la memòria física.
+    YD = YM + 4 * H + 20
+    XD = 180                                 # el disc, a sota a l'esquerra, perquè la fletxa no travessi els marcs
+    o.append(disc(XD, YD, 100, 66))
+    o.append(t(XD + 108, YD + 40, 'Disc', 11, INK, 'start', bold=True))
+    for k, (lletra, p) in enumerate(nomes_disc):
+        f, sk = (P1_F, P1_S) if p == '1' else (P2_F, P2_S)
+        o.append(cel(XD + 36 + k * 30, YD + 26, 28, 22, f, sk, lletra, sk, 11, mono=False))
+    # Fletxes de les pàgines als marcs (contínues) i al disc (discontínua).
+    for k, (lletra, p) in enumerate(marcs):
+        x = 110 if p == '1' else 500
+        fila = next(fi for l, fi in pagines[p] if l == lletra)
+        y = files[fila] + H / 2
+        xa = x + 90 if p == '1' else x
+        o.append(cami([(xa, y), (290 if p == '1' else 390, YM + k * H + H / 2)],
+                      P1_S if p == '1' else P2_S, 1))
+    for lletra, p in nomes_disc:
+        x = 110 if p == '1' else 500
+        fila = next(fi for l, fi in pagines[p] if l == lletra)
+        o.append(cami([(x + 90, files[fila] + H / 2), (XD + 50, YD + 24)], P1_S, 1, dash='5,3'))
+    o += llegenda(110, YD + 90, [(P1_F, P1_S, 'pàgina del procés 1'), (P2_F, P2_S, 'pàgina del procés 2'),
+                                 (NEUTRE, TRAC, 'espai lògic sense ús')])
+    return svg(680, YD + 100, "Espais d'adreçament lògic i físic",
+               "A banda i banda, l'espai lògic de dos processos, de 0x00000000 a 0xFFFFFFFF, amb l'adreça inicial "
+               "i final de cada pàgina de 4 KiB: el procés 1, en blau, usa les pàgines A (0x00000000) i B "
+               "(0x00001000) i la darrera, C (0xFFFFF000); el procés 2, en verd, usa X (0x00000000) i Y "
+               "(0x00001000). Les dues columnes envien adreces lògiques a la MMU, al centre, que les tradueix a "
+               "adreces físiques. A sota, la memòria física de 16 KiB, amb quatre marcs: X a 0x0000, A a 0x1000, "
+               "Y a 0x2000 i C a 0x3000, en un ordre que no és el dels espais lògics. A sota, el disc, amb la "
+               "pàgina B, que no és a la memòria física i hi arriba amb una fletxa discontínua.", o)
 
 
 # ── Pàgines i marcs ──────────────────────────────────────────
@@ -244,28 +277,21 @@ def pagines_marcs():
             o.append(cel(XM, y, 100, 26, NEUTRE, TRAC))
             o.append(t(XM + 50, y + 17, 'lliure', 10, GRIS, italic=True))
         o.append(t(XM + 108, y + 17, f'PPN {k}', 10, GRIS, 'start', mono=True))
-    o.append(disc(XM - 20, 170, 140, 78))
-    # El disc conté una còpia de totes les pàgines (model del tema); la de P1 · VPN 1 només és al disc.
-    disc_pags = [('P1 · VPN 0', P1_F, P1_S, False), ('P1 · VPN 1', P1_F, P1_S, True),
-                 ('P2 · VPN 0', P2_F, P2_S, False), ('P2 · VPN 1', P2_F, P2_S, False)]
-    for k, (nom, f, sk, nomes_disc) in enumerate(disc_pags):
-        x = XM - 12 + (k % 2) * 64
-        y = 196 + (k // 2) * 22
-        o.append(cel(x, y, 60, 18, f if nomes_disc else NEUTRE, sk if nomes_disc else TRAC, nom,
-                     sk if nomes_disc else GRIS, 9, mono=False, sw=1.5 if nomes_disc else 1))
-    o.append(t(XM + 128, 215, 'Disc', 12, INK, 'start', bold=True))
+    o.append(disc(XM, 170, 100, 70))
+    # Al disc només es dibuixa la pàgina que no és a la memòria física.
+    o.append(cel(XM + 12, 200, 76, 22, P1_F, P1_S, 'P1 · VPN 1', P1_S, 10, mono=False))
+    o.append(t(XM + 108, 215, 'Disc', 12, INK, 'start', bold=True))
     xa, xb = X + 100, XM - 2
     o.append(cami([(xa, 49), (xb, 75)], P1_S))
-    o.append(cami([(xa, 75), (XM + 50, 196)], P1_S, dash='5,3'))
+    o.append(cami([(xa, 75), (XM + 10, 211)], P1_S, dash='5,3'))
     o.append(cami([(xa, 169), (xb, 49)], P2_S))
     o.append(cami([(xa, 195), (xb, 101)], P2_S))
-    return svg(680, 262, 'Pàgines i marcs de pàgina',
+    return svg(680, 256, 'Pàgines i marcs de pàgina',
                "A l'esquerra, les pàgines VPN 0 i VPN 1 del procés 1, en blau, i del procés 2, en verd, amb punts "
                "suspensius per a la resta. A la dreta, la memòria física, amb quatre marcs, de PPN 0 a PPN 3, i el "
                "disc a sota. Les fletxes assignen VPN 0 del procés 1 a PPN 1, VPN 0 del procés 2 a PPN 0 i VPN 1 del "
-               "procés 2 a PPN 2; PPN 3 és lliure. El disc conté una còpia de les quatre pàgines; les tres que també "
-               "són a la memòria física hi apareixen en gris, i VPN 1 del procés 1, que només és al disc, en blau, "
-               "amb una fletxa discontínua des de l'espai lògic.", o)
+               "procés 2 a PPN 2; PPN 3 és lliure. VPN 1 del procés 1 no és a la memòria física: una fletxa "
+               "discontínua la porta al disc, on és l'única pàgina dibuixada.", o)
 
 
 # ── Taula de pàgines ─────────────────────────────────────────
