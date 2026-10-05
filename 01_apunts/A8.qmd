@@ -111,16 +111,21 @@ Com que $T$ és una potència de dos ($T = 2^t$), qualsevol adreça lògica es d
 - Els **$t$ bits de menys pes** indiquen la posició de la dada dins la pàgina: és el **desplaçament** (*page offset*).
 - Els **bits restants** identifiquen la pàgina: és el **VPN**.
 
-::: {#cau-mv-traduccio .callout-caution}
-## Traducció d'adreces lògiques a físiques
+En un computador amb memòria virtual, el processador treballa amb adreces lògiques. Cada vegada que necessita llegir o escriure una dada de la memòria (per exemple, per fer la captura d'una instrucció), demana l'adreça lògica d'aquesta dada a la MMU. Mitjançant un procés anomenat **traducció d'adreces**, la MMU tradueix l'adreça lògica sol·licitada a l'adreça física on realment es troba la dada. Com que les dades estan agrupades en pàgines, l'únic que ha de fer el sistema de traducció és, donat el número de pàgina (VPN) a què pertany l'adreça, determinar en quin marc de pàgina (PPN) de la memòria física es troba. L'adreça física de la dada s'obté reemplaçant, a l'adreça lògica, els bits corresponents al VPN pel PPN; el desplaçament es conserva intacte. La @fig-mv-traduccio il·lustra el mecanisme de traducció amb les dades de l'exemple anterior: adreces de 32 bits, mida de pàgina $T = 4\text{ KiB} = 2^{12}$ bytes i memòria física de 16 KiB = $2^{14}$ bytes.
 
-Amb mida de pàgina $T = 2^t$ bytes, una adreça lògica de $n$ bits es descompon en:
-
-$$\underbrace{b_{n-1} \cdots b_t}_{\text{VPN}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}}$$
-
-La traducció substitueix el VPN pel PPN corresponent; el desplaçament es conserva intacte:
-
-$$\underbrace{b_{n-1} \cdots b_t}_{\text{VPN}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}} \;\longrightarrow\; \underbrace{\text{PPN}}_{\text{(de la taula de pàgines)}} \; \underbrace{b_{t-1} \cdots b_0}_{\text{desplaçament}}$$
+::: {#fig-mv-traduccio}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_traduccio__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_traduccio__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_traduccio__original_light.svg)
+:::
+Traducció d'una adreça lògica a una adreça física: el VPN (20 bits) es tradueix a PPN (2 bits) i el desplaçament (12 bits) es conserva.
 :::
 
 ::: {#tip-mv-traduccio-exemple .callout-tip}

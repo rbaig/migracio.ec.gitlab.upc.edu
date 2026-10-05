@@ -14,6 +14,8 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
   antic, amb la geometria de `T7_jerarquia_piramide.svg`).
 - `T8_mv_adreca_exemple.svg` (figura sense caption de §Pàgines i marcs):
   l'adreça 0x10010004 descomposta en VPN i desplaçament, com al tema antic.
+- `T8_mv_traduccio.svg` (`#fig-mv-traduccio`): la traducció d'una adreça
+  lògica de 32 bits a una de física de 14 (figura 7.4 del tema antic).
 - `T8_mv_pagines_marcs.svg` (`#fig-mv-pagines-marcs`): pàgines de dos
   processos assignades a marcs, i una que és al disc.
 - `T8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la taula de pàgines,
@@ -384,6 +386,48 @@ def pagines_marcs():
                "PPN: PPN 0 conté VPN 0 del procés 2, PPN 1 conté VPN 0 del procés 1, PPN 2 conté VPN 1 del procés 2 "
                "i PPN 3 és lliure. A sota, el disc, amb VPN 1 del procés 1, que no és a la memòria física i hi arriba "
                "amb una fletxa discontínua que baixa per l'esquerra de la memòria.", o)
+
+
+# ── Traducció d'una adreça lògica a una de física ───────────
+
+def traduccio():
+    """La figura 7.4 del tema antic: l'adreça lògica de 32 bits (VPN de 20 bits i desplaçament de 12), el
+    bloc de traducció, i l'adreça física de 14 bits (PPN de 2 bits i el mateix desplaçament)."""
+    o = []
+    B = 13                                   # amplada d'un bit
+    XL, YL = 160, 40                         # adreça lògica
+    H = 30
+    wv, wo = 20 * B, 12 * B
+    o.append(t(XL - 10, YL + H / 2 + 5, 'Adreça lògica', 12, INK, 'end', bold=True))
+    o.append(cel(XL, YL, wv, H, NEUTRE, INK, 'VPN', INK, 12, mono=False, sw=1.2))
+    o.append(cel(XL + wv, YL, wo, H, NEUTRE, INK, 'desplaçament', INK, 12, mono=False, sw=1.2))
+    for k in range(32):                      # números de bit, de 31 a 0
+        o.append(t(XL + (31 - k) * B + B / 2, YL - 4, str(k), 7, GRIS, mono=True))
+    o.append(t(XL + wv / 2, YL - 18, '20 bits', 9, GRIS))
+    o.append(t(XL + wv + wo / 2, YL - 18, '12 bits', 9, GRIS))
+    # Bloc de traducció i adreça física, alineada per la dreta.
+    YT = YL + H + 26
+    XT = XL + wv - 70
+    o.append(caixa(XT, YT, 110, 36, TLB_F, TLB_S, 'traducció', 12))
+    YF = YT + 36 + 26
+    wp = 2 * B
+    XP = XL + wv - wp
+    o.append(t(XP - 10, YF + H / 2 + 5, 'Adreça física', 12, INK, 'end', bold=True))
+    o.append(cel(XP, YF, wp, H, NEUTRE, INK, 'PPN', INK, 10, mono=False, sw=1.2))
+    o.append(cel(XL + wv, YF, wo, H, NEUTRE, INK, 'desplaçament', INK, 12, mono=False, sw=1.2))
+    for k in range(14):
+        o.append(t(XL + wv + wo - (k + 1) * B + B / 2, YF + H + 10, str(k), 7, GRIS, mono=True))
+    o.append(t(XP + wp / 2, YF + H + 22, '2 bits', 9, GRIS))
+    o.append(t(XL + wv + wo / 2, YF + H + 22, '12 bits', 9, GRIS))
+    # Fletxes: VPN → traducció → PPN; desplaçament → desplaçament.
+    o.append(fletxa(XT + 55, YL + H, XT + 55, YT - 2, INK, doble=False))
+    o.append(fletxa(XT + 55, YT + 36, XT + 55, YF - 2, INK, doble=False))
+    o.append(fletxa(XL + wv + wo / 2, YL + H, XL + wv + wo / 2, YF - 2, INK, doble=False))
+    return svg(680, YF + H + 30, "Traducció d'una adreça lògica a una adreça física",
+               "A dalt, l'adreça lògica de 32 bits, amb els números de bit de 31 a 0: el VPN ocupa els 20 bits de "
+               "més pes i el desplaçament els 12 de menys pes. El VPN entra a un bloc de traducció, que en treu el "
+               "PPN, de 2 bits; el desplaçament baixa sense canvis. A sota, l'adreça física de 14 bits: el PPN i el "
+               "mateix desplaçament, amb els números de bit de 13 a 0.", o)
 
 
 # ── Taula de pàgines ─────────────────────────────────────────
@@ -948,6 +992,7 @@ FIGURES = {
     'T8_mv_espais.svg': espais,
     'T8_mv_jerarquia.svg': jerarquia,
     'T8_mv_adreca_exemple.svg': adreca_exemple,
+    'T8_mv_traduccio.svg': traduccio,
     'T8_mv_pagines_marcs.svg': pagines_marcs,
     'T8_mv_taula_pagines.svg': taula_pagines,
     'T8_mv_taula_multinivell.svg': taula_multinivell,
