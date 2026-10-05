@@ -128,25 +128,6 @@ En un computador amb memòria virtual, el processador treballa amb adreces lògi
 Traducció d'una adreça lògica a una adreça física: el VPN (20 bits) es tradueix a PPN (2 bits) i el desplaçament (12 bits) es conserva.
 :::
 
-::: {#tip-mv-traduccio-exemple .callout-tip}
-## Exemple de traducció d'adreces
-
-Considerem un sistema amb adreces de 32 bits i mida de pàgina $T = 4\text{ KiB} = 2^{12}$ bytes. L'espai d'adreçament lògic té $2^{32} / 2^{12} = 2^{20}$ pàgines virtuals; el VPN ocupa els 20 bits superiors i el desplaçament els 12 bits inferiors.
-
-Suposem que la pàgina VPN = `0x00001` està carregada al marc PPN = `0x2`. Volem traduir l'adreça lògica `0x00001801`:
-
-| | VPN (20 bits) | Desplaçament (12 bits) |
-| :--- | :---: | :---: |
-| **Adreça lògica** | `0000 0000 0000 0000 0001` (VPN = `0x00001`) | `1000 0000 0001` (`0x801`) |
-| | ↓ traducció (VPN → PPN) | ↓ es conserva |
-| **Adreça física** | `10` (PPN = `0x2`) | `1000 0000 0001` (`0x801`) |
-: {tbl-colwidths="[15,55,30]"}
-
-Adreça física resultant: `10` + `1000 0000 0001` = `0x2801`.
-
-El desplaçament `0x801` es conserva; només canvien els bits superiors (VPN → PPN). Amb una memòria física de $2^{14}$ bytes = 16 KiB, l'adreça física té 14 bits: 2 de PPN i 12 de desplaçament.
-:::
-
 ## La taula de pàgines {#sec-mv-taula-pagines}
 
 Per poder traduir una adreça lògica cal saber en quin marc de pàgina (PPN) es troba cada pàgina virtual (VPN). Aquesta informació la manté una estructura de dades anomenada **taula de pàgines**. Cada procés té la seva pròpia taula de pàgines, emmagatzemada a la memòria principal.
@@ -197,6 +178,23 @@ El bit **`E`**, en canvi, és una simplificació d'aquests apunts: una PTE real 
 ![](/auto_figs/T8_mv_taula_pagines__original_light.svg)
 :::
 Donat un VPN, la taula de pàgines indica si la pàgina és a la memòria física (bit V) i en quin marc de pàgina (PPN) es troba; el PPN, juntament amb el desplaçament, forma l'adreça física. El registre de taula de pàgines (@sec-mv-registre-tp) en conté l'adreça base, i cada entrada (PTE) conté, a més, els bits D i E.
+:::
+
+La @fig-mv-traduccio-exemple mostra com es faria la traducció de l'adreça lògica `0x00001801` mitjançant la taula de pàgines del procés 2 de la @fig-mv-pagines-marcs. Amb pàgines de 4 KiB, el VPN són els 20 bits de més pes de l'adreça (VPN = 1) i el desplaçament, els 12 de menys pes (`0x801`). L'entrada 1 de la taula té V = 1, de manera que la pàgina és a la memòria física, al marc PPN = 2 (`10` en binari). L'adreça física s'obté reemplaçant el VPN pel PPN i conservant el desplaçament: `10` `1000 0000 0001` = `0x2801`. Com que la memòria física és de 16 KiB, l'adreça física té 14 bits: 2 de PPN i 12 de desplaçament.
+
+::: {#fig-mv-traduccio-exemple}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_traduccio_exemple__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_traduccio_exemple__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_traduccio_exemple__original_light.svg)
+:::
+Traducció de l'adreça lògica `0x00001801` mitjançant la taula de pàgines del procés 2 de la @fig-mv-pagines-marcs.
 :::
 
 ### El registre de taula de pàgines i el canvi de context {#sec-mv-registre-tp}

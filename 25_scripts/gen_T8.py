@@ -21,6 +21,8 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
 - `T8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la figura 7.5 del tema
   antic, amb el bit E: l'adreça lògica, el registre de taula de pàgines, la
   taula indexada pel VPN i l'adreça física.
+- `T8_mv_traduccio_exemple.svg` (`#fig-mv-traduccio-exemple`): la figura 7.6
+  del tema antic, la traducció de 0x00001801 amb la taula del procés 2.
 - `T8_mv_taula_multinivell.svg` (`#fig-mv-taula-multinivell`): la taula de
   dos nivells de Sv32, amb la descomposició de l'adreça lògica.
 - `T8_mv_tlb_estructura.svg` (`#fig-mv-tlb-estructura`): el TLB com a còpia
@@ -440,21 +442,29 @@ def files_taula(x=None):
     return files, [vpn for vpn, *_ in TAULA] + ['⋮', '0xFFFFF']
 
 
-def taula_pagines():
+def taula_pagines(exemple=False):
     """La figura 7.5 del tema antic, amb el bit E: l'adreça lògica (VPN i desplaçament), el registre de taula
     de pàgines, que n'apunta la base, la taula indexada pel VPN amb els bits V, D i E i el PPN, i l'adreça
-    física, formada pel PPN de l'entrada i el mateix desplaçament."""
+    física, formada pel PPN de l'entrada i el mateix desplaçament. Amb `exemple`, la figura 7.6: la traducció
+    de 0x00001801 amb la taula de pàgines del procés 2 de `pagines_marcs` (VPN 1 → PPN 2 → 0x2801)."""
     o = []
     B, H = 13, 28
     XL, YL = 200, 40                          # adreça lògica: VPN (20 bits) i desplaçament (12 bits)
     wv, wo = 20 * B, 12 * B
-    o.append(t(XL - 10, YL + H / 2 + 5, 'Adreça lògica', 12, INK, 'end', bold=True))
-    o.append(cel(XL, YL, wv, H, NEUTRE, INK, 'VPN', INK, 12, mono=False, sw=1.2))
-    o.append(cel(XL + wv, YL, wo, H, NEUTRE, INK, 'desplaçament', INK, 12, mono=False, sw=1.2))
+    if exemple:
+        vpn_s, off_s, ppn_s = '0000 0000 0000 0000 0001', '1000 0000 0001', '10'
+    else:
+        vpn_s, off_s, ppn_s = 'VPN', 'desplaçament', 'PPN'
+    mono = exemple
+    o.append(t(XL - 10, YL + H / 2 + (0 if exemple else 5), 'Adreça lògica', 12, INK, 'end', bold=True))
+    if exemple:
+        o.append(t(XL - 10, YL + H / 2 + 14, '0x00001801', 10, GRIS, 'end', mono=True))
+    o.append(cel(XL, YL, wv, H, NEUTRE, INK, vpn_s, INK, 12, mono=mono, sw=1.2))
+    o.append(cel(XL + wv, YL, wo, H, NEUTRE, INK, off_s, INK, 12, mono=mono, sw=1.2))
     for k in range(32):
         o.append(t(XL + (31 - k) * B + B / 2, YL - 4, str(k), 7, GRIS, mono=True))
-    o.append(t(XL + wv / 2, YL - 18, '20 bits', 9, GRIS))
-    o.append(t(XL + wv + wo / 2, YL - 18, '12 bits', 9, GRIS))
+    o.append(t(XL + wv / 2, YL - 18, 'VPN (20 bits)' if exemple else '20 bits', 9, GRIS))
+    o.append(t(XL + wv + wo / 2, YL - 18, 'desplaçament (12 bits)' if exemple else '12 bits', 9, GRIS))
     # Taula de pàgines.
     XT, YT, h = 230, 112, 22
     cols = [('V', 34), ('D', 34), ('E', 34), ('PPN', 70)]
@@ -463,30 +473,36 @@ def taula_pagines():
     for nom, w in cols:
         o.append(t(xx + w / 2, YT - 8, nom, 11, INK, bold=True))
         xx += w
-    files = ['0', '1', '⋮', 'sel', '⋮', 'fi']
+    if exemple:                                # (índex, valors, seleccionada)
+        files = [('0', ('1', '0', '1', '00'), False), ('1', ('1', '0', '1', '10'), True),
+                 ('⋮', ('⋮',) * 4, False), ('fi', ('0', '0', '1', '—'), False)]
+    else:
+        files = [('0', ('',) * 4, False), ('1', ('',) * 4, False), ('⋮', ('⋮',) * 4, False),
+                 ('', ('',) * 4, True), ('⋮', ('⋮',) * 4, False), ('fi', ('',) * 4, False)]
     ysel = None
-    for r, f in enumerate(files):
+    for r, (f, vals, sel) in enumerate(files):
         y = YT + r * h
-        sel = f == 'sel'
         xx = XT
-        for nom, w in cols:
-            o.append(cel(xx, y, w, h, P1_F if sel else NEUTRE, P1_S if sel else TRAC,
-                         '⋮' if f == '⋮' else '', GRIS))
+        for (nom, w), v in zip(cols, vals):
+            o.append(cel(xx, y, w, h, P1_F if sel else NEUTRE, P1_S if sel else TRAC, v,
+                         P1_S if sel else GRIS))
             xx += w
-        if f in ('0', '1'):
-            o.append(idx(XT - 8, y + h / 2 + 4, f))
-        elif f == '⋮':
-            o.append(idx(XT - 8, y + h / 2 + 4, '⋮'))
-        elif f == 'fi':
+        if f == 'fi':
             o.append(t(XT - 8, y + h / 2 + 4, '2<tspan dy="-4" font-size="8">20</tspan><tspan dy="4"> − 1</tspan>',
                        11, GRIS, 'end', mono=True))
+        elif f:
+            o.append(idx(XT - 8, y + h / 2 + 4, f))
         if sel:
             ysel = y + h / 2
     yb = YT + len(files) * h
-    o.append(t(XT + wt / 2, yb + 18, 'Taula de pàgines', 12, INK, bold=True))
-    xv, xppn = XT + 17, XT + 102 + 35
-    o.append(figlib.dot(xv, ysel, P1_S))
-    o.append(figlib.dot(xppn, ysel, P1_S))
+    o.append(t(XT + wt / 2, yb + 18, 'Taula de pàgines de P2' if exemple else 'Taula de pàgines', 11 if exemple else 12,
+               INK, bold=True))   # entre els camins de V i del PPN
+    if exemple:                                # els camins surten de la vora de les cel·les, no del valor
+        xv, xppn, y0 = XT + 7, XT + wt - 10, ysel + h / 2
+    else:
+        xv, xppn, y0 = XT + 17, XT + 102 + 35, ysel
+        o.append(figlib.dot(xv, ysel, P1_S))
+        o.append(figlib.dot(xppn, ysel, P1_S))
     # Registre de taula de pàgines: n'apunta la base.
     o.append(caixa(20, 78, 150, 40, NEUTRE, GRIS, '', 11))
     o.append(linies(95, 98, ['Registre de', 'taula de pàgines'], 11))
@@ -500,17 +516,30 @@ def taula_pagines():
     YF = yb + 64
     wp = 2 * B
     XP = XL + wv - wp
-    o.append(t(XP - 10, YF + H / 2 + 5, 'Adreça física', 12, INK, 'end', bold=True))
-    o.append(cel(XP, YF, wp, H, NEUTRE, INK, 'PPN', INK, 10, mono=False, sw=1.2))
-    o.append(cel(XL + wv, YF, wo, H, NEUTRE, INK, 'desplaçament', INK, 12, mono=False, sw=1.2))
+    o.append(t(XP - 10, YF + H / 2 + (0 if exemple else 5), 'Adreça física', 12, INK, 'end', bold=True))
+    if exemple:
+        o.append(t(XP - 10, YF + H / 2 + 14, '0x2801', 10, GRIS, 'end', mono=True))
+    o.append(cel(XP, YF, wp, H, NEUTRE, INK, ppn_s, INK, 10 if not exemple else 12, mono=mono, sw=1.2))
+    o.append(cel(XL + wv, YF, wo, H, NEUTRE, INK, off_s, INK, 12, mono=mono, sw=1.2))
     for k in range(14):
         o.append(t(XL + wv + wo - (k + 1) * B + B / 2, YF + H + 10, str(k), 7, GRIS, mono=True))
-    o.append(t(XP + wp / 2, YF + H + 22, '2 bits', 9, GRIS))
-    o.append(t(XL + wv + wo / 2, YF + H + 22, '12 bits', 9, GRIS))
-    o.append(cami([(xppn, ysel), (xppn, yb + 30), (XP + wp / 2, yb + 30), (XP + wp / 2, YF - 2)], P1_S))
+    o.append(t(XP + wp / 2, YF + H + 22, 'PPN' if exemple else '2 bits', 9, GRIS))
+    o.append(t(XL + wv + wo / 2, YF + H + 22, 'desplaçament' if exemple else '12 bits', 9, GRIS))
+    o.append(cami([(xppn, y0), (xppn, yb + 30), (XP + wp / 2, yb + 30), (XP + wp / 2, YF - 2)], P1_S))
     o.append(fletxa(XL + wv + wo / 2, YL + H, XL + wv + wo / 2, YF - 2, INK, doble=False))
     # El bit V: anotació a l'esquerra.
-    o.append(cami([(xv, ysel), (XT + 7, ysel), (XT + 7, yb + 30), (178, yb + 30)], P1_S))   # per dins de la columna V
+    o.append(cami([(xv, y0), (XT + 7, y0), (XT + 7, yb + 30), (178, yb + 30)], P1_S))   # per dins de la columna V
+    if exemple:
+        o.append(linies(95, yb + 30, [('V = 1:', 10, P1_S), ('la pàgina és a la', 10, GRIS),
+                                      ('memòria física', 10, GRIS)], 10))
+        return svg(680, YF + H + 30, "Exemple de traducció d'una adreça amb la taula de pàgines",
+                   "Traducció de l'adreça lògica 0x00001801 amb la taula de pàgines del procés 2. A dalt, l'adreça en "
+                   "binari: VPN 0000 0000 0000 0000 0001, és a dir, 1, i desplaçament 1000 0000 0001. El registre de "
+                   "taula de pàgines apunta a la base de la taula, amb columnes V, D, E i PPN: l'entrada 0 té V = 1 i "
+                   "PPN 00, l'entrada 1, destacada en blau, té V = 1 i PPN 10, i la darrera, 2 elevat a 20 menys 1, té "
+                   "V = 0. El VPN 1 selecciona l'entrada 1; el seu bit V = 1 indica que la pàgina és a la memòria "
+                   "física, i el seu PPN, 10, baixa a l'adreça física, on s'ajunta amb el desplaçament 1000 0000 0001: "
+                   "l'adreça física és 0x2801.", o)
     o.append(linies(95, yb + 30, [('Bit de validesa (V):', 10, P1_S), ('si és 0, la pàgina no és', 10, GRIS),
                                   ('a la memòria física;', 10, GRIS), ('si és 1, hi és', 10, GRIS)], 10))
     return svg(680, YF + H + 30, 'La taula de pàgines',
@@ -1052,6 +1081,7 @@ FIGURES = {
     'T8_mv_traduccio.svg': traduccio,
     'T8_mv_pagines_marcs.svg': pagines_marcs,
     'T8_mv_taula_pagines.svg': taula_pagines,
+    'T8_mv_traduccio_exemple.svg': lambda: taula_pagines(exemple=True),
     'T8_mv_taula_multinivell.svg': taula_multinivell,
     'T8_mv_tlb_estructura.svg': tlb_estructura,
     'T8_mv_flux_traduccio.svg': flux,
