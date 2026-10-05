@@ -68,6 +68,7 @@ width="100%"   viewBox="0 0 {W} {H}"
 
 - **Registres de bits** (`gen_regs.py`): `W = 2 + total_bits × 22 + 2` px (708 px per a 32 bits). `width="100%"` igual.
 - **BA i mapes de memòria** *(pendent de migrar a `estreta`)*: marges fixos `sup=inf=10 px`, `esq=76 px`, `dret=10 px`; `w_rect=230 px`; `W=316 px`. Vegeu `TODO.md` per al pla de migració.
+- **Figures estretes generades** (`gen_BA.py` i `gen_memoria.py`): `width="{W}" height="{H}"` en px, i no `width="100%"`. A l'HTML, una figura de 326 o 340 px amb `width="100%"` s'estira a tota la columna (937 px, ×2,9) i el text hi surt a uns 31 px; amb l'amplada en px es mostra a la mida natural, i en un visor estret s'encongeix igualment fins a l'amplada de la columna. Al PDF no canvia res: `rsvg-convert` ja en feia servir la mida del `viewBox`. Decisió de l'usuari (2026-10-05, fase 7c, bloc 11); la solució genèrica per a totes les figures és a `TODO.md` («Mida de les figures a l'HTML»).
 
 ---
 
@@ -246,11 +247,13 @@ fill:         color del stroke del segment corresponent
 
 ### Format de les adreces
 
-Espai cada 4 dígits hexadecimaux:
+Sense espais i amb vuit dígits, com al text (`13_contrib.qmd §Decisions per tema → T2 i T3` i §Amplada dels hexadecimals), en majúscules:
 
 ```
-0x0000 0000 · 0x0040 0000 · 0x1001 0000 · 0x1004 0000 · 0x7fff effc
+0x00000000 · 0x00400000 · 0x10010000 · 0x10040000 · 0x7FFFEFFC
 ```
+
+Fins a la fase 7c, aquesta secció deia «espai cada 4 dígits», contra el text; decisió de l'usuari 10 de la fase 7c (2026-10-03), aplicada el 2026-10-05 a les tres figures que en portaven (`T3_mapa_memoria`, `T7_mc_encert` i `T7_mc_fallada`).
 
 ### Etiquetes de rol («adr. baixes» / «adr. altes» / «sp →»)
 
@@ -553,6 +556,7 @@ Generadors del pre-render (model (b)). El sufix de cada un és a la taula de suf
 | `24_specs/ba.toml` | `25_scripts/gen_BA.py` | `__BA` | Blocs d'activació, amb les zones de §3–§11 (T3) |
 | `24_specs/subrutines.toml` | `25_scripts/gen_subrutines.py` | `__subrutina` | Dependències de dades d'una subrutina: el codi, les crides en franges i una barra de vida per dada (T3) |
 | `24_specs/mc.toml` | `25_scripts/gen_MC.py` | `__MC` | Memòria cau (T7): simula la MC sobre una seqüència d'accessos i en dibuixa la seqüència pas a pas o la taula de traça |
+| `24_specs/memoria.toml` | `25_scripts/gen_memoria.py` | `__memoria` | Memòria per bytes (T2): una fila per byte, amb l'adreça, la dada i una nota (MSB, LSB) o una fletxa de creixement |
 
 Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
 

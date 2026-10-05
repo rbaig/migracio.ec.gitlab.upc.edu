@@ -136,6 +136,7 @@ GENERADORS = {
     'BA':        ('24_specs/ba.toml', 'ba', 'gen_BA.py'),
     'subrutina': ('24_specs/subrutines.toml', 'subrutina', 'gen_subrutines.py'),
     'MC':        ('24_specs/mc.toml', 'mc', 'gen_MC.py'),
+    'memoria':   ('24_specs/memoria.toml', 'memoria', 'gen_memoria.py'),
 }
 
 

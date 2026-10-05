@@ -129,7 +129,9 @@ def make_svg(spec):
     esc_px = spec['escala']
     total = sum(mida(z) for z in spec['zones'])
     h = M_SUP + total * esc_px + M_INF
-    o = [f'<svg width="100%" viewBox="0 0 {W} {h}" xmlns="http://www.w3.org/2000/svg" role="img">',
+    # Amplada i alçada en px, i no width="100%": a l'HTML, una figura estreta es mostra a la mida
+    # natural en lloc d'estirar-se a tota la columna (svg.md §2).
+    o = [f'<svg width="{W}" height="{h}" viewBox="0 0 {W} {h}" xmlns="http://www.w3.org/2000/svg" role="img">',
          f'<title>{esc(spec["title"])}</title>', f'<desc>{esc(spec["desc"])}</desc>']
     y = M_SUP
     fronteres = [y]
