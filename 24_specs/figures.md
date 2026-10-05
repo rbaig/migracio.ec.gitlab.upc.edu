@@ -1,9 +1,9 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `2d14b8f` (2026-10-04), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `17d90ca` (2026-10-05), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
-- **72** etiquetes `#fig-`: 66 amb imatge, 6 d'elles subfigures de 3 figures, i 3 taules Markdown; i **24** imatges sense etiqueta (les del compendi i la de la llicència).
-- **61** fitxers a `22_figs_originals/` i `23_figs_externes/`: 50 consumits i 11 sense consumir.
+- **80** etiquetes `#fig-`: 74 amb imatge, 6 d'elles subfigures de 3 figures, i 3 taules Markdown; i **24** imatges sense etiqueta (les del compendi i la de la llicència).
+- **68** fitxers a `22_figs_originals/` i `23_figs_externes/`: 58 consumits i 10 sense consumir.
 - Figures generades al pre-render: **18** de `gen_regs.py` (`__registre`), **2** de `gen_BA.py` (`__BA`), **2** de `gen_subrutines.py` (`__subrutina`), **11** de `gen_MC.py` (`__MC`).
 
 ## Figures
@@ -80,7 +80,15 @@ Generat per `25_scripts/inventari_figures.py` sobre `2d14b8f` (2026-10-04), amb 
 | `fig-multinivell-diagrama` | `A7.qmd:998` | `22_figs_originals/T7_multinivell_diagrama.svg` | script (gen_T7.py) |  | 0 | Les memòries cau multinivell redueixen la penalització de les fallades de L1: les que enc… | Tres configuracions: (a) la CPU connectada a la MP, amb un … |
 | `fig-multinivell-multicore` | `A7.qmd:1063` | `22_figs_originals/T7_multinivell_multicore.svg` | script (gen_T7.py) |  | 0 | Jerarquia de memòries cau en un processador multinucli: L1 i L2 són privades de cada nucl… | Xip de quatre nuclis. Cada nucli té una L1 d'instruccions (… |
 | `fig-i9-13900k-die` | `A7.qmd:1082` | `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | ràster |  | 1 | Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 20… |  |
-| `fig-mv-flux-traduccio` | `A8.qmd:267` | `22_figs_originals/T8_mv_flux_traduccio.svg` | Inkscape |  | 1 | Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual. | Tres diagrames en una sola figura: configuració física (Hos… |
+| `fig-mv-espais` | `A8.qmd:28` | `22_figs_originals/T8_mv_espais.svg` | script (gen_T8.py) |  | 1 | Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix le… | A banda i banda, l'espai lògic de dos processos, cadascun d… |
+| `fig-mv-pagines-marcs` | `A8.qmd:69` | `22_figs_originals/T8_mv_pagines_marcs.svg` | script (gen_T8.py) |  | 1 | Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física d… | A l'esquerra, les pàgines VPN 0 i VPN 1 del procés 1, en bl… |
+| `fig-mv-taula-pagines` | `A8.qmd:159` | `22_figs_originals/T8_mv_taula_pagines.svg` | script (gen_T8.py) |  | 1 | La taula de pàgines s'indexa pel VPN, i el registre de taula de pàgines (@sec-mv-registre… | Una taula de columnes V, D, E i PPN, indexada pel VPN, que … |
+| `fig-mv-taula-multinivell` | `A8.qmd:184` | `22_figs_originals/T8_mv_taula_multinivell.svg` | script (gen_T8.py) |  | 1 | Taula de pàgines de dos nivells (Sv32). Els 10 bits de més pes del VPN, VPN[1], indexen l… | A dalt, l'adreça lògica de 32 bits dividida en VPN[1], de 1… |
+| `fig-mv-tlb-estructura` | `A8.qmd:262` | `22_figs_originals/T8_mv_tlb_estructura.svg` | script (gen_T8.py) |  | 1 | El TLB emmagatzema una còpia de les entrades de la taula de pàgines utilitzades més recen… | A l'esquerra, la taula de pàgines, a la memòria principal, … |
+| `fig-mv-flux-traduccio` | `A8.qmd:333` | `22_figs_originals/T8_mv_flux_traduccio.svg` | script (gen_T8.py) |  | 1 | Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual. Al centre… | Diagrama de flux en tres columnes. Al centre, en verd, el c… |
+| `fig-mv-comparticio` | `A8.qmd:429` | `22_figs_originals/T8_mv_comparticio.svg` | script (gen_T8.py) |  | 1 | Compartició d'una pàgina física entre dos processos: P1 i P2 assignen VPN diferents al ma… | A l'esquerra, dues taules de pàgines, de P1 a dalt, en blau… |
+| `fig-mv-pipt` | `A8.qmd:457` | `22_figs_originals/T8_mv_pipt.svg` | script (gen_T8.py) |  | 2 | Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en… | Diagrama de blocs en una fila: la CPU envia l'adreça lògica… |
+| `fig-mv-vipt` | `A8.qmd:488` | `22_figs_originals/T8_mv_vipt.svg` | script (gen_T8.py) |  | 1 | Memòria cau VIPT: la indexació de la memòria cau i la traducció del TLB es fan en paral·l… | La CPU genera l'adreça lògica, dividida en VPN i desplaçame… |
 | `fig-cicle-interrupcio` | `A9.qmd:714` | `22_figs_originals/T9_cicle_interrupcio.svg` | Inkscape |  | 0 | Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucc… |  |
 | `—` | `A2.qmd:267` | `registres.toml:compendi_registres_RIS` | gen_regs.py (COMPENDIS) | `nte-instruccions-tipus` | 0 |  |  |
 | `—` | `A2.qmd:1183` | `registres.toml:T2_instruccio_tipus_R` | gen_regs.py | `nte-instruccions-Tipus-R` | 0 |  |  |
@@ -167,9 +175,16 @@ Generat per `25_scripts/inventari_figures.py` sobre `2d14b8f` (2026-10-04), amb 
 | `22_figs_originals/T7_multinivell_multicore.svg` | A7.qmd:1066, A7.qmd:1073 | script (gen_T7.py) | 660 | sí | sí | 20 |  |  |
 | `22_figs_originals/T7_texe_diagrama.svg` | A7.qmd:824, A7.qmd:831 | script (gen_T7.py) | 802 | sí | sí | 59 |  |  |
 | `22_figs_originals/T7_tipus_fallades.svg` | A7.qmd:858, A7.qmd:865 | script (gen_T7.py) | 640 | sí | sí | 10 |  |  |
-| `22_figs_originals/T8_mv_flux_traduccio.svg` | A8.qmd:270, A8.qmd:277 | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/TODO.svg` |
+| `22_figs_originals/T8_mv_comparticio.svg` | A8.qmd:432, A8.qmd:439 | script (gen_T8.py) | 680 | sí | sí | 51 |  |  |
+| `22_figs_originals/T8_mv_espais.svg` | A8.qmd:31, A8.qmd:38 | script (gen_T8.py) | 680 | sí | sí | 32 |  |  |
+| `22_figs_originals/T8_mv_flux_traduccio.svg` | A8.qmd:336, A8.qmd:343 | script (gen_T8.py) | 960 | sí | sí | 51 |  |  |
+| `22_figs_originals/T8_mv_pagines_marcs.svg` | A8.qmd:72, A8.qmd:79 | script (gen_T8.py) | 680 | sí | sí | 19 |  |  |
+| `22_figs_originals/T8_mv_pipt.svg` | A8.qmd:460, A8.qmd:467 | script (gen_T8.py) | 680 | sí | sí | 15 |  |  |
+| `22_figs_originals/T8_mv_taula_multinivell.svg` | A8.qmd:187, A8.qmd:194 | script (gen_T8.py) | 680 | sí | sí | 43 |  |  |
+| `22_figs_originals/T8_mv_taula_pagines.svg` | A8.qmd:162, A8.qmd:169 | script (gen_T8.py) | 680 | sí | sí | 45 |  |  |
+| `22_figs_originals/T8_mv_tlb_estructura.svg` | A8.qmd:265, A8.qmd:272 | script (gen_T8.py) | 680 | sí | sí | 70 |  |  |
+| `22_figs_originals/T8_mv_vipt.svg` | A8.qmd:491, A8.qmd:498 | script (gen_T8.py) | 680 | sí | sí | 22 |  |  |
 | `22_figs_originals/T9_cicle_interrupcio.svg` | A9.qmd:717, A9.qmd:724 | Inkscape | 680 | no | no | 17 |  |  |
-| `22_figs_originals/TODO.svg` | **orfe** | Inkscape | 680 | sí | sí | 1 | #ff0000 | `22_figs_originals/T8_mv_flux_traduccio.svg` |
 | `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1084 | ràster |  | no | no | 0 |  |  |
 | `23_figs_externes/by-nc-sa.eu.png` | 14_LICENSE.qmd:5 | ràster |  | no | no | 0 |  |  |
 | `registres.toml:T2_instruccio_tipus_R` | A2.qmd:1183, A2.qmd:1190 | gen_regs.py |  | sí | sí | 0 |  |  |
@@ -208,7 +223,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `2d14b8f` (2026-10-04), amb 
 
 ## Avisos
 
-### Colors fora de la paleta (`svg.md §10` i `§16`) (25)
+### Colors fora de la paleta (`svg.md §10` i `§16`) (24)
 
 - `22_figs_originals/T1_flux_compilacio.svg`: #1a5276 #4a90b8 #e8f4f8
 - `22_figs_originals/T1_picopi_fases.svg`: #888780
@@ -234,11 +249,6 @@ Generat per `25_scripts/inventari_figures.py` sobre `2d14b8f` (2026-10-04), amb 
 - `22_figs_originals/T7_gap_processador_memoria.svg`: #dee2e6
 - `22_figs_originals/T7_mc_encert.svg`: #000000
 - `22_figs_originals/T7_mc_fallada.svg`: #000000 #0b449a #7d6d6c
-- `22_figs_originals/T8_mv_flux_traduccio.svg`: #ff0000
-
-### Duplicats byte a byte (1)
-
-- `22_figs_originals/T8_mv_flux_traduccio.svg` = `22_figs_originals/TODO.svg`
 
 ### Figures del cos del text sense cap remissió `@` (25)
 
@@ -268,17 +278,9 @@ Generat per `25_scripts/inventari_figures.py` sobre `2d14b8f` (2026-10-04), amb 
 - `fig-multinivell-multicore` (A7.qmd:1063)
 - `fig-cicle-interrupcio` (A9.qmd:714)
 
-### Figures que consumeixen el placeholder (`TODO.svg`) (1)
-
-- `22_figs_originals/T8_mv_flux_traduccio.svg`
-
 ### Figures ràster (1)
 
 - `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg`
-
-### Fitxers font orfes (cap `.qmd` no els consumeix) (1)
-
-- `22_figs_originals/TODO.svg`
 
 ### Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives) (10)
 

@@ -14,7 +14,8 @@ commit.
 Mesura pel contingut, no pel nom (`13_contrib.qmd §Escombrades i verificació
 del corpus`, regla 2): l'origen surt de l'SVG (marques d'Inkscape, LO Draw,
 draw.io, Graphviz) i de les taules de `24_specs/svg.md §15` i `§16`; els
-duplicats, del hash; i el placeholder, del contingut de `TODO.svg`.
+duplicats, del hash; i el placeholder, del hash de `TODO.svg` (`PLACEHOLDER`),
+retirat a la fase 7c i recuperable amb `git show 17d90ca:22_figs_originals/TODO.svg`.
 
 Comprovacions que fa (secció «Avisos»):
 
@@ -128,6 +129,8 @@ def info_svg(path, pal, declarats):
 
 
 # Generadors del pre-render (model (b)): sufix a auto_figs/ → (definició, taula del TOML, script)
+PLACEHOLDER = '013175106fe4'   # hash de 22_figs_originals/TODO.svg, el placeholder retirat
+
 GENERADORS = {
     'registre':  ('24_specs/registres.toml', 'registers', 'gen_regs.py'),
     'BA':        ('24_specs/ba.toml', 'ba', 'gen_BA.py'),
@@ -251,7 +254,7 @@ def main():
             fonts[f] = {'sha': hashlib.sha256(p.read_bytes()).hexdigest()[:12], 'origen': 'ràster',
                         'title': '', 'desc': '', 'fora': [], 'textLength': 0, 'gris': 0, 'textos': [], 'amplada': ''}
     fonts.update(generades())
-    placeholder = fonts.get('22_figs_originals/TODO.svg', {}).get('sha')
+    placeholder = PLACEHOLDER
 
     usos, figs, textos = consumidors()
     corpus = '\n'.join(textos.values())
@@ -334,7 +337,7 @@ def main():
                 else:
                     avisos['Fitxers font orfes (cap `.qmd` no els consumeix)'].append(f'`{f}`')
             continue
-        if placeholder and i['sha'] == placeholder:
+        if i['sha'] == placeholder:
             avisos['Figures que consumeixen el placeholder (`TODO.svg`)'].append(f'`{f}`')
         if f.startswith('23_figs_externes/') and f.endswith('.svg'):
             avisos['Figures consumides com a exportació (`__extern_`)'].append(f'`{f}`')

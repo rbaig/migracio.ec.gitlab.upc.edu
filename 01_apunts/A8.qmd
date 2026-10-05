@@ -23,7 +23,22 @@ La memòria virtual es fonamenta en la distinció entre dos espais d'adreçament
 - L'**espai d'adreçament físic** és el conjunt d'adreces de la memòria física real. La seva mida depèn de la quantitat de RAM instal·lada al sistema, i és totalment independent de l'espai d'adreçament lògic.
 - La **unitat de gestió de memòria** (*memory management unit* o **MMU**) és el component maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.
 
-<!-- fig-mv-espais: classe `estàndard` (W=680). Diagrama que mostra dos espais d'adreçament lògic independents (Procés 1 i Procés 2, cadascun de 0x00000000 a 0xFFFFFFFF) a l'esquerra, i l'espai d'adreçament físic (memòria física, més petit) a la dreta, amb fletxes que indiquen que pàgines de cada procés es mapen a marcs de pàgina físics diferents. El disc apareix a baix a la dreta com a nivell inferior. Colors (paleta svg.md §10): bloc de Procés 1 en `.data` (fill #cfe2ff, stroke #084298); bloc de Procés 2 en heap (fill #d1e7dd, stroke #0a3622); marcs físics en reservada/neutre (fill #f8f9fa, stroke #adb5bd); disc en pila (fill #fff3cd, stroke #664d03). Caption: "Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució." -->
+La @fig-mv-espais il·lustra aquests tres elements amb dos processos.
+
+::: {#fig-mv-espais}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_espais__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_espais__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_espais__original_light.svg)
+:::
+Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució. Les lletres identifiquen cada pàgina (@sec-mv-pagines) a l'espai lògic, a la memòria física i al disc.
+:::
 
 ### El disc com a nivell addicional de la jerarquia {#sec-mv-disc}
 
@@ -49,9 +64,22 @@ De manera anàloga, l'espai d'adreçament físic es divideix en blocs de la mate
 
 Un marc de pàgina és un contenidor: pot allotjar qualsevol pàgina lògica de qualsevol procés. El sistema operatiu decideix en quin marc es carrega cada pàgina en funció de l'espai disponible en cada moment, de manera completament associativa, com en una MC d'aquest tipus (@sec-completament-associativa).
 
-Inicialment, totes les pàgines d'un procés resideixen al disc. Durant l'execució, el sistema operatiu les carrega a la memòria física a mesura que es necessiten. En un moment donat, la memòria física conté un subconjunt de les pàgines del procés; la resta romanen al disc.
+Inicialment, totes les pàgines d'un procés resideixen al disc. Durant l'execució, el sistema operatiu les carrega a la memòria física a mesura que es necessiten. En un moment donat, la memòria física conté un subconjunt de les pàgines del procés; la resta romanen al disc (@fig-mv-pagines-marcs).
 
-<!-- fig-mv-pagines-marcs: classe `estàndard` (W=680). Diagrama amb dos processos a l'esquerra (Procés 1 i Procés 2), cadascun amb les seves pàgines virtuals (VPN 0, VPN 1, ...) i a la dreta la memòria física amb els seus marcs (PPN 0, PPN 1, PPN 2, PPN 3). Fletxes mostren que VPN 0 de Procés 1 → PPN 1, VPN 0 de Procés 2 → PPN 0, VPN 1 de Procés 2 → PPN 2, i VPN 1 de Procés 1 apareix al disc (no carregat). Colors (paleta svg.md §10): pàgines de Procés 1 en `.data` (fill #cfe2ff, stroke #084298); pàgines de Procés 2 en heap (fill #d1e7dd, stroke #0a3622); marcs físics en reservada/neutre (fill #f8f9fa, stroke #adb5bd); disc en pila (fill #fff3cd, stroke #664d03). Caption: "Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física de manera completament associativa. Les pàgines que no s'estan usant romanen al disc." -->
+::: {#fig-mv-pagines-marcs}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_pagines_marcs__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_pagines_marcs__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_pagines_marcs__original_light.svg)
+:::
+Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física de manera completament associativa. Les pàgines que no s'estan usant romanen al disc.
+:::
 
 ### Traducció d'adreces: VPN, PPN i desplaçament {#sec-mv-traduccio}
 
@@ -97,7 +125,7 @@ El desplaçament `0x801` es conserva; només canvien els bits superiors (VPN →
 
 Per poder traduir una adreça lògica cal saber en quin marc de pàgina (PPN) es troba cada pàgina virtual (VPN). Aquesta informació la manté una estructura de dades anomenada **taula de pàgines**. Cada procés té la seva pròpia taula de pàgines, emmagatzemada a la memòria principal.
 
-La taula de pàgines s'indexa pel VPN: cada fila correspon a una pàgina virtual i s'anomena **entrada de la taula de pàgines** (*page table entry* o **PTE**). El nombre d'entrades és igual al nombre de pàgines virtuals de l'espai d'adreçament ($2^{20}$ entrades en l'exemple de 32 bits amb pàgines de 4 KiB).
+La taula de pàgines s'indexa pel VPN (@fig-mv-taula-pagines): cada fila correspon a una pàgina virtual i s'anomena **entrada de la taula de pàgines** (*page table entry* o **PTE**). El nombre d'entrades és igual al nombre de pàgines virtuals de l'espai d'adreçament ($2^{20}$ entrades en l'exemple de 32 bits amb pàgines de 4 KiB).
 
 ### Estructura d'una entrada (PTE) {#sec-mv-pte}
 
@@ -128,7 +156,20 @@ Quan V = 0, el camp PPN no té validesa: la pàgina no és a la memòria física
 Aquests apunts segueixen la notació de la ISA de RISC-V (esquema Sv32) i de Harris & Harris: el bit de presència de la PTE s'anomena **`V`** (*Valid*). Alguns textos i els exàmens anteriors d'EC anomenen aquest camp **`P`** (*Present*), com fa l'arquitectura x86; en consultar-los, cal tenir en compte aquesta diferència de notació.
 :::
 
-<!-- fig-mv-taula-pagines: classe `estàndard` (W=680). Diagrama de la taula de pàgines. Columnes: VPN (índex, a l'esquerra, de 0 a 2^20-1 amb punts suspensius al mig), V, D, E, PPN. Dues o tres files destacades (V=1, amb PPN vàlid) en `.data` (fill #cfe2ff, stroke #084298), la resta (V=0, PPN buit) en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d). Un registre de taula de pàgines (fletxa des de fora) apunta a la base de la taula. Caption: "La taula de pàgines s'indexa pel VPN. Cada entrada (PTE) conté el PPN i els bits de control V, D i E." -->
+::: {#fig-mv-taula-pagines}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_taula_pagines__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_taula_pagines__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_taula_pagines__original_light.svg)
+:::
+La taula de pàgines s'indexa pel VPN, i el registre de taula de pàgines (@sec-mv-registre-tp) en conté l'adreça base. Cada entrada (PTE) conté el PPN i els bits de control V, D i E. Són les entrades de l'exemple de @tip-mv-tlb-exemple.
+:::
 
 ### El registre de taula de pàgines i el canvi de context {#sec-mv-registre-tp}
 
@@ -138,9 +179,22 @@ Quan el sistema operatiu commuta d'un procés a un altre (**canvi de context**),
 
 ### Taules de pàgines multinivell {#sec-mv-multinivell}
 
-La taula de pàgines plana descrita fins ara ocupa una quantitat de memòria proporcional al nombre de pàgines virtuals possibles, independentment de quantes en faci servir realment el procés. En sistemes de 32 bits amb pàgines de 4 KiB i entrades de 4 bytes, això representa 4 MiB per procés en tot moment; en sistemes de 64 bits, el cost es fa inassumible. Les **taules de pàgines multinivell** resolen el problema assignant memòria només per a les regions de l'espai lògic que el procés utilitza realment.
+La taula de pàgines plana descrita fins ara ocupa una quantitat de memòria proporcional al nombre de pàgines virtuals possibles, independentment de quantes en faci servir realment el procés. En sistemes de 32 bits amb pàgines de 4 KiB i entrades de 4 bytes, això representa 4 MiB per procés en tot moment; en sistemes de 64 bits, el cost es fa inassumible. Les **taules de pàgines multinivell** resolen el problema assignant memòria només per a les regions de l'espai lògic que el procés utilitza realment (@fig-mv-taula-multinivell).
 
-<!-- fig-mv-taula-multinivell: classe `estàndard` (W=680). Diagrama d'una taula de pàgines de dos nivells (Sv32). A l'esquerra, una taula de primer nivell (directori de pàgines) amb 1024 entrades; algunes apunten a taules de segon nivell (a la dreta), la resta estan marcades com a no assignades. Cada taula de segon nivell té 1024 PTEs. Colors (paleta svg.md §10): entrades assignades en `.data` (fill #cfe2ff, stroke #084298); entrades no assignades en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d). Caption: "Taula de pàgines de dos nivells: les taules de segon nivell només s'assignen per a les regions de l'espai lògic en ús, reduint l'ús de memòria." -->
+::: {#fig-mv-taula-multinivell}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_taula_multinivell__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_taula_multinivell__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_taula_multinivell__original_light.svg)
+:::
+Taula de pàgines de dos nivells (Sv32). Els 10 bits de més pes del VPN, VPN[1], indexen la taula de primer nivell, i els 10 següents, VPN[0], la de segon nivell. Les taules de segon nivell només s'assignen per a les regions de l'espai lògic en ús, cosa que redueix la memòria que ocupa la taula de pàgines.
+:::
 
 ::: {#wrn-mv-multinivell .callout-warning collapse="true"}
 ## Taules de pàgines multinivell
@@ -188,7 +242,7 @@ La taula de pàgines és a la memòria principal. Això implica que cada accés 
 
 ### Estructura i funcionament {#sec-mv-tlb-estructura}
 
-Cada entrada del TLB conté una còpia d'una PTE (camps V, D, E i PPN) i el VPN al qual correspon. A diferència de la taula de pàgines, que s'indexa directament pel VPN, el TLB funciona de manera **completament associativa**: per traduir una adreça, es compara el VPN amb tots els VPNs emmagatzemats simultàniament.
+Cada entrada del TLB conté una còpia d'una PTE (camps V, D, E i PPN) i el VPN al qual correspon (@fig-mv-tlb-estructura). A diferència de la taula de pàgines, que s'indexa directament pel VPN, el TLB funciona de manera **completament associativa**: per traduir una adreça, es compara el VPN amb tots els VPNs emmagatzemats simultàniament.
 
 Al TLB, el camp `V` té un significat **lleugerament diferent** del camp `V` de la PTE, com s'explica a la @sec-mv-tlb-bitv.
 
@@ -205,7 +259,20 @@ Al TLB, el camp `V` té un significat **lleugerament diferent** del camp `V` de 
 : {.striped}
 :::
 
-<!-- fig-mv-tlb-estructura: classe `estàndard` (W=680). Diagrama de dues estructures en paral·lel. A l'esquerra, la taula de pàgines (columnes VPN implícit com a índex, V, D, E, PPN) amb moltes files, la majoria en reservada/neutre (fill #f8f9fa, stroke #adb5bd/#6c757d; V=0) i unes poques destacades en `.data` (fill #cfe2ff, stroke #084298; V=1). A la dreta, el TLB (columnes VPN, V, D, E, PPN) amb poques files (4-6), totes destacades en heap (fill #d1e7dd, stroke #0a3622), representant les entrades actives. Fletxes des d'algunes files del TLB cap a les files corresponents de la taula de pàgines, indicant que el TLB és una còpia parcial. Caption: "El TLB emmagatzema una còpia de les PTEs utilitzades més recentment. Cada entrada inclou el VPN com a clau de cerca." -->
+::: {#fig-mv-tlb-estructura}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_tlb_estructura__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_tlb_estructura__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_tlb_estructura__original_light.svg)
+:::
+El TLB emmagatzema una còpia de les entrades de la taula de pàgines utilitzades més recentment, i cada entrada inclou el VPN com a clau de cerca. Són les dades inicials de @tip-mv-tlb-exemple.
+:::
 
 ### Encert de TLB {#sec-mv-tlb-encert}
 
@@ -263,7 +330,6 @@ La política adoptada és d'**escriptura immediata**: quan s'escriu en una pàgi
 
 La @fig-mv-flux-traduccio resumeix totes les situacions possibles durant la traducció d'una adreça en un sistema amb TLB i memòria virtual.
 
-<!-- fig-mv-flux-traduccio: classe `ampla` (W=960; diagrama de flux amb moltes branques, no cap en `estàndard` sense amuntegar text). Diagrama de flux complet de la traducció d'una adreça. Punt d'entrada: "Cerca VPN al TLB". Primera decisió: "TLB hit?" → branca "sí" (TLB hit): "V=1?" → "sí": "Escriptura i D=0?" → "sí": actualitzar D al TLB i a la TP (escriptura immediata) → "PPN (finalitzar accés)"; → "no": "PPN (finalitzar accés)"; → "no" (V=0): fallada de pàgina → gestió SO → reexecutar instrucció. Branca "no" (TLB miss): "TLB ple?" → "no": copiar PTE → TLB (entrada lliure) → reintent; → "sí": reemplaçar entrada LRU → copiar PTE → reintent. La fallada de pàgina: "Marc lliure?" → "sí": carregar pàgina → actualitzar PTE → reexecutar; → "no": reemplaçar pàgina (LRU), "D=1?" → "sí": escriure pàgina al disc → carregar nova pàgina → actualitzar PTE → reexecutar; → "no": carregar nova pàgina → actualitzar PTE → reexecutar. Colors (paleta svg.md §10, semàntica hit/miss): camí principal (encert) en verd (#198754, coherent amb "Hit" de MC); fallada de TLB en groc (fill #fff3cd, stroke #664d03, coherent amb pila); fallada de pàgina en vermell (#dc3545, coherent amb "Miss" de MC). Caption: "Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual." -->
 ::: {#fig-mv-flux-traduccio}
 ::: {.content-visible when-format="html"}
 ::: {.light-content}
@@ -276,7 +342,7 @@ La @fig-mv-flux-traduccio resumeix totes les situacions possibles durant la trad
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T8_mv_flux_traduccio__original_light.svg)
 :::
-Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual.
+Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual. Al centre, l'encert de TLB; a l'esquerra, la fallada de TLB, i a la dreta, la fallada de pàgina, que gestiona el sistema operatiu.
 :::
 
 ::: {#wrn-mv-tlb-shootdown .callout-warning collapse="true"}
@@ -350,7 +416,7 @@ Aquest mecanisme té diverses aplicacions pràctiques:
 
 ### Compartició de pàgines {#sec-mv-comparticio}
 
-El sistema operatiu pot fer que dos processos comparteixin una mateixa pàgina física simplement escrivint a les seves taules de pàgines dues PTEs que apuntin al mateix PPN. Cada procés pot tenir la pàgina compartida assignada a un VPN diferent, i el bit E pot ser diferent per a cada procés.
+El sistema operatiu pot fer que dos processos comparteixin una mateixa pàgina física simplement escrivint a les seves taules de pàgines dues PTEs que apuntin al mateix PPN (@fig-mv-comparticio). Cada procés pot tenir la pàgina compartida assignada a un VPN diferent, i el bit E pot ser diferent per a cada procés.
 
 ::: {#tip-mv-comparticio .callout-tip}
 ## Exemple de compartició de pàgines
@@ -360,7 +426,20 @@ El procés P1 vol compartir la seva pàgina VPN = `0x00000` (carregada al marc P
 A partir d'aquell moment, quan P2 accedeix a VPN = `0x00001` i P1 accedeix a VPN = `0x00000`, tots dos accedeixen a la mateixa pàgina física. Qualsevol modificació feta per un dels dos processos és visible immediatament per l'altre.
 :::
 
-<!-- fig-mv-comparticio: classe `estàndard` (W=680). Diagrama amb dues taules de pàgines (P1 a l'esquerra, P2 a la dreta) i la memòria física al centre. La fila VPN=0x00000 de P1 (V=1, E=1, PPN=0x02) i la fila VPN=0x00001 de P2 (V=1, E=1, PPN=0x02) tenen fletxes que convergeixen al mateix marc PPN=0x02 de la memòria física, destacat en heap (fill #d1e7dd, stroke #0a3622; "Hit"/encert semàntic: marc compartit amb èxit). La resta de marcs en reservada/neutre (fill #f8f9fa, stroke #adb5bd). Caption: "Compartició d'una pàgina física entre dos processos: P1 i P2 mapen VPNs diferents al mateix PPN. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE." -->
+::: {#fig-mv-comparticio}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_comparticio__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_comparticio__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_comparticio__original_light.svg)
+:::
+Compartició d'una pàgina física entre dos processos: P1 i P2 assignen VPN diferents al mateix PPN, `0x02`. El sistema operatiu controla els permisos d'accés mitjançant el bit E de cada PTE.
+:::
 
 La compartició de pàgines té dues aplicacions principals:
 
@@ -373,9 +452,22 @@ En un sistema amb memòria virtual, cada accés a memòria implica dos passos: t
 
 ### Memòria cau indexada físicament {#sec-mv-cache-fisica}
 
-L'esquema més senzill és la **memòria cau indexada i etiquetada físicament** (*PIPT, physically indexed physically tagged*): primer es tradueix l'adreça lògica amb el TLB i, un cop obtinguda l'adreça física, s'accedeix a la memòria cau amb aquesta adreça.
+L'esquema més senzill és la **memòria cau indexada i etiquetada físicament** (*PIPT, physically indexed physically tagged*): primer es tradueix l'adreça lògica amb el TLB i, un cop obtinguda l'adreça física, s'accedeix a la memòria cau amb aquesta adreça (@fig-mv-pipt).
 
-<!-- fig-mv-pipt: classe `estàndard` (W=680). Diagrama de blocs seqüencial. CPU → [adreça lògica] → TLB → (TLB hit) → [adreça física] → MC → (encert) → Dada. Els blocs TLB i MC estan en sèrie, amb una fletxa horitzontal que passa per tots dos. La memòria principal apareix per sota de la MC com a alternativa en cas de fallada. Colors (paleta svg.md §10): TLB en `.data` (fill #cfe2ff, stroke #084298); MC en heap (fill #d1e7dd, stroke #0a3622); memòria principal en reservada/neutre (fill #f8f9fa, stroke #adb5bd). Caption: "Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en sèrie." -->
+::: {#fig-mv-pipt}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_pipt__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_pipt__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_pipt__original_light.svg)
+:::
+Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en sèrie. A sota, el temps d'accés: el del TLB i el de la memòria cau, un darrere l'altre.
+:::
 
 L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adreça física identifica unívocament una dada. L'inconvenient és el **temps d'accés**: la memòria cau no pot començar a operar fins que el TLB hagi acabat la traducció, de manera que els dos accessos es fan en sèrie.
 
@@ -387,13 +479,26 @@ El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines 
 
 ### VIPT: la solució estàndard {#sec-mv-vipt}
 
-La solució adoptada per la pràctica totalitat dels processadors actuals és la **memòria cau indexada virtualment i etiquetada físicament** (*VIPT, virtually indexed physically tagged*). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel**:
+La solució adoptada per la pràctica totalitat dels processadors actuals és la **memòria cau indexada virtualment i etiquetada físicament** (*VIPT, virtually indexed physically tagged*). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel** (@fig-mv-vipt):
 
 - L'**índex** de la memòria cau s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menys pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).
 - Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.
 - Un cop acabats els dos accessos en paral·lel, es compara el PPN obtingut del TLB amb les etiquetes físiques llegides de la memòria cau per determinar si hi ha encert.
 
-<!-- fig-mv-vipt: classe `estàndard` (W=680). Diagrama de blocs amb dos camins paral·lels sortint de la CPU. Camí superior: [adreça lògica] → bits d'índex (desplaçament) → MC (lectura d'etiquetes i dades). Camí inferior: [adreça lògica] → VPN → TLB → PPN. Els dos camins convergeixen en un comparador (=) que confronta el PPN amb les etiquetes llegides de la MC. Si coincideixen: encert → Dada. Si no: fallada → memòria principal. Colors (paleta svg.md §10): camí TLB en `.data` (fill #cfe2ff, stroke #084298); camí MC en heap (fill #d1e7dd, stroke #0a3622); comparador en pila (fill #fff3cd, stroke #664d03). Caption: "Memòria cau VIPT: l'índex de la memòria cau i la traducció del TLB s'executen en paral·lel. L'etiqueta física elimina el problema d'aliàsing." -->
+::: {#fig-mv-vipt}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_vipt__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_vipt__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_vipt__original_light.svg)
+:::
+Memòria cau VIPT: la indexació de la memòria cau i la traducció del TLB es fan en paral·lel, i l'etiqueta física elimina el problema de l'aliàsing. A sota, el temps d'accés, a la mateixa escala que a la @fig-mv-pipt.
+:::
 
 La condició perquè VIPT funcioni sense aliàsing és que l'índex de la memòria cau usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L'índex d'una memòria cau de mida $C$, associativitat $a$ i mida de bloc $B$ ocupa $\log_2(C / (a \cdot B))$ bits. Perquè tots aquests bits pertanyin al desplaçament (els $t = \log_2 T$ bits de menys pes), cal que:
 

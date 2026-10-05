@@ -13,6 +13,7 @@ inventari:              # inventari de figures (24_specs/figures.md)
 comprova-figures:       # els SVG versionats dels generadors de model (a) coincideixen amb el que generen
 	python3 25_scripts/gen_T4_sumador.py --comprova
 	python3 25_scripts/gen_T7.py --comprova
+	python3 25_scripts/gen_T8.py --comprova
 
 clean:
 	rm -rf _book *_files

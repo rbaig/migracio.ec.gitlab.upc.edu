@@ -562,6 +562,15 @@ Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
 | `T7_multinivell_diagrama` | `25_scripts/gen_T7.py` | CPU–MP, CPU–MC–MP i CPU–L1–L2–MP, amb els temps de cada enllaç |
 | `T7_multinivell_multicore` | `25_scripts/gen_T7.py` | Xip de quatre nuclis amb L1i, L1d i L2 privades i L3 compartida |
 | `T7_tipus_fallades` | `25_scripts/gen_T7.py` | Taxa de fallades segons la mida i l'associativitat (qualitativa) |
+| `T8_mv_espais` | `25_scripts/gen_T8.py` | Espais lògics de dos processos, la MMU, la memòria física i el disc |
+| `T8_mv_pagines_marcs` | `25_scripts/gen_T8.py` | Pàgines de dos processos assignades a marcs, i una al disc |
+| `T8_mv_taula_pagines` | `25_scripts/gen_T8.py` | Taula de pàgines indexada pel VPN, amb el registre de taula de pàgines |
+| `T8_mv_taula_multinivell` | `25_scripts/gen_T8.py` | Taula de dos nivells de Sv32, amb VPN[1], VPN[0] i el desplaçament |
+| `T8_mv_tlb_estructura` | `25_scripts/gen_T8.py` | El TLB com a còpia parcial de la taula de pàgines |
+| `T8_mv_flux_traduccio` | `25_scripts/gen_T8.py` | Diagrama de flux de la traducció: encert, fallada de TLB i fallada de pàgina |
+| `T8_mv_comparticio` | `25_scripts/gen_T8.py` | Dues taules de pàgines que apunten al mateix marc |
+| `T8_mv_pipt` | `25_scripts/gen_T8.py` | TLB i MC en sèrie, amb el cronograma de l'accés |
+| `T8_mv_vipt` | `25_scripts/gen_T8.py` | TLB i MC en paral·lel i el comparador, amb el cronograma a la mateixa escala |
 
 **Figures dinàmiques (només a l'HTML).** Amb `fotogrames = true`, `gen_MC.py` escriu també un fotograma per pas, `<nom>_pas<k>__MC_{light,dark}.svg`, tots de la mateixa mida, i `figures_dinamiques.html` (inclòs a l'HTML per `_quarto.yml`) converteix la figura en un navegador de passos. El PDF hi porta la figura estàtica del mateix script i de la mateixa definició, de manera que els dos formats no poden divergir. Prototip: `#fig-lru-exemple` (bloc 9 de la fase 7c, 2026-10-04); el marcatge és a `13_contrib.qmd §Figures dinàmiques`.
 
