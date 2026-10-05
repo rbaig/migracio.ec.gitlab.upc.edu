@@ -37,22 +37,29 @@ La @fig-mv-espais il·lustra aquests tres elements amb dos processos.
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T8_mv_espais__original_light.svg)
 :::
-Cada procés disposa d'un espai d'adreçament lògic propi i independent. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució. Les lletres identifiquen cada pàgina (@sec-mv-pagines) a l'espai lògic, a la memòria física i al disc.
+Cada procés disposa d'un espai d'adreçament lògic propi i independent, de `0x00000000` a `0xFFFFFFFF`, del qual només fa servir unes quantes pàgines (@sec-mv-pagines), identificades amb lletres. La MMU tradueix les adreces lògiques a adreces físiques en temps d'execució; la memòria física, de 16 KiB, té quatre marcs, i la pàgina B del procés 1 només és al disc. Al disc es dibuixen únicament les pàgines que no són a la memòria física.
 :::
 
 ### El disc com a nivell addicional de la jerarquia {#sec-mv-disc}
 
-Abans de la memòria virtual, quan la mida d'un programa superava la memòria física disponible, els programadors havien de gestionar manualment la càrrega i descàrrega de blocs de codi i dades entre la memòria i el disc, una tècnica de superposicions (*overlays*). La memòria virtual automatitza completament aquesta gestió, a càrrec del sistema operatiu i amb el suport del maquinari.
+Una de les motivacions originals de la memòria virtual era donar solució al problema de no poder encabir tot un programa a la memòria física, la mida de la qual era antigament molt limitada. Tradicionalment, això s'havia solucionat mitjançant la tècnica de les superposicions (*overlays*): el programador divideix el programa en blocs, que va movent selectivament entre la memòria física i el disc, mantenint a la memòria únicament els blocs indispensables en cada moment. La memòria virtual funciona d'una manera semblant, ja que també fa servir el disc per emmagatzemar temporalment les parts d'un programa que no s'estan fent servir, però això ho gestiona el sistema operatiu, amb l'ajuda del maquinari, i allibera els programadors d'aquesta tasca.
 
-En un sistema amb memòria virtual, el disc (o SSD) es converteix en un nivell addicional de la jerarquia de memòria, per sota de la memòria principal. De la mateixa manera que la memòria cau conté un subconjunt de les dades de la memòria principal (@sec-jerarquia), la memòria principal conté un subconjunt de les dades del disc: la memòria física emmagatzema només les parts d'un procés que s'utilitzen activament, i el disc en guarda la resta. (En el model simplificat d'aquest tema, el disc conté sempre una còpia de tot el procés; vegeu @sec-mv-pagines.)
+En un computador amb memòria virtual, el disc (o SSD) passa a ser una capa més de la jerarquia de memòria que hem vist a la @sec-jerarquia (@fig-mv-jerarquia). De la mateixa manera que la memòria cau només conté un subconjunt de les dades del nivell inferior (de la memòria principal), la memòria física d'un computador amb memòria virtual només conté un subconjunt de les dades necessàries per a l'execució d'un programa. La totalitat de les dades és sempre emmagatzemada al nivell inferior, el disc, que es troba a la base de la jerarquia.
 
-| Nivell | Tecnologia | Temps d'accés (ordre de magnitud) |
-| :--- | :--- | :---: |
-| Registres | SRAM | ~0,25 ns |
-| Memòria cau | SRAM | 0,5 – 5 ns |
-| Memòria principal | DRAM | 50 – 100 ns |
-| Memòria secundària | SSD | 0,05 – 0,1 ms |
-: La jerarquia de memòria en un sistema amb memòria virtual. Els temps són ordres de magnitud orientatius, que depenen del processador, de la memòria i del dispositiu concrets (vegeu @tbl-tecnologies-memoria per a dades de capacitat i cost). {#tbl-mv-jerarquia tbl-colwidths="[30,30,40]" .striped}
+::: {#fig-mv-jerarquia}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T8_mv_jerarquia__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_jerarquia__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_jerarquia__original_light.svg)
+:::
+Jerarquia de memòria en un computador amb memòria virtual. Els temps d'accés són ordres de magnitud orientatius, que depenen del processador, de la memòria i del dispositiu concrets (vegeu @tbl-tecnologies-memoria per a dades de capacitat i cost).
+:::
 
 ## Paginació {#sec-mv-paginacio}
 
@@ -80,7 +87,7 @@ Inicialment, totes les pàgines d'un procés resideixen al disc. Durant l'execuc
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T8_mv_pagines_marcs__original_light.svg)
 :::
-Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física de manera completament associativa. Les pàgines que no s'estan usant romanen al disc.
+Les pàgines lògiques dels processos s'assignen als marcs de pàgina de la memòria física de manera completament associativa. Les pàgines que no s'estan usant romanen al disc, on només es dibuixen les que no són a la memòria física.
 :::
 
 ### Traducció d'adreces: VPN, PPN i desplaçament {#sec-mv-traduccio}

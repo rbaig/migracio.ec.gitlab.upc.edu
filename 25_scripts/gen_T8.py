@@ -9,6 +9,9 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
 
 - `T8_mv_espais.svg` (`#fig-mv-espais`): els espais lògics de dos processos,
   la MMU, la memòria física i el disc.
+- `T8_mv_jerarquia.svg` (`#fig-mv-jerarquia`): la piràmide de la jerarquia
+  de memòria amb el disc, i els temps d'accés orientatius (figura 7.2 del tema
+  antic, amb la geometria de `T7_jerarquia_piramide.svg`).
 - `T8_mv_pagines_marcs.svg` (`#fig-mv-pagines-marcs`): pàgines de dos
   processos assignades a marcs, i una que és al disc.
 - `T8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la taula de pàgines,
@@ -254,6 +257,47 @@ def espais():
                "adreces físiques. A sota, la memòria física de 16 KiB, amb quatre marcs: X a 0x0000, A a 0x1000, "
                "Y a 0x2000 i C a 0x3000, en un ordre que no és el dels espais lògics. A sota, el disc, amb la "
                "pàgina B, que no és a la memòria física i hi arriba amb una fletxa discontínua.", o)
+
+
+# ── Jerarquia de memòria amb el disc ─────────────────────────
+
+def jerarquia():
+    """La piràmide de la figura 7.2 del tema antic, amb la geometria i els colors de la de T7
+    (`T7_jerarquia_piramide.svg`), les anotacions originals (proper, ràpid, car, petit / llunyà, lent, barat,
+    gran) i, a la dreta, el temps d'accés orientatiu de cada nivell."""
+    o = []
+    nivells = [('Registres', P1_F, P1_S, '~0,25 ns'),
+               ('Memòria cau (SRAM)', P2_F, P2_S, '0,5 – 5 ns'),
+               ('Memòria principal (DRAM)', TLB_F, TLB_S, '50 – 100 ns'),
+               ('Disc (SSD)', DISC_F, DISC_S, '0,05 – 0,1 ms')]
+    cx, y0, h, pend = 300, 20, 52, 0.83          # centre, y del vèrtex, alçada de nivell, mig-amplada per px
+    for k, (nom, f, sk, temps) in enumerate(nivells):
+        ya, yb = y0 + k * (h + 4), y0 + k * (h + 4) + h
+        wa, wb = (ya - y0) * pend, (yb - y0) * pend
+        if k == 0:
+            pts = f'{cx},{ya} {cx + wb},{yb} {cx - wb},{yb}'
+        else:
+            pts = f'{cx - wa},{ya} {cx + wa},{ya} {cx + wb},{yb} {cx - wb},{yb}'
+        o.append(f'<polygon points="{pts}" fill="{f}" stroke="{sk}" stroke-width="1"/>')
+        o.append(t(cx, (ya + yb) / 2 + 4 + (6 if k == 0 else 0), nom if k else 'Regs.', 12, sk, bold=True))
+        o.append(t(cx + wb + 56, (ya + yb) / 2 + 4, temps, 11, INK, 'start', mono=True))
+        o.append(f'<line x1="{cx + wb + 8}" y1="{(ya + yb) / 2}" x2="{cx + wb + 50}" y2="{(ya + yb) / 2}" '
+                 f'stroke="{TRAC}" stroke-width="1" stroke-dasharray="3,3"/>')
+    yb = y0 + 4 * (h + 4) - 4
+    o.append(t(cx + 56 + (yb - y0) * pend, y0 - 4, "temps d'accés", 11, GRIS, 'start', italic=True))
+    # Anotacions de la figura antiga: a l'esquerra, cap amunt; a la dreta... totes dues a l'esquerra, com a 7.2.
+    xa = 60
+    o.append(f'<line x1="{xa}" y1="{yb}" x2="{xa}" y2="{y0 + 8}" stroke="{GRIS}" stroke-width="1"/>')
+    o.append(f'<polygon points="{xa},{y0} {xa - 4},{y0 + 12} {xa + 4},{y0 + 12}" fill="{GRIS}"/>')
+    o.append(linies(xa + 26, y0 + 40, [('proper', 11, GRIS), ('ràpid', 11, GRIS), ('car', 11, GRIS), ('petit', 11, GRIS)], 11))
+    xb = 60
+    o.append(linies(xb + 26, yb - 38, [('llunyà', 11, GRIS), ('lent', 11, GRIS), ('barat', 11, GRIS), ('gran', 11, GRIS)], 11))
+    o.append(f'<polygon points="{xb},{yb + 8} {xb - 4},{yb - 4} {xb + 4},{yb - 4}" fill="{GRIS}"/>')
+    return svg(680, yb + 24, 'Jerarquia de memòria en un computador amb memòria virtual',
+               "Piràmide de quatre nivells, de dalt a baix: registres, memòria cau (SRAM), memòria principal "
+               "(DRAM) i disc (SSD). A la dreta de cada nivell, el temps d'accés orientatiu: 0,25 ns, de 0,5 a 5 "
+               "ns, de 50 a 100 ns i de 0,05 a 0,1 ms. A l'esquerra, una fletxa vertical: cap amunt, els nivells "
+               "són més propers, ràpids, cars i petits; cap avall, més llunyans, lents, barats i grans.", o)
 
 
 # ── Pàgines i marcs ──────────────────────────────────────────
@@ -854,6 +898,7 @@ def parteix(text, n):
 
 FIGURES = {
     'T8_mv_espais.svg': espais,
+    'T8_mv_jerarquia.svg': jerarquia,
     'T8_mv_pagines_marcs.svg': pagines_marcs,
     'T8_mv_taula_pagines.svg': taula_pagines,
     'T8_mv_taula_multinivell.svg': taula_multinivell,
