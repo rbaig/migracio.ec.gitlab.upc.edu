@@ -470,6 +470,7 @@ def taula_pagines(exemple=False):
     cols = [('V', 34), ('D', 34), ('E', 34), ('PPN', 70)]
     wt = sum(w for _, w in cols)
     xx = XT
+    o.append(t(XT - 8, YT - 8, 'VPN', 11, GRIS, 'end', bold=True))   # l'índex, a fora: la taula no el desa
     for nom, w in cols:
         o.append(t(xx + w / 2, YT - 8, nom, 11, INK, bold=True))
         xx += w
@@ -506,8 +507,8 @@ def taula_pagines(exemple=False):
     # Registre de taula de pàgines: n'apunta la base.
     o.append(caixa(20, 78, 150, 40, NEUTRE, GRIS, '', 11))
     o.append(linies(95, 98, ['Registre de', 'taula de pàgines'], 11))
-    o.append(cami([(170, 98), (XT, 98), (XT, YT - 2)], INK))
-    o.append(t(190, 92, 'adreça base', 9, GRIS, 'start', italic=True))
+    o.append(cami([(170, 86), (XT, 86), (XT, YT - 2)], INK))          # per sobre de la capçalera VPN
+    o.append(t(186, 80, 'adreça base', 9, GRIS, 'start', italic=True))
     # El VPN indexa la taula: entra per la dreta a la fila seleccionada.
     xi = XL + wv - 30
     o.append(cami([(xi, YL + H), (xi, ysel), (XT + wt + 2, ysel)], INK))
