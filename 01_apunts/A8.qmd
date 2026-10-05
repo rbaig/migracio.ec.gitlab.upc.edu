@@ -364,7 +364,7 @@ El TLB és una còpia parcial de la taula de pàgines, i cal mantenir-les cohere
 
 El bit D és l'únic camp del TLB que pot modificar l'execució del programa: quan una instrucció d'escriptura (`sw`, `fsw`, etc.) accedeix a una pàgina amb D = 0, el bit D s'ha de posar a 1, i la taula de pàgines ho ha de saber, perquè és la PTE la que consulta el sistema operatiu quan ha de reemplaçar la pàgina.
 
-En el model d'aquest tema, la MMU segueix una política d'**escriptura immediata**: a la primera escriptura en una pàgina (D = 0 al TLB), posa D = 1 simultàniament a l'entrada del TLB i a la PTE de la taula de pàgines. Això requereix un accés addicional a la memòria principal, però només succeeix la primera vegada que s'escriu en cada pàgina, no en cada instrucció d'escriptura. És una de les dues opcions que admet RISC-V per actualitzar els bits A i D de la PTE; l'altra, que ho faci el sistema operatiu a través d'una excepció, s'explica a l'aprofundiment @wrn-tlb-bit-ad del Tema 9.
+A EC assumim que l'actualització del bit D **la fa el maquinari**, sense cap excepció ni intervenció del sistema operatiu: la MMU segueix una política d'**escriptura immediata** i, a la primera escriptura en una pàgina (D = 0 al TLB), posa D = 1 simultàniament a l'entrada del TLB i a la PTE de la taula de pàgines. Això requereix un accés addicional a la memòria principal, però només succeeix la primera vegada que s'escriu en cada pàgina, no en cada instrucció d'escriptura. És una de les dues opcions que admet RISC-V per actualitzar els bits A i D de la PTE; l'altra, que ho faci el sistema operatiu a través d'una excepció, no la farem servir, i s'explica a l'aprofundiment @wrn-tlb-bit-ad del Tema 9.
 
 ### Flux complet de traducció {#sec-mv-tlb-flux}
 
