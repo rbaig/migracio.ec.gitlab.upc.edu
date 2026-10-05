@@ -12,6 +12,8 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
 - `T8_mv_jerarquia.svg` (`#fig-mv-jerarquia`): la piràmide de la jerarquia
   de memòria amb el disc, i els temps d'accés orientatius (figura 7.2 del tema
   antic, amb la geometria de `T7_jerarquia_piramide.svg`).
+- `T8_mv_adreca_exemple.svg` (figura sense caption de §Pàgines i marcs):
+  l'adreça 0x10010004 descomposta en VPN i desplaçament, com al tema antic.
 - `T8_mv_pagines_marcs.svg` (`#fig-mv-pagines-marcs`): pàgines de dos
   processos assignades a marcs, i una que és al disc.
 - `T8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la taula de pàgines,
@@ -299,6 +301,28 @@ def jerarquia():
                "(DRAM) i disc (SSD). A la dreta de cada nivell, el temps d'accés orientatiu: 0,25 ns, de 0,5 a 5 "
                "ns, de 50 a 100 ns i de 0,05 a 0,1 ms. A l'esquerra, una fletxa vertical: cap amunt, els nivells "
                "són més propers, ràpids, cars i petits; cap avall, més llunyans, lents, barats i grans.", o)
+
+
+# ── Exemple d'adreça lògica: VPN i desplaçament ─────────────
+
+def adreca_exemple():
+    """Figura sense caption de §Pàgines i marcs (la del tema antic): l'adreça 0x10010004 descomposta en
+    VPN (20 bits) i desplaçament (12 bits), en binari."""
+    o = []
+    X, Y, H = 196, 30, 40
+    o.append(t(X - 10, Y + H / 2 + 5, '<tspan font-style="italic">A</tspan> = 0x10010004 =', 13, INK, 'end'))
+    o.append(cel(X, Y, 300, H, NEUTRE, INK, '', sw=1.2))
+    o.append(cel(X + 300, Y, 180, H, NEUTRE, INK, '', sw=1.2))
+    o.append(t(X + 150, Y + H / 2 + 5, '0001 0000 0000 0001 0000', 15, INK, mono=True))
+    o.append(t(X + 390, Y + H / 2 + 5, '0000 0000 0100', 15, INK, mono=True))
+    o.append(t(X + 150, Y - 8, 'VPN', 11, INK, bold=True))
+    o.append(t(X + 390, Y - 8, 'desplaçament', 11, INK, bold=True))
+    o.append(t(X + 150, Y + H + 14, '20 bits', 10, GRIS))
+    o.append(t(X + 390, Y + H + 14, '12 bits', 10, GRIS))
+    return svg(680, Y + H + 22, "Descomposició de l'adreça lògica 0x10010004 en VPN i desplaçament",
+               "L'adreça lògica A = 0x10010004, escrita en binari dins de dues caselles: a l'esquerra, els 20 bits "
+               "de més pes, 0001 0000 0000 0001 0000, que són el VPN, i a la dreta, els 12 bits de menys pes, "
+               "0000 0000 0100, que són el desplaçament dins la pàgina.", o)
 
 
 # ── Pàgines i marcs ──────────────────────────────────────────
@@ -900,6 +924,7 @@ def parteix(text, n):
 FIGURES = {
     'T8_mv_espais.svg': espais,
     'T8_mv_jerarquia.svg': jerarquia,
+    'T8_mv_adreca_exemple.svg': adreca_exemple,
     'T8_mv_pagines_marcs.svg': pagines_marcs,
     'T8_mv_taula_pagines.svg': taula_pagines,
     'T8_mv_taula_multinivell.svg': taula_multinivell,
