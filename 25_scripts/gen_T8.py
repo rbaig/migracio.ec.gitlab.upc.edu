@@ -18,8 +18,9 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
   lògica de 32 bits a una de física de 14 (figura 7.4 del tema antic).
 - `T8_mv_pagines_marcs.svg` (`#fig-mv-pagines-marcs`): pàgines de dos
   processos assignades a marcs, i una que és al disc.
-- `T8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la taula de pàgines,
-  indexada pel VPN, i el registre de taula de pàgines.
+- `T8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la figura 7.5 del tema
+  antic, amb el bit E: l'adreça lògica, el registre de taula de pàgines, la
+  taula indexada pel VPN i l'adreça física.
 - `T8_mv_taula_multinivell.svg` (`#fig-mv-taula-multinivell`): la taula de
   dos nivells de Sv32, amb la descomposició de l'adreça lògica.
 - `T8_mv_tlb_estructura.svg` (`#fig-mv-tlb-estructura`): el TLB com a còpia
@@ -440,29 +441,85 @@ def files_taula(x=None):
 
 
 def taula_pagines():
+    """La figura 7.5 del tema antic, amb el bit E: l'adreça lògica (VPN i desplaçament), el registre de taula
+    de pàgines, que n'apunta la base, la taula indexada pel VPN amb els bits V, D i E i el PPN, i l'adreça
+    física, formada pel PPN de l'entrada i el mateix desplaçament."""
     o = []
-    X, Y = 290, 64
-    cols = [('V', 40), ('D', 40), ('E', 40), ('PPN', 70)]
-    files, index = files_taula()
-    o += taula(X, Y, cols, files, index=index, cap='VPN')
-    o.append(t(X + 95, 22, 'Taula de pàgines', 12, INK, bold=True))
-    o.append(caixa(50, 20, 150, 40, NEUTRE, GRIS, '', 11))
-    o.append(linies(125, 40, ['Registre de', 'taula de pàgines'], 11))
-    o.append(cami([(200, 40), (X, 40), (X, Y - 2)], INK))
-    o.append(t(245, 34, 'adreça base', 10, GRIS))
-    yb = Y + len(files) * 22
-    xr = X + 190 + 16
-    o.append(f'<line x1="{xr}" y1="{Y}" x2="{xr}" y2="{yb}" stroke="{GRIS}" stroke-width="1"/>')
-    for yy in (Y, yb):
-        o.append(f'<line x1="{xr - 4}" y1="{yy}" x2="{xr + 4}" y2="{yy}" stroke="{GRIS}" stroke-width="1"/>')
-    o.append(f'<text x="{xr + 8}" y="{(Y + yb) / 2 + 4}" font-family="{SANS}" font-size="11" fill="{GRIS}" '
-             f'text-anchor="start">2<tspan dy="-5" font-size="8">20</tspan><tspan dx="3" dy="5">entrades</tspan></text>')
-    return svg(680, yb + 20, 'La taula de pàgines',
-               "Una taula de columnes V, D, E i PPN, indexada pel VPN, que s'escriu a fora, a l'esquerra, de 0x00000 "
-               "a 0x00005, punts suspensius i 0xFFFFF, amb una cota de 2 elevat a 20 entrades. Les entrades 0x00000, "
-               "0x00002 i 0x00003 tenen V = 1 i un PPN, 0x01, 0x02 i 0x00, i són en blau; les altres tenen V = 0, sense "
-               "PPN, en gris. El registre de taula de pàgines, a dalt a l'esquerra, apunta amb una fletxa a l'inici "
-               "de la taula: l'adreça base.", o)
+    B, H = 13, 28
+    XL, YL = 200, 40                          # adreça lògica: VPN (20 bits) i desplaçament (12 bits)
+    wv, wo = 20 * B, 12 * B
+    o.append(t(XL - 10, YL + H / 2 + 5, 'Adreça lògica', 12, INK, 'end', bold=True))
+    o.append(cel(XL, YL, wv, H, NEUTRE, INK, 'VPN', INK, 12, mono=False, sw=1.2))
+    o.append(cel(XL + wv, YL, wo, H, NEUTRE, INK, 'desplaçament', INK, 12, mono=False, sw=1.2))
+    for k in range(32):
+        o.append(t(XL + (31 - k) * B + B / 2, YL - 4, str(k), 7, GRIS, mono=True))
+    o.append(t(XL + wv / 2, YL - 18, '20 bits', 9, GRIS))
+    o.append(t(XL + wv + wo / 2, YL - 18, '12 bits', 9, GRIS))
+    # Taula de pàgines.
+    XT, YT, h = 230, 112, 22
+    cols = [('V', 34), ('D', 34), ('E', 34), ('PPN', 70)]
+    wt = sum(w for _, w in cols)
+    xx = XT
+    for nom, w in cols:
+        o.append(t(xx + w / 2, YT - 8, nom, 11, INK, bold=True))
+        xx += w
+    files = ['0', '1', '⋮', 'sel', '⋮', 'fi']
+    ysel = None
+    for r, f in enumerate(files):
+        y = YT + r * h
+        sel = f == 'sel'
+        xx = XT
+        for nom, w in cols:
+            o.append(cel(xx, y, w, h, P1_F if sel else NEUTRE, P1_S if sel else TRAC,
+                         '⋮' if f == '⋮' else '', GRIS))
+            xx += w
+        if f in ('0', '1'):
+            o.append(idx(XT - 8, y + h / 2 + 4, f))
+        elif f == '⋮':
+            o.append(idx(XT - 8, y + h / 2 + 4, '⋮'))
+        elif f == 'fi':
+            o.append(t(XT - 8, y + h / 2 + 4, '2<tspan dy="-4" font-size="8">20</tspan><tspan dy="4"> − 1</tspan>',
+                       11, GRIS, 'end', mono=True))
+        if sel:
+            ysel = y + h / 2
+    yb = YT + len(files) * h
+    o.append(t(XT + wt / 2, yb + 18, 'Taula de pàgines', 12, INK, bold=True))
+    xv, xppn = XT + 17, XT + 102 + 35
+    o.append(figlib.dot(xv, ysel, P1_S))
+    o.append(figlib.dot(xppn, ysel, P1_S))
+    # Registre de taula de pàgines: n'apunta la base.
+    o.append(caixa(20, 78, 150, 40, NEUTRE, GRIS, '', 11))
+    o.append(linies(95, 98, ['Registre de', 'taula de pàgines'], 11))
+    o.append(cami([(170, 98), (XT, 98), (XT, YT - 2)], INK))
+    o.append(t(190, 92, 'adreça base', 9, GRIS, 'start', italic=True))
+    # El VPN indexa la taula: entra per la dreta a la fila seleccionada.
+    xi = XL + wv - 30
+    o.append(cami([(xi, YL + H), (xi, ysel), (XT + wt + 2, ysel)], INK))
+    o.append(t(xi + 6, YT + 40, 'índex', 10, GRIS, 'start', italic=True))
+    # Adreça física: PPN (2 bits) i desplaçament (12 bits), alineada amb el desplaçament lògic.
+    YF = yb + 64
+    wp = 2 * B
+    XP = XL + wv - wp
+    o.append(t(XP - 10, YF + H / 2 + 5, 'Adreça física', 12, INK, 'end', bold=True))
+    o.append(cel(XP, YF, wp, H, NEUTRE, INK, 'PPN', INK, 10, mono=False, sw=1.2))
+    o.append(cel(XL + wv, YF, wo, H, NEUTRE, INK, 'desplaçament', INK, 12, mono=False, sw=1.2))
+    for k in range(14):
+        o.append(t(XL + wv + wo - (k + 1) * B + B / 2, YF + H + 10, str(k), 7, GRIS, mono=True))
+    o.append(t(XP + wp / 2, YF + H + 22, '2 bits', 9, GRIS))
+    o.append(t(XL + wv + wo / 2, YF + H + 22, '12 bits', 9, GRIS))
+    o.append(cami([(xppn, ysel), (xppn, yb + 30), (XP + wp / 2, yb + 30), (XP + wp / 2, YF - 2)], P1_S))
+    o.append(fletxa(XL + wv + wo / 2, YL + H, XL + wv + wo / 2, YF - 2, INK, doble=False))
+    # El bit V: anotació a l'esquerra.
+    o.append(cami([(xv, ysel), (XT + 7, ysel), (XT + 7, yb + 30), (178, yb + 30)], P1_S))   # per dins de la columna V
+    o.append(linies(95, yb + 30, [('Bit de validesa (V):', 10, P1_S), ('si és 0, la pàgina no és', 10, GRIS),
+                                  ('a la memòria física;', 10, GRIS), ('si és 1, hi és', 10, GRIS)], 10))
+    return svg(680, YF + H + 30, 'La taula de pàgines',
+               "A dalt, l'adreça lògica de 32 bits: VPN, de 20 bits, i desplaçament, de 12. El registre de taula de "
+               "pàgines, a l'esquerra, apunta a l'adreça base de la taula de pàgines, que té 2 elevat a 20 entrades, "
+               "de 0 a 2 elevat a 20 menys 1, amb columnes V, D, E i PPN. El VPN fa d'índex i selecciona una "
+               "entrada, destacada en blau. Del bit V de l'entrada surt una anotació: si és 0, la pàgina no és a "
+               "la memòria física; si és 1, hi és. El PPN de l'entrada baixa fins a l'adreça física, de 14 bits, "
+               "on s'ajunta amb el desplaçament de l'adreça lògica, que es conserva.", o)
 
 
 # ── Taula de pàgines multinivell ─────────────────────────────
