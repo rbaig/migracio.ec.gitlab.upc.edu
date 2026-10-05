@@ -20,7 +20,7 @@ Es disposa d'un sistema amb memòria virtual paginada amb les característiques 
 
 Cada programa pot tenir a memòria física un màxim de 3 pàgines simultàniament. En cas que calgui alliberar una pàgina, s'usa l'algorisme de reemplaçament LRU.
 
-a) Indiqueu les dimensions de la taula de pàgines de cada programa, tenint en compte que cada entrada té un bit de presència i un bit de modificació.
+a) Indiqueu les dimensions de la taula de pàgines de cada programa, tenint en compte que cada entrada té un bit de validesa (V) i un bit de modificació (D).
 b) La taula següent mostra una llista d'adreces virtuals generades pel processador. Ompliu-la indicant, per a cada adreça, el número de pàgina (columna A), si es produeix una fallada de pàgina (columna B) i, en cas de reemplaçament, el número de pàgina reemplaçada (columna C). Considereu que inicialment no hi ha cap pàgina carregada a memòria física.
 
 | Adreça (hex) | A — Núm. pàgina (hex) | B — Fallada de pàgina | C — Pàgina reemplaçada (hex) |
@@ -39,7 +39,7 @@ b) La taula següent mostra una llista d'adreces virtuals generades pel processa
 ::: {#exr-t8-mv-multinivell}
 Un sistema té adreces virtuals de 32 bits, pàgines de 4 KiB i taules de pàgines de dos nivells. Cada entrada de la taula ocupa 4 bytes.
 
-a) Quants bits s'usen per al desplaçament dins la pàgina, per a l'índex de primer nivell i per a l'índex de segon nivell (suposa una divisió simètrica dels bits d'índex)?
+a) Quants bits s'usen per al desplaçament dins la pàgina, per a l'índex de primer nivell i per a l'índex de segon nivell (suposeu una divisió simètrica dels bits d'índex)?
 b) Quina és la mida d'una taula de pàgines de primer nivell? I d'una de segon nivell?
 c) Quin és el nombre màxim de taules de segon nivell que pot tenir un procés? Quina és la mida total de la jerarquia de taules en el pitjor cas?
 d) Compareu la mida total de la jerarquia de dos nivells (pitjor cas) amb la d'una taula de pàgines de nivell únic. Quin avantatge té la jerarquia en el cas típic en què un procés usa poca memòria?
@@ -129,12 +129,14 @@ Considerem un sistema amb memòria virtual de pàgines de 4 KiB, un TLB de 4 ent
 
 El contingut inicial del TLB és:
 
-| VPN | V | PPN |
+| V | VPN | PPN |
 | :---: | :---: | :---: |
-| 11 | 1 | 12 |
-| 7 | 1 | 4 |
-| 3 | 1 | 6 |
-| 9 | 0 | 0 |
+| 1 | 11 | 12 |
+| 1 | 7 | 4 |
+| 1 | 3 | 6 |
+| 0 | — | — |
+
+(La quarta entrada és lliure.)
 
 El contingut inicial de la taula de pàgines és:
 
@@ -195,7 +197,7 @@ fi:
 Suposant pàgines de 8 KiB i un TLB de 4 entrades completament associatiu amb reemplaçament LRU:
 
 a) Per a cadascuna de les tres instruccions d'accés a dades de memòria (`lw`/`sw`) i per a les primeres 5 iteracions del bucle, indiqueu a quina pàgina de la memòria virtual s'accedeix.
-b) Indiqueu el nombre total de fallades de TLB en tot el bucle.
+b) Indiqueu el nombre total de fallades del TLB de dades en tot el bucle (només es consideren els accessos a dades; les captures d'instruccions passen per un TLB d'instruccions a part, que no es té en compte).
 c) Responeu les mateixes preguntes suposant pàgines de 4 KiB.
 :::
 
@@ -225,7 +227,7 @@ fi:
 Suposant pàgines d'1 KiB i un TLB completament associatiu de 4 entrades amb reemplaçament LRU:
 
 a) Indiqueu el nombre de pàgines diferents accedides per a cadascuna de les quatre instruccions d'accés a dades de memòria (`lh`/`sh`).
-b) Calculeu el nombre de fallades de TLB en tot el bucle.
+b) Calculeu el nombre de fallades del TLB de dades en tot el bucle (només es consideren els accessos a dades, no les captures d'instruccions).
 c) Es vol redissenyar el TLB, mantenint el reemplaçament LRU, per minimitzar el nombre de fallades en aquest programa. Indiqueu quin és el nombre mínim de fallades assolible i quin és el nombre mínim d'entrades de TLB necessàries per obtenir-lo.
 d) Repetiu els apartats anteriors considerant pàgines de 4 KiB.
 :::
