@@ -214,7 +214,7 @@ class Geometria:
         return bits(e, self.t) if self.spec.get('format_etiqueta', 'binari') == 'binari' and self.t else str(e)
 
 
-def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True):
+def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True, cap_lru='LRU'):
     """Taula de la MC: una fila per conjunt (línia), i les vies una al costat de l'altra."""
     y = y0
     if mostra_cap:
@@ -229,7 +229,7 @@ def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True):
             o.append(text(cx + g.ncel * g.w_dada / 2, y - 6, f'Dades ({g.B} bytes)', 10, INK, bold=True))
         o.append(text(x0 + 10, y - 6, '#' if g.N == 1 else 'Conj', 10, INK, bold=True))
         if lru is not None:
-            o.append(text(x0 + 24 + g.N * (g.col_via + 12) + 14, y - 6, 'LRU', 10, INK, bold=True))
+            o.append(text(x0 + 24 + g.N * (g.col_via + 12) + 14, y - 6, cap_lru, 10, INK, bold=True))
     for c in range(g.NC):
         yy = y + c * H
         o.append(text(x0 + 10, yy + 15, c, FS, GRIS, bold=True))
@@ -317,12 +317,24 @@ def sequencia(spec, pas=None):
     desti = (lambda c, v: f'la línia {c}') if g.N == 1 else (lambda c, v: f'la via {v} del conjunt {c}')
     if g.N == g.NL:
         desti = lambda c, v: f'la línia {v}'
+    # Completament associativa: un sol conjunt, i cada via és una línia. Es dibuixa com una columna de
+    # línies (la forma d'A7), amb la línia LRU marcada, i no com a N vies d'una fila.
+    gg = g
+    if g.NC == 1 and g.N > 1:
+        import copy
+        gg = copy.copy(g)
+        gg.N, gg.NC = 1, g.NL
+        gg.etiq_text = g.etiq_text                    # l'etiqueta és el número de bloc sencer
+        passos = [(k, a, [[e[0][v]] for v in range(g.NL)],
+                   dict(r, lru=['LRU' if r.get('lru') and r['lru'][0] == str(v) else '' for v in range(g.NL)]),
+                   (rs[1], 0, rs[2]) if rs else None)
+                  for k, a, e, r, rs in passos]
     x_mp = 10
     x_seq = 10 + (96 if g.w_adr else 40) + 80 + 50 if spec.get('mostra_mp', True) else 10
     w_seq = spec.get('amplada_seq', 250)
     x_mc = x_seq + w_seq
-    w = x_mc + 24 + g.N * (g.col_via + 12) + (30 if g.N > 1 else 0) + 6
-    y0 = 70 if g.N > 1 else 56
+    w = x_mc + 24 + gg.N * (gg.col_via + 12) + (30 if (g.N > 1) else 0) + 6
+    y0 = 70 if gg.N > 1 else 56
     sel = passos if pas is None else [passos[pas]]
 
     def notes(k, a, r):
@@ -330,20 +342,20 @@ def sequencia(spec, pas=None):
 
     def alcada(k, a, r):
         text_h = 20 if k == 'inicial' else 46 + 13 * len(notes(k, a, r))
-        return max(g.NC * H, text_h) + 26
+        return max(gg.NC * H, text_h) + 26
     if pas is None:
         h_total = y0 + sum(alcada(k, a, r) for k, a, _, r, _ in sel) + 10
     else:                      # fotogrames: tots de la mateixa alçada, la del pas més alt
         h_total = y0 + max(alcada(k, a, r) for k, a, _, r, _ in passos) + 10
     o = []
     y_mp_fi = dibuixa_mp(o, g, x_mp, y0) if spec.get('mostra_mp', True) else 0
-    o.append(text(x_seq + w_seq / 2, y0 - 34 - (14 if g.N > 1 else 0), "Seqüència d'accessos", 14, INK, bold=True))
-    o.append(text(x_mc + (w - x_mc) / 2, y0 - 34 - (14 if g.N > 1 else 0), 'MC', 14, INK, bold=True))
+    o.append(text(x_seq + w_seq / 2, y0 - 34 - (14 if gg.N > 1 else 0), "Seqüència d'accessos", 14, INK, bold=True))
+    o.append(text(x_mc + (w - x_mc) / 2, y0 - 34 - (14 if gg.N > 1 else 0), 'MC', 14, INK, bold=True))
     y = y0
     for i, (k, a, estat, r, ressalt) in enumerate(sel):
         if i > 0:
             o.append(f'<line x1="{x_seq}" y1="{y - 10}" x2="{w - 6}" y2="{y - 10}" stroke="{TRAC}" stroke-width="1"/>')
-        dibuixa_mc(o, g, x_mc, y, estat, ressalt, r['lru'], mostra_cap=(i == 0))
+        dibuixa_mc(o, gg, x_mc, y, estat, ressalt, r['lru'], mostra_cap=(i == 0), cap_lru='' if gg is not g else 'LRU')
         ty = y + 14
         if k == 'inicial':
             o.append(text(x_seq, ty + 4, 'Estat inicial', 12, INK, anchor='start', bold=True))

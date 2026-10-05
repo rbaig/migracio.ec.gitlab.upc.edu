@@ -122,7 +122,7 @@ def texe():
     yy = y0 + 2 * 90 - 10
     o.append(fletxa(x0, yy, x_fi, yy, GRIS, doble=False, w=1))
     o.append(t(x_fi, yy + 16, 'temps', 10, GRIS, 'end', italic=True))
-    llegenda = ('F: cerca de la instrucció · D: descodificació · R: lectura de registres · '
+    llegenda = ('F: captura de la instrucció · D: descodificació · R: lectura de registres · '
                 'A: ALU · M: accés a la dada · W: escriptura del registre')
     o.append(t(x0, yy + 34, llegenda, 10, GRIS, 'start'))
     o.append(f'<rect x="{x0}" y="{yy + 44}" width="12" height="10" fill="{MC_F}" stroke="{INK}" stroke-width="0.75"/>')
