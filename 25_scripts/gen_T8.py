@@ -280,11 +280,12 @@ def jerarquia():
             pts = f'{cx - wa},{ya} {cx + wa},{ya} {cx + wb},{yb} {cx - wb},{yb}'
         o.append(f'<polygon points="{pts}" fill="{f}" stroke="{sk}" stroke-width="1"/>')
         o.append(t(cx, (ya + yb) / 2 + 4 + (6 if k == 0 else 0), nom if k else 'Regs.', 12, sk, bold=True))
-        o.append(t(cx + wb + 56, (ya + yb) / 2 + 4, temps, 11, INK, 'start', mono=True))
-        o.append(f'<line x1="{cx + wb + 8}" y1="{(ya + yb) / 2}" x2="{cx + wb + 50}" y2="{(ya + yb) / 2}" '
+        xt = cx + (y0 + 4 * (h + 4) - 4 - y0) * pend + 56    # els temps, alineats en una sola columna
+        o.append(t(xt, (ya + yb) / 2 + 4, temps, 11, INK, 'start', mono=True))
+        o.append(f'<line x1="{cx + wb + 8}" y1="{(ya + yb) / 2}" x2="{xt - 8}" y2="{(ya + yb) / 2}" '
                  f'stroke="{TRAC}" stroke-width="1" stroke-dasharray="3,3"/>')
     yb = y0 + 4 * (h + 4) - 4
-    o.append(t(cx + 56 + (yb - y0) * pend, y0 - 4, "temps d'accés", 11, GRIS, 'start', italic=True))
+    o.append(t(cx + (yb - y0) * pend + 56, y0 - 4, "temps d'accés", 11, GRIS, 'start', italic=True))
     # Anotacions de la figura antiga: a l'esquerra, cap amunt; a la dreta... totes dues a l'esquerra, com a 7.2.
     xa = 60
     o.append(f'<line x1="{xa}" y1="{yb}" x2="{xa}" y2="{y0 + 8}" stroke="{GRIS}" stroke-width="1"/>')
