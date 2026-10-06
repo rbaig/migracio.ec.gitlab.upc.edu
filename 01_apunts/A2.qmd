@@ -565,9 +565,20 @@ Suposant que `f`, `g`, `h`, `i` són variables locals enteres emmagatzemades als
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
 {{< include ../21_riscv/RV32I_instruccions_lui.qmd >}}
-: {tbl-colwidths="[5,20,35,35,5]" .striped}
+: {tbl-colwidths="[13,15,30,34,8]" .striped}
 
 `lui` carrega un immediat de 20 bits als **20 bits superiors** del registre destinació i posa els 12 bits inferiors a zero. Aquesta instrucció és especialment útil per a la càrrega d'immediats de 32 bits, que es poden construir combinant `lui` amb una instrucció de suma immediata `addi` per afegir els bits inferiors, que és el que fa la pseudoinstrucció `li` (@nte-pseudoinstruccio-li).
+:::
+
+::: {#nte-instruccio-auipc .callout-note}
+## RV32I — Instrucció `auipc`
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include ../21_riscv/RV32I_instruccions_auipc.qmd >}}
+: {tbl-colwidths="[13,15,30,34,8]" .striped}
+
+`auipc` col·loca l'immediat de 20 bits als **20 bits superiors**, com `lui`, però en lloc d'escriure'l directament al registre destinació **hi suma el valor del PC**, que és l'adreça de la mateixa instrucció `auipc`. El resultat és una adreça **relativa al PC**, que no depèn d'on es carregui el programa en memòria. És la primera instrucció de l'expansió de la pseudoinstrucció `la` (@nte-pseudoinstruccio-la); per què `la` la fa servir en lloc de `lui` es tracta a [Tema 3](#sec-tema-traduccio) (@nte-la-auipc).
 :::
 
 #### Pseudoinstruccions {#sec-pseudoinstruccions}
@@ -634,7 +645,7 @@ y:      .word   14, -1 # Es suposa que y està a l'adreça 0x10010024
 ::: {#wrn-rars-expansio-la .callout-warning collapse=true}
 ## RARS — Expansió de `la`
 
-La instrucció `auipc` de l'expansió, i per què s'hi fa servir en lloc de `lui` (adreces relatives al PC), es tracten a @nte-la-auipc.
+La instrucció `auipc` de l'expansió és a @nte-instruccio-auipc, i per què s'hi fa servir en lloc de `lui` (adreces relatives al PC), a @nte-la-auipc.
 :::
 ::::
 
@@ -1263,7 +1274,7 @@ Les instruccions que usen el mode immediat són de format **Tipus-I** (@nte-inst
 A **RV32I**, als operands immediats sempre se'ls aplica l'extensió de signe, $SignExt()$, que és la **regla general** a **RISC-V**.
 :::
 
-La instrucció `lui` (@nte-instruccio-lui) també té un operand immediat, però de **20 bits**, i per això no cap al format Tipus-I: és de format **Tipus-U** (@nte-format-u), el quart dels formats nuclears.
+Les instruccions `lui` (@nte-instruccio-lui) i `auipc` (@nte-instruccio-auipc) també tenen un operand immediat, però de **20 bits**, i per això no caben al format Tipus-I: són de format **Tipus-U** (@nte-format-u), el quart dels formats nuclears.
 
 :::: {#nte-format-u .callout-note}
 ## RV32I ISA — Format Tipus-U
@@ -1279,7 +1290,7 @@ La instrucció `lui` (@nte-instruccio-lui) també té un operand immediat, però
 ![](/auto_figs/T2_instruccio_tipus_U__registre_light.svg)
 :::
 
-El camp `imm[31:12]` conté els 20 bits superiors de l'immediat; els 12 bits inferiors del resultat els determina la instrucció concreta (`lui` els posa a `0`). És el format amb l'immediat més gran de tota la ISA, i no té camps `rs1`, `rs2` ni `funct`. L'altra instrucció d'aquest format, `auipc`, es presenta a [Tema 3](#sec-tema-traduccio) amb l'expansió de `la` (@nte-la-auipc).
+El camp `imm[31:12]` conté els 20 bits superiors de l'immediat; els 12 bits inferiors del resultat els determina la instrucció concreta (`lui` els posa a `0`, i `auipc` hi deixa els del PC). És el format amb l'immediat més gran de tota la ISA, i no té camps `rs1`, `rs2` ni `funct`.
 ::::
 
 ::: {#tip-mode-immediat .callout-tip}

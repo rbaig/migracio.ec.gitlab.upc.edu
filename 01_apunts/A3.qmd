@@ -1060,18 +1060,15 @@ En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que car
 
 Si s'accedeix diverses vegades a la mateixa variable dins una mateixa funció, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
 
-Les dues instruccions en què s'expandeix `la` pertanyen al format **Tipus-U**, presentat a [Tema 2](#sec-format-instruccions) amb `lui` (@nte-format-u): `lui` mateixa (@nte-instruccio-lui) i `auipc` (@nte-la-auipc).
+La primera de les dues instruccions en què s'expandeix `la`, `auipc` (@nte-instruccio-auipc), és de format **Tipus-U**, com `lui`, presentat a [Tema 2](#sec-format-instruccions) (@nte-format-u); la segona, `addi`, és de format Tipus-I.
 
 ::: {#nte-la-auipc .callout-note}
 ## RARS — Expansió de `la`
 
-
-La instrucció **`auipc`** (*add upper immediate to PC*) suma un immediat de 20 bits, col·locat als 20 bits superiors (desplaçat 12 posicions a l'esquerra), al valor actual del **PC**, i escriu el resultat al registre destinació. Això produeix una adreça **relativa al PC**, en lloc d'una adreça absoluta.
-
-`la` s'expandeix en dues instruccions amb adreces **relatives al PC**:
+`la` s'expandeix en dues instruccions amb adreces **relatives al PC**: `auipc` (@nte-instruccio-auipc), que suma al PC la part alta del desplaçament fins a l'etiqueta, i `addi`, que hi suma la part baixa:
 
 ```{.s filename="RV32I"}
-        auipc   rd, hi_20(offset)     # rd ← PC + hi_20(offset) << 12
+        auipc   rd, hi_20(offset)     # rd ← PC + (hi_20(offset) << 12)
         addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
 ```
 
