@@ -22,6 +22,9 @@ Estils (`estil`):
 - `"traca"`: una taula amb una fila per accés (accés, bloc, línia o conjunt,
   resultat i el bloc que conté cada línia després de l'accés). És la forma
   compacta, pensada per al PDF.
+- `"estat"`: l'estat de la MC en un moment donat (després dels accessos
+  d'`inicial`), sense seqüència: les taules d'organització de T7. Amb `ubica`
+  (una adreça), també la MP i on pot anar el bloc d'aquella adreça.
 
 Amb `fotogrames = true`, escriu a més un fotograma per pas,
 `<nom>_pas<k>__MC_light.svg` (k = 0 és l'estat inicial), per a la figura
@@ -196,11 +199,27 @@ class Geometria:
         self.t = self.w_adr - self.b - self.c if self.w_adr else 0
         self.D = spec.get('escriptura', 'immediata') == 'retardada'
         self.w_dada = 56 if self.u == 1 else 54
-        self.col_via = 26 + (26 if self.D else 0) + 54 + self.ncel * self.w_dada  # V, D, etiq, dades
+        self.hex = spec.get('format_etiqueta') == 'hex'
+        self.nh = (self.w_adr + 3) // 4                      # xifres hexadecimals d'una adreça
+        # etiqueta: amb `format_etiqueta = "hex"` i l'adreça sencera, la columna s'eixampla fins a la xifra més llarga
+        self.w_etiq = max(54, round(6.6 * (2 + (self.w_adr - self.b + 3) // 4) + 12)) if self.hex else 54
+        self.nom_etiq = 'Etiqueta' if self.w_etiq >= 70 else 'Etiq'
+        # `dades = "bloc"`: una sola cel·la de dades per línia, amb el rang d'adreces del bloc, en lloc d'una per byte
+        self.dades_bloc = spec.get('dades') == 'bloc'
+        self.w_dades = max(96, round(6.0 * (len(self.rang(0)) if self.w_adr else 0) + 14)) if self.dades_bloc else self.ncel * self.w_dada
+        self.col_via = 26 + (26 if self.D else 0) + self.w_etiq + self.w_dades  # V, D, etiq, dades
+
+    def rang(self, bloc):
+        """Contingut d'una línia amb `dades = "bloc"`: el rang d'adreces del bloc."""
+        a, z = bloc * self.B, bloc * self.B + self.B - 1
+        return f'bytes 0x{a:0{self.nh}X}–0x{z:0{self.nh}X}' if self.hex else f'bytes {a}–{z}'
 
     def color_bloc(self, bloc):
         """Un color per vector (`color = "vector"`) o per bloc, en l'ordre en què surten a la MP: així
-        dos blocs que es veuen alhora no comparteixen color (el mòdul 4 donava el mateix a 1, 9 i 13)."""
+        dos blocs que es veuen alhora no comparteixen color (el mòdul 4 donava el mateix a 1, 9 i 13).
+        Amb `color = "uniforme"`, el mateix per a tots (sense MP, el color no distingeix res)."""
+        if self.spec.get('color') == 'uniforme':
+            return COLORS[0]
         if self.spec.get('color') == 'vector':
             adr = bloc * self.B
             for k, v in enumerate(self.spec.get('vectors', [])):
@@ -211,6 +230,8 @@ class Geometria:
 
     def etiq_text(self, bloc):
         e = bloc // self.NC
+        if self.hex:
+            return f'0x{e:X}'
         return bits(e, self.t) if self.spec.get('format_etiqueta', 'binari') == 'binari' and self.t else str(e)
 
 
@@ -223,10 +244,10 @@ def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True, cap
             if g.N > 1:
                 o.append(text(xv + g.col_via / 2, y - 22, f'Via {v}', 12, INK, bold=True))
             cx = xv
-            for nom, w in [('V', 26)] + ([('D', 26)] if g.D else []) + [('Etiq', 54)]:
+            for nom, w in [('V', 26)] + ([('D', 26)] if g.D else []) + [(g.nom_etiq, g.w_etiq)]:
                 o.append(text(cx + w / 2, y - 6, nom, 10, INK, bold=True))
                 cx += w
-            o.append(text(cx + g.ncel * g.w_dada / 2, y - 6, f'Dades ({g.B} bytes)', 10, INK, bold=True))
+            o.append(text(cx + g.w_dades / 2, y - 6, f'Dades ({g.B} bytes)', 10, INK, bold=True))
         o.append(text(x0 + 10, y - 6, '#' if g.N == 1 else 'Conj', 10, INK, bold=True))
         if lru is not None:
             o.append(text(x0 + 24 + g.N * (g.col_via + 12) + 14, y - 6, cap_lru, 10, INK, bold=True))
@@ -240,11 +261,16 @@ def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True, cap
             tc = stroke if l else GRIS
             cx = xv
             cells = [('1' if l else '0', 26)] + ([(str(l['D']) if l else '0', 26)] if g.D else []) + \
-                    [(g.etiq_text(l['bloc']) if l else '—', 54)]
+                    [(g.etiq_text(l['bloc']) if l else '—', g.w_etiq)]
             for t, w in cells:
                 o.append(rect(cx, yy, w, H, fill, stroke if l else TRAC, 0.75))
                 o.append(text(cx + w / 2, yy + 15, esc(t), FS, tc, mono=True))
                 cx += w
+            if g.dades_bloc:
+                o.append(rect(cx, yy, g.w_dades, H, fill, stroke if l else TRAC, 0.75))
+                if l:
+                    o.append(text(cx + g.w_dades / 2, yy + 15, esc(g.rang(l['bloc'])), 10, tc, mono=True))
+                continue
             for k in range(g.ncel):
                 o.append(rect(cx, yy, g.w_dada, H, fill, stroke if l else TRAC, 0.75))
                 if l:
@@ -258,8 +284,9 @@ def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True, cap
     return y + g.NC * H
 
 
-def dibuixa_mp(o, g, x0, y0):
-    """Columna de la MP: adreça en binari (o element), contingut i número de bloc."""
+def dibuixa_mp(o, g, x0, y0, pos=None):
+    """Columna de la MP: adreça en binari (o element), contingut i número de bloc. Amb `pos` (un dict),
+    hi deixa on és cada bloc: `pos[bloc] = (y_dalt, y_baix)`, i les x de l'adreça (`xa`) i del contingut (`xc`)."""
     spec = g.spec
     y = y0
     files = []
@@ -269,6 +296,8 @@ def dibuixa_mp(o, g, x0, y0):
             blocs.append(None)
         blocs.extend(range(a, b + 1))
     xa, xc, xb = x0, x0 + (96 if g.w_adr else 40), x0 + (96 if g.w_adr else 40) + 80
+    if pos is not None:
+        pos.update(xa=xa, xc=xc)
     o.append(text((x0 + xb + 20) / 2, y0 - 34, 'MP', 14, INK, bold=True))
     if g.w_adr:
         o.append(text(xa + 44, y0 - 18, 'Adreça (bin)', 10, INK, bold=True))
@@ -281,6 +310,8 @@ def dibuixa_mp(o, g, x0, y0):
             y += 18
             continue
         fill, stroke = g.color_bloc(bloc)
+        if pos is not None:
+            pos[bloc] = (y, y + 20 * g.ncel)
         for k in range(g.ncel):
             adr = bloc * g.B + k * g.u
             if g.w_adr:
@@ -478,6 +509,80 @@ def traca(spec):
 
 
 # ═══════════════════════════════════════════════════════════
+# Estil «estat»: l'estat de la MC en un moment donat
+# ═══════════════════════════════════════════════════════════
+
+RESSALT = "#842029"      # el que la figura vol fer veure (svg.md §16)
+
+
+def estat(spec):
+    """Estil «estat»: la MC després dels accessos d'`inicial`, sense seqüència. `ressalta_columna = "D"`
+    emmarca la columna del bit D. Amb `ubica` (una adreça), dibuixa també la MP i on pot anar el bloc
+    d'aquella adreça: l'índex, que tria el conjunt, i una fletxa a cada via del conjunt."""
+    g = Geometria(spec)
+    mc = MC(spec)
+    for a in spec.get('inicial', []):
+        mc.acces(a['op'], a['adr'])
+    ocup = mc.ocupacio()
+    gg = g
+    if g.NC == 1 and g.N > 1:          # completament associativa: una columna de línies, com a `sequencia`
+        import copy
+        gg = copy.copy(g)
+        gg.N, gg.NC = 1, g.NL
+        gg.etiq_text = g.etiq_text
+        ocup = [[ocup[0][v]] for v in range(g.NL)]
+    o = []
+    adr = spec.get('ubica')
+    if adr is None:
+        x0, y0 = 10, (44 if gg.N > 1 else 30)
+        dibuixa_mc(o, gg, x0, y0, ocup)
+        if spec.get('ressalta_columna') == 'D' and g.D:
+            o.append(rect(x0 + 24 + 26, y0 - 20, 26, gg.NC * H + 20, 'none', RESSALT, 2))
+        return x0 + 24 + gg.N * (gg.col_via + 12) - 12 + 10, y0 + gg.NC * H + 10, o
+    bloc = adr // g.B
+    conj = bloc % g.NC
+    _, stroke = g.color_bloc(bloc)
+    x0 = 16                                                     # la MC; a l'esquerra, el camí de l'índex
+    xv = [x0 + 24 + v * (g.col_via + 12) for v in range(g.N)]
+    x_fi = xv[-1] + g.col_via
+    # MP, amb el contingut del bloc centrat sobre la MC, i l'índex emmarcat
+    x_mp = round((x0 + 24 + x_fi) / 2) - 134                 # 134: de l'inici de la MP al centre del contingut
+    pos = {}
+    dibuixa_mp(o, g, x_mp, 56, pos)
+    ya, yz = pos[bloc]
+    n = g.t + g.c + g.b + 2                                     # caràcters de «etiq idx off», de 6 px (mono de 10 px)
+    xi0 = pos['xa'] + 44 - n * 3.0 + (g.t + 1) * 6.0 - 2
+    xi1 = xi0 + g.c * 6.0 + 4
+    o.append(rect(xi0, ya + 2, xi1 - xi0, yz - ya - 4, 'none', stroke, 1.5))
+    # què passa amb el bloc, a la dreta de la MP
+    xp = pos['xc'] + 76 + 56
+    e, ix, off = adr >> (g.b + g.c), (adr >> g.b) & ((1 << g.c) - 1), adr & ((1 << g.b) - 1)
+    o.append(text(xp, ya - 2, f'Adreça {adr}', 11, INK, anchor='start', bold=True))
+    o.append(f'<text x="{xp + 72}" y="{ya - 2}" font-family="{MONO}" font-size="11" fill="{stroke}">{bits(e, g.t)} '
+             f'<tspan font-weight="bold">{bits(ix, g.c)}</tspan> {bits(off, g.b)}</text>')
+    o.append(text(xp, ya + 14, f'bloc {bloc}, conjunt {conj}', 10, GRIS, anchor='start'))
+    for j, tros in enumerate(parteix(f"L'índex tria el conjunt; dins del conjunt, el bloc pot ocupar "
+                                     f"qualsevol de les {g.N} vies.", 32)):
+        o.append(text(xp, ya + 32 + j * 13, esc(tros), 10, GRIS, anchor='start', italic=True))
+    # MC, amb el conjunt emmarcat
+    y_mc = yz + 84
+    o.append(text(x0, y_mc - 22, 'MC', 14, INK, anchor='start', bold=True))
+    dibuixa_mc(o, g, x0, y_mc, ocup)
+    y_c = y_mc + conj * H
+    o.append(rect(x0 + 20, y_c - 2, x_fi - x0 - 16, H + 4, 'none', stroke, 2))
+    # l'índex porta al conjunt
+    xm = (xi0 + xi1) / 2
+    o.append(figlib.line([(xm, yz - 2), (xm, yz + 12), (4, yz + 12), (4, y_c + H / 2), (x0 - 2, y_c + H / 2)], stroke, 1.2))
+    o.append(figlib.fletxa(x0 - 8, y_c + H / 2, x0 + 2, y_c + H / 2, stroke, doble=False))
+    # el bloc pot anar a qualsevol via del conjunt
+    xb = pos['xc'] + 38
+    for v in range(g.N):
+        x_ini = xb + (v - (g.N - 1) / 2) * 20
+        o.append(figlib.fletxa(x_ini, yz, xv[v] + g.col_via / 2, y_mc - 38, stroke, doble=False))
+    return max(x_fi + 10, xp + 190), y_mc + g.NC * H + 10, o
+
+
+# ═══════════════════════════════════════════════════════════
 # Estil «lectura»: diagrama de blocs del maquinari d'una lectura
 # ═══════════════════════════════════════════════════════════
 
@@ -637,7 +742,7 @@ def main():
     for nom, spec in dades.items():
         try:
             estil = spec.get('estil', 'sequencia')
-            w, h, cos = traca(spec) if estil == 'traca' else (lectura(spec) if estil == 'lectura' else sequencia(spec))
+            w, h, cos = {'traca': traca, 'lectura': lectura, 'estat': estat}.get(estil, sequencia)(spec)
             (args.output_dir / f'{nom}{args.sufix}.svg').write_text(svg(spec, w, h, cos), encoding='utf-8')
             n += 1
             if spec.get('fotogrames'):

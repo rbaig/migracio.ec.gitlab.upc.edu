@@ -10,7 +10,8 @@
 #
 #   [mc.<nom>]                     # nom del fitxer, sense sufix ni extensió
 #   title, desc                    # <title> i <desc> de l'SVG (el <desc> és el text alternatiu)
-#   estil       = "sequencia"      # "sequencia" (MP, accessos i MC a cada pas) o "traca" (una fila per accés)
+#   estil       = "sequencia"      # "sequencia" (MP, accessos i MC a cada pas), "traca" (una fila per accés),
+#                                  # "estat" (la MC després d'`inicial`, sense seqüència) o "lectura" (més avall)
 #   adreca_bits = 8                # amplada de l'adreça; si n'hi ha, la MP mostra l'adreça en binari
 #   bloc        = 4                # bytes per bloc
 #   linies      = 2                # línies de la MC
@@ -18,8 +19,10 @@
 #   escriptura  = "immediata"      # "immediata" o "retardada" (amb bit D)
 #   assignacio  = true             # escriptura amb assignació o sense
 #   unitat      = 1                # bytes per cel·la de dades (1: bytes; 4: paraules)
+#   dades       = "bloc"           # una sola cel·la de dades per línia, amb el rang d'adreces del bloc
+#   format_etiqueta = "hex"        # etiqueta en hexadecimal (0x…); per defecte, en binari
 #   vectors     = [{nom="V", base=0, n=16, mida=4}]   # rètols de les cel·les (V[i]) en lloc de «byte k»
-#   color       = "bloc"           # "bloc" (un color per bloc) o "vector" (un color per vector)
+#   color       = "bloc"           # "bloc" (un color per bloc), "vector" (un color per vector) o "uniforme"
 #   classifica  = false            # el resultat diu el tipus de fallada (obligatòria, de capacitat, de conflicte)
 #   mp          = [[0, 2], [63, 63]]                 # rangs de blocs que es mostren a la MP
 #   mostra_mp   = true             # estil "sequencia": columna de la MP
@@ -29,6 +32,8 @@
 #   accessos    = [{op="L", adr=0, grup="i = 0", nota="…"}, …]
 #                                  # op: "L" (lectura) o "E" (escriptura); grup: rètol d'un grup d'accessos;
 #                                  # nota: substitueix l'explicació automàtica del pas
+#   ressalta_columna = "D"         # estil "estat": emmarca la columna del bit D
+#   ubica       = 4                # estil "estat": una adreça; dibuixa també la MP i on pot anar el seu bloc
 #
 # Les seqüències són les d'A7 (§Exemples de les polítiques d'escriptura,
 # #tip-lru-exemple, §Exemple: fallades de conflicte, §Exemple: fallades de
@@ -186,3 +191,48 @@ estil = "lectura"
 organitzacio = "completa"
 bloc = 16
 linies = 8
+
+# ── Taules d'organització (A7 §Organització, §Associativa per conjunts, §Polítiques d'escriptura): estil "estat" ──
+# Les etiquetes de les dues primeres són les de #fig-mc-fallada, i la primera és la de #tip-mc-numbloc
+# (A = 0x100100F8, B = 16). La MC és completament associativa perquè l'etiqueta hi sigui el número de bloc
+# sencer: a §Organització, A7 encara no ha presentat les polítiques d'emplaçament.
+
+[mc.T7_mc_organitzacio]
+title = "Organització interna d'una memòria cau"
+desc  = "Taula d'una memòria cau de 4 línies, numerades de 0 a 3, amb les columnes V, etiqueta i dades. Les línies 0, 1 i 2 són vàlides (V = 1): les etiquetes 0x100100F, 0x7FFFF01 i 0x1001010, i a les dades, els 16 bytes del bloc corresponent (per exemple, de 0x100100F0 a 0x100100FF). La línia 3 és buida (V = 0)."
+estil = "estat"
+adreca_bits = 32
+bloc = 16
+linies = 4
+vies = 4
+format_etiqueta = "hex"
+dades = "bloc"
+color = "uniforme"
+inicial = [{op="L", adr=0x100100F8}, {op="L", adr=0x7FFFF010}, {op="L", adr=0x10010100}]
+
+[mc.T7_assoc_conjunts_taula]
+title = "On pot anar un bloc en una memòria cau associativa per conjunts de 3 vies"
+desc  = "A dalt, el bloc 1 de la MP, bytes 4 a 7, amb les adreces en binari partides en etiqueta, índex i desplaçament; l'índex, 01, és emmarcat. A sota, la MC buida, de 4 conjunts amb 3 vies cadascun. Una línia porta de l'índex al conjunt 1, que és emmarcat, i tres fletxes van del bloc a cadascuna de les 3 vies."
+estil = "estat"
+adreca_bits = 8
+bloc = 4
+linies = 12
+vies = 3
+dades = "bloc"
+mp = [[1, 1]]
+ubica = 4
+
+[mc.T7_escriptura_dirty_bit]
+title = "Línies d'una memòria cau amb el bit de modificació D"
+desc  = "La mateixa taula de 4 línies amb una columna més, D, emmarcada. Les línies 0 i 2 tenen D = 1 (el bloc s'ha modificat a la MC); la línia 1, D = 0; la línia 3 és buida (V = 0, D = 0)."
+estil = "estat"
+adreca_bits = 32
+bloc = 16
+linies = 4
+vies = 4
+escriptura = "retardada"
+format_etiqueta = "hex"
+dades = "bloc"
+color = "uniforme"
+ressalta_columna = "D"
+inicial = [{op="E", adr=0x100100F8}, {op="L", adr=0x7FFFF010}, {op="E", adr=0x10010100}]

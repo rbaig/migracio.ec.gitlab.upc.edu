@@ -1,10 +1,10 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `3ee92f4` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **84** etiquetes `#fig-`: 81 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
-- **79** fitxers a `22_figs_originals/` i `23_figs_externes/`: 69 consumits i 10 sense consumir.
-- Figures generades al pre-render: **18** de `gen_regs.py` (`__registre`), **2** de `gen_BA.py` (`__BA`), **2** de `gen_subrutines.py` (`__subrutina`), **11** de `gen_MC.py` (`__MC`), **3** de `gen_memoria.py` (`__memoria`).
+- **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 66 consumits i 10 sense consumir.
+- Figures generades al pre-render: **18** de `gen_regs.py` (`__registre`), **2** de `gen_BA.py` (`__BA`), **2** de `gen_subrutines.py` (`__subrutina`), **14** de `gen_MC.py` (`__MC`), **3** de `gen_memoria.py` (`__memoria`).
 
 ## Figures
 
@@ -13,11 +13,11 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `fig-flux-compilacio` | `A1.qmd:55` | `22_figs_originals/T1_flux_compilacio.svg` | Inkscape |  | 1 | El flux de generació del programari: les quatre etapes del *toolchain* GCC. | Diagrama que mostra el flux de generació d'un programa exec… |
 | `fig-picopi-fases` | `A1.qmd:224` | `22_figs_originals/T1_picopi_fases.svg` | Inkscape | `wrn-picopi` | 0 | Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) + Target (*P… | Quatre diagrames en una sola figura: fase de creació (el ho… |
 | `fig-von-neumann` | `A1.qmd:358` | `22_figs_originals/T1_von_neumann.svg` | Inkscape |  | 1 | Arquitectura de Von Neumann: CPU (ALU, CU i Registres), Memòria principal i Sistema d'E/S… | CPU, Memòria Principal i Sistema d'E/S en disposició horitz… |
-| `fig-memoria-creix-avall` | `A2.qmd:961` | `memoria.toml:T2_memoria_creix_avall` | gen_memoria.py | `imp-adrecament-a-nivell-byte` | 0 | Representació gràfica de la memòria. | Una columna de cel·les d'un byte cadascuna, amb l'adreça a … |
-| `fig-big-endian` | `A2.qmd:1001` | `memoria.toml:T2_big_endian` | gen_memoria.py | `tip-endianness` | 0 | Big-endian | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
-| `fig-little-endian` | `A2.qmd:1015` | `memoria.toml:T2_little_endian` | gen_memoria.py | `tip-endianness` | 0 | Little-endian | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
-| `fig-endianness-regla-pi` | `A2.qmd:1041` | `22_figs_originals/T2_endianness_regla_pi.svg` | Inkscape | `wrn-endianness-regla-pi` | 0 | Regla mnemotècnica de la lletra grega pi (Π) per recordar l'ordenació dels bytes Little-e… | A dalt, el valor com a quatre bytes: 11, 22, 33 i 44. A l'e… |
-| `fig-acces-vector` | `A2.qmd:1894` | `22_figs_originals/T2_acces_vector.svg` | SVG natiu | `tip-load-store-word` | 0 | Accés a un element d'un vector. | El vector vec en memòria, amb les adreces creixent cap aval… |
+| `fig-memoria-creix-avall` | `A2.qmd:963` | `memoria.toml:T2_memoria_creix_avall` | gen_memoria.py | `imp-adrecament-a-nivell-byte` | 0 | Representació gràfica de la memòria. | Una columna de cel·les d'un byte cadascuna, amb l'adreça a … |
+| `fig-big-endian` | `A2.qmd:1003` | `memoria.toml:T2_big_endian` | gen_memoria.py | `tip-endianness` | 0 | Big-endian | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
+| `fig-little-endian` | `A2.qmd:1017` | `memoria.toml:T2_little_endian` | gen_memoria.py | `tip-endianness` | 0 | Little-endian | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
+| `fig-endianness-regla-pi` | `A2.qmd:1043` | `22_figs_originals/T2_endianness_regla_pi.svg` | Inkscape | `wrn-endianness-regla-pi` | 0 | Regla mnemotècnica de la lletra grega pi (Π) per recordar l'ordenació dels bytes Little-e… | A dalt, el valor com a quatre bytes: 11, 22, 33 i 44. A l'e… |
+| `fig-acces-vector` | `A2.qmd:1896` | `22_figs_originals/T2_acces_vector.svg` | SVG natiu | `tip-load-store-word` | 0 | Accés a un element d'un vector. | El vector vec en memòria, amb les adreces creixent cap aval… |
 | `fig-mapa-memoria` | `A3.qmd:1017` | `22_figs_originals/T3_mapa_memoria.svg` | Inkscape |  | 1 | Mapa de memòria de RARS: regions `.text`, `.data`, heap i pila, amb les adreces d'inici d… | Una columna de memòria amb les adreces creixent cap avall: … |
 | `fig-func-uninivell-pila` | `A3.qmd:1382` | `22_figs_originals/T3_pila_uninivell.svg` | Inkscape | `tip-func-uninivell-bloc-activacio` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció fulla `funcB`: decrei… | El codi de funcB, que executa sentB. A sota, tres columnes … |
 | `fig-ba-general` | `A3.qmd:1423` | `22_figs_originals/T3_ba_general.svg` | Inkscape |  | 1 | Estructura general del bloc d'activació: variables locals al cim de la pila i registres d… | La pila, d'adreces baixes, amb sp a dalt, a adreces altes, … |
@@ -55,17 +55,17 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `fig-not-0-1` | `A6.qmd:323` | `22_figs_originals/T6_not_0_1.svg` | extreta de PDF | `wrn-RC` | 1 | Evolució temporal de la tensió de sortida de la porta NOT quan el valor lògic de l'entrad… | A l'esquerra, la porta NOT en CMOS, que alimenta un circuit… |
 | `fig-gap-processador-memoria` | `A7.qmd:31` | `22_figs_originals/T7_gap_processador_memoria.svg` | SVG natiu |  | 1 | Evolució del rendiment relatiu de processadors i memòria DRAM entre 1980 i 2010 (escala l… | Gràfica de línies amb escala logarítmica que mostra la dive… |
 | `fig-jerarquia-piramide` | `A7.qmd:96` | `22_figs_originals/T7_jerarquia_piramide.svg` | SVG natiu |  | 1 | La jerarquia de memòria: cada nivell conserva les dades del nivell inferior que tinguin m… | Diagrama en forma de piràmide de quatre nivells: registres,… |
-| `fig-mc-organitzacio` | `A7.qmd:142` | `22_figs_originals/T7_mc_organitzacio.svg` | SVG natiu |  | 1 | Organització interna d'una memòria cau de quatre línies. Cada línia conté un bit de valid… | Taula d'una memòria cau amb 4 línies, mostrant les columnes… |
+| `fig-mc-organitzacio` | `A7.qmd:142` | `mc.toml:T7_mc_organitzacio` | gen_MC.py |  | 1 | Organització interna d'una memòria cau de quatre línies. Cada línia conté un bit de valid… | Taula d'una memòria cau de 4 línies, numerades de 0 a 3, am… |
 | `fig-mc-numbloc-descomposicio` | `A7.qmd:181` | `22_figs_originals/T7_mc_descomposicio_bits.svg` | Inkscape | `tip-mc-numbloc` | 0 | Descomposició de l'adreça `0x100100F8` amb blocs de 16 bytes: número de bloc i desplaçame… | Descomposició dels 32 bits de l'adreça 0x100100F8 en num_bl… |
 | `fig-mc-encert` | `A7.qmd:220` | `22_figs_originals/T7_mc_encert.svg` | Inkscape |  | 1 | Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament de la MC a… | Diagrama que mostra el flux d'un encert de memòria cau: la … |
 | `fig-mc-fallada` | `A7.qmd:243` | `22_figs_originals/T7_mc_fallada.svg` | Inkscape |  | 1 | Fallada en un accés a l'adreça `0x100100F8`: el bloc es copia de la MP a la MC i la dada … | Diagrama que mostra els quatre passos d'una fallada de memò… |
 | `fig-cd-descomposicio-bits` | `A7.qmd:281` | `22_figs_originals/T7_cd_descomposicio_bits.svg` | Inkscape |  | 1 | Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de… | Descomposició dels 32 bits de l'adreça 0x100100F8 en etique… |
 | `fig-cd-diagrama` | `A7.qmd:314` | `mc.toml:T7_cd_diagrama` | gen_MC.py |  | 1 | Diagrama de blocs d'una lectura en una memòria cau de correspondència directa. | L'adreça es parteix en etiqueta, índex i desplaçament. L'ín… |
-| `fig-assoc-conjunts-taula` | `A7.qmd:357` | `22_figs_originals/T7_assoc_conjunts_taula.svg` | Inkscape |  | 1 | Organització d'una memòria cau associativa per conjunts de 4 conjunts i 3 vies: el bloc d… | Estructura d'una MC associativa per conjunts de 4 conjunts … |
+| `fig-assoc-conjunts-taula` | `A7.qmd:357` | `mc.toml:T7_assoc_conjunts_taula` | gen_MC.py |  | 1 | Organització d'una memòria cau associativa per conjunts de 4 conjunts i 3 vies: el bloc d… | A dalt, el bloc 1 de la MP, bytes 4 a 7, amb les adreces en… |
 | `fig-assoc-conjunts-diagrama` | `A7.qmd:375` | `mc.toml:T7_assoc_conjunts_diagrama` | gen_MC.py |  | 1 | Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de $N$ vies. | L'adreça es parteix en etiqueta, índex i desplaçament. L'ín… |
 | `fig-ca-diagrama` | `A7.qmd:405` | `mc.toml:T7_ca_diagrama` | gen_MC.py |  | 1 | Diagrama de blocs d'una lectura en una memòria cau completament associativa: cal comparar… | L'adreça es parteix en etiqueta i desplaçament, sense índex… |
 | `fig-lru-exemple` | `A7.qmd:472` | `mc.toml:T7_lru_exemple` | gen_MC.py | `tip-lru-exemple` | 0 | Evolució de la memòria cau associativa per conjunts de 2 vies amb reemplaçament LRU per a… | MC de 4 conjunts de 2 vies amb blocs de 4 bytes, inicialmen… |
-| `fig-escriptura-dirty-bit` | `A7.qmd:506` | `22_figs_originals/T7_escriptura_dirty_bit.svg` | Inkscape |  | 1 | Estructura d'una línia de memòria cau amb escriptura retardada: el bit de modificació $D$… | Taula d'una memòria cau amb 4 línies, mostrant les columnes… |
+| `fig-escriptura-dirty-bit` | `A7.qmd:506` | `mc.toml:T7_escriptura_dirty_bit` | gen_MC.py |  | 1 | Estructura d'una línia de memòria cau amb escriptura retardada: el bit de modificació $D$… | La mateixa taula de 4 línies amb una columna més, D, emmarc… |
 | `fig-escriptura-estat-inicial` | `A7.qmd:565` | `(subfigures)` | — |  | 1 | Estat de la memòria cau al final de la seqüència inicial de 5 lectures, partint d'una MC … |  |
 | `fig-escriptura-estat-inicial-sequencia` | `A7.qmd:566` | `mc.toml:T7_escriptura_estat_inicial` | gen_MC.py |  | 0 | Pas a pas: la MP, cada lectura i l'estat de la MC després de l'accés. | MC de correspondència directa de 2 línies amb blocs de 4 by… |
 | `fig-escriptura-estat-inicial-traca` | `A7.qmd:582` | `mc.toml:T7_escriptura_estat_inicial_traca` | gen_MC.py |  | 0 | En forma de traça: una fila per lectura, amb el bloc que conté cada línia de la MC despré… | Taula amb una fila per lectura (bytes 0, 2, 4, 6 i 8): bloc… |
@@ -95,10 +95,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `fig-mv-tlb-exemple` | `A8.qmd:586` | `22_figs_originals/T8_mv_exemple_tlb.svg` | script (gen_T8.py) |  | 1 | Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el … | A dalt, l'estat inicial: el TLB, amb tres entrades vàlides … |
 | `fig-cicle-interrupcio` | `A9.qmd:714` | `22_figs_originals/T9_cicle_interrupcio.svg` | Inkscape |  | 1 | Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucc… | Una línia de temps d'esquerra a dreta en tres trams: execuc… |
 | `—` | `A2.qmd:267` | `registres.toml:compendi_registres_RIS` | gen_regs.py (COMPENDIS) | `nte-instruccions-tipus` | 0 |  |  |
-| `—` | `A2.qmd:1190` | `registres.toml:T2_instruccio_tipus_R` | gen_regs.py | `nte-instruccions-Tipus-R` | 0 |  |  |
-| `—` | `A2.qmd:1249` | `registres.toml:T2_instruccio_tipus_I` | gen_regs.py | `nte-instruccions-Tipus-I` | 0 |  |  |
-| `—` | `A2.qmd:1270` | `registres.toml:T2_instruccio_tipus_U` | gen_regs.py | `nte-format-u` | 0 |  |  |
-| `—` | `A2.qmd:1326` | `registres.toml:T2_instruccio_tipus_S` | gen_regs.py | `nte-instruccions-Tipus-S` | 0 |  |  |
+| `—` | `A2.qmd:1192` | `registres.toml:T2_instruccio_tipus_R` | gen_regs.py | `nte-instruccions-Tipus-R` | 0 |  |  |
+| `—` | `A2.qmd:1251` | `registres.toml:T2_instruccio_tipus_I` | gen_regs.py | `nte-instruccions-Tipus-I` | 0 |  |  |
+| `—` | `A2.qmd:1272` | `registres.toml:T2_instruccio_tipus_U` | gen_regs.py | `nte-format-u` | 0 |  |  |
+| `—` | `A2.qmd:1328` | `registres.toml:T2_instruccio_tipus_S` | gen_regs.py | `nte-instruccions-Tipus-S` | 0 |  |  |
 | `—` | `A3.qmd:403` | `registres.toml:T3_instruccio_tipus_B` | gen_regs.py | `nte-format-b` | 0 |  |  |
 | `—` | `A3.qmd:508` | `registres.toml:T3_instruccio_tipus_J` | gen_regs.py | `nte-format-j` | 0 |  |  |
 | `—` | `A5.qmd:753` | `registres.toml:T5_fcsr` | gen_regs.py | `nte-fcsr` | 0 |  |  |
@@ -127,8 +127,8 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `22_figs_originals/T1_flux_compilacio.svg` | A1.qmd:58, A1.qmd:65 | Inkscape | 901 | sí | sí | 20 | #1a5276 #4a90b8 #e8f4f8 |  |
 | `22_figs_originals/T1_picopi_fases.svg` | A1.qmd:227, A1.qmd:234 | Inkscape | 680 | sí | sí | 39 | #888780 |  |
 | `22_figs_originals/T1_von_neumann.svg` | A1.qmd:361, A1.qmd:368 | Inkscape | 700 | sí | sí | 26 | #185fa5 #888780 #e6f1fb |  |
-| `22_figs_originals/T2_acces_vector.svg` | A2.qmd:1897, A2.qmd:1904 | SVG natiu | 260 | sí | sí | 13 |  |  |
-| `22_figs_originals/T2_endianness_regla_pi.svg` | A2.qmd:1044, A2.qmd:1051 | Inkscape | 680 | sí | sí | 15 |  |  |
+| `22_figs_originals/T2_acces_vector.svg` | A2.qmd:1899, A2.qmd:1906 | SVG natiu | 260 | sí | sí | 13 |  |  |
+| `22_figs_originals/T2_endianness_regla_pi.svg` | A2.qmd:1046, A2.qmd:1053 | Inkscape | 680 | sí | sí | 15 |  |  |
 | `22_figs_originals/T3_ba_exemple.svg` | **orfe** | Inkscape | 316 | no | no | 20 |  |  |
 | `22_figs_originals/T3_ba_func.svg` | A3.qmd:1455, A3.qmd:1462 | Inkscape | 326 | sí | sí | 11 | #333333 #4d4d4d |  |
 | `22_figs_originals/T3_ba_general.svg` | A3.qmd:1426, A3.qmd:1433 | Inkscape | 326 | sí | sí | 12 | #4d4d4d |  |
@@ -158,12 +158,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `22_figs_originals/T6_not_1_0.svg` | A6.qmd:309, A6.qmd:316 | extreta de PDF | 386 | sí | sí | 14 | #000000 |  |
 | `22_figs_originals/T6_not_cmos.svg` | A6.qmd:290, A6.qmd:297 | extreta de PDF | 360 | sí | sí | 8 | #000000 |  |
 | `22_figs_originals/T6_tc_tc_prima.svg` | A6.qmd:149, A6.qmd:156 | extreta de PDF | 284 | sí | sí | 10 | #000000 #b3b3b3 |  |
-| `22_figs_originals/T7_assoc_conjunts_taula.svg` | A7.qmd:360, A7.qmd:367 | Inkscape | 800 | sí | sí | 76 | #000000 |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 235 |  |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 266 |  |  |
 | `22_figs_originals/T7_cd_descomposicio_bits.svg` | A7.qmd:284, A7.qmd:291 | Inkscape | 545 | sí | sí | 19 |  |  |
 | `22_figs_originals/T7_conflicte_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 120 | #000000 |  |
-| `22_figs_originals/T7_escriptura_dirty_bit.svg` | A7.qmd:509, A7.qmd:516 | Inkscape | 520 | sí | sí | 20 |  |  |
 | `22_figs_originals/T7_escriptura_estat_inicial.svg` | **orfe** | Inkscape | 800 | sí | sí | 167 | #000000 |  |
 | `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 101 | #000000 |  |
 | `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 100 | #000000 |  |
@@ -174,7 +172,6 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `22_figs_originals/T7_mc_descomposicio_bits.svg` | A7.qmd:184, A7.qmd:191 | Inkscape | 590 | sí | sí | 18 |  |  |
 | `22_figs_originals/T7_mc_encert.svg` | A7.qmd:223, A7.qmd:230 | Inkscape | 575 | sí | sí | 29 | #000000 |  |
 | `22_figs_originals/T7_mc_fallada.svg` | A7.qmd:246, A7.qmd:253 | Inkscape | 575 | sí | sí | 48 | #000000 #0b449a #7d6d6c |  |
-| `22_figs_originals/T7_mc_organitzacio.svg` | A7.qmd:145, A7.qmd:152 | SVG natiu | 520 | sí | sí | 15 |  |  |
 | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | A7.qmd:685, A7.qmd:692 | Graphviz | 459 | sí | sí | 19 |  |  |
 | `22_figs_originals/T7_multinivell_diagrama.svg` | A7.qmd:1001, A7.qmd:1008 | script (gen_T7.py) | 660 | sí | sí | 22 |  |  |
 | `22_figs_originals/T7_multinivell_multicore.svg` | A7.qmd:1066, A7.qmd:1073 | script (gen_T7.py) | 660 | sí | sí | 20 |  |  |
@@ -203,10 +200,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `22_figs_originals/T9_cicle_interrupcio.svg` | A9.qmd:717, A9.qmd:724 | Inkscape | 680 | sí | sí | 17 |  |  |
 | `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1084 | ràster |  | no | no | 0 |  |  |
 | `23_figs_externes/by-nc-sa.eu.png` | 14_LICENSE.qmd:5 | ràster |  | no | no | 0 |  |  |
-| `registres.toml:T2_instruccio_tipus_R` | A2.qmd:1190, A2.qmd:1197 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:T2_instruccio_tipus_I` | A2.qmd:1249, A2.qmd:1256 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:T2_instruccio_tipus_S` | A2.qmd:1326, A2.qmd:1333 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:T2_instruccio_tipus_U` | A2.qmd:1270, A2.qmd:1277 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:T2_instruccio_tipus_R` | A2.qmd:1192, A2.qmd:1199 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:T2_instruccio_tipus_I` | A2.qmd:1251, A2.qmd:1258 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:T2_instruccio_tipus_S` | A2.qmd:1328, A2.qmd:1335 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:T2_instruccio_tipus_U` | A2.qmd:1272, A2.qmd:1279 | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:T3_instruccio_tipus_B` | A3.qmd:403, A3.qmd:410 | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:T3_instruccio_tipus_J` | A3.qmd:508, A3.qmd:515 | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:T5_instruccio_tipus_R4` | A5.qmd:876, A5.qmd:883 | gen_regs.py |  | sí | sí | 0 |  |  |
@@ -234,15 +231,18 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 | `mc.toml:T7_cd_diagrama` | A7.qmd:317, A7.qmd:324 | gen_MC.py |  | sí | sí | 0 |  |  |
 | `mc.toml:T7_assoc_conjunts_diagrama` | A7.qmd:378, A7.qmd:385 | gen_MC.py |  | sí | sí | 0 |  |  |
 | `mc.toml:T7_ca_diagrama` | A7.qmd:408, A7.qmd:415 | gen_MC.py |  | sí | sí | 0 |  |  |
-| `memoria.toml:T2_memoria_creix_avall` | A2.qmd:964, A2.qmd:971 | gen_memoria.py |  | sí | sí | 0 |  |  |
-| `memoria.toml:T2_big_endian` | A2.qmd:1004, A2.qmd:1011 | gen_memoria.py |  | sí | sí | 0 |  |  |
-| `memoria.toml:T2_little_endian` | A2.qmd:1018, A2.qmd:1025 | gen_memoria.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_mc_organitzacio` | A7.qmd:145, A7.qmd:152 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_assoc_conjunts_taula` | A7.qmd:360, A7.qmd:367 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `mc.toml:T7_escriptura_dirty_bit` | A7.qmd:509, A7.qmd:516 | gen_MC.py |  | sí | sí | 0 |  |  |
+| `memoria.toml:T2_memoria_creix_avall` | A2.qmd:966, A2.qmd:973 | gen_memoria.py |  | sí | sí | 0 |  |  |
+| `memoria.toml:T2_big_endian` | A2.qmd:1006, A2.qmd:1013 | gen_memoria.py |  | sí | sí | 0 |  |  |
+| `memoria.toml:T2_little_endian` | A2.qmd:1020, A2.qmd:1027 | gen_memoria.py |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres` | 11_riscv.qmd:40, 11_riscv.qmd:47 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres_RIS` | A2.qmd:267, A2.qmd:274 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 
 ## Avisos
 
-### Colors fora de la paleta (`svg.md §10` i `§16`) (25)
+### Colors fora de la paleta (`svg.md §10` i `§16`) (24)
 
 - `22_figs_originals/T1_flux_compilacio.svg`: #1a5276 #4a90b8 #e8f4f8
 - `22_figs_originals/T1_picopi_fases.svg`: #888780
@@ -264,7 +264,6 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 - `22_figs_originals/T6_not_1_0.svg`: #000000
 - `22_figs_originals/T6_not_cmos.svg`: #000000
 - `22_figs_originals/T6_tc_tc_prima.svg`: #000000 #b3b3b3
-- `22_figs_originals/T7_assoc_conjunts_taula.svg`: #000000
 - `22_figs_originals/T7_gap_processador_memoria.svg`: #dee2e6
 - `22_figs_originals/T7_mc_encert.svg`: #000000
 - `22_figs_originals/T7_mc_fallada.svg`: #000000 #0b449a #7d6d6c
@@ -289,8 +288,8 @@ Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb 
 
 ### Peus que no acaben en punt (2)
 
-- `fig-big-endian` (A2.qmd:1001)
-- `fig-little-endian` (A2.qmd:1015)
+- `fig-big-endian` (A2.qmd:1003)
+- `fig-little-endian` (A2.qmd:1017)
 
 ### `textLength` (rsvg-convert no l'implementa) (5)
 
