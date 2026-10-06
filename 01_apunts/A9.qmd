@@ -769,13 +769,13 @@ La **fallada de pàgina** és l'exemple més complet del mecanisme d'excepcions 
 
 Com s'ha vist a @sec-mv-tlb, el **TLB** (*translation-lookaside buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan la traducció d'una adreça no és al TLB, es produeix una **fallada de TLB** (*TLB miss*).
 
-A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el *hardware page-table walker* de la MMU, que recorre la taula de pàgines, copia la PTE al TLB i deixa continuar l'accés sense interrompre el programa (vegeu @wrn-mv-tlb-hw-walker). L'excepció apareix només quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari.
+A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el *hardware page-table walker* de la MMU, que recorre la taula de pàgines, copia la PTE al TLB i deixa continuar l'accés sense interrompre el programa (@sec-mv-tlb-fallada). L'excepció apareix només quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari.
 
 ::: {#cau-tlb-miss-excepcio .callout-caution}
 A RISC-V, la **fallada de TLB** la resol el maquinari (*page-table walker*) de forma transparent. Només la **fallada de pàgina** (V = 0) és una excepció: la instrucció causant s'avorta, `sepc` (o `mepc`) hi apunta, i la RSE l'ha de **reexecutar** en acabar (sense incrementar `sepc`). En la reexecució, el walker troba la PTE vàlida i l'accés continua normalment.
 :::
 
-El bit V de la PTE que desencadena la fallada és el mateix que s'ha estudiat a @sec-mv-tlb-bitv. Recordeu que l'especificació RISC-V l'anomena `V` —no `P`—, tal com s'explica a @wrn-mv-notacio-v.
+El bit V de la PTE que desencadena la fallada és el que s'ha estudiat a @sec-mv-pte. Recordeu que l'especificació RISC-V l'anomena `V` —no `P`—, tal com s'explica a @wrn-mv-notacio-v.
 
 ### Codi de causa i adreça de la fallada {#sec-ei-tlb-mecanisme}
 
