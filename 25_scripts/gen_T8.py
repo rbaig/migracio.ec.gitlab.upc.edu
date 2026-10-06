@@ -721,8 +721,8 @@ def flux():
     o.append(node(870, 145, 148, 58, ['Adreça invàlida: el SO', 'avorta el procés',
                                      ('(segmentation fault)', 10, GRIS)], ab_f, ab_s, 'terminal', 11))
     o.append(node(R, r[3], 150, 64, ['Hi ha cap marc', '(PPN) lliure?'], SO_N, MISS_S, 'rombe'))
-    o.append(node(R, r[4], 170, 58, ['Tria la víctima (LRU):', 'V = 0 a la seva PTE', 'i invalida-la del TLB'],
-                  SO_N, MISS_S, size=12))
+    o.append(node(R, r[4], 176, 58, ['Tria marc (PPN) a reemplaçar:', 'V = 0 a la seva PTE', 'i també al TLB'],
+                  SO_N, MISS_S, size=11))
     o.append(node(R, r[5], 150, 64, ['D = 1?'], SO_N, MISS_S, 'rombe'))
     o.append(node(R, r[6], 170, 44, ['Escriu la víctima', 'al disc'], SO_N, MISS_S))
     o.append(node(R, r[7], 170, 44, ['Carrega la pàgina', 'del disc al marc'], SO_N, MISS_S))
@@ -746,8 +746,8 @@ def flux():
                "al TLB i a la PTE. Al centre, en groc, la fallada de TLB, que resol la MMU: llegeix la PTE de la "
                "taula de pàgines i, si V = 1, la copia al TLB i la traducció continua com en un encert. Si V = 0, "
                "es produeix una excepció, la fallada de pàgina, que resol el SO, a la dreta: si l'adreça no és "
-               "vàlida, avorta el procés (segmentation fault); si ho és i no hi ha cap marc lliure, tria una "
-               "víctima, posa V = 0 a la seva PTE i n'invalida l'entrada del TLB, i l'escriu al disc si D = 1; "
+               "vàlida, avorta el procés (segmentation fault); si ho és i no hi ha cap marc lliure, tria el "
+               "marc (PPN) a reemplaçar i posa V = 0 a la seva PTE i també al TLB, i l'escriu al disc si D = 1; "
                "després carrega la pàgina i actualitza la PTE amb V = 1, D = 0 i el PPN. Una fletxa que surt cap "
                "amunt indica que es reexecuta la instrucció.", [cos])
 
