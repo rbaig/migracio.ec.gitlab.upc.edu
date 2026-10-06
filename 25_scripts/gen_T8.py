@@ -729,7 +729,6 @@ def flux():
     o.append(node(R, r[8], 170, 44, ['Actualitza la PTE', '(V = 1, D = 0 i PPN)'], SO_N, MISS_S))
     o.append(t(L, 86, 'Fallada de TLB', 13, TLB_S, bold=True))
     o.append(t(696, 90, 'Fallada de pàgina (excepció)', 13, SO_S, 'start', bold=True))
-    o.append(t(20, 22, 'Encert de TLB', 13, HIT_S, 'start', bold=True))
     # Llegenda de les zones, a baix a l'esquerra.
     yg = r[8] - 10
     for fill, stroke, s in ((HW_F, HW_S, 'Fet pel maquinari (MMU)'), (SO_F, SO_S, 'Ho resol el sistema operatiu')):
