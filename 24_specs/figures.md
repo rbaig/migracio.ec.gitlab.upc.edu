@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `e166691` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `e806916` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **84** etiquetes `#fig-`: 81 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **79** fitxers a `22_figs_originals/` i `23_figs_externes/`: 69 consumits i 10 sense consumir.
