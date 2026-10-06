@@ -64,11 +64,13 @@ width="100%"   viewBox="0 0 {W} {H}"
 | `estàndard` | **680** | Valor per defecte: mapes de memòria, diagrames de blocs, taules de caché, gràfics. |
 | `ampla` | **960** | Figures panoràmiques: pipelines multi-etapa, diagrames multicore. El PDF les redueix al textwidth. |
 
+**A l'HTML**, la mida no la decideix el `width` de l'SVG sinó el filtre `25_scripts/figures.lua`: cada imatge es mostra a l'amplada del `viewBox` per 1,4 (una figura de 680 px, a 952 px; una de 340, a 476), i la classe `img-fluid` la limita a l'amplada de la columna. Així el text d'11 px de totes les figures surt a la mateixa mida, uns 15 px, sigui quina sigui la classe; abans, una figura amb `width="100%"` s'estirava a tota la columna i una amb l'amplada en px es quedava a la mida natural (`TODO.md`, «Mida de les figures a l'HTML»). Al PDF, la figura va a la mida del `viewBox` (1 px = 0,75 pt), reduïda a l'amplada del text si no hi cap. Decisió de l'usuari (2026-10-06).
+
 **Excepcions:**
 
 - **Registres de bits** (`gen_regs.py`): `W = 2 + total_bits × 22 + 2` px (708 px per a 32 bits). `width="100%"` igual.
 - **BA i mapes de memòria** *(pendent de migrar a `estreta`)*: marges fixos `sup=inf=10 px`, `esq=76 px`, `dret=10 px`; `w_rect=230 px`; `W=316 px`. Vegeu `TODO.md` per al pla de migració.
-- **Figures estretes generades** (`gen_BA.py` i `gen_memoria.py`): `width="{W}" height="{H}"` en px, i no `width="100%"`. A l'HTML, una figura de 326 o 340 px amb `width="100%"` s'estira a tota la columna (937 px, ×2,9) i el text hi surt a uns 31 px; amb l'amplada en px es mostra a la mida natural, i en un visor estret s'encongeix igualment fins a l'amplada de la columna. Al PDF no canvia res: `rsvg-convert` ja en feia servir la mida del `viewBox`. Decisió de l'usuari (2026-10-05, fase 7c, bloc 11); la solució genèrica per a totes les figures és a `TODO.md` («Mida de les figures a l'HTML»).
+- **Figures estretes generades** (`gen_BA.py` i `gen_memoria.py`): `width="{W}" height="{H}"` en px, i no `width="100%"`. A l'HTML, una figura de 326 o 340 px amb `width="100%"` s'estira a tota la columna (937 px, ×2,9) i el text hi surt a uns 31 px; amb l'amplada en px es mostra a la mida natural, i en un visor estret s'encongeix igualment fins a l'amplada de la columna. Al PDF no canvia res: `rsvg-convert` ja en feia servir la mida del `viewBox`. Decisió de l'usuari (2026-10-05, fase 7c, bloc 11). Des del bloc 12 (2026-10-06), la mida a l'HTML la fixa el filtre `figures.lua` per a totes les figures (vegeu més amunt), i l'amplada en px d'aquests dos generadors ja no hi influeix; es manté perquè és innòcua.
 
 ---
 

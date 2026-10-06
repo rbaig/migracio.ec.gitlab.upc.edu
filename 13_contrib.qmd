@@ -495,7 +495,7 @@ Regles generals:
 | Essencial | `#cau-` | `.callout-caution` | Vermell | Sí | No | Contingut indispensable o recordatori fonamental. Per defecte, sense títol, curt, en **negretes**, i s'ha de llegir com un ressaltat del text. Si el contingut supera ~4 línies o barreja diversos aspectes, s'admet un títol curt en lloc de forçar la brevetat. |
 | Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu en 2a persona del singular (distinta de la dels enunciats `#exr-`, en plural). No s'introdueix al text. |
 | Aprofundiment | `#wrn-` | `.callout-warning` | Lila | No | Sí | Contingut d'enriquiment no avaluable. No s'introdueix al text; s'hi pot remetre puntualment amb una referència `@wrn-…` com a **punter opcional**, mai com a dependència (el cos del text ha de ser autocontingut sense l'aprofundiment). Si >1 línia: `collapse=true`. |
-| Figura | `#fig-` | | | | No | Porta caption. |
+| Figura | `#fig-` | | | | No | Porta caption. Les del cos del text s'introdueixen amb una remissió `@fig-…` (al PDF poden flotar lluny del text); les dels callouts, no cal (decisió de l'usuari 8 de la fase 7c). |
 | Taula | `#tbl-` | | | | No | Porta caption. |
 | Codi | `#lst-` | | | | No | Porta caption. |
 | Equació | `#eq-` | | | | No | |
@@ -551,6 +551,7 @@ La part mecànica dels criteris (F1–F4: columna 0 per a les directives de segm
 ### Figures i material gràfic
 
 - Tots els diagrames nous es generen com a SVG (no Mermaid).
+- **Text alternatiu i mida a l'HTML**: el `<desc>` de cada SVG n'és el text alternatiu, i el filtre `25_scripts/figures.lua` (a `filters:` de `_quarto.yml`) el copia a l'`alt` de la imatge; el peu es queda al `.qmd`, i el `<desc>` ha de descriure el que es veu, no repetir-lo (decisió 6 de la fase 7c). El mateix filtre dona a cada imatge, només a l'HTML, l'amplada del `viewBox` per 1,4, de manera que el text de totes les figures té la mateixa mida; en un visor estret s'encongeixen fins a la columna, i les que porten `{width=…}` al `.qmd` es respecten (decisió de l'usuari, 2026-10-06; `24_specs/svg.md §2`). Tot SVG consumit porta `<title>` i `<desc>`.
 - **Inventari**: `24_specs/figures.md`, una taula per figura i una per fitxer font, amb els avisos (orfes, duplicats, placeholders, `<title>`/`<desc>`, colors fora de paleta, `textLength`, peus i remissions). El genera `25_scripts/inventari_figures.py` (`make inventari`), que mesura pel contingut i no pel nom, i no s'edita a mà. Cal regenerar-lo en el mateix commit que afegeixi, retiri o canviï una figura. Creat a la fase 7c (2026-10-03).
 
 #### Política de generació SVG
@@ -631,6 +632,7 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 3. Fons blanc del canvas (`<polygon fill="white">`) → `fill="none" stroke="none"`.
 4. `fill="#343a40"` explícit a cada element `<text>`.
 5. Color de les arestes: `#adb5bd` (stroke neutre del sistema de disseny).
+6. `<title>` i `<desc>` a l'arrel, just després de `<svg>`: el `<desc>` és el text alternatiu (§Figures i material gràfic). `dot` no els escriu, i cal tornar-los a posar si es regenera l'SVG.
 
 **Figures Graphviz existents:**
 
@@ -774,6 +776,7 @@ Per al criteri d'ús de LaTeX math vs. backticks per context, vegeu §Codi, mate
 Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
 
 - **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta` (funciona a HTML i PDF).
+- **Figures del cos del text**: cadascuna porta almenys una remissió `@fig-…` des del text, perquè al PDF la figura pot flotar a una altra pàgina; les dels callouts i les subfigures, no cal. Decisió de l'usuari 8 de la fase 7c (2026-10-03), aplicada el 2026-10-06 a les 25 que no en tenien; l'inventari (`24_specs/figures.md`, «Figures del cos del text sense cap remissió `@`») les llista.
 - **Enllaços a seccions dins del mateix fitxer**: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
 - ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: la sintaxi `@` per a seccions **només funciona a PDF**.
 

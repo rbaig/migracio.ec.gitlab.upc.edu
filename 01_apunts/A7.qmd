@@ -91,7 +91,7 @@ La solució al *gap* no consisteix a construir una memòria principal igualment 
 
 La localitat permet una solució elegant al *gap*: interposar entre el processador i la memòria principal una memòria petita i ràpida que retingui les dades amb més probabilitat de ser accedides en el futur. Si la majoria d'accessos es resolen en aquesta memòria ràpida, el temps d'accés mitjà s'aproximarà al de la memòria ràpida, no al de la lenta.
 
-Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un més gran i més lent que l'anterior— s'obté el subsistema de memòria tal com s'implementa als processadors actuals:
+Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un més gran i més lent que l'anterior— s'obté el subsistema de memòria tal com s'implementa als processadors actuals (@fig-jerarquia-piramide):
 
 ::: {#fig-jerarquia-piramide}
 ::: {.content-visible when-format="html"}
@@ -133,7 +133,7 @@ Com que alguns documents s'han de consultar repetidament (localitat temporal), l
 
 La MC no guarda dades soltes sinó **blocs** sencers de mida fixa $B$ bytes, on $B$ és una potència de 2 (les mides típiques oscil·len entre 16 i 128 bytes). L'espai d'adreçament de la memòria principal es subdivideix lògicament en blocs de $B$ bytes: l'adreça inicial de cada bloc és un múltiple de $B$, i cada bloc té un identificador únic anomenat **número de bloc**, que s'obté numerant correlativament tots els blocs des de zero.
 
-Internament, la MC s'organitza com una taula. Cada entrada d'aquesta taula s'anomena **línia** i pot contenir un bloc de dades o estar buida. Per a cada línia, la MC emmagatzema tres elements:
+Internament, la MC s'organitza com una taula. Cada entrada d'aquesta taula s'anomena **línia** i pot contenir un bloc de dades o estar buida. Per a cada línia, la MC emmagatzema tres elements (@fig-mc-organitzacio):
 
 - El **bit de validesa** ($V$, *validity bit*): indica si la línia conté un bloc vàlid ($V=1$) o està buida ($V=0$).
 - L'**etiqueta** (*tag* o *label*): identifica quin bloc de la memòria principal és guardat a la línia. Està formada pels bits del número de bloc (o una part d'aquests, com es veurà a la @sec-politica-emplacament).
@@ -212,7 +212,7 @@ $$h = \frac{\text{núm. encerts}}{\text{núm. referències}} \qquad m = \frac{\t
 
 L'operació d'una lectura il·lustra la mecànica bàsica de la MC. Suposem blocs de 16 bytes i que la CPU llegeix una dada a l'adreça $A$ = `0x100100F8` (num\_bloc = `0x100100F`, desplaçament = 8).
 
-**Cas d'encert**: El bloc és present a la MC.
+**Cas d'encert** (@fig-mc-encert): El bloc és present a la MC.
 
 1. La MC consulta les etiquetes de les línies vàlides i troba que el num\_bloc de $A$ coincideix amb l'etiqueta d'una línia. S'ha produït un encert.
 2. La MC usa el desplaçament com a selector per extreure la dada sol·licitada del bloc guardat i la transfereix a la CPU.
@@ -232,7 +232,7 @@ L'operació d'una lectura il·lustra la mecànica bàsica de la MC. Suposem bloc
 Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament de la MC a la CPU.
 :::
 
-**Cas de fallada**: El bloc no és present a la MC.
+**Cas de fallada** (@fig-mc-fallada): El bloc no és present a la MC.
 
 1. La MC comprova les etiquetes i no troba el num\_bloc de $A$. S'ha produït una fallada: la CPU es bloqueja fins que la MC resolgui l'accés.
 2. La MC sol·licita a la memòria principal el bloc sencer que conté $A$, enviant-li l'adreça inicial del bloc (`0x100100F0`, que s'obté posant a zero els $b$ bits de desplaçament de $A$).
@@ -275,7 +275,7 @@ $$A = \underbrace{\cdots}_{\text{etiqueta}} \;
      \underbrace{\cdots}_{\text{índex}\;(n_l\text{ bits})} \;
      \underbrace{\cdots}_{\text{offset}\;(b\text{ bits})}$$
 
-Com que tots els blocs que es mapen a una mateixa línia comparteixen el mateix índex, l'etiqueta pot prescindir d'aquests bits: n'hi ha prou amb els bits restants del número de bloc per identificar unívocament el bloc guardat.
+Com que tots els blocs que es mapen a una mateixa línia comparteixen el mateix índex, l'etiqueta pot prescindir d'aquests bits: n'hi ha prou amb els bits restants del número de bloc per identificar unívocament el bloc guardat (@fig-cd-descomposicio-bits).
 
 <!-- figura: descomposició dels bits d'una adreça de 32 bits en etiqueta, índex i offset per a una memòria cau de correspondència directa amb N_L=8 línies (n_l=3) i blocs de B=16 bytes (b=4), aplicada a l'adreça 0x100100F8. Basada en les Figures 6.10–6.12 del PDF. Caption: "Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de correspondència directa." -->
 ::: {#fig-cd-descomposicio-bits}
@@ -347,7 +347,7 @@ $$\text{num\_bloc} = 4 \div 4 = 1$$
 
 $$\text{índex} = 1 \bmod 4 = 1$$
 
-El bloc s'ha d'emmagatzemar al conjunt 1, però pot ocupar qualsevol de les 3 vies que estigui lliure.
+El bloc s'ha d'emmagatzemar al conjunt 1, però pot ocupar qualsevol de les 3 vies que estigui lliure (@fig-assoc-conjunts-taula).
 
 $$A = \underbrace{0000}_{\text{etiqueta}}\,
 \underbrace{01}_{\text{índex}=1}\,
@@ -501,7 +501,7 @@ Quan una escriptura produeix un encert, la dada és present a la MC i cal decidi
 
 L'inconvenient és que cada escriptura accedeix a la memòria principal, que és lenta. Per mitigar-ho s'usa un **buffer d'escriptura**: les escriptures pendents s'encuen al buffer i es transfereixen a la memòria principal en segon pla mentre la CPU continua executant. Si el buffer s'omple (perquè el ritme d'escriptures supera la velocitat de buidatge), la CPU s'ha d'aturar fins que hi hagi espai.
 
-**Escriptura retardada** (***write-back*** o ***copy-back***): S'escriu únicament a la MC. La memòria principal queda temporalment desactualitzada. Per saber si un bloc ha estat modificat, cada línia incorpora un **bit de modificació** (*dirty bit*, $D$). $D = 1$ indica que el bloc ha estat modificat i la memòria principal no té la versió actualitzada. Quan calgui reemplaçar un bloc amb $D = 1$, caldrà copiar-lo prèviament a la memòria principal per no perdre les modificacions.
+**Escriptura retardada** (***write-back*** o ***copy-back***): S'escriu únicament a la MC. La memòria principal queda temporalment desactualitzada. Per saber si un bloc ha estat modificat, cada línia incorpora un **bit de modificació** (*dirty bit*, $D$; @fig-escriptura-dirty-bit). $D = 1$ indica que el bloc ha estat modificat i la memòria principal no té la versió actualitzada. Quan calgui reemplaçar un bloc amb $D = 1$, caldrà copiar-lo prèviament a la memòria principal per no perdre les modificacions.
 
 ::: {#fig-escriptura-dirty-bit}
 ::: {.content-visible when-format="html"}
@@ -552,7 +552,7 @@ Els exemples següents usen una memòria cau de correspondència directa molt se
 - Blocs de $B = 4$ bytes ($b = 2$): 2 bits de desplaçament, 6 bits de número de bloc.
 - Memòria cau de 2 línies ($n_l = 1$): 1 bit d'índex, 5 bits d'etiqueta.
 
-Es parteix sempre de l'estat de la memòria cau després d'executar la seqüència inicial de 5 lectures:
+Es parteix sempre de l'estat de la memòria cau després d'executar la seqüència inicial de 5 lectures (@fig-escriptura-estat-inicial):
 
 - `lb @0` (bloc 0, índex 0) → **Fallada**, copia bloc 0 a línia 0.
 - `lb @2` (bloc 0, índex 0) → **Encert**.
@@ -923,7 +923,7 @@ La traça dels primers quatre valors de `i` mostra els dos tipus de fallada:
 - **$i = 2$**: `lw A[2]` (bloc 1, línia 1) → **fallada obligatòria**; primer accés al bloc 1. `lw B[2]` (bloc 5, línia 1) → **fallada obligatòria**.
 - **$i = 3$**: `lw A[3]` (bloc 1, línia 1) → **fallada de conflicte**. `lw B[3]` (bloc 5, línia 1) → **fallada de conflicte**.
 
-El patró es repeteix per a les parelles $i = 4,5$ i $i = 6,7$. En total: **8 fallades obligatòries** (iteracions parelles, primer accés al bloc) i **8 fallades de conflicte** (iteracions senars, reaccés a un bloc expulsat). **Els 16 accessos fallen**.
+El patró es repeteix per a les parelles $i = 4,5$ i $i = 6,7$. En total: **8 fallades obligatòries** (iteracions parelles, primer accés al bloc) i **8 fallades de conflicte** (iteracions senars, reaccés a un bloc expulsat). **Els 16 accessos fallen** (@fig-conflicte-exemple).
 
 ::: {#fig-conflicte-exemple}
 ::::: {.content-visible when-format="html"}
@@ -957,7 +957,7 @@ int g(int V[16]) {
 }
 ```
 
-El vector `V` ocupa 8 blocs de 2 words cadascun. La memòria cau, amb 4 línies, només pot contenir la meitat del vector simultàniament.
+El vector `V` ocupa 8 blocs de 2 words cadascun. La memòria cau, amb 4 línies, només pot contenir la meitat del vector simultàniament (@fig-capacitat-exemple).
 
 - **Primer bucle**: els blocs de `V[0]`–`V[7]` entren a la memòria cau amb fallades obligatòries. Quan s'accedeix a `V[8]`–`V[15]`, la memòria cau és plena i els blocs de la primera meitat s'expulsen (LRU).
 - **Segon bucle**: quan es torna a accedir a `V[0]`–`V[7]`, els blocs ja no hi són. Fallen de nou: són **fallades de capacitat**.
@@ -989,7 +989,7 @@ La solució és aplicar el mateix principi que va donar lloc a la memòria cau: 
 
 ### Estructura i funcionament {#sec-multinivell-estructura}
 
-En un sistema amb dos nivells de memòria cau, **L1** i **L2**, el flux d'un accés és el següent:
+En un sistema amb dos nivells de memòria cau, **L1** i **L2**, el flux d'un accés és el següent (@fig-multinivell-diagrama):
 
 1. La CPU accedeix primer a **L1**. Si hi ha encert, l'accés es resol amb temps $t_{h_{L1}}$.
 2. Si hi ha fallada a L1, s'accedeix a **L2**. Si hi ha encert a L2, la penalització és $t_{h_{L2}}$, molt menor que el temps d'accés a la memòria principal.
@@ -1058,7 +1058,7 @@ A partir de L2, les memòries cau acostumen a ser **unificades** (instruccions i
 
 ### Jerarquies actuals {#sec-multinivell-actuals}
 
-L'augment en el nombre de nuclis (*cores*) integrats en un mateix xip ha incrementat el tràfic sobre la memòria principal fins a saturar l'amplada de banda de la interconnexió. Per reduir aquest tràfic, les arquitectures actuals incorporen un tercer nivell **L3**, compartit entre tots els nuclis i integrat dins del mateix xip:
+L'augment en el nombre de nuclis (*cores*) integrats en un mateix xip ha incrementat el tràfic sobre la memòria principal fins a saturar l'amplada de banda de la interconnexió. Per reduir aquest tràfic, les arquitectures actuals incorporen un tercer nivell **L3**, compartit entre tots els nuclis i integrat dins del mateix xip (@fig-multinivell-multicore):
 
 ::: {#fig-multinivell-multicore}
 ::: {.content-visible when-format="html"}

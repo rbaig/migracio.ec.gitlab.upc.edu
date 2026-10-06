@@ -154,7 +154,7 @@ def fig_semisumador_sumador_complet():
 
     W_, H_ = 590, 320
     svg = [f'<svg width="{W_}" height="{H_}" viewBox="0 0 {W_} {H_}" xmlns="http://www.w3.org/2000/svg" role="img">',
-           '<title>Semisumador i sumador complet (mode clar)</title>',
+           '<title>Semisumador i sumador complet</title>',
            '<desc>(a) Semisumador: una porta XOR dona el bit de suma s = a xor b i una porta AND dona el bit de ròssec c = a and b. '
            '(b) Sumador complet fet amb dos semisumadors i una porta OR: el primer suma a_i i b_i; el segon suma el resultat, a_i xor b_i, amb el ròssec d\'entrada c_i i dona s_i; '
            'la OR combina a_i and b_i i (a_i xor b_i) and c_i en el ròssec de sortida c_(i+1).</desc>']
@@ -204,7 +204,7 @@ def fig_sumador_propagacio_rossec():
 
     W_, H_ = 750, 265
     svg = [f'<svg width="{W_}" height="{H_}" viewBox="0 0 {W_} {H_}" xmlns="http://www.w3.org/2000/svg" role="img">',
-           '<title>Sumador amb propagació del ròssec i detecció del sobreeiximent (mode clar)</title>',
+           '<title>Sumador amb propagació del ròssec i detecció del sobreeiximent</title>',
            '<desc>Cadena de n sumadors complets, del bit de més pes (n-1, a l\'esquerra) al de menys pes (0, a la dreta). '
            'Cada sumador complet rep a_i, b_i i el ròssec c_i del sumador de la seva dreta, i dona s_i i el ròssec c_(i+1) al de la seva esquerra. '
            'Una porta XOR rep el ròssec d\'entrada c_(n-1) i el de sortida c_n del darrer sumador i dona el bit de sobreeiximent v.</desc>']

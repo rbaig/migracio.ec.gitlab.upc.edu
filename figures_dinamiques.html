@@ -2,11 +2,14 @@
      El div porta la figura estàtica (la seqüència sencera, clara i fosca) i data-passos, el nombre de
      fotogrames; els fotogrames són <nom>_pas<k>__<sufix>_{light,dark}.svg, al costat de l'estàtica, i
      la ruta se'n dedueix de la imatge estàtica, perquè el lloc es pot publicar en un subdirectori.
-     Sense JavaScript, es veu la figura estàtica. Ho genera 25_scripts/gen_MC.py (fotogrames = true). -->
+     Sense JavaScript, es veu la figura estàtica. Ho genera 25_scripts/gen_MC.py (fotogrames = true).
+     data-amplada, si hi és, és l'amplada dels fotogrames a l'HTML, que hi posa 25_scripts/figures.lua
+     (el viewBox per l'escala comuna); sense, els fotogrames ocupen tota la columna. -->
 <script>
 (function () {
   function inicia(fig) {
     var n = parseInt(fig.getAttribute('data-passos'), 10);
+    var amplada = fig.getAttribute('data-amplada');
     var plantilla = {};
     fig.querySelectorAll('img').forEach(function (im) {
       var m = (im.getAttribute('src') || '').match(/^(.*)__([A-Za-z]+)_(light|dark)\.svg$/);
@@ -23,7 +26,8 @@
       var d = document.createElement('div');
       d.className = v + '-content';
       var im = document.createElement('img');
-      im.style.width = '100%';
+      im.className = 'img-fluid figure-img';
+      if (amplada) im.setAttribute('width', amplada); else im.style.width = '100%';
       d.appendChild(im);
       vista.appendChild(d);
       capes[v] = im;
