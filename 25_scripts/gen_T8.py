@@ -650,7 +650,7 @@ def flux():
     C, L, R = 300, 550, 790          # columnes: encert, fallada de TLB, fallada de pàgina
     E = 95                           # sortides laterals de l'encert (excepció de protecció, bit D)
     rc = [50, 130, 230, 310]         # files de l'encert: cerca, encert?, E = 0?, D = 0?
-    r = [50, 130, 210, 290, 370, 440, 510, 580, 650]   # files de la fallada de TLB i de la fallada de pàgina
+    r = [50, 130, 210, 290, 370, 440, 510, 595]        # files de la fallada de TLB i de la fallada de pàgina
     yj = 180                         # la fallada de TLB s'uneix al camí de l'encert
     yd = rc[3] + 65                  # el camí del bit D s'uneix a la sortida
     hb = rc[3] + 90                  # vora de baix de la zona del maquinari
@@ -663,7 +663,7 @@ def flux():
     # Zones (fons ombrejat), abans de tot.
     o.append(f'<rect x="4" y="0" width="668" height="{hb}" rx="10" fill="{HW_F}" stroke="{HW_S}" '
              f'stroke-width="1" stroke-dasharray="5 3"/>')
-    o.append(f'<rect x="682" y="66" width="266" height="{r[8] + 34 - 66}" rx="10" fill="{SO_F}" stroke="{SO_S}" '
+    o.append(f'<rect x="682" y="66" width="266" height="{r[7] + 49 - 66}" rx="10" fill="{SO_F}" stroke="{SO_S}" '
              f'stroke-width="1" stroke-dasharray="5 3"/>')
     # Fletxes, perquè els nodes les tapin.
     o.append(cami([(C, -DY + 4), (C, rc[0] - 22)]))                          # VPN → cerca
@@ -681,16 +681,15 @@ def flux():
     o.append(cami([(435, r[3]), (418, r[3]), (418, yj), (C, yj)], TLB_S))   # copia → continua com un encert
     o.append(cami([(865, r[2]), (905, r[2]), (905, 175)]))                  # adreça vàlida? no → el SO avorta
     o.append(cami([(R, 242), (R, 257)]))                                   # adreça vàlida? sí → marc lliure?
-    o.append(cami([(715, r[3]), (697, r[3]), (697, r[7]), (703, r[7])]))    # marc lliure? sí → carrega
+    o.append(cami([(715, r[3]), (697, r[3]), (697, r[7]), (701, r[7])]))    # marc lliure? sí → copia la pàgina nova
     o.append(cami([(R, 322), (R, 341)]))                                   # marc lliure? no → tria la víctima
     o.append(cami([(R, r[4] + 29), (R, r[5] - 33)]))                        # víctima → D = 1?
     o.append(cami([(R, r[5] + 32), (R, r[6] - 23)]))                        # D = 1? sí → copia la pàgina reemplaçada al disc
-    ym = (r[6] + r[7]) / 2
-    o.append(cami([(865, r[5]), (895, r[5]), (895, ym), (R, ym)], cap=False))  # D = 1? no → carrega
+    ym = (r[6] + 22 + r[7] - 29) / 2
+    o.append(cami([(865, r[5]), (895, r[5]), (895, ym), (R, ym)], cap=False))  # D = 1? no → copia la pàgina nova
     o.append(figlib.dot(R, ym))
-    o.append(cami([(R, r[6] + 22), (R, r[7] - 23)]))                        # copia al disc → carrega
-    o.append(cami([(R, r[7] + 22), (R, r[8] - 23)]))                        # carrega → actualitza la PTE
-    o.append(cami([(875, r[8]), (xr, r[8]), (xr, -DY + 26)], MISS_S))       # actualitza → reexecuta
+    o.append(cami([(R, r[6] + 22), (R, r[7] - 31)]))                        # copia al disc → copia la pàgina nova
+    o.append(cami([(878, r[7]), (xr, r[7]), (xr, -DY + 26)], MISS_S))       # actualitza la PTE → reexecuta
     # Rètols de les branques.
     for x, y, s, a in ((C - 6, rc[1] + 46, 'sí', 'end'), (414, rc[1] - 6, 'no', 'middle'),
                        (188, rc[2] - 6, 'sí', 'middle'), (C + 6, rc[2] + 46, 'no', 'start'),
@@ -725,19 +724,19 @@ def flux():
                   SO_N, MISS_S, size=11))
     o.append(node(R, r[5], 150, 64, ['D = 1?'], SO_N, MISS_S, 'rombe'))
     o.append(node(R, r[6], 170, 44, ['Copiar pàgina reemplaçada', 'Mem → Disc'], SO_N, MISS_S, size=12))
-    o.append(node(R, r[7], 170, 44, ['Carrega la pàgina', 'del disc al marc'], SO_N, MISS_S))
-    o.append(node(R, r[8], 170, 44, ['Actualitza la PTE', '(V = 1, D = 0 i PPN)'], SO_N, MISS_S))
+    o.append(node(R, r[7], 176, 58, ['Copiar pàg. nova Disc → Mem', 'i actualitzar la PTE', '(V = 1, D = 0 i PPN)'],
+                  SO_N, MISS_S, size=11))
     o.append(t(L, 86, 'Fallada de TLB', 13, TLB_S, bold=True))
     o.append(t(696, 90, 'Fallada de pàgina (excepció)', 13, SO_S, 'start', bold=True))
     # Llegenda de les zones, a baix a l'esquerra.
-    yg = r[8] - 10
+    yg = r[7] - 10
     for fill, stroke, s in ((HW_F, HW_S, 'Fet pel maquinari (MMU)'), (SO_F, SO_S, 'Ho resol el sistema operatiu')):
         o.append(f'<rect x="20" y="{yg - 11}" width="24" height="15" rx="3" fill="{fill}" stroke="{stroke}" '
                  f'stroke-width="1" stroke-dasharray="5 3"/>')
         o.append(t(52, yg, s, 12, INK, 'start'))
         yg += 24
     cos = f'<g transform="translate(0,{DY})">\n' + '\n'.join(o) + '\n</g>'
-    return svg(960, DY + r[8] + 50, "Flux complet de traducció d'una adreça",
+    return svg(960, DY + r[7] + 65, "Flux complet de traducció d'una adreça",
                "Diagrama de flux en tres columnes, agrupades en dues zones ombrejades: la blava, el que fa el "
                "maquinari (la MMU), i la rosa, el que resol el sistema operatiu. El flux entra a dalt, amb el VPN, "
                "i surt a baix, amb el PPN, per finalitzar l'accés a memòria. A l'esquerra, en verd, el camí de "
@@ -748,7 +747,7 @@ def flux():
                "es produeix una excepció, la fallada de pàgina, que resol el SO, a la dreta: si l'adreça no és "
                "vàlida, avorta el procés (segmentation fault); si ho és i no hi ha cap marc lliure, tria el "
                "marc (PPN) a reemplaçar i posa V = 0 a la seva PTE i també al TLB, i, si D = 1, copia la pàgina reemplaçada al disc; "
-               "després carrega la pàgina i actualitza la PTE amb V = 1, D = 0 i el PPN. Una fletxa que surt cap "
+               "després copia la pàgina nova del disc a memòria i actualitza la PTE amb V = 1, D = 0 i el PPN. Una fletxa que surt cap "
                "amunt indica que es reexecuta la instrucció.", [cos])
 
 
