@@ -684,11 +684,11 @@ def flux():
     o.append(cami([(715, r[3]), (697, r[3]), (697, r[7]), (703, r[7])]))    # marc lliure? sí → carrega
     o.append(cami([(R, 322), (R, 341)]))                                   # marc lliure? no → tria la víctima
     o.append(cami([(R, r[4] + 29), (R, r[5] - 33)]))                        # víctima → D = 1?
-    o.append(cami([(R, r[5] + 32), (R, r[6] - 23)]))                        # D = 1? sí → escriu al disc
+    o.append(cami([(R, r[5] + 32), (R, r[6] - 23)]))                        # D = 1? sí → copia la pàgina reemplaçada al disc
     ym = (r[6] + r[7]) / 2
     o.append(cami([(865, r[5]), (895, r[5]), (895, ym), (R, ym)], cap=False))  # D = 1? no → carrega
     o.append(figlib.dot(R, ym))
-    o.append(cami([(R, r[6] + 22), (R, r[7] - 23)]))                        # escriu → carrega
+    o.append(cami([(R, r[6] + 22), (R, r[7] - 23)]))                        # copia al disc → carrega
     o.append(cami([(R, r[7] + 22), (R, r[8] - 23)]))                        # carrega → actualitza la PTE
     o.append(cami([(875, r[8]), (xr, r[8]), (xr, -DY + 26)], MISS_S))       # actualitza → reexecuta
     # Rètols de les branques.
@@ -724,7 +724,7 @@ def flux():
     o.append(node(R, r[4], 176, 58, ['Tria marc (PPN) a reemplaçar:', 'V = 0 a la seva PTE', 'i també al TLB'],
                   SO_N, MISS_S, size=11))
     o.append(node(R, r[5], 150, 64, ['D = 1?'], SO_N, MISS_S, 'rombe'))
-    o.append(node(R, r[6], 170, 44, ['Escriu la víctima', 'al disc'], SO_N, MISS_S))
+    o.append(node(R, r[6], 170, 44, ['Copiar pàgina reemplaçada', 'Mem → Disc'], SO_N, MISS_S, size=12))
     o.append(node(R, r[7], 170, 44, ['Carrega la pàgina', 'del disc al marc'], SO_N, MISS_S))
     o.append(node(R, r[8], 170, 44, ['Actualitza la PTE', '(V = 1, D = 0 i PPN)'], SO_N, MISS_S))
     o.append(t(L, 86, 'Fallada de TLB', 13, TLB_S, bold=True))
@@ -747,7 +747,7 @@ def flux():
                "taula de pàgines i, si V = 1, la copia al TLB i la traducció continua com en un encert. Si V = 0, "
                "es produeix una excepció, la fallada de pàgina, que resol el SO, a la dreta: si l'adreça no és "
                "vàlida, avorta el procés (segmentation fault); si ho és i no hi ha cap marc lliure, tria el "
-               "marc (PPN) a reemplaçar i posa V = 0 a la seva PTE i també al TLB, i l'escriu al disc si D = 1; "
+               "marc (PPN) a reemplaçar i posa V = 0 a la seva PTE i també al TLB, i, si D = 1, copia la pàgina reemplaçada al disc; "
                "després carrega la pàgina i actualitza la PTE amb V = 1, D = 0 i el PPN. Una fletxa que surt cap "
                "amunt indica que es reexecuta la instrucció.", [cos])
 
