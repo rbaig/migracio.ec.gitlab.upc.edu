@@ -396,6 +396,7 @@ def main():
         dup = ' '.join(f'`{x}`' for x in per_sha.get(i['sha'], []) if x != f) if i['sha'] else ''
         if not llocs and estatica(f):
             llocs = [f'fotograma de `{Path(estatica(f)).name}`']
+            i = dict(i, origen=fonts[estatica(f)]['origen'])      # el del generador de l'estàtica
         o.append(f"| `{f}` | {', '.join(llocs[:2]) + (' …' if len(llocs) > 2 else '') if llocs else '**orfe**'} | {i['origen']} | "
                  f"{i['amplada']} | {'sí' if i['title'] else 'no'} | {'sí' if i['desc'] else 'no'} | {len(i['textos'])} | "
                  f"{' '.join(i['fora'])} | {dup} |")

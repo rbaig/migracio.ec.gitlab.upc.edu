@@ -567,16 +567,21 @@ Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
 | `T7_multinivell_multicore` | `25_scripts/gen_T7.py` | Xip de quatre nuclis amb L1i, L1d i L2 privades i L3 compartida |
 | `T7_tipus_fallades` | `25_scripts/gen_T7.py` | Taxa de fallades segons la mida i l'associativitat (qualitativa) |
 | `T8_mv_espais` | `25_scripts/gen_T8.py` | Espais lògics de dos processos, la MMU, la memòria física i el disc |
+| `T8_mv_jerarquia` | `25_scripts/gen_T8.py` | Piràmide de la jerarquia de memòria amb el disc i els temps d'accés (figura 7.2 del tema antic) |
+| `T8_mv_adreca_exemple` | `25_scripts/gen_T8.py` | L'adreça 0x10010004 descomposta en VPN i desplaçament (sense peu) |
+| `T8_mv_traduccio` | `25_scripts/gen_T8.py` | Traducció d'una adreça lògica de 32 bits a una de física de 14 (figura 7.4 del tema antic) |
 | `T8_mv_pagines_marcs` | `25_scripts/gen_T8.py` | Pàgines de dos processos assignades a marcs, i una al disc |
-| `T8_mv_taula_pagines` | `25_scripts/gen_T8.py` | Taula de pàgines indexada pel VPN, amb el registre de taula de pàgines |
+| `T8_mv_taula_pagines` | `25_scripts/gen_T8.py` | Adreça lògica, registre de taula de pàgines, taula indexada pel VPN i adreça física (figura 7.5 del tema antic, amb el bit E) |
+| `T8_mv_traduccio_exemple` | `25_scripts/gen_T8.py` | La traducció de 0x00001801 amb la taula del procés 2 (figura 7.6 del tema antic) |
 | `T8_mv_taula_multinivell` | `25_scripts/gen_T8.py` | Taula de dos nivells de Sv32, amb VPN[1], VPN[0] i el desplaçament |
 | `T8_mv_tlb_estructura` | `25_scripts/gen_T8.py` | El TLB com a còpia parcial de la taula de pàgines |
-| `T8_mv_flux_traduccio` | `25_scripts/gen_T8.py` | Diagrama de flux de la traducció: encert, fallada de TLB i fallada de pàgina |
+| `T8_mv_flux_traduccio` | `25_scripts/gen_T8.py` | Diagrama de flux de la traducció, amb les zones del maquinari i del SO |
 | `T8_mv_comparticio` | `25_scripts/gen_T8.py` | Dues taules de pàgines que apunten al mateix marc |
 | `T8_mv_pipt` | `25_scripts/gen_T8.py` | TLB i MC en sèrie, amb el cronograma de l'accés |
 | `T8_mv_vipt` | `25_scripts/gen_T8.py` | TLB i MC en paral·lel i el comparador, amb el cronograma a la mateixa escala |
+| `T8_mv_exemple_tlb` | `25_scripts/gen_T8.py` | Traça dels cinc accessos de `#tip-mv-tlb-exemple`, simulats, i els fotogrames `_pas<k>` de la figura dinàmica |
 
-**Figures dinàmiques (només a l'HTML).** Amb `fotogrames = true`, `gen_MC.py` escriu també un fotograma per pas, `<nom>_pas<k>__MC_{light,dark}.svg`, tots de la mateixa mida, i `figures_dinamiques.html` (inclòs a l'HTML per `_quarto.yml`) converteix la figura en un navegador de passos. El PDF hi porta la figura estàtica del mateix script i de la mateixa definició, de manera que els dos formats no poden divergir. Prototip: `#fig-lru-exemple` (bloc 9 de la fase 7c, 2026-10-04); el marcatge és a `13_contrib.qmd §Figures dinàmiques`.
+**Figures dinàmiques (només a l'HTML).** Amb `fotogrames = true`, `gen_MC.py` escriu també un fotograma per pas, `<nom>_pas<k>__MC_{light,dark}.svg`, tots de la mateixa mida (i `gen_T8.py`, de model (a), els de `#fig-mv-tlb-exemple`, `22_figs_originals/T8_mv_exemple_tlb_pas<k>.svg`, que el pre-render converteix com la resta d'originals), i `figures_dinamiques.html` (inclòs a l'HTML per `_quarto.yml`) converteix la figura en un navegador de passos. El PDF hi porta la figura estàtica del mateix script i de la mateixa definició, de manera que els dos formats no poden divergir. Prototip: `#fig-lru-exemple` (bloc 9 de la fase 7c, 2026-10-04); el marcatge és a `13_contrib.qmd §Figures dinàmiques`.
 
 **Figures de memòria cau (`gen_MC.py`).** Dos estils, de la mateixa simulació: `sequencia` (la MP, cada accés amb l'explicació que en calcula l'script, i l'estat de la MC després de cada accés) i `traca` (una fila per accés, amb el bloc que conté cada línia després de l'accés; en color, el que acaba de canviar, i amb vora gruixuda, la línia accedida). Decisió de l'usuari (2026-10-04): al PDF, la seqüència per als exemples curts (estat inicial, polítiques d'escriptura, LRU) i la traça per als llargs (conflicte, capacitat); l'estat inicial, en totes dues, com a subfigures, perquè l'alumne faci la transició d'una a l'altra. A l'HTML hi anirà la figura dinàmica (fotogrames de l'estil `sequencia`). Els colors són un per bloc, en l'ordre en què surten a la MP, o un per vector (`color = "vector"`), i la terminologia és la de la decisió 11 de la fase 7c: «Lectura», «Escriptura», «Encert», «Fallada» i fallades «obligatòria», «de capacitat» i «de conflicte».
 
