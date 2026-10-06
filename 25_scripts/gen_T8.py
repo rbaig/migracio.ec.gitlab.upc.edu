@@ -641,19 +641,30 @@ def tlb_estructura():
 # ── Diagrama de flux de la traducció ─────────────────────────
 
 def flux():
-    """Flux de la traducció al model del tema (RISC-V): a l'esquerra, l'encert de TLB; al centre, la fallada
-    de TLB, que resol la MMU sense interrompre el programa; a la dreta, la fallada de pàgina, que és una
-    excepció i la resol el SO. Els dos camins que no acaben a la dada tornen a la cerca al TLB."""
+    """Flux de la traducció al model del tema (RISC-V), en tres columnes i dues zones. A la zona del maquinari
+    (MMU), l'encert de TLB, a l'esquerra, i la fallada de TLB, al centre, que la MMU resol sense interrompre el
+    programa. A la zona del SO, a la dreta, la fallada de pàgina, que és una excepció. El flux comença amb el
+    VPN, a dalt; els dos camins que no acaben a la dada tornen a la cerca al TLB."""
     o = []
-    C, L, R = 300, 560, 790          # columnes: encert, fallada de TLB, fallada de pàgina
+    C, L, R = 300, 550, 790          # columnes: encert, fallada de TLB, fallada de pàgina
     E = 95                           # sortides laterals de l'encert (excepció de protecció, bit D)
     r = [50, 130, 210, 290, 370, 440, 510, 580, 650, 720]
     yl = r[4] + 50                   # el retorn de la fallada de TLB passa per sota de l'accés a la dada
+    DY = 40                          # espai de dalt per a la fletxa del VPN
+    HW_F, HW_S = '#e6f1fb', P1_S     # zona del maquinari (MMU)
+    SO_F, SO_S = DISC_F, DISC_S      # zona del sistema operatiu
+    SO_N = '#ffffff'                 # nodes de la zona del SO
     ab_f, ab_s = NEUTRE, GRIS
-    # Fletxes primer, perquè els nodes les tapin.
+    # Zones (fons ombrejat), abans de tot.
+    o.append(f'<rect x="4" y="0" width="668" height="{yl + 14}" rx="10" fill="{HW_F}" stroke="{HW_S}" '
+             f'stroke-width="1" stroke-dasharray="5 3"/>')
+    o.append(f'<rect x="682" y="66" width="266" height="{r[9] + 34 - 66}" rx="10" fill="{SO_F}" stroke="{SO_S}" '
+             f'stroke-width="1" stroke-dasharray="5 3"/>')
+    # Fletxes, perquè els nodes les tapin.
+    o.append(cami([(C, -DY + 4), (C, r[0] - 22)]))                           # VPN → cerca
     o.append(cami([(C, 72), (C, 97)]))                                     # cerca → encert?
     o.append(cami([(C, 162), (C, 177)]))                                   # encert? sí → E = 0?
-    o.append(cami([(395, r[1]), (443, r[1])]))                              # encert? no → llegeix la PTE
+    o.append(cami([(395, r[1]), (433, r[1])]))                              # encert? no → llegeix la PTE
     o.append(cami([(205, r[2]), (172, r[2])]))                              # E = 0? sí → excepció de protecció
     o.append(cami([(C, 242), (C, 257)]))                                   # E = 0? no → D = 0?
     o.append(cami([(205, r[3]), (172, r[3])]))                              # D = 0? sí → posa D = 1
@@ -661,11 +672,11 @@ def flux():
     o.append(cami([(C, 322), (C, 347)]))                                   # D = 0? no → accés a la dada
     o.append(cami([(L, 163), (L, 177)]))                                   # llegeix la PTE → V = 1?
     o.append(cami([(L, 242), (L, 257)]))                                   # V = 1? sí → copia la PTE al TLB
-    o.append(cami([(655, r[2]), (713, r[2])]))                              # V = 1? no → adreça vàlida?
+    o.append(cami([(645, r[2]), (713, r[2])]))                              # V = 1? no → excepció → adreça vàlida?
     o.append(cami([(L, r[3] + 33), (L, yl), (15, yl), (15, r[0]), (188, r[0])], TLB_S))  # → cerca
-    o.append(cami([(865, r[2]), (872, r[2])]))                              # adreça vàlida? no → el SO avorta
+    o.append(cami([(865, r[2]), (905, r[2]), (905, 175)]))                  # adreça vàlida? no → el SO avorta
     o.append(cami([(R, 242), (R, 257)]))                                   # adreça vàlida? sí → marc lliure?
-    o.append(cami([(715, r[3]), (690, r[3]), (690, r[7]), (703, r[7])]))    # marc lliure? sí → carrega
+    o.append(cami([(715, r[3]), (697, r[3]), (697, r[7]), (703, r[7])]))    # marc lliure? sí → carrega
     o.append(cami([(R, 322), (R, 341)]))                                   # marc lliure? no → tria la víctima
     o.append(cami([(R, r[4] + 29), (R, r[5] - 33)]))                        # víctima → D = 1?
     o.append(cami([(R, r[5] + 32), (R, r[6] - 23)]))                        # D = 1? sí → escriu al disc
@@ -677,14 +688,16 @@ def flux():
     o.append(cami([(R, r[8] + 22), (R, r[9] - 23)]))                        # actualitza → reexecuta
     o.append(cami([(875, r[9]), (955, r[9]), (955, r[0]), (412, r[0])], MISS_S))  # reexecuta → cerca
     # Rètols de les branques.
-    for x, y, s, a in ((C + 6, 174, 'sí', 'start'), (419, r[1] - 6, 'no', 'middle'),
+    for x, y, s, a in ((C + 6, 174, 'sí', 'start'), (414, r[1] - 6, 'no', 'middle'),
                        (188, r[2] - 6, 'sí', 'middle'), (C + 6, 254, 'no', 'start'),
                        (188, r[3] - 6, 'sí', 'middle'), (C + 6, 338, 'no', 'start'),
-                       (L + 6, 254, 'sí', 'start'), (684, r[2] - 6, 'no', 'middle'),
-                       (R + 6, 254, 'sí', 'start'), (868, r[2] - 6, 'no', 'end'),
-                       (702, r[3] - 6, 'sí', 'middle'), (R + 6, 336, 'no', 'start'),
+                       (L + 6, 254, 'sí', 'start'), (655, r[2] - 6, 'no', 'middle'),
+                       (R + 6, 254, 'sí', 'start'), (885, r[2] - 6, 'no', 'middle'),
+                       (706, r[3] - 6, 'sí', 'middle'), (R + 6, 336, 'no', 'start'),
                        (R + 6, r[5] + 43, 'sí', 'start'), (880, r[5] - 6, 'no', 'middle')):
         o.append(t(x, y, s, 12, INK, a, italic=True))
+    o.append(t(687, r[2] + 17, 'excepció', 10, MISS_S, 'start', bold=True))   # ja dins de la zona del SO
+    o.append(t(C + 8, -DY + 22, 'VPN', 12, INK, 'start', mono=True, bold=True))
     # Nodes.
     o.append(node(C, r[0], 220, 44, ['Cerca el VPN al TLB'], HIT_F, HIT_S))
     o.append(node(C, r[1], 190, 64, ['Encert de TLB?'], HIT_F, HIT_S, 'rombe'))
@@ -692,7 +705,7 @@ def flux():
     o.append(node(C, r[3], 190, 64, ['Escriptura', 'i D = 0?'], HIT_F, HIT_S, 'rombe'))
     o.append(node(C, r[4], 260, 44, ["Accés a la dada amb l'adreça", 'física (PPN i desplaçament)'],
                   HIT_F, HIT_S, 'terminal'))
-    o.append(node(E, r[2], 150, 56, ['Excepció de', 'protecció: el SO', 'avorta el procés'], ab_f, ab_s, 'terminal', 12))
+    o.append(node(E, r[2], 150, 56, ['Excepció de', 'protecció: el SO', 'avorta el procés'], SO_F, SO_S, 'terminal', 12))
     o.append(node(E, r[3], 150, 44, ['Posa D = 1 al', 'TLB i a la PTE'], HIT_F, HIT_S))
     o.append(node(L, r[1], 230, 66, ['Llegeix la PTE de la', 'taula de pàgines',
                                      ('(recorregut per maquinari,', 10, GRIS),
@@ -700,30 +713,42 @@ def flux():
     o.append(node(L, r[2], 190, 64, ['V = 1?'], TLB_F, TLB_S, 'rombe'))
     o.append(node(L, r[3], 230, 66, ['Copia la PTE al TLB', ('(a una entrada lliure o,', 10, GRIS),
                                      ('si no n’hi ha, a la LRU)', 10, GRIS)], TLB_F, TLB_S))
-    o.append(node(R, r[2], 150, 64, ['Adreça', 'vàlida?'], MISS_F, MISS_S, 'rombe'))
-    o.append(node(912, r[2], 78, 44, ['El SO avorta', 'el procés'], ab_f, ab_s, 'terminal', 10))
-    o.append(node(R, r[3], 150, 64, ['Hi ha cap', 'marc lliure?'], MISS_F, MISS_S, 'rombe'))
+    o.append(node(R, r[2], 150, 64, ['Adreça', 'vàlida?'], SO_N, MISS_S, 'rombe'))
+    o.append(node(870, 145, 148, 58, ['Adreça invàlida: el SO', 'avorta el procés',
+                                     ('(segmentation fault)', 10, GRIS)], ab_f, ab_s, 'terminal', 11))
+    o.append(node(R, r[3], 150, 64, ['Hi ha cap', 'marc lliure?'], SO_N, MISS_S, 'rombe'))
     o.append(node(R, r[4], 170, 58, ['Tria la víctima (LRU):', 'V = 0 a la seva PTE', 'i invalida-la del TLB'],
-                  MISS_F, MISS_S, size=12))
-    o.append(node(R, r[5], 150, 64, ['D = 1?'], MISS_F, MISS_S, 'rombe'))
-    o.append(node(R, r[6], 170, 44, ['Escriu la víctima', 'al disc'], MISS_F, MISS_S))
-    o.append(node(R, r[7], 170, 44, ['Carrega la pàgina', 'del disc al marc'], MISS_F, MISS_S))
-    o.append(node(R, r[8], 170, 44, ['Actualitza la PTE', '(V = 1, D = 0 i PPN)'], MISS_F, MISS_S))
-    o.append(node(R, r[9], 170, 44, ['Reexecuta', 'la instrucció'], MISS_F, MISS_S))
-    o.append(t(L, 86, 'Fallada de TLB (la resol la MMU)', 13, TLB_S, bold=True))
-    o.append(t(R, 166, 'Fallada de pàgina (la resol el SO)', 13, MISS_S, bold=True))
-    o.append(t(C, 20, 'Encert de TLB', 13, HIT_S, bold=True))
-    return svg(960, r[9] + 50, "Flux complet de traducció d'una adreça",
-               "Diagrama de flux en tres columnes. A l'esquerra, en verd, el camí de l'encert: es cerca el VPN al "
-               "TLB; si hi és, es comprova si és una escriptura amb E = 0, que provoca una excepció de protecció i "
-               "el SO avorta el procés, i si és una escriptura amb D = 0, que posa D = 1 al TLB i a la PTE; s'acaba "
-               "accedint a la dada amb l'adreça física. Al centre, en groc, la fallada de TLB, que resol la MMU: "
-               "llegeix la PTE de la taula de pàgines i, si V = 1, la copia al TLB i torna a la cerca, que ara "
-               "encerta. A la dreta, en vermell, la fallada de pàgina, quan la PTE té V = 0, que resol el SO: si "
-               "l'adreça no és vàlida, avorta el procés; si ho és i no hi ha cap marc lliure, tria una víctima, "
-               "posa V = 0 a la seva PTE i n'invalida l'entrada del TLB, i l'escriu al disc si D = 1; després "
-               "carrega la pàgina, actualitza la PTE amb V = 1, D = 0 i el PPN, i reexecuta la instrucció, que "
-               "torna a la cerca al TLB.", o)
+                  SO_N, MISS_S, size=12))
+    o.append(node(R, r[5], 150, 64, ['D = 1?'], SO_N, MISS_S, 'rombe'))
+    o.append(node(R, r[6], 170, 44, ['Escriu la víctima', 'al disc'], SO_N, MISS_S))
+    o.append(node(R, r[7], 170, 44, ['Carrega la pàgina', 'del disc al marc'], SO_N, MISS_S))
+    o.append(node(R, r[8], 170, 44, ['Actualitza la PTE', '(V = 1, D = 0 i PPN)'], SO_N, MISS_S))
+    o.append(node(R, r[9], 170, 44, ['Reexecuta', 'la instrucció'], SO_N, MISS_S))
+    o.append(t(L, 86, 'Fallada de TLB', 13, TLB_S, bold=True))
+    o.append(t(696, 90, 'Fallada de pàgina (excepció)', 13, SO_S, 'start', bold=True))
+    o.append(t(20, 22, 'Encert de TLB', 13, HIT_S, 'start', bold=True))
+    # Llegenda de les zones.
+    yg = r[9] + 66
+    xg = 250
+    for fill, stroke, s in ((HW_F, HW_S, 'Fet pel maquinari (MMU)'), (SO_F, SO_S, 'Ho resol el sistema operatiu')):
+        o.append(f'<rect x="{xg}" y="{yg - 11}" width="24" height="15" rx="3" fill="{fill}" stroke="{stroke}" '
+                 f'stroke-width="1" stroke-dasharray="5 3"/>')
+        o.append(t(xg + 32, yg, s, 12, INK, 'start'))
+        xg += 250
+    cos = f'<g transform="translate(0,{DY})">\n' + '\n'.join(o) + '\n</g>'
+    return svg(960, DY + r[9] + 90, "Flux complet de traducció d'una adreça",
+               "Diagrama de flux en tres columnes, agrupades en dues zones ombrejades: la blava, el que fa el "
+               "maquinari (la MMU), i la rosa, el que resol el sistema operatiu. El flux comença a dalt, amb el VPN. "
+               "A l'esquerra, en verd, el camí de l'encert: es cerca el VPN al TLB; si hi és, es comprova si és una "
+               "escriptura amb E = 0, que provoca una excepció de protecció i el SO avorta el procés, i si és una "
+               "escriptura amb D = 0, que posa D = 1 al TLB i a la PTE; s'acaba accedint a la dada amb l'adreça "
+               "física. Al centre, en groc, la fallada de TLB, que resol la MMU: llegeix la PTE de la taula de "
+               "pàgines i, si V = 1, la copia al TLB i torna a la cerca, que ara encerta. Si V = 0, es produeix "
+               "una excepció, la fallada de pàgina, que resol el SO, a la dreta: si l'adreça no és vàlida, avorta "
+               "el procés (segmentation fault); si ho és i no hi ha cap marc lliure, tria una víctima, posa V = 0 "
+               "a la seva PTE i n'invalida l'entrada del TLB, i l'escriu al disc si D = 1; després carrega la "
+               "pàgina, actualitza la PTE amb V = 1, D = 0 i el PPN, i reexecuta la instrucció, que torna a la "
+               "cerca al TLB.", [cos])
 
 
 # ── Compartició ──────────────────────────────────────────────
