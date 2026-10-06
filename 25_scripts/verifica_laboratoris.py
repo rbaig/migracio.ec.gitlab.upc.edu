@@ -71,20 +71,38 @@ SUPERSEDED = {
                             # l'ordre 2.
 }
 
-# Blocs "incomplets per disseny": depenen d'una subrutina que l'enunciat
-# demana escriure a l'alumne i que no és present al bloc. Es couen soles:
-# no compten com a fallada dinàmica (assemblatge/execució). NOMÉS s'usa per
-# a la classificació dinàmica: les comprovacions estàtiques es deriven
-# únicament del contingut del bloc, no d'aquesta taula.
-INCOMPLETE_BY_DESIGN = {
-    ("L3", "s3_4_2.s", 1): "conté el comentari `# update: vegeu la solució de "
-                            "s3_4_1.s (inseriu el codi aquí)` — la subrutina "
-                            "update l'ha d'enganxar l'alumne.",
-}
+# Blocs NO AUTÒNOMS: un bloc complet (amb `.text` i la sortida) que no s'ha de
+# verificar sol. Fins al 2026-10-06 eren una taula escrita a mà,
+# INCOMPLETE_BY_DESIGN, amb un sol bloc (`s3_4_2.s`), que ja s'havia hagut
+# d'actualitzar un cop perquè la raó citava una àncora retirada, i que no
+# tenia `#exr-depuracio`. Ara es dedueixen del contingut (TODO.md, retirada
+# del 2026-10-06), per dos camins:
+#
+#   - per OMISSIÓ: el bloc salta o crida una etiqueta que no defineix ni ell ni
+#     els fitxers amb què s'assembla (JOINT_COMPILATION). És el codi que
+#     l'alumne ha d'enganxar: `s3_4_2.s` crida `update`, de la solució de
+#     `s3_4_1.s`;
+#   - per INCORRECCIÓ DELIBERADA: el bloc és a l'enunciat (`#exr-`) i la
+#     solució (`#sol-`) del mateix laboratori torna a donar el mateix fitxer. La
+#     versió de l'enunciat és la que l'alumne ha de corregir o completar, i
+#     executar-la no verifica res: `s3_5_1.s` de `#exr-depuracio`, amb tres
+#     errors a posta, acabava amb una excepció que l'informe donava com a
+#     fallada.
+#
+# NOMÉS afecta la classificació dinàmica: les comprovacions estàtiques es
+# deriven únicament del contingut del bloc.
+CONTROL_TARGET_RE = re.compile(
+    r'^\s*(?:jal|j|b|call|tail|beqz|bnez|bltz|bgez|blez|bgtz|beq|bne|blt|bge|'
+    r'bltu|bgeu|bgt|ble|bgtu|bleu)\s+(?:[\w]+\s*,\s*)*([A-Za-z_][\w]*)\s*$',
+    re.M)
+REGISTRES = ({"zero", "ra", "sp", "gp", "tp", "fp"}
+             | {f"x{i}" for i in range(32)}
+             | {f"t{i}" for i in range(7)} | {f"s{i}" for i in range(12)}
+             | {f"a{i}" for i in range(8)})
 
 
 class Block:
-    def __init__(self, lab, filename, order, body, line):
+    def __init__(self, lab, filename, order, body, line, div=None):
         # `filename` és None quan el bloc ```{.s} no porta filename="..."
         # (p. ex. L3.qmd:490). `real_filename` el conserva per a la lògica
         # que en depèn (taules cablejades, filtres); `filename` esdevé un
@@ -95,6 +113,9 @@ class Block:
         self.order = order
         self.body = body
         self.line = line
+        # (tipus, nom) del div que conté el bloc: ("exr", "depuracio"),
+        # ("sol", "moda")... o None si és fora de cap enunciat o solució.
+        self.div = div
         if filename is None:
             self.filename = f"{lab}_{line}.s"
             self.label = f"{lab}:{line}"
@@ -154,14 +175,37 @@ class Block:
         return (self.lab, self.real_filename, self.order) in SUPERSEDED
 
     @property
-    def incomplete_reason(self):
-        return INCOMPLETE_BY_DESIGN.get((self.lab, self.real_filename, self.order))
+    def labels(self):
+        return set(LABEL_RE.findall(self.body))
+
+    @property
+    def control_targets(self):
+        """Etiquetes on el bloc salta o crida (sense els comentaris)."""
+        codi = "\n".join(strip_comment(l) for l in self.body.splitlines())
+        return {t for t in CONTROL_TARGET_RE.findall(codi) if t not in REGISTRES}
+
+
+def no_autonom(block, blocks, labels_extra=frozenset()):
+    """Motiu pel qual un bloc complet no és autònom, deduït del contingut, o
+    None. `labels_extra`: les etiquetes dels fitxers amb què s'assembla."""
+    falten = sorted(block.control_targets - block.labels - set(labels_extra))
+    if falten:
+        noms = ", ".join(f"`{f}`" for f in falten)
+        return (f"NO AUTÒNOM (per omissió: salta a {noms}, que no defineix "
+                f"el bloc)")
+    if block.div and block.div[0] == "exr" and block.real_filename:
+        sol = [b for b in blocks if b.lab == block.lab and b.div
+               and b.div[0] == "sol" and b.real_filename == block.real_filename]
+        if sol:
+            return (f"NO AUTÒNOM (versió de l'enunciat; la solució la corregeix "
+                    f"o la completa, línia {sol[0].line})")
+    return None
 
 
 # ---------------------------------------------------------------------------
 # Comprovacions ESTÀTIQUES (text, no depenen d'assemblar ni executar).
 # S'apliquen a TOTS els blocs .s, inclosos els que RARS no pot processar sol
-# (incomplets per disseny, sense programa principal, substituïts).
+# (no autònoms, sense programa principal, substituïts).
 # ---------------------------------------------------------------------------
 
 LABEL_RE = re.compile(r'^([A-Za-z_.][\w.]*)\s*:', re.M)
@@ -274,11 +318,39 @@ def static_checks(block):
     return findings
 
 
+DIV_OPEN_RE = re.compile(r'^:{3,}\s*\{#(exr|sol)-([\w-]+)')
+DIV_ANY_OPEN_RE = re.compile(r'^:{3,}\s*\S')
+DIV_CLOSE_RE = re.compile(r'^:{3,}\s*$')
+
+
+def divs_per_linia(text):
+    """Per a cada línia (1-indexada), el div #exr-/#sol- més intern que la
+    conté, o None. Segueix la imbricació dels divs (els de Pandoc es tanquen per
+    ordre, no pel nombre de dos punts) i salta els blocs de codi."""
+    resultat = [None]
+    pila = []
+    dins_codi = False
+    for linia in text.split("\n"):
+        if linia.startswith("```"):
+            dins_codi = not dins_codi
+        elif not dins_codi:
+            m = DIV_OPEN_RE.match(linia)
+            if m:
+                pila.append((m.group(1), m.group(2)))
+            elif DIV_ANY_OPEN_RE.match(linia) and not DIV_CLOSE_RE.match(linia):
+                pila.append(None)
+            elif DIV_CLOSE_RE.match(linia) and pila:
+                pila.pop()
+        resultat.append(next((d for d in reversed(pila) if d), None))
+    return resultat
+
+
 def extract_blocks():
     blocks = []
     for path in sorted(LAB_DIR.glob("L*.qmd")):
         lab = path.stem
         text = path.read_text(encoding="utf-8")
+        divs = divs_per_linia(text)
         counts = {}
         for m in BLOCK_RE.finditer(text):
             attrs, body = m.group(1), m.group(2)
@@ -287,7 +359,7 @@ def extract_blocks():
             counts[filename] = counts.get(filename, 0) + 1
             order = counts[filename]
             line = text[:m.start()].count("\n") + 1
-            blocks.append(Block(lab, filename, order, body, line))
+            blocks.append(Block(lab, filename, order, body, line, divs[line]))
     return blocks
 
 
@@ -398,16 +470,19 @@ def main():
             handled.add(rowkey)
             continue
 
-        reason = b.incomplete_reason
-        if reason:
-            rows.append((b.lab, b.label, b.order, b.line, "—", "INCOMPLET PER DISSENY", reason, estatic))
-            handled.add(rowkey)
-            continue
-
         # Compilació conjunta?
         joint = JOINT_COMPILATION.get((b.lab, b.key))
         if joint:
             group_blocks = [by_key[(b.lab, k)] for k in joint if (b.lab, k) in by_key]
+            labels_grup = set().union(*(gb.labels for gb in group_blocks))
+            motius = [no_autonom(gb, blocks, labels_grup) for gb in group_blocks]
+            if any(motius):
+                for gb in group_blocks:
+                    handled.add((gb.lab, gb.key))
+                label = " + ".join(g.label for g in group_blocks)
+                rows.append((b.lab, label, "-", "/".join(str(g.line) for g in group_blocks),
+                             "—", next(m for m in motius if m), "", estatic))
+                continue
             for gb in group_blocks:
                 handled.add((gb.lab, gb.key))
             estatics = [estatic] + [static_summary(gb) for gb in group_blocks if gb is not b]
@@ -433,6 +508,12 @@ def main():
                      "s'enllaça amb el programa principal)"
                      if b.has_text_segment else
                      "FRAGMENT (sense .text, no verificable sol)")
+            rows.append((b.lab, b.label, b.order, b.line, "—", motiu, "", estatic))
+            handled.add(rowkey)
+            continue
+
+        motiu = no_autonom(b, blocks)
+        if motiu:
             rows.append((b.lab, b.label, b.order, b.line, "—", motiu, "", estatic))
             handled.add(rowkey)
             continue

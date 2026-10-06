@@ -212,7 +212,7 @@ Verifiqueu les respostes amb el *Data Cache Simulator* de RARS.
 
 **Apartat 2.**
 
-El vector té 100 elements. Cada bloc de MC conté 4 elements: la primera referència a cada grup de 4 és una fallada (*cold-start*) i les tres restants són encerts. Hi ha $\lceil 100 / 4 \rceil = 25$ blocs de MP accedits, cadascun amb 1 fallada i 3 encerts.
+El vector té 100 elements. Cada bloc de MC conté 4 elements: la primera referència a cada grup de 4 és una fallada d'arrencada en fred (*cold-start*) i les tres restants són encerts. Hi ha $\lceil 100 / 4 \rceil = 25$ blocs de MP accedits, cadascun amb 1 fallada i 3 encerts.
 
 $$\text{taxa d'encerts} = \frac{75}{100} = 0{,}75$$
 :::
@@ -262,7 +262,7 @@ Modifiqueu el programa `suma_vector.s` per invertir l'ordre del recorregut i ver
 ::: {#sol-recorregut-invers}
 La taxa d'encerts és **la mateixa**: $0{,}75$.
 
-El patró de fallades no depèn de la direcció del recorregut, sinó de la relació entre la mida del bloc i l'*stride* d'accés (@sec-opt-acces-sequencial). En ambdós casos, cada bloc de MC conté 4 elements consecutius del vector: la primera referència a cada bloc és una fallada (*cold-start*) i les tres restants són encerts, independentment de si el recorregut és creixent o decreixent.
+El patró de fallades no depèn de la direcció del recorregut, sinó de la relació entre la mida del bloc i l'*stride* d'accés (@sec-opt-acces-sequencial). En ambdós casos, cada bloc de MC conté 4 elements consecutius del vector: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres restants són encerts, independentment de si el recorregut és creixent o decreixent.
 :::
 
 ---
@@ -476,7 +476,7 @@ A cada iteració `i`, el bucle interior fa $2 \times (4 - i)$ lectures (dues per
 
 **Apartat 3. Taxa d'encerts global.**
 
-Les úniques fallades són les dues de *cold-start* de la iteració `i = 0` (primer accés al bloc 0, amb `vec[1]`, i al bloc 1, amb `vec[4]`); a partir d'aleshores tots dos blocs romanen a la cau (vector de 2 blocs, cap conflicte amb 32 línies). Per tant:
+Les úniques fallades són les dues d'arrencada en fred de la iteració `i = 0` (primer accés al bloc 0, amb `vec[1]`, i al bloc 1, amb `vec[4]`); a partir d'aleshores tots dos blocs romanen a la cau (vector de 2 blocs, cap conflicte amb 32 línies). Per tant:
 
 $$\text{taxa d'encerts} = \frac{34}{36} \approx 0{,}944$$
 
@@ -514,7 +514,7 @@ En política d'escriptura retardada amb assignació, les escriptures es fan úni
 
 Considereu ara un vector de **64 elements** (en lloc de 5), mantenint la mateixa geometria de memòria cau (correspondència directa, 32 blocs de 4 paraules) i la política d'escriptura immediata amb assignació.
 
-1. Quantes fallades es produirien en l'execució del programa d'ordenació adaptat a 64 elements? Justifiqueu la resposta indicant si es produeixen fallades de *cold-start*, de capacitat o de conflicte (@sec-tipologia-fallades, @cau-tres-c).
+1. Quantes fallades es produirien en l'execució del programa d'ordenació adaptat a 64 elements? Justifiqueu la resposta indicant si es produeixen fallades d'arrencada en fred, de capacitat o de conflicte (@sec-tipologia-fallades, @cau-tres-c).
 
 2. Sense que augmenti el nombre de fallades, fins a quin nombre mínim de blocs es podria reduir la memòria cau? Raoneu la resposta.
 
@@ -528,13 +528,13 @@ Modifiqueu `ordenacio.s` per adaptar-lo a un vector de 64 elements: poseu `.eqv 
 
 El vector de 64 enters ocupa $64 \times 4 = 256$ bytes, és a dir 16 blocs de 16 bytes. Amb 32 línies disponibles, tots els blocs del vector caben simultàniament a la cau: **no hi ha fallades de conflicte ni de capacitat**.
 
-Les úniques fallades són de ***cold-start***: la primera referència a cada un dels 16 blocs. En el recorregut del bucle interior, cada bloc és accedit per primera vegada en ordre creixent d'índex, i a partir d'aquell moment roman a la cau durant tota l'execució (no és expulsat perquè no hi ha conflictes). El nombre total de fallades és, doncs:
+Les úniques fallades són **d'arrencada en fred**: la primera referència a cada un dels 16 blocs. En el recorregut del bucle interior, cada bloc és accedit per primera vegada en ordre creixent d'índex, i a partir d'aquell moment roman a la cau durant tota l'execució (no és expulsat perquè no hi ha conflictes). El nombre total de fallades és, doncs:
 
 $$n_{fallades} = 16$$
 
 **Apartat 2. Nombre mínim de blocs.**
 
-Perquè no augmenti el nombre de fallades (que ha de continuar sent només les 16 de *cold-start*), cal que els 16 blocs del vector puguin conviure a la cau sense expulsar-se. Al llarg de l'execució, qualsevol bloc expulsat es tornaria a referenciar en una iteració posterior del bucle exterior i provocaria una fallada addicional; per tant, els 16 blocs han de residir simultàniament a la cau. Amb una cau de correspondència directa de **16 blocs**, els 16 blocs consecutius del vector (0–15) es mapen a 16 línies diferents (bloc $b$ → línia $b \bmod 16$), de manera que no hi ha conflictes. El mínim és, doncs, **16 blocs**.
+Perquè no augmenti el nombre de fallades (que ha de continuar sent només les 16 d'arrencada en fred), cal que els 16 blocs del vector puguin conviure a la cau sense expulsar-se. Al llarg de l'execució, qualsevol bloc expulsat es tornaria a referenciar en una iteració posterior del bucle exterior i provocaria una fallada addicional; per tant, els 16 blocs han de residir simultàniament a la cau. Amb una cau de correspondència directa de **16 blocs**, els 16 blocs consecutius del vector (0–15) es mapen a 16 línies diferents (bloc $b$ → línia $b \bmod 16$), de manera que no hi ha conflictes. El mínim és, doncs, **16 blocs**.
 :::
 
 ## Accés a múltiples estructures {#sec-l6-multiple-estructures}
@@ -655,7 +655,7 @@ Verifiqueu el resultat amb el *Data Cache Simulator*.
 ::: {#sol-padding}
 Amb 16 blocs i blocs de 4 paraules (16 bytes), la cau cobreix $16 \times 16 = 256$ bytes. Els conflictes es produeixen perquè `A`, `B` i `C` estan separats exactament 512 bytes = 32 blocs, múltiple del nombre de línies (16), de manera que es mapen a les mateixes línies.
 
-Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapen a línies **diferents**: en cada iteració del bucle, els blocs de `A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada (*cold-start*): 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
+Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapen a línies **diferents**: en cada iteració del bucle, els blocs de `A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada d'arrencada en fred: 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
 
 $$\text{taxa d'encerts} = \frac{384 - 96}{384} = \frac{288}{384} = 0{,}75$$
 
@@ -709,7 +709,7 @@ Executeu `s6_4_2.s` amb el *Data Cache Simulator* (16 blocs, 4 paraules/bloc, co
 
 Considereu ara una memòria cau **completament associativa** (@sec-completament-associativa) amb **16 blocs de 4 paraules** i política LRU (@sec-politica-reemplacament).
 
-Calculeu la taxa d'encerts en l'execució del programa `suma_vectors.s`. Raoneu la resposta indicant si es produeixen fallades de conflicte, de capacitat o únicament de *cold-start*.
+Calculeu la taxa d'encerts en l'execució del programa `suma_vectors.s`. Raoneu la resposta indicant si es produeixen fallades de conflicte, de capacitat o únicament d'arrencada en fred.
 
 Verifiqueu la resposta amb el *Data Cache Simulator* configurat en mode completament associatiu.
 :::
@@ -719,7 +719,7 @@ Verifiqueu la resposta amb el *Data Cache Simulator* configurat en mode completa
 ::: {#sol-completament-associativa}
 En una cau completament associativa, qualsevol bloc de MP pot anar a qualsevol línia: no hi ha mapat fix i, per tant, **no hi ha fallades de conflicte**. Podria semblar que hi haurà fallades de capacitat, ja que els tres vectors sumen $3 \times 32 = 96$ blocs mentre que la cau només en té 16 ($96 > 16$); però el que determina les fallades de capacitat no és l'ocupació total del programa, sinó el *working set* instantani (els blocs realment vius en un moment donat).
 
-A cada iteració del bucle s'accedeix a un bloc de `A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment són els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada de *cold-start* i les tres referències restants al mateix bloc (els altres 3 elements) són encerts.
+A cada iteració del bucle s'accedeix a un bloc de `A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment són els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres referències restants al mateix bloc (els altres 3 elements) són encerts.
 
 El comportament és idèntic al d'accés seqüencial sense conflictes: 32 fallades per vector × 3 vectors = 96 fallades, 384 − 96 = 288 encerts.
 
@@ -751,7 +751,7 @@ Amb grau 1 (correspondència directa), els 3 blocs que competeixen per cada conj
 
 Amb grau **2**, cada conjunt té 2 vies. A cada iteració hi ha 3 blocs actius que competeixen pel mateix conjunt (un de `A`, un de `B`, un de `C`): 3 > 2, de manera que amb LRU un dels tres blocs és expulsat a cada accés. Encara hi haurà conflictes i la taxa d'encerts continuarà sent 0.
 
-Amb grau **3**, cada conjunt té 3 vies: els 3 blocs actius ($A[i]$, $B[i]$, $C[i]$) caben simultàniament al mateix conjunt sense expulsar-se. La primera referència a cada bloc és una fallada de *cold-start* i les tres referències restants al bloc són encerts. La taxa d'encerts és 0,75 > 0.
+Amb grau **3**, cada conjunt té 3 vies: els 3 blocs actius ($A[i]$, $B[i]$, $C[i]$) caben simultàniament al mateix conjunt sense expulsar-se. La primera referència a cada bloc és una fallada d'arrencada en fred i les tres referències restants al bloc són encerts. La taxa d'encerts és 0,75 > 0.
 
 El **grau mínim** és, per tant, **3**.
 
@@ -769,36 +769,36 @@ En aquest exercici classificareu les fallades del programa `suma_vectors.s` sego
 
 Activeu la casella *Runtime Log* (*Enabled*) del Data Cache Simulator: per a cada accés, el registre indica l'adreça, l'etiqueta i si és un encert o una fallada. Tingueu present que **RARS no etiqueta el tipus de fallada**; la classificació és un pas de raonament vostre, a partir del mètode següent:
 
-- Una fallada és de ***cold-start*** si és la **primera** referència a aquell bloc (la primera vegada que apareix la seva etiqueta al registre).
-- Les fallades que no són de *cold-start* són de **conflicte** o de **capacitat**. Per distingir-les, es compara amb una execució en què no hi pugui haver conflictes: una cau **completament associativa** de la mateixa capacitat. Les fallades que desapareixen en passar a completament associativa eren de **conflicte**; les que persisteixen (més enllà de les de *cold-start*) són de **capacitat**.
+- Una fallada és **d'arrencada en fred** si és la **primera** referència a aquell bloc (la primera vegada que apareix la seva etiqueta al registre).
+- Les fallades que no són d'arrencada en fred són de **conflicte** o de **capacitat**. Per distingir-les, es compara amb una execució en què no hi pugui haver conflictes: una cau **completament associativa** de la mateixa capacitat. Les fallades que desapareixen en passar a completament associativa eren de **conflicte**; les que persisteixen (més enllà de les d'arrencada en fred) són de **capacitat**.
 
-1. Executeu `suma_vectors.s` amb la cau de **correspondència directa** de 16 blocs de 4 paraules (la de @exr-suma-vectors-cd). Amb el Runtime Log, determineu quantes de les fallades són de *cold-start*. (Pista: quants blocs diferents s'accedeixen en total?)
+1. Executeu `suma_vectors.s` amb la cau de **correspondència directa** de 16 blocs de 4 paraules (la de @exr-suma-vectors-cd). Amb el Runtime Log, determineu quantes de les fallades són d'arrencada en fred. (Pista: quants blocs diferents s'accedeixen en total?)
 
 2. Executeu ara el mateix programa amb la cau **completament associativa** de 16 blocs (la de @exr-completament-associativa). Quantes fallades queden? De quin tipus són?
 
-3. A partir dels dos resultats, feu el desglossament complet de les fallades de la cau de correspondència directa en *cold-start*, conflicte i capacitat.
+3. A partir dels dos resultats, feu el desglossament complet de les fallades de la cau de correspondència directa en fallades d'arrencada en fred, de conflicte i de capacitat.
 :::
 
 ---
 
 ::: {#sol-classificacio-fallades}
-**Apartat 1. Fallades de la cau de correspondència directa i *cold-start*.**
+**Apartat 1. Fallades de la cau de correspondència directa i d'arrencada en fred.**
 
-Amb la cau de correspondència directa (@sol-suma-vectors-cd), els 384 accessos són fallades. Ara bé, de *cold-start* només ho són les primeres referències a cada bloc diferent. Cada vector ocupa 32 blocs, i són tres vectors sense solapament, de manera que s'accedeixen $3 \times 32 = 96$ blocs diferents:
+Amb la cau de correspondència directa (@sol-suma-vectors-cd), els 384 accessos són fallades. Ara bé, d'arrencada en fred només ho són les primeres referències a cada bloc diferent. Cada vector ocupa 32 blocs, i són tres vectors sense solapament, de manera que s'accedeixen $3 \times 32 = 96$ blocs diferents:
 
-$$n_{\text{cold-start}} = 96$$
+$$n_{\text{obligatòries}} = 96$$
 
 **Apartat 2. Fallades de la cau completament associativa.**
 
-Amb la cau completament associativa (@sol-completament-associativa), la taxa d'encerts és 0,75: hi ha **96 fallades**. Com que en una cau completament associativa no hi pot haver fallades de conflicte, i el *working set* instantani (3 blocs) és molt inferior a la capacitat (16 blocs), tampoc no n'hi ha de capacitat: **les 96 fallades són totes de *cold-start***.
+Amb la cau completament associativa (@sol-completament-associativa), la taxa d'encerts és 0,75: hi ha **96 fallades**. Com que en una cau completament associativa no hi pot haver fallades de conflicte, i el *working set* instantani (3 blocs) és molt inferior a la capacitat (16 blocs), tampoc no n'hi ha de capacitat: **les 96 fallades són totes d'arrencada en fred**.
 
 **Apartat 3. Desglossament de les fallades de la cau de correspondència directa.**
 
-Les 96 fallades de la cau completament associativa són el nombre irreductible de *cold-start*. Les fallades addicionals de la cau de correspondència directa (les que desapareixen en passar a completament associativa) són de **conflicte**:
+Les 96 fallades de la cau completament associativa són el nombre irreductible de fallades d'arrencada en fred. Les fallades addicionals de la cau de correspondència directa (les que desapareixen en passar a completament associativa) són de **conflicte**:
 
 | Tipus de fallada | Correspondència directa | Completament associativa |
 | :--- | :---: | :---: |
-| *cold-start* | 96 | 96 |
+| Obligatòria | 96 | 96 |
 | Conflicte | 288 | 0 |
 | Capacitat | 0 | 0 |
 | **Total** | **384** | **96** |

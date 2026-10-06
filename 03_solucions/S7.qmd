@@ -344,30 +344,30 @@ Blocs accedits: 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3. Cadascun ocupa una línia di
 
 | Accés | Bloc | Línia | Resultat | Tipus |
 | :---: | :---: | :---: | :---: | :--- |
-| 0 | 0 | 0 | Fallada | *Cold-start* |
-| 4 | 1 | 1 | Fallada | *Cold-start* |
-| 8 | 2 | 2 | Fallada | *Cold-start* |
-| 12 | 3 | 3 | Fallada | *Cold-start* |
-| 16 | 4 | 4 | Fallada | *Cold-start* |
-| 20 | 5 | 5 | Fallada | *Cold-start* |
-| 24 | 6 | 6 | Fallada | *Cold-start* |
-| 28 | 7 | 7 | Fallada | *Cold-start* |
+| 0 | 0 | 0 | Fallada | Obligatòria |
+| 4 | 1 | 1 | Fallada | Obligatòria |
+| 8 | 2 | 2 | Fallada | Obligatòria |
+| 12 | 3 | 3 | Fallada | Obligatòria |
+| 16 | 4 | 4 | Fallada | Obligatòria |
+| 20 | 5 | 5 | Fallada | Obligatòria |
+| 24 | 6 | 6 | Fallada | Obligatòria |
+| 28 | 7 | 7 | Fallada | Obligatòria |
 | 0 | 0 | 0 | **Encert** | — |
 | 4 | 1 | 1 | **Encert** | — |
 | 8 | 2 | 2 | **Encert** | — |
 | 12 | 3 | 3 | **Encert** | — |
 : {tbl-colwidths="[18,15,15,22,30]" .striped}
 
-Total: **8 fallades** (totes *cold-start*), **4 encerts**. Cap fallada de conflicte (cada bloc té línia pròpia) ni de capacitat (el *working set* cap a la MC).
+Total: **8 fallades** (totes obligatòries), **4 encerts**. Cap fallada de conflicte (cada bloc té línia pròpia) ni de capacitat (el *working set* cap a la MC).
 
 **Seqüència B**: 0, 4, 8, 12, 0, 4, 8, 12, 0, 4, 8, 12
 
 Blocs: 0, 1, 2, 3 (repetits 3 vegades). Quatre blocs, cadascun amb línia diferent: el *working set* (4 blocs) és la meitat de la capacitat.
 
-- Primer recorregut (0, 4, 8, 12): 4 fallades *cold-start*.
+- Primer recorregut (0, 4, 8, 12): 4 fallades obligatòries.
 - Segon i tercer recorreguts: tot encerts (els 4 blocs continuen a la MC).
 
-Total: **4 fallades** (totes *cold-start*), **8 encerts**.
+Total: **4 fallades** (totes obligatòries), **8 encerts**.
 
 **Seqüència C**: 0, 32, 0, 32, 0, 32, 0, 32
 
@@ -375,8 +375,8 @@ Blocs: 0, 8, 0, 8, ... El bloc 0 i el bloc 8 es mapen tots dos a la línia 0 ($0
 
 | Accés | Bloc | Línia | Resultat | Tipus |
 | :---: | :---: | :---: | :---: | :--- |
-| 0 | 0 | 0 | Fallada | *Cold-start* |
-| 32 | 8 | 0 | Fallada | *Cold-start* (expulsa bloc 0) |
+| 0 | 0 | 0 | Fallada | Obligatòria |
+| 32 | 8 | 0 | Fallada | Obligatòria (expulsa bloc 0) |
 | 0 | 0 | 0 | Fallada | Conflicte |
 | 32 | 8 | 0 | Fallada | Conflicte |
 | 0 | 0 | 0 | Fallada | Conflicte |
@@ -385,15 +385,15 @@ Blocs: 0, 8, 0, 8, ... El bloc 0 i el bloc 8 es mapen tots dos a la línia 0 ($0
 | 32 | 8 | 0 | Fallada | Conflicte |
 : {tbl-colwidths="[18,15,15,22,30]" .striped}
 
-Total: **8 fallades** (2 *cold-start*, 6 de conflicte), **0 encerts**. El *working set* és de només 2 blocs (molt inferior a la capacitat de 8), però tots dos competeixen per la mateixa línia. La MC té 7 línies buides que no s'aprofiten.
+Total: **8 fallades** (2 obligatòries, 6 de conflicte), **0 encerts**. El *working set* és de només 2 blocs (molt inferior a la capacitat de 8), però tots dos competeixen per la mateixa línia. La MC té 7 línies buides que no s'aprofiten.
 
 **b)** Per eliminar les fallades de conflicte de la seqüència C, cal que els blocs 0 i 8 puguin coexistir a la MC. La solució és **augmentar l'associativitat** a 2 o més vies: amb 2 vies, el conjunt 0 tindria dues posicions i ambdós blocs hi cabrien simultàniament.
 
 **c)** Amb una MC associativa de 2 vies de la mateixa capacitat total (8 blocs → 4 conjunts, 2 vies cadascun):
 
-- **Seqüència C**: blocs 0 i 8 es mapen al conjunt $0 \bmod 4 = 0$ i $8 \bmod 4 = 0$. Amb 2 vies, ambdós hi caben. Després de les 2 fallades *cold-start*, els 6 accessos restants serien encerts. **Sí, millora** (de 8 a 2 fallades).
+- **Seqüència C**: blocs 0 i 8 es mapen al conjunt $0 \bmod 4 = 0$ i $8 \bmod 4 = 0$. Amb 2 vies, ambdós hi caben. Després de les 2 fallades d'arrencada en fred (*cold-start*), els 6 accessos restants serien encerts. **Sí, millora** (de 8 a 2 fallades).
 
-- **Seqüència B**: blocs 0, 1, 2, 3 es mapen als conjunts 0, 1, 2, 3. Cada bloc ocupa un conjunt diferent: no hi ha conflictes ni amb correspondència directa. **No millora** (les 4 fallades *cold-start* són igualment inevitables).
+- **Seqüència B**: blocs 0, 1, 2, 3 es mapen als conjunts 0, 1, 2, 3. Cada bloc ocupa un conjunt diferent: no hi ha conflictes ni amb correspondència directa. **No millora** (les 4 fallades d'arrencada en fred són igualment inevitables).
 :::
 
 ::: {#sol-t7-fallades-programa .callout-tip}
@@ -405,7 +405,7 @@ Total: **8 fallades** (2 *cold-start*, 6 de conflicte), **0 encerts**. El *worki
 
 Paràmetres: bloc = 32 bytes = 8 enters per bloc. A i B ocupen cadascun $256/8 = 32$ blocs.
 
-**a)** En el primer recorregut, cada bloc s'accedeix per primera vegada: **32 fallades *cold-start* per a A** i **32 per a B** (una per bloc, quan s'accedeix a $A[0], A[8], A[16], \ldots, A[248]$ i anàlogament per a $B$).
+**a)** En el primer recorregut, cada bloc s'accedeix per primera vegada: **32 fallades d'arrencada en fred per a A** i **32 per a B** (una per bloc, quan s'accedeix a $A[0], A[8], A[16], \ldots, A[248]$ i anàlogament per a $B$).
 
 **b)** Calculem el mapatge de cada vector:
 
@@ -416,13 +416,13 @@ El bloc $k$ d'A i el bloc $k$ de B es mapen a la **mateixa línia** ($k \bmod 16
 
 En el bucle, els accessos s'intercalen: $A[i], B[i], A[i+1], B[i+1], \ldots$ Dins de cada grup de 8 iteracions (que correspon a un bloc), l'accés a $A[i]$ carrega el bloc d'A a la línia $k$, i l'accés a $B[i]$ el reemplaça pel bloc de B; i viceversa.
 
-- $A[0]$ (bloc 0, línia 0): **fallada** (*cold-start*), carrega bloc 0.
-- $B[0]$ (bloc 32, línia 0): **fallada** (*cold-start*), expulsa bloc 0.
+- $A[0]$ (bloc 0, línia 0): **fallada** (obligatòria), carrega bloc 0.
+- $B[0]$ (bloc 32, línia 0): **fallada** (obligatòria), expulsa bloc 0.
 - $A[1]$ (bloc 0, línia 0): **fallada** (conflicte), expulsa bloc 32.
 - $B[1]$ (bloc 32, línia 0): **fallada** (conflicte), expulsa bloc 0.
 - $\ldots$ i així fins a $A[7], B[7]$.
 
-Dins de cada grup de 8 iteracions: 2 fallades *cold-start* (primer accés a cada bloc) + 14 fallades de conflicte. El patró es repeteix per a cada bloc, amb 32 grups. En total: **tots els 512 accessos a dades fallen**, cosa que anul·la completament l'efecte de la MC.
+Dins de cada grup de 8 iteracions: 2 fallades obligatòries (primer accés a cada bloc) + 14 fallades de conflicte. El patró es repeteix per a cada bloc, amb 32 grups. En total: **tots els 512 accessos a dades fallen**, cosa que anul·la completament l'efecte de la MC.
 
 **Sí, es produeixen fallades de conflicte massives**, causades per l'alineament dels dos vectors respecte a la MC.
 
