@@ -39,12 +39,12 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: quarto install tool tinytex
         
-      # Les llibreries d'imatges només s'instal·len si es llança manualment
-      - name: Instal·la llibreries per a imatges SVG
+      # Les llibreries d'imatges i la font monoespaiada del PDF només s'instal·len si es llança manualment
+      - name: Instal·la llibreries per a imatges SVG i fonts del PDF
         if: github.event_name == 'workflow_dispatch'
         run: |
           sudo apt-get update
-          sudo apt-get install -y librsvg2-bin
+          sudo apt-get install -y librsvg2-bin fonts-dejavu-core   # DejaVu Sans Mono: la monofont del PDF (_quarto.yml)
 
       - name: Genera les taules fusionades (auto_riscv/)
         run: python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"

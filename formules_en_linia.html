@@ -1,0 +1,41 @@
+<!-- Fórmules en línia (styles.css): només les que no caben a la columna reben desplaçament
+     horitzontal propi, amb la classe .formula-llarga. Posar-lo a totes les alçava per sobre de la
+     línia de text (un inline-block amb overflow es recolza en la vora inferior). Es torna a
+     comprovar quan MathJax acaba, en canviar la mida de la finestra i en obrir un callout plegat,
+     perquè una fórmula amagada no té amplada. -->
+<script>
+(function () {
+  // Amplada de contingut del bloc que conté la fórmula (el límit del max-width: 100%).
+  function disponible(c) {
+    var p = c.parentElement;
+    while (p && getComputedStyle(p).display.indexOf('inline') === 0) p = p.parentElement;
+    if (!p) return Infinity;
+    var e = getComputedStyle(p);
+    return p.clientWidth - parseFloat(e.paddingLeft) - parseFloat(e.paddingRight);
+  }
+  // Llarga: la caixa ha topat amb l'amplada del bloc i el contingut encara en sobresurt.
+  // Només amb la segona condició no n'hi hauria prou: el contingut de MathJax sobresurt
+  // uns quants píxels de la caixa de moltes fórmules curtes (subíndexs, cursiva).
+  function marca() {
+    document.querySelectorAll('mjx-container:not([display="true"])').forEach(function (c) {
+      var llarga = c.scrollWidth > c.clientWidth + 1
+        && c.getBoundingClientRect().width >= disponible(c) - 1;
+      c.classList.toggle('formula-llarga', llarga);
+    });
+  }
+  function espera() {
+    if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+      MathJax.startup.promise.then(marca);
+    } else {
+      setTimeout(espera, 100);
+    }
+  }
+  var temps;
+  window.addEventListener('resize', function () {
+    clearTimeout(temps);
+    temps = setTimeout(marca, 150);
+  });
+  document.addEventListener('shown.bs.collapse', marca);
+  espera();
+})();
+</script>

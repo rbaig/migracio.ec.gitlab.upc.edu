@@ -9,7 +9,7 @@
 \ofoot{\thepage}
 \AtBeginDocument{
   \subtitle{Departament d'Arquitectura de Computadors \linebreak \linebreak Grau en Enginyeria Informàtica \linebreak Facultat d'informàtica de Barcelona \linebreak Universitat politècnica de Catalunya}
-  \date{\today}
+  \date{\today\ifdefined\eccommit\ (\eccommit)\fi} % \eccommit: el commit renderitzat, de 25_scripts/versio.lua
   \counterwithin{quartocalloutimpno}{chapter} % Comptadors de les callouts per capítol (RISC-V 4.1, EC 2.3, etc.) en lloc de global (RISC-V 1, RISC-V 2, ..., EC 1, EC 2, etc.)
   \counterwithin{quartocalloutnteno}{chapter}
   \counterwithin{quartocalloutwrnno}{chapter}
@@ -49,3 +49,35 @@
 \usepackage{newunicodechar}
 \newcommand{\exercisename}{Exercici}
 \newunicodechar{⁂}{\exercisename}
+
+% ✓ al text i a les taules (TODO.md, «PDF: el ✓ del text no surt»). La font del cos del PDF
+% no té el glif, i LuaLaTeX el deixava en blanc sense cap error ni avís: la Taula 7.3 sortia
+% amb les cel·les buides. El símbol matemàtic d'amssymb té la mateixa forma.
+\newunicodechar{✓}{\ensuremath{\checkmark}}
+
+% Imatges dins dels callouts, centrades (TODO.md). Una imatge sense peu és un paràgraf que
+% LaTeX alinea a l'esquerra; fora dels callouts totes les figures porten peu i ja surten
+% centrades. El ganxo marca l'interior dels tcolorbox (els callouts de Quarto), i només s'hi
+% centra la imatge que comença un paràgraf (mode vertical): una imatge dins d'una línia de
+% text no es toca. Pandoc escriu les imatges de dues maneres, i totes dues hi passen:
+% \pandocbounded{\includegraphics…} sense amplada, i \includegraphics[width=…] amb amplada.
+\makeatletter
+\AddToHook{env/tcolorbox/begin}{\let\ec@dinscallout\relax}
+\newcommand\ec@centra[1]{%
+  \ifvmode
+    \ifdefined\ec@dinscallout
+      {\centering#1\par}%
+    \else
+      #1%
+    \fi
+  \else
+    #1%
+  \fi}
+\AtBeginDocument{%
+  \NewCommandCopy\ec@pandocbounded\pandocbounded
+  \RenewDocumentCommand\pandocbounded{m}{\ec@centra{\ec@pandocbounded{#1}}}%
+  \NewCommandCopy\ec@includegraphics\includegraphics
+  \RenewDocumentCommand\includegraphics{s O{} m}{%
+    \ec@centra{\IfBooleanTF{#1}{\ec@includegraphics*[#2]{#3}}{\ec@includegraphics[#2]{#3}}}}%
+}
+\makeatother

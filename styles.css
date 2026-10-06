@@ -23,19 +23,30 @@ mjx-container[display="true"] {
   padding-bottom: 2px;
 }
 
-/* Equacions inline llargues: mateixa estratègia, mantenint el flux inline.
-   MathJax 3 no parteix línies automàticament; sense això, una expressió
-   inline més ampla que el viewport quedaria tallada. La barra de scroll
-   s'amaga (desbordaments de subpíxel la farien aparèixer sota expressions
-   curtes); el desplaçament tàctil o amb roda segueix funcionant. */
+/* Equacions inline llargues. MathJax 3 no parteix línies automàticament, i una
+   expressió en línia més ampla que la columna quedaria tallada: a aquestes, i
+   només a aquestes, se'ls dona desplaçament horitzontal propi. Les marca amb la
+   classe .formula-llarga formules_en_linia.html (_quarto.yml, include-after-body),
+   que compara l'amplada del contingut amb la de la caixa.
+
+   No es pot posar l'overflow a totes: un inline-block amb un overflow que no
+   sigui visible pren com a línia de base la vora inferior del marge (CSS 2.1
+   §10.8.1), no la del text, i la fórmula hi queda recolzada pel peu. Mesurat a
+   A6 (2026-10-06, 40 fórmules): pujaven entre 1 i 6 px per sobre de la línia,
+   4 de mitjana, i feien créixer l'interlineat; sense l'overflow, 0 px.
+
+   La barra de scroll s'amaga (desbordaments de subpíxel la farien aparèixer);
+   el desplaçament tàctil o amb roda segueix funcionant. */
 mjx-container:not([display="true"]) {
   display: inline-block;
   max-width: 100%;
+}
+mjx-container.formula-llarga:not([display="true"]) {
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;             /* Firefox */
 }
-mjx-container:not([display="true"])::-webkit-scrollbar {
+mjx-container.formula-llarga:not([display="true"])::-webkit-scrollbar {
   display: none;                     /* Chrome/Safari */
 }
 

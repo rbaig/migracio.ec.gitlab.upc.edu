@@ -836,6 +836,8 @@ Regla dels `:` addicionals:
     - Taules.
     - Elements de bloc.
 - **Figures SVG** (`.light-content` / `.dark-content`): els blocs de figura **no** porten `style="text-align: center;"`. Les figures amb `{#fig-}` ja centren automàticament a HTML i PDF.
+- **Imatges sense peu dins dels callouts, al PDF**: `preamble.tex` les centra (fins al 2026-10-06 sortien alineades a l'esquerra). Ho fa a les que comencen un paràgraf dins d'un `tcolorbox`, que és com Quarto escriu els callouts; una imatge dins d'una línia de text no es toca, i fora dels callouts no canvia res. Avui totes les imatges sense peu dels callouts són figures de registres més amples que el callout, de manera que la regla no hi té cap efecte visible: és per a la primera que no ho sigui.
+- **Fórmules en línia, a l'HTML**: `inline-block` sense `overflow`. Només les que no caben a la columna reben desplaçament horitzontal propi, amb la classe `.formula-llarga` que hi posa `formules_en_linia.html` (`_quarto.yml`, `include-after-body`). Fins al 2026-10-06 l'`overflow-x: auto` era a totes, i un `inline-block` amb un `overflow` que no sigui `visible` es recolza en la vora inferior (CSS 2.1 §10.8.1): les fórmules pujaven d'1 a 6 px per sobre de la línia de text (mesurat a A6, 40 fórmules) i feien créixer l'interlineat. Ara, a l'escriptori, cap fórmula d'A4, A5, A6 i S6 no és llarga i totes són a 0 px de la línia; en un mòbil de 375 px, en són llargues 4, 14, 2 i 1.
 - **CSS mode fosc** (`custom_dark.scss`, secció `/*-- scss:rules --*/`): el codi inline dins de llegendes, capçaleres i títols de callout porta colors propis:
 
 ```scss
@@ -1345,6 +1347,19 @@ quarto render             # les dues sortides
 ::: {.callout-warning}
 **`make render` (i `quarto render --to html`) neteja `_book` i no hi deixa cap PDF**: el que hi hagués d'un render anterior desapareix. És el comportament per defecte i el que volem al bucle diari, que és prosa i referències. Quan necessiteu el PDF —verificació final abans d'obrir la Merge Request, material per a alumnes, o qualsevol canvi que el toqui— feu `make render-complet`. Si voleu conservar un PDF concret, guardeu-lo fora de `_book/` abans.
 :::
+
+**Peces del render que no són al Makefile** (totes dues sortides passen per `_quarto.yml`, de manera que valen per a `make render`, `make render-complet`, `quarto render` i el CI):
+
+| Peça | Format | Què fa |
+| :--- | :--- | :--- |
+| `25_scripts/figures.lua` | HTML (i `alt` als dos) | Text alternatiu des del `<desc>` de l'SVG i amplada comuna de les figures (§Figures i material gràfic) |
+| `25_scripts/titols_pdf.lua` | PDF | Marcadors amb els títols curts del menú de l'HTML («T1 Introducció», «S1 RARS»), presos dels `text:` de `chapters:`; la pàgina, l'índex i la capçalera conserven el títol llarg |
+| `25_scripts/versio.lua` | HTML i PDF | Hash curt del commit renderitzat, entre parèntesis, després de la data de «Publicat» de la portada i a la portada del PDF, amb `-dirty` si l'arbre té canvis no confirmats |
+| `figures_dinamiques.html` | HTML | Navegador de passos de les figures dinàmiques |
+| `formules_en_linia.html` | HTML | Desplaçament horitzontal només per a les fórmules en línia que no caben (§Presentació visual) |
+| `preamble.tex` | PDF | Capçaleres, colors i comptadors dels callouts, algorismes en rodona, «Problema»/«Exercici», el ✓ (`\newunicodechar`, perquè la font del cos no en té el glif) i les imatges centrades dins dels callouts |
+
+**Font monoespaiada del PDF: DejaVu Sans Mono**, amb `Scale=MatchLowercase` (`_quarto.yml`, `monofont`), des del 2026-10-06. Latin Modern Mono, la de per defecte, no té els glifs de caixa (`─`) ni el ✓ que fan servir alguns blocs de codi; amb DejaVu Sans Mono el registre de LaTeX ja no hi dona cap «Missing character». Escalada a l'altura de les minúscules del text, és més estreta que Latin Modern Mono, i cap bloc de codi ni cap taula no surt del marge (`pdftotext -bbox`). El CI la instal·la amb el paquet `fonts-dejavu-core` (`.github/workflows/publish.yml`), al pas que fa el PDF. La font monoespaiada dels SVG continua sent Liberation Mono (`24_specs/svg.md §12`).
 
 `make clean` elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) sense tocar fitxers font.
 
