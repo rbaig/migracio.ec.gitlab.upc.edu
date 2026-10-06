@@ -64,13 +64,13 @@ on `^` és la XOR bit a bit i `1 << X` desplaça el valor `1` exactament `X` pos
 ::: {#sol-bits-invertir}
 ```{.s filename="s3_1_1.s"}
 .text
-        li   t0, 1
-        sll  t0, t0, s0     # t0 = 1 << X
-        addi t0, t0, -1     # t0 = (1 << X) - 1  (màscara dels X bits de menys pes)
-        xor  s1, s1, t0     # complementa els X bits de menys pes de Y
+        li      t0, 1
+        sll     t0, t0, s0  # t0 = 1 << X
+        addi    t0, t0, -1  # t0 = (1 << X) - 1  (màscara dels X bits de menys pes)
+        xor     s1, s1, t0  # complementa els X bits de menys pes de Y
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -112,52 +112,52 @@ El programa ha de respectar l'avaluació lazy de `&&` i `||` (@cau-lazy-evaluati
 ::: {#sol-classifica-caracter}
 ```{.s filename="s3_2_1.s"}
 .data
-num:    .byte  '7'
-result: .word  0
+num:    .byte   '7'
+result: .word   0
 
 .text
-        la   t1, num
-        lb   t0, 0(t1)          # t0 = num
+        la      t1, num
+        lb      t0, 0(t1)       # t0 = num
 
         # if (num >= 'a' && num <= 'z')
-        li   t2, 'a'
-        blt  t0, t2, comp_maj
-        li   t2, 'z'
-        bgt  t0, t2, comp_maj
-        j    es_alfa
+        li      t2, 'a'
+        blt     t0, t2, comp_maj
+        li      t2, 'z'
+        bgt     t0, t2, comp_maj
+        j       es_alfa
 
 comp_maj:
         # || (num >= 'A' && num <= 'Z')
-        li   t2, 'A'
-        blt  t0, t2, comp_esp
-        li   t2, 'Z'
-        bgt  t0, t2, comp_esp
+        li      t2, 'A'
+        blt     t0, t2, comp_esp
+        li      t2, 'Z'
+        bgt     t0, t2, comp_esp
 
 es_alfa:
-        la   t1, result
-        sw   t0, 0(t1)          # result = num
-        j    fi
+        la      t1, result
+        sw      t0, 0(t1)       # result = num
+        j       fi
 
 comp_esp:
         # else if (num == ' ' || num == '!')
-        li   t2, ' '
-        beq  t0, t2, es_esp     # primer operand || cert → lazy
-        li   t2, '!'
-        bne  t0, t2, es_altre
+        li      t2, ' '
+        beq     t0, t2, es_esp  # primer operand || cert → lazy
+        li      t2, '!'
+        bne     t0, t2, es_altre
 
 es_esp:
-        la   t1, result
-        sw   zero, 0(t1)        # result = 0
-        j    fi
+        la      t1, result
+        sw      zero, 0(t1)     # result = 0
+        j       fi
 
 es_altre:
-        la   t1, result
-        li   t2, -1
-        sw   t2, 0(t1)          # result = -1
+        la      t1, result
+        li      t2, -1
+        sw      t2, 0(t1)       # result = -1
 
 fi:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -200,26 +200,26 @@ void main() {
 ::: {#sol-compta-caracter}
 ```{.s filename="s3_3_1.s"}
 .data
-w: .asciz "4444185720444938167204449251044"
+w:      .asciz  "4444185720444938167204449251044"
 
 .text
-        la   t1, w              # t1 = punter al caràcter actual
-        li   s0, 0              # s0 = comptador d'aparicions de '4'
-        li   t2, '4'            # t2 = caràcter a cercar
+        la      t1, w           # t1 = punter al caràcter actual
+        li      s0, 0           # s0 = comptador d'aparicions de '4'
+        li      t2, '4'         # t2 = caràcter a cercar
 
 while:
-        lb   t0, 0(t1)          # t0 = w[i]
-        beqz t0, fiwhile        # si w[i] == '\0', fi del bucle
-        bne  t0, t2, seguent    # si w[i] != '4', no comptem
-        addi s0, s0, 1          # s0++
+        lb      t0, 0(t1)       # t0 = w[i]
+        beqz    t0, fiwhile     # si w[i] == '\0', fi del bucle
+        bne     t0, t2, seguent # si w[i] != '4', no comptem
+        addi    s0, s0, 1       # s0++
 
 seguent:
-        addi t1, t1, 1          # avança el punter
-        j    while
+        addi    t1, t1, 1       # avança el punter
+        j       while
 
 fiwhile:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -267,21 +267,21 @@ update:
         # a0 = h, a1 = i, a2 = imax
 
         # h[i]++
-        slli t0, a1, 2          # t0 = i * 4
-        add  t0, a0, t0         # t0 = &h[i]
-        lw   t1, 0(t0)
-        addi t1, t1, 1
-        sw   t1, 0(t0)          # h[i]++
+        slli    t0, a1, 2       # t0 = i * 4
+        add     t0, a0, t0      # t0 = &h[i]
+        lw      t1, 0(t0)
+        addi    t1, t1, 1
+        sw      t1, 0(t0)       # h[i]++
 
         # if (h[i] > h[imax]) return i; else return imax
-        slli t2, a2, 2          # t2 = imax * 4
-        add  t2, a0, t2         # t2 = &h[imax]
-        lw   t2, 0(t2)          # t2 = h[imax]
-        ble  t1, t2, ret_imax
-        mv   a0, a1             # return i
+        slli    t2, a2, 2       # t2 = imax * 4
+        add     t2, a0, t2      # t2 = &h[imax]
+        lw      t2, 0(t2)       # t2 = h[imax]
+        ble     t1, t2, ret_imax
+        mv      a0, a1          # return i
         ret
 ret_imax:
-        mv   a0, a2             # return imax
+        mv      a0, a2          # return imax
         ret
 ```
 
@@ -348,20 +348,20 @@ Mida del BA: 60 bytes (@imp-abi-alineacio-pila).
 
 ```{.s filename="s3_4_2.s"}
 .data
-w:        .asciz "4444185720444938167204449251044"
-resultat: .byte  0
+w:      .asciz  "4444185720444938167204449251044"
+resultat: .byte 0
 
 .text
 
-        la   a0, w
-        li   a1, 31
-        jal  ra, moda
+        la      a0, w
+        li      a1, 31
+        jal     ra, moda
 
-        la   t0, resultat
-        sb   a0, 0(t0)
+        la      t0, resultat
+        sb      a0, 0(t0)
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 
 # update: vegeu la solució de s3_4_1.s (inseriu el codi aquí)
@@ -369,66 +369,66 @@ resultat: .byte  0
 moda:
         # moda(char *vec, int num) — a0 = vec, a1 = num
         # pròleg
-        addi sp, sp,  -60
-        sw   s0,  40(sp)
-        sw   s1,  44(sp)
-        sw   s2,  48(sp)
-        sw   s3,  52(sp)
-        sw   ra,  56(sp)
-        mv   s0, a0             # s0 = vec
-        mv   s1, a1             # s1 = num
+        addi    sp, sp,  -60
+        sw      s0,  40(sp)
+        sw      s1,  44(sp)
+        sw      s2,  48(sp)
+        sw      s3,  52(sp)
+        sw      ra,  56(sp)
+        mv      s0, a0          # s0 = vec
+        mv      s1, a1          # s1 = num
 
         # for (k=0; k<10; k++) histo[k] = 0
-        li   s2, 0              # k = 0
-        li   t0, 10
+        li      s2, 0           # k = 0
+        li      t0, 10
 for1:
-        bge  s2, t0, ffor1
-        slli t1, s2, 2          # t1 = k * 4
-        add  t1, sp, t1         # t1 = &histo[k]
-        sw   zero, 0(t1)
-        addi s2, s2, 1
-        j    for1
+        bge     s2, t0, ffor1
+        slli    t1, s2, 2       # t1 = k * 4
+        add     t1, sp, t1      # t1 = &histo[k]
+        sw      zero, 0(t1)
+        addi    s2, s2, 1
+        j       for1
 ffor1:
 
         # max = '0'
-        li   s3, '0'
+        li      s3, '0'
 
         # for (k=0; k<num; k++)   ← mateix patró que s3_3_1.s
-        li   s2, 0              # k = 0
+        li      s2, 0           # k = 0
 for2:
-        bge  s2, s1, ffor2
+        bge     s2, s1, ffor2
 
         # vec[k] → t0; a1 = vec[k] - '0'
-        add  t0, s0, s2         # t0 = &vec[k]
-        lb   t0, 0(t0)          # t0 = vec[k]
-        li   t1, '0'
-        sub  a1, t0, t1         # a1 = vec[k] - '0'
+        add     t0, s0, s2      # t0 = &vec[k]
+        lb      t0, 0(t0)       # t0 = vec[k]
+        li      t1, '0'
+        sub     a1, t0, t1      # a1 = vec[k] - '0'
 
         # a2 = max - '0'
-        sub  a2, s3, t1         # a2 = max - '0'
+        sub     a2, s3, t1      # a2 = max - '0'
 
         # a0 = &histo
-        mv   a0, sp
+        mv      a0, sp
 
-        jal  ra, update
+        jal     ra, update
 
         # max = '0' + resultat
-        li   t1, '0'
-        add  s3, t1, a0         # s3 = '0' + update(...)
+        li      t1, '0'
+        add     s3, t1, a0      # s3 = '0' + update(...)
 
-        addi s2, s2, 1          # k++
-        j    for2
+        addi    s2, s2, 1       # k++
+        j       for2
 ffor2:
 
-        mv   a0, s3             # return max
+        mv      a0, s3          # return max
 
         # epíleg
-        lw   s0,  40(sp)
-        lw   s1,  44(sp)
-        lw   s2,  48(sp)
-        lw   s3,  52(sp)
-        lw   ra,  56(sp)
-        addi sp, sp, 60
+        lw      s0,  40(sp)
+        lw      s1,  44(sp)
+        lw      s2,  48(sp)
+        lw      s3,  52(sp)
+        lw      ra,  56(sp)
+        addi    sp, sp, 60
         ret
 ```
 
@@ -479,60 +479,60 @@ La traducció RV32I següent conté **tres errors**, tots dins de `codifica`. La
 ```{.s filename="s3_5_1.s"}
 .data
 alfabet: .asciz "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-w1:      .asciz "ARQUITECTURA"
-w2:      .space 16
+w1:     .asciz  "ARQUITECTURA"
+w2:     .space  16
 
 .text
 
-        la   a0, w1
-        la   a1, w2
-        jal  ra, codifica
+        la      a0, w1
+        la      a1, w2
+        jal     ra, codifica
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 
 g:
-        lb   t0, 0(a1)          # t0 = *pfrase
-        li   t1, 'A'
-        sub  t0, t0, t1         # t0 = *pfrase - 'A'
-        li   t1, 25
-        sub  t0, t1, t0         # t0 = 25 - (*pfrase - 'A')
-        add  t0, a0, t0         # t0 = &alfa[25 - ...]
-        lb   a0, 0(t0)          # a0 = alfa[25 - ...]
+        lb      t0, 0(a1)       # t0 = *pfrase
+        li      t1, 'A'
+        sub     t0, t0, t1      # t0 = *pfrase - 'A'
+        li      t1, 25
+        sub     t0, t1, t0      # t0 = 25 - (*pfrase - 'A')
+        add     t0, a0, t0      # t0 = &alfa[25 - ...]
+        lb      a0, 0(t0)       # a0 = alfa[25 - ...]
         ret
 
 codifica:
-        addi sp, sp, -16        # reserva el BA
-        sw   s0,  0(sp)
-        sw   s1,  4(sp)
-        sw   s2,  8(sp)
-        mv   s0, a0             # s0 = pfrasein
-        mv   s1, a1             # s1 = pfraseout
-        li   s2, 0              # i = 0
+        addi    sp, sp, -16     # reserva el BA
+        sw      s0,  0(sp)
+        sw      s1,  4(sp)
+        sw      s2,  8(sp)
+        mv      s0, a0          # s0 = pfrasein
+        mv      s1, a1          # s1 = pfraseout
+        li      s2, 0           # i = 0
 
 while:
-        lb   t0, 0(s0)
-        beqz t0, fiwhile
+        lb      t0, 0(s0)
+        beqz    t0, fiwhile
 
-        la   a0, alfabet
-        mv   a1, s1
-        jal  ra, g
+        la      a0, alfabet
+        mv      a1, s1
+        jal     ra, g
 
-        sb   a0, 0(s0)
-        addi s0, s0, 1
-        addi s1, s1, 1
-        addi s2, s2, 1
-        j    while
+        sb      a0, 0(s0)
+        addi    s0, s0, 1
+        addi    s1, s1, 1
+        addi    s2, s2, 1
+        j       while
 
 fiwhile:
-        sb   zero, 0(s1)
-        mv   a0, s2
+        sb      zero, 0(s1)
+        mv      a0, s2
 
-        lw   s0,  0(sp)
-        lw   s1,  4(sp)
-        lw   s2,  8(sp)
-        addi sp, sp, 16
+        lw      s0,  0(sp)
+        lw      s1,  4(sp)
+        lw      s2,  8(sp)
+        addi    sp, sp, 16
         ret
 ```
 
@@ -554,10 +554,10 @@ Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
 
 ```{.s filename="RV32I"}
         # pròleg — afegir:
-        sw   ra, 12(sp)         # codifica crida g, que sobreescriu ra
+        sw      ra, 12(sp)      # codifica crida g, que sobreescriu ra
 
         # epíleg — afegir:
-        lw   ra, 12(sp)         # recupera l'adreça de retorn cap al programa principal
+        lw      ra, 12(sp)      # recupera l'adreça de retorn cap al programa principal
 ```
 
 **Error 2 — `mv a1, s1` passa `pfraseout` (`s1`) a `g` en lloc de `pfrasein` (`s0`).**
@@ -567,7 +567,7 @@ La funció `g` ha de rebre el punter al caràcter d'entrada per calcular-ne la l
 Correcció:
 
 ```{.s filename="RV32I"}
-        mv   a1, s0             # g ha de rebre el punter d'entrada
+        mv      a1, s0          # g ha de rebre el punter d'entrada
 ```
 
 **Error 3 — `sb a0, 0(s0)` escriu a `pfrasein` (`s0`) en lloc de `pfraseout` (`s1`).**
@@ -577,45 +577,45 @@ El caràcter codificat que retorna `g` a `a0` s'ha d'escriure al vector de sorti
 Correcció:
 
 ```{.s filename="RV32I"}
-        sb   a0, 0(s1)          # el caràcter codificat va al vector de sortida
+        sb      a0, 0(s1)       # el caràcter codificat va al vector de sortida
 ```
 
 **Versió corregida de `codifica`**:
 
 ```{.s filename="s3_5_1.s"}
 codifica:
-        addi sp, sp, -16
-        sw   s0,  0(sp)
-        sw   s1,  4(sp)
-        sw   s2,  8(sp)
-        sw   ra, 12(sp)         # codifica crida g, que sobreescriu ra
-        mv   s0, a0
-        mv   s1, a1
-        li   s2, 0
+        addi    sp, sp, -16
+        sw      s0,  0(sp)
+        sw      s1,  4(sp)
+        sw      s2,  8(sp)
+        sw      ra, 12(sp)      # codifica crida g, que sobreescriu ra
+        mv      s0, a0
+        mv      s1, a1
+        li      s2, 0
 
 while:
-        lb   t0, 0(s0)
-        beqz t0, fiwhile
+        lb      t0, 0(s0)
+        beqz    t0, fiwhile
 
-        la   a0, alfabet
-        mv   a1, s0             # g ha de rebre el punter d'entrada
-        jal  ra, g
+        la      a0, alfabet
+        mv      a1, s0          # g ha de rebre el punter d'entrada
+        jal     ra, g
 
-        sb   a0, 0(s1)          # el caràcter codificat va al vector de sortida
-        addi s0, s0, 1
-        addi s1, s1, 1
-        addi s2, s2, 1
-        j    while
+        sb      a0, 0(s1)       # el caràcter codificat va al vector de sortida
+        addi    s0, s0, 1
+        addi    s1, s1, 1
+        addi    s2, s2, 1
+        j       while
 
 fiwhile:
-        sb   zero, 0(s1)
-        mv   a0, s2
+        sb      zero, 0(s1)
+        mv      a0, s2
 
-        lw   s0,  0(sp)
-        lw   s1,  4(sp)
-        lw   s2,  8(sp)
-        lw   ra, 12(sp)         # recupera l'adreça de retorn cap al programa principal
-        addi sp, sp, 16
+        lw      s0,  0(sp)
+        lw      s1,  4(sp)
+        lw      s2,  8(sp)
+        lw      ra, 12(sp)      # recupera l'adreça de retorn cap al programa principal
+        addi    sp, sp, 16
         ret
 ```
 :::

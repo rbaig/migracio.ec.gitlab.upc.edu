@@ -138,8 +138,8 @@ El programa principal és multinivell (crida `abs`), però no necessita cap regi
 # abs(int x)
 # a0 = x; retorna |x| a a0
 abs:
-        bge  a0, zero, positiu  # si x >= 0, retorna x directament
-        neg  a0, a0             # a0 = -x
+        bge     a0, zero, positiu  # si x >= 0, retorna x directament
+        neg     a0, a0             # a0 = -x
 positiu:
         ret
 ```
@@ -150,14 +150,14 @@ resultat: .word 0
 
 .text
 
-        li   a0, -7
-        jal  ra, abs            # a0 = abs(-7) = 7
+        li      a0, -7
+        jal     ra, abs         # a0 = abs(-7) = 7
 
-        la   t0, resultat
-        sw   a0, 0(t0)          # resultat = 7
+        la      t0, resultat
+        sw      a0, 0(t0)       # resultat = 7
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -357,25 +357,25 @@ Els paràmetres arriben per convenció ABI: `a0 = cf`, `a1 = @s`, `a2 = @e`, `a3
 # a0 = cf, a1 = @s, a2 = @e, a3 = @m
 descompon:
         # *s = (cf < 0)
-        slt  t2, a0, zero       # t2 = 1 si cf < 0, 0 si no
-        sw   t2, 0(a1)          # *s = t2
+        slt     t2, a0, zero       # t2 = 1 si cf < 0, 0 si no
+        sw      t2, 0(a1)          # *s = t2
 
         # cf = cf << 1  (elimina el bit de signe)
-        slli t0, a0, 1          # t0 = cf << 1
+        slli    t0, a0, 1          # t0 = cf << 1
 
         # if (cf == 0) exp = 0
-        li   t1, 0              # exp = 0 (cas zero)
-        beqz t0, desa           # si cf == 0, salta a desar
+        li      t1, 0              # exp = 0 (cas zero)
+        beqz    t0, desa           # si cf == 0, salta a desar
 
         # else: exp = 18
-        li   t1, 18
+        li      t1, 18
 
         # while (cf >= 0): normalitza
 while:
-        blt  t0, zero, fiwhile  # si bit 31 és 1 (cf < 0), fi del bucle
-        slli t0, t0, 1          # cf = cf << 1
-        addi t1, t1, -1         # exp--
-        j    while
+        blt     t0, zero, fiwhile  # si bit 31 és 1 (cf < 0), fi del bucle
+        slli    t0, t0, 1          # cf = cf << 1
+        addi    t1, t1, -1         # exp--
+        j       while
 fiwhile:
 
         # cf = (cf >> 8) & 0x7FFFFF
@@ -384,16 +384,16 @@ fiwhile:
         # srai propagaria aquest bit i deixaria els 8 bits superiors a 1 abans
         # de la màscara. srli garanteix que els bits desplaçats entrants siguin
         # 0, fent que la màscara 0x7FFFFF elimini correctament el bit ocult.
-        srli t0, t0, 8
-        li   t2, 0x7FFFFF
-        and  t0, t0, t2         # elimina el bit ocult i bits superiors
+        srli    t0, t0, 8
+        li      t2, 0x7FFFFF
+        and     t0, t0, t2         # elimina el bit ocult i bits superiors
 
         # exp = exp + 127
-        addi t1, t1, 127
+        addi    t1, t1, 127
 
 desa:
-        sw   t1, 0(a2)          # *e = exp
-        sw   t0, 0(a3)          # *m = cf
+        sw      t1, 0(a2)          # *e = exp
+        sw      t0, 0(a3)          # *m = cf
 
         ret
 ```
@@ -403,21 +403,21 @@ Per provar `descompon` de manera aïllada, creeu temporalment un programa princi
 
 ```{.s filename="s5_3_1.s"}
 .data
-signe:    .word 0
+signe:  .word   0
 exponent: .word 0
 mantissa: .word 0
-cfixa:    .word 0x87D18A00
+cfixa:  .word   0x87D18A00
 
 .text
-        la   a0, cfixa
-        lw   a0, 0(a0)
-        la   a1, signe
-        la   a2, exponent
-        la   a3, mantissa
-        jal  ra, descompon
+        la      a0, cfixa
+        lw      a0, 0(a0)
+        la      a1, signe
+        la      a2, exponent
+        la      a3, mantissa
+        jal     ra, descompon
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -481,47 +481,47 @@ El programa principal no necessita bloc d'activació, tot i usar registres segur
 .globl compon
 
 .data
-signe:    .word 0
+signe:  .word   0
 exponent: .word 0
 mantissa: .word 0
-cfixa:    .word 0x87D18A00
+cfixa:  .word   0x87D18A00
 cflotant: .word 0
 
 .text
 
-        la   s0, signe
-        la   s1, exponent
-        la   s2, mantissa
+        la      s0, signe
+        la      s1, exponent
+        la      s2, mantissa
 
         # descompon(cfixa, &signe, &exponent, &mantissa)
-        la   a0, cfixa
-        lw   a0, 0(a0)
-        mv   a1, s0
-        mv   a2, s1
-        mv   a3, s2
-        jal  ra, descompon
+        la      a0, cfixa
+        lw      a0, 0(a0)
+        mv      a1, s0
+        mv      a2, s1
+        mv      a3, s2
+        jal     ra, descompon
 
         # compon(signe, exponent, mantissa)
-        lw   a0, 0(s0)          # a0 = signe
-        lw   a1, 0(s1)          # a1 = exponent
-        lw   a2, 0(s2)          # a2 = mantissa
-        jal  ra, compon         # a0 = cflotant
+        lw      a0, 0(s0)       # a0 = signe
+        lw      a1, 0(s1)       # a1 = exponent
+        lw      a2, 0(s2)       # a2 = mantissa
+        jal     ra, compon      # a0 = cflotant
 
-        la   t0, cflotant
-        sw   a0, 0(t0)          # cflotant = a0
+        la      t0, cflotant
+        sw      a0, 0(t0)       # cflotant = a0
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 
 # compon(int signe, int exponent, int mantissa)
 # a0 = signe, a1 = exponent, a2 = mantissa
 # retorna el valor IEEE 754 de precisió simple a a0
 compon:
-        slli t0, a0, 31         # t0 = signe << 31
-        slli t1, a1, 23         # t1 = exponent << 23
-        or   t0, t0, t1         # t0 = (signe << 31) | (exponent << 23)
-        or   a0, t0, a2         # a0 = t0 | mantissa
+        slli    t0, a0, 31      # t0 = signe << 31
+        slli    t1, a1, 23      # t1 = exponent << 23
+        or      t0, t0, t1      # t0 = (signe << 31) | (exponent << 23)
+        or      a0, t0, a2      # a0 = t0 | mantissa
         ret
 ```
 

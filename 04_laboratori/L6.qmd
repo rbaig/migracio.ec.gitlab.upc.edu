@@ -138,24 +138,24 @@ La traducció a RV32I segueix el patró d'accés seqüencial (@tip-optimitzacio-
 .eqv N, 100
 
 .data
-vector: .space 400              # int vector[100]
+vector: .space  400             # int vector[100]
 
 .text
 
-        mv   t1, zero           # suma = 0
-        la   t2, vector         # t2 = @vector[0]
-        li   t3, N
-        slli t3, t3, 2
-        add  t3, t2, t3         # t3 = @vector[N] (sentinella)
+        mv      t1, zero        # suma = 0
+        la      t2, vector      # t2 = @vector[0]
+        li      t3, N
+        slli    t3, t3, 2
+        add     t3, t2, t3      # t3 = @vector[N] (sentinella)
 for:
-        bgeu t2, t3, fifor      # salta si t2 >= sentinella
-        lw   t4, 0(t2)          # t4 = vector[i]
-        add  t1, t1, t4         # suma += vector[i]
-        addi t2, t2, 4          # t2++ (stride = 4 bytes)
-        j    for
+        bgeu    t2, t3, fifor   # salta si t2 >= sentinella
+        lw      t4, 0(t2)       # t4 = vector[i]
+        add     t1, t1, t4      # suma += vector[i]
+        addi    t2, t2, 4       # t2++ (stride = 4 bytes)
+        j       for
 fifor:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -352,52 +352,52 @@ La traducció a RV32I que es fa servir en aquesta secció és la següent:
 .eqv N, 5
 
 .data
-vec:    .word 20, -18, 45, 12, -1    # int vec[5]
+vec:    .word   20, -18, 45, 12, -1  # int vec[5]
 
 .text
 
-        la   t0, vec                 # t0 = @vec[0]
-        li   t6, N                   # t6 = N
-        li   s0, 0                   # i = 0
+        la      t0, vec              # t0 = @vec[0]
+        li      t6, N                # t6 = N
+        li      s0, 0                # i = 0
 buc_i:
-        addi t5, t6, -1
-        bge  s0, t5, fibuc_i         # surt si i >= N-1
+        addi    t5, t6, -1
+        bge     s0, t5, fibuc_i      # surt si i >= N-1
 
-        mv   s1, s0                  # max = i
-        addi s2, s0, 1               # j = i+1
+        mv      s1, s0               # max = i
+        addi    s2, s0, 1            # j = i+1
 buc_j:
-        bge  s2, t6, fibuc_j         # surt si j >= N
+        bge     s2, t6, fibuc_j      # surt si j >= N
 
-        slli t1, s2, 2
-        add  t1, t0, t1              # t1 = @vec[j]
-        lw   t2, 0(t1)               # t2 = vec[j]
+        slli    t1, s2, 2
+        add     t1, t0, t1           # t1 = @vec[j]
+        lw      t2, 0(t1)            # t2 = vec[j]
 
-        slli t3, s1, 2
-        add  t3, t0, t3              # t3 = @vec[max]
-        lw   t4, 0(t3)               # t4 = vec[max]
+        slli    t3, s1, 2
+        add     t3, t0, t3           # t3 = @vec[max]
+        lw      t4, 0(t3)            # t4 = vec[max]
 
-        ble  t2, t4, no_canvi        # si vec[j] <= vec[max], no actualitza
-        mv   s1, s2                  # max = j
+        ble     t2, t4, no_canvi     # si vec[j] <= vec[max], no actualitza
+        mv      s1, s2               # max = j
 no_canvi:
-        addi s2, s2, 1               # j++
-        j    buc_j
+        addi    s2, s2, 1            # j++
+        j       buc_j
 fibuc_j:
-        slli t1, s0, 2
-        add  t1, t0, t1              # t1 = @vec[i]
-        lw   t2, 0(t1)               # t2 = aux = vec[i]
+        slli    t1, s0, 2
+        add     t1, t0, t1           # t1 = @vec[i]
+        lw      t2, 0(t1)            # t2 = aux = vec[i]
 
-        slli t3, s1, 2
-        add  t3, t0, t3              # t3 = @vec[max]
-        lw   t4, 0(t3)               # t4 = vec[max]
+        slli    t3, s1, 2
+        add     t3, t0, t3           # t3 = @vec[max]
+        lw      t4, 0(t3)            # t4 = vec[max]
 
-        sw   t4, 0(t1)               # vec[i] = vec[max]
-        sw   t2, 0(t3)               # vec[max] = aux
+        sw      t4, 0(t1)            # vec[i] = vec[max]
+        sw      t2, 0(t3)            # vec[max] = aux
 
-        addi s0, s0, 1               # i++
-        j    buc_i
+        addi    s0, s0, 1            # i++
+        j       buc_i
 fibuc_i:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -560,31 +560,31 @@ La traducció a RV32I fa servir tres punters que avancen en paral·lel:
 .eqv N, 128
 
 .data
-A:      .space 512              # int A[128]
-B:      .space 512              # int B[128]
-C:      .space 512              # int C[128]
+A:      .space  512             # int A[128]
+B:      .space  512             # int B[128]
+C:      .space  512             # int C[128]
 
 .text
 
-        la   t0, A              # t0 = @A[0]
-        la   t1, B              # t1 = @B[0]
-        la   t2, C              # t2 = @C[0]
-        li   t3, N
-        slli t3, t3, 2
-        add  t3, t0, t3         # t3 = @A[N] (sentinella)
+        la      t0, A           # t0 = @A[0]
+        la      t1, B           # t1 = @B[0]
+        la      t2, C           # t2 = @C[0]
+        li      t3, N
+        slli    t3, t3, 2
+        add     t3, t0, t3      # t3 = @A[N] (sentinella)
 for:
-        bgeu t0, t3, fifor
-        lw   t4, 0(t0)          # t4 = A[i]
-        lw   t5, 0(t1)          # t5 = B[i]
-        add  t4, t4, t5         # t4 = A[i] + B[i]
-        sw   t4, 0(t2)          # C[i] = A[i] + B[i]
-        addi t0, t0, 4          # A[i+1]
-        addi t1, t1, 4          # B[i+1]
-        addi t2, t2, 4          # C[i+1]
-        j    for
+        bgeu    t0, t3, fifor
+        lw      t4, 0(t0)       # t4 = A[i]
+        lw      t5, 0(t1)       # t5 = B[i]
+        add     t4, t4, t5      # t4 = A[i] + B[i]
+        sw      t4, 0(t2)       # C[i] = A[i] + B[i]
+        addi    t0, t0, 4       # A[i+1]
+        addi    t1, t1, 4       # B[i+1]
+        addi    t2, t2, 4       # C[i+1]
+        j       for
 fifor:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -667,33 +667,33 @@ Per separar els vectors cal que `A`, `B` i `C` es mapin a línies diferents. Com
 .eqv PAD, 16                    # 1 bloc de farciment entre vectors
 
 .data
-A:      .space 512              # int A[128]: 512 bytes, línies 0–15
-        .space PAD              # farciment: desplaça B 1 bloc
-B:      .space 512              # int B[128]: 512 bytes, línies 1–0 (rotació)
-        .space PAD              # farciment: desplaça C 1 bloc addicional
-C:      .space 512              # int C[128]: 512 bytes, línies 2–1 (rotació)
+A:      .space  512             # int A[128]: 512 bytes, línies 0–15
+        .space  PAD             # farciment: desplaça B 1 bloc
+B:      .space  512             # int B[128]: 512 bytes, línies 1–0 (rotació)
+        .space  PAD             # farciment: desplaça C 1 bloc addicional
+C:      .space  512             # int C[128]: 512 bytes, línies 2–1 (rotació)
 
 .text
 
-        la   t0, A
-        la   t1, B
-        la   t2, C
-        li   t3, N
-        slli t3, t3, 2
-        add  t3, t0, t3
+        la      t0, A
+        la      t1, B
+        la      t2, C
+        li      t3, N
+        slli    t3, t3, 2
+        add     t3, t0, t3
 for:
-        bgeu t0, t3, fifor
-        lw   t4, 0(t0)
-        lw   t5, 0(t1)
-        add  t4, t4, t5
-        sw   t4, 0(t2)
-        addi t0, t0, 4
-        addi t1, t1, 4
-        addi t2, t2, 4
-        j    for
+        bgeu    t0, t3, fifor
+        lw      t4, 0(t0)
+        lw      t5, 0(t1)
+        add     t4, t4, t5
+        sw      t4, 0(t2)
+        addi    t0, t0, 4
+        addi    t1, t1, 4
+        addi    t2, t2, 4
+        j       for
 fifor:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -838,48 +838,48 @@ La traducció a RV32IM de la versió original és:
 
 .data
         .align 2
-V1:     .space 64                 # int V1[16]
+V1:     .space  64                # int V1[16]
         .align 2
-M:      .space 1024              # int M[16][16]
+M:      .space  1024             # int M[16][16]
         .align 2
-V2:     .space 64                 # int V2[16]
+V2:     .space  64                # int V2[16]
 
 .text
 
-        la   s3, V1             # s3 = @V1[0] (invariant)
-        la   s4, M              # s4 = @M[i][0] (punter de fila)
-        la   s5, V2             # s5 = @V2[0] (invariant)
-        li   s2, NI             # s2 = sentinella i (invariant)
-        li   s6, NJ
-        slli s6, s6, 2          # s6 = NJ*4: mida d'una fila en bytes (invariant)
+        la      s3, V1          # s3 = @V1[0] (invariant)
+        la      s4, M           # s4 = @M[i][0] (punter de fila)
+        la      s5, V2          # s5 = @V2[0] (invariant)
+        li      s2, NI          # s2 = sentinella i (invariant)
+        li      s6, NJ
+        slli    s6, s6, 2       # s6 = NJ*4: mida d'una fila en bytes (invariant)
 
-        li   s1, 0              # i = 0
+        li      s1, 0           # i = 0
 buc_i:
-        bge  s1, s2, fibuc_i
+        bge     s1, s2, fibuc_i
 
-        li   t1, 0              # tmp = 0
-        mv   t2, s4             # t2 = punter a M[i][j] (j = 0)
-        mv   t4, s5             # t4 = punter a V2[j] (j = 0)
-        add  t5, s4, s6         # t5 = sentinella j: @M[i][NJ]
+        li      t1, 0           # tmp = 0
+        mv      t2, s4          # t2 = punter a M[i][j] (j = 0)
+        mv      t4, s5          # t4 = punter a V2[j] (j = 0)
+        add     t5, s4, s6      # t5 = sentinella j: @M[i][NJ]
 buc_j:
-        bgeu t2, t5, fibuc_j
-        lw   t6, 0(t2)          # t6 = M[i][j]
-        lw   a0, 0(t4)          # a0 = V2[j]
-        mul  t6, t6, a0         # t6 = M[i][j] * V2[j]
-        add  t1, t1, t6         # tmp += M[i][j] * V2[j]
-        addi t2, t2, 4          # punter M avança (stride = 4)
-        addi t4, t4, 4          # punter V2 avança (stride = 4)
-        j    buc_j
+        bgeu    t2, t5, fibuc_j
+        lw      t6, 0(t2)       # t6 = M[i][j]
+        lw      a0, 0(t4)       # a0 = V2[j]
+        mul     t6, t6, a0      # t6 = M[i][j] * V2[j]
+        add     t1, t1, t6      # tmp += M[i][j] * V2[j]
+        addi    t2, t2, 4       # punter M avança (stride = 4)
+        addi    t4, t4, 4       # punter V2 avança (stride = 4)
+        j       buc_j
 fibuc_j:
-        slli t6, s1, 2
-        add  t6, s3, t6         # t6 = @V1[i]
-        sw   t1, 0(t6)          # V1[i] = tmp
-        add  s4, s4, s6         # punter de fila: @M[i+1][0]
-        addi s1, s1, 1          # i++
-        j    buc_i
+        slli    t6, s1, 2
+        add     t6, s3, t6      # t6 = @V1[i]
+        sw      t1, 0(t6)       # V1[i] = tmp
+        add     s4, s4, s6      # punter de fila: @M[i+1][0]
+        addi    s1, s1, 1       # i++
+        j       buc_i
 fibuc_i:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -971,74 +971,74 @@ Al bucle interior (`j` de 0 a 3), `j` varia més ràpidament. L'element accedit 
 
 .data
         .align 2
-V1:     .word 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   # int V1[16] inicialitzat a 0
+V1:     .word   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 # int V1[16] inicialitzat a 0
         .align 2
-M:      .space 1024                            # int M[16][16]
+M:      .space  1024                           # int M[16][16]
         .align 2
-V2:     .space 64                               # int V2[16]
+V2:     .space  64                              # int V2[16]
 
 .text
 
-        la   s3, V1             # s3 = @V1[0]
-        la   s4, M              # s4 = @M[0][0]
-        la   s5, V2             # s5 = @V2[0]
-        li   s6, 4              # s6 = sentinella k = NJ/BLK (invariant)
-        li   s2, NI             # s2 = sentinella i (invariant)
+        la      s3, V1          # s3 = @V1[0]
+        la      s4, M           # s4 = @M[0][0]
+        la      s5, V2          # s5 = @V2[0]
+        li      s6, 4           # s6 = sentinella k = NJ/BLK (invariant)
+        li      s2, NI          # s2 = sentinella i (invariant)
 
-        li   s0, 0              # k = 0
+        li      s0, 0           # k = 0
 buc_k:
-        bge  s0, s6, fibuc_k
+        bge     s0, s6, fibuc_k
 
         # @V2[k*4] = @V2 + k*BLK*4 = @V2 + k*16
-        slli t3, s0, 4          # t3 = k * 16
-        add  t3, s5, t3         # t3 = @V2[k*4]
+        slli    t3, s0, 4       # t3 = k * 16
+        add     t3, s5, t3      # t3 = @V2[k*4]
 
-        li   s1, 0              # i = 0
+        li      s1, 0           # i = 0
 buc_i:
-        bge  s1, s2, fibuc_i
+        bge     s1, s2, fibuc_i
 
-        li   t1, 0              # tmp = 0
+        li      t1, 0           # tmp = 0
 
         # @M[i][k*4] = @M + i*NJ*4 + k*16
-        li   t0, NJ
-        mul  t2, s1, t0         # t2 = i * NJ
-        slli t2, t2, 2          # t2 = i * NJ * 4 (bytes)
-        add  t2, s4, t2         # t2 = @M[i][0]
-        slli t0, s0, 4          # t0 = k * 16 (offset de columna en bytes)
-        add  t2, t2, t0         # t2 = @M[i][k*4]
+        li      t0, NJ
+        mul     t2, s1, t0      # t2 = i * NJ
+        slli    t2, t2, 2       # t2 = i * NJ * 4 (bytes)
+        add     t2, s4, t2      # t2 = @M[i][0]
+        slli    t0, s0, 4       # t0 = k * 16 (offset de columna en bytes)
+        add     t2, t2, t0      # t2 = @M[i][k*4]
 
-        mv   t4, t3             # t4 = @V2[k*4] (còpia local per al bucle j)
+        mv      t4, t3          # t4 = @V2[k*4] (còpia local per al bucle j)
 
-        li   t0, 0              # j = 0
-        li   t5, BLK            # t5 = sentinella j
+        li      t0, 0           # j = 0
+        li      t5, BLK         # t5 = sentinella j
 buc_j:
-        bge  t0, t5, fibuc_j
+        bge     t0, t5, fibuc_j
 
-        lw   t6, 0(t2)          # t6 = M[i][k*4 + j]
-        lw   a0, 0(t4)          # a0 = V2[k*4 + j]
-        mul  t6, t6, a0         # t6 = M[i][k*4+j] * V2[k*4+j]
-        add  t1, t1, t6         # tmp += producte
+        lw      t6, 0(t2)       # t6 = M[i][k*4 + j]
+        lw      a0, 0(t4)       # a0 = V2[k*4 + j]
+        mul     t6, t6, a0      # t6 = M[i][k*4+j] * V2[k*4+j]
+        add     t1, t1, t6      # tmp += producte
 
-        addi t2, t2, 4          # punter M avança al següent element de la fila
-        addi t4, t4, 4          # punter V2 avança al següent element del bloc
-        addi t0, t0, 1          # j++
-        j    buc_j
+        addi    t2, t2, 4       # punter M avança al següent element de la fila
+        addi    t4, t4, 4       # punter V2 avança al següent element del bloc
+        addi    t0, t0, 1       # j++
+        j       buc_j
 fibuc_j:
         # V1[i] += tmp
-        slli t2, s1, 2          # t2 = i * 4
-        add  t2, s3, t2         # t2 = @V1[i]
-        lw   t6, 0(t2)          # t6 = V1[i]
-        add  t6, t6, t1         # t6 = V1[i] + tmp
-        sw   t6, 0(t2)          # V1[i] += tmp
+        slli    t2, s1, 2       # t2 = i * 4
+        add     t2, s3, t2      # t2 = @V1[i]
+        lw      t6, 0(t2)       # t6 = V1[i]
+        add     t6, t6, t1      # t6 = V1[i] + tmp
+        sw      t6, 0(t2)       # V1[i] += tmp
 
-        addi s1, s1, 1          # i++
-        j    buc_i
+        addi    s1, s1, 1       # i++
+        j       buc_i
 fibuc_i:
-        addi s0, s0, 1          # k++
-        j    buc_k
+        addi    s0, s0, 1       # k++
+        j       buc_k
 fibuc_k:
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 

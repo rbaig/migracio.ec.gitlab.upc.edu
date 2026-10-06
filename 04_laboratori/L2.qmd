@@ -69,18 +69,18 @@ Afegiu-hi l'esquelet mínim del programa (@nte-programa-esquelet).
 ::: {#sol-declaracio-variables}
 ```{.s filename="s2_1_1.s"}
 .data
-aa: .byte  -5
-bb: .half  -344
+aa:     .byte   -5
+bb:     .half   -344
         .align 3          # cc és long long: alineació a 8
-cc: .dword -3
-dd: .byte  0xA0
-ee: .word  5799
-ff: .half  -1
+cc:     .dword  -3
+dd:     .byte   0xA0
+ee:     .word   5799
+ff:     .half   -1
 
 .text
         # Sortir del programa
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 :::
@@ -287,8 +287,8 @@ Donada la declaració següent, on `pdada` és un punter inicialitzat amb l'adre
 
 ```{.s filename="RV32I"}
 .data
-dada:  .half 3
-pdada: .word dada
+dada:   .half   3
+pdada:  .word   dada
 ```
 
 Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els blancs de les vinyetes i calculeu el valor de cada expressió C:
@@ -359,32 +359,32 @@ Comproveu que, en acabar l'execució, `s0` val `0x0000000C` (12), que `A[1]` (`0
 ::: {#sol-punters-codi}
 ```{.s filename="s2_3_2.s"}
 .data
-A:      .word 3, 5, 7
-punter: .word 0
+A:      .word   3, 5, 7
+punter: .word   0
 
 .text
         # punter = &A[2]
-        la   t0, A
-        addi t0, t0, 8      # &A[2] = &A + 2*4
-        la   t1, punter
-        sw   t0, 0(t1)      # punter = &A[2]
+        la      t0, A
+        addi    t0, t0, 8   # &A[2] = &A + 2*4
+        la      t1, punter
+        sw      t0, 0(t1)   # punter = &A[2]
 
         # temp = *punter + 2
-        lw   s0, 0(t0)      # s0 = *punter = A[2] = 7
-        addi s0, s0, 2      # s0 = 9
+        lw      s0, 0(t0)   # s0 = *punter = A[2] = 7
+        addi    s0, s0, 2   # s0 = 9
 
         # temp = *(punter - 2) + temp
-        addi t0, t0, -8     # punter - 2 = &A[0]
-        lw   t2, 0(t0)      # t2 = A[0] = 3
-        add  s0, t2, s0     # s0 = 3 + 9 = 12
+        addi    t0, t0, -8  # punter - 2 = &A[0]
+        lw      t2, 0(t0)   # t2 = A[0] = 3
+        add     s0, t2, s0  # s0 = 3 + 9 = 12
 
         # A[1] = temp
-        la   t0, A
-        sw   s0, 4(t0)      # A[1] = 12
+        la      t0, A
+        sw      s0, 4(t0)   # A[1] = 12
 
         # Sortir del programa
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -434,13 +434,13 @@ $$@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot 4$$
 
 ```{.s filename="s2_4_1.s"}
 .data
-vec: .word 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+vec:    .word   9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
 .text
-        la   t0, vec        # t0 = @vec
-        slli t1, s2, 2      # t1 = i * 4
-        add  t0, t0, t1     # t0 = @vec[i]
-        lw   s1, 0(t0)      # s1 = vec[i]
+        la      t0, vec     # t0 = @vec
+        slli    t1, s2, 2   # t1 = i * 4
+        add     t0, t0, t1  # t0 = @vec[i]
+        lw      s1, 0(t0)   # s1 = vec[i]
 ```
 :::
 
@@ -473,46 +473,46 @@ Comproveu que, en acabar l'execució, el segment de dades conté els 10 termes: 
 ::: {#sol-vectors-fibonacci}
 ```{.s filename="s2_4_2.s"}
 .data
-fib: .space 40              # 10 enters * 4 bytes
+fib:    .space  40          # 10 enters * 4 bytes
 
 .text
         # fib[0] = 0
-        la   t0, fib
-        sw   zero, 0(t0)    # fib[0] = 0
+        la      t0, fib
+        sw      zero, 0(t0) # fib[0] = 0
 
         # fib[1] = 1
-        li   t1, 1
-        sw   t1, 4(t0)      # fib[1] = 1
+        li      t1, 1
+        sw      t1, 4(t0)   # fib[1] = 1
 
         # i = 2
-        li   s0, 2
+        li      s0, 2
 
 while:
         # if i >= 10, sortir
-        li   t1, 10
-        bge  s0, t1, fi
+        li      t1, 10
+        bge     s0, t1, fi
 
         # t1 = fib[i-1]
-        la   t0, fib
-        slli t2, s0, 2      # t2 = i * 4
-        add  t3, t0, t2     # t3 = @fib[i]
-        lw   t1, -4(t3)     # t1 = fib[i-1]
+        la      t0, fib
+        slli    t2, s0, 2   # t2 = i * 4
+        add     t3, t0, t2  # t3 = @fib[i]
+        lw      t1, -4(t3)  # t1 = fib[i-1]
 
         # t2 = fib[i-2]
-        lw   t2, -8(t3)     # t2 = fib[i-2]
+        lw      t2, -8(t3)  # t2 = fib[i-2]
 
         # fib[i] = fib[i-1] + fib[i-2]
-        add  t1, t1, t2
-        sw   t1, 0(t3)      # fib[i] = t1
+        add     t1, t1, t2
+        sw      t1, 0(t3)   # fib[i] = t1
 
         # i++
-        addi s0, s0, 1
-        j    while
+        addi    s0, s0, 1
+        j       while
 
 fi:
         # Sortir del programa
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 :::
@@ -556,45 +556,45 @@ Comproveu que, en acabar l'execució, el word a `0x10010000` mostra `0x36383931`
 ::: {#sol-strings-ascii}
 ```{.s filename="s2_5_1.s"}
 .data
-cadena: .space 6
-vec:    .word  5, 6, 8, 9, 1
+cadena: .space  6
+vec:    .word   5, 6, 8, 9, 1
 
 .text
         # i = 0
-        li   s0, 0
+        li      s0, 0
 
 while:
         # if i >= 5, sortir
-        li   t0, 5
-        bge  s0, t0, fi
+        li      t0, 5
+        bge     s0, t0, fi
 
         # t1 = vec[4-i]
-        li   t0, 4
-        sub  t0, t0, s0     # t0 = 4 - i
-        la   t1, vec
-        slli t2, t0, 2      # t2 = (4-i) * 4
-        add  t1, t1, t2     # t1 = @vec[4-i]
-        lw   t1, 0(t1)      # t1 = vec[4-i]
+        li      t0, 4
+        sub     t0, t0, s0  # t0 = 4 - i
+        la      t1, vec
+        slli    t2, t0, 2   # t2 = (4-i) * 4
+        add     t1, t1, t2  # t1 = @vec[4-i]
+        lw      t1, 0(t1)   # t1 = vec[4-i]
 
         # cadena[i] = vec[4-i] + '0'
-        li   t2, 0x30       # '0' en ASCII
-        add  t1, t1, t2     # t1 = vec[4-i] + '0'
-        la   t2, cadena
-        add  t2, t2, s0     # t2 = @cadena[i]
-        sb   t1, 0(t2)      # cadena[i] = t1
+        li      t2, 0x30    # '0' en ASCII
+        add     t1, t1, t2  # t1 = vec[4-i] + '0'
+        la      t2, cadena
+        add     t2, t2, s0  # t2 = @cadena[i]
+        sb      t1, 0(t2)   # cadena[i] = t1
 
         # i++
-        addi s0, s0, 1
-        j    while
+        addi    s0, s0, 1
+        j       while
 
 fi:
         # cadena[5] = 0
-        la   t0, cadena
-        sb   zero, 5(t0)
+        la      t0, cadena
+        sb      zero, 5(t0)
 
         # Sortir del programa
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 

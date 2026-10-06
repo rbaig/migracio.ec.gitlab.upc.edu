@@ -73,19 +73,19 @@ Recordeu que en C els elements d'una matriu es guarden per files, i que en RV32I
 
 .data
         .align 2
-mat1:   .space 120             # int mat1[5][6]: NF1*NC1*4 = 120 bytes
+mat1:   .space  120               # int mat1[5][6]: NF1*NC1*4 = 120 bytes
 
-mat2:   .space 15              # char mat2[3][5]: NF2*NC2*1 = 15 bytes (sense alineació)
+mat2:   .space  15                # char mat2[3][5]: NF2*NC2*1 = 15 bytes (sense alineació)
 
         .align 3
-mat3:   .space 32             # long long mat3[2][2]: NF3*NC3*8 = 32 bytes
+mat3:   .space  32            # long long mat3[2][2]: NF3*NC3*8 = 32 bytes
 
         .align 2
-mat4:   .word 2, 3, 1, 2, 4, 3 # int mat4[2][3] inicialitzada per files
+mat4:   .word   2, 3, 1, 2, 4, 3  # int mat4[2][3] inicialitzada per files
 
 .text
-        li  a7, 93
-        li  a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 ```
 
@@ -198,37 +198,37 @@ Cap dels dos blocs no necessita bloc d'activació: `subr` és uninivell i sense 
 
 .data
         .align 2
-mat1:   .space 120             # int mat1[5][6]: NF1*NC1*4 = 120 bytes
+mat1:   .space  120            # int mat1[5][6]: NF1*NC1*4 = 120 bytes
         .align 2
-mat4:   .word  2, 3, 1, 2, 4, 3 # int mat4[2][3]
-col:    .word  2
+mat4:   .word   2, 3, 1, 2, 4, 3  # int mat4[2][3]
+col:    .word   2
 
 .text
 
-        la   s0, mat1           # s0 = @mat1 (segur: travessa les crides)
-        la   s1, mat4           # s1 = @mat4 (segur: travessa les crides)
+        la      s0, mat1          # s0 = @mat1 (segur: travessa les crides)
+        la      s1, mat4          # s1 = @mat4 (segur: travessa les crides)
 
         # mat1[4][3] = subr(mat4, mat4[0][2], col)
-        mv   a0, s1             # arg0: @mat4
-        lw   a1, 8(s1)          # arg1: mat4[0][2] = @mat4 + 8 → 1
-        la   t0, col
-        lw   a2, 0(t0)          # arg2: col = 2
-        jal  ra, subr           # a0 = subr(@mat4, 1, 2) → retorna 1
+        mv      a0, s1            # arg0: @mat4
+        lw      a1, 8(s1)         # arg1: mat4[0][2] = @mat4 + 8 → 1
+        la      t0, col
+        lw      a2, 0(t0)         # arg2: col = 2
+        jal     ra, subr          # a0 = subr(@mat4, 1, 2) → retorna 1
 
         # @mat1[4][3] = @mat1 + (4*NC1 + 3)*4 = @mat1 + 108
-        sw   a0, 108(s0)
+        sw      a0, 108(s0)
 
         # mat1[0][0] = subr(mat4, 1, 1)
-        mv   a0, s1             # arg0: @mat4
-        li   a1, 1              # arg1: i = 1
-        li   a2, 1              # arg2: j = 1
-        jal  ra, subr           # a0 = subr(@mat4, 1, 1) → retorna 1
+        mv      a0, s1            # arg0: @mat4
+        li      a1, 1             # arg1: i = 1
+        li      a2, 1             # arg2: j = 1
+        jal     ra, subr          # a0 = subr(@mat4, 1, 1) → retorna 1
 
         # @mat1[0][0] = @mat1 + 0
-        sw   a0, 0(s0)
+        sw      a0, 0(s0)
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 
 # subr(int x[][3], int i, int j)
@@ -237,24 +237,24 @@ col:    .word  2
 # uninivell: a2 = j és vàlid durant tot el cos (cap crida el destrueix)
 subr:
         # t0 = x[i][j] = Mw[@x + (i*NC4 + j)*4]
-        li   t1, NC4
-        mul  t0, a1, t1         # t0 = i * NC4
-        add  t0, t0, a2         # t0 = i*NC4 + j
-        slli t0, t0, 2          # t0 = (i*NC4 + j) * 4
-        add  t0, a0, t0         # t0 = @x[i][j]
-        lw   t0, 0(t0)          # t0 = x[i][j]
+        li      t1, NC4
+        mul     t0, a1, t1        # t0 = i * NC4
+        add     t0, t0, a2        # t0 = i*NC4 + j
+        slli    t0, t0, 2         # t0 = (i*NC4 + j) * 4
+        add     t0, a0, t0        # t0 = @x[i][j]
+        lw      t0, 0(t0)         # t0 = x[i][j]
 
         # mat1[j][5] = x[i][j]
         # @mat1[j][5] = @mat1 + (j*NC1 + 5)*4
-        la   t1, mat1
-        li   t2, NC1
-        mul  t3, a2, t2         # t3 = j * NC1
-        addi t3, t3, 5          # t3 = j*NC1 + 5
-        slli t3, t3, 2          # t3 = (j*NC1 + 5) * 4
-        add  t1, t1, t3         # t1 = @mat1[j][5]
-        sw   t0, 0(t1)          # mat1[j][5] = x[i][j]
+        la      t1, mat1
+        li      t2, NC1
+        mul     t3, a2, t2        # t3 = j * NC1
+        addi    t3, t3, 5         # t3 = j*NC1 + 5
+        slli    t3, t3, 2         # t3 = (j*NC1 + 5) * 4
+        add     t1, t1, t3        # t1 = @mat1[j][5]
+        sw      t0, 0(t1)         # mat1[j][5] = x[i][j]
 
-        mv   a0, a1             # return i
+        mv      a0, a1            # return i
         ret
 ```
 
@@ -370,43 +370,43 @@ El programa principal crida `suma_col`, però és el **punt d'entrada**: com que
 
 .data
         .align 2
-mat:    .word 0, 0, 2, 0, 0, 0
-        .word 0, 0, 4, 0, 0, 0
-        .word 0, 0, 6, 0, 0, 0
-        .word 0, 0, 8, 0, 0, 0
+mat:    .word   0, 0, 2, 0, 0, 0
+        .word   0, 0, 4, 0, 0, 0
+        .word   0, 0, 6, 0, 0, 0
+        .word   0, 0, 8, 0, 0, 0
         .align 2
 resultat: .word 0
 
 .text
 
-        la   a0, mat
-        jal  ra, suma_col       # a0 = suma_col(mat)
+        la      a0, mat
+        jal     ra, suma_col    # a0 = suma_col(mat)
 
-        la   t0, resultat
-        sw   a0, 0(t0)          # resultat = a0
+        la      t0, resultat
+        sw      a0, 0(t0)       # resultat = a0
 
-        li   a7, 93
-        li   a0, 0
+        li      a7, 93
+        li      a0, 0
         ecall
 
 # suma_col(int m[][6])
 # a0 = @m
 # retorna suma (a0)
 suma_col:
-        li   t1, 0              # suma = 0
-        li   t3, 24             # stride = NC*4 = 6*4 = 24
-        addi t0, a0, 8          # p = @m[0][2] = @m + (0*NC + 2)*4 = @m + 8
-        li   t4, NF
-        mul  t2, t4, t3
-        add  t2, t0, t2         # sentinella = @m[NF][2] = p + NF*stride
+        li      t1, 0           # suma = 0
+        li      t3, 24          # stride = NC*4 = 6*4 = 24
+        addi    t0, a0, 8       # p = @m[0][2] = @m + (0*NC + 2)*4 = @m + 8
+        li      t4, NF
+        mul     t2, t4, t3
+        add     t2, t0, t2      # sentinella = @m[NF][2] = p + NF*stride
 for:
-        bgeu t0, t2, fifor      # salta si p >= sentinella
-        lw   t4, 0(t0)          # t4 = *p = m[i][2]
-        add  t1, t1, t4         # suma += *p
-        add  t0, t0, t3         # p += stride
-        j    for
+        bgeu    t0, t2, fifor   # salta si p >= sentinella
+        lw      t4, 0(t0)       # t4 = *p = m[i][2]
+        add     t1, t1, t4      # suma += *p
+        add     t0, t0, t3      # p += stride
+        j       for
 fifor:
-        mv   a0, t1             # return suma
+        mv      a0, t1          # return suma
         ret
 ```
 
