@@ -720,7 +720,7 @@ def flux():
     o.append(node(R, r[2], 150, 64, ['Adreça', 'vàlida?'], SO_N, MISS_S, 'rombe'))
     o.append(node(870, 145, 148, 58, ['Adreça invàlida: el SO', 'avorta el procés',
                                      ('(segmentation fault)', 10, GRIS)], ab_f, ab_s, 'terminal', 11))
-    o.append(node(R, r[3], 150, 64, ['Hi ha cap', 'marc lliure?'], SO_N, MISS_S, 'rombe'))
+    o.append(node(R, r[3], 150, 64, ['Hi ha cap marc', '(PPN) lliure?'], SO_N, MISS_S, 'rombe'))
     o.append(node(R, r[4], 170, 58, ['Tria la víctima (LRU):', 'V = 0 a la seva PTE', 'i invalida-la del TLB'],
                   SO_N, MISS_S, size=12))
     o.append(node(R, r[5], 150, 64, ['D = 1?'], SO_N, MISS_S, 'rombe'))
