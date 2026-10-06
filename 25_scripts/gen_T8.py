@@ -754,42 +754,63 @@ def flux():
 # ── Compartició ──────────────────────────────────────────────
 
 def comparticio():
+    """Com la figura 7.9 del tema antic: a l'esquerra, les taules de pàgines de P1 i P2 senceres (fins a VPN
+    0xFFFFF), amb una sola entrada vàlida cadascuna, VPN 0x00000 de P1 i VPN 0x00001 de P2, que apunten al mateix
+    marc, PPN 0x02. A la dreta de la línia discontínua, el maquinari amb P2 en execució: el TLB, que només
+    conté traduccions de P2, i el registre de taula de pàgines, que apunta a la taula de P2; a sota, la memòria
+    física. Les dades són les de `#tip-mv-comparticio`."""
     o = []
-    cols = [('V', 32), ('D', 32), ('E', 32), ('PPN', 56)]
-    taules = (('P1', 52, P1_F, P1_S, [('0x00000', '0x02'), ('0x00001', '0x00')]),
-              ('P2', 182, P2_F, P2_S, [('0x00000', '0x03'), ('0x00001', '0x02')]))
-    XM = 450
-    ymarc = {'0x00': 52, '0x01': 86, '0x02': 120, '0x03': 154}
-    for p, y, f, s, valides in taules:
-        files = [(('1', '0', '1', ppn), f, s) for _, ppn in valides] + [(('0', '0', '1', '—'), NEUTRE, TRAC)]
-        o += taula(80, y, cols, files, index=[v for v, _ in valides] + ['0x00002'], cap='VPN')
-        o.append(t(156, y - 30, f'Taula de pàgines de {p}', 12, s, bold=True))
-        for k, (_, ppn) in enumerate(valides):
-            compartida = ppn == '0x02'
-            if compartida:
-                o.append(f'<rect x="80" y="{y + k * 22}" width="152" height="22" fill="none" stroke="{s}" stroke-width="2"/>')
-            o.append(cami([(232, y + k * 22 + 11), (XM - 2, ymarc[ppn] + 17)], s, 2 if compartida else 1))
-    o.append(t(XM + 50, 42, 'Memòria física', 12, INK, bold=True))
-    for ppn, y in ymarc.items():
-        if ppn == '0x02':
-            o.append(f'<rect x="{XM}" y="{y}" width="50" height="34" fill="{P1_F}"/>')
-            o.append(f'<rect x="{XM + 50}" y="{y}" width="50" height="34" fill="{P2_F}"/>')
-            o.append(f'<rect x="{XM}" y="{y}" width="100" height="34" fill="none" stroke="{INK}" stroke-width="1.5"/>')
-            o.append(t(XM + 50, y + 21, 'compartida', 11, INK, bold=True))
-        elif ppn == '0x01':
-            o.append(cel(XM, y, 100, 34, NEUTRE, TRAC))
-            o.append(t(XM + 50, y + 21, 'lliure', 10, GRIS, italic=True))
+    cols = [('V', 26), ('D', 26), ('E', 26), ('PPN', 56)]
+    XT, h = 96, 20
+    wt = sum(w for _, w in cols)
+    index = ['0x00000', '0x00001', '0x00002', '0x00003', '⋮', '0xFFFFF']
+    buida = (('0', '0', '0', '—'), NEUTRE, TRAC)
+    punts = (('⋮',) * 4, NEUTRE, TRAC)
+    XM, YM, hm = 430, 252, 30                 # memòria física: quatre marcs
+    ycomp = YM + 2 * hm                       # marc compartit, PPN 0x02
+    sortides = []
+    for p, yt, f, s, fila in (('P1', 48, P1_F, P1_S, 0), ('P2', 236, P2_F, P2_S, 1)):
+        files = [buida] * 4 + [punts, buida]
+        files[fila] = (('1', '0', '1', '0x02'), f, s)
+        o += taula(XT, yt, cols, files, h=h, index=index, cap='VPN')
+        o.append(f'<rect x="{XT}" y="{yt + fila * h}" width="{wt}" height="{h}" fill="none" stroke="{s}" stroke-width="2"/>')
+        o.append(t(XT + wt / 2, yt - 26, f'Taula de pàgines de {p}', 12, s, bold=True))
+        sortides.append((yt + fila * h + h / 2, s, 10 if p == 'P1' else 20))
+    # Línia que separa les taules (a la memòria) del maquinari.
+    o.append(f'<line x1="300" y1="8" x2="300" y2="{YM + 4 * hm + 6}" stroke="{TRAC}" stroke-width="1.2" stroke-dasharray="7 4"/>')
+    # Maquinari, amb P2 en execució: el TLB i el registre de taula de pàgines.
+    o.append(t(490, 20, 'Maquinari (en execució P2)', 12, INK, bold=True))
+    ctlb = [('V', 26), ('VPN', 72), ('D', 26), ('E', 26), ('PPN', 46)]
+    ftlb = [(('1', '0x00001', '0', '1', '0x02'), P2_F, P2_S)] + [(('0', '—', '—', '—', '—'), NEUTRE, TRAC)] * 3
+    o.append(t(490, 42, 'TLB', 11, INK, bold=True))
+    o += taula(392, 66, ctlb, ftlb, h=h)
+    o.append(caixa(410, 168, 160, 34, NEUTRE, GRIS, '', 11))
+    o.append(linies(490, 185, ['Registre de', 'taula de pàgines'], 11))
+    o.append(cami([(410, 185), (262, 185), (262, 246), (XT + wt + 2, 246)], INK))   # a la base de la taula de P2
+    o.append(t(268, 222, 'base', 9, GRIS, 'start', italic=True))
+    # Memòria física.
+    o.append(t(XM + 50, YM - 10, 'Memòria física', 12, INK, bold=True))
+    for k in range(4):
+        y = YM + k * hm
+        if k == 2:
+            o.append(f'<rect x="{XM}" y="{y}" width="50" height="{hm}" fill="{P1_F}"/>')
+            o.append(f'<rect x="{XM + 50}" y="{y}" width="50" height="{hm}" fill="{P2_F}"/>')
+            o.append(f'<rect x="{XM}" y="{y}" width="100" height="{hm}" fill="none" stroke="{INK}" stroke-width="1.5"/>')
+            o.append(linies(XM + 50, y + hm / 2, [('VPN 0x00000 (P1)', 9, P1_S), ('VPN 0x00001 (P2)', 9, P2_S)]))
         else:
-            f, s, p = (P1_F, P1_S, 'P1') if ppn == '0x00' else (P2_F, P2_S, 'P2')
-            o.append(cel(XM, y, 100, 34, f, s, p, s, 11, mono=False))
-        o.append(t(XM + 108, y + 21, f'PPN {ppn}', 10, GRIS, 'start', mono=True))
-    return svg(680, 266, 'Compartició de pàgines',
-               "A l'esquerra, dues taules de pàgines, de P1 a dalt, en blau, i de P2 a sota, en verd, amb columnes V, "
-               "D, E i PPN. A la dreta, la memòria física, amb quatre marcs, de PPN 0x00 a 0x03. A P1, VPN 0x00000 "
-               "apunta a PPN 0x02 i VPN 0x00001 a PPN 0x00; a P2, VPN 0x00000 apunta a PPN 0x03 i VPN 0x00001 a "
-               "PPN 0x02. Les dues entrades que apunten a PPN 0x02 tenen V = 1 i E = 1, i les seves fletxes, més "
-               "gruixudes, convergeixen al marc 0x02, mig blau i mig verd, rotulat «compartida». PPN 0x01 és "
-               "lliure.", o)
+            o.append(cel(XM, y, 100, hm, NEUTRE, TRAC))
+        o.append(t(XM + 108, y + hm / 2 + 4, f'PPN 0x0{k}', 10, GRIS, 'start', mono=True))
+    # Les dues entrades vàlides apunten al marc compartit.
+    for ys, s, dy in sortides:
+        o.append(cami([(XT + wt, ys), (XM - 2, ycomp + dy)], s, 1.6))
+    return svg(680, YM + 4 * hm + 16, 'Compartició de pàgines',
+               "A l'esquerra, les taules de pàgines de P1, a dalt, en blau, i de P2, a sota, en verd, amb columnes V, "
+               "D, E i PPN i entrades de VPN 0x00000 a 0xFFFFF. Cada taula té una sola entrada vàlida: VPN 0x00000 a "
+               "P1 i VPN 0x00001 a P2, totes dues amb V = 1, D = 0, E = 1 i PPN 0x02; la resta tenen V = 0. Les "
+               "fletxes de les dues entrades convergeixen al marc PPN 0x02 de la memòria física, mig blau i mig verd. "
+               "A la dreta d'una línia discontínua, el maquinari amb P2 en execució: el TLB, amb una sola entrada "
+               "vàlida, VPN 0x00001 de P2 amb PPN 0x02, i el registre de taula de pàgines, que apunta a la base de "
+               "la taula de P2.", o)
 
 
 # ── Integració del TLB i la memòria cau ──────────────────────
