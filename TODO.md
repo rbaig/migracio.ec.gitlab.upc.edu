@@ -662,6 +662,8 @@ Rutes de destí per a les 9: `/auto_figs/T8_*__original_light.svg`.
   grep -o -h "{style='[^}]*}" -r _book --include=*.html | wc -l   # 4, al render del bloc 11 (sobre 3fd62b4 i el bloc sense confirmar)
   ```
 
+  ✅ **Executada el 2026-10-06 (decisió de l'usuari: fora `style=`).** Els quatre peus es queden amb la resta d'atributs (`tbl-colwidths`, `.striped`), i el d'`A2.qmd` que només tenia `style=` s'ha tret. Al render complet, 0 peus literals a l'HTML i al PDF. Es retira en tancar la fase 7c.
+
 - **Figures externes (llicències)**: taula completa de figures extretes de PDFs (incloses fonts i llicències). Referència eliminada temporalment de `13_contrib.qmd`. Enllaça amb `§Decisions obertes → Figures portades d'extern`.
 
 - **Gestió d'errades post-commit**: definir protocol. ⚠️ **La secció de destí és buida**: `13_contrib.qmd:779` (mesurat a `ebdf055`) té la capçalera `### Gestió d'errades` seguida directament de `## Eines` (`:781`), sense cap contingut. En resoldre-ho, o bé s'omple la secció, o bé se n'elimina la capçalera i la tasca queda només aquí.
