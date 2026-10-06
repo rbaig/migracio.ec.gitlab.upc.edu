@@ -395,82 +395,6 @@ Per garantir la coherència, el sistema operatiu ha d'invalidar les entrades afe
 El cost del *TLB shootdown* és significatiu: cada nucli afectat ha d'interrompre l'execució, processar la interrupció i invalidar l'entrada. En sistemes amb molts nuclis i processos que comparteixen memòria, el *TLB shootdown* pot convertir-se en un coll d'ampolla de rendiment rellevant, i és una de les raons per les quals la gestió eficient de la memòria virtual en sistemes multicore és un problema de recerca actiu.
 :::
 
-::: {#tip-mv-tlb-exemple .callout-tip}
-## Exemple de traducció amb TLB
-
-Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB ($t = 12$), una memòria física de 16 KiB (4 marcs de pàgina, adreces físiques de 14 bits) i un TLB de 4 entrades amb reemplaçament LRU, tant per al TLB com per a les pàgines. L'estat inicial és:
-
-| V | VPN | D | E | PPN |
-| :---: | :---: | :---: | :---: | :---: |
-| 1 | `0x00003` | 1 | 1 | `0x00` |
-| 1 | `0x00000` | 0 | 1 | `0x01` |
-| 1 | `0x00002` | 0 | 1 | `0x02` |
-| 0 | — | — | — | — |
-: TLB (estat inicial) {.striped}
-
-I la taula de pàgines (entrades rellevants):
-
-| VPN | V | D | E | PPN |
-| :---: | :---: | :---: | :---: | :---: |
-| `0x00000` | 1 | 0 | 1 | `0x01` |
-| `0x00001` | 0 | 0 | 1 | — |
-| `0x00002` | 1 | 0 | 1 | `0x02` |
-| `0x00003` | 1 | 1 | 1 | `0x00` |
-| `0x00004` | 0 | 0 | 1 | — |
-| `0x00005` | 0 | 0 | 1 | — |
-: Taula de pàgines (entrades rellevants) {.striped}
-
-Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = `0x03` és lliure), i que els 3 darrers accessos han estat a VPN = `0x00003`, VPN = `0x00000` i VPN = `0x00002`, en aquest ordre (de més antic a més recent). Les tres pàgines residents tenen entrada al TLB, de manera que l'ordre LRU del TLB i el de les pàgines coincideixen.
-
-**Accés 1**: Escriptura a `0x00002A0B` → VPN = `0x00002`.
-
-Encert de TLB. Com que és una escriptura amb E = 1 i D = 0, s'aplica la política d'escriptura immediata descrita a la @sec-mv-tlb-bitd: es posa D = 1 al TLB i a la PTE. PPN = `0x02`. Adreça física (14 bits): `0x2A0B`. VPN 2 passa a ser la pàgina més recent (ja ho era).
-
-**Accés 2**: Lectura a `0x00001F21` → VPN = `0x00001`.
-
-Fallada de TLB. La MMU llegeix la PTE de VPN 1: V = 0, fallada de pàgina; no es copia res al TLB. El sistema operatiu troba el marc lliure (PPN = `0x03`), hi carrega la pàgina des del disc i actualitza la PTE (V = 1, D = 0, PPN = `0x03`). En reexecutar la lectura, torna a fallar el TLB, però ara la PTE té V = 1 i la MMU la copia a l'entrada lliure. PPN = `0x03`. Adreça física: `0x3F21`. Ordre LRU: VPN 3, 0, 2, 1.
-
-**Accés 3**: Lectura a `0x0000420C` → VPN = `0x00004`.
-
-Fallada de TLB i, en llegir la PTE, fallada de pàgina. Cap marc lliure: el sistema operatiu tria la víctima LRU, VPN 3 (al marc `0x00`), que té D = 1 i cal escriure primer al disc. Posa V = 0 a la PTE de VPN 3 i n'**invalida l'entrada del TLB**, que queda lliure. Carrega VPN 4 al marc `0x00` i actualitza la seva PTE (V = 1, D = 0, PPN = `0x00`). En reexecutar la lectura, la MMU copia la PTE de VPN 4 a l'entrada que acaba de quedar lliure. PPN = `0x00`. Adreça física: `0x020C`. Ordre LRU: VPN 0, 2, 1, 4.
-
-**Accés 4**: Lectura a `0x00003001` → VPN = `0x00003`.
-
-Fallada de TLB (l'entrada de VPN 3 s'ha invalidat a l'accés 3) i fallada de pàgina. La víctima LRU és VPN 0 (al marc `0x01`), amb D = 0: no cal escriure-la al disc. V = 0 a la seva PTE i entrada del TLB invalidada. Es carrega VPN 3 al marc `0x01` (PTE: V = 1, D = 0, PPN = `0x01`; en tornar del disc la pàgina ja no està modificada) i, en reexecutar, s'instal·la a l'entrada lliure. PPN = `0x01`. Adreça física: `0x1001`. Ordre LRU: VPN 2, 1, 4, 3.
-
-**Accés 5**: Lectura a `0x00005120` → VPN = `0x00005`.
-
-Fallada de TLB i fallada de pàgina. La víctima LRU és VPN 2 (al marc `0x02`), que té D = 1 des de l'accés 1: s'escriu al disc. V = 0 a la seva PTE i entrada del TLB invalidada. Es carrega VPN 5 al marc `0x02` (PTE: V = 1, D = 0, PPN = `0x02`) i s'instal·la al TLB. PPN = `0x02`. Adreça física: `0x2120`. Ordre LRU: VPN 1, 4, 3, 5.
-
-| | Adreça lògica | VPN | Fallada TLB | Fallada pàg. | Pàg. víctima | Escr. disc | PPN | Adreça física |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| E | `0x00002A0B` | `0x00002` | no | no | — | no | `0x02` | `0x2A0B` |
-| L | `0x00001F21` | `0x00001` | sí | sí | — (marc lliure) | no | `0x03` | `0x3F21` |
-| L | `0x0000420C` | `0x00004` | sí | sí | `0x00003` | sí (VPN 3) | `0x00` | `0x020C` |
-| L | `0x00003001` | `0x00003` | sí | sí | `0x00000` | no | `0x01` | `0x1001` |
-| L | `0x00005120` | `0x00005` | sí | sí | `0x00002` | sí (VPN 2) | `0x02` | `0x2120` |
-: Resum dels cinc accessos {.striped tbl-colwidths="[5,16,11,10,10,16,12,8,12]"}
-
-En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x02`) i VPN 1 (`0x03`), totes amb D = 0, i el TLB té exactament aquestes quatre traduccions. Observeu que, amb tants marcs com entrades de TLB, el reemplaçament LRU del TLB no arriba a actuar mai: cada fallada de pàgina allibera una entrada del TLB abans que la pàgina nova la necessiti. El reemplaçament del TLB només entra en joc quan hi ha més pàgines residents que entrades, com a @exr-t8-tlb-estat. La @fig-mv-tlb-exemple mostra l'estat del TLB i de la memòria física després de cada accés.
-:::
-
-::::: {#fig-mv-tlb-exemple}
-:::: {.content-visible when-format="html"}
-::: {.fig-dinamica data-passos="6"}
-::: {.light-content}
-![](/auto_figs/T8_mv_exemple_tlb__original_light.svg)
-:::
-::: {.dark-content}
-![](/auto_figs/T8_mv_exemple_tlb__original_dark.svg)
-:::
-:::
-::::
-::: {.content-visible when-format="pdf"}
-![](/auto_figs/T8_mv_exemple_tlb__original_light.svg)
-:::
-Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el TLB i la memòria física després de resoldre'l, amb les entrades i els marcs que han canviat amb vora gruixuda. A l'HTML, el navegador de passos mostra també la taula de pàgines i l'ordre LRU després de cada accés.
-:::::
-
 ## Protecció i compartició {#sec-mv-proteccio}
 
 Una de les funcions més importants de la memòria virtual és permetre que múltiples processos comparteixin la memòria física de manera segura. Això requereix mecanismes que garanteixin que cap procés pugui accedir a l'espai d'adreçament d'un altre de manera no autoritzada.
@@ -595,3 +519,83 @@ on $T$ és la mida de pàgina. Per exemple, amb pàgines de 4 KiB i associativit
 
 VIPT és l'esquema habitual als processadors actuals per a la memòria cau L1. Les memòries cau L2 i L3, menys crítiques en latència, usen habitualment PIPT. Cap dels tres esquemes no és un requisit de la ISA: l'organització de les memòries cau és una decisió de cada implementació.
 :::
+
+## Exemple pràctic {#sec-mv-exemple}
+
+Aquesta secció recorre un exemple complet: una seqüència de cinc accessos a memòria en un sistema amb TLB, amb la traducció de cada adreça, les fallades de TLB i de pàgina, el reemplaçament i el bit D, seguint el flux de la @fig-mv-flux-traduccio.
+
+::: {#tip-mv-tlb-exemple .callout-tip}
+## Exemple de traducció amb TLB
+
+Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB ($t = 12$), una memòria física de 16 KiB (4 marcs de pàgina, adreces físiques de 14 bits) i un TLB de 4 entrades amb reemplaçament LRU, tant per al TLB com per a les pàgines. L'estat inicial és:
+
+| V | VPN | D | E | PPN |
+| :---: | :---: | :---: | :---: | :---: |
+| 1 | `0x00003` | 1 | 1 | `0x00` |
+| 1 | `0x00000` | 0 | 1 | `0x01` |
+| 1 | `0x00002` | 0 | 1 | `0x02` |
+| 0 | — | — | — | — |
+: TLB (estat inicial) {.striped}
+
+I la taula de pàgines (entrades rellevants):
+
+| VPN | V | D | E | PPN |
+| :---: | :---: | :---: | :---: | :---: |
+| `0x00000` | 1 | 0 | 1 | `0x01` |
+| `0x00001` | 0 | 0 | 1 | — |
+| `0x00002` | 1 | 0 | 1 | `0x02` |
+| `0x00003` | 1 | 1 | 1 | `0x00` |
+| `0x00004` | 0 | 0 | 1 | — |
+| `0x00005` | 0 | 0 | 1 | — |
+: Taula de pàgines (entrades rellevants) {.striped}
+
+Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = `0x03` és lliure), i que els 3 darrers accessos han estat a VPN = `0x00003`, VPN = `0x00000` i VPN = `0x00002`, en aquest ordre (de més antic a més recent). Les tres pàgines residents tenen entrada al TLB, de manera que l'ordre LRU del TLB i el de les pàgines coincideixen.
+
+**Accés 1**: Escriptura a `0x00002A0B` → VPN = `0x00002`.
+
+Encert de TLB. Com que és una escriptura amb E = 1 i D = 0, s'aplica la política d'escriptura immediata descrita a la @sec-mv-tlb-bitd: es posa D = 1 al TLB i a la PTE. PPN = `0x02`. Adreça física (14 bits): `0x2A0B`. VPN 2 passa a ser la pàgina més recent (ja ho era).
+
+**Accés 2**: Lectura a `0x00001F21` → VPN = `0x00001`.
+
+Fallada de TLB. La MMU llegeix la PTE de VPN 1: V = 0, fallada de pàgina; no es copia res al TLB. El sistema operatiu troba el marc lliure (PPN = `0x03`), hi carrega la pàgina des del disc i actualitza la PTE (V = 1, D = 0, PPN = `0x03`). En reexecutar la lectura, torna a fallar el TLB, però ara la PTE té V = 1 i la MMU la copia a l'entrada lliure. PPN = `0x03`. Adreça física: `0x3F21`. Ordre LRU: VPN 3, 0, 2, 1.
+
+**Accés 3**: Lectura a `0x0000420C` → VPN = `0x00004`.
+
+Fallada de TLB i, en llegir la PTE, fallada de pàgina. Cap marc lliure: el sistema operatiu tria la víctima LRU, VPN 3 (al marc `0x00`), que té D = 1 i cal escriure primer al disc. Posa V = 0 a la PTE de VPN 3 i n'**invalida l'entrada del TLB**, que queda lliure. Carrega VPN 4 al marc `0x00` i actualitza la seva PTE (V = 1, D = 0, PPN = `0x00`). En reexecutar la lectura, la MMU copia la PTE de VPN 4 a l'entrada que acaba de quedar lliure. PPN = `0x00`. Adreça física: `0x020C`. Ordre LRU: VPN 0, 2, 1, 4.
+
+**Accés 4**: Lectura a `0x00003001` → VPN = `0x00003`.
+
+Fallada de TLB (l'entrada de VPN 3 s'ha invalidat a l'accés 3) i fallada de pàgina. La víctima LRU és VPN 0 (al marc `0x01`), amb D = 0: no cal escriure-la al disc. V = 0 a la seva PTE i entrada del TLB invalidada. Es carrega VPN 3 al marc `0x01` (PTE: V = 1, D = 0, PPN = `0x01`; en tornar del disc la pàgina ja no està modificada) i, en reexecutar, s'instal·la a l'entrada lliure. PPN = `0x01`. Adreça física: `0x1001`. Ordre LRU: VPN 2, 1, 4, 3.
+
+**Accés 5**: Lectura a `0x00005120` → VPN = `0x00005`.
+
+Fallada de TLB i fallada de pàgina. La víctima LRU és VPN 2 (al marc `0x02`), que té D = 1 des de l'accés 1: s'escriu al disc. V = 0 a la seva PTE i entrada del TLB invalidada. Es carrega VPN 5 al marc `0x02` (PTE: V = 1, D = 0, PPN = `0x02`) i s'instal·la al TLB. PPN = `0x02`. Adreça física: `0x2120`. Ordre LRU: VPN 1, 4, 3, 5.
+
+| | Adreça lògica | VPN | Fallada TLB | Fallada pàg. | Pàg. víctima | Escr. disc | PPN | Adreça física |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| E | `0x00002A0B` | `0x00002` | no | no | — | no | `0x02` | `0x2A0B` |
+| L | `0x00001F21` | `0x00001` | sí | sí | — (marc lliure) | no | `0x03` | `0x3F21` |
+| L | `0x0000420C` | `0x00004` | sí | sí | `0x00003` | sí (VPN 3) | `0x00` | `0x020C` |
+| L | `0x00003001` | `0x00003` | sí | sí | `0x00000` | no | `0x01` | `0x1001` |
+| L | `0x00005120` | `0x00005` | sí | sí | `0x00002` | sí (VPN 2) | `0x02` | `0x2120` |
+: Resum dels cinc accessos {.striped tbl-colwidths="[5,16,11,10,10,16,12,8,12]"}
+
+En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x02`) i VPN 1 (`0x03`), totes amb D = 0, i el TLB té exactament aquestes quatre traduccions. Observeu que, amb tants marcs com entrades de TLB, el reemplaçament LRU del TLB no arriba a actuar mai: cada fallada de pàgina allibera una entrada del TLB abans que la pàgina nova la necessiti. El reemplaçament del TLB només entra en joc quan hi ha més pàgines residents que entrades, com a @exr-t8-tlb-estat. La @fig-mv-tlb-exemple mostra l'estat del TLB i de la memòria física després de cada accés.
+:::
+
+::::: {#fig-mv-tlb-exemple}
+:::: {.content-visible when-format="html"}
+::: {.fig-dinamica data-passos="6"}
+::: {.light-content}
+![](/auto_figs/T8_mv_exemple_tlb__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T8_mv_exemple_tlb__original_dark.svg)
+:::
+:::
+::::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T8_mv_exemple_tlb__original_light.svg)
+:::
+Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el TLB i la memòria física després de resoldre'l, amb les entrades i els marcs que han canviat amb vora gruixuda. A l'HTML, el navegador de passos mostra també la taula de pàgines i l'ordre LRU després de cada accés.
+:::::
