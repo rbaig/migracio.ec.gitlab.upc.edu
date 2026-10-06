@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `3ee92f4` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `d59ae41` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **84** etiquetes `#fig-`: 81 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 66 consumits i 10 sense consumir.
@@ -124,35 +124,35 @@ Generat per `25_scripts/inventari_figures.py` sobre `3ee92f4` (2026-10-06), amb 
 
 | Fitxer | Ús | Origen | Amplada | `<title>` | `<desc>` | Textos | Fora de paleta | Duplicat de |
 | :--- | :--- | :--- | ---: | :---: | :---: | ---: | :--- | :--- |
-| `22_figs_originals/T1_flux_compilacio.svg` | A1.qmd:58, A1.qmd:65 | Inkscape | 901 | sí | sí | 20 | #1a5276 #4a90b8 #e8f4f8 |  |
-| `22_figs_originals/T1_picopi_fases.svg` | A1.qmd:227, A1.qmd:234 | Inkscape | 680 | sí | sí | 39 | #888780 |  |
-| `22_figs_originals/T1_von_neumann.svg` | A1.qmd:361, A1.qmd:368 | Inkscape | 700 | sí | sí | 26 | #185fa5 #888780 #e6f1fb |  |
+| `22_figs_originals/T1_flux_compilacio.svg` | A1.qmd:58, A1.qmd:65 | Inkscape | 901 | sí | sí | 20 |  |  |
+| `22_figs_originals/T1_picopi_fases.svg` | A1.qmd:227, A1.qmd:234 | Inkscape | 680 | sí | sí | 39 |  |  |
+| `22_figs_originals/T1_von_neumann.svg` | A1.qmd:361, A1.qmd:368 | Inkscape | 700 | sí | sí | 26 |  |  |
 | `22_figs_originals/T2_acces_vector.svg` | A2.qmd:1899, A2.qmd:1906 | SVG natiu | 260 | sí | sí | 13 |  |  |
 | `22_figs_originals/T2_endianness_regla_pi.svg` | A2.qmd:1046, A2.qmd:1053 | Inkscape | 680 | sí | sí | 15 |  |  |
 | `22_figs_originals/T3_ba_exemple.svg` | **orfe** | Inkscape | 316 | no | no | 20 |  |  |
-| `22_figs_originals/T3_ba_func.svg` | A3.qmd:1455, A3.qmd:1462 | Inkscape | 326 | sí | sí | 11 | #333333 #4d4d4d |  |
-| `22_figs_originals/T3_ba_general.svg` | A3.qmd:1426, A3.qmd:1433 | Inkscape | 326 | sí | sí | 12 | #4d4d4d |  |
+| `22_figs_originals/T3_ba_func.svg` | A3.qmd:1455, A3.qmd:1462 | Inkscape | 326 | sí | sí | 11 |  |  |
+| `22_figs_originals/T3_ba_general.svg` | A3.qmd:1426, A3.qmd:1433 | Inkscape | 326 | sí | sí | 12 |  |  |
 | `22_figs_originals/T3_ba_multi.svg` | **orfe** | Inkscape | 326 | no | no | 7 |  |  |
 | `22_figs_originals/T3_compilacio_separada.svg` | A3.qmd:1890, A3.qmd:1897 | Inkscape | 610 | sí | sí | 13 |  |  |
 | `22_figs_originals/T3_deps_exemple.svg` | A3.qmd:1734, A3.qmd:1741 | Inkscape | 340 | sí | sí | 5 |  |  |
 | `22_figs_originals/T3_deps_multi.svg` | A3.qmd:1620, A3.qmd:1627 | Inkscape | 290 | sí | sí | 3 |  |  |
 | `22_figs_originals/T3_flux_gcc_complet.svg` | A3.qmd:2084, A3.qmd:2091 | SVG natiu | 490 | sí | sí | 21 |  |  |
-| `22_figs_originals/T3_mapa_memoria.svg` | A3.qmd:1020, A3.qmd:1027 | Inkscape | 326 | sí | sí | 19 | #4d4d4d |  |
-| `22_figs_originals/T3_pila_multinivell.svg` | A3.qmd:1506, A3.qmd:1513 | Inkscape | 510 | sí | sí | 30 | #e6e9ec |  |
-| `22_figs_originals/T3_pila_uninivell.svg` | A3.qmd:1385, A3.qmd:1392 | Inkscape | 310 | sí | sí | 18 | #e6e9ec |  |
+| `22_figs_originals/T3_mapa_memoria.svg` | A3.qmd:1020, A3.qmd:1027 | Inkscape | 326 | sí | sí | 19 |  |  |
+| `22_figs_originals/T3_pila_multinivell.svg` | A3.qmd:1506, A3.qmd:1513 | Inkscape | 510 | sí | sí | 30 |  |  |
+| `22_figs_originals/T3_pila_uninivell.svg` | A3.qmd:1385, A3.qmd:1392 | Inkscape | 310 | sí | sí | 18 |  |  |
 | `22_figs_originals/T4_divisor_sequencial.svg` | A4.qmd:394, A4.qmd:401 | SVG natiu | 440 | sí | sí | 16 |  |  |
-| `22_figs_originals/T4_matriu_emmagatzematge.svg` | A4.qmd:521, A4.qmd:528 | SVG natiu | 680 | sí | sí | 50 | #dee2e6 |  |
-| `22_figs_originals/T4_matriu_offset_ij.svg` | A4.qmd:562, A4.qmd:569 | SVG natiu | 680 | sí | sí | 12 | #dee2e6 |  |
+| `22_figs_originals/T4_matriu_emmagatzematge.svg` | A4.qmd:521, A4.qmd:528 | SVG natiu | 680 | sí | sí | 50 |  |  |
+| `22_figs_originals/T4_matriu_offset_ij.svg` | A4.qmd:562, A4.qmd:569 | SVG natiu | 680 | sí | sí | 12 |  |  |
 | `22_figs_originals/T4_matriu_recorreguts_strides.svg` | A4.qmd:849, A4.qmd:856 | SVG natiu | 680 | sí | sí | 8 |  |  |
 | `22_figs_originals/T4_multiplicador_arbre.svg` | A4.qmd:252, A4.qmd:259 | SVG natiu | 440 | sí | sí | 22 |  |  |
 | `22_figs_originals/T4_multiplicador_sequencial.svg` | A4.qmd:190, A4.qmd:197 | SVG natiu | 420 | sí | sí | 15 |  |  |
 | `22_figs_originals/T4_semisumador_sumador_complet.svg` | A4.qmd:80, A4.qmd:87 | script (gen_T4_sumador.py) | 590 | sí | sí | 24 |  |  |
 | `22_figs_originals/T4_sumador_propagacio_rossec.svg` | A4.qmd:104, A4.qmd:97 | script (gen_T4_sumador.py) | 750 | sí | sí | 28 |  |  |
-| `22_figs_originals/T5_exponent.svg` | A5.qmd:135, A5.qmd:142 | Inkscape | 740 | sí | sí | 24 | #000000 |  |
-| `22_figs_originals/T5_grs_esquema.svg` | A5.qmd:435, A5.qmd:442 | SVG natiu | 620 | sí | sí | 20 | #000000 |  |
-| `22_figs_originals/T5_recta_global.svg` | A5.qmd:270, A5.qmd:277 | SVG natiu | 950 | sí | sí | 86 | #000000 |  |
-| `22_figs_originals/T5_recta_zoom_zero.svg` | A5.qmd:385, A5.qmd:392 | Inkscape | 900 | sí | sí | 74 | #000000 |  |
-| `22_figs_originals/T5_taula_codificacions.svg` | A5.qmd:344, A5.qmd:351 | exportació LO Draw | 11509.377 | sí | sí | 12 | #000000 |  |
+| `22_figs_originals/T5_exponent.svg` | A5.qmd:135, A5.qmd:142 | Inkscape | 740 | sí | sí | 24 |  |  |
+| `22_figs_originals/T5_grs_esquema.svg` | A5.qmd:435, A5.qmd:442 | SVG natiu | 620 | sí | sí | 20 |  |  |
+| `22_figs_originals/T5_recta_global.svg` | A5.qmd:270, A5.qmd:277 | SVG natiu | 950 | sí | sí | 86 |  |  |
+| `22_figs_originals/T5_recta_zoom_zero.svg` | A5.qmd:385, A5.qmd:392 | Inkscape | 900 | sí | sí | 74 |  |  |
+| `22_figs_originals/T5_taula_codificacions.svg` | A5.qmd:344, A5.qmd:351 | exportació LO Draw | 11509.377 | sí | sí | 12 |  |  |
 | `22_figs_originals/T6_amdahl.svg` | A6.qmd:217, A6.qmd:224 | extreta de PDF | 220 | sí | sí | 38 | #000000 #999999 |  |
 | `22_figs_originals/T6_not_0_1.svg` | A6.qmd:326, A6.qmd:333 | extreta de PDF | 386 | sí | sí | 14 | #000000 |  |
 | `22_figs_originals/T6_not_1_0.svg` | A6.qmd:309, A6.qmd:316 | extreta de PDF | 386 | sí | sí | 14 | #000000 |  |
@@ -166,12 +166,12 @@ Generat per `25_scripts/inventari_figures.py` sobre `3ee92f4` (2026-10-06), amb 
 | `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 101 | #000000 |  |
 | `22_figs_originals/T7_escriptura_immediata_sense_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 100 | #000000 |  |
 | `22_figs_originals/T7_escriptura_retardada.svg` | **orfe** | Inkscape | 800 | sí | sí | 163 | #000000 |  |
-| `22_figs_originals/T7_gap_processador_memoria.svg` | A7.qmd:34, A7.qmd:41 | SVG natiu | 620 | sí | sí | 17 | #dee2e6 |  |
+| `22_figs_originals/T7_gap_processador_memoria.svg` | A7.qmd:34, A7.qmd:41 | SVG natiu | 620 | sí | sí | 17 |  |  |
 | `22_figs_originals/T7_jerarquia_piramide.svg` | A7.qmd:106, A7.qmd:99 | SVG natiu | 580 | sí | sí | 7 |  |  |
 | `22_figs_originals/T7_lru_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 237 | #000000 |  |
 | `22_figs_originals/T7_mc_descomposicio_bits.svg` | A7.qmd:184, A7.qmd:191 | Inkscape | 590 | sí | sí | 18 |  |  |
-| `22_figs_originals/T7_mc_encert.svg` | A7.qmd:223, A7.qmd:230 | Inkscape | 575 | sí | sí | 29 | #000000 |  |
-| `22_figs_originals/T7_mc_fallada.svg` | A7.qmd:246, A7.qmd:253 | Inkscape | 575 | sí | sí | 48 | #000000 #0b449a #7d6d6c |  |
+| `22_figs_originals/T7_mc_encert.svg` | A7.qmd:223, A7.qmd:230 | Inkscape | 575 | sí | sí | 29 |  |  |
+| `22_figs_originals/T7_mc_fallada.svg` | A7.qmd:246, A7.qmd:253 | Inkscape | 575 | sí | sí | 48 |  |  |
 | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | A7.qmd:685, A7.qmd:692 | Graphviz | 459 | sí | sí | 19 |  |  |
 | `22_figs_originals/T7_multinivell_diagrama.svg` | A7.qmd:1001, A7.qmd:1008 | script (gen_T7.py) | 660 | sí | sí | 22 |  |  |
 | `22_figs_originals/T7_multinivell_multicore.svg` | A7.qmd:1066, A7.qmd:1073 | script (gen_T7.py) | 660 | sí | sí | 20 |  |  |
@@ -187,7 +187,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `3ee92f4` (2026-10-06), amb 
 | `22_figs_originals/T8_mv_exemple_tlb_pas3.svg` | fotograma de `T8_mv_exemple_tlb.svg` | script (gen_T8.py) | 680 | sí | sí | 76 |  |  |
 | `22_figs_originals/T8_mv_exemple_tlb_pas4.svg` | fotograma de `T8_mv_exemple_tlb.svg` | script (gen_T8.py) | 680 | sí | sí | 76 |  |  |
 | `22_figs_originals/T8_mv_exemple_tlb_pas5.svg` | fotograma de `T8_mv_exemple_tlb.svg` | script (gen_T8.py) | 680 | sí | sí | 76 |  |  |
-| `22_figs_originals/T8_mv_flux_traduccio.svg` | A8.qmd:376, A8.qmd:383 | script (gen_T8.py) | 960 | sí | sí | 57 | #e6f1fb |  |
+| `22_figs_originals/T8_mv_flux_traduccio.svg` | A8.qmd:376, A8.qmd:383 | script (gen_T8.py) | 960 | sí | sí | 57 |  |  |
 | `22_figs_originals/T8_mv_jerarquia.svg` | A8.qmd:52, A8.qmd:59 | script (gen_T8.py) | 680 | sí | sí | 17 |  |  |
 | `22_figs_originals/T8_mv_pagines_marcs.svg` | A8.qmd:102, A8.qmd:95 | script (gen_T8.py) | 680 | sí | sí | 41 |  |  |
 | `22_figs_originals/T8_mv_pipt.svg` | A8.qmd:461, A8.qmd:468 | script (gen_T8.py) | 680 | sí | sí | 15 |  |  |
@@ -242,32 +242,13 @@ Generat per `25_scripts/inventari_figures.py` sobre `3ee92f4` (2026-10-06), amb 
 
 ## Avisos
 
-### Colors fora de la paleta (`svg.md §10` i `§16`) (24)
+### Colors fora de la paleta (`svg.md §10` i `§16`) (5)
 
-- `22_figs_originals/T1_flux_compilacio.svg`: #1a5276 #4a90b8 #e8f4f8
-- `22_figs_originals/T1_picopi_fases.svg`: #888780
-- `22_figs_originals/T1_von_neumann.svg`: #185fa5 #888780 #e6f1fb
-- `22_figs_originals/T3_ba_func.svg`: #333333 #4d4d4d
-- `22_figs_originals/T3_ba_general.svg`: #4d4d4d
-- `22_figs_originals/T3_mapa_memoria.svg`: #4d4d4d
-- `22_figs_originals/T3_pila_multinivell.svg`: #e6e9ec
-- `22_figs_originals/T3_pila_uninivell.svg`: #e6e9ec
-- `22_figs_originals/T4_matriu_emmagatzematge.svg`: #dee2e6
-- `22_figs_originals/T4_matriu_offset_ij.svg`: #dee2e6
-- `22_figs_originals/T5_exponent.svg`: #000000
-- `22_figs_originals/T5_grs_esquema.svg`: #000000
-- `22_figs_originals/T5_recta_global.svg`: #000000
-- `22_figs_originals/T5_recta_zoom_zero.svg`: #000000
-- `22_figs_originals/T5_taula_codificacions.svg`: #000000
 - `22_figs_originals/T6_amdahl.svg`: #000000 #999999
 - `22_figs_originals/T6_not_0_1.svg`: #000000
 - `22_figs_originals/T6_not_1_0.svg`: #000000
 - `22_figs_originals/T6_not_cmos.svg`: #000000
 - `22_figs_originals/T6_tc_tc_prima.svg`: #000000 #b3b3b3
-- `22_figs_originals/T7_gap_processador_memoria.svg`: #dee2e6
-- `22_figs_originals/T7_mc_encert.svg`: #000000
-- `22_figs_originals/T7_mc_fallada.svg`: #000000 #0b449a #7d6d6c
-- `22_figs_originals/T8_mv_flux_traduccio.svg`: #e6f1fb
 
 ### Figures ràster (1)
 

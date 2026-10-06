@@ -283,6 +283,10 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | Hit (encert de MC) — etiqueta de resultat   | — | `#198754` |
 | Miss (zona de bloc) — fons de cel·la MC/MP  | `#f8d0d3` | `#dc3545` |
 | Hit (zona de bloc) — fons de cel·la MC/MP   | `#c8ebd8` | `#198754` |
+| Zona o contenidor (la CPU, el maquinari d'un flux) | `#e6f1fb` | `#084298` |
+| Graella i vores secundàries | — | `#dee2e6` |
+
+Els dos últims colors s'hi van afegir el 2026-10-06 (decisió de l'usuari, a proposta de Claude Code), perquè ja els feien servir diverses figures amb aquest paper: `#e6f1fb`, `T1_von_neumann` i `T8_mv_flux_traduccio`; `#dee2e6`, `T4_matriu_emmagatzematge`, `T4_matriu_offset_ij` i `T7_gap_processador_memoria`. La resta de colors que quedaven fora de la paleta es van migrar el mateix dia (§14). La paleta s'ha de revisar per reduir-ne la quantitat de colors (`TODO.md`).
 
 ---
 
@@ -422,56 +426,21 @@ REPLACEMENTS = [
     ('#664d03', '#ffd966'),
     ('#f8d7da', '#3a1a1e'),  # .text / executable (rosa)
     ('#842029', '#f1a8ae'),
-    # Figures extretes de PDF (text traçat, vegeu §15)
-    ('#000000', '#adb5bd'),  # línies i text negre implícit → gris clar
-    ('rgb(0, 0, 0)', '#adb5bd'),  # negre en notació funcional (export draw.io)
-    ('#ffffff', '#2d2d2d'),  # fons blanc de zones internes → gris molt fosc
-    ('#b3b3b3', '#666666'),  # gris mig (p. ex. barres de tc/tc') → gris fosc llegible
+    ('#cc0000', '#ff6b6b'),  # dependències de dades: resultats intermedis (T3_deps_*, vegeu §14)
     ('#f8d0d3', '#3d1a1e'),  # Miss zona bloc (vermell clar → fosc)
     ('#dc3545', '#f07080'),  # Miss zona bloc stroke
     ('#c8ebd8', '#1a3328'),  # Hit zona bloc (verd clar → fosc)
     ('#198754', '#70c898'),  # Hit zona bloc stroke
+    ('#e6f1fb', '#173349'),  # zona o contenidor: fons blau molt clar
+    ('#dee2e6', '#495057'),  # graella i vores secundàries (Bootstrap gray-300 → gray-700)
+    # Figures extretes de PDF (text traçat, vegeu §15)
+    ('#000000', '#adb5bd'),  # línies i text negre implícit → gris clar
+    ('#ffffff', '#2d2d2d'),  # fons blanc de zones internes → gris molt fosc
+    ('#b3b3b3', '#666666'),  # gris mig (p. ex. barres de tc/tc') → gris fosc llegible
+    ('#999999', '#777777'),  # T6_amdahl: gris mig (fill)
     # Artefacte Inkscape: color de la graella d'edició (<inkscape:grid color=...>),
     # invisible al render. Entrada identitat perquè no es reporti com a desconegut.
     ('#0099e5', '#0099e5'),
-    # Colors llegat de figures natives (T1, T3, T6, T7; pendents de migrar a la paleta §10)
-    ('#cc0000', '#ff6b6b'),  # T3_deps_*: resultats intermedis (vegeu §14)
-    ('#0b449a', '#90bfff'),  # T7_mc_fallada: blau fosc → blau clar
-    ('#185fa5', '#7db8e8'),  # T1_von_neumann: blau mig
-    ('#1a5276', '#85c1e9'),  # T1_flux_compilacio: blau petroli fosc
-    ('#4a90b8', '#7cc0e8'),  # T1_flux_compilacio: blau acer
-    ('#333333', '#cccccc'),  # T3_ba_func: text gris molt fosc
-    ('#4d4d4d', '#bbbbbb'),  # T3 BA/mapa memòria: text gris fosc
-    ('#7d6d6c', '#b5a8a6'),  # T7_mc_fallada: gris marronós
-    ('#888780', '#a5a49c'),  # T1: stroke gris càlid
-    ('#999999', '#777777'),  # T6_amdahl: gris mig (fill)
-    ('#dee2e6', '#495057'),  # T4/T7: vores gris clar (Bootstrap gray-300 → gray-700)
-    ('#e6f1fb', '#173349'),  # T1_von_neumann: fons blau molt clar
-    ('#e8f4f8', '#16333d'),  # T1_flux_compilacio: fons cian molt clar
-    # Figures externes LO Draw / draw.io (T7): text traçat saturat → pastel clar
-    ('#0000ff', '#6699ff'),  # text/línies blau pur
-    ('#ff0000', '#ff7070'),  # text/línies vermell pur
-    ('#00ff00', '#55dd55'),  # text/línies verd pur
-    ('#2eff2e', '#55dd55'),  # verd brillant (draw.io)
-    ('#2b5190', '#8fb3e8'),  # stroke blau fosc (gràfic tipus de fallades)
-    ('#4273c5', '#9bbdf2'),  # blau mig (gràfic tipus de fallades)
-    # Figures externes LO Draw / draw.io (T7): fons de cel·la clars → foscos apagats
-    ('#8080ff', '#2e2e5c'),  # fons violeta-blau
-    ('#b3b3ff', '#3a3a70'),  # fons lavanda
-    ('#80ff80', '#1e4d1e'),  # fons verd clar
-    ('#90c490', '#3a5f3a'),  # fons verd mig
-    ('#ccffcc', '#1a3a1a'),  # fons verd molt clar
-    ('#d3e8d3', '#243a24'),  # fons verd grisós
-    ('#dfecf7', '#1c2e3f'),  # fons blau clar
-    ('#ffff00', '#665f00'),  # fons groc (realçat)
-    ('#ffff80', '#4d4700'),  # fons groc clar
-    ('#ffff9a', '#544e10'),  # fons groc pàl·lid
-    ('#ff6666', '#5c2626'),  # fons vermell mig (T7_lru_roger draw.io)
-    ('#ff8080', '#4d1f1f'),  # fons vermell clar
-    ('#ffe0d1', '#3d2a20'),  # fons taronja clar
-    ('#ffe9e2', '#3d2a24'),  # fons taronja-rosat clar
-    ('#ffebe0', '#3d2c20'),  # fons taronja pàl·lid
-    ('#fff0ec', '#382723'),  # fons taronja-rosat molt pàl·lid
 ]
 ```
 
@@ -485,7 +454,7 @@ Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
 **Figures de dependències de dades** (`T3_deps_*`): el color `#cc0000` (resultats intermedis i usos posteriors a la crida) forma part de la taula de substitució dark (§13) amb l'equivalent `#ff6b6b`; la variant dark es genera automàticament.
 
-**Colors llegat**: diverses figures natives (T1, T3, T6, T7) usen colors fora de la paleta §10, incorporats a la taula §13 perquè la variant dark es generi correctament. Quan aquestes figures es migrin a la paleta §10, les entrades corresponents de §13 (bloc «Colors llegat») es podran retirar.
+**Colors llegat: migrats el 2026-10-06.** Fins llavors, diverses figures natives (T1, T3, T5, T6, T7) feien servir colors fora de la paleta §10, que §13 convertia per al fosc; dues, `T3_pila_uninivell` i `T3_pila_multinivell`, en feien servir un (`#e6e9ec`) que no hi era, i al fosc la memòria lliure sortia d'un gris molt clar. Es van passar a la paleta: el negre de les figures natives de T5, a `#343a40`; els blaus de T1 i de `T7_mc_fallada`, a `#084298` i `#cfe2ff`; els grisos de text de T3, a `#343a40`; els de traç de T1, a `#adb5bd`; i el de la pila, a `#f8f9fa`. Dos colors que feien servir diverses figures amb un paper propi es van afegir a §10 (`#e6f1fb` i `#dee2e6`). §13 va perdre les 32 entrades que ja no feia servir cap fitxer: les 23 de les figures externes de T7 retirades a la fase 7c i les 9 que la migració va deixar lliures. Un color nou fora de §10 s'ha d'afegir a §13 en el mateix commit, o el fosc el deixa igual (`gen_dark.py` l'avisa al render).
 
 ---
 
