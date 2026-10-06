@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `d59ae41` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `c7180d9` (2026-10-06), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **84** etiquetes `#fig-`: 81 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 66 consumits i 10 sense consumir.
@@ -153,11 +153,11 @@ Generat per `25_scripts/inventari_figures.py` sobre `d59ae41` (2026-10-06), amb 
 | `22_figs_originals/T5_recta_global.svg` | A5.qmd:270, A5.qmd:277 | SVG natiu | 950 | sí | sí | 86 |  |  |
 | `22_figs_originals/T5_recta_zoom_zero.svg` | A5.qmd:385, A5.qmd:392 | Inkscape | 900 | sí | sí | 74 |  |  |
 | `22_figs_originals/T5_taula_codificacions.svg` | A5.qmd:344, A5.qmd:351 | exportació LO Draw | 11509.377 | sí | sí | 12 |  |  |
-| `22_figs_originals/T6_amdahl.svg` | A6.qmd:217, A6.qmd:224 | extreta de PDF | 220 | sí | sí | 38 | #000000 #999999 |  |
-| `22_figs_originals/T6_not_0_1.svg` | A6.qmd:326, A6.qmd:333 | extreta de PDF | 386 | sí | sí | 14 | #000000 |  |
-| `22_figs_originals/T6_not_1_0.svg` | A6.qmd:309, A6.qmd:316 | extreta de PDF | 386 | sí | sí | 14 | #000000 |  |
-| `22_figs_originals/T6_not_cmos.svg` | A6.qmd:290, A6.qmd:297 | extreta de PDF | 360 | sí | sí | 8 | #000000 |  |
-| `22_figs_originals/T6_tc_tc_prima.svg` | A6.qmd:149, A6.qmd:156 | extreta de PDF | 284 | sí | sí | 10 | #000000 #b3b3b3 |  |
+| `22_figs_originals/T6_amdahl.svg` | A6.qmd:217, A6.qmd:224 | extreta de PDF | 220 | sí | sí | 15 |  |  |
+| `22_figs_originals/T6_not_0_1.svg` | A6.qmd:326, A6.qmd:333 | extreta de PDF | 386 | sí | sí | 14 |  |  |
+| `22_figs_originals/T6_not_1_0.svg` | A6.qmd:309, A6.qmd:316 | extreta de PDF | 386 | sí | sí | 14 |  |  |
+| `22_figs_originals/T6_not_cmos.svg` | A6.qmd:290, A6.qmd:297 | extreta de PDF | 360 | sí | sí | 8 |  |  |
+| `22_figs_originals/T6_tc_tc_prima.svg` | A6.qmd:149, A6.qmd:156 | extreta de PDF | 284 | sí | sí | 10 |  |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 235 |  |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 266 |  |  |
 | `22_figs_originals/T7_cd_descomposicio_bits.svg` | A7.qmd:284, A7.qmd:291 | Inkscape | 545 | sí | sí | 19 |  |  |
@@ -242,14 +242,6 @@ Generat per `25_scripts/inventari_figures.py` sobre `d59ae41` (2026-10-06), amb 
 
 ## Avisos
 
-### Colors fora de la paleta (`svg.md §10` i `§16`) (5)
-
-- `22_figs_originals/T6_amdahl.svg`: #000000 #999999
-- `22_figs_originals/T6_not_0_1.svg`: #000000
-- `22_figs_originals/T6_not_1_0.svg`: #000000
-- `22_figs_originals/T6_not_cmos.svg`: #000000
-- `22_figs_originals/T6_tc_tc_prima.svg`: #000000 #b3b3b3
-
 ### Figures ràster (1)
 
 - `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg`
@@ -271,11 +263,3 @@ Generat per `25_scripts/inventari_figures.py` sobre `d59ae41` (2026-10-06), amb 
 
 - `fig-big-endian` (A2.qmd:1003)
 - `fig-little-endian` (A2.qmd:1017)
-
-### `textLength` (rsvg-convert no l'implementa) (5)
-
-- `22_figs_originals/T6_amdahl.svg` (38)
-- `22_figs_originals/T6_not_0_1.svg` (13)
-- `22_figs_originals/T6_not_1_0.svg` (13)
-- `22_figs_originals/T6_not_cmos.svg` (8)
-- `22_figs_originals/T6_tc_tc_prima.svg` (5)

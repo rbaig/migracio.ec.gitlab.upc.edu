@@ -436,8 +436,6 @@ REPLACEMENTS = [
     # Figures extretes de PDF (text traçat, vegeu §15)
     ('#000000', '#adb5bd'),  # línies i text negre implícit → gris clar
     ('#ffffff', '#2d2d2d'),  # fons blanc de zones internes → gris molt fosc
-    ('#b3b3b3', '#666666'),  # gris mig (p. ex. barres de tc/tc') → gris fosc llegible
-    ('#999999', '#777777'),  # T6_amdahl: gris mig (fill)
     # Artefacte Inkscape: color de la graella d'edició (<inkscape:grid color=...>),
     # invisible al render. Entrada identitat perquè no es reporti com a desconegut.
     ('#0099e5', '#0099e5'),
@@ -470,13 +468,12 @@ Algunes figures del projecte provenen de PDFs originals (material docent anterio
 
 ### Generació de la variant dark
 
-Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com la resta de figures, gràcies a les tres entrades específiques de la taula `REPLACEMENTS` (§13):
+Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com la resta de figures, gràcies a les dues entrades específiques de la taula `REPLACEMENTS` (§13):
 
 | Light | Dark | Ús |
 |:---|:---|:---|
 | `#000000` | `#adb5bd` | Línies, contorns i text de figures de línia negra |
 | `#ffffff` | `#2d2d2d` | Zones blanques internes (p. ex. àrea buida de barres) |
-| `#b3b3b3` | `#666666` | Gris mig de figures (p. ex. barres de `T6_tc_tc_prima`) |
 
 **El pipeline automàtic gestiona correctament totes les figures extretes de PDF**: no cal cap configuració addicional.
 
@@ -487,8 +484,10 @@ Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com
 | `T6_amdahl` | `T6_amdahl.pdf` | Barres $t_0/t_1$, fraccions $P_x$, $s_x$ (Llei d'Amdahl) |
 | `T6_tc_tc_prima` | `T6_tc_tc_prima.pdf` | Barres A/B, $t_c$ vs $t_c'$ (reducció de temps de cicle) |
 | `T6_not_cmos` | `T6_not__cmos___1_0___0_1.pdf` | Porta NOT: representació funcional i CMOS |
-| `T6_not_1_0` | `T6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=Vcc(1-e^{-t/RC})$ |
-| `T6_not_0_1` | `T6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=Vcc\,e^{-t/RC}$ |
+| `T6_not_1_0` | `T6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=V_{CC}(1-e^{-t/RC})$ |
+| `T6_not_0_1` | `T6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=V_{CC}\,e^{-t/RC}$ |
+
+Les cinc figures de T6 ja no són el resultat directe de l'extracció: el 2026-10-06 se'ls va treure el `textLength` (que `rsvg-convert` no implementa), els subíndexs es van passar a `<tspan dy>` dins d'un sol `<text>` (a `T6_amdahl`, els 38 `<text>` d'un caràcter o d'un subíndex es van refer en 15), el text es va posar en la notació d'A6 ($V_{CC}$, $V_{in}$, $V_{out}$, $s_x$, $t_{\text{no-millorat}}$, PMOS i NMOS) i els colors, a la paleta (el negre a `#343a40`, i el gris mig de les barres, `#999999` i `#b3b3b3`, a `#adb5bd`). Si mai es tornen a extreure del PDF, cal refer-ho. Un espai que obre un `<tspan>` després d'un subíndex, `rsvg-convert` se'l menja si el `<text>` no porta `xml:space="preserve"`.
 
 
 ---
