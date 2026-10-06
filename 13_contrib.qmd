@@ -900,6 +900,8 @@ duplicació de figures si no se separen les variants, `tbl-colwidths` que ha de
 sumar 100, les capçaleres `###` del laboratori, `[@sec-]` que només funciona a
 PDF, i aquest fitxer sent HTML-only). Per a la resta, `make render`.
 
+**Esperar un render en segon pla.** Les sessions de Claude Code sovint llancen `make render-complet` en segon pla, perquè dura uns quants minuts. Per saber quan acaba, escriviu un marcador al registre (`make render-complet > log 2>&1; echo "exit=$?" >> log`) i espereu el marcador (`until grep -q '^exit=' log; do sleep 15; done`). No espereu amb `pgrep -f "quarto render"`: el patró també és a la línia d'ordres del bucle mateix, que es troba a si mateix i no acaba mai. Un bucle així va quedar 34 hores en segon pla i bloquejava el `/exit` de Claude Code (detectat el 2026-10-06).
+
 Una escombrada de referències creuades trencades sobre el resultat del render
 és la xarxa secundària; la primària és que `make render` acabi net. Si la feu,
 té tres trampes. **Ha de ser recursiva sobre `_book/`**: `_book/*.html` són 5
