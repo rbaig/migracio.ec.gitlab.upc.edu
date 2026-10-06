@@ -20,7 +20,10 @@ retirat a la fase 7c i recuperable amb `git show 17d90ca:22_figs_originals/TODO.
 Comprovacions que fa (secció «Avisos»):
 
 - fitxers font que cap `.qmd` no consumeix (orfes), i duplicats byte a byte;
-- figures que consumeixen el placeholder, una exportació (`__extern_`) o un ràster;
+- figures que consumeixen el placeholder, una exportació (`__extern_`) o un
+  ràster de `22_figs_originals/` (les natives han de ser SVG); una figura de
+  `23_figs_externes/`, com la foto del xip de T7, pot ser ràster, però el peu
+  n'ha de dir la font, `(Font: [@clau])` (13_contrib.qmd §Convencions SVG);
 - SVG consumits sense `<title>` o sense `<desc>`, i `<desc>` idèntic al peu
   (el `<desc>` és el text alternatiu, i no ha de repetir el peu: decisió de
   l'usuari, 2026-10-03, fase 7c);
@@ -353,7 +356,10 @@ def main():
         if f.startswith('23_figs_externes/') and f.endswith('.svg'):
             avisos['Figures consumides com a exportació (`__extern_`)'].append(f'`{f}`')
         if i['origen'] == 'ràster' and 'by-nc-sa' not in f:
-            avisos['Figures ràster'].append(f'`{f}`')
+            if not f.startswith('23_figs_externes/'):
+                avisos['Figures ràster natives (han de ser SVG)'].append(f'`{f}`')
+            elif any('(Font: [@' not in peu(textos[u['qmd']], u['fig']) for u in us if u['fig']):
+                avisos['Figures externes sense la font al peu (`(Font: [@clau])`)'].append(f'`{f}`')
         if f.endswith('.svg') or ':' in f:
             if not i['title']:
                 avisos['SVG consumits sense `<title>`'].append(f'`{f}`')
