@@ -262,6 +262,14 @@ def main():
     consumides = collections.defaultdict(list)
     for u in usos:
         consumides[u['font']].append(u)
+
+    def estatica(f):
+        """Si f és un fotograma d'una figura dinàmica (<arrel>_pas<k>.svg, al costat de l'estàtica) i
+        l'estàtica es consumeix, l'estàtica. Els fotogrames només els cita el JavaScript de
+        figures_dinamiques.html, i no són orfes."""
+        m = re.match(r'(.+)_pas\d+$', Path(f).stem)
+        e = str(Path(f).with_name(m.group(1) + Path(f).suffix)) if m else None
+        return e if e and consumides.get(e) else None
     per_sha = collections.defaultdict(list)
     for f, i in fonts.items():
         if i['sha']:
@@ -331,6 +339,8 @@ def main():
         if not us:
             if ':' not in f:
                 tija = Path(f).stem
+                if estatica(f):
+                    continue
                 # una figura generada amb la mateixa arrel, o amb una arrel que n'és el començament
                 # (T7_capacitat_exemple aplega les dues passades de T7_capacitat_exemple_bucle_*)
                 if any(':' in k and tija.startswith(k.split(':', 1)[1]) and consumides.get(k) for k in fonts):
@@ -364,7 +374,7 @@ def main():
          f'Generat per `25_scripts/inventari_figures.py` sobre `{commit}` ({data})'
          + (', amb canvis no confirmats a l\'arbre de treball' if brut else '') + '. **No l\'editeu a mà**: '
          '`make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l\'script.', '']
-    n_cons = sum(1 for f in fonts if consumides.get(f) and ':' not in f)
+    n_cons = sum(1 for f in fonts if (consumides.get(f) or estatica(f)) and ':' not in f)
     n_fit = sum(1 for f in fonts if ':' not in f)
     o += [f'- **{len(figs)}** etiquetes `#fig-`: {len(figs_amb_imatge)} amb imatge, {len(subfigs)} d\'elles subfigures de {len(pares)} figures, '
           f'i {len(figs) - len(figs_amb_imatge) - len(pares)} taules Markdown; '
@@ -384,6 +394,8 @@ def main():
         us = consumides.get(f, [])
         llocs = sorted({f"{u['qmd'].split('/')[-1]}:{u['linia']}" for u in us if u['variant'] == 'clar'})
         dup = ' '.join(f'`{x}`' for x in per_sha.get(i['sha'], []) if x != f) if i['sha'] else ''
+        if not llocs and estatica(f):
+            llocs = [f'fotograma de `{Path(estatica(f)).name}`']
         o.append(f"| `{f}` | {', '.join(llocs[:2]) + (' …' if len(llocs) > 2 else '') if llocs else '**orfe**'} | {i['origen']} | "
                  f"{i['amplada']} | {'sí' if i['title'] else 'no'} | {'sí' if i['desc'] else 'no'} | {len(i['textos'])} | "
                  f"{' '.join(i['fora'])} | {dup} |")
