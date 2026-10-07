@@ -209,4 +209,4 @@ Regles operatives:
 Política de generació SVG (prioritat, tipus de figures, fonts i colors): vegeu `13_contrib.qmd §Figures i material gràfic`.
 
 Mirror públic del repositori: https://github.com/rbaig/migracio.ec.gitlab.upc.edu
-Renderització HTML (pot estar desactualitzada): https://loi.ac.upc.edu/ec
+Renderització HTML (pot estar desactualitzada): https://rbaig.github.io/migracio.ec.gitlab.upc.edu/

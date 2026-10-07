@@ -3,7 +3,6 @@
 ::::::::: {.content-visible when-format="pdf"}
 Aquest document de convencions només està disponible en la versió web:
 
-<!-- [\texttt{https://loi.pc.ac.upc.edu/ec/contrib.html}](https://loi.pc.ac.upc.edu/ec/contrib.html) -->
 [{{< var website >}}]({{< var website >}})
 :::::::::
 
@@ -12,8 +11,9 @@ Aquest document de convencions només està disponible en la versió web:
 
 ## Ús d'aquesta guia
 
-- S'ha d'actualitzar sempre que es prengui una decisió de format, estil, etc.
-- Per al flux de treball, model d'IA i fase actual del projecte, vegeu `CLAUDE.md`.
+- Recull les regles del llibre: contingut, llenguatge, format i eines. S'ha d'actualitzar sempre que es prengui una decisió de format, estil, etc.
+- El perquè i l'historial de cada regla, datats i amb els commits, són al registre de decisions, [`24_specs/registre_de_decisions.md`]({{< var decisions >}}). Les regles que hi tenen entrada hi enllacen amb el seu identificador, com ara [D-1]({{< var decisions >}}#d-1). Una regla nova o canviada porta la seva entrada al registre, en el mateix commit.
+- Per al flux de treball, el model d'IA i la fase actual del projecte, vegeu `CLAUDE.md`.
 - Per a tasques pendents i decisions obertes, vegeu `TODO.md`.
 
 ## Contingut
@@ -25,7 +25,7 @@ Aquest document de convencions només està disponible en la versió web:
 - **Mnemònics**: El primer cop, si no estan prop d'una taula on se n'indiqui l'expansió, han d'anar seguits de l'expansió entre parèntesis. Ex: `addi` (***add immediate***).
 - No es permet que un nivell de profunditat tingui un sol ítem. En aquest cas, s'ha de pujar el contingut un nivell.
 - L'arquitectura de referència és RISC-V. No s'ha de fer cap referència a MIPS (tret d'on ja s'ha fet explícitament).
-
+- **Precedència textual**: els apunts (`Ax.qmd`) prevalen sobre els problemes (`Ex.qmd`) i les solucions (`Sx.qmd`); dins dels apunts, el cos del text i els `.callout-note` prevalen sobre la resta de callouts i continguts. S'aplica, per exemple, als bits `E` i `V` de §T8 ([D-1]({{< var decisions >}}#d-1)).
 
 ### Fitxer de referència tècnica (`11_riscv.qmd`) i directori `21_riscv/` {#sec-contrib-reftecnica}
 
@@ -37,15 +37,15 @@ El directori `21_riscv/` conté els **fragments de taula reutilitzables** (sols 
 
 - Només files de taula (sense header, sense caption, sense atributs `{}`).
 - Nom: `<extensió>_<categoria>_<descripció>.qmd`. Exemples: `RV32I_instruccions_aritmetiques.qmd`, `Zicsr_instruccions.qmd`, `RARS_syscall_codis.qmd`.
-- Excepció: els callouts que contenen **figures SVG** no s'externalitzen; es reprodueixen íntegrament a `11_riscv.qmd` amb IDs `#nte-rv-*`. Les figures, com totes les dels callouts `#nte-` (§Callouts), van sense etiqueta ni peu. Fins al 2026-10-04 (fase 7c) aquesta línia deia que portaven `#fig-rv-*`, i cap figura del compendi no en tenia; les dels `#nte-` dels `Ax.qmd` sí que en portaven, quinze, i es van treure.
+- Excepció: els callouts que contenen **figures SVG** no s'externalitzen; es reprodueixen íntegrament a `11_riscv.qmd` amb IDs `#nte-rv-*`. Les figures, com totes les dels callouts `#nte-` (§Callouts), van sense etiqueta ni peu ([D-2]({{< var decisions >}}#d-2)).
 
 **IDs dels callouts a `11_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Ax.qmd`), per evitar conflictes de ID Quarto. Les figures que contenen no porten etiqueta.
 
-**Referències creuades cap als Apunts:** cada callout de `11_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) del `Ax.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemari i solucionari (PE/PS)). Quan un mateix contingut es presenta a més d'un `Ax.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
+**Referències creuades cap als Apunts:** cada callout de `11_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) del `Ax.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemes i solucions). Quan un mateix contingut es presenta a més d'un `Ax.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
 
-**Taules amb més d'un fragment font:** Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa taula pipe — el primer tanca la taula i la resta cau a text cru (line block de Pandoc). Quan una taula de `11_riscv.qmd` combina files de més d'un fitxer de `21_riscv/` (p. ex. aritmètica + `lui` sota un sol header), els fragments es fusionen prèviament en un únic fitxer generat per `25_scripts/gen_taules_auto.py` (manifest: `24_specs/taules_fusio.toml`) i `11_riscv.qmd` hi fa un únic `{{< include auto_riscv/NOM.qmd >}}`. El directori `auto_riscv/` és generat (gitignored); no s'edita a mà.
+**Taules amb més d'un fragment font:** Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa taula *pipe*. Quan una taula de `11_riscv.qmd` combina files de més d'un fitxer de `21_riscv/` (p. ex. aritmètica + `lui` sota un sol header), els fragments es fusionen prèviament en un únic fitxer generat per `25_scripts/gen_taules_auto.py` (manifest: `24_specs/taules_fusio.toml`) i `11_riscv.qmd` hi fa un únic `{{< include auto_riscv/NOM.qmd >}}`. El directori `auto_riscv/` és generat (gitignored); no s'edita a mà.
 
-A diferència dels altres scripts de `25_scripts/`, aquest **no** es crida des del `pre-render` de `_quarto.yml`: Quarto resol els `{{< include >}}` dels capítols en un escaneig de configuració que s'executa *abans* del pre-render, de manera que el fitxer fusionat ha d'existir al disc abans d'invocar `quarto`. Cal executar-lo manualment (vegeu `README.md`) el primer cop, i sempre que s'editi un fitxer de `21_riscv/` que aparegui a `24_specs/taules_fusio.toml` (si no, `auto_riscv/` queda desactualitzat en silenci: `quarto render` no fallarà, però la taula final no reflectirà el canvi). Els fitxers font de `21_riscv/` continuen sent l'única font de veritat.
+L'script **no** és al `pre-render` de `_quarto.yml`: el fitxer fusionat ha d'existir abans d'invocar `quarto` ([D-3]({{< var decisions >}}#d-3)). `make taules` el genera, i `make render` i `make render-complet` ja el criden; sense `make`, cal executar-lo a mà (vegeu `README.md`) el primer cop i sempre que s'editi un fitxer de `21_riscv/` que aparegui a `24_specs/taules_fusio.toml`. Si no, `auto_riscv/` queda desactualitzat en silenci: `quarto render` no fallarà, però la taula final no reflectirà el canvi. Els fitxers font de `21_riscv/` continuen sent l'única font de veritat.
 
 **Contingut d'Aprofundiment exclòs de `11_riscv.qmd`:** el compendi de referència tècnica no pot incloure contingut que provingui únicament d'un callout d'Aprofundiment d'un `Ax.qmd` (material opcional, no bàsic). Exemple: `Zicsr_instruccions_immediats.qmd` (`csrrwi`/`csrrsi`/`csrrci`) es presenta a `A9.qmd` dins un callout d'Aprofundiment; per això `11_riscv.qmd` només inclou `Zicsr_instruccions.qmd` (les instruccions base), no la taula d'immediats. El fitxer de `21_riscv/` es manté igualment, per a l'ús des del `Ax.qmd` corresponent.
 
@@ -98,6 +98,7 @@ A diferència dels altres scripts de `25_scripts/`, aquest **no** es crida des d
 | `RV32M_instruccions_multiplicacio.qmd` | T4, `11_riscv.qmd` |
 | `Zicsr_instruccions.qmd` | T9, `11_riscv.qmd` |
 | `Zicsr_instruccions_immediats.qmd` | T9 |
+| `Zicsr_pseudo_immediats.qmd` | Cap (`TODO.md`) |
 
 ### Extensions RISC-V a EC
 
@@ -117,47 +118,40 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 
 #### T2 i T3
 
-- **`.globl` vs. `.global`**: s'usa `.globl` (forma estàndard de GNU AS); `.global` és un àlies acceptat però no s'usa als exemples ni al laboratori. Des del 2026-10-02 (revisió externa de T3), el text de T3 (`#nte-globl`) tampoc no l'esmenta: només el recull la taula de directives del compendi (`21_riscv/RARS_directives.qmd`). Motiu: GCC genera `.globl` (verificat amb GCC 14.2, `gcc -S`), i RARS 1.6 assembla `.global` (verificat), de manera que l'estudiant només se'l trobarà en codi escrit a mà o d'altres arquitectures, com ARM.
+- **`.globl` vs. `.global`**: s'usa `.globl` (forma estàndard de GNU AS); `.global` és un àlies acceptat però no s'usa als exemples ni al laboratori, i el text de T3 (`#nte-globl`) tampoc no l'esmenta: només el recull la taula de directives del compendi (`21_riscv/RARS_directives.qmd`) ([D-4]({{< var decisions >}}#d-4)).
 - **Mode base + desplaçament** (terme canònic a EC): el mode d'adreçament que usa la sintaxi `offset(rs1)` s'anomena **mode base + desplaçament** a EC. El terme **mode memòria** és un sinònim de la literatura; es menciona com a tal al callout `{#cau-mode-base-desplacament}` de T2, però no s'usa com a terme principal.
 - **Modes d'adreçament**: quatre modes a EC: registre, immediat, base+desplaçament, relatiu al PC. `lui` → immediat; `auipc` → relatiu al PC (A3, taula resum dels modes); `jalr` → base+desplaçament.
-- **Formats d'instrucció de RV32I**: **quatre de nuclears**, R, I, S i U, com diu la font de veritat (@riscv_rv32i, «four core instruction formats»); **B i J són variants** de S i U, respectivament, i no formats independents. Cap text no ha de donar «sis formats» com a total. Adoptat a la revisió interna de T2 (2026-07) i escrit a `A2.qmd §Format de les instruccions RV32I` (`#sec-format-instruccions`). Escombrada del 2026-10-01: cap fitxer no en dona un altre recompte. **On es presenta cada format** (decisió de l'usuari, 2026-10-01): els quatre nuclears a T2 —R, I i S a §Modes d'adreçament i U amb `lui` i `auipc` (`#nte-format-u`; les dues instruccions, a §Operands en mode immediat, `#nte-instruccio-lui` i `#nte-instruccio-auipc`, aquesta des del 2026-10-06)— i les dues variants a T3, amb les instruccions de salt (`#nte-format-b`, `#nte-format-j`), que remeten al format nuclear de T2. Així cap variant no es presenta abans que el seu format nuclear.
+- **Formats d'instrucció de RV32I**: **quatre de nuclears**, R, I, S i U, com diu la font de veritat (@riscv_rv32i, «four core instruction formats»); **B i J són variants** de S i U, respectivament, i no formats independents. Cap text no ha de donar «sis formats» com a total. Escrit a `A2.qmd §Format de les instruccions RV32I` (`#sec-format-instruccions`). **On es presenta cada format**: els quatre nuclears a T2 —R, I i S a §Modes d'adreçament i U amb `lui` i `auipc` (`#nte-format-u`; les dues instruccions, a §Operands en mode immediat, `#nte-instruccio-lui` i `#nte-instruccio-auipc`)— i les dues variants a T3, amb les instruccions de salt (`#nte-format-b`, `#nte-format-j`), que remeten al format nuclear de T2. Així cap variant no es presenta abans que el seu format nuclear ([D-5]({{< var decisions >}}#d-5)).
 - **Terminologia de salts**: relatiu al PC (`beq`, `jal`) vs. indirecte (`jalr`). Tots els salts condicionals de RV32I són relatius al PC.
-- **Etiquetes de bucle**: `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.). El prefix de l'etiqueta de sortida és **`fi-`** (`fibucle:`, `fifor:`, `fiwhile:`), que és la forma majoritària al corpus.
-    - **Més d'un bucle al mateix bloc**: quan un fragment conté dos bucles o més **al mateix àmbit d'assemblador**, les etiquetes es **numeren** (`for1:`/`ffor1:`, `for2:`/`ffor2:`), perquè dues etiquetes iguals al mateix bloc no assemblen. La numeració **no és una desviació de la convenció**: n'és l'extensió per al cas de bucles germans. Únic cas actual al corpus: la solució de `s3_4_2.s` (`L3.qmd`), on `moda` té el bucle d'inicialització de l'histograma i el de recorregut de la cadena.
+- **Etiquetes de bucle**: `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.). El prefix de l'etiqueta de sortida és **`fi-`** (`fibucle:`, `fifor:`, `fiwhile:`).
+    - **Més d'un bucle al mateix bloc**: quan un fragment conté dos bucles o més **al mateix àmbit d'assemblador**, les etiquetes es **numeren** (`for1:`/`ffor1:`, `for2:`/`ffor2:`), perquè dues etiquetes iguals al mateix bloc no assemblen. La numeració no és una desviació de la convenció: n'és l'extensió per al cas de bucles germans ([D-6]({{< var decisions >}}#d-6)).
 - **Registres als exemples**: `t0`, `t1`, `t2`... tant en C com en assemblador per eliminar el soroll del mapatge.
 - **`la label+offset`**: admès a EC (pissarra i exàmens) però no suportat per RARS; al laboratori cal `la` + `addi`.
-- **Optimitzacions de bucle**: les tres optimitzacions numerades es defineixen a T4 (§4.5); el prerequisit no numerat (extracció d'invariants) s'introdueix a T2 (@sec-extraccio-invariants) i s'hi remet des de T4. La numeració és única per al bloc, no es reparteix entre temes, i és: #1 accés seqüencial, #2 avaluació de la condició al final, #3 eliminació de la variable d'inducció (vegeu §T4 a continuació).
 - **Pseudoinstruccions vs. macros**: distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
-- **Alineació de la pila**: la mida del BA i el valor de `sp` han de ser **múltiples de 4 bytes** a EC (relaxació pedagògica). L'ABI estàndard de RV32I exigeix múltiples de 16 bytes; aquest fet és a `{#nte-abi-alineacio-pila}` de T3, i el criteri d'EC, a `{#imp-abi-alineacio-pila}`, just a continuació (separats el 2026-10-04, a petició de l'usuari).
+- **Alineació de la pila**: la mida del BA i el valor de `sp` han de ser **múltiples de 4 bytes** a EC (relaxació pedagògica). L'ABI estàndard de RV32I exigeix múltiples de 16 bytes; aquest fet és a `{#nte-abi-alineacio-pila}` de T3, i el criteri d'EC, a `{#imp-abi-alineacio-pila}`, just a continuació ([D-7]({{< var decisions >}}#d-7)).
 - **Retorn de resultats**: les subrutines retornen com a màxim dos resultats escalars, per `a0` i `a1`. El segon (`a1`) s'usa habitualment per a un codi d'error o un segon valor de retorn. Documentat a `{#nte-abi-pas-parametres}` de T3.
 - **Retorn de subrutines — `ret`**: als exemples s'usa sempre `ret` (pseudoinstrucció estàndard, més llegible), no `jalr x0, 0(ra)`.
-- **Format d'adreces de memòria**: sense espais (`0x10010000`), no amb separador cada 4 nibbles. L'amplada (8 dígits per als valors de 32 bits) és a §Criteris generals.
-- **`.section`**: no s'utilitza. Només `.data` i `.text`, sense indentar, a columna 0 (vegeu també §Convencions globals del laboratori). **No és una preferència d'estil: RARS 1.6 no admet la forma llarga** (verificat executant RARS 1.6, 2026-09-23; procediment a §Verificació empírica a RARS, registre i ordres de reproducció al `TODO.md` §Entrades retirades). Dues fallades, totes dues cares:
-    - `.section .data` i `.section .text` **no assemblen**: error `.section must be followed by a section name`. Ho causa l'analitzador lèxic —`.data` i `.text` són *tokens* de directiva i, darrere de `.section`, es consumeixen com a directiva pròpia sense arribar-hi mai com a operand—, de manera que no hi ha grafia que ho salvi (tabulador, doble espai, `.SECTION`, `.DATA`, cometes).
-    - Les formes que **sí** que assemblen són pitjors, perquè fallen en silenci: **`.section` no commuta al segment equivocat, no commuta gens**, i l'assemblador es queda on ja era. Amb un nom reconegut (`.rodata`, `.sdata`) **descarta a més tot el codi que la segueix**, sense cap error ni avís: quatre instruccions queden en una al bolcat i el programa acaba «dropped off the bottom». **No es desen al segment equivocat: desapareixen** —el bolcat de `.data` del mateix programa diu «This segment has not been written to»—, cosa que descarta la hipòtesi natural que acabin com a dades. Contraintuïtivament, un nom **no** reconegut (`.section .foo`) és la forma segura, perquè avisa i conserva les instruccions.
-    - Excepció legítima: la forma amb sufix i *flags* (`.section .text.trap, "ax"`) sí que assembla, i és la d'`A9.qmd:402`, dins d'un exemple declarat il·lustratiu i no executable. **No s'ha de tocar.**
+- **`.section`**: no s'utilitza. Només `.data` i `.text`, sense indentar, a columna 0, també al laboratori (§Convencions globals del laboratori). **No és una preferència d'estil: RARS 1.6 no admet la forma llarga.** `.section .data` i `.section .text` no assemblen (error `.section must be followed by a section name`), i les formes que sí que assemblen són pitjors, perquè fallen en silenci: no commuten de segment i, amb un nom reconegut (`.rodata`, `.sdata`), descarten tot el codi que les segueix ([D-8]({{< var decisions >}}#d-8)).
+    - Excepció legítima: la forma amb sufix i *flags* (`.section .text.trap, "ax"`) sí que assembla, i és la de l'exemple de RSE mínima d'A9 (`#sec-ei-rse-exemple`), declarat il·lustratiu i no executable. **No s'ha de tocar.**
 
 #### T4
 
-- Prerequisit implícit (no numerat): **Extracció d'invariants**.
-- **Optimització #1**: Accés seqüencial.
-- **Optimització #2**: Avaluació de la condició al final.
-- **Optimització #3**: Eliminació de la variable d'inducció.
-- **Notació de la multiplicació i la divisió**: $z = x \times y$ (multiplicand $x$, multiplicador $y$, producte $z$) i $x = y \cdot q + r$ (dividend $x$, divisor $y$, quocient $q$, residu $r$), a l'algorisme, als exemples i al pseudocodi dels circuits seqüencials. Els registres dels circuits (P, MD i MR; R, D i Q) són noms de maquinari, no variables: a la prosa, en rodona, i a les fórmules només amb el seu valor o un bit ($P = 10000010_2$, $R_{2n-1}$). Fins al 2026-10-03 (fase 7 de `CLAUDE.md §Pla de treball`), la divisió tenia tres notacions a A4 —$x$/$y$/$q$/$r$, $D$/$d$/$q$/$r$ i $x$/$y$/$z$/$w$—, i $D$ era el dividend mentre que el registre D és el divisor.
+- **Optimitzacions de bucle**: tres de numerades, que es defineixen a T4 (@sec-optimitzacions-bucle): **#1** accés seqüencial, **#2** avaluació de la condició al final i **#3** eliminació de la variable d'inducció. El prerequisit no numerat, l'**extracció d'invariants**, s'introdueix a T2 (@sec-extraccio-invariants) i s'hi remet des de T4. La numeració és única per al bloc, no es reparteix entre temes.
+- **Notació de la multiplicació i la divisió**: $z = x \times y$ (multiplicand $x$, multiplicador $y$, producte $z$) i $x = y \cdot q + r$ (dividend $x$, divisor $y$, quocient $q$, residu $r$), a l'algorisme, als exemples i al pseudocodi dels circuits seqüencials. Els registres dels circuits (P, MD i MR; R, D i Q) són noms de maquinari, no variables: a la prosa, en rodona, i a les fórmules només amb el seu valor o un bit ($P = 10000010_2$, $R_{2n-1}$) ([D-9]({{< var decisions >}}#d-9)).
 
 #### T1 i T5
 
 - **«En excés» / «codificació en excés»**: terme correcte per al concepte general de representació d'enters (T1, `@sec-enters-en-exces`). Usat quan el valor K és arbitrari.
-- **«Esbiaixat» / «biaix»**: terme correcte per a l'exponent IEEE 754 específicament (T5, L5, S5). Font: Viquipèdia cat., «Format de coma flotant de precisió simple». *No* és sinònim de «biaix estadístic» (context RNE): són homònims, no el mateix concepte.
-- **«Mantissa» (no «significand»)**: terme preferent a EC per a la part $1{,}F$ del nombre en coma flotant. L'estàndard IEEE 754 en anglès prefereix formalment *significand* perquè *mantissa* ja té un significat establert en el context de logaritmes (Knuth en critica l'ús aquí per aquest motiu), però aquesta distinció és interna a l'anglès tècnic: **cap font normativa catalana la reflecteix**. Termcat (Cercaterm) només té fitxa per a «mantissa» (àmbit Matemàtiques, logaritmes); la Viquipèdia catalana, tant a «Format de coma flotant de precisió simple» com a «Format de coma flotant Bfloat16», usa «mantissa» com a terme principal («significand» hi apareix només com a manlleu anglès puntual, no com a alternativa establerta). A EC, l'ambigüitat que criticava Knuth ja queda resolta amb la distinció pròpia del projecte entre **fracció** ($F$, els bits emmagatzemats) i **mantissa** ($1{,}F$, amb el bit ocult): vegeu més amunt. Es descarta, doncs, l'adopció de «significand».
+- **«Esbiaixat» / «biaix»**: terme correcte per a l'exponent IEEE 754 específicament (T5, L5, S5). *No* és sinònim de «biaix estadístic» (context RNE): són homònims, no el mateix concepte ([D-10]({{< var decisions >}}#d-10)).
+- **«Mantissa» (no «significand»)**: terme preferent a EC per a la part $1{,}F$ del nombre en coma flotant. No s'adopta *significand*: l'ambigüitat per la qual l'estàndard IEEE 754 en anglès el prefereix ja queda resolta a EC amb la distinció entre **fracció** i **mantissa** (§T5) ([D-11]({{< var decisions >}}#d-11)).
 
 #### T5
 
 - **`quartet`** (no `nibble`): terme preferit per als grups de 4 bits.
-- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació. La **precisió** $p$ compta els bits significatius de la mantissa, bit ocult inclòs: la fracció en té $p-1$ ($b_{-1} \ldots b_{-(p-1)}$), i l'exponent és $e$ tant en base 2 com en la notació científica decimal ($v = m \times 10^e$). Fins al 2026-10-03, `A5.qmd §Representació binària` donava $p$ bits a la fracció, i §Notació científica normalitzada deia $n$ a l'exponent.
+- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació. La **precisió** $p$ compta els bits significatius de la mantissa, bit ocult inclòs: la fracció en té $p-1$ ($b_{-1} \ldots b_{-(p-1)}$), i l'exponent és $e$ tant en base 2 com en la notació científica decimal ($v = m \times 10^e$) ([D-12]({{< var decisions >}}#d-12)).
 - **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des del LSB.
 - **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`).
-- **Solucionari (PS)**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
+- **Solucions**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
 - **`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el camp `rm`** de la instrucció, no trunquen sempre. Sense operand de mode (`fcvt.w.s rd, rs1`), l'assemblador RISC-V hi assigna `dyn` (mode dinàmic: el del registre `frm`, RNE per defecte a RARS). Per traduir el *cast* `(int)` de C (que trunca cap a zero) cal escriure explícitament `fcvt.w.s rd, rs1, rtz`.
 - **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
 - **No-associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$.
@@ -165,16 +159,16 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### T6
 
 - **Ordre de seccions**: Rendiment → Llei d'Amdahl → Potència, tant a la teoria com als enunciats i les solucions. El nom de la secció de potència és **«Potència»** (no «Potència i consum»).
-- **Ordre dins de §Potència** (anotació #12 de la revisió externa, 2026-10-01): definició i `#eq-potencia` primer, després §Potència dinàmica i §Potència estàtica, i al final §Miniaturització i límit tèrmic (llei de Moore, `#wrn-dennard`). Cap frase no ha de remetre a la potència, ni als corrents de fuita, abans que el text els hagi presentat.
-- **Rendiment vs. productivitat** (anotació #9, 2026-10-01): a EC, el rendiment és l'invers del temps d'execució (`#eq-rendiment`), i s'enuncia **abans** dels exemples que el comparen amb la productivitat. «Quant de treball per unitat de temps» és la definició de productivitat, no de rendiment.
+- **Ordre dins de §Potència**: definició i `#eq-potencia` primer, després §Potència dinàmica i §Potència estàtica, i al final §Miniaturització i límit tèrmic (llei de Moore, `#wrn-dennard`). Cap frase no ha de remetre a la potència, ni als corrents de fuita, abans que el text els hagi presentat ([D-13]({{< var decisions >}}#d-13)).
+- **Rendiment vs. productivitat**: a EC, el rendiment és l'invers del temps d'execució (`#eq-rendiment`), i s'enuncia **abans** dels exemples que el comparen amb la productivitat. «Quant de treball per unitat de temps» és la definició de productivitat, no de rendiment ([D-14]({{< var decisions >}}#d-14)).
 - **Notació**: les definicions formals (teoria) usen les formes llargues $t_{clock}$, $f_{clock}$, $n_{ins}$; a partir de la seva introducció, la resta del tema (exemples, enunciats, solucions) usa lliurement les abreviatures $t_c$, $f$, $N$. Fora de T6 (p. ex. el problema de rendiment de T3), les formes llargues.
-- **Guany, llei d'Amdahl i potència: la notació de la teoria, també als problemes i les solucions.** Guany $s$ i guany màxim $s_{max}$; fracció del temps $P_x$ i guany $s_x$ del component $x$ (amb diversos components, $\sum_x P_x/s_x$); potència $P$, $P_d$ i $P_s$; freqüències dels computadors A i B, $f_A$ i $f_B$. Fins al 2026-10-03 (fase 7 de `CLAUDE.md §Pla de treball`), S6 feia servir $S$, $S_{max}$, $f$ i $k$ a la llei d'Amdahl —amb $f$ alhora fracció i freqüència dins del mateix fitxer—, $P_{din}$, $P_{est}$ i $P_{tot}$, i E6 i S6, $F_A$ i $F_B$ ($F$ és la fracció a T5).
+- **Guany, llei d'Amdahl i potència: la notació de la teoria, també als problemes i les solucions.** Guany $s$ i guany màxim $s_{max}$; fracció del temps $P_x$ i guany $s_x$ del component $x$ (amb diversos components, $\sum_x P_x/s_x$); potència $P$, $P_d$ i $P_s$; freqüències dels computadors A i B, $f_A$ i $f_B$ ([D-15]({{< var decisions >}}#d-15)).
 - **«Capacitat equivalent» (terme principal) / «capacitància» (sinònim)**: per a $C$ a les fórmules de potència dinàmica. S'introdueix «capacitat equivalent» amb «(capacitància)» entre parèntesis a la primera aparició de cada fitxer; les aparicions posteriors poden fer servir qualsevol dels dos termes indistintament. Es descarta «càrrega capacitiva» (calc directe de l'anglès *capacitive load*, no normatiu).
 - **Sigles CMOS i CF**: s'expandeixen a la primera aparició del cos de cada fitxer («*complementary metal–oxide–semiconductor* (CMOS)»; «instruccions de coma flotant (CF)») i tenen entrada a `12_sigles_simbols.qmd`. **FPU** no s'usa als enunciats ni les solucions: es prefereix «unitat de coma flotant» (o «unitat CF» en segones aparicions).
 - **Guany / *speedup***: el terme principal a EC és **«guany»**; *speedup* n'és el manlleu anglès i s'escriu en cursiva només a la primera aparició de cada fitxer.
 - **Majúscules de lleis i principis**: «llei d'Amdahl», «llei de Moore» i «escalat de Dennard» s'escriuen amb minúscula inicial al cos del text (com qualsevol altre terme comú), tret dels títols de secció o de callout, que segueixen la regla general de majúscula de frase (p. ex. `## Llei d'Amdahl`).
 - **$I_{fuita}$** (no `I_leak`) i **«corrents de fuita»** (plural, com a fenomen general): notació i terme establerts a T6, reutilitzats a T7 i T8.
-- **Etiquetes de classe d'instruccions a les taules d'exercicis**: en català, com a la prosa i com mana la taula de substitucions obligatòries: «Lectura», «Escriptura», «Lectura/escriptura» (abreujat «L/E», també en subíndex: $P_{L/E}$) i «Salt». Decisió de l'usuari (2026-10-03); fins llavors E6 i S6 les tenien en anglès («Load», «Store», «Load/Store», «L/S», «Branch»), també en 7 usos en prosa («les branch 2 cicles»). No s'hi inclouen els noms anglesos de les instruccions a les taules ISA (*load word*), els identificadors (`#nte-load-store`) ni la glossa de les lletres de format i de mnemònic («S, *store*», «`l`, load»).
+- **Etiquetes de classe d'instruccions a les taules dels problemes**: en català, com a la prosa i com mana la taula de substitucions obligatòries: «Lectura», «Escriptura», «Lectura/escriptura» (abreujat «L/E», també en subíndex: $P_{L/E}$) i «Salt». No s'hi inclouen els noms anglesos de les instruccions a les taules ISA (*load word*), els identificadors (`#nte-load-store`) ni la glossa de les lletres de format i de mnemònic («S, *store*», «`l`, load») ([D-16]({{< var decisions >}}#d-16)).
 - **Amplada de les figures extretes de PDF** (`svg.md §15`): l'atribut `width` de la imatge SVG es normalitza a `100%`; l'amplada visual final la determina exclusivament l'atribut `{width="X%"}` del bloc Quarto, amb el mateix valor a HTML i a PDF (sense divergència entre formats). A T6: `40%` per a `fig-amdahl` i `fig-tc-tc-prima`; `50%` per a les tres figures `fig-not-*`.
 
 #### T7
@@ -182,21 +176,19 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **$t_{bloc}$ (no $t_{block}$)**: notació canònica per al temps de transferència d'un bloc entre la MC i la memòria principal (teoria, enunciats i solucions).
 - **«línia» vs. «bloc»**: la **línia** és el contenidor de la MC; el **bloc** és el contingut (fragment de la memòria principal). Els enunciats especifiquen la geometria com a «$N$ línies amb blocs de $B$ bytes» o «$N$ vies per conjunt», mai «$N$ blocs» per comptar línies o vies.
 - **Notació multinivell**: la dels subíndexs de nivell de la teoria (`@eq-tam-multinivell`): $t_{h_{L1}}$, $t_{h_{L2}}$, $m_{L1}$, $m_{L2}$; els subíndexs numèrics ($m_1$, $m_2$…) es reserven per enumerar alternatives dins d'un mateix exercici.
-- **Tipus de fallades (les tres C)**: fallades **d'arrencada en fred** (*cold-start*), també **obligatòries** (*compulsory*) o **de primera referència** (*first-reference*); **de conflicte** (o **de col·lisió**); i **de capacitat**. La quarta C, les **de coherència** (o **d'invalidació**) dels processadors multinucli, és d'aprofundiment (`#wrn-fallades-coherencia`). Les figures generades diuen «obligatòria», la forma curta. Decisió de l'usuari (2026-10-04), amb els termes del PDF original (T6, §8). Fins llavors A7 deia *cold-start* com a terme principal. **A la resta del material** (E7, S7, S8, L6 i `S_criteris_seleccio.qmd`, des del 2026-10-06; recomanació de Claude Code, acceptada per l'usuari): a la prosa, «d'arrencada en fred», amb *cold-start* en cursiva a la primera aparició de cada fitxer; a les taules i als llocs curts (parèntesis, subíndexs), «obligatòria», com a les figures. S8 l'aplica a les fallades de TLB, que segueixen la mateixa classificació.
-- **Unitats de capacitat** (criteri transversal): unitats binàries (KiB, MiB, GiB) per a registres, memòries cau i memòria principal; unitats decimals (GB, TB) per a l'emmagatzematge secundari, els costos ($/GB) i les amplades de banda (GB/s, TB/s).
+- **Tipus de fallades (les tres C)**: fallades **d'arrencada en fred** (*cold-start*), també **obligatòries** (*compulsory*) o **de primera referència** (*first-reference*); **de conflicte** (o **de col·lisió**); i **de capacitat**. La quarta C, les **de coherència** (o **d'invalidació**) dels processadors multinucli, és d'aprofundiment (`#wrn-fallades-coherencia`). Les figures generades diuen «obligatòria», la forma curta. **A la resta del material** (E7, S7, S8, L6 i `S_criteris_seleccio.qmd`): a la prosa, «d'arrencada en fred», amb *cold-start* en cursiva a la primera aparició de cada fitxer; a les taules i als llocs curts (parèntesis, subíndexs), «obligatòria», com a les figures. S8 l'aplica a les fallades de TLB, que segueixen la mateixa classificació ([D-17]({{< var decisions >}}#d-17)).
 
 #### T8
 
-- **Precedència textual (criteri general, aplicat aquí al bit `E`)**: els apunts (`Ax.qmd`) prevalen sobre els problemes (`Ex.qmd`) i solucions (`Sx.qmd`); dins dels apunts, el cos del text i els `.callout-note` prevalen sobre la resta de callouts i continguts.
-- **Bit de permís d'escriptura `E`**: la teoria i els enunciats/solucions usen el bit **E** (`E = 1` → permís d'escriptura; `E = 0` → només lectura), **no `W`**. Quan un enunciat heretat usava `W` (`1` = només lectura, polaritat oposada), s'ha reescrit a `E`, aplicant el criteri de precedència textual.
-- **Bit de validesa `V`**: la teoria usa **V** (*valid bit*, notació RISC-V Sv32 / Harris & Harris) per al bit de presència d'una PTE, no **P**. Els enunciats i solucions, que usaven `P` (notació x86 i dels exàmens antics d'EC), s'han reescrit a `V`, aplicant el mateix criteri de precedència textual; `#wrn-mv-notacio-v` a `A8.qmd` documenta la notació `P` per a qui consulti exàmens anteriors.
+- **Bit de permís d'escriptura `E`**: la teoria, els enunciats i les solucions usen el bit **E** (`E = 1` → permís d'escriptura; `E = 0` → només lectura), **no `W`** ([D-18]({{< var decisions >}}#d-18)).
+- **Bit de validesa `V`**: la teoria, els enunciats i les solucions usen **V** (*valid bit*, notació RISC-V Sv32 / Harris & Harris) per al bit de presència d'una PTE, no **P**. `#wrn-mv-notacio-v` a `A8.qmd` documenta la notació `P` per a qui consulti exàmens anteriors ([D-18]({{< var decisions >}}#d-18)).
 - **Mida de pàgina explícita**: si un enunciat de memòria virtual no especifica la mida de pàgina però les adreces la impliquen, s'afegeix explícitament a l'enunciat (rigor i bona definició).
 - **Estat inicial del TLB**: quan es dona l'estat inicial d'un TLB completament associatiu amb LRU, cal especificar també l'**ordre d'ús** (MRU→LRU) de les entrades vàlides; sense això el reemplaçament és ambigu.
 - **Canvi de mida de pàgina sobre un estat fix**: una pregunta que reutilitzi una taula de pàgines o un TLB donats per a una mida de pàgina concreta i en canviï la mida es torna incoherent; en aquests casos es reformula en clau **qualitativa** (efecte sobre el nombre de fallades).
-- **Model del TLB (decisió de l'usuari, 2026-10-05): el de RISC-V, no el de MIPS.** El TLB d'EC és un model docent (`#imp-mv-model-tlb`: a RISC-V el TLB no és arquitectònic), completament associatiu i amb LRU, que **només conté traduccions de pàgines residents**: la fallada de TLB la resol la MMU (recorregut de la taula de pàgines per maquinari, transparent al SO); si la PTE té V = 1 es copia al TLB i la traducció continua, i si té V = 0 **no es copia res** i es produeix la fallada de pàgina. En expulsar una pàgina, el SO posa V = 0 a la PTE de la víctima **i n'invalida l'entrada del TLB** (`sfence.vma`, T9), que queda lliure. El bit V d'una entrada del TLB vol dir «entrada ocupada», com el de les línies de la MC (T7), i mai no és una còpia del V de la PTE. El bit D s'actualitza per maquinari a la primera escriptura, al TLB i a la PTE (l'opció HW de RISC-V; Svade a `@wrn-tlb-bit-ad` de T9). El model antic de MIPS (TLB arquitectònic, *refill* per programari, encert de TLB amb V = 0) queda com a nota històrica a `#wrn-mv-tlb-hw-walker`, amb l'avís per als exàmens antics d'EC. Conseqüències als problemes: les entrades lliures del TLB es donen com a «V = 0, —», no amb un VPN residual; i amb tants marcs com entrades de TLB el reemplaçament LRU del TLB no arriba a actuar (l'exemple d'A8 ho diu explícitament i remet a `exr-t8-tlb-estat`).
+- **Model del TLB: el de RISC-V, no el de MIPS.** El TLB d'EC és un model docent (`#imp-mv-model-tlb`: a RISC-V el TLB no és arquitectònic), completament associatiu i amb LRU, que **només conté traduccions de pàgines residents**: la fallada de TLB la resol la MMU (recorregut de la taula de pàgines per maquinari, transparent al SO); si la PTE té V = 1 es copia al TLB i la traducció continua, i si té V = 0 **no es copia res** i es produeix la fallada de pàgina. En expulsar una pàgina, el SO posa V = 0 a la PTE de la víctima **i n'invalida l'entrada del TLB** (`sfence.vma`, T9), que queda lliure. El bit V d'una entrada del TLB vol dir «entrada ocupada», com el de les línies de la MC (T7), i mai no és una còpia del V de la PTE. El bit D s'actualitza per maquinari a la primera escriptura, al TLB i a la PTE (l'opció HW de RISC-V; Svade a `@wrn-tlb-bit-ad` de T9). El model antic de MIPS (TLB arquitectònic, *refill* per programari, encert de TLB amb V = 0) queda com a nota històrica a `#wrn-mv-tlb-hw-walker`, amb l'avís per als exàmens antics d'EC. Conseqüències als problemes: les entrades lliures del TLB es donen com a «V = 0, —», no amb un VPN residual; i amb tants marcs com entrades de TLB el reemplaçament LRU del TLB no arriba a actuar (l'exemple d'A8 ho diu explícitament i remet a `exr-t8-tlb-estat`) ([D-19]({{< var decisions >}}#d-19)).
 - **Columnes de les taules de TLB**: `V | VPN | D | E | PPN` (V primer, com a bit d'ocupació de l'entrada); les de la taula de pàgines, `VPN | V | D | E | PPN`, amb el VPN com a índex.
 - **Fallades de TLB als problemes amb codi**: els enunciats que compten fallades de TLB sobre un bucle diuen «TLB de dades» i que no es consideren les captures d'instruccions (`exr-t8-tlb-basic`, `exr-t8-tlb-optimitzacio`).
-- **Exemple pràctic (`#tip-mv-tlb-exemple`)**: a la secció final del tema, `#sec-mv-exemple`, com la secció 7 del PDF original (decisió de l'usuari, 2026-10-06). Els cinc accessos del PDF original, amb les dades del PDF, en text i en una taula resum; la traça és la figura dinàmica `#fig-mv-tlb-exemple`, generada per `gen_T8.py` a partir d'una simulació del model (que fa alhora de verificador numèric).
+- **Exemple pràctic (`#tip-mv-tlb-exemple`)**: a la secció final del tema, `#sec-mv-exemple`. Els cinc accessos del PDF original, amb les dades del PDF, en text i en una taula resum; la traça és la figura dinàmica `#fig-mv-tlb-exemple`, generada per `gen_T8.py` a partir d'una simulació del model (que fa alhora de verificador numèric) ([D-20]({{< var decisions >}}#d-20)).
 
 #### T9
 
@@ -204,57 +196,39 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **RSE**: cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
 - **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del maquinari.
 - **Zicsr**: les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
-- **Mode S**: el tractament de fallades de TLB per programari requereix mode S (`satp`, `stval`, `sfence.vma`). El cos del text descriu el mecanisme en mode M; l'aprofundiment cobreix mode S.
+- **Mode S**: el mecanisme d'excepcions s'estudia en mode M; el mode S s'introdueix a `#sec-ei-csr-modes` i s'aplica, al cos del text, al tractament de la fallada de pàgina (`satp`, `stval`, `sfence.vma`; `#sec-ei-tlb-modes`). La fallada de TLB no és una excepció: la resol el maquinari (§T8, «Model del TLB») ([D-21]({{< var decisions >}}#d-21)).
 
-### Problemari i solucionari (PE/PS)
+### Problemes i solucions
 
-- **Referències creuades cap a la teoria** (Nivell 2): als exercicis i solucions, afegir referències `@sec-nom` a la secció de teoria rellevant quan el concepte clau no és obvi o quan l'estudiant típicament s'encalla. No de forma mecànica a tots els exercicis, sinó selectivament. Nivell 3 (`@nte-`, `@tip-`...) admès quan la solució és aplicació directa d'un exemple concret de teoria.
+- **Termes**: les parts del llibre són «Problemes» (els enunciats) i «Solucions»; cada element és un **problema** (com als exàmens: «Problema 1», «Problema 2») amb la seva **solució**; «exercici» només al laboratori. No s'usa «problemari», que no és al DIEC2, al Termcat ni a l'Optimot ([D-24]({{< var decisions >}}#d-24)).
+- **Referències creuades cap a la teoria** (Nivell 2): als problemes i a les solucions, afegir referències `@sec-nom` a la secció de teoria rellevant quan el concepte clau no és obvi o quan l'estudiant típicament s'encalla. No de forma mecànica a tots els problemes, sinó selectivament. Nivell 3 (`@nte-`, `@tip-`...) admès quan la solució és aplicació directa d'un exemple concret de teoria.
   - Format recomanat als enunciats: nota al final del bloc `{#exr-}` o sota la capçalera de secció: «*Vegeu `@sec-nom`.*» (al text real la referència va **sense** cometes invertides; les d'aquí marquen la metavariable).
   - Format recomanat a les solucions: integrat al text de la solució on es fa servir el concepte.
-- **Cobertura**: aplicar als xats de revisió de cada tema. E2/S2 es retoquen en un xat breu un cop A2.qmd tingui els slugs complets (tasca Claude Code).
-- **Identificadors d'enunciats i solucions**: `#exr-t<N>-<slug>` i `#sol-t<N>-<slug>`, on `<N>` és el tema del fitxer que els defineix (`E<N>.qmd`/`S<N>.qmd`) i el `<slug>` és el mateix a l'enunciat i a la solució. Fins al 2026-10-01 el prefix era `p<N>-`, la numeració de les col·leccions MIPS, que en cinc temes no coincidia amb el tema (E2 i S2 feien servir `p3-`). Decisió de l'usuari (2026-10-01). Els enllaços externs a les àncores publicades amb el prefix antic van deixar de funcionar amb el canvi.
-- **Etiqueta visible: «Problema» a Problemes i Solucions, «Exercici» al laboratori** (decisió de l'usuari, 2026-10-01). Tots dos fan servir `#exr-`, de manera que l'etiqueta no es pot fixar un sol cop a `_quarto.yml`. Cada format ho fa d'una manera:
+- **Identificadors d'enunciats i solucions**: `#exr-t<N>-<slug>` i `#sol-t<N>-<slug>`, on `<N>` és el tema del fitxer que els defineix (`E<N>.qmd`/`S<N>.qmd`) i el `<slug>` és el mateix a l'enunciat i a la solució ([D-22]({{< var decisions >}}#d-22)).
+- **Etiqueta visible: «Problema» a Problemes i Solucions, «Exercici» al laboratori.** Tots dos fan servir `#exr-`, de manera que l'etiqueta no es pot fixar un sol cop a `_quarto.yml`. Cada format ho fa d'una manera:
     - **HTML**: cada `Ex.qmd` i `Sx.qmd` porta a la capçalera `language:` amb `crossref-exr-title: "Problema"` i `crossref-exr-prefix: "Problema"`. Un fitxer nou d'enunciats o de solucions l'ha de copiar.
-    - **PDF**: és un sol document LaTeX, amb un sol `\newtheorem{exercise}`, i les metadades de cada fitxer no hi arriben. `_quarto.yml` (`format: pdf: language:`) hi posa «⁂» com a títol i prefix; `preamble.tex` fa que «⁂» s'expandeixi a `\exercisename`; i un bloc `{=latex}` amb `\renewcommand{\exercisename}{…}` a l'inici d'`E1.qmd` («Problema») i d'`L1.qmd` («Exercici») el canvia a cada part. Una referència pren el nom de la part on és: avui cap referència no creua parts.
-    - ⚠️ **Dues formes que no funcionen**, provades: un bloc `crossref:` a la capçalera del fitxer substitueix la configuració de capítols que el llibre hi injecta (la numeració perd el capítol i les referències a capítols d'altres fitxers no resolen), i `\exercisename` escrit directament al prefix surt literal al PDF, perquè Quarto n'escapa la contrabarra. D'aquí el caràcter `⁂`, que no és a cap altre lloc del corpus.
-- **Veu dels enunciats**: 2a persona del **plural** («Traduïu», «Calculeu», «Contesteu»; no «Tradueix», «Calcula», «Contesta»). Aplicat a tots els enunciats, `E1.qmd`–`E9.qmd`, des del 2026-10-01; fins llavors només E4 i E6 el seguien. Les solucions no hi entren: són a `.callout-tip`, que fa servir la 2a persona del singular (§Criteris generals → Veu impersonal).
+    - **PDF**: és un sol document LaTeX, amb un sol `\newtheorem{exercise}`, i les metadades de cada fitxer no hi arriben. `_quarto.yml` (`format: pdf: language:`) hi posa «⁂» com a títol i prefix; `preamble.tex` fa que «⁂» s'expandeixi a `\exercisename`; i un bloc `{=latex}` amb `\renewcommand{\exercisename}{…}` a l'inici d'`E1.qmd` («Problema») i d'`L1.qmd` («Exercici») el canvia a cada part. Una referència pren el nom de la part on és.
+    - ⚠️ **No es pot fer** amb un bloc `crossref:` a la capçalera del fitxer ni escrivint `\exercisename` directament al prefix: totes dues formes s'han provat i no funcionen ([D-23]({{< var decisions >}}#d-23)).
+- **Veu dels enunciats**: segona persona del plural (§Criteris generals → Veu impersonal).
 
 #### Convencions globals del laboratori
 
-- **El punt d'entrada no porta etiqueta** (criteri de l'usuari, 2026-09-23; **inverteix** la convenció anterior, que exigia `_start` i `.globl _start`). El primer bloc de `.text` comença directament amb la primera instrucció, sense cap etiqueta que l'anomeni —ni `_start`, ni `main`, ni cap altra—, i la prosa que se'n parla hi diu «el programa principal» o «el bloc principal».
-
-    **Motiu, i no és de coherència interna.** A EC es programa directament sobre el processador (`@imp-directe-sobre-processador`), en un **entorn autònom** (*freestanding*, `@sec-entorn-autonom-bare-metal`): l'execució comença a la primera instrucció de `.text` i **cap agent no llegeix el nom del punt d'entrada**. A Linux, en canvi, `_start` és el símbol que l'enllaçador i el carregador resolen —hi té un consumidor—. És el mateix argument que justifica `void main()` en aquesta mateixa guia (§Estil de codi C): en un entorn autònom **la forma i el nom del punt d'entrada són definits per la implementació**, i una etiqueta que ningú no resol és la mateixa ficció que un `return` que ningú no recull. Un nom qualsevol reintroduiria la idea que el punt d'entrada en té.
-
-    ⚠️ **L'excepció de RARS no afecta l'argument, i el text ho ha de dir.** `@imp-directe-sobre-processador` declara RARS «una excepció important» a l'assumpció *bare-metal* perquè simula syscalls; l'excepció és sobre els **serveis que el programa crida**, no sobre **qui crida el programa**. Al punt d'entrada no hi intervé res.
-
-    El punt d'entrada **no ha de tenir pròleg ni epíleg**, perquè no és callee de ningú i acaba amb la sortida `li a7, 93` + `ecall`; sí que ha d'usar registres segurs per a les dades pròpies que travessen crides.
-
-- **L'opció «start at main» (`sm`) només actua amb un `main` declarat global.** L'ajuda de RARS 1.6 diu literalment «*start execution at statement with global label main, if defined*»: **global** hi és determinant. Una etiqueta `main:` sense `.globl main` **no fa res** —l'execució comença igualment a la primera instrucció—, de manera que amb `.globl main` el mateix fitxer s'executaria de dues maneres segons una casella que cada alumne té activada o no: una divergència silenciosa entre dos alumnes amb el mateix codi. És la segona raó per la qual el punt d'entrada no porta etiqueta, i no és una raó de disciplina sinó d'**impossibilitat**: sense cap etiqueta global, `sm` no té on agafar-se i les dues posicions de la casella donen el mateix resultat. La divergència no s'evita confiant que ningú no l'activi —**s'elimina**—, que és el que decideix en material que faran servir dotzenes d'alumnes amb configuracions diferents. Verificat amb RARS 1.6 (2026-09-24) mesurant l'estat final dels registres, no l'absència d'error (§Verificació empírica a RARS):
-
-    ```bash
-    # prova.s:  li t0,111  /  main:  li t1,222  /  li a7,93  /  li a0,0  /  ecall
-    java -jar rars1_6.jar nc    prova.s t0 t1   # t0=0x6f: comença a la 1a instrucció
-    java -jar rars1_6.jar nc sm prova.s t0 t1   # t0=0x6f: sense .globl main, `sm` no fa res
-    # el mateix fitxer amb `.globl main` afegit:
-    java -jar rars1_6.jar nc sm prova.s t0 t1   # t0=0x00: només aquí comença a `main`
-    ```
-
-    📌 **`_start` no hi rebia cap tracte especial**: amb `.globl _start` i l'etiqueta en segona posició, l'execució començava igualment a la primera instrucció, amb `sm` i sense. **La convenció que s'inverteix no descansava, doncs, en cap comportament del simulador**: era convenció pura. Això fa la inversió menys arriscada del que sembla —no hi ha cap automatisme de RARS que depengui del nom— i explica alhora per què ningú no se n'havia adonat: una etiqueta inert no falla mai, i per això es pot mantenir anys sense que res la contradigui.
-
-- **Tres blocs del laboratori tenen `.text` sense punt d'entrada, i és legítim.** L'exempció ja constava quan la convenció exigia `_start`; el criteri nou en deixa caduc el motiu —ja no hi ha etiqueta que els falti— però **la particularitat dels tres blocs es manté i cal conservar-la**: `s2_4_1.s` (`L2.qmd`) és un fragment d'accés a vector, **no un programa**; `s5_1_1.s` i `s5_2_1.s` (`L5.qmd`) són fitxers de **subrutina sola** (`abs` i `descompon`), que s'enllacen amb el fitxer que porta el programa principal. Cap dels tres no s'ha d'«arreglar» afegint-hi un punt d'entrada.
+- **El punt d'entrada no porta etiqueta.** El primer bloc de `.text` comença directament amb la primera instrucció, sense cap etiqueta que l'anomeni —ni `_start`, ni `main`, ni cap altra—, i la prosa que se'n parla hi diu «el programa principal» o «el bloc principal» ([D-25]({{< var decisions >}}#d-25)).
+    - Quan el text esmenti l'excepció de RARS a l'assumpció *bare-metal* (`@imp-directe-sobre-processador`), ha de dir que és sobre els **serveis que el programa crida**, no sobre **qui crida el programa**.
+    - El punt d'entrada **no ha de tenir pròleg ni epíleg**, perquè no és callee de ningú i acaba amb la sortida `li a7, 93` + `ecall`; sí que ha d'usar registres segurs per a les dades pròpies que travessen crides.
+- **Tres blocs del laboratori tenen `.text` sense punt d'entrada, i és legítim**: `s2_4_1.s` (`L2.qmd`) és un fragment d'accés a vector, **no un programa**; `s5_1_1.s` i `s5_2_1.s` (`L5.qmd`) són fitxers de **subrutina sola** (`abs` i `descompon`), que s'enllacen amb el fitxer que porta el programa principal. Cap dels tres no s'ha d'«arreglar» afegint-hi un punt d'entrada ([D-26]({{< var decisions >}}#d-26)).
 - **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit2`). No es fa servir `startup.s`.
 - **Expressions aritmètiques als operands**: a la **teoria, els problemes i els exàmens** s'admeten (`.space NF*NC*4`, `li t0, NC*4`, `la t0, vec+8`), perquè fan visible l'estructura del càlcul. Al **laboratori** cal el **literal ja calculat**, amb l'expressió al comentari; i `la rd, etiqueta+desplaçament` se substitueix per la parella `la` + `addi`. Font única: `@imp-ec-operands-expressions` (el cas de `la`, a `@imp-ec-la-offset`).
-- **Directives de segment**: `.data` i `.text` (sense `.section`), sense indentar, a columna 0. Al laboratori la regla és **obligatòria per motiu tècnic**, no d'estil: `.section .data` i `.section .text` no assemblen a RARS, i les variants que sí que ho fan no commuten de segment i poden descartar el codi posterior en silenci. Verificat a RARS 1.6 (2026-09-23). El detall és a §Decisions per tema → T2 i T3; el procediment, a §Verificació empírica a RARS.
+- **Directives de segment**: vegeu §T2 i T3, `.section`. Al laboratori la regla és obligatòria per motiu tècnic, no d'estil.
 - **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
-- **Lliuraments** i **Lectura prèvia**: dues seccions fixes al principi de cada sessió, en aquest ordre. "Lliuraments" porta una taula amb els exercicis i el nom del fitxer de lliurament; "Lectura prèvia" porta una taula amb columnes "Concepte" i "On trobar-ho".
-- **Capçaleres de "Lliuraments" i "Lectura prèvia"**: `### ` (Heading 3), no `## `, amb `{.unnumbered}`. És un *dirty hack* per evitar que la capçalera de pàgina del PDF quedi fixada a "Lectura prèvia" (efecte que sí que es produeix amb Heading 2).
+- **Lliuraments** i **Lectura prèvia**: dues seccions fixes al principi de cada sessió, en aquest ordre (§Ordre i atribut de seccions no numerades). «Lliuraments» porta una taula amb els exercicis i el nom del fitxer de lliurament; «Lectura prèvia» porta una taula amb columnes «Concepte» i «On trobar-ho».
 - **Nom de figura SVG**: `L<N>_nom_figura.svg` (fitxer font a `22_figs_originals/`). El pre-render genera `auto_figs/L<N>_nom_figura__original_light.svg` i `_dark` automàticament.
-- **Oracle i tècnica: on va cada cosa**. Una verificació a RARS té dues parts, i tenen destinataris diferents:
-    - L'**oracle** (els valors que l'estudiant ha d'obtenir) va **al final de l'enunciat `{#exr-...}`**, en prosa, amb l'imperatiu «Comproveu que…». Sense callout ni negreta. Hi ha d'anar perquè l'estudi previ es lliura **abans** de la sessió i hi haurà una versió del llibre sense solucions: un oracle dins d'un `{#sol-...}` és inabastable justament quan fa falta.
-    - Un oracle és una parella **(entrada, resultat esperat)**. Si cal fixar una entrada perquè el resultat estigui determinat (p. ex. «afegint `li s2, 7` abans del fragment»), la fixació va amb el resultat: un valor sense la seva precondició no és reproduïble.
+- **Oracle i tècnica: on va cada cosa**. Una verificació a RARS té dues parts, i tenen destinataris diferents ([D-27]({{< var decisions >}}#d-27)):
+    - L'**oracle** (els valors que l'estudiant ha d'obtenir) va **al final de l'enunciat `{#exr-...}`**, en prosa, amb l'imperatiu «Comproveu que…». Sense callout ni negreta.
+    - Un oracle és una parella **(entrada, resultat esperat)**. Si cal fixar una entrada perquè el resultat estigui determinat (p. ex. «afegint `li s2, 7` abans del fragment»), la fixació va amb el resultat.
     - La **tècnica** (quina vista de RARS obrir, com avançar pas a pas, com interpretar el que es veu) es queda al bloc `{#sol-...}`, com a `{.callout-tip title="Comprovació pràctica"}`. No porta etiqueta `#tip-` perquè no es referencia des d'altres punts del text.
-    - Si un cop separat l'oracle la tècnica no té contingut propi, **el callout se suprimeix**: un callout que només existeix per no deixar el lloc buit és soroll.
+    - Si un cop separat l'oracle la tècnica no té contingut propi, **el callout se suprimeix**.
 - **Directives `.eqv`**: es defineixen **abans** de la primera directiva de segment (`.data` o `.text`), fora de qualsevol secció.
 
 #### Nom dels fitxers de lliurament
@@ -263,7 +237,7 @@ Patró: `s<N>_<S>_<E>.<ext>` — sessió, secció, exercici, extensió (`.s` per
 
 #### Ordre i atribut de seccions no numerades
 
-Les seccions `### Lliuraments` i `### Lectura prèvia` porten `{.unnumbered}` per evitar que incrementin el comptador i provoquin un decalatge entre la numeració dels exercicis i els noms dels fitxers de lliurament. S'usa Heading 3 (no Heading 2) com a *dirty hack* per evitar que la capçalera de pàgina del PDF quedi fixada a "Lectura prèvia". L'ordre fix al principi de cada sessió és:
+Les seccions `### Lliuraments` i `### Lectura prèvia` porten `{.unnumbered}` per evitar que incrementin el comptador i provoquin un decalatge entre la numeració dels exercicis i els noms dels fitxers de lliurament. Són capçaleres de nivell 3 (`###`), no de nivell 2 (`##`) ([D-28]({{< var decisions >}}#d-28)). L'ordre fix al principi de cada sessió és:
 
 ```markdown
 ### Lliuraments {.unnumbered}
@@ -290,7 +264,8 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 
 ### Referència normativa
 
-- La norma general és l'**IEC** (Institut d'Estudis Catalans): [DIEC2](https://dlc.iec.cat/) i [Optimot](https://optimot.cat/).
+- La norma general és la de l'**IEC** (Institut d'Estudis Catalans).
+- **Fonts de correcció lèxica**, per aquest ordre jeràrquic: el [DIEC2](https://dlc.iec.cat/), el [Termcat](https://www.termcat.cat/) i l'[Optimot](https://optimot.cat/) ([D-29]({{< var decisions >}}#d-29)).
 - El català normatiu és el criteri de resolució per a qualsevol dubte lèxic o ortogràfic no cobert explícitament per aquesta guia.
 
 ### Criteris generals
@@ -303,13 +278,16 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
     - Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres.
     - La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`.
     - **Separador de milers**: espai («65 535»), no coma anglesa («65,535», ambigua amb la coma decimal catalana) ni punt.
-- **Prefixos de mida binaris vs. decimals**: `KiB`, `MiB`, `GiB`, `TiB` (IEC, base 2) per a qualsevol mida que sigui una potència de 2 —mida de cau, de memòria, de pàgina, de bloc, rangs d'adreçament, etc.—, que és la immensa majoria de casos a EC. `KB`, `MB`, `GB`, `TB` (base 10) es reserven exclusivament per a mides genuïnament decimals (p. ex. la capacitat comercial anunciada d'un disc, o les referències de mercat aproximades de `A7.qmd §El problema de la diferència entre processador i memòria`, @sec-gap-memoria). Explicat a `A2.qmd` (@cau-prefixos-binaris), primera aparició al llibre; en cas de dubte, per defecte `KiB`/`MiB`/`GiB`/`TiB`.
-- **Dígits hexadecimals, majúscules vs. minúscules**: la preferència és per majúscules (p. ex. `0xE6666666`), però s'admeten minúscules perquè és el criteri de RARS. No cal, doncs, unificar-ho sistemàticament allà on ja apareguin totes dues grafies.
-- **Amplada dels hexadecimals**: els valors de **32 bits** —adreces de memòria, contingut de registres i codificacions d'instrucció— s'escriuen sempre amb **8 dígits** (`0x00400000`, `t1 = 0x00000043`), que és com els mostra RARS. La resta segueix l'amplada del seu rol: bytes (`0xCC`), mitges paraules (`0x2211`), immediats i camps (`lui t1, 0x11223`, VPN = `0x00001`), màscares (`0x7FFFFF`) i les adreces de les màquines que defineix un problema (`0x39` en una memòria de 64 bytes). Decisió de l'usuari (2026-10-01). **Excepció explícita**: si un problema escriu adreces de 32 bits en format reduït, sense els zeros de l'esquerra, perquè només en fan falta els bits de menys pes i l'enunciat no en fixa l'amplada, ho ha de dir amb una «**Nota**:» a l'enunciat i justificar-ho. Casos: `exr-t7-fallades-programa` i `exr-t8-mv-proteccio` (usuari, 2026-10-01: el format hi és correcte, i s'explicita). Amb aquesta, el format dels hexadecimals té tres regles: aquesta, la de majúscules (la de dalt) i la de separadors (§Decisions per tema → T2 i T3).
-- **Ordre substantiu–adjectiu**: els adjectius **classificadors** van darrere del nom: «precisió simple», «precisió doble», «la instrucció següent», «l'element següent». Anteposar-los («simple precisió», «la següent instrucció») és un calc de l'anglès. Excepcions, que sí que van davant: ordinals, quantificadors i indefinits, «mateix», «propi», «altre», adjectius valoratius idiomàtics i «simple» en el sentit de «mer» («un simple error tipogràfic»). Decisió de l'usuari (2026-10-01). Aplicada a tot el corpus el 2026-10-01: el material de T5 (teoria, problemes, solucions, laboratori i figures), després de fusionar `temes456`.
-- **«No» davant d'un nom**: amb guionet, com fixa l'IEC per a aquest ús de *no* («no-violència», «no-intervenció»): «no-associativitat», «no-distributivitat». Davant d'un adjectiu, sense guionet: «no és distributiva». Decisió de l'usuari (2026-10-01), que confirma la forma que el corpus ja feia servir.
-- **Veu impersonal**: Sempre: "Cal verificar que no hi ha errors" (no "hem de verificar"). Excepcions:
-    - **`{.callout-tip}`**: segona persona del singular per a instruccions directes a l'estudiant (*calcula*, *determina*, *suposa que...*). Criteri revisat el 2026-07 (revisió interna T2, xat A2-E2-S2); **no confondre amb els enunciats `#exr-`, que usen plural** (vegeu `§Problemari i solucionari`). **Excepció dins la pròpia excepció**: als exemples *narrats* (una traça o un escenari que es va desenvolupant pas a pas, no una instrucció puntual), s'admet el «nosaltres» expositiu (*Considerem un sistema amb...*, *Suposem que...*, *Sabem que...*): pràctica consolidada a T7 i T8, revisada el 2026-07 (revisió interna T8, xat A8-E8-S8). El criteri per triar entre tots dos: si la frase estableix el marc o l'estat d'un exemple, «nosaltres»; si demana una acció puntual a l'estudiant («calcula», «indica»), 2a persona del singular.
+- **Prefixos de mida binaris vs. decimals**: `KiB`, `MiB`, `GiB`, `TiB` (IEC, base 2) per a qualsevol mida que sigui una potència de 2 —mida de cau, de memòria, de pàgina, de bloc, rangs d'adreçament, etc.—, que és la immensa majoria de casos a EC: registres, memòries cau i memòria principal. `KB`, `MB`, `GB`, `TB` (base 10) es reserven per a les mides genuïnament decimals: l'emmagatzematge secundari (p. ex. la capacitat comercial anunciada d'un disc), els costos ($/GB), les amplades de banda (GB/s, TB/s) i les referències de mercat aproximades de `A7.qmd §El problema de la diferència entre processador i memòria` (@sec-gap-memoria). Explicat a `A2.qmd` (@cau-prefixos-binaris), primera aparició al llibre; en cas de dubte, per defecte `KiB`/`MiB`/`GiB`/`TiB`.
+- **Hexadecimals**: tres regles.
+    - **Majúscules o minúscules**: la preferència és per majúscules (p. ex. `0xE6666666`), però s'admeten minúscules perquè és el criteri de RARS. No cal, doncs, unificar-ho sistemàticament allà on ja apareguin totes dues grafies.
+    - **Amplada**: els valors de **32 bits** —adreces de memòria, contingut de registres i codificacions d'instrucció— s'escriuen sempre amb **8 dígits** (`0x00400000`, `t1 = 0x00000043`), que és com els mostra RARS. La resta segueix l'amplada del seu rol: bytes (`0xCC`), mitges paraules (`0x2211`), immediats i camps (`lui t1, 0x11223`, VPN = `0x00001`), màscares (`0x7FFFFF`) i les adreces de les màquines que defineix un problema (`0x39` en una memòria de 64 bytes). **Excepció explícita**: si un problema escriu adreces de 32 bits en format reduït, sense els zeros de l'esquerra, perquè només en fan falta els bits de menys pes i l'enunciat no en fixa l'amplada, ho ha de dir amb una «**Nota**:» a l'enunciat i justificar-ho ([D-30]({{< var decisions >}}#d-30)).
+    - **Separadors**: les adreces de memòria van sense espais (`0x10010000`), no amb separador cada 4 nibbles.
+- **Ordre substantiu–adjectiu**: els adjectius **classificadors** van darrere del nom: «precisió simple», «precisió doble», «la instrucció següent», «l'element següent». Anteposar-los («simple precisió», «la següent instrucció») és un calc de l'anglès. Excepcions, que sí que van davant: ordinals, quantificadors i indefinits, «mateix», «propi», «altre», adjectius valoratius idiomàtics i «simple» en el sentit de «mer» («un simple error tipogràfic») ([D-31]({{< var decisions >}}#d-31)).
+- **«No» davant d'un nom**: amb guionet, com fixa l'IEC per a aquest ús de *no* («no-violència», «no-intervenció»): «no-associativitat», «no-distributivitat». Davant d'un adjectiu, sense guionet: «no és distributiva» ([D-32]({{< var decisions >}}#d-32)).
+- **Veu impersonal**: Sempre: «Cal verificar que no hi ha errors» (no «hem de verificar»). Excepcions ([D-33]({{< var decisions >}}#d-33)):
+    - **`{.callout-tip}`**: segona persona del singular per a instruccions directes a l'estudiant (*calcula*, *determina*, *suposa que...*). També hi van les solucions dels problemes. **Excepció dins la pròpia excepció**: als exemples *narrats* (una traça o un escenari que es va desenvolupant pas a pas, no una instrucció puntual), s'admet el «nosaltres» expositiu (*Considerem un sistema amb...*, *Suposem que...*, *Sabem que...*). El criteri per triar entre tots dos: si la frase estableix el marc o l'estat d'un exemple, «nosaltres»; si demana una acció puntual a l'estudiant («calcula», «indica»), 2a persona del singular.
+    - **Enunciats dels problemes (`#exr-` d'`E1.qmd`–`E9.qmd`)**: segona persona del **plural** («Traduïu», «Calculeu», «Contesteu»; no «Tradueix», «Calcula», «Contesta»).
     - **Instruccions operatives pas a pas**: imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*).
 
 ### Puntuació
@@ -347,17 +325,17 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 | hardware / HW | maquinari | Terme preferent. |
 | software / SW | programari | Terme preferent. |
 | fallo | fallada | Esmena lèxica. |
-| anidat / anidament, aniuat / aniuament | imbricat / imbricació | Esmena lèxica. «Aniuat», que la taula donava fins al 2026-10-04, no és el terme informàtic en català (decisió de l'usuari, 2026-10-04): bucles imbricats, crides imbricades. |
+| anidat / anidament, aniuat / aniuament | imbricat / imbricació | Esmena lèxica: bucles imbricats, crides imbricades. «Aniuat» no és el terme informàtic en català ([D-34]({{< var decisions >}}#d-34)). |
 | event | esdeveniment | Esmena lèxica. |
 | empotrat | encastat | p. ex. *embedded processors*. |
 | cache | cau | Especialment en títols. |
-| load/store | lectura/escriptura | Les instruccions que llegeixen o escriuen la memòria (`lw`, `sw`, `flw`…) i la seva operació, també els verbs (*llegir* i *escriure*). No hi entren la càrrega d'immediats o d'adreces (`li`, `lui`, `la`), la del programa, la d'una pàgina ni la d'un bloc a la MC, ni «emmagatzematge» com a disposició o com a suport (secundari, per files, *endianness*, categoria d'emmagatzemament de C). Aplicat a tot el corpus el 2026-10-07 (decisió de l'usuari): fins llavors A2 presentava *load* i *store* com a «càrrega» i «emmagatzematge»/«emmagatzemament». Els identificadors (`#nte-load-store`, `#sec-carrega-…`) no han canviat. |
+| load/store | lectura/escriptura | Les instruccions que llegeixen o escriuen la memòria (`lw`, `sw`, `flw`…) i la seva operació, també els verbs (*llegir* i *escriure*). No hi entren la càrrega d'immediats o d'adreces (`li`, `lui`, `la`), la del programa, la d'una pàgina ni la d'un bloc a la MC, ni «emmagatzematge» com a disposició o com a suport (secundari, per files, *endianness*, categoria d'emmagatzemament de C). Els identificadors (`#nte-load-store`, `#sec-carrega-…`) no canvien ([D-35]({{< var decisions >}}#d-35)). |
 | offset | desplaçament | |
 | branch | salt | |
 | jump | salt | |
 | overflow | sobreeiximent | |
 | underflow | subdesbordament | |
-| carry | ròssec | Termcat (decisió de l'usuari, 2026-10-03). Derivats: *carry-in* → «ròssec d'entrada», *carry-out* → «ròssec de sortida», *ripple carry* → «propagació del ròssec». Substitueix «arrossegament», que el corpus usava fins aleshores. |
+| carry | ròssec | Termcat. Derivats: *carry-in* → «ròssec d'entrada», *carry-out* → «ròssec de sortida», *ripple carry* → «propagació del ròssec» ([D-36]({{< var decisions >}}#d-36)). |
 | half-adder | semisumador | Pendent de confirmar al Termcat (`TODO.md`). Primera aparició en un fitxer: «**semisumador** (*half-adder*)». |
 | full-adder | sumador complet | Pendent de confirmar al Termcat (`TODO.md`); el Termcat dona *adder* → «sumador». Primera aparició en un fitxer: «**sumador complet** (*full-adder*)». |
 | promig | mitjana | |
@@ -368,14 +346,14 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 | mapejar | mapar |  |
 | biased exponent | exponent esbiaixat | En context IEEE 754. El valor numèric del biaix s'anomena «biaix» (no «excés»). Vegeu @sec-enters-en-exces per al concepte general. |
 | ample de banda | amplada de banda | Forma normalitzada (Termcat: *bandwidth*). |
-| punt flotant | coma flotant | Calc de *floating point*. És el terme del corpus: 113 ocurrències contra 4, totes a `A2.qmd`, unificades el 2026-10-01. |
+| punt flotant | coma flotant | Calc de *floating point* ([D-37]({{< var decisions >}}#d-37)). |
 | aliasing | aliàsing | Grafia adaptada, ja majoritària al projecte (T8). Primera aparició en un fitxer: «**aliàsing** (*aliasing*)»; a partir d'aquí, sense cursiva. |
-| multicore | multinucli | Adjectiu invariable: «processador multinucli», «disseny multinucli». Decisió de l'usuari (2026-10-07), amb el Termcat com a referència; primera aparició en un fitxer: «**multinucli** (*multicore*)». |
-| padding | farciment | Termcat (Informàtica > Estructura de les dades). Primera aparició en un fitxer: «**farciment** (*padding*)»; a partir d'aquí, sense cursiva. El símbol `PAD` del codi es manté. |
+| multicore | multinucli | Adjectiu invariable: «processador multinucli», «disseny multinucli». Termcat. Primera aparició en un fitxer: «**multinucli** (*multicore*)» ([D-38]({{< var decisions >}}#d-38)). |
+| padding | farciment | Termcat (Informàtica > Estructura de les dades). Primera aparició en un fitxer: «**farciment** (*padding*)»; a partir d'aquí, sense cursiva. El símbol `PAD` del codi es manté ([D-38]({{< var decisions >}}#d-38)). |
 
 <!--- cSpell:enable --->
 
-- **`enter` vs. `natural`**: a EC, **enter** vol dir **amb signe** (Ca2, tipus `int`) i **natural**, **sense signe** (tipus `unsigned`), com a T1 (@sec-codificacio-naturals). Per tant, «enter amb signe» i «natural sense signe» són redundants, i «enter sense signe» és contradictori: s'escriu «enter» o «natural». S'admet la glossa entre parèntesis allà on el text explica la correspondència amb l'anglès o defineix un símbol, com «naturals (sense signe)» a la presentació de `lhu`/`lbu` (A2) o $x_u$ a `12_sigles_simbols.qmd`. Proposta de la revisió externa de T3 (`A3.qmd:121`) i decisió de l'usuari (2026-10-02), amb l'escombrada del corpus feta el mateix dia.
+- **`enter` vs. `natural`**: a EC, **enter** vol dir **amb signe** (Ca2, tipus `int`) i **natural**, **sense signe** (tipus `unsigned`), com a T1 (@sec-codificacio-naturals). Per tant, «enter amb signe» i «natural sense signe» són redundants, i «enter sense signe» és contradictori: s'escriu «enter» o «natural». S'admet la glossa entre parèntesis allà on el text explica la correspondència amb l'anglès o defineix un símbol, com «naturals (sense signe)» a la presentació de `lhu`/`lbu` (A2) o $x_u$ a `12_sigles_simbols.qmd` ([D-39]({{< var decisions >}}#d-39)).
 - **`mida` vs. `longitud`**: `mida` designa l'espai que ocupa un tipus o una variable en memòria (p. ex. *la mida d'un `int` és de 4 bytes*); `longitud` designa el nombre d'unitats d'un element seqüenciable —bits d'un registre o camp, elements d'un vector, caràcters d'una cadena— (p. ex. *la longitud del camp `opcode` és de 7 bits*). El terme `tamany` no és normatiu i no s'ha d'usar mai.
 
 ### Sigles, símbols i notació
@@ -389,7 +367,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 S'exclouen:
 
 - Sigles dels `{.callout-warning}` (aprofundiments no avaluables).
-- Noms de camps individuals de registres i bits de control (p. ex. `MIE`, `MPIE`, `ASID`). **VPN** i **PPN** no hi entren: a T8 són conceptes (el número de pàgina virtual i el de pàgina física, que donen nom a §Traducció d'adreces) i no només noms de camp, i per això tenen entrada a la taula de sigles. Decisió de l'usuari (2026-10-03); fins llavors aquest criteri les posava d'exemple d'exclusió i la taula les incloïa.
+- Noms de camps individuals de registres i bits de control (p. ex. `MIE`, `MPIE`, `ASID`). **VPN** i **PPN** no hi entren: a T8 són conceptes (el número de pàgina virtual i el de pàgina física, que donen nom a §Traducció d'adreces) i no només noms de camp, i per això tenen entrada a la taula de sigles ([D-40]({{< var decisions >}}#d-40)).
 - Sigles institucionals trivials (`UPC`, `GEI`, `FIB`) i referències a temes (`T7`, `T8`…).
 - Unitats de mesura de bytes (`KB`, `GB`, `MB`…).
 
@@ -402,8 +380,8 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
 **Símbols i notació** (mateix fitxer `12_sigles_simbols.qmd`, seccions `## Símbols` i `## Notació`):
 
 - **`## Símbols`**: glossari de variables/paràmetres d'equacions (símbol → concepte que representa), **contextual per tema**. Un mateix símbol pot tenir significats diferents segons on s'usi (p. ex. $m$ és la mantissa a T5 però la taxa de fallades a T7): en aquest cas s'indica a la columna «Observacions». Columnes: `Símbol | Significat | Tema | Observacions`. Ordenació: alfabètica pel símbol/nom de variable.
-- **`## Notació`**: operadors i convencions de representació, majoritàriament **transversals** i estables amb independència del tema (p. ex. $\oplus$, $>>>$, $\lfloor\cdot\rfloor$). Columnes: `Notació | Significat | Tema | Observacions`; la columna «Tema» només s'omple quan la notació és pròpia d'un tema (p. ex. la de les taules ISA), i en cas contrari es deixa en blanc. Ordenació: per categoria funcional (operadors lògics/bit a bit, desplaçaments, funcions...), no alfabètica. Fins al 2026-10-03 aquesta línia deia «Notació | Significat (sense columna de tema)», i la taula ja en tenia quatre.
-- **`## Termes`**: glossari anglès → català dels termes que el llibre presenta amb l'anglès entre parèntesis, amb el tema de la primera presentació. **No s'edita a mà**: el genera `25_scripts/gen_glossari.py` (`make glossari`) a partir de les presentacions «**terme** (*english*)» del corpus, entre dos marcadors, i cal tornar-lo a generar quan una presentació canvia (`--comprova` diu si és al dia). Només compten les presentacions amb el terme català en negreta. `--divergencies` llista els termes anglesos amb més d'una forma catalana; el glossari en mostra la de la primera presentació. Creat el 2026-10-06 (`TODO.md`). No és la taula de §Substitucions obligatòries, que és per a qui escriu.
+- **`## Notació`**: operadors i convencions de representació, majoritàriament **transversals** i estables amb independència del tema (p. ex. $\oplus$, $>>>$, $\lfloor\cdot\rfloor$). Columnes: `Notació | Significat | Tema | Observacions`; la columna «Tema» només s'omple quan la notació és pròpia d'un tema (p. ex. la de les taules ISA), i en cas contrari es deixa en blanc. Ordenació: per categoria funcional (operadors lògics/bit a bit, desplaçaments, funcions...), no alfabètica.
+- **`## Termes`**: glossari anglès → català dels termes que el llibre presenta amb l'anglès entre parèntesis, amb el tema de la primera presentació. **No s'edita a mà**: el genera `25_scripts/gen_glossari.py` (`make glossari`) a partir de les presentacions «**terme** (*english*)» del corpus, entre dos marcadors, i cal tornar-lo a generar quan una presentació canvia (`--comprova` diu si és al dia). Només compten les presentacions amb el terme català en negreta. `--divergencies` llista els termes anglesos amb més d'una forma catalana; el glossari en mostra la de la primera presentació. No és la taula de §Substitucions obligatòries, que és per a qui escriu.
 - **Criteri de distinció**: si el signe es "llegeix" com una magnitud amb nom i valor contextual → Símbols. Si es "llegeix" com una operació o convenció de representació → Notació.
 - **Sigles que també apareixen com a variable d'equació** (p. ex. CPI): doble entrada — definició completa a `## Sigles`, entrada curta amb remissió («Vegeu CPI a Sigles») a `## Símbols`. Criteri: si la sigla apareix dins d'una fórmula matemàtica (no només en prosa), guanya entrada també a Símbols.
 - **Excepcions de patró notacional conegudes i acceptades**: quan una font de referència (p. ex. Harris & Harris) imposa una notació que trenca un patró general del llibre, es documenta com a excepció explícita (amb un callout `#imp-` si cal remarcar-ho al text, com a `@imp-notacio-desplacament-aritmetic` a A3.qmd), no com un error a corregir silenciosament.
@@ -422,11 +400,11 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
 **Dins de les fórmules**:
 
 - `\text{…}`: paraules catalanes, sigles i unitats ($\text{CPI}$, $t_h = 2\text{ ns}$, $\text{núm. encerts}$). És l'opció per defecte per a qualsevol camp o paraula ($\text{offset}$, $\text{índex}$).
-- `\texttt{…}`: literals de codi dins d'una fórmula ($\texttt{0x100100F}$, $\texttt{vec[i]}$), també les constants d'un programa ($\texttt{NC}$, $\texttt{NF}$). No `\mathtt{…}`, que el corpus feia servir 44 vegades (S1, S4 i A1) fins al 2026-10-03 i que es va unificar a `\texttt{…}` a la fase 7.
-- **Subíndexs**: els que són etiquetes van en cursiva, com la resta del símbol, **també quan són sigles**: $t_{clock}$, $n_{ins}$, $\text{CPI}_{ideal}$, $V_{CC}$, $m_{L1}$, $t_{MP}$. `\text{…}` en un subíndex només per a paraules o sintagmes descriptius ($t_{\text{millorat}}$, $t_{\text{no-millorat}}$) i per a les etiquetes d'un `\underbrace`. Decisió de l'usuari (2026-10-03, fase 7 de `CLAUDE.md §Pla de treball`), que escriu l'ús del corpus: la regla de `\text{…}` per a les sigles s'aplica a la sigla que fa de variable ($\text{CPI}$, $\text{TAM}$), no a l'etiqueta d'un subíndex.
-- **Excepció: les taules ISA** (`21_riscv/`). La notació de transferència de registres hi va tota en cursiva matemàtica: registres i camps ($rd$, $rs1$, $PC$, $mepc$, $MPIE$), operands ($offset$, $imm12$) i funcions ($SignExt$, $M_w$). $PC$ hi és un registre, al costat de $rd$, no una sigla de la prosa, i escriure'l amb `\text{…}` el separaria tipogràficament dels altres operands de la mateixa fórmula. Decisió de l'usuari (2026-10-03, fase 7). La notació és a la taula `## Notació` de `12_sigles_simbols.qmd`.
+- `\texttt{…}`: literals de codi dins d'una fórmula ($\texttt{0x100100F}$, $\texttt{vec[i]}$), també les constants d'un programa ($\texttt{NC}$, $\texttt{NF}$). No `\mathtt{…}` ([D-41]({{< var decisions >}}#d-41)).
+- **Subíndexs**: els que són etiquetes van en cursiva, com la resta del símbol, **també quan són sigles**: $t_{clock}$, $n_{ins}$, $\text{CPI}_{ideal}$, $V_{CC}$, $m_{L1}$, $t_{MP}$. `\text{…}` en un subíndex només per a paraules o sintagmes descriptius ($t_{\text{millorat}}$, $t_{\text{no-millorat}}$) i per a les etiquetes d'un `\underbrace`. La regla de `\text{…}` per a les sigles s'aplica a la sigla que fa de variable ($\text{CPI}$, $\text{TAM}$), no a l'etiqueta d'un subíndex ([D-42]({{< var decisions >}}#d-42)).
+- **Excepció: les taules ISA** (`21_riscv/`). La notació de transferència de registres hi va tota en cursiva matemàtica: registres i camps ($rd$, $rs1$, $PC$, $mepc$, $MPIE$), operands ($offset$, $imm12$) i funcions ($SignExt$, $M_w$). $PC$ hi és un registre, al costat de $rd$, no una sigla de la prosa. La notació és a la taula `## Notació` de `12_sigles_simbols.qmd` ([D-42]({{< var decisions >}}#d-42)).
 
-**Operacions lògiques (AND, OR, XOR, NOT)**: la forma depèn del context, com la resta d'aquesta secció. Decisió de l'usuari (2026-10-01), que escriu l'ús que el corpus ja feia majoritàriament i n'hi alinea les desviacions.
+**Operacions lògiques (AND, OR, XOR, NOT)**: la forma depèn del context, com la resta d'aquesta secció ([D-43]({{< var decisions >}}#d-43)).
 
 | Context | Forma | Exemple |
 | :--- | :--- | :--- |
@@ -487,7 +465,7 @@ Regles generals:
 - **Localització**: a continuació de la referència o explicació al text.
 - No hi ha d'haver repeticions: ús de referències creuades.
 
-**Numeració**: tot callout amb etiqueta (`#nte-`, `#imp-`, `#cau-`, `#tip-`, `#wrn-`) queda numerat **automàticament** per Quarto (mecanisme natiu de `crossref`, el mateix que numera figures i taules), amb el prefix propi de cada tipus definit a `_quarto.yml §language` (`crossref-nte-prefix: "RISC-V"`, `crossref-tip-prefix: "Exemple"`, `crossref-cau-prefix: "Essencial"`, `crossref-wrn-prefix: "Aprofundiment"`, `crossref-imp-prefix: "EC"`; les claus `callout-*-title` fixen el mateix text com a títol visible dins el bloc). No cal, doncs, cap acció addicional per numerar-los ni cap etiquetatge especial més enllà del prefix habitual: la numeració ("RISC-V 5.3", "Exemple 5.2"...) ja és conseqüència directa de tenir `{#prefix-nom}`.
+**Numeració**: tot callout amb etiqueta (`#nte-`, `#imp-`, `#cau-`, `#tip-`, `#wrn-`) el numera Quarto **automàticament** (el mateix mecanisme de `crossref` que numera figures i taules), amb el prefix propi de cada tipus definit a `_quarto.yml §language` (`crossref-nte-prefix: «RISC-V»`, `crossref-tip-prefix: «Exemple»`, `crossref-cau-prefix: «Essencial»`, `crossref-wrn-prefix: «Aprofundiment»`, `crossref-imp-prefix: «EC»`; les claus `callout-*-title` fixen el mateix text com a títol visible dins el bloc). No cal cap acció ni cap etiquetatge més enllà del prefix habitual: la numeració («RISC-V 5.3», «Exemple 5.2»...) és conseqüència directa de tenir `{#prefix-nom}`.
 
 **Icones**: es couen a `custom.scss`, que sobreescriu la icona per defecte de Quarto per a `.callout-note` (CPU, verd), `.callout-warning` (porta oberta, lila) i `.callout-caution` (check, vermell). `.callout-tip` i `.callout-important` **no** tenen icona personalitzada i mantenen la de Quarto per defecte (bombeta i cercle d'exclamació, respectivament); és una omissió no deliberada, no un criteri establert. Els colors de tots cinc tipus (incloent-hi `tip` i `important`) es defineixen a `custom_light.scss`/`custom_dark.scss` (`$callout-color-*`).
 
@@ -496,14 +474,14 @@ Regles generals:
 | RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/21_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## RV32IM ISA — `, `## RV32F ISA — `, `## RV32I ABI — `, `## RV32F ABI — `, `## Pseudoinstruccions — `, `## Directives — `, `## RARS — `, `## RV32I Registres — `, `## Supervisor ISA — ` (instruccions de l'arquitectura privilegiada disponibles en mode S, com `sfence.vma`; els CSR de mode M s'agrupen sota `RV32I ISA —` per coherència amb la resta de CSR de la variant RV32). |
 | Criteri EC | `#imp-` | `.callout-important` | Blau | Sí | No | Criteris de l'assignatura. Per defecte, sense títol, curt, en **negretes**. Si el contingut supera ~4 línies o barreja diversos criteris, s'admet un títol curt (com als `#nte-`) en lloc de forçar la brevetat. No s'introdueix al text. |
 | Essencial | `#cau-` | `.callout-caution` | Vermell | Sí | No | Contingut indispensable o recordatori fonamental. Per defecte, sense títol, curt, en **negretes**, i s'ha de llegir com un ressaltat del text. Si el contingut supera ~4 línies o barreja diversos aspectes, s'admet un títol curt en lloc de forçar la brevetat. |
-| Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu en 2a persona del singular (distinta de la dels enunciats `#exr-`, en plural). No s'introdueix al text. |
+| Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu: §Criteris generals → Veu impersonal. No s'introdueix al text. |
 | Aprofundiment | `#wrn-` | `.callout-warning` | Lila | No | Sí | Contingut d'enriquiment no avaluable. No s'introdueix al text; s'hi pot remetre puntualment amb una referència `@wrn-…` com a **punter opcional**, mai com a dependència (el cos del text ha de ser autocontingut sense l'aprofundiment). Si >1 línia: `collapse=true`. |
-| Figura | `#fig-` | | | | No | Porta caption. Les del cos del text s'introdueixen amb una remissió `@fig-…` (al PDF poden flotar lluny del text); les dels callouts, no cal (decisió de l'usuari 8 de la fase 7c). |
+| Figura | `#fig-` | | | | No | Porta caption. Les del cos del text s'introdueixen amb una remissió `@fig-…` (al PDF poden flotar lluny del text); les dels callouts, no cal ([D-44]({{< var decisions >}}#d-44)). |
 | Taula | `#tbl-` | | | | No | Porta caption. |
 | Codi | `#lst-` | | | | No | Porta caption. |
 | Equació | `#eq-` | | | | No | |
 | Secció | `#sec-` | | | | No | |
-| Exercici | `#exr-` | | | | No | |
+| Problema o exercici | `#exr-` | | | | No | |
 | Solució | `#sol-` | | | | No | |
 | Algorisme | `#thm-` | | | | No | |
 
@@ -525,40 +503,30 @@ El camp `filename` indica el llenguatge o el context del bloc:
 | Codi deliberadament incorrecte | ` ```{.s filename="⚠️codi_erroni__nom_reservat.s⚠️"} ` |
 | Bash | ` ```bash ` |
 
-- **Títol dels blocs de pseudocodi**: «Pseudocodi: *què fa el bloc*» («Pseudocodi: divisió amb restauració», «Pseudocodi: while → do-while»), no «Pseudocodi» sol. «Pseudocodi» al davant marca el llenguatge, com «C» o «RV32I» a la resta de blocs; el que segueix els dos punts diu de quin algorisme o transformació es tracta, que és el que el lector busca quan n'hi ha més d'un a prop. Decisió de l'usuari (2026-10-01), a partir de l'anotació #4 de la revisió externa de T4. ⚠️ **El separador són dos punts, no un guió llarg**: el `filename` arriba al PDF en font monoespaiada, on «—» surt com a `---` (verificat a `make render-complet`, 2026-10-01).
-- **Algorismes (`#thm-`) en rodona**: el text d'un bloc Algorisme no va en cursiva, ni a l'HTML ni al PDF. Al PDF, la cursiva venia de l'estil *plain* del `\newtheorem` que genera Quarto, i `preamble.tex` la treu redefinint aquest estil (2026-10-02; `TODO.md §Decisions obertes → Anotacions de la revisió externa de T4–T6`, #4). Si mai s'hi declara un altre entorn d'estil *plain*, també sortirà en rodona. Mateixa decisió.
-- **Ressaltat dels blocs `.s`: definició pròpia, `24_specs/riscv.xml`** (format KDE, el de skylighting, que és el ressaltador de Pandoc; `syntax-definitions:` a `_quarto.yml`, als dos formats). Classes: instruccions (`kw`), salts, crides, retorns i crides al sistema (`cf`), registres i CSR (`va`), directives (`pp`), etiquetes i crides a macros (`fu`), paràmetres de macro (`at`), modes d'arrodoniment (`bu`), i comentaris, cadenes, caràcters i nombres. Feta des de zero el 2026-10-07 (decisió de l'usuari): fins llavors Pandoc feia servir `gnuassembler`, que no ressaltava `.eqv` ni `.end_macro` (de RARS) i donava el mateix color a instruccions i registres; partir de la d'x86 volia dir canviar-ne totes les llistes. **El llenguatge s'ha de dir `s`**: Pandoc tria la definició pel nom de la classe abans que per l'extensió, i amb un altre nom guanyaria `gnuassembler`. Una instrucció o una directiva nova que surti sense ressaltar s'afegeix a la seva llista del fitxer; el 2026-10-07 cobreix tots els mnemònics i directives dels blocs `.s` del corpus.
-- **Codi deliberadament incorrecte (`codi_erroni`)**: un bloc que és incorrecte a posta —un contraexemple, un error que el text explica— porta al `filename` el prefix `codi_erroni__`, un nom descriptiu i l'extensió, entre dos senyals d'avís: `⚠️codi_erroni__<nom>.<ext>⚠️`. La marca té **dos destinataris**: el lector, que veu a la capçalera del bloc que aquell codi no s'ha de copiar, i les eines, que l'exclouen **per forma** de les comprovacions i de les escombrades del corpus, en lloc d'una llista de línies que caduca (`verifica_format_codi.py` ja ho fa). Sense la marca, el contraexemple de `@nte-rars-noms-reservats`, amb un `.eqv B, 16` escrit a posta, compta com un xoc real en una escombrada dels símbols `.eqv` i obliga a aturar-se a decidir-ho. Decidit el 2026-10-06 (`TODO.md`, entrada retirada); fins llavors la marca no tenia fila en aquesta taula. Al corpus hi ha quatre blocs, tots a A2, amb aquesta forma; fins al 2026-10-07 dos en feien servir variants, sense els senyals (`codi_erroni__gcc_tipus.c`) i amb espais. Al bloc de `gcc`, el nom de dins de l'ordre i de la sortida del compilador és el del fitxer, sense els senyals: la marca és del títol del bloc. Al laboratori, el bloc de l'enunciat de `#exr-depuracio` no porta la marca, perquè el nom és el del fitxer de lliurament: `verifica_laboratoris.py` en dedueix que no és autònom pel contingut.
+- **Títol dels blocs de pseudocodi**: «Pseudocodi: *què fa el bloc*» («Pseudocodi: divisió amb restauració», «Pseudocodi: while → do-while»), no «Pseudocodi» sol. «Pseudocodi» al davant marca el llenguatge, com «C» o «RV32I» a la resta de blocs; el que segueix els dos punts diu de quin algorisme o transformació es tracta, que és el que el lector busca quan n'hi ha més d'un a prop. ⚠️ **El separador són dos punts, no un guió llarg**: el `filename` arriba al PDF en font monoespaiada, on «—» surt com a `---` ([D-45]({{< var decisions >}}#d-45)).
+- **Algorismes (`#thm-`) en rodona**: el text d'un bloc Algorisme no va en cursiva, ni a l'HTML ni al PDF. Al PDF, `preamble.tex` treu la cursiva de l'estil *plain* del `\newtheorem` que genera Quarto; si mai s'hi declara un altre entorn d'estil *plain*, també sortirà en rodona ([D-46]({{< var decisions >}}#d-46)).
+- **Ressaltat dels blocs `.s`: definició pròpia, `24_specs/riscv.xml`** (format KDE, el de skylighting, que és el ressaltador de Pandoc; `syntax-definitions:` a `_quarto.yml`, als dos formats). Classes: instruccions (`kw`), salts, crides, retorns i crides al sistema (`cf`), registres i CSR (`va`), directives (`pp`), etiquetes i crides a macros (`fu`), paràmetres de macro (`at`), modes d'arrodoniment (`bu`), i comentaris, cadenes, caràcters i nombres. **El llenguatge s'ha de dir `s`**: Pandoc tria la definició pel nom de la classe abans que per l'extensió, i amb un altre nom guanyaria `gnuassembler`. Una instrucció o una directiva nova que surti sense ressaltar s'afegeix a la seva llista del fitxer ([D-47]({{< var decisions >}}#d-47)).
+- **Codi deliberadament incorrecte (`codi_erroni`)**: un bloc que és incorrecte a posta —un contraexemple, un error que el text explica— porta al `filename` el prefix `codi_erroni__`, un nom descriptiu i l'extensió, entre dos senyals d'avís: `⚠️codi_erroni__<nom>.<ext>⚠️`. La marca té **dos destinataris**: el lector, que veu a la capçalera del bloc que aquell codi no s'ha de copiar, i les eines, que l'exclouen **per forma** de les comprovacions i de les escombrades del corpus (`verifica_format_codi.py` ja ho fa). Al bloc de `gcc`, el nom de dins de l'ordre i de la sortida del compilador és el del fitxer, sense els senyals: la marca és del títol del bloc. Al laboratori, el bloc de l'enunciat de `#exr-depuracio` no porta la marca, perquè el nom és el del fitxer de lliurament: `verifica_laboratoris.py` en dedueix que no és autònom pel contingut ([D-48]({{< var decisions >}}#d-48)).
 - **Cap referència creuada dins dels blocs de codi.** Quan un comentari d'un bloc ha de remetre a una altra part del llibre, la remissió va a la **prosa adjacent**; dins del bloc hi queda, si cal, el nom del tema o del fitxer en text pla. Quarto no resol `@…` dins d'un bloc de codi (pandoc no hi analitza res: el contingut és una cadena crua) i es renderitza literalment. A més, els comentaris dels blocs de laboratori l'alumne els copia al seu fitxer.
 
 #### Estil de codi C
 
 - Indentats: múltiples de 4.
 - Comentaris d'una sola línia: `//`. Més d'una línia: `/* */`.
-- Punt d'entrada: **`void main()` quan el C és notació per traduir a mà a assemblador; `int main` quan el C es compila de debò o quan la cadena de compilació és el tema.**
-
-**Per què `void main()`, si el C estàndard demana `int main`.** L'estàndard exigeix `int main` a les implementacions **allotjades** (*hosted*): les que corren sota un sistema operatiu que en recull el codi de retorn. En un entorn **autònom** (*freestanding*) la forma i el nom del punt d'entrada són **definits per la implementació**, i és aquest el cas d'EC: s'hi treballa directament sobre el processador, sense SO (@imp-directe-sobre-processador). A més, aquell C **no es compila mai**: és la notació del programa que l'alumne tradueix a mà a assemblador. Un `return` que ningú no recull seria una ficció, i `void` ho diu sense enganyar.
-
-Això val **dins d'EC i pel motiu dit**, no en general: en un programa de C normal, compilat per a un SO, **cal `int main`**. L'estàndard n'especifica dues formes, `int main(void)` i `int main(int argc, char *argv[])`; **cap de les dues no és més canònica que l'altra**, i la tria depèn de si el programa fa servir els arguments de la línia d'ordres.
-
-Els blocs que porten `int main` **no són excepcions: són l'altra meitat de la regla**, i hi són perquè el corpus la demostri sencera en lloc d'afirmar-ne només una meitat:
-
-| Bloc | Per què hi va `int main` |
-| :--- | :--- |
-| `A2.qmd` @tip-forcar-error-tipus | És l'únic C del corpus del qual se cita literalment la sortida del compilador: es compila de debò amb `gcc -Wall -Wextra -Wpedantic`. Amb `void main()`, gcc hi afegiria un diagnòstic nou i la citació deixaria de ser reproduïble. |
-| `E3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio | L'exercici tracta del **flux de compilació i enllaçat**: el C hi és l'objecte d'estudi, no notació. El `return f(x)` és justament el que fa visible la referència externa que s'ha de resoldre en l'enllaçat. |
+- Punt d'entrada: **`void main()` quan el C és notació per traduir a mà a assemblador; `int main` quan el C es compila de debò o quan la cadena de compilació és el tema.** Fora d'EC, en un programa de C normal compilat per a un SO, cal `int main` ([D-49]({{< var decisions >}}#d-49)).
+- Porten `int main` el bloc d'`A2.qmd` @tip-forcar-error-tipus, que es compila de debò i del qual se cita la sortida del compilador, i el d'`E3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio, que tracta del flux de compilació i enllaçat. No són excepcions: són l'altra meitat de la regla.
 
 #### Estil de codi RISC-V
 
 @imp-codi-format-criteris
 
-La part mecànica dels criteris (F1–F4: columna 0 per a les directives de segment i de visibilitat i per a les etiquetes, 8 espais d'indentació, cap tabulador; F5: el mnemònic o la directiva en un camp de 8 caràcters, i els operands a la columna 16) es comprova amb `python3 25_scripts/verifica_format_codi.py` sobre tots els blocs `.s` del corpus, tret dels `codi_erroni`; `--detall` en llista les línies. Escrit el 2026-10-03 a partir de la proposta d'un checker que deixava un marcador a A2. **F5 entra al callout el 2026-10-06** (decisió de l'usuari, a proposta de Claude Code): és l'estil de tota la teoria i els solucionaris (1 176 línies d'instrucció, contra 596 amb els operands a la columna 13 o 14 als laboratoris i a E2–E4 i E8, i 93 amb un sol espai), i és on cauen els operands del codi que genera `gcc -S`, amb tabuladors de 8. Els operands se separen amb una coma i un espai (1 799 de 1 799 línies amb comes ja ho fan). La columna dels comentaris no es regula: 199 dels 213 blocs amb comentaris ja els tenen en una sola columna. El format no s'avalua per si mateix (el callout ho diu). Decidit per l'usuari, perquè la reunió del grup de treball del 2026-10-05 no ho va arribar a tractar.
+La part mecànica dels criteris (F1–F4: columna 0 per a les directives de segment i de visibilitat i per a les etiquetes, 8 espais d'indentació, cap tabulador; F5: el mnemònic o la directiva en un camp de 8 caràcters, i els operands a la columna 16) es comprova amb `python3 25_scripts/verifica_format_codi.py` sobre tots els blocs `.s` del corpus, tret dels `codi_erroni`; `--detall` en llista les línies. Els operands se separen amb una coma i un espai. La columna dels comentaris no es regula. El format no s'avalua per si mateix (el callout ho diu) ([D-50]({{< var decisions >}}#d-50)).
 
 ### Figures i material gràfic
 
 - Tots els diagrames nous es generen com a SVG (no Mermaid).
-- **Text alternatiu i mida a l'HTML**: el `<desc>` de cada SVG n'és el text alternatiu, i el filtre `25_scripts/figures.lua` (a `filters:` de `_quarto.yml`) el copia a l'`alt` de la imatge; el peu es queda al `.qmd`, i el `<desc>` ha de descriure el que es veu, no repetir-lo (decisió 6 de la fase 7c). El mateix filtre dona a cada imatge, només a l'HTML, l'amplada del `viewBox` per 1,4, de manera que el text de totes les figures té la mateixa mida; en un visor estret s'encongeixen fins a la columna, i les que porten `{width=…}` al `.qmd` es respecten (decisió de l'usuari, 2026-10-06; `24_specs/svg.md §2`). Tot SVG consumit porta `<title>` i `<desc>`.
-- **Inventari**: `24_specs/figures.md`, una taula per figura i una per fitxer font, amb els avisos (orfes, duplicats, placeholders, `<title>`/`<desc>`, colors fora de paleta, `textLength`, peus i remissions). El genera `25_scripts/inventari_figures.py` (`make inventari`), que mesura pel contingut i no pel nom, i no s'edita a mà. Cal regenerar-lo en el mateix commit que afegeixi, retiri o canviï una figura. Creat a la fase 7c (2026-10-03).
+- **Text alternatiu i mida a l'HTML**: el `<desc>` de cada SVG n'és el text alternatiu, i el filtre `25_scripts/figures.lua` (a `filters:` de `_quarto.yml`) el copia a l'`alt` de la imatge; el peu es queda al `.qmd`, i el `<desc>` ha de descriure el que es veu, no repetir-lo. El mateix filtre dona a cada imatge, només a l'HTML, l'amplada del `viewBox` per 1,4, de manera que el text de totes les figures té la mateixa mida; en un visor estret s'encongeixen fins a la columna, i les que porten `{width=…}` al `.qmd` es respecten (`24_specs/svg.md §2`). Tot SVG consumit porta `<title>` i `<desc>` ([D-51]({{< var decisions >}}#d-51)).
+- **Inventari**: `24_specs/figures.md`, una taula per figura i una per fitxer font, amb els avisos (orfes, duplicats, placeholders, `<title>`/`<desc>`, colors fora de paleta, `textLength`, peus i remissions). El genera `25_scripts/inventari_figures.py` (`make inventari`), que mesura pel contingut i no pel nom, i no s'edita a mà. Cal regenerar-lo en el mateix commit que afegeixi, retiri o canviï una figura.
 
 #### Política de generació SVG
 
@@ -571,18 +539,18 @@ La part mecànica dels criteris (F1–F4: columna 0 per a les directives de segm
 
 **Figures extretes de PDFs originals (reservat per a figures complexes):**
 
-L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que no és viable reproduir com a SVG natiu en un temps raonable (gràfics multisèrie, circuits detallats, geometria molt densa). La decisió es pren conjuntament amb l'usuari. Es desen a `23_figs_externes/`; vegeu `24_specs/svg.md §15` per als detalls tècnics i la llista de figures existents.
+L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que no és viable reproduir com a SVG natiu en un temps raonable (gràfics multisèrie, circuits detallats, geometria molt densa). La decisió es pren conjuntament amb l'editor del llibre. Es desen a `23_figs_externes/`; vegeu `24_specs/svg.md §15` per als detalls tècnics i la llista de figures existents.
 
 **Figures de registres de bits:**
 - Definides a `24_specs/registres.toml` (font de veritat).
 - Generades automàticament pel pre-render (`25_scripts/gen_regs.py`).
 - Inclou formats d'instrucció (R, I, S, B, U, J, R4) i dos compendis, generats automàticament a partir de les entrades `instruccio_tipus_*` del TOML, sense entrada pròpia: `compendi_registres`, amb els set formats (el del compendi de referència, `11_riscv.qmd`), i `compendi_registres_RIS`, amb R, I i S (el d'A2, `#nte-instruccions-tipus`; vegeu §T2 i T3, «Formats d'instrucció de RV32I»). Quins formats porta cada compendi ho diu `COMPENDIS`, a `gen_regs.py`.
 - Figures de registres CSR: `T5_fcsr`, `T9_mstatus`, `T9_mtvec`, `T9_mepc`, `T9_mcause`, `T9_mip`, `T9_mie`, `T9_satp`.
-- El nom d'un camp d'un bit va girat, perquè no hi cap; la clau `horitzontals` d'un registre en llista els que no s'han de girar (la «S» de `T5_ieee754_format_registre`, a petició de la revisió externa de T5). Afegida el 2026-10-03 (fase 7c).
+- El nom d'un camp d'un bit va girat, perquè no hi cap; la clau `horitzontals` d'un registre en llista els que no s'han de girar (la «S» de `T5_ieee754_format_registre`) ([D-52]({{< var decisions >}}#d-52)).
 
 **Flux de pre-render** (`_quarto.yml`):
 
-El pipeline de pre-render és a `_quarto.yml` (clau `project.pre-render`). La font de veritat és sempre `_quarto.yml`; no es duplica aquí. Hi intervenen `25_scripts/norm_font.py` (normalització de fonts i generació de les variants `_light`), `25_scripts/gen_regs.py` (figures de registres), `25_scripts/gen_crops.py` (retalls, vegeu §Retalls) i `25_scripts/gen_dark.py` (variants `_dark`).
+El pipeline de pre-render és a `_quarto.yml` (clau `project.pre-render`), que n'és la font de veritat: no es duplica aquí. Els generadors que hi intervenen, i el sufix que deixa cadascun a `auto_figs/`, són a la taula de sufixos de §Convencions SVG; a més, `25_scripts/gen_crops.py` hi fa els retalls (§Retalls) i `25_scripts/gen_dark.py`, les variants `_dark`.
 
 En tots els casos, la font de veritat per a fonts i colors és `24_specs/svg.md`.
 
@@ -612,7 +580,7 @@ Convenció de noms dels fitxers font: `T<N>_nom_figura.svg` (guió baix, no gui�
 
 Un sufix nou és un generador nou del pre-render (`24_specs/svg.md §17`), i s'afegeix a aquesta taula. Com que l'origen és al sufix, una figura pot tenir la mateixa arrel amb dos orígens: `T3_deps_exemple__original` i `T3_deps_exemple__subrutina`. Els retalls de `gen_crops.py` no porten sufix d'origen: es diuen com el retall de `24_specs/retalls.toml`.
 
-Dins del nom d'un fitxer font, un sufix diu l'eina que l'ha fet: avui només `__graphviz` (§Figures Graphviz). Els altres que hi havia (`__drawio`, `__org`, `____error____`, `__net__`) eren de fitxers orfes, retirats a la fase 7c; l'estat d'una figura no ha d'anar al nom. Revisat i escrit el 2026-10-04 (fase 7c), amb els sufixos `__BA` i `__subrutina` proposats per l'usuari.
+Dins del nom d'un fitxer font, un sufix diu l'eina que l'ha fet: avui només `__graphviz` (§Figures Graphviz). L'estat d'una figura no ha d'anar al nom ([D-53]({{< var decisions >}}#d-53)).
 
 Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`.
 
@@ -620,7 +588,7 @@ Al caption de cada figura externa s'indica la font amb la notació `(Font: [@cla
 
 | Fitxer | On | Autoria i font | Llicència | Observacions |
 | :--- | :--- | :--- | :--- | :--- |
-| `T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7, `#fig-i9-13900k-die` | Fritzchens Fritz (foto) i JmsDoug (etiquetes), 2023; Wikimedia Commons, `[@intel_i9_die_shot]` | CC0 1.0 (domini públic) | Reduïda a 800 × 368 px. Fins al 2026-10-06 el `.bib` hi deia CC BY-SA 2.0 i només Fritzchens Fritz; la pàgina del fitxer a Commons diu CC0 1.0 i tots dos autors |
+| `T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7, `#fig-i9-13900k-die` | Fritzchens Fritz (foto) i JmsDoug (etiquetes), 2023; Wikimedia Commons, `[@intel_i9_die_shot]` | CC0 1.0 (domini públic) | Reduïda a 800 × 368 px ([D-54]({{< var decisions >}}#d-54)) |
 | `by-nc-sa.eu.png` | `14_LICENSE.qmd` | Creative Commons | Cap llicència CC: és una marca de Creative Commons, que la seva política permet fer servir per indicar la llicència d'una obra si s'hi enllaça el *deed* | `14_LICENSE.qmd` enllaça el *deed* de CC BY-NC-SA 4.0 (`LICENSE.md`) |
 : {tbl-colwidths="[24,12,18,24,22]"}
 
@@ -656,11 +624,9 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 | :--- | :--- | :--- | :--- |
 | `24_specs/T7_mc_politiques_resum__graphviz.gv` | `T7_mc_politiques_resum__graphviz.svg` | `T7_mc_politiques_resum__graphviz__original_light.svg` i `…__original_dark.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
 
-Fins al 2026-10-03 (fase 7c), el `.gv` es deia `T7_mc_politiques__graphviz.gv`, sense el `_resum` de l'SVG, i aquesta secció ho advertia com a discrepància coneguda. Es va resoldre reanomenant el `.gv`, que no referencia cap script ni cap `.qmd`; reanomenar l'SVG hauria trencat les rutes d'`A7.qmd`.
-
 #### Figures dinàmiques
 
-Una figura que mostra una seqüència (els accessos a una memòria cau, per exemple) pot ser **dinàmica a l'HTML**: un navegador de passos («◀ Anterior», «Següent ▶», «Veure-ho tot») que en mostra un sol pas cada vegada. **Al PDF sempre hi va la seqüència estàtica**, generada pel mateix script i a partir de la mateixa definició, perquè els dos formats no divergeixin (decisió de l'usuari 4 de la fase 7c). El generador n'escriu els fotogrames (a `gen_MC.py`, `fotogrames = true`; a `gen_T8.py`, `T8_mv_exemple_tlb_pas<k>.svg`, que passen pel mateix `norm_font.py` i `gen_dark.py` que la resta de `22_figs_originals/`), i el navegador és `figures_dinamiques.html`, que `_quarto.yml` inclou a totes les pàgines HTML. Els fotogrames només els cita el JavaScript, i per això són a `resources:`. Sense JavaScript, es veu la figura estàtica. Marcatge, al bloc HTML de la figura:
+Una figura que mostra una seqüència (els accessos a una memòria cau, per exemple) pot ser **dinàmica a l'HTML**: un navegador de passos («◀ Anterior», «Següent ▶», «Veure-ho tot») que en mostra un sol pas cada vegada. **Al PDF sempre hi va la seqüència estàtica**, generada pel mateix script i a partir de la mateixa definició, perquè els dos formats no divergeixin ([D-55]({{< var decisions >}}#d-55)). El generador n'escriu els fotogrames (a `gen_MC.py`, `fotogrames = true`; a `gen_T8.py`, `T8_mv_exemple_tlb_pas<k>.svg`, que passen pel mateix `norm_font.py` i `gen_dark.py` que la resta de `22_figs_originals/`), i el navegador és `figures_dinamiques.html`, que `_quarto.yml` inclou a totes les pàgines HTML. Els fotogrames només els cita el JavaScript, i per això són a `resources:`. Sense JavaScript, es veu la figura estàtica. Marcatge, al bloc HTML de la figura:
 
 ``` code
 ::::: {#fig-nom}
@@ -740,7 +706,7 @@ Notes:
 - Caption només obligatori en el cos del text.
 - Hi ha l'opció de `.hover`.
 - `tbl-colwidths="[...]"` **ha de sumar 100**; si no, el PDF no renderitza bé.
-- **Comprovació al PDF**: `python3 25_scripts/verifica_taules.py` (`--detall`, `--proposa`, `--aplica`) mira totes les taules que arriben al PDF amb tres criteris: que no desbordi cap element que no es pot partir (codi, un tros de fórmula), que cap mot no es parteixi amb guionet perquè no cap a la columna («Mnemò-nic») ni cap cel·la de codi per dins, i que els `tbl-colwidths` sumin 100 i en tinguin un per columna. Mesura amb les mètriques reals de les fonts del PDF (fontTools). `--aplica` escriu un ajust mínim: eixampla només les columnes que no arriben al mínim i treu l'espai de les que en tenen de sobres. Creat el 2026-10-06, quan 52 de les 296 taules del PDF tenien algun problema (tres sumaven 85, 14 i 105); des de llavors, cap. Que una capçalera de diverses paraules passi a dues línies pels espais no compta: és la composició normal d'una taula.
+- **Comprovació al PDF**: `python3 25_scripts/verifica_taules.py` (`--detall`, `--proposa`, `--aplica`) mira totes les taules que arriben al PDF amb tres criteris: que no desbordi cap element que no es pot partir (codi, un tros de fórmula), que cap mot no es parteixi amb guionet perquè no cap a la columna («Mnemò-nic») ni cap cel·la de codi per dins, i que els `tbl-colwidths` sumin 100 i en tinguin un per columna. Mesura amb les mètriques reals de les fonts del PDF (fontTools). `--aplica` escriu un ajust mínim: eixampla només les columnes que no arriben al mínim i treu l'espai de les que en tenen de sobres. Que una capçalera de diverses paraules passi a dues línies pels espais no compta: és la composició normal d'una taula.
 - Amplada: `style="width: X%; margin: auto;"` (recomanat dins callouts). Classe `.striped` recomanada per a taules llargues.
 
 ```code
@@ -776,7 +742,7 @@ Sintaxi: `$$expressió$$ {#eq-NOM}`. La referència és `@eq-NOM`.
 
 **Criteri de numeració**: s'etiqueten (`{#eq-NOM}`) — i per tant es numeren — només:
 
-- les equacions **referenciades** amb `@eq-` des d'algun punt del llibre (mateix tema, PE/PS o laboratori), i
+- les equacions **referenciades** amb `@eq-` des d'algun punt del llibre (mateix tema, problemes, solucions o laboratori), i
 - les **fórmules canòniques** del tema susceptibles de ser referenciades (p. ex. la definició del TAM, la Llei d'Amdahl).
 
 La resta d'equacions display queden sense etiqueta ni número. Si més endavant cal referenciar una equació no etiquetada, s'etiqueta en aquell moment.
@@ -792,14 +758,14 @@ Per al criteri d'ús de LaTeX math vs. backticks per context, vegeu §Codi, mate
 
 Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
 
-- **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta` (funciona a HTML i PDF).
-- **Figures del cos del text**: cadascuna porta almenys una remissió `@fig-…` des del text, perquè al PDF la figura pot flotar a una altra pàgina; les dels callouts i les subfigures, no cal. Decisió de l'usuari 8 de la fase 7c (2026-10-03), aplicada el 2026-10-06 a les 25 que no en tenien; l'inventari (`24_specs/figures.md`, «Figures del cos del text sense cap remissió `@`») les llista.
-- **Enllaços a seccions dins del mateix fitxer**: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
-- ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: la sintaxi `@` per a seccions **només funciona a PDF**.
+- **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta`, sola (funciona a HTML i PDF).
+- **Figures del cos del text**: cadascuna porta almenys una remissió `@fig-…` des del text, perquè al PDF la figura pot flotar a una altra pàgina; les dels callouts i les subfigures, no cal. L'inventari (`24_specs/figures.md`, «Figures del cos del text sense cap remissió `@`») les llista ([D-44]({{< var decisions >}}#d-44)).
+- **Enllaços amb text propi a una secció**, del mateix fitxer o d'un altre: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
+- ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: aquestes dues formes **només funcionen a PDF**.
 
-Exemple — fitxer `PS.qmd` amb una secció etiquetada:
+Exemple — fitxer `Sx.qmd` amb una secció etiquetada:
 
-```{.text filename="PS.qmd"}
+```{.text filename="Sx.qmd"}
 # Problemes: Solucions seleccionades {#sec-problemes-solucions}
 ```
 
@@ -840,20 +806,15 @@ Regla dels `:` addicionals:
 | `::::` -- `::: {.callout-note}` -- `:::` -- `::::` | `:::` -- `::: {.callout-note}` -- `:::` -- `:::` |
 | `:::: {.callout-note}` -- `:::` -- `:::` -- `::::` | `::: {.callout-note}` -- `:::` -- `:::` -- `:::` |
 
-#### HTML: comportament en callouts encastats
-
-- Es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben.
-
 ### Presentació visual
 
-- **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tbl-}`, etc. no cal perquè ja centren automàticament.
+- **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tbl-}`, etc. no cal perquè ja centren automàticament (les figures SVG, vegeu §Integració al `.qmd`).
     - Imatges dins callouts (**només HTML**; al PDF no té efecte).
 - **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100% de l'amplada.
     - Taules.
     - Elements de bloc.
-- **Figures SVG** (`.light-content` / `.dark-content`): els blocs de figura **no** porten `style="text-align: center;"`. Les figures amb `{#fig-}` ja centren automàticament a HTML i PDF.
-- **Imatges sense peu dins dels callouts, al PDF**: `preamble.tex` les centra (fins al 2026-10-06 sortien alineades a l'esquerra). Ho fa a les que comencen un paràgraf dins d'un `tcolorbox`, que és com Quarto escriu els callouts; una imatge dins d'una línia de text no es toca, i fora dels callouts no canvia res. Avui totes les imatges sense peu dels callouts són figures de registres més amples que el callout, de manera que la regla no hi té cap efecte visible: és per a la primera que no ho sigui.
-- **Fórmules en línia, a l'HTML**: `inline-block` sense `overflow`. Només les que no caben a la columna reben desplaçament horitzontal propi, amb la classe `.formula-llarga` que hi posa `formules_en_linia.html` (`_quarto.yml`, `include-after-body`). Fins al 2026-10-06 l'`overflow-x: auto` era a totes, i un `inline-block` amb un `overflow` que no sigui `visible` es recolza en la vora inferior (CSS 2.1 §10.8.1): les fórmules pujaven d'1 a 6 px per sobre de la línia de text (mesurat a A6, 40 fórmules) i feien créixer l'interlineat. Ara, a l'escriptori, cap fórmula d'A4, A5, A6 i S6 no és llarga i totes són a 0 px de la línia; en un mòbil de 375 px, en són llargues 4, 14, 2 i 1.
+- **Imatges sense peu dins dels callouts, al PDF**: `preamble.tex` les centra. Ho fa a les que comencen un paràgraf dins d'un `tcolorbox`, que és com Quarto escriu els callouts; una imatge dins d'una línia de text no es toca, i fora dels callouts no canvia res ([D-56]({{< var decisions >}}#d-56)).
+- **Fórmules en línia, a l'HTML**: `inline-block` sense `overflow`. Només les que no caben a la columna reben desplaçament horitzontal propi, amb la classe `.formula-llarga` que hi posa `formules_en_linia.html` (`_quarto.yml`, `include-after-body`) ([D-57]({{< var decisions >}}#d-57)).
 - **CSS mode fosc** (`custom_dark.scss`, secció `/*-- scss:rules --*/`): el codi inline dins de llegendes, capçaleres i títols de callout porta colors propis:
 
 ```scss
@@ -875,15 +836,13 @@ h1, h2, h3, h4,
 - Una bona font per aprendre és la [pròpia documentació de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/).
 - `::: {` (amb espai, Quarto) però ```{` (sense espai, Markdown).
 
-### Gestió d'errades
-
 ## Eines
 
 ### Requisits previs
 
 Abans de contribuir cal tenir instal·lat:
 
-- **Git** i accés com a **Developer**: [{{< var website >}}]({{< var repo >}}) ([Cal ser membre del grup `ec`](https://gitlab.upc.edu/groups/ec/)).
+- **Git** i accés com a **Developer** al repositori de GitLab, [gitlab.upc.edu/ec/migracio](https://gitlab.upc.edu/ec/migracio) ([cal ser membre del grup `ec`](https://gitlab.upc.edu/groups/ec/)).
 - **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/). Extensions recomanades:
     - [Quarto](https://marketplace.visualstudio.com/items?itemName=quarto.quarto)
     - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
@@ -912,12 +871,8 @@ make render
 render-complet` (HTML + PDF, ~7 min) és obligatori** abans de tocar res que
 depengui del PDF —qualsevol bloc `when-format`, una figura, una taula amb
 `tbl-colwidths`, o matemàtiques— i abans de compartir material amb alumnes o
-d'obrir la revisió externa. El motiu és que un render HTML no exercita el PDF:
-el corpus té **83 blocs `when-format="pdf"`**, i almenys cinc convencions
-d'aquest fitxer existeixen precisament perquè el PDF es comporta diferent (la
-duplicació de figures si no se separen les variants, `tbl-colwidths` que ha de
-sumar 100, les capçaleres `###` del laboratori, `[@sec-]` que només funciona a
-PDF, i aquest fitxer sent HTML-only). Per a la resta, `make render`.
+d'obrir la revisió externa, perquè un render HTML no exercita el PDF
+([D-58]({{< var decisions >}}#d-58)). Per a la resta, `make render`.
 
 **Esperar un render en segon pla.** Les sessions de Claude Code sovint llancen `make render-complet` en segon pla, perquè dura uns quants minuts. Per saber quan acaba, escriviu un marcador al registre (`make render-complet > log 2>&1; echo "exit=$?" >> log`) i espereu el marcador (`until grep -q '^exit=' log; do sleep 15; done`). No espereu amb `pgrep -f "quarto render"`: el patró també és a la línia d'ordres del bucle mateix, que es troba a si mateix i no acaba mai. Un bucle així va quedar 34 hores en segon pla i bloquejava el `/exit` de Claude Code (detectat el 2026-10-06).
 
@@ -1331,7 +1286,7 @@ Co-Authored-By: ...
 
 ### Push directe a `main` (només maintainers)
 
-La branca `main` està protegida. El nivell d'accés és el següent:
+La branca `main` està protegida. Per als revisors i col·laboradors, el nivell d'accés és el següent:
 
 | Rol | Push directe a `main` | Merge Requests |
 | :--- | :---: | :---: |
@@ -1344,7 +1299,9 @@ Els **Maintainers** poden fer push directe a `main` exclusivament per a canvis t
 - Canvis d'una sola línia en fitxers de configuració (`_quarto.yml`, `.gitignore`).
 - Actualitzacions de `CLAUDE.md`.
 
-Qualsevol altre canvi, independentment del rol, requereix una **Merge Request**. Els **Developers** sempre han d'usar el flux de Merge Request, sense excepcions.
+Qualsevol altre canvi requereix una **Merge Request**. Els **Developers** sempre han d'usar el flux de Merge Request, sense excepcions.
+
+**L'editor del llibre (Roger Baig) no està subjecte a aquesta restricció fins al segon quadrimestre del curs 2026-27**: fins llavors pot fer push directe a `main` de qualsevol canvi, també des de les sessions de Claude Code que dirigeix ([D-59]({{< var decisions >}}#d-59)).
 
 ### Renderitzar el projecte
 
@@ -1376,7 +1333,7 @@ quarto render             # les dues sortides
 | `formules_en_linia.html` | HTML | Desplaçament horitzontal només per a les fórmules en línia que no caben (§Presentació visual) |
 | `preamble.tex` | PDF | Capçaleres, colors i comptadors dels callouts, algorismes en rodona, «Problema»/«Exercici», els caràcters que la font del cos no té (`\newunicodechar`: ✓, ↔, ≡, ≠, ⌊⌋ amb el símbol matemàtic; ⚠ i les icones de les capçaleres de la presentació amb la de `fontawesome5`, i el caràcter original als marcadors) i les imatges centrades dins dels callouts. Un caràcter nou que surti en blanc al PDF hi ha d'afegir la seva línia: el registre de LaTeX el dona com a «Missing character» |
 
-**Font monoespaiada del PDF: DejaVu Sans Mono**, amb `Scale=MatchLowercase` (`_quarto.yml`, `monofont`), des del 2026-10-06. Latin Modern Mono, la de per defecte, no té els glifs de caixa (`─`) ni el ✓ que fan servir alguns blocs de codi; amb DejaVu Sans Mono el registre de LaTeX ja no hi dona cap «Missing character». Escalada a l'altura de les minúscules del text, és més estreta que Latin Modern Mono, i cap bloc de codi ni cap taula no surt del marge (`pdftotext -bbox`). El CI la instal·la amb el paquet `fonts-dejavu-core` (`.github/workflows/publish.yml`), al pas que fa el PDF. La font monoespaiada dels SVG continua sent Liberation Mono (`24_specs/svg.md §12`).
+**Font monoespaiada del PDF: DejaVu Sans Mono**, amb `Scale=MatchLowercase` (`_quarto.yml`, `monofont`): Latin Modern Mono, la de per defecte, no té els glifs de caixa (`─`) ni el ✓ que fan servir alguns blocs de codi. El CI la instal·la amb el paquet `fonts-dejavu-core` (`.github/workflows/publish.yml`), al pas que fa el PDF. La font monoespaiada dels SVG continua sent Liberation Mono (`24_specs/svg.md §12`) ([D-60]({{< var decisions >}}#d-60)).
 
 `make clean` elimina els artefactes de render (`_book`, `*_files`, `*.html`, `*.log`, `Estructura-de-computadors.tex`) sense tocar fitxers font.
 
@@ -1393,14 +1350,14 @@ El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi
 | Peça | Què fa | Regla |
 | :--- | :--- | :--- |
 | Hook `guarda-git.sh` | Bloqueja el push al remot `mirror` i les ordres que reescriuen l'historial (`--force`, `rebase`, `--amend`, `reset --hard`, `filter-branch`) | `CLAUDE.md §Flux de treball` |
-| Hook `abans-commit.sh` | Abans de cada `git commit`, `make render`: si falla, no hi ha commit. Després, revisió de prosa de les línies afegides i avís de `make render-complet` si el canvi pot afectar el PDF: en tots dos casos ni bloqueja ni pregunta, sinó que passa l'avís a Claude i el mostra a l'usuari (fins al 2026-10-03 demanava confirmació; decisió de l'usuari, perquè el flux ja fa `make render-complet` abans de cada push) | §Commits, §Verificació de l'entorn |
+| Hook `abans-commit.sh` | Abans de cada `git commit`, `make render`: si falla, no hi ha commit. Després, revisió de prosa de les línies afegides i avís de `make render-complet` si el canvi pot afectar el PDF: en tots dos casos ni bloqueja ni pregunta, sinó que passa l'avís a Claude i el mostra a l'usuari ([D-61]({{< var decisions >}}#d-61)) | §Commits, §Verificació de l'entorn |
 | Skill `escombrada` | Remet a les regles de les escombrades i hi fa servir `25_scripts/escombrada.sh` | §Escombrades i verificació del corpus |
 | Subagent `auditor-xifres` | Reprodueix les xifres que publica un commit o un rang (Opus, effort alt, només lectura) | §Escombrades i verificació del corpus |
 | Subagent `revisor-linguistic` | Revisió en català normatiu d'un diff (Sonnet, només informa) | §Llenguatge |
 
 Els dos scripts de `25_scripts/` que hi intervenen també es fan servir a mà: `python3 25_scripts/lint_prosa.py` (línies afegides respecte d'`HEAD`, o fitxers sencers si se n'hi donen) i `25_scripts/escombrada.sh --help`.
 
-⚠️ **El hook d'abans del commit fa un `make render` sencer**, que el 2026-09-25 va trigar **2 min 38 s**, i, com qualsevol `make render`, **esborra el PDF de `_book/`** (§Renderitzar el projecte).
+⚠️ **El hook d'abans del commit fa un `make render` sencer**, que triga uns minuts, i, com qualsevol `make render`, **esborra el PDF de `_book/`** (§Renderitzar el projecte).
 
 Els permisos que no han de demanar confirmació són a `.claude/settings.json`, també versionat. Les aprovacions que Claude Code desa pel seu compte van a `.claude/settings.local.json`, que git ignora: les que hagin de valer per a tothom s'han de passar a mà a `settings.json`.
 

@@ -249,7 +249,7 @@ fill:         color del stroke del segment corresponent
 
 ### Format de les adreces
 
-Sense espais i amb vuit dígits, com al text (`13_contrib.qmd §Decisions per tema → T2 i T3` i §Amplada dels hexadecimals), en majúscules:
+Sense espais i amb vuit dígits, com al text (`13_contrib.qmd §Criteris generals`, «Hexadecimals»), en majúscules:
 
 ```
 0x00000000 · 0x00400000 · 0x10010000 · 0x10040000 · 0x7FFFEFFC

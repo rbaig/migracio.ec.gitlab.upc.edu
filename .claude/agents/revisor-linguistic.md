@@ -23,6 +23,6 @@ Abans de començar, llegeix:
 
 ## Informe
 
-Una llista ordenada per fitxer i línia: `fitxer:línia` · fragment actual (el mínim) · proposta · motiu, amb la secció de `13_contrib.qmd` que s'hi aplica o la font normativa (DIEC2, Optimot).
+Una llista ordenada per fitxer i línia: `fitxer:línia` · fragment actual (el mínim) · proposta · motiu, amb la secció de `13_contrib.qmd` que s'hi aplica o la font normativa (DIEC2, Termcat i Optimot, per aquest ordre: `13_contrib.qmd §Referència normativa`).
 
 Separa-la en dos blocs: **errors** (contra la norma o contra una substitució obligatòria) i **propostes d'estil** (opcionals). Si en un fitxer no trobes res, digues-ho explícitament.
