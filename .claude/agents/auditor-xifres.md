@@ -24,7 +24,7 @@ Abans de començar, llegeix `.claude/skills/escombrada/regles.md`, on hi ha les 
    - Marca les ordres que sostenen una negació amb la sortida truncada (`head`, `-m`; regla 10), les que compten amb `-c` en lloc de `-o … | wc -l` (regla 1) i les que exclouen fitxers sense dir per què (regla 12).
    - Si una afirmació no porta ordre, digues-ho. No n'inventis una per donar-la per bona.
    - D'un punter `fitxer:línia`, comprova que el contingut que anomena hi és, al commit que diu.
-4. **Una declaració de l'usuari no es verifica** («tancat», «ho dono per bo», «decisió de l'usuari»): no la marquis com a no verificable ni proposis treure-la (`CLAUDE.md §Estat dels materials`).
+4. **Una declaració de l'usuari no es verifica** («tancat», «ho dono per bo», «decisió de l'usuari»): no la marquis com a no verificable ni proposis treure-la (`CLAUDE.md §Flux de treball`).
 
 ## Informe
 

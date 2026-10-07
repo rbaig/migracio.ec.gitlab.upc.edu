@@ -76,6 +76,21 @@ a una. Serveix per a qualsevol còpia antiga —un `.orig`, una branca
 abandonada, un fitxer que algú us passi—, no només per a la feina que la va
 originar.
 
+Una quarta, sobre els registres de revisió d'abans del 2026-09-22 (esborrats,
+i recuperables amb `git show a211bbf:<ruta>`): **no en citeu cap resum, citeu
+la secció pròpia de l'ítem i comproveu-la al corpus.** Un registre pot portar
+diversos resums escrits en moments diferents, i cap marca no diu quin és
+vigent —ni el titular, ni l'ordre al fitxer—. El cas (2026-09-23): a
+`T4_P_tasques.md`, el titular diu «✅ FASE C COMPLETADA + DECISIONS FINALS
+RESOLTES», la taula «Decisions que resten obertes per a tu» (`:24`) llista els
+ítems 3, 4.2 i 8 com a pendents, i el resum final (`:329`) diu «no queda cap
+decisió pendent tret de l'ítem 8». **El vigent és el segon resum**, i el
+corpus ho confirma: `#wrn-mul-modul-2n` és a `A4.qmd:323` i el punter T4→T7, a
+`13_contrib.qmd §Referències creuades`. Citar la taula de dalt hauria
+registrat com a pendents dues coses fetes des de juliol. Fins al 2026-10-07
+aquesta lliçó era a `CLAUDE.md §Estat dels materials`, que en citava el resum
+final com a `:312`, una línia que no reprodueix a `a211bbf`.
+
 **6. Quan trobeu un cas d'una forma, escombreu la forma**: ni el nom sol, ni la
 línia sola. En excloure el mecanisme `startup.s`, l'escombrada pel nom va donar
 setze ocurrències i un panorama tranquil; la traça que de debò contradeia la
@@ -86,7 +101,7 @@ del mecanisme, no el seu nom, i el bloc diu ara `suma:` (`c2a9171`).
 
 **7. Abans d'afirmar que una línia arriba a l'alumne, comproveu `_quarto.yml`.**
 Un fitxer comentat als `chapters:` segueix sent del projecte (vegeu
-`CLAUDE.md §Volum`) i el seu contingut sortirà imprès quan es descomenti:
+`CLAUDE.md §Abast del projecte`) i el seu contingut sortirà imprès quan es descomenti:
 l'únic «TODO» escrit com a text de llibre era a `S_criteris_seleccio.qmd`, que
 avui no es renderitza, i per això cap escombrada del `_book/` no el veia. A
 l'inrevés, `13_contrib.qmd` és **HTML-only** (`.content-visible when-format="html"`
