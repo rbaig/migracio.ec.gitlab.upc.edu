@@ -402,6 +402,7 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
 
 - **`## Símbols`**: glossari de variables/paràmetres d'equacions (símbol → concepte que representa), **contextual per tema**. Un mateix símbol pot tenir significats diferents segons on s'usi (p. ex. $m$ és la mantissa a T5 però la taxa de fallades a T7): en aquest cas s'indica a la columna «Observacions». Columnes: `Símbol | Significat | Tema | Observacions`. Ordenació: alfabètica pel símbol/nom de variable.
 - **`## Notació`**: operadors i convencions de representació, majoritàriament **transversals** i estables amb independència del tema (p. ex. $\oplus$, $>>>$, $\lfloor\cdot\rfloor$). Columnes: `Notació | Significat | Tema | Observacions`; la columna «Tema» només s'omple quan la notació és pròpia d'un tema (p. ex. la de les taules ISA), i en cas contrari es deixa en blanc. Ordenació: per categoria funcional (operadors lògics/bit a bit, desplaçaments, funcions...), no alfabètica. Fins al 2026-10-03 aquesta línia deia «Notació | Significat (sense columna de tema)», i la taula ja en tenia quatre.
+- **`## Termes`**: glossari anglès → català dels termes que el llibre presenta amb l'anglès entre parèntesis, amb el tema de la primera presentació. **No s'edita a mà**: el genera `25_scripts/gen_glossari.py` (`make glossari`) a partir de les presentacions «**terme** (*english*)» del corpus, entre dos marcadors, i cal tornar-lo a generar quan una presentació canvia (`--comprova` diu si és al dia). Només compten les presentacions amb el terme català en negreta. `--divergencies` llista els termes anglesos amb més d'una forma catalana; el glossari en mostra la de la primera presentació. Creat el 2026-10-06 (`TODO.md`). No és la taula de §Substitucions obligatòries, que és per a qui escriu.
 - **Criteri de distinció**: si el signe es "llegeix" com una magnitud amb nom i valor contextual → Símbols. Si es "llegeix" com una operació o convenció de representació → Notació.
 - **Sigles que també apareixen com a variable d'equació** (p. ex. CPI): doble entrada — definició completa a `## Sigles`, entrada curta amb remissió («Vegeu CPI a Sigles») a `## Símbols`. Criteri: si la sigla apareix dins d'una fórmula matemàtica (no només en prosa), guanya entrada també a Símbols.
 - **Excepcions de patró notacional conegudes i acceptades**: quan una font de referència (p. ex. Harris & Harris) imposa una notació que trenca un patró general del llibre, es documenta com a excepció explícita (amb un callout `#imp-` si cal remarcar-ho al text, com a `@imp-notacio-desplacament-aritmetic` a A3.qmd), no com un error a corregir silenciosament.
@@ -520,10 +521,12 @@ El camp `filename` indica el llenguatge o el context del bloc:
 | Assemblador RV32IF | ` ```{.s filename="RV32IF"} ` |
 | Assemblador RV32IZicsr | ` ```{.s filename="RV32IZicsr"} ` |
 | Fitxer `.s` específic | ` ```{.s filename="s3_4_1.s"} ` |
+| Codi deliberadament incorrecte | ` ```{.s filename="⚠️codi_erroni__nom_reservat.s⚠️"} ` |
 | Bash | ` ```bash ` |
 
 - **Títol dels blocs de pseudocodi**: «Pseudocodi: *què fa el bloc*» («Pseudocodi: divisió amb restauració», «Pseudocodi: while → do-while»), no «Pseudocodi» sol. «Pseudocodi» al davant marca el llenguatge, com «C» o «RV32I» a la resta de blocs; el que segueix els dos punts diu de quin algorisme o transformació es tracta, que és el que el lector busca quan n'hi ha més d'un a prop. Decisió de l'usuari (2026-10-01), a partir de l'anotació #4 de la revisió externa de T4. ⚠️ **El separador són dos punts, no un guió llarg**: el `filename` arriba al PDF en font monoespaiada, on «—» surt com a `---` (verificat a `make render-complet`, 2026-10-01).
 - **Algorismes (`#thm-`) en rodona**: el text d'un bloc Algorisme no va en cursiva, ni a l'HTML ni al PDF. Al PDF, la cursiva venia de l'estil *plain* del `\newtheorem` que genera Quarto, i `preamble.tex` la treu redefinint aquest estil (2026-10-02; `TODO.md §Decisions obertes → Anotacions de la revisió externa de T4–T6`, #4). Si mai s'hi declara un altre entorn d'estil *plain*, també sortirà en rodona. Mateixa decisió.
+- **Codi deliberadament incorrecte (`codi_erroni`)**: un bloc que és incorrecte a posta —un contraexemple, un error que el text explica— porta al `filename` el prefix `codi_erroni__`, un nom descriptiu i l'extensió, entre dos senyals d'avís: `⚠️codi_erroni__<nom>.<ext>⚠️`. La marca té **dos destinataris**: el lector, que veu a la capçalera del bloc que aquell codi no s'ha de copiar, i les eines, que l'exclouen **per forma** de les comprovacions i de les escombrades del corpus, en lloc d'una llista de línies que caduca (`verifica_format_codi.py` ja ho fa). Sense la marca, el contraexemple de `@nte-rars-noms-reservats`, amb un `.eqv B, 16` escrit a posta, compta com un xoc real en una escombrada dels símbols `.eqv` i obliga a aturar-se a decidir-ho. Decidit el 2026-10-06 (`TODO.md`, entrada retirada); fins llavors la marca no tenia fila en aquesta taula. Al corpus hi ha quatre blocs, tots a A2, i dos fan servir variants de la forma: sense els senyals (`codi_erroni__gcc_tipus.c`) i amb espais (`⚠️ codi_erroni__vectors.c ⚠️`). Al laboratori, el bloc de l'enunciat de `#exr-depuracio` no porta la marca, perquè el nom és el del fitxer de lliurament: `verifica_laboratoris.py` en dedueix que no és autònom pel contingut.
 - **Cap referència creuada dins dels blocs de codi.** Quan un comentari d'un bloc ha de remetre a una altra part del llibre, la remissió va a la **prosa adjacent**; dins del bloc hi queda, si cal, el nom del tema o del fitxer en text pla. Quarto no resol `@…` dins d'un bloc de codi (pandoc no hi analitza res: el contingut és una cadena crua) i es renderitza literalment. A més, els comentaris dels blocs de laboratori l'alumne els copia al seu fitxer.
 
 #### Estil de codi C
@@ -610,6 +613,16 @@ Un sufix nou és un generador nou del pre-render (`24_specs/svg.md §17`), i s'a
 Dins del nom d'un fitxer font, un sufix diu l'eina que l'ha fet: avui només `__graphviz` (§Figures Graphviz). Els altres que hi havia (`__drawio`, `__org`, `____error____`, `__net__`) eren de fitxers orfes, retirats a la fase 7c; l'estat d'una figura no ha d'anar al nom. Revisat i escrit el 2026-10-04 (fase 7c), amb els sufixos `__BA` i `__subrutina` proposats per l'usuari.
 
 Al caption de cada figura externa s'indica la font amb la notació `(Font: [@clau])`.
+
+**Figures externes** (les de `23_figs_externes/`, que no són obra dels professors de l'assignatura; verificades el 2026-10-06):
+
+| Fitxer | On | Autoria i font | Llicència | Observacions |
+| :--- | :--- | :--- | :--- | :--- |
+| `T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7, `#fig-i9-13900k-die` | Fritzchens Fritz (foto) i JmsDoug (etiquetes), 2023; Wikimedia Commons, `[@intel_i9_die_shot]` | CC0 1.0 (domini públic) | Reduïda a 800 × 368 px. Fins al 2026-10-06 el `.bib` hi deia CC BY-SA 2.0 i només Fritzchens Fritz; la pàgina del fitxer a Commons diu CC0 1.0 i tots dos autors |
+| `by-nc-sa.eu.png` | `14_LICENSE.qmd` | Creative Commons | Cap llicència CC: és una marca de Creative Commons, que la seva política permet fer servir per indicar la llicència d'una obra si s'hi enllaça el *deed* | `14_LICENSE.qmd` enllaça el *deed* de CC BY-NC-SA 4.0 (`LICENSE.md`) |
+: {tbl-colwidths="[24,12,18,24,22]"}
+
+Les figures extretes dels PDF originals de l'assignatura (les cinc de T6 marcades «extreta de PDF» a `24_specs/figures.md`) no són externes: són dels materials dels professors d'EC que recull `14_LICENSE.qmd §Reconeixements`.
 
 #### Figures Graphviz (diagrames d'arbre i grafs)
 
@@ -1340,6 +1353,7 @@ make render               # bucle diari: taules fusionades + HTML (segons)
 make render-complet       # HTML + PDF (~7 min); obligatori si toqueu res del PDF
 make taules               # només les taules fusionades (auto_riscv/), sense renderitzar
 make inventari            # inventari de figures (24_specs/figures.md), sense renderitzar
+make glossari             # glossari de 12_sigles_simbols.qmd §Termes, des del corpus
 quarto render --to html   # només HTML, sense generar les taules fusionades
 quarto render --to pdf    # només PDF (compilació LaTeX)
 quarto render             # les dues sortides

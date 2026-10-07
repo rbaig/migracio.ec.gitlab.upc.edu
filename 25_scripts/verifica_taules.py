@@ -16,6 +16,10 @@ PDF, perquè el PDF no diu de quina taula és cada mot:
   3. SUMA: cada `tbl-colwidths` ha de sumar 100 i tenir tantes amplades com
      columnes (13_contrib.qmd §Taules).
 
+I un quart, trobat en fer-lo servir: un PEU seguit d'una línia no buida (un
+comentari HTML, per exemple) surt literal, «{tbl-colwidths=…}», perquè Pandoc
+ajunta les dues línies i els atributs ja no són al final.
+
 L'amplada natural de cada cel·la es calcula amb les mètriques reals de les fonts
 del PDF (Latin Modern Roman a 11 pt, i DejaVu Sans Mono amb
 Scale=MatchLowercase per al codi; _quarto.yml), amb fontTools. Les fórmules
@@ -351,11 +355,14 @@ def taules(fitxer):
             while j < len(lin) and lin[j][1].lstrip().startswith("|"):
                 files.append(celles(lin[j][1]))
                 j += 1
-            peu, n_peu = "", None
+            peu, n_peu, k_peu = "", None, None
             if j < len(lin) and lin[j][1].startswith(": "):
-                peu, n_peu = lin[j][1], lin[j][0]
+                peu, n_peu, k_peu = lin[j][1], lin[j][0], j
             elif j + 1 < len(lin) and not lin[j][1].strip() and lin[j + 1][1].startswith(": "):
-                peu, n_peu = lin[j + 1][1], lin[j + 1][0]
+                peu, n_peu, k_peu = lin[j + 1][1], lin[j + 1][0], j + 1
+            # un peu seguit d'una línia no buida: Pandoc les ajunta, i els atributs surten literals
+            peu_enganxat = (k_peu is not None and k_peu + 1 < len(lin)
+                            and lin[k_peu + 1][1].strip() != "" and not DIV_TANCA.match(lin[k_peu + 1][1]))
             html = any('when-format="html"' in a for a, _ in pila)
             callout = any(".callout" in a for a, _ in pila)
             colw = COLW.search(peu)
@@ -370,7 +377,7 @@ def taules(fitxer):
             yield {
                 "fitxer": fitxer, "linia": n, "cap": cap, "sep": sep, "files": files,
                 "colw": [float(x) for x in colw.group(1).split(",")] if colw else None,
-                "n_colw": n_colw, "n_peu": n_peu, "n_fi": lin[j - 1][0],
+                "n_colw": n_colw, "n_peu": n_peu, "n_fi": lin[j - 1][0], "peu_enganxat": peu_enganxat,
                 "callout": callout, "html": html, "llarga": llarga, "peu": peu,
             }
             i = j
@@ -387,6 +394,8 @@ def comprova(t):
     L = L_CALLOUT if t["callout"] else L_PAGINA
     avisos = []
     files = [t["cap"]] + t["files"]
+    if t["peu_enganxat"]:
+        avisos.append(("peu", "la línia de després del peu no és buida: Pandoc les ajunta i els atributs surten literals"))
     if t["colw"] is not None:
         if len(t["colw"]) != n:
             avisos.append(("suma", f"tbl-colwidths té {len(t['colw'])} amplades i la taula {n} columnes"))
