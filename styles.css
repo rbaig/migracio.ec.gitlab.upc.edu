@@ -13,10 +13,14 @@
 
 /* Equacions display (MathJax CHTML): en pantalles estretes, les fórmules més
    amples que el viewport es desplacen horitzontalment dins del seu propi
-   contenidor en lloc de desbordar per la dreta. */
+   contenidor en lloc de desbordar per la dreta. Les equacions numerades porten
+   un min-width de MathJax igual a l'amplada de la fórmula (perquè el número
+   quedi a la dreta), que guanya el max-width i les feia sobresortir de la
+   columna; per això min-width: 0 (2026-10-07: A1, A4–A7 passaven del visor). */
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
+  min-width: 0 !important;
   overflow-x: auto;
   overflow-y: hidden;
   padding-top: 2px;     /* evita que l'scroll retalli superíndexs/subíndexs */
@@ -58,6 +62,23 @@ mjx-container.formula-llarga:not([display="true"])::-webkit-scrollbar {
     max-width: 100%;
     overflow-x: auto;
   }
+  /* Al mòbil, el codi en línia llarg i les referències creuades amb el títol
+     d'una secció (Quarto les escriu amb white-space: nowrap) es parteixen en
+     lloc de fer més ample tota la pàgina (2026-10-07: A2, A3 i 13_contrib). */
+  :not(pre) > code {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+  }
+  a.quarto-xref,
+  a.quarto-xref span {
+    white-space: normal;
+  }
+}
+
+/* Bibliografia: les URL llargues es parteixen on calgui (index.html passava del
+   visor al mòbil). */
+.csl-entry {
+  overflow-wrap: anywhere;
 }
 
 /* Per sota del breakpoint de col·lapse de la sidebar de Quarto (992 px), els
