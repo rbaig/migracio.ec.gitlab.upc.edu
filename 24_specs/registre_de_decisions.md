@@ -48,9 +48,11 @@ On es presenta cada format és decisió de l'usuari (2026-10-01, opció b): fins
 
 ### D-6
 
-**Etiquetes de bucle: el prefix `fi-`, i la numeració dels bucles germans** · `13_contrib.qmd §T2 i T3` · 2026-09-23 · `a507297`
+**Etiquetes de bucle: el prefix `fi-`, i la numeració dels bucles germans** · `13_contrib.qmd §T2 i T3` · 2026-09-23, 2026-10-07 · `a507297`
 
 El prefix de sortida `fi-` és la forma majoritària al corpus. La numeració de les etiquetes quan hi ha dos bucles al mateix bloc és decisió de l'usuari (2026-09-23): no es toca el codi i es documenta la convenció, perquè renombrar-les a `for:`/`fifor:` hi duplicaria etiquetes i el fragment no assemblaria. L'únic cas al corpus, quan es va escriure, era la solució de `s3_4_2.s` (`L3.qmd`), on `moda` té el bucle d'inicialització de l'histograma i el de recorregut de la cadena (`TODO.md §Entrades retirades`, «Etiquetes de bucle heterogènies a L3» i «`fwhile:` → `fiwhile:` al laboratori»).
+
+Fins al 2026-10-07 les etiquetes de sortida numerades eren `ffor1:` i `ffor2:`, a L3 i a l'exemple de la regla, contra el prefix `fi-` de la mateixa regla. Decisió de l'usuari (2026-10-07, fase 7e): `fifor1:` i `fifor2:`, amb els seus salts; el bloc de L3 assembla igual a RARS 1.6 (49 paraules al bolcat de `.text`, idèntiques).
 
 ### D-7
 
@@ -320,6 +322,8 @@ Decisió de l'usuari (2026-10-01), que escriu l'ús que el corpus ja feia majori
 **Una remissió `@fig-` a cada figura del cos del text** · `13_contrib.qmd §Callouts`, `§Referències creuades` · 2026-10-03 · `e806916`
 
 Decisió de l'usuari 8 de la fase 7c (2026-10-03), aplicada el 2026-10-06 a les 25 figures que no en tenien.
+
+Fins al 2026-10-07, §Referències creuades deia també «Figures i Taules: no han d'estar necessàriament referenciades al text», que la contradeia per a les figures des del 2026-10-03. Decisió de l'usuari (2026-10-07, fase 7e): «Figures sempre, taules opcional».
 
 ### D-45
 

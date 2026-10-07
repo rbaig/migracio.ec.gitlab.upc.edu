@@ -382,13 +382,13 @@ moda:
         li      s2, 0           # k = 0
         li      t0, 10
 for1:
-        bge     s2, t0, ffor1
+        bge     s2, t0, fifor1
         slli    t1, s2, 2       # t1 = k * 4
         add     t1, sp, t1      # t1 = &histo[k]
         sw      zero, 0(t1)
         addi    s2, s2, 1
         j       for1
-ffor1:
+fifor1:
 
         # max = '0'
         li      s3, '0'
@@ -396,7 +396,7 @@ ffor1:
         # for (k=0; k<num; k++)   ← mateix patró que s3_3_1.s
         li      s2, 0           # k = 0
 for2:
-        bge     s2, s1, ffor2
+        bge     s2, s1, fifor2
 
         # vec[k] → t0; a1 = vec[k] - '0'
         add     t0, s0, s2      # t0 = &vec[k]
@@ -418,7 +418,7 @@ for2:
 
         addi    s2, s2, 1       # k++
         j       for2
-ffor2:
+fifor2:
 
         mv      a0, s3          # return max
 
@@ -432,7 +432,7 @@ ffor2:
         ret
 ```
 
-El patró de @exr-compta-caracter reapareix al segon `for`: `add t0, s0, s2` calcula l'adreça del caràcter actual (equivalent a avançar el punter), `lb t0, 0(t0)` el llegeix, i `bge s2, s1, ffor2` comprova la condició de fi (aquí amb comptador explícit en lloc de sentinella, perquè `num` és conegut). El resultat esperat a `resultat` és `'4'` (`0x34`).
+El patró de @exr-compta-caracter reapareix al segon `for`: `add t0, s0, s2` calcula l'adreça del caràcter actual (equivalent a avançar el punter), `lb t0, 0(t0)` el llegeix, i `bge s2, s1, fifor2` comprova la condició de fi (aquí amb comptador explícit en lloc de sentinella, perquè `num` és conegut). El resultat esperat a `resultat` és `'4'` (`0x34`).
 :::
 
 ---
