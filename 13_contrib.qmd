@@ -38,6 +38,7 @@ El directori `21_riscv/` conté els **fragments de taula reutilitzables** (sols 
 
 - Només files de taula (sense header, sense caption, sense atributs `{}`).
 - Nom: `<extensió>_<categoria>_<descripció>.qmd`. Exemples: `RV32I_instruccions_aritmetiques.qmd`, `Zicsr_instruccions.qmd`, `RARS_syscall_codis.qmd`.
+- **Pseudoinstruccions**: fragment propi, `<extensió>_pseudo_<descripció>.qmd`, i mai dins d'una taula ISA. Les columnes són sempre «Pseudoinstrucció | Operació | Expansió», amb l'operació en la notació de les taules ISA (§Codi, matemàtiques i cursiva); `li`, que té una expansió per a cada cas, hi afegeix «Condició» davant de l'expansió ([D-66]({{< var decisions >}}#d-66)).
 - Excepció: els callouts que contenen **figures SVG** no s'externalitzen; es reprodueixen íntegrament a `11_riscv.qmd` amb IDs `#nte-rv-*`. Les figures, com totes les dels callouts `#nte-` (§Callouts), van sense etiqueta ni peu ([D-2]({{< var decisions >}}#d-2)).
 
 **IDs dels callouts a `11_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Ax.qmd`), per evitar conflictes de ID Quarto. Les figures que contenen no porten etiqueta.
@@ -62,8 +63,8 @@ L'script **no** és al `pre-render` de `_quarto.yml`: el fitxer fusionat ha d'ex
 | `RV32F_instruccions_lectura_escriptura.qmd` | T5, `11_riscv.qmd` |
 | `RV32F_instruccions_comparacio.qmd` | T5, `11_riscv.qmd` |
 | `RV32F_instruccions_conversio.qmd` | T5, `11_riscv.qmd` |
-| `RV32F_instruccions_moviment.qmd` | T5, `11_riscv.qmd` |
 | `RV32F_instruccions_moviment_bits.qmd` | T5, `11_riscv.qmd` |
+| `RV32F_pseudo_fmv.qmd` | T5, `11_riscv.qmd` |
 | `RV32I_abi_registres_resum.qmd` | T3, `11_riscv.qmd` |
 | `RV32I_csr_mcause_taula.qmd` | T9, `11_riscv.qmd` |
 | `RV32I_csr_mip_mie_taula.qmd` | T9, `11_riscv.qmd` |
@@ -99,6 +100,7 @@ L'script **no** és al `pre-render` de `_quarto.yml`: el fitxer fusionat ha d'ex
 | `RV32M_instruccions_multiplicacio.qmd` | T4, `11_riscv.qmd` |
 | `Zicsr_instruccions.qmd` | T9, `11_riscv.qmd` |
 | `Zicsr_instruccions_immediats.qmd` | T9 |
+| `Zicsr_pseudo.qmd` | T9, `11_riscv.qmd` |
 | `Zicsr_pseudo_immediats.qmd` | Cap (`TODO.md`) |
 
 ### Extensions RISC-V a EC
@@ -473,7 +475,7 @@ Regles generals:
 
 | Tipus | Prefix | Classe | Color | Aval. | Títol | Ús i particularitats |
 | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
-| RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/21_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## RV32IM ISA — `, `## RV32F ISA — `, `## RV32I ABI — `, `## RV32F ABI — `, `## Pseudoinstruccions — `, `## Directives — `, `## RARS — `, `## RV32I Registres — `, `## Supervisor ISA — ` (instruccions de l'arquitectura privilegiada disponibles en mode S, com `sfence.vma`; els CSR de mode M s'agrupen sota `RV32I ISA —` per coherència amb la resta de CSR de la variant RV32). |
+| RISC-V | `#nte-` | `.callout-note` | Verd | Sí | Sí | Material de referència ISA/ABI. Introducció al text sempre que sigui possible. Contingut compartit amb el compendi: fitxer a `/21_riscv/` amb `{{< include >}}`. Figures i taules internes sense etiqueta ni caption. Títols: `## RV32I ISA — `, `## Zicsr ISA — `, `## RV32IM ISA — `, `## RV32F ISA — `, `## RV32I ABI — `, `## RV32F ABI — `, `## Pseudoinstruccions — ` (totes, de qualsevol extensió: les defineix el manual de l'assemblador, no l'ABI; [D-66]({{< var decisions >}}#d-66)), `## Directives — `, `## RARS — `, `## RV32I Registres — `, `## Supervisor ISA — ` (instruccions de l'arquitectura privilegiada disponibles en mode S, com `sfence.vma`; els CSR de mode M s'agrupen sota `RV32I ISA —` per coherència amb la resta de CSR de la variant RV32). |
 | Criteri EC | `#imp-` | `.callout-important` | Blau | Sí | No | Criteris de l'assignatura. Per defecte, sense títol, curt, en **negretes**. Si el contingut supera ~4 línies o barreja diversos criteris, s'admet un títol curt (com als `#nte-`) en lloc de forçar la brevetat. No s'introdueix al text. |
 | Essencial | `#cau-` | `.callout-caution` | Vermell | Sí | No | Contingut indispensable o recordatori fonamental. Per defecte, sense títol, curt, en **negretes**, i s'ha de llegir com un ressaltat del text. Si el contingut supera ~4 línies o barreja diversos aspectes, s'admet un títol curt en lloc de forçar la brevetat. |
 | Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu: §Criteris generals → Veu impersonal. No s'introdueix al text. |

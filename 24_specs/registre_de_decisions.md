@@ -370,6 +370,16 @@ Els blocs que porten `int main` **no són excepcions: són l'altra meitat de la 
 
 Escrit el 2026-10-03 a partir de la proposta d'un *checker* que deixava un marcador a A2. **F5 entra al callout el 2026-10-06** (decisió de l'usuari, a proposta de Claude Code): és l'estil de tota la teoria i les solucions (1 176 línies d'instrucció, contra 596 amb els operands a la columna 13 o 14 als laboratoris i a E2–E4 i E8, i 93 amb un sol espai), i és on cauen els operands del codi que genera `gcc -S`, amb tabuladors de 8. Els operands ja se separaven amb una coma i un espai (1 799 de 1 799 línies amb comes). La columna dels comentaris no es regula perquè 199 dels 213 blocs amb comentaris ja els tenien en una sola columna. Decidit per l'usuari perquè la reunió del grup de treball del 2026-10-05 no ho va arribar a tractar.
 
+### D-66
+
+**Pseudoinstruccions: un sol esquema de columnes i un sol prefix de títol** · `13_contrib.qmd §Fitxer de referència tècnica`, `§Callouts` · 2026-10-07
+
+Fins al 2026-10-07 les taules de pseudoinstruccions tenien cinc esquemes de columnes: «Pseudoinstrucció, Operació, Expansió», «Pseudoinstrucció, Expansió, Ús», «Pseudoinstrucció, Condició, Expansió», «Pseudoinstrucció, Expansió, Condició» i «Pseudoinstrucció, Expansió». «Condició» hi volia dir dues coses: a `li`, quan s'aplica cada expansió; als salts amb zero, la condició del salt, escrita amb la sintaxi de C («salta si `rs == 0`») i no amb la de les taules ISA. `fmv.s`, `csrr` i `csrw` eren files de taules ISA (les dues de Zicsr, amb «Tipus I»). Els títols feien servir tres prefixos: «Pseudoinstrucció —» (A2, A3 i A4), «RV32I ABI —» (els salts d'A3 i el compendi) i «RV32F ABI —» (A5).
+
+L'esquema de l'operació és el de les taules ISA perquè la pseudoinstrucció es llegeix al costat de la instrucció en què s'expandeix. La columna «Ús» de `j`, `jr` i `ret` es va treure sense perdre res: el rang de ±1 MiB és a la prosa d'A3 (`jal`), i el retorn de subrutina, a §Subrutines. El prefix no porta extensió, com «Directives —», perquè les pseudoinstruccions no són ISA ni ABI: les defineix el manual de l'assemblador (*RISC-V Assembly Programmer's Manual*, `riscv_asm_manual` a `15_bibliografia.bib`).
+
+Era l'opció B de l'entrada del `TODO.md` «Unificar el format de les taules de pseudoinstruccions». El 2026-10-03 (fase 7b) l'usuari va triar l'A, que unificava A2 i afegia `la` al compendi, perquè la B tocava fitxers en revisió externa. La B es va decidir el 2026-10-07 (declaració de l'usuari, que accepta la proposta de Claude Code: «Propostes acceptades: 1, 2 i 3»), per fer-la abans que els equips de revisió comencin (fase 7f de `CLAUDE.md §Pla de treball`). El prefix, «Pseudoinstruccions —», la columna de `li` i l'abast (`fmv.s`, i `csrr` i `csrw` a A9 i al compendi), decisions de l'usuari del mateix dia, a proposta de Claude Code.
+
 ## Figures
 
 ### D-51
