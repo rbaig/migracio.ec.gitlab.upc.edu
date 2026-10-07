@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language>
+<!--
+  Ressaltat de sintaxi del codi d'assemblador RISC-V de RARS (blocs ```{.s}), en format
+  KDE (skylighting, el ressaltador de Pandoc). _quarto.yml el carrega amb
+  `syntax-definitions:` als dos formats. Fet des de zero el 2026-10-07 (decisió de
+  l'usuari): la definició que Pandoc feia servir fins llavors, `gnuassembler`, no ressaltava
+  `.eqv` ni `.end_macro` (són de RARS, no de GNU AS) i donava el mateix color a les
+  instruccions i als registres; partir d'una altra (la d'x86, `nasm`) volia dir canviar-ne
+  totes les llistes. 13_contrib.qmd §Blocs de codi.
+
+  El nom del llenguatge ha de ser «s»: és el nom de la classe dels blocs, i Pandoc tria la
+  definició pel nom abans que per l'extensió (amb un altre nom, guanya `gnuassembler`, que
+  també declara *.s). La classe HTML del bloc surt del nom del fitxer («riscv»).
+
+  Classes (defStyleNum) i el que hi va:
+    dsKeyword      instruccions (RV32I, M, F, Zicsr i pseudoinstruccions)
+    dsControlFlow  salts, crides, retorns i crides al sistema (beq, jal, ret, ecall, mret...)
+    dsVariable     registres (x0-x31, f0-f31, els noms de l'ABI i els CSR: mstatus, mepc, fcsr...)
+    dsBuiltIn      modes d'arrodoniment (rtz...)
+    dsPreprocessor directives (.data, .word, .eqv, .macro, .end_macro...)
+    dsFunction     etiquetes (definició) i crides a macros
+    dsAttribute    paràmetres de macro (%reg)
+    dsComment, dsString, dsChar, dsDecVal, dsBaseN, dsFloat, dsOperator
+-->
+<language name="s" section="Assembler" version="1" kateversion="5.0" extensions="*.s;*.S;*.asm" casesensitive="0" author="EC (FIB-UPC)" license="MIT">
+  <highlighting>
+    <list name="instruccions">
+      <!-- RV32I -->
+      <item>lui</item><item>auipc</item>
+      <item>lb</item><item>lh</item><item>lw</item><item>lbu</item><item>lhu</item>
+      <item>sb</item><item>sh</item><item>sw</item>
+      <item>addi</item><item>slti</item><item>sltiu</item><item>xori</item><item>ori</item><item>andi</item>
+      <item>slli</item><item>srli</item><item>srai</item>
+      <item>add</item><item>sub</item><item>sll</item><item>slt</item><item>sltu</item><item>xor</item>
+      <item>srl</item><item>sra</item><item>or</item><item>and</item>
+      <item>fence</item><item>fence.i</item>
+      <!-- M -->
+      <item>mul</item><item>mulh</item><item>mulhsu</item><item>mulhu</item>
+      <item>div</item><item>divu</item><item>rem</item><item>remu</item>
+      <!-- F -->
+      <item>flw</item><item>fsw</item>
+      <item>fmadd.s</item><item>fmsub.s</item><item>fnmsub.s</item><item>fnmadd.s</item>
+      <item>fadd.s</item><item>fsub.s</item><item>fmul.s</item><item>fdiv.s</item><item>fsqrt.s</item>
+      <item>fsgnj.s</item><item>fsgnjn.s</item><item>fsgnjx.s</item><item>fmin.s</item><item>fmax.s</item>
+      <item>fcvt.w.s</item><item>fcvt.wu.s</item><item>fcvt.s.w</item><item>fcvt.s.wu</item>
+      <item>fmv.x.w</item><item>fmv.w.x</item><item>fmv.x.s</item><item>fmv.s.x</item>
+      <item>feq.s</item><item>flt.s</item><item>fle.s</item><item>fclass.s</item>
+      <item>fmv.s</item><item>fabs.s</item><item>fneg.s</item>
+      <item>frcsr</item><item>fscsr</item><item>frrm</item><item>fsrm</item><item>frflags</item><item>fsflags</item>
+      <!-- Zicsr -->
+      <item>csrrw</item><item>csrrs</item><item>csrrc</item><item>csrrwi</item><item>csrrsi</item><item>csrrci</item>
+      <item>csrr</item><item>csrw</item><item>csrs</item><item>csrc</item><item>csrwi</item><item>csrsi</item><item>csrci</item>
+      <!-- Arquitectura privilegiada (sense salt) -->
+      <item>sfence.vma</item>
+      <!-- Pseudoinstruccions sense salt -->
+      <item>nop</item><item>li</item><item>la</item><item>mv</item><item>not</item><item>neg</item>
+      <item>seqz</item><item>snez</item><item>sltz</item><item>sgtz</item>
+    </list>
+    <list name="salts">
+      <item>jal</item><item>jalr</item>
+      <item>beq</item><item>bne</item><item>blt</item><item>bge</item><item>bltu</item><item>bgeu</item>
+      <item>beqz</item><item>bnez</item><item>blez</item><item>bgez</item><item>bltz</item><item>bgtz</item>
+      <item>bgt</item><item>ble</item><item>bgtu</item><item>bleu</item>
+      <item>j</item><item>jr</item><item>b</item><item>ret</item><item>call</item><item>tail</item>
+      <item>ecall</item><item>ebreak</item><item>mret</item><item>sret</item><item>uret</item><item>wfi</item>
+    </list>
+    <list name="registres">
+      <item>zero</item><item>ra</item><item>sp</item><item>gp</item><item>tp</item><item>fp</item>
+      <item>t0</item><item>t1</item><item>t2</item><item>t3</item><item>t4</item><item>t5</item><item>t6</item>
+      <item>s0</item><item>s1</item><item>s2</item><item>s3</item><item>s4</item><item>s5</item>
+      <item>s6</item><item>s7</item><item>s8</item><item>s9</item><item>s10</item><item>s11</item>
+      <item>a0</item><item>a1</item><item>a2</item><item>a3</item><item>a4</item><item>a5</item><item>a6</item><item>a7</item>
+      <item>ft0</item><item>ft1</item><item>ft2</item><item>ft3</item><item>ft4</item><item>ft5</item>
+      <item>ft6</item><item>ft7</item><item>ft8</item><item>ft9</item><item>ft10</item><item>ft11</item>
+      <item>fs0</item><item>fs1</item><item>fs2</item><item>fs3</item><item>fs4</item><item>fs5</item>
+      <item>fs6</item><item>fs7</item><item>fs8</item><item>fs9</item><item>fs10</item><item>fs11</item>
+      <item>fa0</item><item>fa1</item><item>fa2</item><item>fa3</item><item>fa4</item><item>fa5</item><item>fa6</item><item>fa7</item>
+    </list>
+    <list name="csr">
+      <item>fcsr</item><item>frm</item><item>fflags</item>
+      <item>mstatus</item><item>misa</item><item>mie</item><item>mtvec</item><item>mscratch</item>
+      <item>mepc</item><item>mcause</item><item>mtval</item><item>mip</item><item>mhartid</item>
+      <item>sstatus</item><item>sie</item><item>stvec</item><item>sscratch</item><item>sepc</item>
+      <item>scause</item><item>stval</item><item>sip</item><item>satp</item>
+      <item>ustatus</item><item>uie</item><item>utvec</item><item>uscratch</item><item>uepc</item>
+      <item>ucause</item><item>utval</item><item>uip</item>
+      <item>cycle</item><item>time</item><item>instret</item><item>cycleh</item><item>timeh</item><item>instreth</item>
+    </list>
+    <list name="arrodoniment">
+      <!-- modes d'arrodoniment de les instruccions de coma flotant (fcvt.w.s rd, rs1, rtz) -->
+      <item>rne</item><item>rtz</item><item>rdn</item><item>rup</item><item>rmm</item><item>dyn</item>
+    </list>
+    <list name="directives">
+      <item>.align</item><item>.ascii</item><item>.asciz</item><item>.string</item>
+      <item>.byte</item><item>.half</item><item>.short</item><item>.word</item><item>.dword</item>
+      <item>.float</item><item>.double</item><item>.space</item>
+      <item>.data</item><item>.text</item><item>.kdata</item><item>.ktext</item><item>.section</item>
+      <item>.rodata</item><item>.bss</item><item>.sdata</item>
+      <item>.globl</item><item>.global</item><item>.extern</item>
+      <item>.eqv</item><item>.equ</item><item>.set</item><item>.include</item>
+      <item>.macro</item><item>.end_macro</item><item>.endm</item>
+      <item>.option</item><item>.type</item><item>.size</item><item>.file</item><item>.ident</item>
+    </list>
+    <contexts>
+      <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
+        <DetectChar attribute="Comment" context="Comentari" char="#"/>
+        <DetectChar attribute="String" context="Cadena" char="&quot;"/>
+        <RegExpr attribute="Char" context="#stay" String="'(\\.|[^'\\])'"/>
+        <!-- definició d'etiqueta al començament de línia -->
+        <RegExpr attribute="Label" context="#stay" String="[A-Za-z_.$][A-Za-z0-9_.$]*:" firstNonSpace="true"/>
+        <keyword attribute="Directive" context="#stay" String="directives"/>
+        <keyword attribute="Control Flow" context="#stay" String="salts"/>
+        <keyword attribute="Instruction" context="#stay" String="instruccions"/>
+        <keyword attribute="Register" context="#stay" String="registres"/>
+        <RegExpr attribute="Register" context="#stay" String="\b[xf]([12]?[0-9]|3[01])\b"/>
+        <keyword attribute="Register" context="#stay" String="csr"/>
+        <keyword attribute="Rounding" context="#stay" String="arrodoniment"/>
+        <RegExpr attribute="Macro Parameter" context="#stay" String="%[A-Za-z_][A-Za-z0-9_]*"/>
+        <!-- crida a una macro: un nom seguit d'un parèntesi (amb espais o sense), al començament de la sentència -->
+        <RegExpr attribute="Label" context="#stay" String="[A-Za-z_][A-Za-z0-9_]*(?=\s*\()" firstNonSpace="true"/>
+        <RegExpr attribute="Float" context="#stay" String="\b[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?\b"/>
+        <RegExpr attribute="BaseN" context="#stay" String="\b0[xX][0-9A-Fa-f]+\b"/>
+        <RegExpr attribute="BaseN" context="#stay" String="\b0[bB][01]+\b"/>
+        <RegExpr attribute="Decimal" context="#stay" String="\b[0-9]+\b"/>
+        <AnyChar attribute="Operator" context="#stay" String=",()+-*/&lt;&gt;|&amp;^~"/>
+      </context>
+      <context name="Comentari" attribute="Comment" lineEndContext="#pop"/>
+      <context name="Cadena" attribute="String" lineEndContext="#pop">
+        <HlCStringChar attribute="Special Char" context="#stay"/>
+        <DetectChar attribute="String" context="#pop" char="&quot;"/>
+      </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Instruction" defStyleNum="dsKeyword"/>
+      <itemData name="Control Flow" defStyleNum="dsControlFlow"/>
+      <itemData name="Register" defStyleNum="dsVariable"/>
+      <itemData name="Rounding" defStyleNum="dsBuiltIn"/>
+      <itemData name="Directive" defStyleNum="dsPreprocessor"/>
+      <itemData name="Label" defStyleNum="dsFunction"/>
+      <itemData name="Macro Parameter" defStyleNum="dsAttribute"/>
+      <itemData name="Comment" defStyleNum="dsComment"/>
+      <itemData name="String" defStyleNum="dsString"/>
+      <itemData name="Special Char" defStyleNum="dsSpecialChar"/>
+      <itemData name="Char" defStyleNum="dsChar"/>
+      <itemData name="Decimal" defStyleNum="dsDecVal"/>
+      <itemData name="BaseN" defStyleNum="dsBaseN"/>
+      <itemData name="Float" defStyleNum="dsFloat"/>
+      <itemData name="Operator" defStyleNum="dsOperator"/>
+    </itemDatas>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="#"/>
+    </comments>
+    <keywords casesensitive="0" weakDeliminator="._$"/>
+  </general>
+</language>
