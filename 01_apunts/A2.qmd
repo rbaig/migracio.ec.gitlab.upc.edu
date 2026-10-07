@@ -44,7 +44,7 @@ El terme ***Reduced Instruction Set Computer*** (**RISC**) apareix a principis d
 
 Abans que els processadors **RISC** fossin populars, els ràpids avenços en la tecnologia d'integració a escala molt gran (**Very Large Scale Integration**, **VLSI**) havien permès als arquitectes integrar circuits cada cop més complexos, i adoptar llenguatges d'assemblador cada cop més potents, amb l'objectiu de reduir la **diferència semàntica** amb els llenguatges d'alt nivell. Així per exemple, en alguns processadors es podien realitzar amb una sola instrucció de llenguatge màquina operacions tan complexes com avaluar un polinomi en coma flotant, o copiar una cadena de caràcters traduint-los prèviament per mitjà d'una taula de conversió. Per abastar tal varietat i sofisticació de tasques calia un repertori amplíssim d'instruccions, amb un nombre variable d'operands, fent necessari codificar-les amb un **format de mida variable**. Per especificar la ubicació dels operands es necessitaven molts **modes d'adreçament** i **indireccions de memòria complexes**. Algunes instruccions involucraven tantes operacions que per interpretar-les es necessitava executar cada cop un petit programa escrit en **microcodi**, en una ***Read Only Memory*** (**ROM**) interna. Aquestes arquitectures són les que van ser més tard conegudes com **CISC**.
 
-Però aquesta tendència va començar a canviar quan alguns estudis estadístics van mostrar que les **instruccions més complexes a penes es feien servir** en la pràctica, ja que responien a necessitats tan particulars que els compiladors trobaven moltes dificultats per aplicar-les. Aviat es va fer evident que tot i que les instruccions complexes podien resoldre problemes particulars de manera molt eficient, la seva implementació augmentava la complexitat del processador de tal manera que comportava sovint que l'execució de les instruccions més simples s'alentís. La filosofia **RISC** va tendir doncs a suprimir les instruccions complexes i lentes, seguint el principi que la mateixa tasca es pot realitzar amb una seqüència d'**instruccions simples**, i que suprimir-les del repertori permet dissenyar un **maquinari** més simple, capaç d'executar més ràpidament les altres instruccions (***simplicity favors regularity*** [@patterson2020riscv]). La principal característica de les arquitectures **RISC** (**ARM**, **PowerPC**, **MIPS**, **RISC-V**, **Alpha**, **SPARC**, etc.) consistia en un joc d'instruccions dissenyat amb el criteri bàsic del **rendiment**. El més característic dels **RISC** era el fet de tenir **instruccions de mida fixa** (normalment 32 bits), pocs **modes d'adreçament** (solament operands en registre o bé immediats), i que l'**accés a memòria** es feia només amb instruccions específiques de càrrega i emmagatzemament a memòria.
+Però aquesta tendència va començar a canviar quan alguns estudis estadístics van mostrar que les **instruccions més complexes a penes es feien servir** en la pràctica, ja que responien a necessitats tan particulars que els compiladors trobaven moltes dificultats per aplicar-les. Aviat es va fer evident que tot i que les instruccions complexes podien resoldre problemes particulars de manera molt eficient, la seva implementació augmentava la complexitat del processador de tal manera que comportava sovint que l'execució de les instruccions més simples s'alentís. La filosofia **RISC** va tendir doncs a suprimir les instruccions complexes i lentes, seguint el principi que la mateixa tasca es pot realitzar amb una seqüència d'**instruccions simples**, i que suprimir-les del repertori permet dissenyar un **maquinari** més simple, capaç d'executar més ràpidament les altres instruccions (***simplicity favors regularity*** [@patterson2020riscv]). La principal característica de les arquitectures **RISC** (**ARM**, **PowerPC**, **MIPS**, **RISC-V**, **Alpha**, **SPARC**, etc.) consistia en un joc d'instruccions dissenyat amb el criteri bàsic del **rendiment**. El més característic dels **RISC** era el fet de tenir **instruccions de mida fixa** (normalment 32 bits), pocs **modes d'adreçament** (solament operands en registre o bé immediats), i que l'**accés a memòria** es feia només amb instruccions específiques de lectura i escriptura de memòria.
 
 Originàriament, els nous microprocessadors de tipus **RISC** eren estructuralment més simples que els de tipus **CISC** i estaven formats per un nombre molt més reduït de transistors, característica que els feia **més barats, ràpids i energèticament eficients**. Moltes de les arquitectures **CISC** van desaparèixer, però algunes que estaven fermament instal·lades en el mercat (com la **x86** d'Intel i **AMD**) simplement van evolucionar, i amb els anys, les diferències entre **CISC** i **RISC** s'han anat difuminant. Per una banda, els processadors **x86** actuals converteixen internament cada una de les instruccions en una o vàries **micro-operacions** del tipus **RISC**. Per l'altra, a mesura que la dissipació de calor ha frenat l'augment de les freqüències de rellotge, aquestes arquitectures han anat incorporant als seus repertoris noves instruccions per augmentar-ne la funcionalitat. Amb aquestes ampliacions, el repertori ha deixat de ser «reduït» però no per això s'ha desvirtuat el criteri **RISC**, que no és pas la llargada del repertori sinó la **millora de rendiment global**.
 
@@ -61,7 +61,7 @@ La **paraula nativa** (***word***) és la mida en bits de dada que el processado
 
 - Mida dels registres.
 - Operand directe de les instruccions aritmètiques.
-- Mida per defecte en operacions de càrrega i emmagatzemament a memòria.
+- Mida per defecte en operacions de lectura i escriptura de memòria.
 
 És una de les característiques determinants de qualsevol arquitectura.
 :::
@@ -147,7 +147,7 @@ Característiques bàsiques:
 - El registre **x0** (també anomenat **zero**) està fixat per **maquinari** al valor 0 i, per tant, no es pot modificar.
 - **Espai d'adreces** de **32 bits**: $2^{32}$ adreces (**0x00000000**--**0xFFFFFFFF**); una adreça per **byte**; 4 GiB ($2^{32}$ bytes).
 - L'espai de memòria és **unificat** (instruccions i dades comparteixen el mateix espai d'adreces).
-- **Model lectura/escriptura** (*load/store*): accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
+- **Model lectura/escriptura** (*load/store*): accés a memòria exclusivament mitjançant instruccions de lectura i escriptura (`lw`/`sw` i variants).
 - Nombre d'instruccions: **40**
 
 Totes les instruccions:
@@ -156,7 +156,7 @@ Totes les instruccions:
     - **Mode registre**: `add`, `sub`, `and`, `or`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu`
     - **Mode immediat**: `addi`, `andi`, `ori`, `xori`, `slli`, `srli`, `srai`, `slti`, `sltiu`.
 - **Càrrega d'immediats**: `lui`, `auipc`.
-- **Càrrega/emmagatzematge**: `lw`, `lh`, `lb`, `lhu`, `lbu`, `sw`, `sh`, `sb`.
+- **Lectura/escriptura**: `lw`, `lh`, `lb`, `lhu`, `lbu`, `sw`, `sh`, `sb`.
 - **Salts condicionals**: `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu`.
 - **Salts incondicionals**: `jal`, `jalr`.
 - **Sistema**: `ecall`, `ebreak`, `fence` (`fence.tso` és una variant codificada dins `fence`)
@@ -230,7 +230,7 @@ El resultat és un fitxer `fitxer.s` amb el codi assemblador RV32I generat pel c
 ## Extensió F — Característiques bàsiques
 - Afegeix **aritmètica en coma flotant de precisió simple** (*single-precision floating-point*, 32 bits), seguint l'estàndard **IEEE 754**.
 - Incorpora **32 registres de coma flotant** de 32 bits addicionals: `f0`–`f31`, independents dels registres enters de RV32I.
-- Inclou instruccions de **càrrega i emmagatzemament** (`flw`/`fsw`), **aritmètica** (`fadd.s`, `fsub.s`, `fmul.s`, `fdiv.s`, `fsqrt.s`), **comparació**, **conversió** entre enters i flotants, i operacions **fusionades** (*fused multiply-add*: `fmadd.s`, `fmsub.s`, etc.).
+- Inclou instruccions de **lectura i escriptura** (`flw`/`fsw`), **aritmètica** (`fadd.s`, `fsub.s`, `fmul.s`, `fdiv.s`, `fsqrt.s`), **comparació**, **conversió** entre enters i flotants, i operacions **fusionades** (*fused multiply-add*: `fmadd.s`, `fmsub.s`, etc.).
 - Nombre d'instruccions: **26**
 :::
 
@@ -840,7 +840,7 @@ Un *dirty hack* és cometre errades al codi deliberadament (conflicte de tipus e
 ::: {#tip-forcar-error-tipus .callout-tip}
 ## C — ⚠️forçar un error per esbrinar un tipus⚠️
 
-```{.c filename="codi_erroni__gcc_tipus.c"}
+```{.c filename="⚠️codi_erroni__gcc_tipus.c⚠️"}
 #include <stdio.h>
 
 int main(void) {
@@ -937,7 +937,7 @@ En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (
 - És **unificat**: Instruccions i dades comparteixen el mateix espai d'adreces (Model Von Neumann, @sec-von-neumann).
 - L'**espai d'adreces** (quantitat de línies del bus d'adreces) és de **32** bits. Per tant, el rang adreçable és [**0x00000000**--**0xFFFFFFFF**].
 - Adreçament a nivell de **byte**: Cada adreça identifica **una posició** de memòria que conté **1 byte** (8 bits).
-- És **load/store**: Accés a memòria exclusivament mitjançant instruccions de càrrega i emmagatzemament (`lw`/`sw` i variants).
+- És **load/store**: Accés a memòria exclusivament mitjançant instruccions de lectura i escriptura (`lw`/`sw` i variants).
 - És **little-endian**: El byte de menys pes ocupa l'adreça més baixa.
 - Les adreces del programa **poden ser virtuals**: en un sistema amb sistema operatiu, la **MMU** (***Memory Management Unit***) les tradueix a adreces físiques (@sec-mv-espais, [Tema 8](#sec-tema-mv)). A **RARS** no hi ha traducció: les adreces del programa **són** directament les adreces físiques.
 
@@ -950,9 +950,9 @@ A **EC** s'estudia un **únic processador sense concurrència**: amb un sol *har
 ::::
 
 ::: {#cau-carrega-abans-operar .callout-caution}
-Per operar una dada que estigui emmagatzemada a memòria, abans de qualsevol instrucció de l'operació primer cal **sempre** carregar de memòria a un registre el valor mitjançant la **instrucció de càrrega** adient.
+Per operar una dada que estigui emmagatzemada a memòria, abans de qualsevol instrucció de l'operació primer cal **sempre** llegir de memòria el valor i deixar-lo en un registre mitjançant la **instrucció de lectura** adient.
 
-Per emmagatzemar qualsevol resultat a memòria, abans de qualsevol **instrucció d'emmagatzematge** primer cal **sempre** obtenir el resultat.
+Per escriure qualsevol resultat a memòria, abans de qualsevol **instrucció d'escriptura** primer cal **sempre** obtenir el resultat.
 :::
 
 ::: {#imp-operador-adreca-de .callout-important}
@@ -1325,13 +1325,13 @@ Si `f`, `g`, `h`, `i` són variables locals enteres guardades als registres `s0`
 En **RV32I**, el mode d'adreçament que usa la sintaxi `offset(rs1)` s'anomena **mode base + desplaçament** (*base + offset mode*) i és el terme que s'utilitza a EC. A la literatura es troba sovint com a **mode memòria** (*memory addressing mode*); tots dos noms fan referència al mateix concepte.
 :::
 
-En processadors **RISC** com el **RV32I**, només les instruccions del tipus **carrega** (***load***) i **emmagatzematge** (***store***) admeten un **operand** resident en memòria. Aquest operand s'ha de codificar en **mode base + desplaçament**, el qual té la sintaxi `offset(rs1)`, on `rs1` és el **registre-base** que conté una adreça de memòria, i `offset` és un **desplaçament** que s'afegeix a aquesta adreça per obtenir l'**adreça efectiva** de la dada a accedir.
+En processadors **RISC** com el **RV32I**, només les instruccions del tipus **lectura** (***load***) i **escriptura** (***store***) admeten un **operand** resident en memòria. Aquest operand s'ha de codificar en **mode base + desplaçament**, el qual té la sintaxi `offset(rs1)`, on `rs1` és el **registre-base** que conté una adreça de memòria, i `offset` és un **desplaçament** que s'afegeix a aquesta adreça per obtenir l'**adreça efectiva** de la dada a accedir.
 
 El desplaçament és un **immediat** de **12 bits** codificat en **Ca2**, que abasta el rang de valors $[-2^{11}, 2^{11}-1]$ ([-2048, +2047]). El processador **RV32I** fa **extensió de signe** a 32 bits abans de sumar-lo a la base.
 
-Les instruccions de **càrrega** (*load*) són de format **Tipus-I** (@nte-instruccions-Tipus-I): especifiquen un **registre destinació** (**rd**) on escriure el valor llegit, a més del registre base (**rs1**) i el desplaçament (`offset`).
+Les instruccions de **lectura** (*load*) són de format **Tipus-I** (@nte-instruccions-Tipus-I): especifiquen un **registre destinació** (**rd**) on escriure el valor llegit, a més del registre base (**rs1**) i el desplaçament (`offset`).
 
-Les instruccions d'**emmagatzemament** (*store*) són de format **Tipus-S** (@nte-instruccions-Tipus-S): no necessiten `rd` (no escriuen a cap registre), però necessiten **dos registres font**: el registre base (`rs1`) per calcular l'adreça efectiva, i el registre font (`rs2`) que conté el valor a emmagatzemar. Els bits de l'immediat es distribueixen en dos camps separats precisament per mantenir `rs1` i `rs2` en posicions fixes, igual que en la resta de formats, cosa que simplifica la descodificació al **maquinari**.
+Les instruccions d'**escriptura** (*store*) són de format **Tipus-S** (@nte-instruccions-Tipus-S): no necessiten `rd` (no escriuen a cap registre), però necessiten **dos registres font**: el registre base (`rs1`) per calcular l'adreça efectiva, i el registre font (`rs2`) que conté el valor a escriure. Els bits de l'immediat es distribueixen en dos camps separats precisament per mantenir `rs1` i `rs2` en posicions fixes, igual que en la resta de formats, cosa que simplifica la descodificació al **maquinari**.
 
 :::: {#nte-instruccions-Tipus-S .callout-note}
 ## RV32I ISA — Format Tipus-S
@@ -1350,18 +1350,18 @@ Les instruccions d'**emmagatzemament** (*store*) són de format **Tipus-S** (@nt
 
 El comportament específic de moltes operacions depèn de les característiques dels operands o el resultat, sent les més habituals el tipus o la mida. Això fa que, en les arquitectures RISC, per implementar-les, calguin diverses **variants** d'un mateix tipus d'instrucció.
 
-Per les instruccions de càrrega i emmagatzematge, els factors rellevants i la influència en els mnemònics són:
+Per les instruccions de lectura i escriptura, els factors rellevants i la influència en els mnemònics són:
 
-- La direcció del flux de dades: si es tracta d'una instrucció de càrrega (`l`, load) o d'emmagatzematge (`s`, store).
+- La direcció del flux de dades: si es tracta d'una instrucció de lectura (`l`, load) o d'escriptura (`s`, store).
 - La mida de les dades a accedir: 4 bytes (`w`, word), 2 bytes (`h`, half-word) o 1 byte (`b`, byte).
-- Si les dades a carregar són naturals (`u`, d'*unsigned*) o enters (sense lletra específica als mnemònics).
+- Si les dades a llegir són naturals (`u`, d'*unsigned*) o enters (sense lletra específica als mnemònics).
 
 Aquesta nomenclatura es manté a totes les variants d'instruccions de RV32I.
 
-@nte-load-store mostra totes les instruccions de **càrrega** i **emmagatzemament** de **RV32I**.
+@nte-load-store mostra totes les instruccions de **lectura** i **escriptura** de **RV32I**.
 
 ::: {#nte-load-store .callout-note}
-## RV32I ISA — Instruccions de càrrega i emmagatzemament
+## RV32I ISA — Instruccions de lectura i escriptura
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
 {{< include ../21_riscv/RV32I_instruccions_lectura_escriptura.qmd >}}
@@ -1397,7 +1397,7 @@ No existeix la instrucció ~~`lwu`~~.
 
 #### Accés a enters de mitja paraula o byte: `lh`, `lb`, `sh`, `sb` {#sec-acces-mig-paraula-byte}
 
-Les instruccions `lh` (*load half*) i `lb` (*load byte*) carreguen de la memòria, a partir de l'adreça efectiva, a un registre **dos bytes** o **un byte**, respectivament. Com que el registre destinació és de 32 bits, es fa una **extensió de signe** del bit més significatiu del valor carregat (el bit de signe en el cas dels enters) per omplir els bits més significatius del registre destinació.
+Les instruccions `lh` (*load half*) i `lb` (*load byte*) llegeixen de la memòria, a partir de l'adreça efectiva, i copien a un registre **dos bytes** o **un byte**, respectivament. Com que el registre destinació és de 32 bits, es fa una **extensió de signe** del bit més significatiu del valor llegit (el bit de signe en el cas dels enters) per omplir els bits més significatius del registre destinació.
 
 Per la seva banda, les instruccions `sh` (*store half*) i `sb` (*store byte*) copien els **dos bytes** o el **byte** menys significatiu del registre font a memòria a partir de l'adreça efectiva.
 
@@ -1421,10 +1421,10 @@ Suposant que `t2` conté l'adreça `0x10010000`, i que en aquesta adreça i les 
 
 | Instrucció | Operació | Resultat al registre |
 | :--- | :--- | :--- |
-| `lb t1, 1(t2)` | Càrrega del byte `0x22` | `t1 = 0x00000022` |
-| `lb t1, 2(t2)` | Càrrega del byte `0xCC` | `t1 = 0xFFFFFFCC` |
-| `lh t1, 0(t2)` | Càrrega de la mitja paraula `0x2211` | `t1 = 0x00002211` |
-| `lh t1, 2(t2)` | Càrrega de la mitja paraula `0xDDCC` | `t1 = 0xFFFFDDCC` |
+| `lb t1, 1(t2)` | Lectura del byte `0x22` | `t1 = 0x00000022` |
+| `lb t1, 2(t2)` | Lectura del byte `0xCC` | `t1 = 0xFFFFFFCC` |
+| `lh t1, 0(t2)` | Lectura de la mitja paraula `0x2211` | `t1 = 0x00002211` |
+| `lh t1, 2(t2)` | Lectura de la mitja paraula `0xDDCC` | `t1 = 0xFFFFDDCC` |
 | `sb t1, 1(t2)` | Guarda el byte `0xCC` a l'adreça `0x10010001` | (Estat final de memòria) |
 
 2. Determina l'**estat final de memòria** resultant de l'execució anterior:
@@ -1437,18 +1437,18 @@ Suposant que `t2` conté l'adreça `0x10010000`, i que en aquesta adreça i les 
 | `0x10010003` | `0xDD` | `0xDD` |
 :::
 
-#### Càrrega de naturals de mitja paraula o byte: `lhu`, `lbu` {#sec-carrega-naturals-mig-paraula-byte}
+#### Lectura de naturals de mitja paraula o byte: `lhu`, `lbu` {#sec-carrega-naturals-mig-paraula-byte}
 
-Les instruccions `lhu` (*load half unsigned*) i `lbu` (*load byte unsigned*) copien a un registre destí els **dos bytes** o el **byte** de memòria, respectivament, a partir de l'adreça efectiva. Com que el registre destinació és de 32 bits, es fa una **extensió per zero** afegint zeros als bits més significatius del registre destinació. Aquestes instruccions s'utilitzen per carregar valors que es consideren naturals (sense signe), com ara caràcters o valors de mida menor a 32 bits que no s'han d'interpretar com a enters.
+Les instruccions `lhu` (*load half unsigned*) i `lbu` (*load byte unsigned*) copien a un registre destí els **dos bytes** o el **byte** de memòria, respectivament, a partir de l'adreça efectiva. Com que el registre destinació és de 32 bits, es fa una **extensió per zero** afegint zeros als bits més significatius del registre destinació. Aquestes instruccions s'utilitzen per llegir valors que es consideren naturals (sense signe), com ara caràcters o valors de mida menor a 32 bits que no s'han d'interpretar com a enters.
 
 ::: {#tip-load-half-byte-unsigned .callout-tip}
-## Operands en mode base + desplaçament, càrrega de naturals de mitja paraula o byte
+## Operands en mode base + desplaçament, lectura de naturals de mitja paraula o byte
 Considerant el mateix contingut inicial de la memòria de l'exemple anterior, determina el **resultat** de l'execució de cada instrucció:
 
 | Instrucció | Operació | Resultat al registre |
 | :--- | :--- | :--- |
-| `lbu t1, 2(t2)` | Càrrega del byte `0xCC` | `t1 = 0x000000CC` |
-| `lhu t1, 2(t2)` | Càrrega de la mitja paraula `0xDDCC` | `t1 = 0x0000DDCC` |
+| `lbu t1, 2(t2)` | Lectura del byte `0xCC` | `t1 = 0x000000CC` |
+| `lhu t1, 2(t2)` | Lectura de la mitja paraula `0xDDCC` | `t1 = 0x0000DDCC` |
 :::
 
 #### Restricció d'alineació {#sec-restriccio-alineacio-carrega}
@@ -1653,12 +1653,12 @@ g:
         lb      t0, 0(t1)   # desreferencia el punter ploc
         ...
         la      t2, pglob
-        lw      t3, 0(t2)   # carrega el punter en un registre
+        lw      t3, 0(t2)   # llegeix el punter en un registre
         lb      t0, 0(t3)   # desreferencia el punter pglob
         ...
 ```
 
-La primera sentència carrega a la variable local `tmp` el contingut de la posició de memòria apuntada per `ploc`. Com que `ploc` està en un registre, n'hi ha prou d'executar una instrucció `lb` on el registre-base sigui el que conté el punter. La segona sentència és similar, però com que `pglob` és global, està emmagatzemada en memòria. Cal prèviament carregar la variable global `pglob` en el registre `t3` (es copia l'etiqueta en `t2` amb la pseudoinstrucció `la`, i a continuació s'accedeix al punter en memòria amb `lw`). Un cop carregat el punter `pglob` en un registre, es fa la desreferència de la mateixa manera que en el cas de `ploc`, amb `lb`.
+La primera sentència llegeix el contingut de la posició de memòria apuntada per `ploc` i el copia a la variable local `tmp`. Com que `ploc` està en un registre, n'hi ha prou d'executar una instrucció `lb` on el registre-base sigui el que conté el punter. La segona sentència és similar, però com que `pglob` és global, està emmagatzemada en memòria. Cal llegir prèviament la variable global `pglob` al registre `t3` (es copia l'etiqueta en `t2` amb la pseudoinstrucció `la`, i a continuació s'accedeix al punter en memòria amb `lw`). Un cop llegit el punter `pglob` en un registre, es fa la desreferència de la mateixa manera que en el cas de `ploc`, amb `lb`.
 :::
 
 ### Aritmètica de punters {#sec-aritmetica-punters}
@@ -1833,7 +1833,7 @@ int vec2[5];    /* Tipus: "vector de 5 enters" */
 
 A diferència dels punters, dos vectors del mateix tipus base (`int`) però de mides diferents **no són assignables** entre ells. Ho il·lustra el codi erroni següent:
 
-```{.c filename="⚠️ codi_erroni__vectors.c ⚠️"}
+```{.c filename="⚠️codi_erroni__vectors.c⚠️"}
 int a[5];
 int b[5];
 int c[10];
@@ -1880,7 +1880,7 @@ En **C**, l'índex comença a **0** i, en sentències, els símbols `[` i `]` pr
 En C és el compilador qui s'encarrega de calcular l'adreça de l'element `vec[i]` multiplicant automàticament l'índex `i` per la mida de cada element, `sizeof(element)`, per obtenir el desplaçament real en bytes. Per tant, rarament cal preocupar-se pel desplaçament; n'hi ha prou amb proporcionar
 l'índex.
 
-En canvi, en **RV32I** cal gestionar manualment l'accés a un element d'un vector mitjançant les instruccions de **càrrega** i **emmagatzematge**. En aquestes instruccions, el registre base conté l'adreça base i l'immediat el desplaçament, tots dos en bytes. Per tant, cal calcular el desplaçament com el producte de l'índex per la mida del tipus dels elements:
+En canvi, en **RV32I** cal gestionar manualment l'accés a un element d'un vector mitjançant les instruccions de **lectura** i **escriptura**. En aquestes instruccions, el registre base conté l'adreça base i l'immediat el desplaçament, tots dos en bytes. Per tant, cal calcular el desplaçament com el producte de l'índex per la mida del tipus dels elements:
 
 $$@\texttt{vec[i]} = @\texttt{vec[0]} + i \cdot T$$ {#eq-acces-aleatori-vector}
 
@@ -1990,7 +1990,7 @@ Per tant, l'operador `[]` forma part de l'**aritmètica de punters** perquè el 
 En **C**, en sentències, l'operador `[]`, precedit del nom d'una variable de tipus vector, fa, per aquest ordre:
 
 1. L'aritmètica d'**enters** (suma i resta) de l'índex al punter.
-2. La **desreferència** (accedeix a l'element apuntat; càrrega o emmagatzematge, segons correspongui).
+2. La **desreferència** (accedeix a l'element apuntat; lectura o escriptura, segons correspongui).
 
 Per tant, és una forma compacta de realitzar aritmètica de punters i desreferència simultàniament.
 :::
