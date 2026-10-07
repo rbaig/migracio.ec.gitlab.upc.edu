@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Escombrada del corpus: compte, repartiment per fitxer i l'ordre que ho reprodueix.
-# Les regles són a 13_contrib.qmd §Escombrades i verificació del corpus; aquest
+# Les regles són a .claude/skills/escombrada/regles.md (skill escombrada); aquest
 # script mecanitza les regles 1, 4, 10, 11, 12 i 12 bis. La resta demanen judici.
 #
 # Ús: 25_scripts/escombrada.sh [opcions] <patró> [-- <pathspec>...]
@@ -8,7 +8,7 @@
 #   -F             patró literal (per defecte, expressió regular estesa)
 #   -w             només paraules senceres
 #   --commit <c>   mesura en un commit en lloc de l'arbre de treball (regla 11)
-#   --tot          no exclou TODO.md ni 13_contrib.qmd (regla 12)
+#   --tot          no exclou els fitxers que documenten els casos (regla 12)
 # Sense pathspec, cobreix tot el repositori versionat, amb tots els tipus de fitxer (regla 4).
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)" || exit 1
@@ -32,7 +32,7 @@ patro=$1; shift
 [ "${1:-}" = "--" ] && shift
 pathspec=("$@")
 [ ${#pathspec[@]} -eq 0 ] && pathspec=(.)
-[ $exclou -eq 1 ] && pathspec+=(':!TODO.md' ':!13_contrib.qmd')
+[ $exclou -eq 1 ] && pathspec+=(':!TODO.md' ':!13_contrib.qmd' ':!24_specs/registre_de_decisions.md' ':!.claude/')
 
 ordre=(git grep -o -I "$mode")
 [ -n "$cas" ] && ordre+=("$cas")
@@ -64,7 +64,7 @@ else
   [ -n "$(git status --porcelain --untracked-files=no)" ] && mesura+=", amb canvis no confirmats"
 fi
 echo "# Mesura: $mesura"
-[ $exclou -eq 1 ] && echo "# Exclou TODO.md (hi registra la tasca) i 13_contrib.qmd (hi escriu la lliçó): regla 12. Per incloure'ls, --tot."
+[ $exclou -eq 1 ] && echo "# Exclou TODO.md (hi registra la tasca), 13_contrib.qmd i 24_specs/registre_de_decisions.md (la regla i el perquè) i .claude/ (la lliçó): regla 12. Per incloure'ls, --tot."
 
 total=0
 [ -n "$sortida" ] && total=$(printf '%s\n' "$sortida" | wc -l)

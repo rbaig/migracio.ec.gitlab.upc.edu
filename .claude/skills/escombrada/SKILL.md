@@ -1,11 +1,11 @@
 ---
 name: escombrada
-description: Mesura el corpus d'EC (comptes, repartiments per fitxer, afirmacions «no n'hi ha cap» o «és l'únic») amb 25_scripts/escombrada.sh. Carrega-la abans de publicar qualsevol xifra o afirmació d'absència o d'unicitat sobre el repositori —al TODO.md, a 13_contrib.qmd, en un missatge de commit o en un informe— i abans de retirar una entrada del TODO.md perquè «ja no hi és».
+description: Mesura el corpus d'EC (comptes, repartiments per fitxer, afirmacions «no n'hi ha cap» o «és l'únic») amb 25_scripts/escombrada.sh. Carrega-la abans de publicar qualsevol xifra o afirmació d'absència o d'unicitat sobre el repositori —al TODO.md, a 13_contrib.qmd, al registre de decisions, en un missatge de commit o en un informe— i abans de retirar una entrada del TODO.md perquè «ja no hi és».
 ---
 
 # Escombrada del corpus
 
-Les regles són a `13_contrib.qmd §Escombrades i verificació del corpus`, i cadascuna porta el cas que la va originar. **Llegeix la secció sencera abans de la primera escombrada de la sessió.** Aquest fitxer no les copia: una còpia paral·lela divergiria en silenci.
+Les regles són a `regles.md`, en aquest mateix directori, i cadascuna porta el cas que la va originar. **Llegeix-lo sencer abans de la primera escombrada de la sessió.** Aquest fitxer no les copia: una còpia paral·lela divergiria en silenci.
 
 ## L'ordre
 
@@ -20,7 +20,7 @@ Les regles són a `13_contrib.qmd §Escombrades i verificació del corpus`, i ca
 - el repartiment per fitxer, amb la comprovació que suma el total;
 - l'ordre `git grep … | wc -l` que ho reprodueix.
 
-Mecanitza les regles **1, 4, 10, 11, 12 i 12 bis**. Per defecte no distingeix majúscules, cobreix tots els tipus de fitxer versionats i exclou `TODO.md` i `13_contrib.qmd`; les opcions ho canvien i la capçalera de la sortida ho diu.
+Mecanitza les regles **1, 4, 10, 11, 12 i 12 bis**. Per defecte no distingeix majúscules, cobreix tots els tipus de fitxer versionats i exclou els fitxers que documenten els casos (regla 12): `TODO.md`, `13_contrib.qmd`, `24_specs/registre_de_decisions.md` i `.claude/`. Les opcions ho canvien i la capçalera de la sortida ho diu.
 
 ## En publicar una xifra
 
@@ -32,4 +32,4 @@ Copia-hi la línia `Ordre:` i la data o el commit de la línia `# Mesura:`. Una 
 
 ## El que l'script no fa
 
-Les regles **2, 3, 5, 6, 7, 8, 9 i 13** demanen judici i continuen sent teves: tria del patró, lectura del bloc sencer, preguntes a l'historial, fitxers comentats a `_quarto.yml`, còpies dels marcadors, contrast amb la llista de canvis aprovats i branques de cada remot. Llegeix-les a la secció abans d'afirmar res que en depengui.
+Les regles **2, 3, 5, 6, 7, 8, 9 i 13** demanen judici i continuen sent teves: tria del patró, lectura del bloc sencer, preguntes a l'historial, fitxers comentats a `_quarto.yml`, còpies dels marcadors, contrast amb la llista de canvis aprovats i branques de cada remot. Llegeix-les a `regles.md` abans d'afirmar res que en depengui.

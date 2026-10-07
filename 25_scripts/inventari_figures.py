@@ -11,8 +11,8 @@ per fitxer font (`22_figs_originals/`, `23_figs_externes/` i les entrades de
 fitxers versionats de l'arbre de treball, i la capçalera del resultat diu el
 commit.
 
-Mesura pel contingut, no pel nom (`13_contrib.qmd §Escombrades i verificació
-del corpus`, regla 2): l'origen surt de l'SVG (marques d'Inkscape, LO Draw,
+Mesura pel contingut, no pel nom (regla 2 de les escombrades,
+`.claude/skills/escombrada/regles.md`): l'origen surt de l'SVG (marques d'Inkscape, LO Draw,
 draw.io, Graphviz) i de les taules de `24_specs/svg.md §15` i `§16`; els
 duplicats, del hash; i el placeholder, del hash de `TODO.svg` (`PLACEHOLDER`),
 retirat a la fase 7c i recuperable amb `git show 17d90ca:22_figs_originals/TODO.svg`.

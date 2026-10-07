@@ -422,6 +422,14 @@ Fins al 2026-10-06 l'`overflow-x: auto` era a totes, i un `inline-block` amb un 
 
 Un render HTML no exercita el PDF: el 2026-09-22 el corpus tenia **83 blocs `when-format="pdf"`**, i almenys cinc convencions de la guia existien precisament perquè el PDF es comporta diferent (la duplicació de figures si no se separen les variants, `tbl-colwidths` que ha de sumar 100, les capçaleres `###` del laboratori, `[@sec-]` que només funciona a PDF, i la guia mateixa, que és HTML-only).
 
+### D-62
+
+**Les afirmacions sobre RARS es resolen executant RARS, i el `.jar` fora del repositori** · `13_contrib.qmd §Verificació empírica a RARS` · 2026-09-23 · `6fcee2c`, `fbf7c3d`
+
+Ja ha passat dues vegades: la comprovació que RARS alinea `.dword` a 4 bytes i no a 8, com demana l'ABI (a L2 des del juliol del 2026 com a molt tard; des del 2026-10-03, la nota de `@nte-directives-alineacio-inicialitzacio` a A2 i el `.align 3` de la solució de `s2_1_1.s`), i l'experiment de `.section` (2026-09-23, [D-8](#d-8)), que va impedir una conversió de 121 directives que no hauria assemblat. Que es comprovi pel resultat i no per l'absència d'error ve del mateix experiment: tres de les formes provades assemblaven sense queixar-se i no feien el que semblava (el cas, a la skill `rars`).
+
+El `.jar` va ser al repositori fins a `fbf7c3d` (2026-07-11), que el va eliminar deliberadament. El procediment de les sessions de Claude Code, que eren a la mateixa secció de la guia fins al 2026-10-07, és a la skill `rars`.
+
 ### D-59
 
 **Push directe a `main`: la restricció és per als revisors, no per a l'editor** · `13_contrib.qmd §Push directe a main` · 2026-04-29, 2026-10-07 · `1d4308d`
