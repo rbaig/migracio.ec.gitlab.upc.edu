@@ -47,8 +47,9 @@ Directori `04_laboratori/`:
 | `Makefile` | `make render` / `make render-complet` (HTML, o HTML + PDF) i `make clean` |
 | `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
 | `15_bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
-| `CLAUDE.md` | Instruccions operatives per a Claude |
-| `13_contrib.qmd` | Guia de contribució: convencions, estil, flux de treball |
+| `CLAUDE.md` | Instruccions operatives per a les sessions de Claude Code |
+| `13_contrib.qmd` | Guia de contribució (capítol «Contribueix-hi»): les regles del llibre i el flux de treball |
+| `24_specs/registre_de_decisions.md` | Registre de decisions: el perquè i l'historial de les regles de `13_contrib.qmd` |
 | `custom_dark.scss` | Estils CSS addicionals per al mode fosc (HTML) |
 | `custom_light.scss` | Estils CSS addicionals per al mode clar (HTML) |
 | `custom.scss` | Estils CSS comuns a tots dos modes (HTML) |
@@ -123,17 +124,7 @@ cd ~/git/EC
 | `quarto render --to pdf` | Renderitza PDF (lent; requereix LaTeX) |
 | `quarto render` | Renderitza les dues sortides |
 
-> **Nota**: `make render` (i `quarto render --to html`) neteja la carpeta `_book` i **no hi deixa cap PDF**: el que hi hagués d'un render anterior desapareix. Quan necessiteu el PDF —verificació final abans d'una Merge Request, material per a alumnes, o qualsevol canvi que el toqui— feu `make render-complet`. Si voleu conservar un PDF concret, guardeu-lo fora de `_book/` abans.
-
-> **Taules fusionades de `11_riscv.qmd`**: `make render` i `make render-complet` ja generen `auto_riscv/` abans de renderitzar. Si en comptes d'això useu `quarto render` directament i obteniu un error del tipus `could not find file .../auto_riscv/NOM.qmd`, executeu primer:
->
-> ```bash
-> make taules
-> ```
->
-> (equivalent, si no useu `make`: `python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"`)
->
-> Cal repetir-ho el primer cop després de clonar el repositori, i sempre que editeu un fitxer de `21_riscv/` que aparegui a `24_specs/taules_fusio.toml`: si no, `auto_riscv/` queda desactualitzat en silenci (el render no fallarà, però la taula no reflectirà el canvi). Detalls tècnics a `13_contrib.qmd` §Fitxer de referència tècnica.
+Què neteja cada ordre, quan cal `make render-complet` i com es generen les taules fusionades de `11_riscv.qmd` (`auto_riscv/`), a `13_contrib.qmd §Verificació de l'entorn`, §Renderitzar el projecte i §Fitxer de referència tècnica.
 
 Neteja:
 
@@ -182,7 +173,7 @@ Descarregueu [`rars1_6.jar`](https://github.com/TheThirdOne/rars/releases/downlo
 
 ## Contribució
 
-Vegeu el fitxer [`13_contrib.qmd`](13_contrib.qmd), que conté:
+Vegeu el fitxer [`13_contrib.qmd`](13_contrib.qmd) (el capítol «Contribueix-hi» del llibre), que conté les regles; el perquè i l'historial de cada una són a [`24_specs/registre_de_decisions.md`](24_specs/registre_de_decisions.md). La guia conté:
 
 - El flux de treball amb Git (branques, commits, Merge Requests).
 - Les convencions d'estil (veu, puntuació, negretes, anglicismes, sigles).
