@@ -25,7 +25,7 @@ La descomposició VPN/desplaçament segueix la @sec-mv-traduccio:
 
 $$6 + 1 + 1 = 8 \text{ bits} = 1 \text{ byte/entrada}$$
 
-$$\text{Mida TP} = 2^{16} \times 1 \text{ B} = 64 \text{ KiB}$$
+$$\text{Mida taula de pàgines} = 2^{16} \times 1 \text{ B} = 64 \text{ KiB}$$
 
 **b)** El VPN és $\lfloor \text{adreça} / \texttt{0x100} \rfloor$ (els dos dígits hexadecimals inferiors són el desplaçament de 8 bits). Hi caben 3 pàgines a memòria física, amb reemplaçament LRU. Seqüència de VPN: 0, 1, 1, 2, 0, 1, 4, 5, 1.
 
@@ -94,7 +94,7 @@ Punts clau:
 
 - `E F458` (VPN 7): fallada amb el marc lliure PPN 3; com que és escriptura, queda $D = 1$.
 - `L 1BBF` (VPN 0) i `E 5C44` (VPN 2): cap marc lliure; s'expulsen les pàgines més antigues (VPN 2 i VPN 3), totes dues amb $D = 0$, de manera que no cal escriure-les a disc.
-- `L 6600` (VPN 3): s'expulsa la VPN 7, que té $D = 1$ → **cal escriure-la primer a disc** (únic *writeback* de la traça).
+- `L 6600` (VPN 3): s'expulsa el VPN 7, que té $D = 1$ → **cal escriure-la primer a disc** (única escriptura a disc de la traça).
 - `L 4000` (VPN 2): encert, la pàgina segueix a PPN 1.
 
 Estat final de la taula de pàgines:
@@ -135,10 +135,10 @@ Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/4096 \rfloor$. TLB de
 : {.striped}
 
 - 4095 (VPN 0): fallada de TLB; la MMU llegeix la PTE, que té $V = 1$ (PPN 5), i la copia a l'entrada lliure, sense fallada de pàgina.
-- 7193 (VPN 1): fallada de TLB i la PTE té $V = 0$ → **fallada de pàgina**; el SO carrega la pàgina i li assigna PPN 13. En reexecutar l'accés, la MMU copia la PTE al TLB reemplaçant la VPN 11 (l'única entrada no reutilitzada des de l'inici → la més antiga).
-- 8912 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); en reexecutar, es reemplaça la VPN 0 (la més antiga de la pila en aquest punt).
+- 7193 (VPN 1): fallada de TLB i la PTE té $V = 0$ → **fallada de pàgina**; el SO carrega la pàgina i li assigna PPN 13. En reexecutar l'accés, la MMU copia la PTE al TLB reemplaçant el VPN 11 (l'única entrada no reutilitzada des de l'inici → la més antiga).
+- 8912 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); en reexecutar, es reemplaça el VPN 0 (la més antiga de la pila en aquest punt).
 
-TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP: VPN 1 → V 1/PPN 13, VPN 2 → V 1/PPN 14.
+TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). Taula de pàgines: VPN 1 → V 1/PPN 13, VPN 2 → V 1/PPN 14.
 
 **Llista 2** (des de l'estat inicial). VPN: 2, 7, 4, 11, 9, 4, 11.
 
@@ -154,11 +154,11 @@ TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). TP:
 : {.striped}
 
 - 9452 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 13); s'omple l'entrada lliure.
-- 19136 (VPN 4): fallada de TLB però $V = 1$ (PPN 9) → sense fallada de pàgina. Es reemplaça la VPN 3 (la més antiga segons l'ordre inicial 11 > 7 > 3).
-- 38110 (VPN 9): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça la VPN 2 (entrada menys recentment usada).
-- 46502 i 47480 (VPN 11): encerts, perquè la VPN 11 era la més recent inicialment i no s'ha expulsat.
+- 19136 (VPN 4): fallada de TLB però $V = 1$ (PPN 9) → sense fallada de pàgina. Es reemplaça el VPN 3 (la més antiga segons l'ordre inicial 11 > 7 > 3).
+- 38110 (VPN 9): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça el VPN 2 (entrada menys recentment usada).
+- 46502 i 47480 (VPN 11): encerts, perquè el VPN 11 era la més recent inicialment i no s'ha expulsat.
 
-TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). TP: VPN 2 → V 1/PPN 13, VPN 9 → V 1/PPN 14.
+TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). Taula de pàgines: VPN 2 → V 1/PPN 13, VPN 9 → V 1/PPN 14.
 
 **b)** Amb pàgines de 16 KiB, $\text{VPN} = \lfloor \text{adreça}/16\,384 \rfloor$ i moltes adreces que abans queien en pàgines diferents passen a compartir pàgina:
 
@@ -171,7 +171,7 @@ En general, augmentar la mida de pàgina **redueix el nombre de pàgines diferen
 
 **c)** Mida de la taula de pàgines (nivell únic):
 
-$$\text{Nre. entrades} = \frac{2^{\text{bits adreça}}}{\text{mida pàgina}}, \qquad \text{Mida TP} = \text{Nre. entrades} \times \text{mida entrada}$$
+$$\text{Nre. entrades} = \frac{2^{\text{bits adreça}}}{\text{mida pàgina}}, \qquad \text{Mida taula de pàgines} = \text{Nre. entrades} \times \text{mida entrada}$$
 
 - 32 bits, pàgines de 4 KiB, entrades de 4 B: $\dfrac{2^{32}}{2^{12}} \times 4 = 2^{20} \times 4 = \mathbf{4 \text{ MiB}}$.
 - 64 bits, pàgines de 16 KiB, entrades de 8 B: $\dfrac{2^{64}}{2^{14}} \times 8 = 2^{50} \times 2^3 = 2^{53} \text{ B} = \mathbf{8 \text{ PiB}}$.
@@ -207,24 +207,24 @@ Observació: els casos a) i e) accedeixen a la **mateixa pàgina** (VPN 0, nomé
 
 **Enunciat**: @exr-t8-mv-tlb-cau.
 
-Pàgines de 4 KiB, cau de dades de correspondència directa amb 64 blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces virtuals de 32 bits.
+Pàgines de 4 KiB, cau de dades de correspondència directa amb 64 línies amb blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces lògiques de 32 bits.
 
-**a)** Descomposició de l'adreça virtual:
+**a)** Descomposició de l'adreça lògica:
 
 - Desplaçament dins la pàgina: $\log_2(4\text{ KiB}) = 12$ bits.
 - VPN: $32 - 12 = 20$ bits.
 - Desplaçament dins el bloc: $\log_2(32) = 5$ bits.
 - Índex de la cau: $\log_2(64) = 6$ bits.
 
-$$\underbrace{b_{31} \cdots b_{12}}_{\text{VPN (20)}} \; \underbrace{b_{11} \cdots b_0}_{\text{desplaçament pàgina (12)}}, \qquad \underbrace{\text{tag}}_{\;} \; \underbrace{b_{10} \cdots b_5}_{\text{índex cau (6)}} \; \underbrace{b_4 \cdots b_0}_{\text{despl. bloc (5)}}$$
+$$\underbrace{b_{31} \cdots b_{12}}_{\text{VPN (20)}} \; \underbrace{b_{11} \cdots b_0}_{\text{desplaçament pàgina (12)}}, \qquad \underbrace{b_{31} \cdots b_{11}}_{\text{etiqueta (21)}} \; \underbrace{b_{10} \cdots b_5}_{\text{índex cau (6)}} \; \underbrace{b_4 \cdots b_0}_{\text{despl. bloc (5)}}$$
 
 Cal notar que índex + desplaçament de bloc $= 6 + 5 = 11$ bits, tots dins dels 12 bits del desplaçament de pàgina.
 
 **b) Lectura amb encert de TLB i encert de cau** (esquema VIPT):
 
-1. La CPU genera l'adreça lògica. **En paral·lel**: els bits d'índex (b10–b5, part del desplaçament) seleccionen el conjunt de la cau, i el VPN (b31–b12) s'envia al TLB.
+1. La CPU genera l'adreça lògica. **En paral·lel**: els bits d'índex (b10–b5, part del desplaçament) seleccionen la línia de la cau, i el VPN (b31–b12) s'envia al TLB.
 2. El TLB troba el VPN (encert) i retorna el PPN.
-3. La cau llegeix l'etiqueta i les dades del bloc indexat.
+3. La cau llegeix l'etiqueta i les dades de la línia indexada.
 4. Es compara el PPN (etiqueta física) amb l'etiqueta llegida de la cau → coincideixen → **encert de cau**.
 5. Es lliura la dada (el desplaçament de bloc, b4–b0, selecciona el byte/paraula).
 
@@ -238,7 +238,7 @@ Com que la traducció i la indexació es fan alhora, el temps d'accés és pràc
 
 El cost addicional respecte de b) és **un accés a memòria** per llegir la PTE (amb la taula de pàgines plana del tema; amb una taula multinivell, un per nivell).
 
-**d)** Com s'explica a @sec-mv-vipt, perquè una cau **VIPT** no pateixi aliàsing (i es comporti, pel que fa a la selecció del conjunt, com una **PIPT**), l'índex de la cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:
+**d)** Com s'explica a @sec-mv-vipt, perquè una cau **VIPT** no pateixi **aliàsing** (*aliasing*) (i es comporti, pel que fa a la selecció de la línia, com una **PIPT**), l'índex de la cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:
 
 $$C \leq a \cdot T$$
 
@@ -246,7 +246,7 @@ on $C$ és la mida de la cau, $a$ l'associativitat i $T$ la mida de pàgina. Aqu
 
 $$2 \text{ KiB} \leq 1 \times 4 \text{ KiB} \quad \checkmark$$
 
-es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaçament de pàgina), de manera que la cau no pateix aliàsing: l'índex selecciona el mateix conjunt amb l'adreça lògica que amb la física.
+es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaçament de pàgina), de manera que la cau no pateix aliàsing: l'índex selecciona la mateixa línia amb l'adreça lògica que amb la física.
 :::
 
 ::: {#sol-t8-mv-cache-tlb .callout-tip}

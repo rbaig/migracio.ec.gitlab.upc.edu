@@ -92,7 +92,7 @@ ff:     .half   -1
 
 Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, ompliu la taula de distribució de variables:
 
-| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Padding [B] |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Farciment [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `aa` |  |  |  |  |  |
 | `bb` |  |  |  |  |  |
@@ -102,7 +102,7 @@ Sabent que les dades globals s'emmagatzemen a partir de l'adreça `0x10010000`, 
 | `ff` |  |  |  |  |  |
 : {.striped .hover}
 
-Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Indiqueu cada etiqueta a la posició que li correspon i marqueu amb `--` els bytes de padding. Deixeu en blanc els bytes lliures (no inicialitzats).
+Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Indiqueu cada etiqueta a la posició que li correspon i marqueu amb `--` els bytes de farciment. Deixeu en blanc els bytes lliures (no inicialitzats).
 
 ::: {layout="[50,-1,50]"}
 ::: {}
@@ -153,7 +153,7 @@ Ara escriviu el contingut de memòria byte a byte, en ordre *little-endian*. Ind
 ::: {#sol-mapa-memoria}
 `cc` és un `long long`, que l'ABI alinea a 8 bytes (@nte-restriccions-alineacio). A RARS, la directiva `.dword` només l'alinea a 4 (@nte-directives-alineacio-inicialitzacio): per això la solució de l'@exr-declaracio-variables hi posa `.align 3` al davant.
 
-| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Padding [B] |
+| Variable | Tipus | Mida [B] | Alineació [B] | Adreça | Farciment [B] |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `aa` | `char` | 1 | 1 | `0x10010000` |  |
 | `bb` | `short` | 2 | 2 | `0x10010002` | 1 |
@@ -247,11 +247,11 @@ El byte de menor adreça ocupa la posició de la dreta; el de major adreça, la 
 
 | Adreça | Valor RARS | `+0` | `+1` | `+2` | `+3` | Variable(s) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, padding, `bb` |
-| `0x10010004` | `0x00000000` | `--` | `--` | `--` | `--` | padding (`.align 3`) |
+| `0x10010000` | `0xfea800fb` | `0xFB` | `--` | `0xA8` | `0xFE` | `aa`, farciment, `bb` |
+| `0x10010004` | `0x00000000` | `--` | `--` | `--` | `--` | farciment (`.align 3`) |
 | `0x10010008` | `0xfffffffd` | `0xFD` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 0–3) |
 | `0x1001000C` | `0xffffffff` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `cc` (bytes 4–7) |
-| `0x10010010` | `0x000000a0` | `0xA0` | `--` | `--` | `--` | `dd`, padding |
+| `0x10010010` | `0x000000a0` | `0xA0` | `--` | `--` | `--` | `dd`, farciment |
 | `0x10010014` | `0x000016a7` | `0xA7` | `0x16` | `0x00` | `0x00` | `ee` |
 | `0x10010018` | `0x0000ffff` | `0xFF` | `0xFF` |  |  | `ff` |
 | `0x1001001C` | `0x00000000` |  |  |  |  |  |
@@ -294,7 +294,7 @@ pdada:  .word   dada
 Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els blancs de les vinyetes i calculeu el valor de cada expressió C:
 
 - `dada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__`.
-- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de padding).
+- `pdada` és un _____ (__ bytes, alineació __), s'emmagatzema a `0x1001000__` (__ bytes de farciment).
 
 | Expressió C | Valor (hex) |
 | :--- | :--- |
@@ -313,7 +313,7 @@ Comproveu que, en assemblar la declaració a RARS, el word a `0x10010000` mostra
 ::: {#sol-punters-valors}
 
 - `dada` és un `short` (2 bytes, alineació 2), s'emmagatzema a `0x10010000`.
-- `pdada` és un punter (4 bytes, alineació 4), s'emmagatzema a `0x10010004` (2 bytes de padding).
+- `pdada` és un punter (4 bytes, alineació 4), s'emmagatzema a `0x10010004` (2 bytes de farciment).
 
 | Expressió C | Valor (hex) | Explicació |
 | :--- | :--- | :--- |
@@ -327,7 +327,7 @@ Comproveu que, en assemblar la declaració a RARS, el word a `0x10010000` mostra
 En llegir `dada` (o `*pdada`) en un registre amb `lh`, el valor s'estén en signe a 32 bits: `0x00000003`.
 
 ::: {.callout-tip title="Comprovació pràctica"}
-No cal executar el programa: n'hi ha prou d'assemblar-lo i obrir la vista del segment de dades, on es veuen el `short` `dada` seguit de 2 bytes de padding i, a continuació, el punter `pdada`.
+No cal executar el programa: n'hi ha prou d'assemblar-lo i obrir la vista del segment de dades, on es veuen el `short` `dada` seguit de 2 bytes de farciment i, a continuació, el punter `pdada`.
 :::
 :::
 

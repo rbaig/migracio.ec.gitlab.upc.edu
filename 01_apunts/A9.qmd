@@ -57,7 +57,7 @@ Cal destacar dues diferències clau entre excepcions i interrupcions que la taul
 RISC-V defineix tres **modes de privilegi**, que determinen quines **instruccions** pot executar el processador i a quines **adreces de memòria** pot accedir.
 
 ::: {#nte-modes-privilegi .callout-note}
-## Modes de privilegi
+## RV32I ISA — Modes de privilegi
 
 | Mode | Privilegi | Nom | Ús habitual | Obligatori |
 | :---: | :--- | :--- | :--- | :--- |
@@ -97,7 +97,7 @@ Les pseudoinstruccions `csrr` i `csrw` (@nte-pseudoinstruccions-csr) són les fo
 L'accés als CSR està **protegit pel nivell de privilegi**: cada CSR té un nivell mínim, codificat als bits 9:8 de la seva adreça de 12 bits, i accedir des de mode U a un CSR de mode M o S genera una excepció d'instrucció il·legal. Alguns CSR són de mode U, com `fcsr` (T5) o els comptadors `cycle` i `instret`.
 
 ::: {#wrn-zicsr-immediats .callout-warning collapse=true}
-## Aprofundiment: variants immediates de les instruccions CSR
+## Variants immediates de les instruccions CSR
 
 Les instruccions `csrrwi`, `csrrsi` i `csrrci` operen igual que `csrrw`, `csrrs` i `csrrc` respectivament, però accepten un immediat de 5 bits sense signe (`uimm5`) en lloc del registre `rs1`. Són útils per activar o desactivar bits individuals d'un CSR sense necessitat de carregar un valor en un registre prèviament.
 
@@ -318,7 +318,7 @@ Tot i que el flux de maquinari és el mateix, hi ha dues diferències importants
 - **Escriptura a `mtval`**: en algunes excepcions, el maquinari escriu informació addicional al registre `mtval` per ajudar la RSE en el tractament (vegeu @sec-ei-csr-mtval). En les interrupcions, `mtval` s'escriu a zero.
 
 ::: {#wrn-flux-pipeline .callout-warning collapse=true}
-## Aprofundiment: excepcions en un pipeline
+## Excepcions en un pipeline
 
 En un processador amb pipeline, diverses instruccions s'executen simultàniament en etapes diferents. Quan es detecta una excepció, cal garantir que:
 
@@ -483,7 +483,7 @@ rse:
 El *dispatcher* (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar la RSE. El *dispatcher* consulta `mcause` per cridar el *handler* específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
 ::: {#wrn-rse-pila .callout-warning collapse=true}
-## Aprofundiment: la pila de la RSE
+## La pila de la RSE
 
 L'exemple usa la pila del programa interromput (`sp`). En un sistema real això és problemàtic: si el programa tenia `sp` corromput o apuntant a una adreça invàlida, la RSE fallaria immediatament. Els sistemes operatius reals usen una pila separada per al nucli, i el canvi de pila forma part de les accions inicials de la RSE, sovint amb l'ajut del registre `mscratch`, que el firmware inicialitza amb l'adreça de la pila del nucli.
 :::
@@ -592,7 +592,7 @@ La convenció de crides al sistema **no és la mateixa** que la convenció de cr
 :::
 
 ::: {#wrn-ecall-exemples-linux .callout-warning collapse=true}
-## Aprofundiment: exemples de crides al sistema Linux/RISC-V (RV32)
+## Exemples de crides al sistema Linux/RISC-V (RV32)
 
 Els exemples següents mostren les crides al sistema més habituals:
 
@@ -634,7 +634,7 @@ Els exemples següents mostren les crides al sistema més habituals:
 :::
 
 ::: {#wrn-ecall-taula-linux .callout-warning collapse=true}
-## Aprofundiment: taula de crides al sistema Linux/RISC-V (RV32) més rellevants
+## Taula de crides al sistema Linux/RISC-V (RV32) més rellevants
 
 | Codi | Nom | Arguments | Retorn |
 | :---: | :--- | :--- | :--- |
@@ -760,7 +760,7 @@ Quan la RSE rep el control per una interrupció (bit 31 de `mcause` val 1), ha d
 4. Si n'hi ha més d'un, aplicar un criteri de **prioritat** per decidir quin s'atén primer.
 
 ::: {#wrn-interrupcions-multiples .callout-warning collapse=true}
-## Aprofundiment: múltiples peticions simultànies
+## Múltiples peticions simultànies
 
 Pot succeir que mentre les interrupcions estaven inhibides (`MIE=0`) arribin peticions de diversos dispositius. En reprendre's el permís, tots els bits corresponents de `mip` estaran actius simultàniament. La RSE ha d'establir un ordre de prioritat per atendre'ls. Entre els tipus d'interrupció, RISC-V fixa un ordre per maquinari (en mode M, externa, de programari i de temporitzador: `MEIP`, `MSIP`, `MTIP`), i `mcause` identifica la de més prioritat. Entre els dispositius que comparteixen la interrupció externa, en canvi, l'ordre és responsabilitat del SO, que implementa la política que consideri adequada (per exemple, prioritat fixa, *round-robin*, etc.).
 
@@ -873,7 +873,7 @@ En el context de la fallada de pàgina, el bit D té dos efectes:
 - **En reemplaçar** un marc, la RSE consulta el bit D de la pàgina víctima: si D = 1, l'escriu primer al disc; si D = 0, el marc es pot sobreescriure directament (vegeu @sec-mv-fallada-pagina).
 
 ::: {#wrn-tlb-bit-ad .callout-warning collapse=true}
-## Aprofundiment: actualització dels bits A i D
+## Actualització dels bits A i D
 
 L'especificació RISC-V permet que el maquinari actualitzi els bits A (*accessed*) i D de la PTE de forma autònoma (extensió Svadu). Les implementacions que no ho suporten generen una excepció de fallada de pàgina en el primer accés a una pàgina nova —o en la primera escriptura a una pàgina amb D = 0—, i la RSE en mode S actualitza els bits A i D manualment abans de reexecutar la instrucció causant.
 :::

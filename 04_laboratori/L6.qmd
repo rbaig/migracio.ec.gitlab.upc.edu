@@ -58,14 +58,14 @@ En una memòria cau de **correspondència directa** (@sec-correspondencia-direct
 
 A la teoria (@sec-mc-organitzacio) la mida del bloc es dona directament en bytes com $B = 2^b$; aquí, com que els programes operen amb paraules de 4 bytes, l'expressem en paraules, de manera que $B = 4 \cdot N_P = 2^{n_p + 2}$ bytes i el desplaçament $b = n_p + 2$. El nombre de línies $N_L = 2^{n_l}$ és el mateix símbol en tots dos llocs.
 
-En aquesta sessió es fa servir una geometria de referència de **32 blocs de 4 paraules** cadascun (tots els exercicis tret que s'indiqui el contrari). Les variables globals dels programes s'emmagatzemen a partir de l'adreça `0x10010000`.
+En aquesta sessió es fa servir una geometria de referència de **32 línies amb blocs de 4 paraules** (tots els exercicis tret que s'indiqui el contrari). Al *Data Cache Simulator* de RARS, el nombre de línies es diu *Number of blocks*. Les variables globals dels programes s'emmagatzemen a partir de l'adreça `0x10010000`.
 
 ---
 
 ::: {#exr-descomposicio-adreces}
 ## `s6_1_1.md`
 
-Considereu una memòria cau de correspondència directa amb **32 blocs de 4 paraules** cadascun.
+Considereu una memòria cau de correspondència directa amb **32 línies amb blocs de 4 paraules**.
 
 1. Determineu el nombre de bits dels camps **desplaçament**, **índex** i **etiqueta** per a adreces de 32 bits. Justifiqueu cada valor.
 
@@ -159,18 +159,18 @@ fifor:
         ecall
 ```
 
-Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator*. Configureu la memòria cau amb **32 blocs de 4 paraules** i política de correspondència directa. Premeu *Connect to Program* abans d'executar.
+Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator*. Configureu la memòria cau amb **32 línies** (*Number of blocks*) **amb blocs de 4 paraules** i correspondència directa. Premeu *Connect to Program* abans d'executar.
 
 ---
 
 ::: {#exr-recorregut-taula}
 ## `s6_2_1.md`
 
-Considereu la memòria cau de correspondència directa amb **32 blocs de 4 paraules** i les variables globals emmagatzemades a partir de `0x10010000`.
+Considereu la memòria cau de correspondència directa amb **32 línies amb blocs de 4 paraules** i les variables globals emmagatzemades a partir de `0x10010000`.
 
-1. Ompliu la taula següent per a les **10 primeres iteracions** del bucle. Per a cada iteració, indiqueu l'adreça de `vector[i]`, el número de bloc de memòria cau accedit i si la referència és un encert (En) o una fallada (F).
+1. Ompliu la taula següent per a les **10 primeres iteracions** del bucle. Per a cada iteració, indiqueu l'adreça de `vector[i]`, la línia de la memòria cau a què s'accedeix i si la referència és un encert (En) o una fallada (F).
 
-| Iteració | Adreça de `vector[i]` | Bloc de MC | En / F |
+| Iteració | Adreça de `vector[i]` | Línia de MC | En / F |
 | :---: | :--- | :---: | :---: |
 | 1 | | | |
 | 2 | | | |
@@ -194,9 +194,9 @@ Verifiqueu les respostes amb el *Data Cache Simulator* de RARS.
 ::: {#sol-recorregut-taula}
 **Apartat 1.**
 
-`vector[0]` comença a `0x10010000`. Cada element ocupa 4 bytes; el bloc té 16 bytes (4 paraules), de manera que cada bloc de MC conté 4 elements consecutius del vector. L'índex de bloc de MC és $\lfloor \text{adreça} / 16 \rfloor \bmod 32$.
+`vector[0]` comença a `0x10010000`. Cada element ocupa 4 bytes; el bloc té 16 bytes (4 paraules), de manera que cada bloc conté 4 elements consecutius del vector. L'índex de línia és $\lfloor \text{adreça} / 16 \rfloor \bmod 32$.
 
-| Iteració | Adreça de `vector[i]` | Bloc de MC | En / F |
+| Iteració | Adreça de `vector[i]` | Línia de MC | En / F |
 | :---: | :--- | :---: | :---: |
 | 1 | `0x10010000` | 0 | F |
 | 2 | `0x10010004` | 0 | En |
@@ -222,11 +222,11 @@ $$\text{taxa d'encerts} = \frac{75}{100} = 0{,}75$$
 ::: {#exr-mida-cache}
 ## `s6_2_2.md`
 
-Considereu el mateix programa i la mateixa geometria de referència (correspondència directa, 32 blocs de 4 paraules).
+Considereu el mateix programa i la mateixa geometria de referència (correspondència directa, 32 línies amb blocs de 4 paraules).
 
-1. Si dupliquem la mida de la memòria cau **doblant el nombre de blocs** (64 blocs de 4 paraules), la taxa d'encerts variarà? Raoneu la resposta.
+1. Si dupliqueu la mida de la memòria cau **doblant el nombre de línies** (64 línies amb blocs de 4 paraules), la taxa d'encerts variarà? Raoneu la resposta.
 
-2. Si dupliquem la mida de la memòria cau **doblant el nombre de paraules per bloc** (32 blocs de 8 paraules), la taxa d'encerts variarà? Raoneu la resposta.
+2. Si dupliqueu la mida de la memòria cau **doblant el nombre de paraules per bloc** (32 línies amb blocs de 8 paraules), la taxa d'encerts variarà? Raoneu la resposta.
 
 Verifiqueu les respostes canviant la geometria al *Data Cache Simulator* i executant el programa de nou. Reinicialitzeu la memòria cau amb *Reset* abans de cada execució.
 :::
@@ -234,11 +234,11 @@ Verifiqueu les respostes canviant la geometria al *Data Cache Simulator* i execu
 ---
 
 ::: {#sol-mida-cache}
-**Apartat 1. Doblar el nombre de blocs (64 blocs de 4 paraules).**
+**Apartat 1. Doblar el nombre de línies (64 línies amb blocs de 4 paraules).**
 
 La mida del bloc no canvia (4 paraules = 16 bytes), de manera que cada referència al vector continua portant exactament 4 elements. El patró de fallades és idèntic: 1 fallada cada 4 accessos. La taxa d'encerts **no varia**: $0{,}75$.
 
-**Apartat 2. Doblar el nombre de paraules per bloc (32 blocs de 8 paraules).**
+**Apartat 2. Doblar el nombre de paraules per bloc (32 línies amb blocs de 8 paraules).**
 
 Ara cada bloc conté 8 paraules = 32 bytes = 8 elements del vector. La primera referència a cada grup de 8 és una fallada i les 7 restants són encerts. Hi ha $\lceil 100 / 8 \rceil = 13$ blocs accedits (12 complets + 1 de parcial amb 4 elements). Fallades: 13. Encerts: $100 - 13 = 87$.
 
@@ -270,7 +270,7 @@ El patró de fallades no depèn de la direcció del recorregut, sinó de la rela
 ::: {#exr-model-temps}
 ## `s6_2_4.md`
 
-Considereu un sistema amb memòria cau d'instruccions i de dades separades. La cau d'instruccions és ideal (taxa d'encerts = 1). La cau de dades és de correspondència directa amb 32 blocs de 4 paraules i el model de temps simplificat següent:
+Considereu un sistema amb memòria cau d'instruccions i de dades separades. La cau d'instruccions és ideal (taxa d'encerts = 1). La cau de dades és de correspondència directa amb 32 línies amb blocs de 4 paraules i el model de temps simplificat següent:
 
 - Temps de cicle: $t_c = 10\ \text{ns}$.
 - Temps d'accés en cas d'encert: $t_h = 1\ \text{cicle}$.
@@ -401,14 +401,14 @@ fibuc_i:
         ecall
 ```
 
-Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator* amb **32 blocs de 4 paraules** i correspondència directa. El simulador de RARS no té cap opció de política d'escriptura: en comptar encerts i fallades, tracta cada escriptura com una lectura (una escriptura amb fallada porta el bloc a la cau), que és el comportament de la política **amb assignació** d'aquest exercici, i no compta el trànsit cap a la memòria principal.
+Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator* amb **32 línies** (*Number of blocks*) **amb blocs de 4 paraules** i correspondència directa. El simulador de RARS no té cap opció de política d'escriptura: en comptar encerts i fallades, tracta cada escriptura com una lectura (una escriptura amb fallada porta el bloc a la cau), que és el comportament de la política **amb assignació** d'aquest exercici, i no compta el trànsit cap a la memòria principal.
 
 ---
 
 ::: {#exr-escriptures-taula}
 ## `s6_3_1.md`
 
-Considereu la memòria cau de correspondència directa amb **32 blocs de 4 paraules** i política d'**escriptura immediata amb assignació** (@tip-escriptura-immediata-assignacio). Les variables globals comencen a `0x10010000`.
+Considereu la memòria cau de correspondència directa amb **32 línies amb blocs de 4 paraules** i política d'**escriptura immediata amb assignació** (@tip-escriptura-immediata-assignacio). Les variables globals comencen a `0x10010000`.
 
 1. Per a cada iteració del bucle exterior (`i = 0, 1, 2, 3`), ompliu la taula amb els accessos a elements de `vec`: índex de l'element accedit, tipus d'accés (L = lectura, E = escriptura) i resultat (En = encert, F = fallada).
 
@@ -416,7 +416,7 @@ Considereu la memòria cau de correspondència directa amb **32 blocs de 4 parau
 
 3. Calculeu la taxa d'encerts global de l'execució completa del programa.
 
-Verifiqueu la taxa d'encerts amb el *Data Cache Simulator* de RARS.
+Verifiqueu la taxa d'encerts amb el *Data Cache Simulator* de RARS. Comproveu també que, en acabar, el vector queda ordenat de gran a petit: `{45, 20, 12, -1, -18}`.
 :::
 
 ---
@@ -426,7 +426,7 @@ Els 5 elements de `vec` ocupen $5 \times 4 = 20$ bytes. Com que 20 > 16 (la mida
 
 Com que `vec` comença a `0x10010000`:
 
-| Element | Adreça | Bloc de MC |
+| Element | Adreça | Línia de MC |
 | :--- | :--- | :---: |
 | `vec[0]` | `0x10010000` | 0 |
 | `vec[1]` | `0x10010004` | 0 |
@@ -456,7 +456,7 @@ Com que `vec` comença a `0x10010000`:
 La lectura de `vec[max]` usa el valor de `max` **abans** de la seva possible actualització. Amb `vec = {20, -18, 45, 12, -1}`, `max = 0` fins que a `j = 2` es detecta el nou màxim `vec[2] = 45`; a partir d'aleshores `max = 2` durant la resta de la iteració (per això les lectures de `vec[max]` a `j = 1` i `j = 2` accedeixen a l'element 0, i les posteriors, a l'element 2).
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Executeu `ordenacio.s` a RARS amb el *Data Cache Simulator* configurat amb 32 blocs de 4 paraules i correspondència directa (les escriptures hi compten com amb assignació). En acabar l'execució, el simulador mostra el nombre total de referències, encerts i fallades. Comproveu que el vector resultant, ordenat de gran a petit, és `{45, 20, 12, -1, -18}`.
+Executeu `ordenacio.s` a RARS amb el *Data Cache Simulator* configurat amb 32 línies (*Number of blocks*) amb blocs de 4 paraules i correspondència directa (les escriptures hi compten com amb assignació). En acabar l'execució, el simulador mostra el nombre total de referències, encerts i fallades.
 
 Per seguir l'evolució accés a accés, poseu un *breakpoint* a la primera instrucció del bucle interior i avanceu pas a pas observant els canvis al panell *Cache*.
 :::
@@ -488,7 +488,7 @@ El *Data Cache Simulator* ha de reportar 36 referències i 2 fallades.
 ::: {#exr-politiques-escriptura}
 ## `s6_3_2.md`
 
-Considereu el mateix programa i la mateixa geometria de memòria cau (32 blocs de 4 paraules).
+Considereu el mateix programa i la mateixa geometria de memòria cau (32 línies amb blocs de 4 paraules).
 
 1. Com canviaria la taxa d'encerts si la política d'escriptura fos **immediata sense assignació** (@tip-escriptura-immediata-sense-assignacio)? Raoneu la resposta indicant quins accessos canvien de resultat.
 
@@ -512,11 +512,11 @@ En política d'escriptura retardada amb assignació, les escriptures es fan úni
 ::: {#exr-vector-gran}
 ## `s6_3_3.md`
 
-Considereu ara un vector de **64 elements** (en lloc de 5), mantenint la mateixa geometria de memòria cau (correspondència directa, 32 blocs de 4 paraules) i la política d'escriptura immediata amb assignació.
+Considereu ara un vector de **64 elements** (en lloc de 5), mantenint la mateixa geometria de memòria cau (correspondència directa, 32 línies amb blocs de 4 paraules) i la política d'escriptura immediata amb assignació.
 
 1. Quantes fallades es produirien en l'execució del programa d'ordenació adaptat a 64 elements? Justifiqueu la resposta indicant si es produeixen fallades d'arrencada en fred, de capacitat o de conflicte (@sec-tipologia-fallades, @cau-tres-c).
 
-2. Sense que augmenti el nombre de fallades, fins a quin nombre mínim de blocs es podria reduir la memòria cau? Raoneu la resposta.
+2. Sense que augmenti el nombre de fallades, fins a quin nombre mínim de línies es podria reduir la memòria cau? Raoneu la resposta.
 
 Modifiqueu `ordenacio.s` per adaptar-lo a un vector de 64 elements: poseu `.eqv N, 64` i substituïu la declaració per `vec: .space 256` (els valors concrets no afecten el nombre de fallades). Verifiqueu les respostes amb el *Data Cache Simulator*.
 :::
@@ -532,9 +532,9 @@ Les úniques fallades són **d'arrencada en fred**: la primera referència a cad
 
 $$n_{fallades} = 16$$
 
-**Apartat 2. Nombre mínim de blocs.**
+**Apartat 2. Nombre mínim de línies.**
 
-Perquè no augmenti el nombre de fallades (que ha de continuar sent només les 16 d'arrencada en fred), cal que els 16 blocs del vector puguin conviure a la cau sense expulsar-se. Al llarg de l'execució, qualsevol bloc expulsat es tornaria a referenciar en una iteració posterior del bucle exterior i provocaria una fallada addicional; per tant, els 16 blocs han de residir simultàniament a la cau. Amb una cau de correspondència directa de **16 blocs**, els 16 blocs consecutius del vector (0–15) es mapen a 16 línies diferents (bloc $b$ → línia $b \bmod 16$), de manera que no hi ha conflictes. El mínim és, doncs, **16 blocs**.
+Perquè no augmenti el nombre de fallades (que ha de continuar sent només les 16 d'arrencada en fred), cal que els 16 blocs del vector puguin conviure a la cau sense expulsar-se. Al llarg de l'execució, qualsevol bloc expulsat es tornaria a referenciar en una iteració posterior del bucle exterior i provocaria una fallada addicional; per tant, els 16 blocs han de residir simultàniament a la cau. Amb una cau de correspondència directa de **16 línies**, els 16 blocs consecutius del vector (0–15) es mapen a 16 línies diferents (bloc $b$ → línia $b \bmod 16$), de manera que no hi ha conflictes. El mínim és, doncs, **16 línies**.
 :::
 
 ## Accés a múltiples estructures {#sec-l6-multiple-estructures}
@@ -595,19 +595,19 @@ Carregueu aquest programa a RARS i activeu el *Data Cache Simulator*.
 ::: {#exr-suma-vectors-cd}
 ## `s6_4_1.md`
 
-Considereu una memòria cau de correspondència directa amb **16 blocs de 4 paraules** i política d'**escriptura immediata amb assignació**. Les variables globals comencen a `0x10010000`.
+Considereu una memòria cau de correspondència directa amb **16 línies amb blocs de 4 paraules** i política d'**escriptura immediata amb assignació**. Les variables globals comencen a `0x10010000`.
 
 1. Calculeu la mida en blocs de cada vector. Determineu a quines línies de MC es mapen els blocs de `A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
 
 2. Calculeu la taxa d'encerts esperada. Justifiqueu el resultat a partir de l'anàlisi de conflictes.
 
-Verifiqueu la resposta amb el *Data Cache Simulator* configurat amb 16 blocs de 4 paraules.
+Verifiqueu la resposta amb el *Data Cache Simulator* configurat amb 16 línies (*Number of blocks*) amb blocs de 4 paraules.
 :::
 
 ---
 
 ::: {#sol-suma-vectors-cd}
-**Apartat 1. Mapeig i conflictes.**
+**Apartat 1. Mapatge i conflictes.**
 
 Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapatge en correspondència directa assigna el bloc $n$ de MP a la línia $n \bmod 16$. Per simplicitat, numerem els blocs de manera relativa a l'inici de `A` (el bloc que conté `A[0]` és el bloc 0).
 
@@ -632,7 +632,7 @@ Els 3 accessos de cada iteració són fallades. Amb 128 iteracions i 3 accessos 
 $$\text{taxa d'encerts} = \frac{0}{384} = 0{,}00$$
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Configureu el *Data Cache Simulator* amb 16 blocs de 4 paraules i correspondència directa (les escriptures hi compten com amb assignació). Executeu `suma_vectors.s` i observeu que la taxa d'encerts és exactament **0**: el simulador només comptabilitza els accessos a dades (les 384 lectures i escriptures als vectors), i totes són fallades.
+Configureu el *Data Cache Simulator* amb 16 línies (*Number of blocks*) amb blocs de 4 paraules i correspondència directa (les escriptures hi compten com amb assignació). Executeu `suma_vectors.s` i observeu que la taxa d'encerts és exactament **0**: el simulador només comptabilitza els accessos a dades (les 384 lectures i escriptures als vectors), i totes són fallades.
 :::
 :::
 
@@ -653,7 +653,7 @@ Verifiqueu el resultat amb el *Data Cache Simulator*.
 ---
 
 ::: {#sol-padding}
-Amb 16 blocs i blocs de 4 paraules (16 bytes), la cau cobreix $16 \times 16 = 256$ bytes. Els conflictes es produeixen perquè `A`, `B` i `C` estan separats exactament 512 bytes = 32 blocs, múltiple del nombre de línies (16), de manera que es mapen a les mateixes línies.
+Amb 16 línies i blocs de 4 paraules (16 bytes), la cau cobreix $16 \times 16 = 256$ bytes. Els conflictes es produeixen perquè `A`, `B` i `C` estan separats exactament 512 bytes = 32 blocs, múltiple del nombre de línies (16), de manera que es mapen a les mateixes línies.
 
 Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapen a línies **diferents**: en cada iteració del bucle, els blocs de `A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada d'arrencada en fred: 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
 
@@ -698,7 +698,7 @@ fifor:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Executeu `s6_4_2.s` amb el *Data Cache Simulator* (16 blocs, 4 paraules/bloc, correspondència directa). La taxa d'encerts ha de ser 0,75. Comproveu també que el resultat al vector `C` coincideix amb el de `suma_vectors.s` original (els valors de `C` han de ser iguals en ambdós casos, ja que el farciment no afecta la lògica del programa).
+Executeu `s6_4_2.s` amb el *Data Cache Simulator* (16 línies amb blocs de 4 paraules, correspondència directa). La taxa d'encerts ha de ser 0,75. Comproveu també que el resultat al vector `C` coincideix amb el de `suma_vectors.s` original (els valors de `C` han de ser iguals en ambdós casos, ja que el farciment no afecta la lògica del programa).
 :::
 :::
 
@@ -707,7 +707,7 @@ Executeu `s6_4_2.s` amb el *Data Cache Simulator* (16 blocs, 4 paraules/bloc, co
 ::: {#exr-completament-associativa}
 ## `s6_4_3.md`
 
-Considereu ara una memòria cau **completament associativa** (@sec-completament-associativa) amb **16 blocs de 4 paraules** i política LRU (@sec-politica-reemplacament).
+Considereu ara una memòria cau **completament associativa** (@sec-completament-associativa) amb **16 línies amb blocs de 4 paraules** i política LRU (@sec-politica-reemplacament).
 
 Calculeu la taxa d'encerts en l'execució del programa `suma_vectors.s`. Raoneu la resposta indicant si es produeixen fallades de conflicte, de capacitat o únicament d'arrencada en fred.
 
@@ -717,7 +717,7 @@ Verifiqueu la resposta amb el *Data Cache Simulator* configurat en mode completa
 ---
 
 ::: {#sol-completament-associativa}
-En una cau completament associativa, qualsevol bloc de MP pot anar a qualsevol línia: no hi ha mapat fix i, per tant, **no hi ha fallades de conflicte**. Podria semblar que hi haurà fallades de capacitat, ja que els tres vectors sumen $3 \times 32 = 96$ blocs mentre que la cau només en té 16 ($96 > 16$); però el que determina les fallades de capacitat no és l'ocupació total del programa, sinó el *working set* instantani (els blocs realment vius en un moment donat).
+En una cau completament associativa, qualsevol bloc de MP pot anar a qualsevol línia: no hi ha mapatge fix i, per tant, **no hi ha fallades de conflicte**. Podria semblar que hi haurà fallades de capacitat, ja que els tres vectors sumen $3 \times 32 = 96$ blocs mentre que la cau només en té 16 ($96 > 16$); però el que determina les fallades de capacitat no és l'ocupació total del programa, sinó el *working set* instantani (els blocs realment vius en un moment donat).
 
 A cada iteració del bucle s'accedeix a un bloc de `A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment són els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres referències restants al mateix bloc (els altres 3 elements) són encerts.
 
@@ -726,7 +726,7 @@ El comportament és idèntic al d'accés seqüencial sense conflictes: 32 fallad
 $$\text{taxa d'encerts} = \frac{288}{384} = 0{,}75$$
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Configureu el *Data Cache Simulator* en mode completament associatiu (seleccioneu *Fully Associative* al camp *Placement Policy*) amb 16 blocs de 4 paraules i política de reemplaçament LRU. Executeu `suma_vectors.s` i verifiqueu que la taxa d'encerts és 0,75.
+Configureu el *Data Cache Simulator* en mode completament associatiu (seleccioneu *Fully Associative* al camp *Placement Policy*) amb 16 línies (*Number of blocks*) amb blocs de 4 paraules i política de reemplaçament LRU. Executeu `suma_vectors.s` i verifiqueu que la taxa d'encerts és 0,75.
 :::
 :::
 
@@ -772,9 +772,9 @@ Activeu la casella *Runtime Log* (*Enabled*) del Data Cache Simulator: per a cad
 - Una fallada és **d'arrencada en fred** si és la **primera** referència a aquell bloc: la primera vegada que apareix al registre una adreça del bloc. El bloc s'identifica pel número de bloc, l'adreça sense els 4 bits del desplaçament (`adreça >> 4`), i no per l'etiqueta sola, que en correspondència directa comparteixen blocs diferents.
 - Les fallades que no són d'arrencada en fred són de **conflicte** o de **capacitat**. Per distingir-les, es compara amb una execució en què no hi pugui haver conflictes: una cau **completament associativa** de la mateixa capacitat. Les fallades que desapareixen en passar a completament associativa eren de **conflicte**; les que persisteixen (més enllà de les d'arrencada en fred) són de **capacitat**.
 
-1. Executeu `suma_vectors.s` amb la cau de **correspondència directa** de 16 blocs de 4 paraules (la de @exr-suma-vectors-cd). Amb el Runtime Log, determineu quantes de les fallades són d'arrencada en fred. (Pista: quants blocs diferents s'accedeixen en total?)
+1. Executeu `suma_vectors.s` amb la cau de **correspondència directa** de 16 línies amb blocs de 4 paraules (la de @exr-suma-vectors-cd). Amb el Runtime Log, determineu quantes de les fallades són d'arrencada en fred. (Pista: quants blocs diferents s'accedeixen en total?)
 
-2. Executeu ara el mateix programa amb la cau **completament associativa** de 16 blocs (la de @exr-completament-associativa). Quantes fallades queden? De quin tipus són?
+2. Executeu ara el mateix programa amb la cau **completament associativa** de 16 línies (la de @exr-completament-associativa). Quantes fallades queden? De quin tipus són?
 
 3. A partir dels dos resultats, feu el desglossament complet de les fallades de la cau de correspondència directa en fallades d'arrencada en fred, de conflicte i de capacitat.
 :::
@@ -790,7 +790,7 @@ $$n_{\text{obligatòries}} = 96$$
 
 **Apartat 2. Fallades de la cau completament associativa.**
 
-Amb la cau completament associativa (@sol-completament-associativa), la taxa d'encerts és 0,75: hi ha **96 fallades**. Com que en una cau completament associativa no hi pot haver fallades de conflicte, i el *working set* instantani (3 blocs) és molt inferior a la capacitat (16 blocs), tampoc no n'hi ha de capacitat: **les 96 fallades són totes d'arrencada en fred**.
+Amb la cau completament associativa (@sol-completament-associativa), la taxa d'encerts és 0,75: hi ha **96 fallades**. Com que en una cau completament associativa no hi pot haver fallades de conflicte, i el *working set* instantani (3 blocs) és molt inferior a la capacitat (16 línies), tampoc no n'hi ha de capacitat: **les 96 fallades són totes d'arrencada en fred**.
 
 **Apartat 3. Desglossament de les fallades de la cau de correspondència directa.**
 
@@ -804,7 +804,7 @@ Les 96 fallades de la cau completament associativa són el nombre irreductible d
 | **Total** | **384** | **96** |
 : {.striped .hover}
 
-El cas confirma que aquí la degradació de la correspondència directa (taxa 0 enfront de 0,75) es deu **íntegrament a fallades de conflicte**, no de capacitat: la cau tindria prou espai per als 3 blocs actius, però el mapat fix els força a la mateixa línia.
+El cas confirma que aquí la degradació de la correspondència directa (taxa 0 enfront de 0,75) es deu **íntegrament a fallades de conflicte**, no de capacitat: la cau tindria prou espai per als 3 blocs actius, però el mapatge fix els força a la mateixa línia.
 :::
 
 ## Optimització: *loop tiling* {#sec-l6-tiling}
@@ -920,17 +920,17 @@ Abans d'escriure cap instrucció:
 
 A continuació, escriviu el codi RV32IM complet.
 
-Verifiqueu que el resultat al vector `V1` coincideix amb el del programa original no optimitzat.
+Comproveu que, amb `M[i][j] = 1` per a tots `i`, `j` i `V2[j] = j`, cada element de `V1` val `120`, com amb el programa original no optimitzat.
 
 3. Amb el *Data Cache Simulator*, mesureu la taxa d'encerts del programa amb *tiling* per a les geometries de la taula següent i compareu-les amb les del programa original `matvec.s`:
 
 | Capacitat | CD | Assoc. grau 2 | Assoc. grau 4 | Assoc. grau 8 | Comp. assoc. |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| 8 blocs | | | | | |
-| 16 blocs | | | | | |
-| 32 blocs | | | | | |
-| 64 blocs | | | | | |
-| 128 blocs | | | | | |
+| 8 línies | | | | | |
+| 16 línies | | | | | |
+| 32 línies | | | | | |
+| 64 línies | | | | | |
+| 128 línies | | | | | |
 : Taxa d'encerts del programa amb *tiling* per a diferents geometries de cau {#tbl-tiling-geometries .striped .hover}
 :::
 
@@ -1043,30 +1043,30 @@ fibuc_k:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-**Verificació de correctesa.** Inicialitzeu `M` i `V2` amb valors coneguts (per exemple, `M[i][j] = 1` per a tots `i`, `j` i `V2[j] = j`). Executeu primer el programa original i anoteu els valors de `V1`. Executeu després `s6_5_1.s` i comproveu que `V1` conté els mateixos valors.
+**Verificació de correctesa.** Inicialitzeu `M` i `V2` amb els valors de l'enunciat, executeu primer el programa original i després `s6_5_1.s`, i compareu-ne `V1` al segment de dades.
 
 **Verificació de rendiment.** Executant `s6_5_1.s` (amb *tiling*) i `matvec.s` (original) amb el *Data Cache Simulator* per a les geometries de la @tbl-tiling-geometries s'obtenen les taxes d'encerts següents (format *tiling* / original):
 
 | Capacitat | CD | Assoc. grau 2 | Assoc. grau 4 | Assoc. grau 8 | Comp. assoc. |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| 8 blocs | 0,52 / 0,43 | 0,84 / 0,81 | 0,87 / 0,78 | 0,87 / 0,73 | 0,87 / 0,73 |
-| 16 blocs | 0,70 / 0,65 | 0,88 / 0,86 | 0,88 / 0,86 | 0,88 / 0,86 | 0,87 / 0,86 |
-| 32 blocs | 0,80 / 0,76 | 0,88 / 0,86 | 0,88 / 0,86 | 0,88 / 0,86 | 0,89 / 0,86 |
-| 64 blocs | 0,84 / 0,82 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 |
-| 128 blocs | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 |
+| 8 línies | 0,52 / 0,43 | 0,84 / 0,81 | 0,87 / 0,78 | 0,87 / 0,73 | 0,87 / 0,73 |
+| 16 línies | 0,70 / 0,65 | 0,88 / 0,86 | 0,88 / 0,86 | 0,88 / 0,86 | 0,87 / 0,86 |
+| 32 línies | 0,80 / 0,76 | 0,88 / 0,86 | 0,88 / 0,86 | 0,88 / 0,86 | 0,89 / 0,86 |
+| 64 línies | 0,84 / 0,82 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 |
+| 128 línies | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 |
 : Taxes d'encerts de referència (solució) {.striped .hover}
 
 Les taxes, però, no comparen bé els dos programes: la versió amb *tiling* fa 640 accessos a dades, i l'original, 528, perquè hi afegeix 112 accessos a `V1` (una lectura i una escriptura per a cada parella `k`, `i`), que són gairebé tots encerts i fan pujar la taxa. El que cal comparar és el **nombre de fallades** (format *tiling* / original):
 
 | Capacitat | CD | Assoc. grau 2 | Assoc. grau 4 | Assoc. grau 8 | Comp. assoc. |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| 8 blocs | 306 / 300 | 105 / 99 | 82 / 114 | 84 / 144 | 84 / 144 |
-| 16 blocs | 190 / 184 | 78 / 72 | 78 / 72 | 78 / 72 | 84 / 72 |
-| 32 blocs | 131 / 126 | 76 / 72 | 76 / 72 | 76 / 72 | 72 / 72 |
-| 64 blocs | 100 / 97 | 73 / 72 | 72 / 72 | 72 / 72 | 72 / 72 |
-| 128 blocs | 72 / 72 | 72 / 72 | 72 / 72 | 72 / 72 | 72 / 72 |
+| 8 línies | 306 / 300 | 105 / 99 | 82 / 114 | 84 / 144 | 84 / 144 |
+| 16 línies | 190 / 184 | 78 / 72 | 78 / 72 | 78 / 72 | 84 / 72 |
+| 32 línies | 131 / 126 | 76 / 72 | 76 / 72 | 76 / 72 | 72 / 72 |
+| 64 línies | 100 / 97 | 73 / 72 | 72 / 72 | 72 / 72 | 72 / 72 |
+| 128 línies | 72 / 72 | 72 / 72 | 72 / 72 | 72 / 72 | 72 / 72 |
 : Fallades de referència (solució) {.striped .hover}
 
-El *tiling* només redueix les fallades amb 8 blocs i grau 4 o més (també completament associativa): és el cas en què la cau no pot mantenir tot `V2` però sí el bloc actiu de `V2` al costat de la fila de `M`. Amb correspondència directa no les redueix: el bloc de `M[i][…]` i el de `V2` que es fan servir alhora cauen a la mateixa línia i s'expulsen l'un a l'altre. Amb prou capacitat, tots dos programes es queden en les 72 fallades d'arrencada en fred (64 blocs de `M`, 4 de `V2` i 4 de `V1`), i el *tiling* no aporta res.
+El *tiling* només redueix les fallades amb 8 línies i grau 4 o més (també completament associativa): és el cas en què la cau no pot mantenir tot `V2` però sí el bloc actiu de `V2` al costat de la fila de `M`. Amb correspondència directa no les redueix: el bloc de `M[i][…]` i el de `V2` que es fan servir alhora cauen a la mateixa línia i s'expulsen l'un a l'altre. Amb prou capacitat, tots dos programes es queden en les 72 fallades d'arrencada en fred (64 blocs de `M`, 4 de `V2` i 4 de `V1`), i el *tiling* no aporta res.
 :::
 :::

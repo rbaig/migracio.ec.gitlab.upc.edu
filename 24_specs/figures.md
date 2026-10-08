@@ -1,10 +1,10 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `75ea6c6` (2026-10-07), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `f450bad` (2026-10-08), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
-- **86** etiquetes `#fig-`: 83 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
+- **87** etiquetes `#fig-`: 84 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 61 consumits i 15 sense consumir.
-- Figures generades al pre-render: **18** de `gen_regs.py` (`__registre`), **6** de `gen_BA.py` (`__BA`), **3** de `gen_mapa.py` (`__mapa`), **2** de `gen_subrutines.py` (`__subrutina`), **14** de `gen_MC.py` (`__MC`), **3** de `gen_memoria.py` (`__memoria`).
+- Figures generades al pre-render: **18** de `gen_regs.py` (`__registre`), **7** de `gen_BA.py` (`__BA`), **3** de `gen_mapa.py` (`__mapa`), **2** de `gen_subrutines.py` (`__subrutina`), **14** de `gen_MC.py` (`__MC`), **3** de `gen_memoria.py` (`__memoria`).
 
 ## Figures
 
@@ -93,9 +93,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `75ea6c6` (2026-10-07), amb 
 | `fig-mv-pipt` | `A8.qmd:458` | `22_figs_originals/T8_mv_pipt.svg` | script (gen_T8.py) |  | 2 | Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en… | Diagrama de blocs en una fila: la CPU envia l'adreça lògica… |
 | `fig-mv-vipt` | `A8.qmd:489` | `22_figs_originals/T8_mv_vipt.svg` | script (gen_T8.py) |  | 1 | Memòria cau VIPT: la indexació de la memòria cau i la traducció del TLB es fan en paral·l… | La CPU genera l'adreça lògica, dividida en VPN i desplaçame… |
 | `fig-mv-tlb-exemple` | `A8.qmd:586` | `22_figs_originals/T8_mv_exemple_tlb.svg` | script (gen_T8.py) |  | 1 | Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el … | A dalt, l'estat inicial: el TLB, amb tres entrades vàlides … |
-| `fig-cicle-interrupcio` | `A9.qmd:721` | `22_figs_originals/T9_cicle_interrupcio.svg` | Inkscape |  | 1 | Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucc… | Una línia de temps d'esquerra a dreta en tres trams: execuc… |
+| `fig-cicle-interrupcio` | `A9.qmd:720` | `22_figs_originals/T9_cicle_interrupcio.svg` | Inkscape |  | 1 | Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucc… | Una línia de temps d'esquerra a dreta en tres trams: execuc… |
 | `fig-ba-funcio-a` | `S3.qmd:626` | `BA.toml:T3_ba_A` | gen_BA.py |  | 1 | Bloc d'activació de la funció `A`: el vector `r` al desplaçament `+0` i l'alineació als b… | Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes… |
-| `fig-ba-moda` | `L3.qmd:337` | `BA.toml:T3_ba_moda` | gen_BA.py |  | 1 | Bloc d'activació de `moda`: el vector `histo` al desplaçament `+0` i els registres desats… | Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes… |
+| `fig-ba-variancia` | `S5.qmd:755` | `BA.toml:T5_ba_variancia` | gen_BA.py |  | 1 | Bloc d'activació de `variancia`: el vector `vquadrats` al desplaçament `+0` i els registr… | Bloc d'activació de 420 bytes, d'adreces baixes (sp) a alte… |
+| `fig-ba-moda` | `L3.qmd:339` | `BA.toml:T3_ba_moda` | gen_BA.py |  | 1 | Bloc d'activació de `moda`: el vector `histo` al desplaçament `+0` i els registres desats… | Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes… |
 | `—` | `A2.qmd:267` | `registres.toml:compendi_registres_RIS` | gen_regs.py (COMPENDIS) | `nte-instruccions-tipus` | 0 |  |  |
 | `—` | `A2.qmd:1205` | `registres.toml:T2_instruccio_tipus_R` | gen_regs.py | `nte-instruccions-Tipus-R` | 0 |  |  |
 | `—` | `A2.qmd:1264` | `registres.toml:T2_instruccio_tipus_I` | gen_regs.py | `nte-instruccions-Tipus-I` | 0 |  |  |
@@ -111,7 +112,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `75ea6c6` (2026-10-07), amb 
 | `—` | `A9.qmd:196` | `registres.toml:T9_mtvec` | gen_regs.py | `nte-mtvec` | 0 |  |  |
 | `—` | `A9.qmd:239` | `registres.toml:T9_mip` | gen_regs.py | `nte-mip-mie` | 0 |  |  |
 | `—` | `A9.qmd:251` | `registres.toml:T9_mie` | gen_regs.py | `nte-mip-mie` | 0 |  |  |
-| `—` | `A9.qmd:812` | `registres.toml:T9_satp` | gen_regs.py | `nte-satp` | 0 |  |  |
+| `—` | `A9.qmd:811` | `registres.toml:T9_satp` | gen_regs.py | `nte-satp` | 0 |  |  |
 | `—` | `11_riscv.qmd:40` | `registres.toml:compendi_registres` | gen_regs.py (COMPENDIS) | `nte-rv-instruccions-formats-detall` | 0 |  |  |
 | `—` | `11_riscv.qmd:270` | `registres.toml:T5_fcsr` | gen_regs.py | `nte-rv-fcsr` | 0 |  |  |
 | `—` | `11_riscv.qmd:444` | `registres.toml:T9_mepc` | gen_regs.py | `nte-rv-mepc` | 0 |  |  |
@@ -199,7 +200,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `75ea6c6` (2026-10-07), amb 
 | `22_figs_originals/T8_mv_traduccio.svg` | A8.qmd:119, A8.qmd:126 | script (gen_T8.py) | 680 | sí | sí | 57 |  |  |
 | `22_figs_originals/T8_mv_traduccio_exemple.svg` | A8.qmd:188, A8.qmd:195 | script (gen_T8.py) | 680 | sí | sí | 91 |  |  |
 | `22_figs_originals/T8_mv_vipt.svg` | A8.qmd:492, A8.qmd:499 | script (gen_T8.py) | 680 | sí | sí | 22 |  |  |
-| `22_figs_originals/T9_cicle_interrupcio.svg` | A9.qmd:724, A9.qmd:731 | Inkscape | 680 | sí | sí | 17 |  |  |
+| `22_figs_originals/T9_cicle_interrupcio.svg` | A9.qmd:723, A9.qmd:730 | Inkscape | 680 | sí | sí | 17 |  |  |
 | `23_figs_externes/T7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1082 | ràster |  | no | no | 0 |  |  |
 | `23_figs_externes/by-nc-sa.eu.png` | 14_LICENSE.qmd:5 | ràster |  | no | no | 0 |  |  |
 | `registres.toml:T2_instruccio_tipus_R` | A2.qmd:1205, A2.qmd:1212 | gen_regs.py |  | sí | sí | 0 |  |  |
@@ -222,8 +223,9 @@ Generat per `25_scripts/inventari_figures.py` sobre `75ea6c6` (2026-10-07), amb 
 | `BA.toml:T3_ba_multi` | A3.qmd:1654, A3.qmd:1661 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `BA.toml:T3_ba_general` | A3.qmd:1427, A3.qmd:1434 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `BA.toml:T3_ba_func` | A3.qmd:1456, A3.qmd:1463 | gen_BA.py |  | sí | sí | 0 |  |  |
-| `BA.toml:T3_ba_moda` | L3.qmd:340, L3.qmd:347 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `BA.toml:T3_ba_moda` | L3.qmd:342, L3.qmd:349 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `BA.toml:T3_ba_A` | S3.qmd:629, S3.qmd:636 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `BA.toml:T5_ba_variancia` | S5.qmd:758, S5.qmd:765 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `mapa.toml:T3_mapa_memoria` | A3.qmd:1024, A3.qmd:1031 | gen_mapa.py |  | sí | sí | 0 |  |  |
 | `mapa.toml:T3_pila_uninivell` | A3.qmd:1386, A3.qmd:1393 | gen_mapa.py |  | sí | sí | 0 |  |  |
 | `mapa.toml:T3_pila_multinivell` | A3.qmd:1507, A3.qmd:1514 | gen_mapa.py |  | sí | sí | 0 |  |  |

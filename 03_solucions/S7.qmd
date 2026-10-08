@@ -33,24 +33,24 @@ La dada correspon a la **línia 2**, amb **etiqueta 3** i **byte 1** dins el blo
 
 Evolució de la seqüència (MC inicialment buida):
 
-| # | Bloc | Línia | Contingut línia | E/F |
+| # | Bloc | Línia | Contingut línia | En/F |
 | :---: | :---: | :---: | :--- | :---: |
 | 1 | 0 | 0 | buida | **F** |
 | 2 | 1 | 1 | buida | **F** |
-| 3 | 0 | 0 | bloc 0 | **E** |
+| 3 | 0 | 0 | bloc 0 | **En** |
 | 4 | 3 | 3 | buida | **F** |
 | 5 | 12 | 0 | bloc 0 $\neq$ 12 | **F** |
 | 6 | 10 | 2 | buida | **F** |
-| 7 | 3 | 3 | bloc 3 | **E** |
+| 7 | 3 | 3 | bloc 3 | **En** |
 | 8 | 7 | 3 | bloc 3 $\neq$ 7 | **F** |
-| 9 | 12 | 0 | bloc 12 | **E** |
+| 9 | 12 | 0 | bloc 12 | **En** |
 | 10 | 15 | 3 | bloc 7 $\neq$ 15 | **F** |
 | 11 | 3 | 3 | bloc 15 $\neq$ 3 | **F** |
 : {tbl-colwidths="[10,13,13,51,13]" .striped}
 
 Encerts: 3. Fallades: 8. Taxa d'encerts: $h = 3/11 \approx 27{,}3\%$.
 
-De les 8 fallades, 7 són **obligatòries** (el primer accés a cadascun dels blocs 0, 1, 3, 12, 10, 7 i 15) i la de l'accés 11 és de **conflicte**: el bloc 3, carregat a l'accés 4, ha estat expulsat pels blocs 7 i 15, que competeixen amb ell per la línia 3 (en una memòria cau completament associativa de la mateixa capacitat, aquest accés seria un encert). El conflicte a la línia 3 és especialment greu: cap dels tres blocs aconsegueix mantenir-s'hi.
+De les 8 fallades, 7 són **d'arrencada en fred** (*cold-start*: el primer accés a cadascun dels blocs 0, 1, 3, 12, 10, 7 i 15) i la de l'accés 11 és de **conflicte**: el bloc 3, carregat a l'accés 4, ha estat expulsat pels blocs 7 i 15, que competeixen amb ell per la línia 3 (en una memòria cau completament associativa de la mateixa capacitat, aquest accés seria un encert). El conflicte a la línia 3 és especialment greu: cap dels tres blocs aconsegueix mantenir-s'hi.
 :::
 
 ::: {#sol-t7-cache-politiques .callout-tip}
@@ -68,70 +68,70 @@ Exemples de descomposició:
 - `0x13A4`: etiqueta = `0x13`, índex = `0xA`, desplaçament = `0x4`.
 - `0x60A0`: etiqueta = `0x60`, índex = `0xA`, desplaçament = `0x0`.
 
-Cada accés R o W transfereix una paraula de 2 bytes (processador de 16 bits).
+Cada accés L o E transfereix una paraula de 2 bytes (processador de 16 bits).
 
 **a)** Escriptura immediata sense assignació.
 
 Comportament per tipus d'accés:
 
-- **R encert**: es llegeix de la MC. Cap tràfic amb MP.
-- **R fallada**: es llegeix el bloc sencer de MP (16 B), es carrega a la MC i se'n llegeix la dada.
-- **W encert**: s'escriu a la MC i a MP (2 B via buffer d'escriptura).
-- **W fallada**: s'escriu directament a MP (2 B). La MC no s'altera.
+- **L encert**: es llegeix de la MC. Cap tràfic amb MP.
+- **L fallada**: es llegeix el bloc sencer de MP (16 B), es carrega a la MC i se'n llegeix la dada.
+- **E encert**: s'escriu a la MC i a MP (2 B via buffer d'escriptura).
+- **E fallada**: s'escriu directament a MP (2 B). La MC no s'altera.
 
 Les columnes **Lect. MC** i **Escr. MC** indiquen si l'accés llegeix o escriu la matriu de dades de la MC (la dada lliurada a la CPU, la càrrega d'un bloc, l'escriptura d'una dada o la còpia d'un bloc modificat cap a MP).
 
-| # | Tipus | Adr. | Etiq. | Índ. | E/F | Llegits MP | Escrits MP | Lect. MC | Escr. MC |
+| # | Tipus | Adr. | Etiq. | Índ. | En/F | Llegits MP | Escrits MP | Lect. MC | Escr. MC |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | R | `4534` | `45` | `3` | **F** | 16 | 0 | S | S |
-| 2 | R | `4568` | `45` | `6` | **F** | 16 | 0 | S | S |
-| 3 | W | `13A4` | `13` | `A` | **F** | 0 | 2 | N | N |
-| 4 | W | `13A8` | `13` | `A` | **F** | 0 | 2 | N | N |
-| 5 | R | `3560` | `35` | `6` | **F** | 16 | 0 | S | S |
-| 6 | W | `453C` | `45` | `3` | **E** | 0 | 2 | N | S |
-| 7 | W | `60A0` | `60` | `A` | **F** | 0 | 2 | N | N |
-| 8 | R | `453C` | `45` | `3` | **E** | 0 | 0 | S | N |
-| 9 | W | `3900` | `39` | `0` | **F** | 0 | 2 | N | N |
-| 10 | R | `A238` | `A2` | `3` | **F** | 16 | 0 | S | S |
+| 1 | L | `4534` | `45` | `3` | **F** | 16 | 0 | S | S |
+| 2 | L | `4568` | `45` | `6` | **F** | 16 | 0 | S | S |
+| 3 | E | `13A4` | `13` | `A` | **F** | 0 | 2 | N | N |
+| 4 | E | `13A8` | `13` | `A` | **F** | 0 | 2 | N | N |
+| 5 | L | `3560` | `35` | `6` | **F** | 16 | 0 | S | S |
+| 6 | E | `453C` | `45` | `3` | **En** | 0 | 2 | N | S |
+| 7 | E | `60A0` | `60` | `A` | **F** | 0 | 2 | N | N |
+| 8 | L | `453C` | `45` | `3` | **En** | 0 | 0 | S | N |
+| 9 | E | `3900` | `39` | `0` | **F** | 0 | 2 | N | N |
+| 10 | L | `A238` | `A2` | `3` | **F** | 16 | 0 | S | S |
 : {tbl-colwidths="[6,8,10,8,8,8,13,13,13,13]" .striped}
 
 Justificació dels casos clau:
 
-- \#3 i #4 (`W 13A4`, `W 13A8`): ambdues escriptures fallen a la línia `A` (buida). Sense assignació, cap de les dues carrega el bloc → la línia resta buida i la segona escriptura també falla.
-- \#6 (`W 453C`): la línia 3 conté el bloc carregat al pas 1 (etiqueta `45`) → encert. S'escriu a MC i a MP (2 B).
-- \#8 (`R 453C`): la línia 3 encara conté l'etiqueta `45` → encert.
-- \#10 (`R A238`): etiqueta `A2` $\neq$ `45` a la línia 3 → fallada, reemplaça.
+- \#3 i #4 (`E 13A4`, `E 13A8`): ambdues escriptures fallen a la línia `A` (buida). Sense assignació, cap de les dues carrega el bloc → la línia resta buida i la segona escriptura també falla.
+- \#6 (`E 453C`): la línia 3 conté el bloc carregat al pas 1 (etiqueta `45`) → encert. S'escriu a MC i a MP (2 B).
+- \#8 (`L 453C`): la línia 3 encara conté l'etiqueta `45` → encert.
+- \#10 (`L A238`): etiqueta `A2` $\neq$ `45` a la línia 3 → fallada, reemplaça.
 
 **b)** Escriptura retardada amb assignació.
 
 Comportament per tipus d'accés:
 
-- **R/W encert**: accés a MC. Cap tràfic amb MP. En cas d'escriptura, $D \leftarrow 1$.
-- **R/W fallada, $D=0$**: es llegeix el bloc de MP (16 B) i es carrega a la MC.
-- **R/W fallada, $D=1$**: es llegeix el bloc antic de la MC i es copia a MP (16 B), i després es llegeix el nou bloc de MP (16 B) i es carrega a la MC.
+- **L/E encert**: accés a MC. Cap tràfic amb MP. En cas d'escriptura, $D \leftarrow 1$.
+- **L/E fallada, $D=0$**: es llegeix el bloc de MP (16 B) i es carrega a la MC.
+- **L/E fallada, $D=1$**: es llegeix el bloc antic de la MC i es copia a MP (16 B), i després es llegeix el nou bloc de MP (16 B) i es carrega a la MC.
 
-A les columnes **Lect. MC** i **Escr. MC**, tota fallada escriu la MC (càrrega del bloc i, si és W, la dada); la MC es llegeix quan la dada es lliura a la CPU (R) o quan cal copiar un bloc modificat cap a MP (*write-back*).
+A les columnes **Lect. MC** i **Escr. MC**, tota fallada escriu la MC (càrrega del bloc i, si és E, la dada); la MC es llegeix quan la dada es lliura a la CPU (L) o quan cal copiar un bloc modificat cap a MP (*write-back*).
 
-| # | Tipus | Adr. | Etiq. | Índ. | E/F | D | Llegits MP | Escrits MP | Lect. MC | Escr. MC |
+| # | Tipus | Adr. | Etiq. | Índ. | En/F | D | Llegits MP | Escrits MP | Lect. MC | Escr. MC |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | R | `4534` | `45` | `3` | **F** | 0 | 16 | 0 | S | S |
-| 2 | R | `4568` | `45` | `6` | **F** | 0 | 16 | 0 | S | S |
-| 3 | W | `13A4` | `13` | `A` | **F** | 0 | 16 | 0 | N | S |
-| 4 | W | `13A8` | `13` | `A` | **E** | 1 | 0 | 0 | N | S |
-| 5 | R | `3560` | `35` | `6` | **F** | 0 | 16 | 0 | S | S |
-| 6 | W | `453C` | `45` | `3` | **E** | 0→1 | 0 | 0 | N | S |
-| 7 | W | `60A0` | `60` | `A` | **F** | 1 | 16 | 16 | S | S |
-| 8 | R | `453C` | `45` | `3` | **E** | 1 | 0 | 0 | S | N |
-| 9 | W | `3900` | `39` | `0` | **F** | 0 | 16 | 0 | N | S |
-| 10 | R | `A238` | `A2` | `3` | **F** | 1 | 16 | 16 | S | S |
-: {tbl-colwidths="[5,9,9,8,7,7,7,12,12,12,12]" .striped}
+| 1 | L | `4534` | `45` | `3` | **F** | 0 | 16 | 0 | S | S |
+| 2 | L | `4568` | `45` | `6` | **F** | 0 | 16 | 0 | S | S |
+| 3 | E | `13A4` | `13` | `A` | **F** | 0 | 16 | 0 | N | S |
+| 4 | E | `13A8` | `13` | `A` | **En** | 1 | 0 | 0 | N | S |
+| 5 | L | `3560` | `35` | `6` | **F** | 0 | 16 | 0 | S | S |
+| 6 | E | `453C` | `45` | `3` | **En** | 0→1 | 0 | 0 | N | S |
+| 7 | E | `60A0` | `60` | `A` | **F** | 1 | 16 | 16 | S | S |
+| 8 | L | `453C` | `45` | `3` | **En** | 1 | 0 | 0 | S | N |
+| 9 | E | `3900` | `39` | `0` | **F** | 0 | 16 | 0 | N | S |
+| 10 | L | `A238` | `A2` | `3` | **F** | 1 | 16 | 16 | S | S |
+: {tbl-colwidths="[5,9,9,8,7,8,7,12,12,11,12]" .striped}
 
 Justificació dels casos clau:
 
-- \#3 (`W 13A4`): amb assignació, es carrega el bloc de MP (16 B) a la línia `A` i s'escriu la dada a la MC ($D \leftarrow 1$).
-- \#4 (`W 13A8`): encert (el bloc és a la línia `A` des del pas 3). S'escriu a MC, $D$ ja és 1.
-- \#7 (`W 60A0`): la línia `A` conté l'etiqueta `13` amb $D=1$. Fallada: cal copiar primer el bloc antic a MP (16 B *escrits*), després carregar el nou bloc de MP (16 B *llegits*), i finalment escriure la dada ($D \leftarrow 1$).
-- \#10 (`R A238`): la línia 3 conté l'etiqueta `45` amb $D=1$ (des del pas 6). Fallada amb *write-back*: 16 B escrits + 16 B llegits.
+- \#3 (`E 13A4`): amb assignació, es carrega el bloc de MP (16 B) a la línia `A` i s'escriu la dada a la MC ($D \leftarrow 1$).
+- \#4 (`E 13A8`): encert (el bloc és a la línia `A` des del pas 3). S'escriu a MC, $D$ ja és 1.
+- \#7 (`E 60A0`): la línia `A` conté l'etiqueta `13` amb $D=1$. Fallada: cal copiar primer el bloc antic a MP (16 B *escrits*), després carregar el nou bloc de MP (16 B *llegits*), i finalment escriure la dada ($D \leftarrow 1$).
+- \#10 (`L A238`): la línia 3 conté l'etiqueta `45` amb $D=1$ (des del pas 6). Fallada amb write-back: 16 B escrits + 16 B llegits.
 
 **c)** Resum comparatiu:
 
@@ -143,7 +143,7 @@ Justificació dels casos clau:
 | Bytes totals MP | 74 | 144 |
 : {tbl-colwidths="[30,35,35]" .striped}
 
-L'escriptura retardada amb assignació té una taxa de fallades inferior (l'accés #4 passa de fallada a encert perquè el bloc es va assignar al pas 3), però genera més tràfic total amb MP: cada assignació per escriptura carrega un bloc de 16 B, i cada *write-back* d'un bloc modificat n'escriu 16 B més. L'escriptura immediata sense assignació genera menys tràfic perquè les escriptures que fallen només transfereixen la paraula escrita (2 B), sense carregar blocs sencers.
+L'escriptura retardada amb assignació té una taxa de fallades inferior (l'accés #4 passa de fallada a encert perquè el bloc es va assignar al pas 3), però genera més tràfic total amb MP: cada assignació per escriptura carrega un bloc de 16 B, i cada write-back d'un bloc modificat n'escriu 16 B més. L'escriptura immediata sense assignació genera menys tràfic perquè les escriptures que fallen només transfereixen la paraula escrita (2 B), sense carregar blocs sencers.
 :::
 
 ## Rendiment
@@ -155,7 +155,7 @@ L'escriptura retardada amb assignació té una taxa de fallades inferior (l'acc�
 
 Dades: $p_e = 20\%$, $p_m = 1/3$, $t_h = 10$ ns, $t_{bloc} = 100$ ns, $h_1 = 0{,}9$ (immediata s/a), $h_2 = 0{,}85$ (retardada a/a).
 
-**a)** Aplicant @eq-tam, amb el temps de penalització mitjà per fallada de cada política (@cau-model-temps). Suposem que la taxa de fallades és independent del tipus d'accés: així, la fracció de fallades que corresponen a escriptures coincideix amb el percentatge d'escriptures $p_e$.
+**a)** Aplicant @eq-tam, amb el temps de penalització mitjà per fallada de cada política (@cau-model-temps). Se suposa que la taxa de fallades és independent del tipus d'accés: així, la fracció de fallades que corresponen a escriptures coincideix amb el percentatge d'escriptures $p_e$.
 
 *Escriptura immediata sense assignació* ($m_1 = 0{,}10$): les fallades de lectura paguen $t_{bloc} + t_h$ i les d'escriptura paguen 0 (el buffer absorbeix l'escriptura):
 
@@ -169,7 +169,7 @@ $$\bar{t}_{p_2} = (1 + p_m) \cdot t_{bloc} + t_h = \frac{4}{3} \cdot 100 + 10 = 
 
 $$\text{TAM}_2 = t_h + m_2 \cdot \bar{t}_{p_2} = 10 + 0{,}15 \cdot 143{,}3 \approx 10 + 21{,}5 = \mathbf{31{,}5} \text{ ns}$$
 
-L'escriptura immediata sense assignació és més ràpida ($18{,}8$ vs. $31{,}5$ ns). Té una taxa de fallades inferior ($10\%$ vs. $15\%$) i, sobretot, una penalització mitjana per fallada molt menor: les fallades d'escriptura no paguen penalització i les de lectura no generen *write-backs*. La penalització mitjana de l'escriptura retardada és un 63% més gran ($143{,}3$ vs. $88$ ns).
+L'escriptura immediata sense assignació és més ràpida ($18{,}8$ vs. $31{,}5$ ns). Té una taxa de fallades inferior ($10\%$ vs. $15\%$) i, sobretot, una penalització mitjana per fallada molt menor: les fallades d'escriptura no paguen penalització i les de lectura no generen write-backs. La penalització mitjana de l'escriptura retardada és un 63% més gran ($143{,}3$ vs. $88$ ns).
 
 **b)** Per a un programa de sols lectures ($p_e = 0$), ambdues polítiques es comporten de manera **idèntica**: en absència d'escriptures, no hi ha diferència entre escriptura immediata i retardada ($p_m = 0$, cap bloc es modifica), i ambdues polítiques carreguen blocs a la MC exactament igual en les fallades de lectura. La taxa de fallades seria la mateixa per a ambdues i la penalització també ($t_{bloc} + t_h = 110$ ns), de manera que cap de les dues alternatives seria més ràpida que l'altra.
 :::
@@ -194,7 +194,7 @@ Dades: $\text{CPI}_{ideal} = 1{,}5$, $t_c = 10$ ns, $n_r = 1{,}6$ referències/i
 
 $$\bar{t}_{pd} = (1 - p_m) \cdot 15 + p_m \cdot 20 = 0{,}80 \cdot 15 + 0{,}20 \cdot 20 = 12 + 4 = 16 \text{ cicles}$$
 
-Observeu que el percentatge d'escriptures ($p_e = 40\%$) no és necessari per resoldre el problema: la penalització de la MC de dades ja es dona directament en funció de si el bloc reemplaçat és modificat o no.
+El percentatge d'escriptures ($p_e = 40\%$) no és necessari per resoldre el problema: la penalització de la MC de dades ja es dona directament en funció de si el bloc reemplaçat és modificat o no.
 
 TAM ponderat per la fracció d'accessos de cada MC:
 
@@ -214,7 +214,7 @@ $$\text{CPI} = \text{CPI}_{ideal} + \text{CPI}_{penal,i} + \text{CPI}_{penal,d} 
 
 $$t_{exe} = \text{CPI} \cdot t_c = 2{,}86 \cdot 10 = \mathbf{28{,}6} \text{ ns/instrucció}$$
 
-Observació: les fallades de memòria cau incrementen el CPI un $90{,}7\%$ respecte del valor ideal (de $1{,}5$ a $2{,}86$). La MC de dades, amb només el $37{,}5\%$ dels accessos, contribueix el $70{,}6\%$ de la penalització ($0{,}96 / 1{,}36$), a causa de la seva taxa de fallades més alta i la penalització per *write-backs*.
+Observació: les fallades de memòria cau incrementen el CPI un $90{,}7\%$ respecte del valor ideal (de $1{,}5$ a $2{,}86$). La MC de dades, amb només el $37{,}5\%$ dels accessos, contribueix el $70{,}6\%$ de la penalització ($0{,}96 / 1{,}36$), a causa de la seva taxa de fallades més alta i la penalització per write-backs.
 :::
 
 ## Associativitat i multinivell
@@ -224,7 +224,7 @@ Observació: les fallades de memòria cau incrementen el CPI un $90{,}7\%$ respe
 
 **Enunciat**: @exr-t7-assoc-2vies.
 
-Processador de 16 bits. MC associativa de 2 vies, 1024 bytes, blocs de 16 bytes, escriptura immediata sense assignació, LRU. La MC té $1024/16 = 64$ línies organitzades en $64/2 = 32$ conjunts de 2 vies.
+Processador de 16 bits. MC associativa de 2 vies, 1 KiB, blocs de 16 bytes, escriptura immediata sense assignació, LRU. La MC té $1024/16 = 64$ línies organitzades en $64/2 = 32$ conjunts de 2 vies.
 
 Descomposició de l'adreça (16 bits):
 
@@ -256,48 +256,48 @@ La seqüència accedeix a dos conjunts: **19** (7 accessos) i **23** (3 accessos
 
 Evolució del conjunt 19 (2 vies):
 
-| # | Accés | E/F | Via 0 | Via 1 | LRU |
+| # | Accés | En/F | Via 0 | Via 1 | LRU |
 | :---: | :--- | :---: | :---: | :---: | :---: |
-| 1 | R `A930` (0x54) | **F** | **0x54** | — | v1 |
-| 2 | R `B930` (0x5C) | **F** | 0x54 | **0x5C** | v0 |
-| 4 | W `A932` (0x54) | **E** | 0x54 | 0x5C | v1 |
-| 5 | W `C935` (0x64) | **F** | 0x54 | 0x5C | (s/a) |
-| 6 | R `C934` (0x64) | **F** | 0x54 | **0x64** | v0 |
-| 8 | W `B936` (0x5C) | **F** | 0x54 | 0x64 | (s/a) |
-| 9 | R `B938` (0x5C) | **F** | **0x5C** | 0x64 | v1 |
+| 1 | L `A930` (0x54) | **F** | **0x54** | — | v1 |
+| 2 | L `B930` (0x5C) | **F** | 0x54 | **0x5C** | v0 |
+| 4 | E `A932` (0x54) | **En** | 0x54 | 0x5C | v1 |
+| 5 | E `C935` (0x64) | **F** | 0x54 | 0x5C | (s/a) |
+| 6 | L `C934` (0x64) | **F** | 0x54 | **0x64** | v0 |
+| 8 | E `B936` (0x5C) | **F** | 0x54 | 0x64 | (s/a) |
+| 9 | L `B938` (0x5C) | **F** | **0x5C** | 0x64 | v1 |
 : {tbl-colwidths="[7,34,11,17,17,14]" .striped}
 
 - \#4: encert a via 0 (etiqueta `0x54`). S'escriu a MC i a MP (2 B). LRU passa a v1.
-- \#5: fallada, però és W sense assignació → MC inalterada, LRU inalterat.
+- \#5: fallada, però és E sense assignació → MC inalterada, LRU inalterat.
 - \#6: fallada de lectura. LRU = v1 (des de #4; #5 no altera res) → s'expulsa v1 (`0x5C`) i es carrega `0x64`.
-- \#8: W fallada sense assignació → MC inalterada.
-- \#9: R fallada. LRU = v0 (des de #6) → s'expulsa v0 (`0x54`) i es carrega `0x5C`.
+- \#8: E fallada sense assignació → MC inalterada.
+- \#9: L fallada. LRU = v0 (des de #6) → s'expulsa v0 (`0x54`) i es carrega `0x5C`.
 
 Evolució del conjunt 23 (2 vies):
 
-| # | Accés | E/F | Via 0 | Via 1 | LRU |
+| # | Accés | En/F | Via 0 | Via 1 | LRU |
 | :---: | :--- | :---: | :---: | :---: | :---: |
-| 3 | W `A972` (0x54) | **F** | — | — | (s/a) |
-| 7 | W `B976` (0x5C) | **F** | — | — | (s/a) |
-| 10 | R `A978` (0x54) | **F** | **0x54** | — | v1 |
+| 3 | E `A972` (0x54) | **F** | — | — | (s/a) |
+| 7 | E `B976` (0x5C) | **F** | — | — | (s/a) |
+| 10 | L `A978` (0x54) | **F** | **0x54** | — | v1 |
 : {tbl-colwidths="[7,34,11,17,17,14]" .striped}
 
 Les escriptures #3 i #7 fallen però, sense assignació, no carreguen cap bloc. El conjunt 23 resta buit fins a la lectura #10.
 
 Taula resum:
 
-| # | Tipus | Adr. | Bloc | Conj. | E/F | Lectura MP | Escriptura MP |
+| # | Tipus | Adr. | Bloc | Conj. | En/F | Lectura MP | Escriptura MP |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | R byte | `A930` | `A93` | 19 | **F** | S, `A930`, 16 B | N |
-| 2 | R word | `B930` | `B93` | 19 | **F** | S, `B930`, 16 B | N |
-| 3 | W byte | `A972` | `A97` | 23 | **F** | N | S, `A972`, 1 B |
-| 4 | W word | `A932` | `A93` | 19 | **E** | N | S, `A932`, 2 B |
-| 5 | W byte | `C935` | `C93` | 19 | **F** | N | S, `C935`, 1 B |
-| 6 | R word | `C934` | `C93` | 19 | **F** | S, `C930`, 16 B | N |
-| 7 | W byte | `B976` | `B97` | 23 | **F** | N | S, `B976`, 1 B |
-| 8 | W word | `B936` | `B93` | 19 | **F** | N | S, `B936`, 2 B |
-| 9 | R byte | `B938` | `B93` | 19 | **F** | S, `B930`, 16 B | N |
-| 10 | R word | `A978` | `A97` | 23 | **F** | S, `A970`, 16 B | N |
+| 1 | L byte | `A930` | `A93` | 19 | **F** | S, `A930`, 16 B | N |
+| 2 | L word | `B930` | `B93` | 19 | **F** | S, `B930`, 16 B | N |
+| 3 | E byte | `A972` | `A97` | 23 | **F** | N | S, `A972`, 1 B |
+| 4 | E word | `A932` | `A93` | 19 | **En** | N | S, `A932`, 2 B |
+| 5 | E byte | `C935` | `C93` | 19 | **F** | N | S, `C935`, 1 B |
+| 6 | L word | `C934` | `C93` | 19 | **F** | S, `C930`, 16 B | N |
+| 7 | E byte | `B976` | `B97` | 23 | **F** | N | S, `B976`, 1 B |
+| 8 | E word | `B936` | `B93` | 19 | **F** | N | S, `B936`, 2 B |
+| 9 | L byte | `B938` | `B93` | 19 | **F** | S, `B930`, 16 B | N |
+| 10 | L word | `A978` | `A97` | 23 | **F** | S, `A970`, 16 B | N |
 : {tbl-colwidths="[6,10,9,9,8,7,25,26]" .striped}
 
 Encerts: 1 (pas 4). Fallades: 9. Taxa de fallades: 90%.
@@ -358,13 +358,13 @@ Blocs accedits: 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3. Cadascun ocupa una línia di
 | 12 | 3 | 3 | **Encert** | — |
 : {tbl-colwidths="[18,15,15,22,30]" .striped}
 
-Total: **8 fallades** (totes obligatòries), **4 encerts**. Cap fallada de conflicte (cada bloc té línia pròpia) ni de capacitat (el *working set* cap a la MC).
+Total: **8 fallades** (totes obligatòries), **4 encerts**. Cap fallada de conflicte (cada bloc té línia pròpia) ni de capacitat (el working set cap a la MC).
 
 **Seqüència B**: 0, 4, 8, 12, 0, 4, 8, 12, 0, 4, 8, 12
 
-Blocs: 0, 1, 2, 3 (repetits 3 vegades). Quatre blocs, cadascun amb línia diferent: el *working set* (4 blocs) és la meitat de la capacitat.
+Blocs: 0, 1, 2, 3 (repetits 3 vegades). Quatre blocs, cadascun amb línia diferent: el working set (4 blocs) és la meitat de la capacitat.
 
-- Primer recorregut (0, 4, 8, 12): 4 fallades obligatòries.
+- Primer recorregut (0, 4, 8, 12): 4 fallades d'arrencada en fred.
 - Segon i tercer recorreguts: tot encerts (els 4 blocs continuen a la MC).
 
 Total: **4 fallades** (totes obligatòries), **8 encerts**.
@@ -385,13 +385,13 @@ Blocs: 0, 8, 0, 8, ... El bloc 0 i el bloc 8 es mapen tots dos a la línia 0 ($0
 | 32 | 8 | 0 | Fallada | Conflicte |
 : {tbl-colwidths="[18,15,15,22,30]" .striped}
 
-Total: **8 fallades** (2 obligatòries, 6 de conflicte), **0 encerts**. El *working set* és de només 2 blocs (molt inferior a la capacitat de 8), però tots dos competeixen per la mateixa línia. La MC té 7 línies buides que no s'aprofiten.
+Total: **8 fallades** (2 obligatòries, 6 de conflicte), **0 encerts**. El working set és de només 2 blocs (molt inferior a la capacitat de 8 línies), però tots dos competeixen per la mateixa línia. La MC té 7 línies buides que no s'aprofiten.
 
 **b)** Per eliminar les fallades de conflicte de la seqüència C, cal que els blocs 0 i 8 puguin coexistir a la MC. La solució és **augmentar l'associativitat** a 2 o més vies: amb 2 vies, el conjunt 0 tindria dues posicions i ambdós blocs hi cabrien simultàniament.
 
-**c)** Amb una MC associativa de 2 vies de la mateixa capacitat total (8 blocs → 4 conjunts, 2 vies cadascun):
+**c)** Amb una MC associativa de 2 vies de la mateixa capacitat total (8 línies → 4 conjunts de 2 vies):
 
-- **Seqüència C**: blocs 0 i 8 es mapen al conjunt $0 \bmod 4 = 0$ i $8 \bmod 4 = 0$. Amb 2 vies, ambdós hi caben. Després de les 2 fallades d'arrencada en fred (*cold-start*), els 6 accessos restants serien encerts. **Sí, millora** (de 8 a 2 fallades).
+- **Seqüència C**: blocs 0 i 8 es mapen al conjunt $0 \bmod 4 = 0$ i $8 \bmod 4 = 0$. Amb 2 vies, ambdós hi caben. Després de les 2 fallades d'arrencada en fred, els 6 accessos restants serien encerts. **Sí, millora** (de 8 a 2 fallades).
 
 - **Seqüència B**: blocs 0, 1, 2, 3 es mapen als conjunts 0, 1, 2, 3. Cada bloc ocupa un conjunt diferent: no hi ha conflictes ni amb correspondència directa. **No millora** (les 4 fallades d'arrencada en fred són igualment inevitables).
 :::
@@ -407,7 +407,7 @@ Paràmetres: bloc = 32 bytes = 8 enters per bloc. A i B ocupen cadascun $256/8 =
 
 **a)** En el primer recorregut, cada bloc s'accedeix per primera vegada: **32 fallades d'arrencada en fred per a A** i **32 per a B** (una per bloc, quan s'accedeix a $A[0], A[8], A[16], \ldots, A[248]$ i anàlogament per a $B$).
 
-**b)** Calculem el mapatge de cada vector:
+**b)** Mapatge de cada vector:
 
 - Bloc $k$ d'A ($k = 0\ldots31$): adreça base $= 32k$. Número de bloc $= k$. Línia $= k \bmod 16$.
 - Bloc $k$ de B ($k = 0\ldots31$): adreça base $= \texttt{0x400} + 32k$. Número de bloc $= 1024/32 + k = 32 + k$. Línia $= (32 + k) \bmod 16 = k \bmod 16$.
@@ -422,7 +422,7 @@ En el bucle, els accessos s'intercalen: $A[i], B[i], A[i+1], B[i+1], \ldots$ Din
 - $B[1]$ (bloc 32, línia 0): **fallada** (conflicte), expulsa bloc 0.
 - $\ldots$ i així fins a $A[7], B[7]$.
 
-Dins de cada grup de 8 iteracions: 2 fallades obligatòries (primer accés a cada bloc) + 14 fallades de conflicte. El patró es repeteix per a cada bloc, amb 32 grups. En total: **tots els 512 accessos a dades fallen**, cosa que anul·la completament l'efecte de la MC.
+Dins de cada grup de 8 iteracions: 2 fallades d'arrencada en fred (primer accés a cada bloc) + 14 fallades de conflicte. El patró es repeteix per a cada bloc, amb 32 grups. En total: **tots els 512 accessos a dades fallen**, cosa que anul·la completament l'efecte de la MC.
 
 **Sí, es produeixen fallades de conflicte massives**, causades per l'alineament dels dos vectors respecte a la MC.
 

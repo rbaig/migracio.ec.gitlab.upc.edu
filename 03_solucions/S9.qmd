@@ -24,7 +24,7 @@ language:
 2. Escriu el codi de causa a `mcause` (bit 31 = 0 per a excepcions, bit 31 = 1 per a interrupcions).
 3. Copia `MIE` a `MPIE` i posa `MIE = 0` (deshabilita les interrupcions).
 4. Guarda el mode de privilegi actual a `MPP` i passa a mode M.
-5. Salta a l'adreça de la RSE continguda a `mtvec`.
+5. Salta a l'adreça de la rutina de servei d'excepcions (RSE) continguda a `mtvec`.
 
 **d)** La RSE ha de salvar **tots** els registres generals (`x1`–`x31`) sense excepció. A diferència d'una subrutina normal, el programa interromput no ha cedit el control voluntàriament i no pot saber quins registres modificarà la RSE. Les convencions ABI (registres salvats vs. temporals) no s'apliquen.
 :::
@@ -34,7 +34,7 @@ language:
 
 **Enunciat**: @exr-t9-exc-rse. *Vegeu l'estructura general de la RSE a @sec-ei-rse.*
 
-```{.s filename="RV32I"}
+```{.s filename="RV32IZicsr"}
 rse:
         # a) Reservar espai i salvar tots els registres (x1-x31, excepte sp=x2)
         addi    sp, sp, -120
@@ -209,7 +209,7 @@ $$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
 **Nota**: a EC la sortida es fa sempre amb `exit2`, no amb `exit` (codi 10) — vegeu @nte-programa-esquelet.
 :::
 
-## Entrada/Sortida
+## Entrada/sortida
 
 ::: {#sol-t9-io-conceptes .callout-tip}
 ## Solució: conceptes d'entrada/sortida
@@ -372,7 +372,7 @@ rse_ret_teclat:
 
 En tots dos casos, `mtval` conté l'**adreça virtual** que ha causat la fallada (@sec-ei-tlb-mecanisme).
 
-Cal recordar que, a RISC-V, l'excepció només es produeix quan la pàgina no és a la memòria física (bit V = 0 a la PTE): la fallada de TLB amb la pàgina present la resol el *page-table walker* sense interrompre el programa (@cau-tlb-miss-excepcio).
+Cal recordar que, a RISC-V, l'excepció només es produeix quan la pàgina no és a la memòria física (bit V = 0 a la PTE): la fallada de TLB amb la pàgina present la resol el recorregut de la taula de pàgines (*page-table walker*) sense interrompre el programa (@cau-tlb-miss-excepcio).
 
 **b)** El flux que ha de seguir la RSE (la rutina completa és a @sec-ei-tlb-modes-rutina):
 

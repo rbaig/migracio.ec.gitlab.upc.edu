@@ -317,6 +317,12 @@ Decisió de l'usuari (2026-10-01), que escriu l'ús que el corpus ja feia majori
 
 ## Format
 
+### D-70
+
+**Punter cap endavant T3 → T6: temps d'execució i CPI** · `13_contrib.qmd §Referències creuades` · 2026-10-08
+
+Decisió de l'usuari (2026-10-08, fase 7g, decisió 8), a proposta de Claude Code. Dos problemes de T3, `exr-t3-bucles-for` (apartats c i d) i `exr-t3-bucles-multiplicacio` (apartats d i e), demanen temps d'execució i CPI, que la teoria presenta a T6 (`@eq-texe2`); a A1–A3 i E1–E2 no hi ha cap ocurrència de «CPI» (mesurat a `7a1640e`). Venen de l'original de MIPS, on el rendiment era a T1. L'alternativa, treure o moure aquells apartats, es va descartar: la dependència és de càlcul, amb la fórmula citada a la solució (S3), i es pot seguir com a punter explícit.
+
 ### D-44
 
 **Una remissió `@fig-` a cada figura del cos del text** · `13_contrib.qmd §Callouts`, `§Referències creuades` · 2026-10-03 · `e806916`
@@ -431,6 +437,12 @@ Detectat a la fase 7g, a partir d'una observació de l'usuari: la secció «Exem
 **Fórmules en línia a l'HTML: `overflow` només a les llargues** · `13_contrib.qmd §Presentació visual` · 2026-10-06 · `74507d7`
 
 Fins al 2026-10-06 l'`overflow-x: auto` era a totes, i un `inline-block` amb un `overflow` que no sigui `visible` es recolza en la vora inferior (CSS 2.1 §10.8.1): les fórmules pujaven d'1 a 6 px per sobre de la línia de text (mesurat a A6, 40 fórmules) i feien créixer l'interlineat. Després del canvi, a l'escriptori, cap fórmula d'A4, A5, A6 i S6 no era llarga i totes eren a 0 px de la línia; en un mòbil de 375 px, n'eren llargues 4, 14, 2 i 1.
+
+### D-71
+
+**BA: vectors massa llargs amb el tram del mig d'alçada fixa** · `24_specs/svg.md §3` · 2026-10-08
+
+Decisió de l'usuari (2026-10-08, fase 7g, decisió 10): el BA de `variancia` de S5 passa de taula a figura de `gen_BA.py`, com els de L3 i S3 de la fase 7f. El vector `vquadrats` (`float[100]`, 400 bytes) faria 4 000 px d'alt a ×½ i 2 000 a ×¼, l'escala més petita de §3. `gen_BA.py` admet ara `mig` als vectors: el tram elidit es dibuixa amb aquesta alçada, i la mida i els desplaçaments rotulats continuen sent els reals (la funció `alcada` dibuixa, `mida` compta). Les sis figures de BA que ja hi havia queden idèntiques byte a byte.
 
 ### D-67
 

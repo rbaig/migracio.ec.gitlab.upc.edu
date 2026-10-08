@@ -21,7 +21,7 @@ Es disposa d'un sistema amb memòria virtual paginada amb les característiques 
 Cada programa pot tenir a memòria física un màxim de 3 pàgines simultàniament. En cas que calgui alliberar una pàgina, s'usa l'algorisme de reemplaçament LRU.
 
 a) Indiqueu les dimensions de la taula de pàgines de cada programa, tenint en compte que cada entrada té un bit de validesa (V) i un bit de modificació (D).
-b) La taula següent mostra una llista d'adreces virtuals generades pel processador. Ompliu-la indicant, per a cada adreça, el número de pàgina (columna A), si es produeix una fallada de pàgina (columna B) i, en cas de reemplaçament, el número de pàgina reemplaçada (columna C). Considereu que inicialment no hi ha cap pàgina carregada a memòria física.
+b) La taula següent mostra una llista d'adreces lògiques generades pel processador. Ompliu-la indicant, per a cada adreça, el número de pàgina (columna A), si es produeix una fallada de pàgina (columna B) i, en cas de reemplaçament, el número de pàgina reemplaçada (columna C). Considereu que inicialment no hi ha cap pàgina carregada a memòria física.
 
 | Adreça (hex) | A — Núm. pàgina (hex) | B — Fallada de pàgina | C — Pàgina reemplaçada (hex) |
 | :---: | :---: | :---: | :---: |
@@ -37,7 +37,7 @@ b) La taula següent mostra una llista d'adreces virtuals generades pel processa
 :::
 
 ::: {#exr-t8-mv-multinivell}
-Un sistema té adreces virtuals de 32 bits, pàgines de 4 KiB i taules de pàgines de dos nivells. Cada entrada de la taula ocupa 4 bytes.
+Un sistema té adreces lògiques de 32 bits, pàgines de 4 KiB i taules de pàgines de dos nivells. Cada entrada de la taula ocupa 4 bytes.
 
 a) Quants bits s'usen per al desplaçament dins la pàgina, per a l'índex de primer nivell i per a l'índex de segon nivell (suposeu una divisió simètrica dels bits d'índex)?
 b) Quina és la mida d'una taula de pàgines de primer nivell? I d'una de segon nivell?
@@ -46,7 +46,7 @@ d) Compareu la mida total de la jerarquia de dos nivells (pitjor cas) amb la d'u
 :::
 
 ::: {#exr-t8-mv-taula-referencies}
-Tenim un processador amb memòria virtual paginada amb les característiques següents:
+Considereu un processador amb memòria virtual paginada amb les característiques següents:
 
 - 16 bits d'adreça lògica, 15 bits d'adreça física.
 - Mida de les pàgines: 8 KiB.
@@ -126,7 +126,7 @@ d) Considerant l'emmagatzematge per columnes, indiqueu el nombre total de fallad
 *Vegeu @sec-mv-tlb.*
 
 ::: {#exr-t8-tlb-estat}
-Considerem un sistema amb memòria virtual de pàgines de 4 KiB, un TLB de 4 entrades completament associatiu i reemplaçament LRU.
+Considereu un sistema amb memòria virtual de pàgines de 4 KiB, un TLB de 4 entrades completament associatiu i reemplaçament LRU.
 
 El contingut inicial del TLB és:
 
@@ -158,20 +158,20 @@ El contingut inicial de la taula de pàgines és:
 
 Per a noves pàgines assignades a memòria física s'assignaran números de PPN correlatius a partir del major disponible (13, 14, etc.). Inicialment, l'ordre d'ús de les entrades vàlides del TLB, de la més recentment usada a la més antiga, és VPN 11, VPN 7, VPN 3.
 
-a) Per a cadascuna de les dues llistes d'adreces virtuals següents, indiqueu l'estat final del TLB i de la taula de pàgines, i per a cada referència si es produeix una fallada al TLB i si es produeix una fallada de pàgina:
+a) Per a cadascuna de les dues llistes d'adreces lògiques següents, indiqueu l'estat final del TLB i de la taula de pàgines, i per a cada referència si es produeix una fallada al TLB i si es produeix una fallada de pàgina:
     - Llista 1: 4095, 31272, 15789, 15000, 7193, 4096, 8912.
     - Llista 2: 9452, 30964, 19136, 46502, 38110, 17653, 47480.
 b) Raoneu, sense refer la traça completa, com canviaria el nombre total de fallades de TLB de cada llista si la mida de pàgina fos de 16 KiB en comptes de 4 KiB.
 c) Calculeu la mida de la taula de pàgines per als dos sistemes següents:
 
-| Mida adreces virtuals | Mida pàgina | Mida entrada TP |
+| Mida adreces lògiques | Mida pàgina | Mida PTE |
 | :---: | :---: | :---: |
 | 32 bits | 4 KiB | 4 bytes |
 | 64 bits | 16 KiB | 8 bytes |
 :::
 
 ::: {#exr-t8-tlb-basic}
-Considerem el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
+Considereu el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
 
 ```{.s filename="RV32I"}
         la      s0, A
@@ -203,7 +203,7 @@ c) Responeu les mateixes preguntes suposant pàgines de 4 KiB.
 :::
 
 ::: {#exr-t8-tlb-optimitzacio}
-Considerem el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
+Considereu el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
 
 ```{.s filename="RV32I"}
         la      s0, A
@@ -249,13 +249,13 @@ Un sistema de memòria virtual amb pàgines de 4 KiB disposa, a cada entrada de 
 
 Per a cada accés de la llista següent, indiqueu si té èxit, provoca una fallada de pàgina o provoca una excepció de protecció:
 
-a) Lectura de l'adreça virtual `0x0FF0`.
-b) Escriptura a l'adreça virtual `0x1234`.
-c) Lectura de l'adreça virtual `0x2000`.
-d) Escriptura a l'adreça virtual `0x3100`.
-e) Escriptura a l'adreça virtual `0x0010`.
+a) Lectura de l'adreça lògica `0x0FF0`.
+b) Escriptura a l'adreça lògica `0x1234`.
+c) Lectura de l'adreça lògica `0x2000`.
+d) Escriptura a l'adreça lògica `0x3100`.
+e) Escriptura a l'adreça lògica `0x0010`.
 
-**Nota**: en aquest problema, excepcionalment, les adreces virtuals s'escriuen en format reduït, amb 4 dígits hexadecimals. Amb pàgines de 4 KiB, els 3 dígits de menys pes són el desplaçament dins de la pàgina i el de més pes és el VPN, i totes les adreces són de les pàgines 0–3 de la taula: els dígits de l'esquerra, que valen zero, no hi aporten res.
+**Nota**: en aquest problema, excepcionalment, les adreces lògiques s'escriuen en format reduït, amb 4 dígits hexadecimals. Amb pàgines de 4 KiB, els 3 dígits de menys pes són el desplaçament dins de la pàgina i el de més pes és el VPN, i totes les adreces són de les pàgines 0–3 de la taula: els dígits de l'esquerra, que valen zero, no hi aporten res.
 :::
 
 ## Integració del TLB i la memòria cau
@@ -263,16 +263,16 @@ e) Escriptura a l'adreça virtual `0x0010`.
 *Vegeu @sec-mv-integracio.*
 
 ::: {#exr-t8-mv-tlb-cau}
-Un sistema amb adreces virtuals de 32 bits té pàgines de 4 KiB, una memòria cau de dades de correspondència directa amb 64 blocs de 32 bytes, i un TLB de dades completament associatiu de 16 entrades.
+Un sistema amb adreces lògiques de 32 bits té pàgines de 4 KiB, una memòria cau de dades de correspondència directa amb 64 línies amb blocs de 32 bytes, i un TLB de dades completament associatiu de 16 entrades.
 
-a) Indiqueu quants bits de l'adreça virtual s'usen per al desplaçament dins la pàgina, quants per al VPN, quants per a l'índex de la MC i quants per al desplaçament dins el bloc.
+a) Indiqueu quants bits de l'adreça lògica s'usen per al desplaçament dins la pàgina, quants per al VPN, quants per a l'índex de la MC i quants per al desplaçament dins el bloc.
 b) Expliqueu el flux complet de traducció i accés a dades per a una lectura amb encert al TLB i encert a la MC.
 c) Per al mateix accés, quin és el flux si hi ha fallada al TLB però la pàgina és present a memòria física?
-d) En una MC indexada físicament (PIPT), la traducció ha de completar-se abans d'accedir a la MC. En canvi, en VIPT, les dues operacions poden solapar-se. Sota quina condició una MC VIPT és equivalent a una PIPT i no presenta problemes d'aliàsing?
+d) En una MC indexada físicament (PIPT), la traducció ha de completar-se abans d'accedir a la MC. En canvi, en VIPT, les dues operacions poden solapar-se. Sota quina condició una MC VIPT no presenta problemes d'aliàsing?
 :::
 
 ::: {#exr-t8-mv-cache-tlb}
-Considerem un processador RISC-V amb una memòria cau de dades de 4 vies, 64 conjunts i 32 bytes per bloc (algorisme LRU), i un TLB de dades completament associatiu de 32 entrades, amb pàgines de 8 KiB i algorisme LRU. Considereu la memòria cau i el TLB inicialment buits.
+Considereu un processador RISC-V amb una memòria cau de dades de 4 vies, 64 conjunts i 32 bytes per bloc (algorisme LRU), i un TLB de dades completament associatiu de 32 entrades, amb pàgines de 8 KiB i algorisme LRU. Considereu la memòria cau i el TLB inicialment buits.
 
 S'executen dues versions d'una mateixa aplicació:
 

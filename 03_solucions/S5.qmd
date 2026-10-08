@@ -47,7 +47,7 @@ Es descompon cada valor en camps $S$ (bit 31), $E_u$ (bits 30:23) i $F$ (bits 22
 S = 0  (positiu)
 Eu = 1000 0000b = 128  →  e = 128 - 127 = 1
 F  = 111 0011 0000 0010 1011 0011
-Mantissa = 1,111 0011 0000 0010 1011 0011 × 2¹
+Valor    = 1,111 0011 0000 0010 1011 0011 × 2¹
 ```
 
 ```{.default filename="Càlcul B = 0xF9C40513"}
@@ -55,7 +55,7 @@ Mantissa = 1,111 0011 0000 0010 1011 0011 × 2¹
 S = 1  (negatiu)
 Eu = 1111 0011b = 243  →  e = 243 - 127 = 116
 F  = 100 0100 0000 0101 0001 0011
-Mantissa = 1,100 0100 0000 0101 0001 0011 × 2¹¹⁶
+Valor    = 1,100 0100 0000 0101 0001 0011 × 2¹¹⁶
 ```
 
 Per a `A` ($e = 1$, es desplaça la coma 1 posició a la dreta):
@@ -70,7 +70,7 @@ $$B \approx -1{,}531 \times 2^{116} \approx \mathbf{-1{,}272 \times 10^{35}}$$
 
 **d) Com a instruccions RISC-V**
 
-Identifiquem l'opcode (bits 6:0) i descodifiquem el format:
+S'identifica l'opcode (bits 6:0) i es descodifica el format:
 
 ```{.default filename="Càlcul A = 0x407302B3"}
 opcode = 011 0011b = 0x33  →  OP (tipus R)
@@ -162,7 +162,7 @@ $$\boxed{v_{\max} = (2 - 2^{-23}) \times 2^{127} \approx 3{,}403 \times 10^{38} 
 
 **b) Menor nombre positiu no nul en format normalitzat**
 
-El menor exponent vàlid normalitzat és $e = -126$ ($E_u = 1$). La menor mantissa normalitzada és `1.000...0` (fracció a zero, bit ocult = 1):
+El menor exponent vàlid normalitzat és $e = -126$ ($E_u = 1$). La menor mantissa normalitzada és $1{,}000\ldots0$ (fracció a zero, bit ocult = 1):
 
 ```{.default filename="Càlcul"}
 S = 0
@@ -298,7 +298,7 @@ La representació binària és **exacta** (la part fraccionària és $0{,}5 = 2^
 
 *Precisió simple (23 bits de fracció):*
 
-Els 11 bits de la mantissa caben àmpliament als 23 bits disponibles: no hi ha arrodoniment.
+Els 11 bits de la fracció caben àmpliament als 23 bits disponibles: no hi ha arrodoniment.
 
 ```{.default filename="Càlcul"}
 S = 1
@@ -340,7 +340,7 @@ La representació binària és **exacta** (la part fraccionària és $0{,}8125$,
 
 *Precisió simple:*
 
-La mantissa té 13 bits significatius (sense el bit ocult), que caben en els 23 bits de fracció: sense arrodoniment.
+La fracció té 13 bits (sense el bit ocult), que caben en els 23 bits disponibles: sense arrodoniment.
 
 ```{.default filename="Càlcul"}
 S = 1
@@ -367,7 +367,7 @@ $$\boxed{B_{\text{doble}} = \texttt{0xC08D568000000000}, \quad \varepsilon_B = 0
 ---
 
 ::: {.callout-caution}
-En aquest exercici, tant $A$ com $B$ resulten ser exactament representables en precisió simple i doble: les seves parts fraccionàries ($0{,}5$ i $0{,}8125$) són sumes de potències negatives de 2 amb un nombre finit de termes. En general, però, la majoria de decimals (per exemple, $0{,}1$ o $0{,}3$) **no** són representables exactament en cap format binari de precisió finita i introdueixen sempre un error de representació.
+En aquest problema, tant $A$ com $B$ resulten ser exactament representables en precisió simple i doble: les seves parts fraccionàries ($0{,}5$ i $0{,}8125$) són sumes de potències negatives de 2 amb un nombre finit de termes. En general, però, la majoria de decimals (per exemple, $0{,}1$ o $0{,}3$) **no** són representables exactament en cap format binari de precisió finita i introdueixen sempre un error de representació.
 :::
 
 :::
@@ -492,7 +492,7 @@ Els dos operands són negatius (mateix signe): se sumen les magnituds. Dins dels
 
 **Pas 3. Arrodonir (RNE)**
 
-$G = 0$ → es **trunca**. Fixeu-vos que $R = S = 1$ no basta per arrodonir cap amunt: si $G = 0$, el residu descartat és inferior a ½ ULP i la decisió és sempre truncar (@sec-bits-de-guarda).
+$G = 0$ → es **trunca**. Cal notar que $R = S = 1$ no basta per arrodonir cap amunt: si $G = 0$, el residu descartat és inferior a ½ ULP i la decisió és sempre truncar (@sec-bits-de-guarda).
 
 $$\boxed{A + B = -1278 = \texttt{0xE4FE} \;(= A)}$$
 
@@ -750,17 +750,22 @@ Només `vec` i `q` han de **sobreviure a alguna crida** i, per tant, necessiten 
 
 **b) Traducció a RISC-V**
 
-Disseny del BA:
+Bloc d'activació de 420 bytes (@fig-ba-variancia), múltiple de 4:
 
-| Contingut | Mida | Desplaçament des de `sp` |
-| :--- | :---: | :---: |
-| `vquadrats[0..99]` | 400 B | `0` |
-| `fs1` | 4 B | `400` |
-| `fs0` | 4 B | `404` |
-| `s1` | 4 B | `408` |
-| `s0` | 4 B | `412` |
-| `ra` | 4 B | `416` |
-| **Total** | **420 B** | |
+:::: {#fig-ba-variancia}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/T5_ba_variancia__BA_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/T5_ba_variancia__BA_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/T5_ba_variancia__BA_light.svg)
+:::
+Bloc d'activació de `variancia`: el vector `vquadrats` al desplaçament `+0` i els registres desats `fs1`, `fs0`, `s1`, `s0` i `ra` als desplaçaments `+400`, `+404`, `+408`, `+412` i `+416`.
+::::
 
 ```{.s filename="RV32IF"}
 variancia:
@@ -967,9 +972,9 @@ C alineat:  0,0000000000001...  × 2¹³
 
 Els 10 bits de fracció de $B$ cobreixen les posicions $2^{-1}$ fins a $2^{-10}$. El bit ocult de $C$ desplaçat arriba a la posició $2^{-13}$, tres posicions més enllà del darrer bit de fracció. Per tant:
 
-- $G = 0$ (posició $2^{-11}$: cap bit de $C$ arriba aquí)
-- $R = 0$ (posició $2^{-12}$: ídem)
-- $S = 1$ (posicions $\leq 2^{-13}$: hi ha el bit ocult de $C$)
+- $G = 0$ (posició $2^{-11}$: cap bit de $C$ arriba aquí).
+- $R = 0$ (posició $2^{-12}$: ídem).
+- $S = 1$ (posicions $\leq 2^{-13}$: hi ha el bit ocult de $C$).
 
 Com que $G = 0$, la regla RNE no arrodoneix cap amunt. $C$ es perd completament:
 
@@ -1110,7 +1115,7 @@ $$(A \times B) + (A \times C) = 0\ |\ 10010\ |\ 1110011100 = \texttt{0x4B9C} = \
 
 $$\boxed{A \times (B + C) = \texttt{0x4B9C} = 15{,}21875 = (A \times B) + (A \times C)}$$
 
-En aquest cas els dos camins **coincideixen**, tot i haver acumulat cinc arrodoniments (dos truncaments, dos «al següent» i un empat «al parell»). Fixeu-vos, però, que els valors exactes dels dos camins són diferents ($15{,}21533\ldots$ i $15{,}21905\ldots$): tots dos s'arrodoneixen casualment al mateix representable. La igualtat és **fortuïta**, no una propietat.
+En aquest cas els dos camins **coincideixen**, tot i haver acumulat cinc arrodoniments (dos truncaments, dos «al següent» i un empat «al parell»). Els valors exactes dels dos camins, però, són diferents ($15{,}21533\ldots$ i $15{,}21905\ldots$): tots dos s'arrodoneixen casualment al mateix representable. La igualtat és **fortuïta**, no una propietat.
 
 **b) `A = 0xCEF9`, `B = 0xEFE6`, `C = 0x70FD`**
 

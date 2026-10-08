@@ -79,7 +79,7 @@ def zona(o, z, y, esc_px):
     # vector: primer element, mig discontinu i darrer element
     he = z['element'] * esc_px
     n = z['n']
-    h = he * n
+    h = alcada(z) * esc_px
     nom = z['nom']
     rect(o, y, h, fill)
     vlines(o, y, y + he, stroke)                             # primer element, sòlid
@@ -96,7 +96,7 @@ def zona(o, z, y, esc_px):
              mida_el, stroke, familia=MONO)
     text_zona(o, y + h / 2,
               [(mono(f'{nom}[0]–{nom}[{n - 1}]', True), 12, False),
-               (mono(z['ctype'], True) + f' ({h // esc_px} bytes)', 11, False)], stroke)
+               (mono(z['ctype'], True) + f' ({mida(z)} bytes)', 11, False)], stroke)
     return h
 
 
@@ -106,6 +106,15 @@ def mida(z):
     if z['tipus'] == 'generica':
         return sum(z['bytes'])
     return z['bytes']
+
+
+def alcada(z):
+    """L'alçada dibuixada, en bytes de l'escala. Un vector amb `mig` (massa llarg per a la
+    figura) en dibuixa el tram elidit amb aquesta alçada fixa; la mida i els desplaçaments
+    que s'hi rotulen continuen sent els reals (`mida`)."""
+    if z['tipus'] == 'vector' and 'mig' in z:
+        return 2 * z['element'] + z['mig']
+    return mida(z)
 
 
 def color_zona(z):
@@ -120,7 +129,7 @@ def color_vora(z):
 def make_svg(spec):
     esc_px = spec['escala']
     w = CLASSES[spec.get('classe', 'estreta')]
-    total = sum(mida(z) for z in spec['zones'])
+    total = sum(alcada(z) for z in spec['zones'])
     h = M_SUP + total * esc_px + M_INF
     o = []
     y, despl = M_SUP, 0

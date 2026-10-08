@@ -93,6 +93,8 @@ Quan el contingut és gran (vectors llargs, moltes zones), cal reduir l'escala p
 
 **Tria de l'escala:** usar la més gran que mantingui la figura llegible i les coordenades en múltiples de 10 (o 5 com a mínim). L'escala s'aplica uniformement a totes les zones d'una mateixa figura.
 
+**Vectors massa llargs.** Un vector que no hi cap ni a ×¼ es dibuixa amb el primer element i el darrer a l'escala i el tram elidit del mig d'una alçada fixa (`mig`, a `BA.toml`); la mida i els desplaçaments que s'hi rotulen són els reals. És el cas de `T5_ba_variancia` (`float[100]`, 400 bytes), que a ×¼ faria 2 000 px d'alt (fase 7g, 2026-10-08; D-71 del registre de decisions).
+
 Exemple: `T3_ba_func` (`v` char×10 + `w` int×10 = 52 bytes) usa ×½ = 10 px/byte:
 ```
 v   (10 bytes) →  100 px   (sub-rect sup 10 px + dash 80 px + sub-rect inf 10 px)

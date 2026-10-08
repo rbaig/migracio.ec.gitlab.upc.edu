@@ -161,7 +161,7 @@ El programa no conté cap instrucció de salt: totes les operacions són aritmè
 
 **Enunciat**: @exr-t4-mul-passos.
 
-El circuit treballa amb naturals. Per a operands de 6 bits, els registres `P` i `MD` tenen 12 bits i `MR` té 6 bits. A cada iteració:
+El circuit treballa amb naturals. Per a operands de 6 bits, els registres P i MD tenen 12 bits i MR en té 6. A cada iteració:
 
 1. Si `MR[0] == 1`: `P = P + MD`.
 2. `MD = MD << 1`.
@@ -169,7 +169,7 @@ El circuit treballa amb naturals. Per a operands de 6 bits, els registres `P` i 
 
 *Convenció de la taula*: cada fila mostra l'estat **final** de la iteració; les columnes MR[0] i Acció indiquen el que s'ha **executat en aquella iteració** (decidit amb el valor de `MR[0]` **abans** del desplaçament); la fila inicial porta «—».
 
-**a) $X =$ `101000` ($40_{10}$), $Y =$ `010011` ($19_{10}$). Resultat esperat: $760_{10}$.**
+**a) $x =$ `101000` ($40_{10}$), $y =$ `010011` ($19_{10}$). Resultat esperat: $760_{10}$.**
 
 | Iter. | P (12 bits) | MD (12 bits) | MR (6 bits) | MR[0] | Acció |
 | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -183,7 +183,7 @@ El circuit treballa amb naturals. Per a operands de 6 bits, els registres `P` i 
 
 Resultat: $P =$ `001011 111000`$_2 = 760_{10}$ ✓
 
-**b) $X =$ `110110` ($54_{10}$), $Y =$ `000100` ($4_{10}$). Resultat esperat: $216_{10}$.**
+**b) $x =$ `110110` ($54_{10}$), $y =$ `000100` ($4_{10}$). Resultat esperat: $216_{10}$.**
 
 | Iter. | P (12 bits) | MD (12 bits) | MR (6 bits) | MR[0] | Acció |
 | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -218,15 +218,15 @@ Totes dues són coherents amb l'enunciat: els 32 bits de menys pes del producte 
 
 **b) `div t3, t1, t2` amb `t1 = 0x00000005` i `t2 = 0xFFFFFFFE`**
 
-$\texttt{t2} =$ `0xFFFFFFFE` $= -2$. La divisió entera signada trunca cap a zero (@cau-divisio-enters-semantica):
+$\texttt{t2} =$ `0xFFFFFFFE` $= -2$. La divisió entera trunca cap a zero (@cau-divisio-enters-semantica):
 
 $$q = \operatorname{trunc}\!\left(\frac{5}{-2}\right) = \operatorname{trunc}(-2{,}5) = -2 \qquad \Rightarrow \qquad \texttt{t3} = \texttt{0xFFFFFFFE}$$
 
-El residu té el signe del dividend i satisfà la identitat $x = q \cdot y + r$:
+El residu té el signe del dividend i satisfà la identitat $x = y \cdot q + r$:
 
 $$r = 5 - (-2) \times (-2) = 5 - 4 = +1$$
 
-**c) Casos de sobreeiximent en la divisió entera signada**
+**c) Casos de sobreeiximent en la divisió entera**
 
 Un únic cas: $-2^{31} \div (-1)$, el resultat matemàtic del qual ($+2^{31}$) no és representable en Ca2 de 32 bits. RISC-V no genera cap excepció: `div` retorna $-2^{31}$ i `rem` retorna $0$ (@sec-casos-especials-divisio). La divisió per zero **no** és un cas de sobreeiximent, sinó un cas especial amb resultat definit (`div` → $-1$, `rem` → dividend).
 :::
@@ -375,13 +375,13 @@ func:
         mv      t1, a0              # t1 = p = @veci[0]
         addi    t2, a0, 4*4         # t2 = sentinella = @veci[4]
         li      t0, 0               # j = 0
-        bgeu    t1, t2, fifunc      # comprovació inicial (longitud 4 > 0: mai no s'executa)
-bucle:
+        bgeu    t1, t2, fibucle1    # comprovació inicial (longitud 4 > 0: mai no s'executa)
+bucle1:
         sw      t0, 0(t1)           # veci[j] = j
         addi    t1, t1, 4           # p += stride (4 bytes)
         addi    t0, t0, 1           # j++
-        bltu    t1, t2, bucle       # salta si p < sentinella
-fifunc:
+        bltu    t1, t2, bucle1      # salta si p < sentinella
+fibucle1:
         ret
 ```
 
@@ -398,13 +398,13 @@ main:
 
         la      s0, mati            # s0 = p = @mati[0][0]  (segur: sobreviu a la crida)
         addi    s1, s0, 5*4*4       # s1 = fi = @mati[5][0]
-        bgeu    s0, s1, fimain      # comprovació inicial (5 > 0, mai s'executa)
-bucle:
+        bgeu    s0, s1, fibucle2    # comprovació inicial (5 > 0, mai s'executa)
+bucle2:
         mv      a0, s0              # a0 = p
         jal     ra, func
         addi    s0, s0, 4*4         # p += 4  (4 ints = 16 bytes)
-        bltu    s0, s1, bucle
-fimain:
+        bltu    s0, s1, bucle2
+fibucle2:
         lw      s0, 0(sp)
         lw      s1, 4(sp)
         lw      ra, 8(sp)
@@ -415,7 +415,7 @@ fimain:
 
 ## Accés seqüencial
 
-**Nota**: com a la secció anterior, les solucions deixen les expressions aritmètiques als operands (`N*4`, `(N+1)*4`, `3*(N-1)*4`, i també les directives `.set`) per fer visible l'stride de cada recorregut, tal com s'admet a la teoria i als exàmens (@imp-ec-operands-expressions).
+**Nota**: com a la secció anterior, les solucions deixen les expressions aritmètiques als operands (`N*4`, `(N+1)*4`, `3*(N-1)*4`, i també les directives `.eqv`) per fer visible l'stride de cada recorregut, tal com s'admet a la teoria i als exàmens (@imp-ec-operands-expressions).
 
 ::: {#sol-t4-seq-bucles .callout-tip}
 ## Solució: recorreguts per fila, columna i diagonal
@@ -437,19 +437,19 @@ L'stride del recorregut per fila és 4 bytes.
 
 L'adreça del primer element és `@A[3][0] = @A + 3*N*4`.
 
-```{.s filename="RV32IM"}
+```{.s filename="RV32I"}
         # a0 = @A, t2 = suma (inicialitzada prèviament a 0)
         li      t3, 3*N*4
         add     t3, a0, t3          # t3 = p = @A[3][0]
         li      t4, N*4
         add     t4, t3, t4          # t4 = sentinella = @A[3][N]
-        bgeu    t3, t4, fifor       # comprovació inicial
+        bgeu    t3, t4, fibucle     # comprovació inicial
 bucle:
         lw      t5, 0(t3)           # A[3][i]
         add     t2, t2, t5          # suma += A[3][i]
         addi    t3, t3, 4           # p += stride (4 bytes)
         bltu    t3, t4, bucle
-fifor:
+fibucle:
 ```
 
 **b) Suma de la columna 4: `for (i = 0; i < N; i++) suma += A[i][4]`**
@@ -466,13 +466,13 @@ La sentinella és `@A[N][4] = @A[0][4] + N*(N*4)`. Com que `N` és una constant,
         li      t5, N*4             # stride = N*4
         li      t4, N*N*4           # N²*4
         add     t4, t3, t4          # t4 = sentinella = @A[N][4]
-        bgeu    t3, t4, fifor       # comprovació inicial
+        bgeu    t3, t4, fibucle     # comprovació inicial
 bucle:
         lw      t6, 0(t3)           # A[i][4]
         add     t2, t2, t6          # suma += A[i][4]
         add     t3, t3, t5          # p += stride (N*4 bytes)
         bltu    t3, t4, bucle
-fifor:
+fibucle:
 ```
 
 **c) Suma de la diagonal principal: `for (i = 0; i < N; i++) suma += A[i][i]`**
@@ -487,13 +487,13 @@ El primer element és `@A[0][0] = @A`, i la sentinella, `@A + N*((N+1)*4)`: com 
         li      t5, (N+1)*4         # stride = (N+1)*4
         li      t4, N*(N+1)*4       # N * (N+1)*4
         add     t4, t3, t4          # t4 = sentinella
-        bgeu    t3, t4, fifor       # comprovació inicial
+        bgeu    t3, t4, fibucle     # comprovació inicial
 bucle:
         lw      t6, 0(t3)           # A[i][i]
         add     t2, t2, t6          # suma += A[i][i]
         add     t3, t3, t5          # p += stride ((N+1)*4 bytes)
         bltu    t3, t4, bucle
-fifor:
+fibucle:
 ```
 
 **d) Diagonal secundària saltant de 3 en 3: `for (i = 0; i < N; i += 3) suma += A[i][N-1-i]`**
@@ -502,21 +502,21 @@ Entre dos elements accedits consecutivament, `A[i][N-1-i]` i `A[i+3][N-1-(i+3)]`
 
 Ara bé, el nombre d'iteracions és $\lceil N/3 \rceil$ i l'adreça de la sentinella no té una expressió senzilla. En aquest cas és més net **conservar `i` com a comptador** del bucle (la variable d'inducció sobreviu per al control) i avançar el punter només per a l'accés a `A`:
 
-```{.s filename="RV32IM"}
+```{.s filename="RV32I"}
         # a0 = @A, t0 = i, t2 = suma (inicialitzada prèviament a 0)
         li      t0, 0               # i = 0
         li      t3, (N-1)*4
         add     t3, a0, t3          # t3 = p = @A[0][N-1]
         li      t5, 3*(N-1)*4       # stride = 3*(N-1)*4
         li      t4, N               # invariant
-        bge     t0, t4, fifor       # comprovació inicial
+        bge     t0, t4, fibucle     # comprovació inicial
 bucle:
         lw      t6, 0(t3)           # A[i][N-1-i]
         add     t2, t2, t6          # suma += A[i][N-1-i]
         add     t3, t3, t5          # p += stride
         addi    t0, t0, 3           # i += 3
         blt     t0, t4, bucle
-fifor:
+fibucle:
 ```
 
 **Contrast entre els recorreguts per fila i per columna (apartats a i b)**: el recorregut per fila (apartat a) té stride 4, el recorregut per columna (apartat b) té stride `N*4`. Per a valors grans de `N`, el recorregut per columna genera moltes fallades de memòria cau, ja que cada accés aterra en una línia de cau diferent. El recorregut per fila aprofita molt millor la localitat espacial (aquests conceptes s'estudien a @sec-tema-mc).
@@ -552,10 +552,10 @@ El bucle accedeix sempre a `vector[2]` (posició fixa) i recorre la columna 2 de
 - `max_dist`: la sentinella `t6` s'assoleix (`beq`) després de les 5 iteracions → 5 vegades l'stride → `5*3*4` = 60.
 
 ```{.s filename="RV32I"}
-.set offset_vector, 2*4     # 8
-.set offset_z,      2*4     # 8
-.set max_dist,      5*3*4   # 60
-.set stride,        3*4     # 12
+.eqv    offset_vector, 2*4     # 8
+.eqv    offset_z,      2*4     # 8
+.eqv    max_dist,      5*3*4   # 60
+.eqv    stride,        3*4     # 12
 ```
 :::
 
@@ -613,7 +613,7 @@ fibucle:
         li      t0, 0
 bucle:
         li      t1, N
-        bge     t0, t1, fi
+        bge     t0, t1, fibucle
         la      t2, v
         slli    t3, t0, 2
         add     t2, t2, t3
@@ -621,7 +621,7 @@ bucle:
         add     t4, t4, t3
         addi    t0, t0, 1
         j       bucle
-fi:
+fibucle:
 ```
 
 **a) Cost de la versió inicial**
@@ -655,7 +655,7 @@ Es pot fer la comprovació inicial una sola vegada (si `N > 0` sempre es complei
         li      t0, 0
         li      t1, N
         la      t2, v               # extracció d'invariants fora del bucle
-        bge     t0, t1, fi          # comprovació inicial: salta si N <= 0
+        bge     t0, t1, fibucle     # comprovació inicial: salta si N <= 0
 bucle:
         slli    t3, t0, 2
         add     t5, t2, t3
@@ -663,7 +663,7 @@ bucle:
         add     t4, t4, t3
         addi    t0, t0, 1
         blt     t0, t1, bucle       # salta si i < N
-fi:
+fibucle:
 ```
 
 S'han extret `li t1, N` i `la t2, v` com a invariants fora del bucle (extracció d'invariants, @sec-extraccio-invariants, prerequisit de tota optimització).
@@ -713,7 +713,7 @@ int v[N], w[N];
         la      t2, v               # @v (invariant)
         la      t3, w               # @w (invariant)
 bucle:
-        bge     t0, t1, fifor       # [ctrl]
+        bge     t0, t1, fibucle     # [ctrl]
         slli    t4, t0, 2           # i*4
         add     t5, t2, t4          # @v[i]
         lw      t5, 0(t5)           # v[i]
@@ -722,7 +722,7 @@ bucle:
         sw      t5, 0(t6)           # w[i] = v[i] * 2
         addi    t0, t0, 1           # i++
         j       bucle
-fifor:
+fibucle:
 ```
 
 Instruccions per iteració: `bge`(1) + `slli` + `add` + `lw`(4) + `slli` + `add` + `sw`(4) + `addi` + `j`(2) = **16 cicles**.
@@ -737,14 +737,14 @@ Es mantenen dos punters `pv` i `pw` que avancen en paral·lel amb stride 4, cont
         li      t2, N*4
         add     t2, t0, t2          # t2 = sentinella = @v[N]
 bucle:
-        bgeu    t0, t2, fifor       # [ctrl]
+        bgeu    t0, t2, fibucle     # [ctrl]
         lw      t3, 0(t0)           # *pv = v[i]
         slli    t3, t3, 1           # v[i] * 2
         sw      t3, 0(t1)           # *pw = v[i] * 2
         addi    t0, t0, 4           # pv++
         addi    t1, t1, 4           # pw++
         j       bucle
-fifor:
+fibucle:
 ```
 
 Instruccions per iteració: `bgeu`(1) + `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `j`(2) = **14 cicles**.
@@ -758,7 +758,7 @@ Partint de b), s'aplica l'optimització #2: la comprovació es fa una única veg
         la      t1, w               # t1 = pw = @w[0]
         li      t2, N*4
         add     t2, t0, t2          # t2 = sentinella = @v[N]
-        bgeu    t0, t2, fifor       # comprovació inicial
+        bgeu    t0, t2, fibucle     # comprovació inicial
 bucle:
         lw      t3, 0(t0)           # *pv = v[i]
         slli    t3, t3, 1           # v[i] * 2
@@ -766,7 +766,7 @@ bucle:
         addi    t0, t0, 4           # pv++
         addi    t1, t1, 4           # pw++
         bltu    t0, t2, bucle
-fifor:
+fibucle:
 ```
 
 El cos del bucle conté:
@@ -814,11 +814,11 @@ per i = 1 fins a n:
         R = R + D
         Q = Q << 1
 
-z = Q           // quocient
-w = R[n-1:0]    // residu
+q = Q           // quocient
+r = R[n-1:0]    // residu
 ```
 
-A cada iteració es fa la resta de prova $R - D$: si el resultat no és negatiu (bit $R[2n-1]$ a 0), el divisor desplaçat «hi cap» i s'anota un 1 al quocient; si és negatiu, es **restaura** el valor de $R$ sumant-hi $D$ de nou, i s'anota un 0. Després de les $n$ iteracions, $Q$ conté el quocient i la part baixa de $R$, el residu (@thm-divisio-sequencial-restauracio; per a un seguiment numèric complet, @tip-seguiment-divisio i @sol-t4-div-passos).
+A cada iteració es fa la resta de prova R − D: si el resultat no és negatiu (bit $R_{2n-1}$ a 0), el divisor desplaçat «hi cap» i s'anota un 1 al quocient; si és negatiu, es **restaura** el valor de R sumant-hi D de nou, i s'anota un 0. Després de les $n$ iteracions, Q conté el quocient i la part baixa de R, el residu (@thm-divisio-sequencial-restauracio; per a un seguiment numèric complet, @tip-seguiment-divisio i @sol-t4-div-passos).
 :::
 
 ::: {#sol-t4-div-passos .callout-tip}
@@ -826,7 +826,7 @@ A cada iteració es fa la resta de prova $R - D$: si el resultat no és negatiu 
 
 **Enunciat**: @exr-t4-div-passos.
 
-El circuit treballa amb naturals. Per a operands de 6 bits, els registres `R` i `D` tenen 12 bits i `Q` té 6 bits. L'algorisme amb restauració a cada iteració:
+El circuit treballa amb naturals. Per a operands de 6 bits, els registres R i D tenen 12 bits i Q en té 6. L'algorisme amb restauració a cada iteració:
 
 1. `D = D >> 1`.
 2. `R = R - D`.
@@ -835,7 +835,7 @@ El circuit treballa amb naturals. Per a operands de 6 bits, els registres `R` i 
 
 *Convenció de la taula*: la columna «R − D» mostra el valor intermedi de la resta (abans de decidir si cal restaurar); la columna «R (final)» mostra l'estat ja restaurat si ha calgut; la fila inicial porta «—».
 
-**a) $X =$ `101000` ($40_{10}$), $Y =$ `010011` ($19_{10}$). Resultat esperat: $q = 2$, $r = 2$.**
+**a) $x =$ `101000` ($40_{10}$), $y =$ `010011` ($19_{10}$). Resultat esperat: $q = 2$, $r = 2$.**
 
 | Iter. | D (12 bits) | R − D | Signe | Acció | R (final) | Q |
 | :---: | :---: | :---: | :---: | :--- | :---: | :---: |
@@ -852,9 +852,9 @@ Quocient: $Q = 000010_2 = 2_{10}$, residu: $R[5:0] = 000010_2 = 2_{10}$ ✓
 
 Verificació: $19 \times 2 + 2 = 40$ ✓
 
-**b) $X =$ `010101` ($21_{10}$), $Y =$ `100100` ($36_{10}$). Resultat esperat: $q = 0$, $r = 21$.**
+**b) $x =$ `010101` ($21_{10}$), $y =$ `100100` ($36_{10}$). Resultat esperat: $q = 0$, $r = 21$.**
 
-Com que $X < Y$, el quocient és 0 i el residu és $X$ en totes les iteracions: el divisor desplaçat sempre és més gran que el dividend parcial i cal restaurar en cada pas.
+Com que $x < y$, el quocient és 0 i el residu és $x$ en totes les iteracions: el divisor desplaçat sempre és més gran que el dividend parcial i cal restaurar en cada pas.
 
 | Iter. | D (12 bits) | R − D | Signe | Acció | R (final) | Q |
 | :---: | :---: | :---: | :---: | :--- | :---: | :---: |
@@ -877,7 +877,7 @@ Quocient: $Q = 000000_2 = 0_{10}$, residu: $R[5:0] = 010101_2 = 21_{10}$ ✓
 
 El circuit (@thm-divisio-sequencial-restauracio) treballa amb registres R i D de $2n = 64$ bits, que no caben en un registre de RV32I. En lloc de simular-los amb parells de registres, s'usa una **formulació equivalent**: mantenir el divisor fix i desplaçar R a l'**esquerra** (desplaçar D a la dreta respecte de R equival a desplaçar R a l'esquerra respecte del divisor), injectant a cada pas el bit següent del dividend. Així tots els valors caben en registres de 32 bits. A més, en lloc de restar i restaurar, és més senzill **comparar abans de restar** (`bltu`), que és equivalent: només es fa la resta quan el resultat no seria negatiu.
 
-Registres: `t3` = dividend $X$ (es va desplaçant; al final es reutilitza per al residu, com demana l'enunciat), `t1` = divisor $y$, `t2` = quocient $Q$, `t4` = residu parcial $R$, `t5` = comptador, `t6` = bit extret.
+Registres: `t3` = dividend $x$ (es va desplaçant; al final es reutilitza per al residu, com demana l'enunciat), `t1` = divisor $y$, `t2` = quocient (Q), `t4` = residu parcial (R), `t5` = comptador, `t6` = bit extret.
 
 ```{.s filename="RV32I"}
         li      t2, 0               # Q = 0
