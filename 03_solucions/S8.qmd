@@ -94,7 +94,7 @@ Punts clau:
 
 - `E F458` (VPN 7): fallada amb el marc lliure PPN 3; com que és escriptura, queda $D = 1$.
 - `L 1BBF` (VPN 0) i `E 5C44` (VPN 2): cap marc lliure; s'expulsen les pàgines més antigues (VPN 2 i VPN 3), totes dues amb $D = 0$, de manera que no cal escriure-les a disc.
-- `L 6600` (VPN 3): s'expulsa el VPN 7, que té $D = 1$ → **cal escriure-la primer a disc** (única escriptura a disc de la traça).
+- `L 6600` (VPN 3): s'expulsa la pàgina del VPN 7, que té $D = 1$ → **cal escriure-la primer a disc** (única escriptura a disc de la traça).
 - `L 4000` (VPN 2): encert, la pàgina segueix a PPN 1.
 
 Estat final de la taula de pàgines:
@@ -135,8 +135,8 @@ Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/4096 \rfloor$. TLB de
 : {.striped}
 
 - 4095 (VPN 0): fallada de TLB; la MMU llegeix la PTE, que té $V = 1$ (PPN 5), i la copia a l'entrada lliure, sense fallada de pàgina.
-- 7193 (VPN 1): fallada de TLB i la PTE té $V = 0$ → **fallada de pàgina**; el SO carrega la pàgina i li assigna PPN 13. En reexecutar l'accés, la MMU copia la PTE al TLB reemplaçant el VPN 11 (l'única entrada no reutilitzada des de l'inici → la més antiga).
-- 8912 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); en reexecutar, es reemplaça el VPN 0 (la més antiga de la pila en aquest punt).
+- 7193 (VPN 1): fallada de TLB i la PTE té $V = 0$ → **fallada de pàgina**; el SO carrega la pàgina i li assigna PPN 13. En reexecutar l'accés, la MMU copia la PTE al TLB reemplaçant l'entrada del VPN 11 (l'única no reutilitzada des de l'inici → la més antiga).
+- 8912 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); en reexecutar, es reemplaça l'entrada del VPN 0 (la més antiga de la pila en aquest punt).
 
 TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). Taula de pàgines: VPN 1 → V 1/PPN 13, VPN 2 → V 1/PPN 14.
 
@@ -154,9 +154,9 @@ TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). Tau
 : {.striped}
 
 - 9452 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 13); s'omple l'entrada lliure.
-- 19136 (VPN 4): fallada de TLB però $V = 1$ (PPN 9) → sense fallada de pàgina. Es reemplaça el VPN 3 (la més antiga segons l'ordre inicial 11 > 7 > 3).
-- 38110 (VPN 9): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça el VPN 2 (entrada menys recentment usada).
-- 46502 i 47480 (VPN 11): encerts, perquè el VPN 11 era la més recent inicialment i no s'ha expulsat.
+- 19136 (VPN 4): fallada de TLB però $V = 1$ (PPN 9) → sense fallada de pàgina. Es reemplaça l'entrada del VPN 3 (la més antiga segons l'ordre inicial 11 > 7 > 3).
+- 38110 (VPN 9): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); es reemplaça l'entrada del VPN 2 (la menys recentment usada).
+- 46502 i 47480 (VPN 11): encerts, perquè l'entrada del VPN 11 era la més recent inicialment i no s'ha expulsat.
 
 TLB final: (VPN 11, PPN 12), (VPN 7, PPN 4), (VPN 4, PPN 9), (VPN 9, PPN 14). Taula de pàgines: VPN 2 → V 1/PPN 13, VPN 9 → V 1/PPN 14.
 
