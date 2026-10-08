@@ -8,7 +8,7 @@ number-sections: true
 
 ### El problema: reubicació i mida limitada {#sec-mv-reubicacio}
 
-Quan es compila un programa, el compilador assigna adreces de memòria a les instruccions i les dades. Però en un computador modern s'executen múltiples programes simultàniament, tots compartint la mateixa memòria física. Això planteja dos problemes fonamentals:
+Quan es compila i s'enllaça un programa, l'enllaçador assigna adreces de memòria a les instruccions i les dades. Però en un computador modern s'executen múltiples programes simultàniament, tots compartint la mateixa memòria física. Això planteja dos problemes fonamentals:
 
 - **Reubicació.** Si dos programes han estat compilats per ocupar les mateixes adreces, no poden coexistir a la memòria sense que les seves dades i instruccions col·lisionin. Cal un mecanisme que permeti que cada programa cregui que ocupa les adreces que li han estat assignades en compilació, però que en realitat estigui ubicat en una zona diferent de la memòria física.
 - **Mida limitada.** El conjunt d'instruccions i dades de tots els programes en execució pot superar fàcilment la capacitat de la memòria física. Sense cap mecanisme addicional, això impossibilitaria l'execució de certs programes o combinacions de programes.
@@ -262,7 +262,7 @@ Una fallada de pàgina es produeix quan V = 0 en la PTE del VPN sol·licitat. É
 
 Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament. A l'assignatura es fa servir l'algorisme **LRU** (*least recently used*), com a les memòries cau (@sec-politica-reemplacament): es reemplaça la pàgina que fa més temps que no s'ha accedit. Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions). Si el processador guarda traduccions en un TLB (@sec-mv-tlb), el sistema operatiu també n'ha d'invalidar l'entrada de la pàgina víctima, com s'explica a la @sec-mv-tlb-invalidacio.
 
-A la zona del disc on s'emmagatzemen les pàgines reemplaçades se l'anomena **espai d'intercanvi** (*swap space*).
+La zona del disc on s'emmagatzemen les pàgines reemplaçades s'anomena **espai d'intercanvi** (*swap space*).
 
 ::: {#wrn-mv-reemplacament-real .callout-warning collapse="true"}
 ## Reemplaçament de pàgines als sistemes reals
@@ -449,7 +449,7 @@ La compartició de pàgines té dues aplicacions principals:
 
 ## Integració del TLB i la memòria cau {#sec-mv-integracio}
 
-En un sistema amb memòria virtual, cada accés a memòria implica dos passos: traduir l'adreça lògica a física (via TLB) i accedir a la dada (via memòria cau). La manera com s'organitzen aquests dos passos determina el temps d'accés efectiu i la complexitat del disseny.
+En un sistema amb memòria virtual, cada accés a memòria implica dos passos: traduir l'adreça lògica a física (amb el TLB) i accedir a la dada (a la memòria cau). La manera com s'organitzen aquests dos passos determina el temps d'accés efectiu i la complexitat del disseny.
 
 ### Memòria cau indexada físicament {#sec-mv-cache-fisica}
 
@@ -472,17 +472,19 @@ Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria
 
 L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adreça física identifica unívocament una dada. L'inconvenient és el **temps d'accés**: la memòria cau no pot començar a operar fins que el TLB hagi acabat la traducció, de manera que els dos accessos es fan en sèrie.
 
-### Memòria cau indexada virtualment {#sec-mv-cache-virtual}
+### Memòria cau indexada i etiquetada virtualment {#sec-mv-cache-virtual}
 
 Per reduir la latència, una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtually tagged* o **VIVT**) usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense necessitat de la traducció; només cal el TLB en cas de fallada, per anar a buscar el bloc a la memòria principal amb l'adreça física.
 
 El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física (@sec-mv-comparticio), el mateix bloc pot ocupar dues línies diferents de la memòria cau, una per a cada adreça lògica. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, trencant la coherència.
 
-### VIPT: la solució estàndard {#sec-mv-vipt}
+L'altre problema són els **homònims**: la mateixa adreça lògica de dos processos correspon a dades físiques diferents. Per això, en cada canvi de context, cal invalidar la memòria cau sencera o afegir a cada etiqueta l'identificador del procés, com fa l'ASID amb el TLB (@sec-mv-tlb-invalidacio).
+
+### VIPT: la solució habitual {#sec-mv-vipt}
 
 La solució més habitual als processadors actuals, per a la memòria cau de primer nivell, és la **memòria cau indexada virtualment i etiquetada físicament** (*virtually indexed physically tagged* o **VIPT**). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel** (@fig-mv-vipt):
 
-- L'**índex** de la memòria cau s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menys pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).
+- L'**índex** de la memòria cau s'extreu de l'adreça lògica. Si només fa servir bits del desplaçament de pàgina (els $t$ bits de menys pes; és la condició de més avall), coincideix exactament amb el de l'adreça física, perquè el desplaçament no es tradueix.
 - Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.
 - Un cop acabats els dos accessos en paral·lel, es compara l'etiqueta física de l'adreça —el PPN obtingut del TLB, més els bits del desplaçament de pàgina que l'índex i el desplaçament de bloc no fan servir, si n'hi ha— amb les etiquetes llegides de la memòria cau per determinar si hi ha encert.
 
@@ -513,7 +515,7 @@ on $T$ és la mida de pàgina. El producte $N_C \cdot B$ és la mida d'una via, 
 | Esquema | Indexació | Etiqueta | Avantatge | Inconvenient |
 | :--- | :---: | :---: | :--- | :--- |
 | PIPT | Física | Física | Simple, sense aliàsing | TLB i MC en sèrie |
-| VIVT | Virtual | Virtual | Ràpid (sense TLB en els encerts) | Aliàsing |
+| VIVT | Virtual | Virtual | Ràpid (sense TLB en els encerts) | Aliàsing i homònims |
 | VIPT | Virtual | Física | Ràpid i sense aliàsing | Restricció de mida |
 : {.striped tbl-colwidths="[12,13,13,31,31]"}
 
@@ -527,7 +529,7 @@ Aquesta secció recorre un exemple complet: una seqüència de cinc accessos a m
 ::: {#tip-mv-tlb-exemple .callout-tip}
 ## Traducció amb TLB
 
-Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB ($t = 12$), una memòria física de 16 KiB (4 marcs de pàgina, adreces físiques de 14 bits) i un TLB de 4 entrades amb reemplaçament LRU, tant per al TLB com per a les pàgines. L'estat inicial és:
+Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB ($t = 12$), una memòria física de 16 KiB (4 marcs de pàgina, adreces físiques de 14 bits) i un TLB de 4 entrades, completament associatiu, amb reemplaçament LRU, tant per al TLB com per a les pàgines. L'estat inicial és:
 
 | V | VPN | D | E | PPN |
 | :---: | :---: | :---: | :---: | :---: |
@@ -580,6 +582,8 @@ Fallada de TLB i fallada de pàgina. La víctima LRU és VPN 2 (al marc `0x02`),
 | L | `0x00005120` | `0x00005` | sí | sí | `0x00002` | sí (VPN 2) | `0x02` | `0x2120` |
 : Resum dels cinc accessos {.striped tbl-colwidths="[5,16,11,10,10,16,12,8,12]"}
 
+A la columna «Fallada TLB» es compta una fallada per accés: quan la instrucció es torna a executar després d'una fallada de pàgina, la segona consulta del TLB no compta com una fallada nova.
+
 En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x02`) i VPN 1 (`0x03`), totes amb D = 0, i el TLB té exactament aquestes quatre traduccions. Fixa't que, amb tants marcs com entrades de TLB, el reemplaçament LRU del TLB no arriba a actuar mai: mentre hi ha marcs lliures, també hi ha entrades lliures, i quan el TLB és ple hi són totes les pàgines residents, de manera que una fallada de TLB és sempre una fallada de pàgina, i en invalidar l'entrada de la víctima n'allibera una. El reemplaçament del TLB només entra en joc quan hi ha més pàgines residents que entrades, com a @exr-t8-tlb-estat. La @fig-mv-tlb-exemple mostra l'estat del TLB i de la memòria física després de cada accés.
 :::
 
@@ -597,5 +601,5 @@ En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A8_mv_exemple_tlb__original_light.svg)
 :::
-Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el TLB i la memòria física després de resoldre'l, amb les entrades i els marcs que han canviat amb vora gruixuda. A l'HTML, el navegador de passos mostra també la taula de pàgines i l'ordre LRU després de cada accés.
+Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el TLB i la memòria física després de resoldre'l, amb les entrades i els marcs que han canviat amb vora gruixuda. A l'HTML, el navegador de passos mostra també la taula de pàgines després de cada accés.
 :::::

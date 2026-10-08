@@ -76,6 +76,8 @@ $$x_u' = x_u - X_{n-1}$$
 
 - `srli t0, t2, 31` → `t0 = 1` (bit de signe)
 - `sub t1, t2, t0` → `t1 = 0xFFFFFFCD - 1 = 0xFFFFFFCC`
+
+El mètode val per a tot el rang de Ca1, $[-(2^{n-1}-1), 2^{n-1}-1]$; $-2^{n-1}$ no hi té representació, i el resultat seria `0x7FFFFFFF`.
 :::
 
 ### Desplaçament aritmètic a la dreta {#sec-desplacament-aritmetic-dreta}
@@ -115,7 +117,7 @@ No existeix la instrucció ~~`sla`~~ ni la ~~`slai`~~.
 
 ### Traducció dels operadors C `<<` i `>>` {#sec-traduccio-desplacament-c}
 
-L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix amb `srl`/`srli` si l'operand és un natural (de tipus `unsigned`), o amb `sra`/`srai` si és un enter.
+L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix segons el tipus de l'operand esquerre: amb `srl`/`srli` si és un natural (de tipus `unsigned`), o amb `sra`/`srai` si és un enter (amb un enter negatiu, el C deixa el resultat a la implementació; els compiladors habituals, com `gcc`, fan el desplaçament aritmètic).
 
 ::: {#tip-traduccio-desplacament-c .callout-tip}
 ## Traducció de `<<` i `>>`
@@ -134,7 +136,7 @@ Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
 
 ### Aplicació d'`sll`/`slli`: multiplicació per potències de 2 {#sec-multiplicacio-potencies-2}
 
-Desplaçar a l'esquerra un enter o natural amb `sll`/`slli` equival a **multiplicar-lo** per una potència de 2: `rd` ← `rs1` × $2^{\texttt{shamt}}$.
+Desplaçar a l'esquerra un enter o natural amb `sll`/`slli` equival a **multiplicar-lo** per $2^k$ ($k$ = `shamt` o `rs2[4:0]`), sempre que el resultat sigui representable en 32 bits.
 
 ::: {#imp-ec-sll-acces-vector .callout-important}
 A **EC**, el **desplaçament** en bytes d'un element d'un vector o d'una matriu (@eq-acces-aleatori-vector) es calcula multiplicant l'índex per la mida de l'element amb `slli` (un desplaçament de bits de $\log_2$ de la mida), no amb `mul`: a EC, les mides dels elements (1, 2, 4 o 8 bytes) són sempre potències de 2. Amb elements d'1 byte, no cal desplaçar.
@@ -154,7 +156,7 @@ Per exemple, la divisió entera (-15 / 4) dona quocient -3 i residu -3, mentre q
 
 ### Operadors `&`, `|` i `^` (`and`, `or` i `xor`) {#sec-instruccions-logiques-bit-a-bit}
 
-Els operadors **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori` i `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que la resta d'instruccions de tipus I.
+Els operadors **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori` i `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que `addi`, `slti` i `sltiu`.
 
 ::: {#cau-immediats-logics-extensio-signe .callout-caution}
 Els immediats de `andi`, `ori` i `xori` s'interpreten en **complement a 2**: si el bit 11 de l'immediat val `1`, el valor estès a 32 bits té els bits [31:12] a `1`. Això pot produir màscares no desitjades. Per exemple:
@@ -366,7 +368,7 @@ Si `t0`, `t1` i `t2` són enters:
 
 ### Traducció de `&&` i `||`: avaluació gandula {#sec-traduccio-operadors-logics}
 
-En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de forma **gandula** (***lazy***): si el valor del primer operand ja determina el resultat de tota la condició, **el segon operand no s'avalua**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert. La seva traducció implica l'ús d'instruccions de salt i s'estudia a la secció de sentències alternatives (@sec-if-then-else).
+En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de forma **gandula** (***lazy***): si el valor del primer operand ja determina el resultat de tota la condició, **el segon operand no s'avalua**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert. La seva traducció implica l'ús d'instruccions de salt i s'estudia a @sec-avaluacio-lazy-encadenats.
 
 ::: {#cau-lazy-evaluation .callout-caution}
 En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**: la imposa la semàntica del llenguatge. Per tant, la **traducció a assemblador l'ha de respectar**.
@@ -384,7 +386,9 @@ La combinació d'aquests dos eixos dona lloc a tres categories:
 | | Relatiu al PC | Indirecte |
 | :--- | :--- | :--- |
 | **Condicional** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu` | — |
-| **Incondicional** | `jal`, `j` | `jalr`, `jr`, `ret` |
+| **Incondicional** | `jal` | `jalr` |
+
+Les pseudoinstruccions de salt (`j`, `jr`, `ret` i les de @nte-pseudoinstruccions-salt-condicional i @nte-pseudoinstruccions-salt-zero) s'expandeixen a aquestes instruccions.
 
 ::: {#cau-salts-condicionals-relatius-pc .callout-caution}
 A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existeix cap salt condicional indirecte.
@@ -444,7 +448,7 @@ Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` 
 ::: {#tip-exemple-beq-offset .callout-tip}
 ## Càlcul del desplaçament d'un salt condicional
 
-Sigui el programa següent i el seu *memory dump*:
+Sigui el programa següent i la vista que en dona la finestra *Text Segment* de RARS:
 
 ```{.s filename="RV32I"}
         beq     zero, zero, etiqueta    # 0x00400000
@@ -456,10 +460,10 @@ etiqueta:
 
 | Adreça | Codi | Bàsic | Font |
 | :--- | :--- | :--- | :--- |
-| `0x00400000` | `0x00000663` | `beq x0, x0, 0x0000000c` | `beq zero, zero, etiqueta` |
-| `0x00400004` | `0x00000013` | `addi x0, x0, 0` | `nop` |
-| `0x00400008` | `0x00000013` | `addi x0, x0, 0` | `nop` |
-| `0x0040000C` | `0x40000033` | `sub x0, x0, x0` | `sub zero, zero, zero` |
+| `0x00400000` | `0x00000663` | `beq x0,x0,0x0000000c` | `beq zero, zero, etiqueta` |
+| `0x00400004` | `0x00000013` | `addi x0,x0,0` | `nop` |
+| `0x00400008` | `0x00000013` | `addi x0,x0,0` | `nop` |
+| `0x0040000C` | `0x40000033` | `sub x0,x0,x0` | `sub zero, zero, zero` |
 : {tbl-colwidths="[22,21,27,30]"}
 
 L'assemblador ha calculat el desplaçament com:
@@ -469,9 +473,9 @@ $$\text{desplaçament} = @\text{etiqueta} - @\text{beq} = \texttt{0x0040000C} - 
 Aquest valor apareix directament al panell *Basic* de RARS com `0x0000000c`,
 confirmat per la codificació binària de la instrucció: `0x00000663`.
 
-**Per què `0x0040000C` i no `0x00400008`?**
+**Per què 12 i no 8?**
 
-El desplaçament es calcula respecte a l'adreça de la instrucció de salt (`0x00400000`), no respecte a la instrucció següent. L'adreça de `etiqueta` és `0x0040000C` perquè hi ha 3 instruccions de 4 bytes entre `beq` i `etiqueta` (`beq` + dues `nop`).
+El desplaçament es calcula respecte a l'adreça de la instrucció de salt (`0x00400000`), no respecte a la instrucció següent (`0x00400004`): de `beq` fins a `etiqueta` hi ha 3 instruccions de 4 bytes (`beq` i les dues `nop`).
 :::
 
 ::: {#tip-exemple-and-mascara-2 .callout-tip}
@@ -563,7 +567,7 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 ::: {#tip-salt-llunya .callout-tip}
 ## Salt a adreça llunyana amb `jr`
 
-La pseudoinstrucció `la` carrega l'adreça de 32 bits d'una etiqueta en un registre (@nte-la-auipc).
+La pseudoinstrucció `la` carrega l'adreça de 32 bits d'una etiqueta en un registre (@nte-pseudoinstruccio-la; l'expansió, a @nte-la-auipc).
 
 ```{.s filename="RV32I"}
         la      t0, etiqueta_llunyana
@@ -573,10 +577,6 @@ La pseudoinstrucció `la` carrega l'adreça de 32 bits d'una etiqueta en un regi
 
 ::: {#imp-ec-rol-salts .callout-important}
 A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'usen per implementar el control de flux local (`if-then-else`, bucles); `jal` (amb `rd = ra`), per cridar subrutines; i els salts **indirectes** (`jalr`, `jr`, `ret`), quan la destinació està en un registre, com en retorns de subrutina, vectors de salts o salts a adreces carregades explícitament.
-:::
-
-::: {#cau-salts-incondicionals .callout-caution}
-A **RV32I**, els salts **incondicionals** poden ser **relatius al PC** (`jal`, `j`) o **indirectes** (`jalr`, `jr`, `ret`).
 :::
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
@@ -589,7 +589,7 @@ La classificació proposada inclou quatre decisions que cal justificar:
 - **`lui`** s'ha classificat com a mode **immediat** perquè el seu únic operand font és un valor constant de 20 bits codificat directament a la instrucció; no hi ha cap registre base ni cap referència al PC.
 - **`auipc`** s'ha classificat com a mode **relatiu al PC** perquè suma un immediat de 20 bits al valor actual del PC per construir adreces relatives a la posició actual del programa.
 - **`jalr`** s'ha classificat com a mode **base + desplaçament** perquè calcula l'adreça de salt sumant un registre base (`rs1`) i un immediat de 12 bits, exactament com fan les instruccions de lectura i escriptura. L'única diferència és que el resultat s'usa com a adreça de salt en lloc d'adreça de memòria.
-- **`ecall`** no s'ha inclòs perquè no és una instrucció de processament de dades, sinó una instrucció de control que invoca una crida al sistema (@sec-ei-ecall).
+- **`ecall`** no s'ha inclòs perquè no té cap operand ni accedeix a cap dada: el servei el decideix el contingut d'`a7` (@sec-ei-ecall).
 
 | Mode | Instruccions |
 | :--- | :--- |
@@ -836,7 +836,7 @@ bucle:
 fibucle:
 ```
 
-El cos del bucle s'executa ara sense cap salt incondicional: el salt condicional al final torna al principi si la condició segueix sent certa, o en cas contrari cau a `fibucle`. Això estalvia un salt per iteració. Aquesta transformació es formalitza més endavant com a Optimització #2 (@sec-optimitzacions-bucle a Tema 4).
+El cos del bucle s'executa ara sense cap salt incondicional: el salt condicional al final torna al principi si la condició segueix sent certa, o en cas contrari cau a `fibucle`. Això estalvia un salt per iteració. Aquesta transformació es formalitza més endavant com a Optimització #2 (@sec-opt-condicio-final).
 
 Si la condició és complexa i escriure-la dues vegades seria costós, es pot substituir la comprovació inicial per un salt incondicional a la instrucció d'avaluació al final del bucle:
 
@@ -859,7 +859,7 @@ La sentència `do-while` executa el cos **sempre almenys una vegada**, i la cond
 ```{.c filename="C"}
 do
     sentencia_cos;
-while (condició);
+while (condicio);
 ```
 
 El patró de traducció és més senzill que el del `while` perquè no cal comprovació inicial: el cos s'executa primer i el salt condicional al final decideix si tornar a iterar:
@@ -867,7 +867,7 @@ El patró de traducció és més senzill que el del `while` perquè no cal compr
 ```{.s filename="RV32I"}
 bucle:
         # traducció de sentencia_cos
-        # avaluar condició
+        # avaluar condicio
         # salt si és certa a bucle
 ```
 
@@ -901,21 +901,21 @@ El bucle avança per `v` fins a trobar el primer element no negatiu. La condici�
 
 ### Sentència `for` {#sec-for}
 
-Al bucle `for`, el més habitual és que `sentència1` inicialitzi la variable de control del bucle (típicament un comptador) i que `sentència2` l'actualitzi després de cada iteració.
+Al bucle `for`, el més habitual és que `sentencia1` inicialitzi la variable de control del bucle (típicament un comptador) i que `sentencia2` l'actualitzi després de cada iteració.
 
 ```{.c filename="C"}
-for (sentència1; condició; sentència2) {
-    sentència3;
+for (sentencia1; condicio; sentencia2) {
+    sentencia3;
 }
 ```
 
-Quan es fa així, el `for` agrupa tots els elements que controlen el bucle en una única capçalera, cosa que el fa més fàcil de llegir que el `while` equivalent:
+Quan es fa així, el `for` agrupa tots els elements que controlen el bucle en una única capçalera, cosa que el fa més fàcil de llegir que el `while` equivalent (si el cos no conté cap `continue`):
 
 ```{.c filename="C"}
-sentència1;
-while (condició) {
-    sentència3;
-    sentència2;
+sentencia1;
+while (condicio) {
+    sentencia3;
+    sentencia2;
 }
 ```
 
@@ -949,7 +949,7 @@ fibucle:
 ::: {#tip-optimitzacio-eliminacio-variable-induccio .callout-tip}
 ## Eliminació de la variable d'inducció
 
-Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament. Aquesta transformació es formalitza més endavant com a Optimització #3 (@sec-optimitzacions-bucle a Tema 4).
+Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament. Aquesta transformació es formalitza més endavant com a Optimització #3 (@sec-opt-eliminacio-induccio).
 
 Per exemple, en el `for` anterior, en lloc de calcular `@v[i] = @v[0] + i*4` a cada iteració, pot mantenir directament un punter `p` que avanci de 4 en 4 bytes:
 
@@ -991,7 +991,7 @@ A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte 
 A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap***. La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el heap s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fa explícitament per part del programador (mitjançant `malloc()` i `free()`).
 
 ::: {#tip-exemple-tipus-variables .callout-tip}
-## Els tres tipus d'emmagatzemament
+## Les tres ubicacions de les dades: `.data`, pila i heap
 
 ```{.c filename="C"}
 int gvec[100];      // global: emmagatzemament estàtic (.data)
@@ -1048,7 +1048,7 @@ RARS: *Settings* → *Memory Configuration...* mostra totes les regions de memò
 ::: {#wrn-gp-global-pointer .callout-warning collapse=true}
 ## El registre `gp` (*global pointer*)
 
-L'ABI reserva el registre `gp` (`x3`, *global pointer*) per optimitzar l'accés a variables globals petites situades dins d'un rang de ±2 KiB respecte al valor de `gp`. El carregador l'inicialitza automàticament en arrencar el programa; el programador no l'ha de manipular mai directament. A **EC** no s'estudia aquest mecanisme.
+L'ABI reserva el registre `gp` (`x3`, *global pointer*) per optimitzar l'accés a variables globals petites situades dins d'un rang de ±2 KiB respecte al valor de `gp`. L'entorn d'execució l'inicialitza en arrencar el programa (a RARS, a `0x10008000`); el programador no l'ha de manipular mai directament. A **EC** no s'estudia aquest mecanisme.
 :::
 
 ### Accés a variables globals {#sec-acces-variables-globals}
@@ -1107,7 +1107,7 @@ Una subrutina és:
 
 ### Crida i retorn (el registre `ra`) {#sec-crida-retorn}
 
-Des del punt de vista del control del flux d'execució, quan es crida una subrutina cal guardar l'**adreça de retorn**, és a dir, l'adreça de la instrucció següent a l'execució de la subrutina. L'ABI de RV32I reserva el registre `ra` (***return address***, `x1`) per a aquest propòsit.
+Des del punt de vista del control del flux d'execució, quan es crida una subrutina cal guardar l'**adreça de retorn**, és a dir, l'adreça de la instrucció que segueix la instrucció de crida. L'ABI de RV32I reserva el registre `ra` (***return address***, `x1`) per a aquest propòsit.
 
 La instrucció `jal ra, label` (@nte-instruccions-salt-incondicional-relatiu-jal) salta a l'adreça indicada per `label` (primera instrucció de la subrutina cridada) i guarda l'adreça de retorn (`PC + 4`) a `ra`. Per retornar, s'usa la pseudoinstrucció `ret` (@nte-pseudoinstruccions-salt-indirecte), que salta a l'adreça continguda a `ra`.
 
@@ -1204,7 +1204,7 @@ Cal distingir el **mecanisme físic** de pas del paràmetre (com es transmet la 
 | Registre (`a0`–`a7`) | Referència | Paràmetre punter (`int *`) |
 | Pila | Valor | Paràmetre escalar quan `a0`–`a7` ja són ocupats |
 
-En **C**, el mecanisme és sempre per registre o pila, però la **semàntica** depèn del tipus: un **escalar** és pas per **valor**, un **punter** és pas per **referència**.
+En **C**, el mecanisme és sempre per registre o pila, però la **semàntica** depèn del tipus: un **escalar** és pas per **valor**, i un **punter** té un efecte equivalent al pas per **referència**.
 :::
 
 En **C** només existeix el **pas per valor**. Per tant la funció cridada rep una còpia dels paràmetres i, per tant, les modificacions que hi faci no afectaran els valors de les dades originals.
@@ -1251,6 +1251,7 @@ Els **vectors** i **matrius** només es poden passar per **referència**.
 
 ```{.c filename="C"}
 short x[10], y, z;
+short funcB(short *vec, short n, int i);
 
 void funcA() {
     int k;                      // k a t0
@@ -1524,7 +1525,7 @@ sub:
         ...
         sw      ra, 0(sp)       # preserva ra a la pila
         ...
-        jal     ra, sub2        # crida a sub2 (multinivell)
+        jal     ra, sub2        # crida a sub2 (per això sub és multinivell)
         ...
         lw      ra, 0(sp)       # restaurar ra abans de retornar
         ret
@@ -2005,7 +2006,7 @@ Els fitxers objecte contindran:
 
 L'**enllaçador** (*linker*) combina múltiples fitxers objecte i fitxers de biblioteca en un sol fitxer executable. Ho fa en quatre passos:
 
-**1. Resolució de símbols.** L'enllaçador reuneix totes les taules de símbols globals i llistes de referències externes. S'assegura que cada referència externa té una definició, cercant-la primer als fitxers objecte i després als fitxers de biblioteca. Si no troba alguna definició, finalitza amb un error: `unresolved reference to symbol X`.
+**1. Resolució de símbols.** L'enllaçador reuneix totes les taules de símbols globals i llistes de referències externes. S'assegura que cada referència externa té una definició, cercant-la primer als fitxers objecte i després als fitxers de biblioteca. Si no troba alguna definició, finalitza amb un error: ``undefined reference to `X'`` (GNU `ld`).
 
 **2. Combinació de seccions.** Les seccions `.text` i `.data` de tots els mòduls es concatenen. Les seccions dels mòduls que no són el primer queden desplaçades. L'enllaçador calcula i anota el desplaçament sofert per les seccions de cada mòdul.
 
@@ -2063,7 +2064,7 @@ El `void main()` dels programes en C d'aquests apunts no contradiu res del que s
 ::: {#wrn-flux-gcc-complet .callout-warning collapse=true}
 ## Flux de generació detallat amb GCC/Clang
 
-El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa al *host* (x86) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
+El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa al *host* (x86-64 o ARM) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
 
 ::: {#fig-flux-gcc-complet}
 ::: {.content-visible when-format="html"}
@@ -2084,7 +2085,7 @@ El flux de generació complet.
 
 **1. Preprocessador (`cpp`) \[agnòstic a ABI i ISA\]**:
 
-- Expandeix macros i símbols (vegeu @sec-compilacio).
+- Expandeix macros i símbols.
 - Substitueix el contingut dels fitxers de capçalera en la posició de les directives `#include`.
 - Processa les directives de compilació condicional (`#ifdef`, `#ifndef`, `#if`).
 - Suprimeix tots els comentaris.

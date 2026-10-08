@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `66b6cab` (2026-10-09), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **87** etiquetes `#fig-`: 84 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 61 consumits i 15 sense consumir.
@@ -12,27 +12,27 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | :--- | :--- | :--- | :--- | :--- | ---: | :--- | :--- |
 | `fig-flux-compilacio` | `A1.qmd:55` | `22_figs_originals/A1_flux_compilacio.svg` | Inkscape |  | 1 | El flux de generació del programari: les quatre etapes del *toolchain* GCC. | Diagrama que mostra el flux de generació d'un programa exec… |
 | `fig-picopi-fases` | `A1.qmd:224` | `22_figs_originals/A1_picopi_fases.svg` | Inkscape | `wrn-picopi` | 0 | Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) + Target (*P… | Quatre diagrames en una sola figura: fase de creació (el ho… |
-| `fig-von-neumann` | `A1.qmd:359` | `22_figs_originals/A1_von_neumann.svg` | Inkscape |  | 1 | Arquitectura de Von Neumann: CPU (ALU, CU i Registres), Memòria principal i Sistema d'E/S… | CPU, Memòria Principal i Sistema d'E/S en disposició horitz… |
-| `fig-memoria-creix-avall` | `A2.qmd:983` | `memoria.toml:A2_memoria_creix_avall` | gen_memoria.py | `imp-adrecament-a-nivell-byte` | 0 | Representació gràfica de la memòria. | Una columna de cel·les d'un byte cadascuna, amb l'adreça a … |
-| `fig-big-endian` | `A2.qmd:1023` | `memoria.toml:A2_big_endian` | gen_memoria.py | `tip-endianness` | 0 | Big-endian. | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
-| `fig-little-endian` | `A2.qmd:1037` | `memoria.toml:A2_little_endian` | gen_memoria.py | `tip-endianness` | 0 | Little-endian. | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
-| `fig-endianness-regla-pi` | `A2.qmd:1063` | `22_figs_originals/A2_endianness_regla_pi.svg` | Inkscape | `wrn-endianness-regla-pi` | 0 | Regla mnemotècnica de la lletra grega pi (Π) per recordar l'ordenació dels bytes Little-e… | A dalt, el valor com a quatre bytes: 11, 22, 33 i 44. A l'e… |
-| `fig-acces-vector` | `A2.qmd:1906` | `22_figs_originals/A2_acces_vector.svg` | SVG natiu | `tip-load-store-word` | 0 | Accés a un element d'un vector. | El vector vec en memòria, amb les adreces creixent cap aval… |
+| `fig-von-neumann` | `A1.qmd:360` | `22_figs_originals/A1_von_neumann.svg` | Inkscape |  | 1 | Arquitectura de Von Neumann: CPU (ALU, CU i Registres), Memòria principal i Sistema d'E/S… | CPU, Memòria Principal i Sistema d'E/S en disposició horitz… |
+| `fig-memoria-creix-avall` | `A2.qmd:986` | `memoria.toml:A2_memoria_creix_avall` | gen_memoria.py | `imp-adrecament-a-nivell-byte` | 0 | Representació gràfica de la memòria. | Una columna de cel·les d'un byte cadascuna, amb l'adreça a … |
+| `fig-big-endian` | `A2.qmd:1026` | `memoria.toml:A2_big_endian` | gen_memoria.py | `tip-endianness` | 0 | Big-endian. | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
+| `fig-little-endian` | `A2.qmd:1040` | `memoria.toml:A2_little_endian` | gen_memoria.py | `tip-endianness` | 0 | Little-endian. | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
+| `fig-endianness-regla-pi` | `A2.qmd:1066` | `22_figs_originals/A2_endianness_regla_pi.svg` | Inkscape | `wrn-endianness-regla-pi` | 0 | Regla mnemotècnica de la lletra grega pi (Π) per recordar l'ordenació dels bytes Little-e… | A dalt, el valor com a quatre bytes: 11, 22, 33 i 44. A l'e… |
+| `fig-acces-vector` | `A2.qmd:1910` | `22_figs_originals/A2_acces_vector.svg` | SVG natiu | `tip-load-store-word` | 0 | Accés a un element d'un vector. | El vector vec en memòria, amb les adreces creixent cap aval… |
 | `fig-mapa-memoria` | `A3.qmd:1021` | `mapa.toml:A3_mapa_memoria` | gen_mapa.py |  | 1 | Mapa de memòria de RARS: regions `.text`, `.data`, heap i pila, amb les adreces d'inici d… | Una columna de memòria amb les adreces creixent cap avall: … |
-| `fig-func-uninivell-pila` | `A3.qmd:1384` | `mapa.toml:A3_pila_uninivell` | gen_mapa.py | `tip-func-uninivell-bloc-activacio` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció fulla `funcB`: decrei… | Tres columnes de la pila, d'adreces baixes a altes, amb sp … |
-| `fig-ba-general` | `A3.qmd:1425` | `BA.toml:A3_ba_general` | gen_BA.py |  | 1 | Estructura general del bloc d'activació: variables locals al cim de la pila i registres d… | La pila, d'adreces baixes, amb sp a dalt, a adreces altes, … |
-| `fig-ba-func` | `A3.qmd:1454` | `BA.toml:A3_ba_func` | gen_BA.py | `tip-exemple-variables-pila` | 0 | Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocup… | Bloc d'activació de 52 bytes, d'adreces baixes (sp) a altes… |
-| `fig-pila-crides-multinivell` | `A3.qmd:1505` | `mapa.toml:A3_pila_multinivell` | gen_mapa.py | `tip-exemple-pila-multinivell` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció multinivell `funcA` i… | Cinc columnes de la pila, d'adreces baixes a altes, amb sp … |
-| `fig-deps-multi` | `A3.qmd:1618` | `(subfigures)` | — | `tip-exemple-multi` | 0 | Dependències de dades de la subrutina `multi`, en dues representacions. Les dades `c` i `… |  |
-| `fig-deps-multi-fletxes` | `A3.qmd:1619` | `22_figs_originals/A3_deps_multi.svg` | Inkscape | `tip-exemple-multi` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… | El codi de la funció multi(int a, int b, int c). Una línia … |
-| `fig-deps-multi-barres` | `A3.qmd:1633` | `subrutines.toml:A3_deps_multi` | gen_subrutines.py | `tip-exemple-multi` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. La franja grisa és la crida. | Codi C de la subrutina multi, amb la crida a mcm marcada co… |
-| `fig-ba-multi` | `A3.qmd:1652` | `BA.toml:A3_ba_multi` | gen_BA.py | `tip-exemple-multi` | 0 | Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i `ra` desats als despl… | Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes… |
-| `fig-deps-exemple` | `A3.qmd:1726` | `(subfigures)` | — | `tip-exemple-exemple` | 0 | Dependències de dades de la subrutina `exemple`, en dues representacions. Les dades `c`, … |  |
-| `fig-deps-exemple-fletxes` | `A3.qmd:1727` | `22_figs_originals/A3_deps_exemple.svg` | Inkscape | `tip-exemple-exemple` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… | El codi de la funció exemple(int a, int b, int c), amb líni… |
-| `fig-deps-exemple-barres` | `A3.qmd:1741` | `subrutines.toml:A3_deps_exemple` | gen_subrutines.py | `tip-exemple-exemple` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. Les franges grises són les cride… | Codi C de la subrutina exemple, amb les crides a f i a g ma… |
-| `fig-ba-exemple` | `A3.qmd:1774` | `BA.toml:A3_ba_exemple` | gen_BA.py | `tip-exemple-exemple` | 0 | Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i `w` als desplaçam… | Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes… |
-| `fig-compilacio-separada` | `A3.qmd:1874` | `22_figs_originals/A3_compilacio_separada.svg` | Inkscape |  | 1 | Flux de compilació separada: cada mòdul es compila i assembla independentment generant un… | Diagrama que mostra el flux de compilació separada: p1.c i … |
-| `fig-flux-gcc-complet` | `A3.qmd:2068` | `22_figs_originals/A3_flux_gcc_complet.svg` | SVG natiu | `wrn-flux-gcc-complet` | 0 | El flux de generació complet. | Diagrama del flux complet de generació d'un executable amb … |
+| `fig-func-uninivell-pila` | `A3.qmd:1385` | `mapa.toml:A3_pila_uninivell` | gen_mapa.py | `tip-func-uninivell-bloc-activacio` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció fulla `funcB`: decrei… | Tres columnes de la pila, d'adreces baixes a altes, amb sp … |
+| `fig-ba-general` | `A3.qmd:1426` | `BA.toml:A3_ba_general` | gen_BA.py |  | 1 | Estructura general del bloc d'activació: variables locals al cim de la pila i registres d… | La pila, d'adreces baixes, amb sp a dalt, a adreces altes, … |
+| `fig-ba-func` | `A3.qmd:1455` | `BA.toml:A3_ba_func` | gen_BA.py | `tip-exemple-variables-pila` | 0 | Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocup… | Bloc d'activació de 52 bytes, d'adreces baixes (sp) a altes… |
+| `fig-pila-crides-multinivell` | `A3.qmd:1506` | `mapa.toml:A3_pila_multinivell` | gen_mapa.py | `tip-exemple-pila-multinivell` | 0 | Evolució del registre `sp` durant la crida i el retorn de la funció multinivell `funcA` i… | Cinc columnes de la pila, d'adreces baixes a altes, amb sp … |
+| `fig-deps-multi` | `A3.qmd:1619` | `(subfigures)` | — | `tip-exemple-multi` | 0 | Dependències de dades de la subrutina `multi`, en dues representacions. Les dades `c` i `… |  |
+| `fig-deps-multi-fletxes` | `A3.qmd:1620` | `22_figs_originals/A3_deps_multi.svg` | Inkscape | `tip-exemple-multi` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… | El codi de la funció multi(int a, int b, int c). Una línia … |
+| `fig-deps-multi-barres` | `A3.qmd:1634` | `subrutines.toml:A3_deps_multi` | gen_subrutines.py | `tip-exemple-multi` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. La franja grisa és la crida. | Codi C de la subrutina multi, amb la crida a mcm marcada co… |
+| `fig-ba-multi` | `A3.qmd:1653` | `BA.toml:A3_ba_multi` | gen_BA.py | `tip-exemple-multi` | 0 | Bloc d'activació de la subrutina `multi`: 12 bytes amb `s0`, `s1` i `ra` desats als despl… | Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes… |
+| `fig-deps-exemple` | `A3.qmd:1727` | `(subfigures)` | — | `tip-exemple-exemple` | 0 | Dependències de dades de la subrutina `exemple`, en dues representacions. Les dades `c`, … |  |
+| `fig-deps-exemple-fletxes` | `A3.qmd:1728` | `22_figs_originals/A3_deps_exemple.svg` | Inkscape | `tip-exemple-exemple` | 0 | Amb fletxes, de l'escriptura a l'ús. Les línies de punts separen el codi anterior i el po… | El codi de la funció exemple(int a, int b, int c), amb líni… |
+| `fig-deps-exemple-barres` | `A3.qmd:1742` | `subrutines.toml:A3_deps_exemple` | gen_subrutines.py | `tip-exemple-exemple` | 0 | Amb barres de vida, de l'última escriptura a l'últim ús. Les franges grises són les cride… | Codi C de la subrutina exemple, amb les crides a f i a g ma… |
+| `fig-ba-exemple` | `A3.qmd:1775` | `BA.toml:A3_ba_exemple` | gen_BA.py | `tip-exemple-exemple` | 0 | Bloc d'activació de la subrutina `exemple`: variables locals `q`, `v` i `w` als desplaçam… | Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes… |
+| `fig-compilacio-separada` | `A3.qmd:1875` | `22_figs_originals/A3_compilacio_separada.svg` | Inkscape |  | 1 | Flux de compilació separada: cada mòdul es compila i assembla independentment generant un… | Diagrama que mostra el flux de compilació separada: p1.c i … |
+| `fig-flux-gcc-complet` | `A3.qmd:2069` | `22_figs_originals/A3_flux_gcc_complet.svg` | SVG natiu | `wrn-flux-gcc-complet` | 0 | El flux de generació complet. | Diagrama del flux complet de generació d'un executable amb … |
 | `fig-semisumador-sumador-complet` | `A4.qmd:77` | `22_figs_originals/A4_semisumador_sumador_complet.svg` | SVG natiu | `wrn-sobreeiximent-maquinari` | 1 | Semisumador i sumador complet: (a) el semisumador, amb una XOR per al bit de suma i una A… | (a) Semisumador: una porta XOR dona el bit de suma s = a xo… |
 | `fig-sumador-propagacio-rossec` | `A4.qmd:94` | `22_figs_originals/A4_sumador_propagacio_rossec.svg` | SVG natiu | `wrn-sobreeiximent-maquinari` | 1 | Sumador de $n$ bits amb propagació del ròssec. El ròssec avança de dreta a esquerra, del … | Cadena de n sumadors complets, del bit de més pes (n-1, a l… |
 | `fig-multiplicador-sequencial` | `A4.qmd:187` | `22_figs_originals/A4_multiplicador_sequencial.svg` | SVG natiu |  | 1 | Circuit multiplicador seqüencial. | Esquema del circuit multiplicador seqüencial: el registre M… |
@@ -44,10 +44,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | `fig-ieee754-format` | `A5.qmd:83` | `registres.toml:A5_ieee754_format_registre` | gen_regs.py |  | 1 | Disposició dels camps S, E i F en el format IEEE 754 de precisió simple (32 bits). | S(31), E(30–23), F(22–0). |
 | `fig-exponent-ieee754` | `A5.qmd:132` | `22_figs_originals/A5_exponent.svg` | Inkscape |  | 1 | Correspondència entre l'exponent emmagatzemat $E_u$ (0–255) i l'exponent real $e = E_u - … | Dues rectes. La de dalt és l'exponent emmagatzemat, de 0 a … |
 | `fig-recta-global` | `A5.qmd:267` | `22_figs_originals/A5_recta_global.svg` | SVG natiu |  | 1 | Recta de la coma flotant IEEE 754 (precisió simple): $\pm\infty$ i NaN als extrems ($E=25… | Dues rectes, la dels negatius a dalt i la dels positius a s… |
-| `fig-taula-codificacions` | `A5.qmd:341` | `22_figs_originals/A5_taula_codificacions.svg` | exportació LO Draw |  | 1 | Mapa de codificacions IEEE 754 de precisió simple: els eixos $E$ i $F$ determinen unívoca… | Una taula de dues entrades. Les columnes són l'exponent E: … |
-| `fig-recta-zoom-zero` | `A5.qmd:382` | `22_figs_originals/A5_recta_zoom_zero.svg` | Inkscape |  | 1 | Zoom al voltant del zero: $\pm 0$ i els denormals ($E=0$) omplen el buit entre el zero i … | Dues rectes al voltant del zero, la dels negatius a dalt i … |
-| `fig-grs-esquema` | `A5.qmd:432` | `22_figs_originals/A5_grs_esquema.svg` | SVG natiu |  | 1 | Esquema dels bits de guarda ($G$), arrodoniment ($R$) i *sticky* ($S$) respecte de la man… | Mantissa retinguda seguida dels tres bits descartats G, R i… |
-| `fig-format-r4` | `A5.qmd:873` | `registres.toml:A5_instruccio_tipus_R4` | gen_regs.py | `wrn-instruccions-fusionades` | 1 | Format d'instrucció R4 (RV32F), el de les instruccions fusionades. | fs3(31–27), funct2(26–25), fs2(24–20), fs1(19–15), funct3(1… |
+| `fig-taula-codificacions` | `A5.qmd:343` | `22_figs_originals/A5_taula_codificacions.svg` | exportació LO Draw |  | 1 | Mapa de codificacions IEEE 754 de precisió simple: els eixos $E$ i $F$ determinen unívoca… | Una taula de dues entrades. Les columnes són l'exponent E: … |
+| `fig-recta-zoom-zero` | `A5.qmd:384` | `22_figs_originals/A5_recta_zoom_zero.svg` | Inkscape |  | 1 | Zoom al voltant del zero: $\pm 0$ i els denormals ($E=0$) omplen el buit entre el zero i … | Dues rectes al voltant del zero, la dels negatius a dalt i … |
+| `fig-grs-esquema` | `A5.qmd:434` | `22_figs_originals/A5_grs_esquema.svg` | SVG natiu |  | 1 | Esquema dels bits de guarda ($G$), arrodoniment ($R$) i *sticky* ($S$) respecte de la man… | Mantissa retinguda seguida dels tres bits descartats G, R i… |
+| `fig-format-r4` | `A5.qmd:875` | `registres.toml:A5_instruccio_tipus_R4` | gen_regs.py | `wrn-instruccions-fusionades` | 1 | Format d'instrucció R4 (RV32F), el de les instruccions fusionades. | fs3(31–27), funct2(26–25), fs2(24–20), fs1(19–15), funct3(1… |
 | `fig-tc-tc-prima` | `A6.qmd:146` | `22_figs_originals/A6_tc_tc_prima.svg` | Inkscape | `tip-augment-freq` | 0 | Mateixos components, diferents temps de cicle. | Dos diagrames de temps amb dues etapes, A i B, de durades d… |
 | `fig-amdahl` | `A6.qmd:214` | `22_figs_originals/A6_amdahl.svg` | Inkscape |  | 1 | Temps total del programa original dividit en una part optimitzada (fracció $P_{x}$) i una… | Dues barres de temps d'execució, l'original i la millorada.… |
 | `fig-not-cmos` | `A6.qmd:287` | `22_figs_originals/A6_not_cmos.svg` | Inkscape | `wrn-RC` | 1 | Porta NOT, representació funcional i implementació amb CMOS. | A l'esquerra, el símbol de la porta NOT, que alimenta un ci… |
@@ -91,20 +91,20 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | `fig-mv-flux-traduccio` | `A8.qmd:373` | `22_figs_originals/A8_mv_flux_traduccio.svg` | SVG natiu |  | 2 | Flux complet de traducció d'una adreça en un sistema amb TLB i memòria virtual. A l'esque… | Diagrama de flux en tres columnes, agrupades en dues zones … |
 | `fig-mv-comparticio` | `A8.qmd:430` | `22_figs_originals/A8_mv_comparticio.svg` | SVG natiu |  | 1 | Compartició d'una pàgina física entre dos processos (@tip-mv-comparticio): P1 la té assig… | A l'esquerra, les taules de pàgines de P1, a dalt, en blau,… |
 | `fig-mv-pipt` | `A8.qmd:458` | `22_figs_originals/A8_mv_pipt.svg` | SVG natiu |  | 2 | Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en… | Diagrama de blocs en una fila: la CPU envia l'adreça lògica… |
-| `fig-mv-vipt` | `A8.qmd:489` | `22_figs_originals/A8_mv_vipt.svg` | SVG natiu |  | 1 | Memòria cau VIPT: la indexació de la memòria cau i la traducció del TLB es fan en paral·l… | La CPU genera l'adreça lògica, dividida en VPN i desplaçame… |
-| `fig-mv-tlb-exemple` | `A8.qmd:586` | `22_figs_originals/A8_mv_exemple_tlb.svg` | SVG natiu |  | 1 | Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el … | A dalt, l'estat inicial: el TLB, amb tres entrades vàlides … |
+| `fig-mv-vipt` | `A8.qmd:491` | `22_figs_originals/A8_mv_vipt.svg` | SVG natiu |  | 1 | Memòria cau VIPT: la indexació de la memòria cau i la traducció del TLB es fan en paral·l… | La CPU genera l'adreça lògica, dividida en VPN i desplaçame… |
+| `fig-mv-tlb-exemple` | `A8.qmd:590` | `22_figs_originals/A8_mv_exemple_tlb.svg` | SVG natiu |  | 1 | Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el … | A dalt, l'estat inicial: el TLB, amb tres entrades vàlides … |
 | `fig-cicle-interrupcio` | `A9.qmd:718` | `22_figs_originals/A9_cicle_interrupcio.svg` | Inkscape |  | 1 | Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucc… | Una línia de temps d'esquerra a dreta en tres trams: execuc… |
 | `fig-ba-funcio-a` | `S3.qmd:626` | `BA.toml:S3_ba_A` | gen_BA.py |  | 1 | Bloc d'activació de la funció `A`: el vector `r` al desplaçament `+0` i l'alineació als b… | Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes… |
 | `fig-ba-variancia` | `S5.qmd:755` | `BA.toml:S5_ba_variancia` | gen_BA.py |  | 1 | Bloc d'activació de `variancia`: el vector `vquadrats` al desplaçament `+0` i els registr… | Bloc d'activació de 420 bytes, d'adreces baixes (sp) a alte… |
 | `fig-ba-moda` | `L3.qmd:341` | `BA.toml:L3_ba_moda` | gen_BA.py |  | 1 | Bloc d'activació de `moda`: el vector `histo` al desplaçament `+0` i els registres desats… | Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes… |
 | `—` | `A2.qmd:270` | `registres.toml:compendi_registres_RIS` | gen_regs.py (COMPENDIS) | `nte-instruccions-tipus` | 0 |  |  |
-| `—` | `A2.qmd:1212` | `registres.toml:A2_instruccio_tipus_R` | gen_regs.py | `nte-instruccions-Tipus-R` | 0 |  |  |
-| `—` | `A2.qmd:1271` | `registres.toml:A2_instruccio_tipus_I` | gen_regs.py | `nte-instruccions-Tipus-I` | 0 |  |  |
-| `—` | `A2.qmd:1292` | `registres.toml:A2_instruccio_tipus_U` | gen_regs.py | `nte-format-u` | 0 |  |  |
-| `—` | `A2.qmd:1334` | `registres.toml:A2_instruccio_tipus_S` | gen_regs.py | `nte-instruccions-Tipus-S` | 0 |  |  |
-| `—` | `A3.qmd:403` | `registres.toml:A3_instruccio_tipus_B` | gen_regs.py | `nte-format-b` | 0 |  |  |
-| `—` | `A3.qmd:511` | `registres.toml:A3_instruccio_tipus_J` | gen_regs.py | `nte-format-j` | 0 |  |  |
-| `—` | `A5.qmd:753` | `registres.toml:A5_fcsr` | gen_regs.py | `nte-fcsr` | 0 |  |  |
+| `—` | `A2.qmd:1215` | `registres.toml:A2_instruccio_tipus_R` | gen_regs.py | `nte-instruccions-Tipus-R` | 0 |  |  |
+| `—` | `A2.qmd:1274` | `registres.toml:A2_instruccio_tipus_I` | gen_regs.py | `nte-instruccions-Tipus-I` | 0 |  |  |
+| `—` | `A2.qmd:1295` | `registres.toml:A2_instruccio_tipus_U` | gen_regs.py | `nte-format-u` | 0 |  |  |
+| `—` | `A2.qmd:1337` | `registres.toml:A2_instruccio_tipus_S` | gen_regs.py | `nte-instruccions-Tipus-S` | 0 |  |  |
+| `—` | `A3.qmd:407` | `registres.toml:A3_instruccio_tipus_B` | gen_regs.py | `nte-format-b` | 0 |  |  |
+| `—` | `A3.qmd:515` | `registres.toml:A3_instruccio_tipus_J` | gen_regs.py | `nte-format-j` | 0 |  |  |
+| `—` | `A5.qmd:755` | `registres.toml:A5_fcsr` | gen_regs.py | `nte-fcsr` | 0 |  |  |
 | `—` | `A8.qmd:76` | `22_figs_originals/A8_mv_adreca_exemple.svg` | SVG natiu |  | 0 |  |  |
 | `—` | `A9.qmd:122` | `registres.toml:A9_mcause` | gen_regs.py | `nte-mcause-mes-rellevants` | 0 |  |  |
 | `—` | `A9.qmd:152` | `registres.toml:A9_mepc` | gen_regs.py | `nte-mepc` | 0 |  |  |
@@ -129,17 +129,17 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | :--- | :--- | :--- | ---: | :---: | :---: | ---: | :--- | :--- |
 | `22_figs_originals/A1_flux_compilacio.svg` | A1.qmd:58, A1.qmd:65 | Inkscape | 901 | sí | sí | 20 |  |  |
 | `22_figs_originals/A1_picopi_fases.svg` | A1.qmd:227, A1.qmd:234 | Inkscape | 680 | sí | sí | 39 |  |  |
-| `22_figs_originals/A1_von_neumann.svg` | A1.qmd:362, A1.qmd:369 | Inkscape | 700 | sí | sí | 26 |  |  |
-| `22_figs_originals/A2_acces_vector.svg` | A2.qmd:1909, A2.qmd:1916 | SVG natiu | 260 | sí | sí | 13 |  |  |
-| `22_figs_originals/A2_endianness_regla_pi.svg` | A2.qmd:1066, A2.qmd:1073 | Inkscape | 285 | sí | sí | 15 |  |  |
+| `22_figs_originals/A1_von_neumann.svg` | A1.qmd:363, A1.qmd:370 | Inkscape | 700 | sí | sí | 26 |  |  |
+| `22_figs_originals/A2_acces_vector.svg` | A2.qmd:1913, A2.qmd:1920 | SVG natiu | 260 | sí | sí | 13 |  |  |
+| `22_figs_originals/A2_endianness_regla_pi.svg` | A2.qmd:1069, A2.qmd:1076 | Inkscape | 285 | sí | sí | 15 |  |  |
 | `22_figs_originals/A3_ba_exemple.svg` | **orfe** | Inkscape | 316 | no | no | 20 |  |  |
 | `22_figs_originals/A3_ba_func.svg` | **orfe** | Inkscape | 326 | sí | sí | 11 |  |  |
 | `22_figs_originals/A3_ba_general.svg` | **orfe** | Inkscape | 326 | sí | sí | 12 |  |  |
 | `22_figs_originals/A3_ba_multi.svg` | **orfe** | Inkscape | 326 | no | no | 7 |  |  |
-| `22_figs_originals/A3_compilacio_separada.svg` | A3.qmd:1877, A3.qmd:1884 | Inkscape | 610 | sí | sí | 13 |  |  |
-| `22_figs_originals/A3_deps_exemple.svg` | A3.qmd:1730, A3.qmd:1737 | Inkscape | 340 | sí | sí | 5 |  |  |
-| `22_figs_originals/A3_deps_multi.svg` | A3.qmd:1622, A3.qmd:1629 | Inkscape | 290 | sí | sí | 3 |  |  |
-| `22_figs_originals/A3_flux_gcc_complet.svg` | A3.qmd:2071, A3.qmd:2078 | SVG natiu | 490 | sí | sí | 21 |  |  |
+| `22_figs_originals/A3_compilacio_separada.svg` | A3.qmd:1878, A3.qmd:1885 | Inkscape | 610 | sí | sí | 13 |  |  |
+| `22_figs_originals/A3_deps_exemple.svg` | A3.qmd:1731, A3.qmd:1738 | Inkscape | 340 | sí | sí | 5 |  |  |
+| `22_figs_originals/A3_deps_multi.svg` | A3.qmd:1623, A3.qmd:1630 | Inkscape | 290 | sí | sí | 3 |  |  |
+| `22_figs_originals/A3_flux_gcc_complet.svg` | A3.qmd:2072, A3.qmd:2079 | SVG natiu | 490 | sí | sí | 21 |  |  |
 | `22_figs_originals/A3_mapa_memoria.svg` | **orfe** | Inkscape | 326 | sí | sí | 19 |  |  |
 | `22_figs_originals/A3_pila_multinivell.svg` | **orfe** | Inkscape | 510 | sí | sí | 30 |  |  |
 | `22_figs_originals/A3_pila_uninivell.svg` | **orfe** | Inkscape | 310 | sí | sí | 18 |  |  |
@@ -152,10 +152,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | `22_figs_originals/A4_semisumador_sumador_complet.svg` | A4.qmd:80, A4.qmd:87 | SVG natiu | 590 | sí | sí | 24 |  |  |
 | `22_figs_originals/A4_sumador_propagacio_rossec.svg` | A4.qmd:104, A4.qmd:97 | SVG natiu | 750 | sí | sí | 28 |  |  |
 | `22_figs_originals/A5_exponent.svg` | A5.qmd:135, A5.qmd:142 | Inkscape | 740 | sí | sí | 24 |  |  |
-| `22_figs_originals/A5_grs_esquema.svg` | A5.qmd:435, A5.qmd:442 | SVG natiu | 620 | sí | sí | 20 |  |  |
+| `22_figs_originals/A5_grs_esquema.svg` | A5.qmd:437, A5.qmd:444 | SVG natiu | 620 | sí | sí | 20 |  |  |
 | `22_figs_originals/A5_recta_global.svg` | A5.qmd:270, A5.qmd:277 | SVG natiu | 950 | sí | sí | 86 |  |  |
-| `22_figs_originals/A5_recta_zoom_zero.svg` | A5.qmd:385, A5.qmd:392 | Inkscape | 900 | sí | sí | 74 |  |  |
-| `22_figs_originals/A5_taula_codificacions.svg` | A5.qmd:344, A5.qmd:351 | exportació LO Draw | 11509.377 | sí | sí | 12 |  |  |
+| `22_figs_originals/A5_recta_zoom_zero.svg` | A5.qmd:387, A5.qmd:394 | Inkscape | 900 | sí | sí | 74 |  |  |
+| `22_figs_originals/A5_taula_codificacions.svg` | A5.qmd:346, A5.qmd:353 | exportació LO Draw | 11509.377 | sí | sí | 12 |  |  |
 | `22_figs_originals/A6_amdahl.svg` | A6.qmd:217, A6.qmd:224 | Inkscape | 220 | sí | sí | 15 |  |  |
 | `22_figs_originals/A6_not_0_1.svg` | A6.qmd:326, A6.qmd:333 | Inkscape | 386 | sí | sí | 14 |  |  |
 | `22_figs_originals/A6_not_1_0.svg` | A6.qmd:309, A6.qmd:316 | Inkscape | 386 | sí | sí | 14 |  |  |
@@ -183,7 +183,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | `22_figs_originals/A8_mv_adreca_exemple.svg` | A8.qmd:76, A8.qmd:83 | SVG natiu | 680 | sí | sí | 7 |  |  |
 | `22_figs_originals/A8_mv_comparticio.svg` | A8.qmd:433, A8.qmd:440 | SVG natiu | 680 | sí | sí | 109 |  |  |
 | `22_figs_originals/A8_mv_espais.svg` | A8.qmd:31, A8.qmd:38 | SVG natiu | 680 | sí | sí | 49 |  |  |
-| `22_figs_originals/A8_mv_exemple_tlb.svg` | A8.qmd:590, A8.qmd:598 | SVG natiu | 680 | sí | sí | 237 |  |  |
+| `22_figs_originals/A8_mv_exemple_tlb.svg` | A8.qmd:594, A8.qmd:602 | SVG natiu | 680 | sí | sí | 237 |  |  |
 | `22_figs_originals/A8_mv_exemple_tlb_pas0.svg` | fotograma de `A8_mv_exemple_tlb.svg` | SVG natiu | 680 | sí | sí | 75 |  |  |
 | `22_figs_originals/A8_mv_exemple_tlb_pas1.svg` | fotograma de `A8_mv_exemple_tlb.svg` | SVG natiu | 680 | sí | sí | 76 |  |  |
 | `22_figs_originals/A8_mv_exemple_tlb_pas2.svg` | fotograma de `A8_mv_exemple_tlb.svg` | SVG natiu | 680 | sí | sí | 76 |  |  |
@@ -199,17 +199,17 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | `22_figs_originals/A8_mv_tlb_estructura.svg` | A8.qmd:312, A8.qmd:319 | SVG natiu | 680 | sí | sí | 75 |  |  |
 | `22_figs_originals/A8_mv_traduccio.svg` | A8.qmd:119, A8.qmd:126 | SVG natiu | 680 | sí | sí | 57 |  |  |
 | `22_figs_originals/A8_mv_traduccio_exemple.svg` | A8.qmd:188, A8.qmd:195 | SVG natiu | 680 | sí | sí | 91 |  |  |
-| `22_figs_originals/A8_mv_vipt.svg` | A8.qmd:492, A8.qmd:499 | SVG natiu | 680 | sí | sí | 22 |  |  |
+| `22_figs_originals/A8_mv_vipt.svg` | A8.qmd:494, A8.qmd:501 | SVG natiu | 680 | sí | sí | 22 |  |  |
 | `22_figs_originals/A9_cicle_interrupcio.svg` | A9.qmd:721, A9.qmd:728 | Inkscape | 680 | sí | sí | 17 |  |  |
 | `23_figs_externes/A7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1078 | ràster |  | no | no | 0 |  |  |
 | `23_figs_externes/by-nc-sa.eu.png` | 14_LICENSE.qmd:5 | ràster |  | no | no | 0 |  |  |
-| `registres.toml:A2_instruccio_tipus_R` | A2.qmd:1212, A2.qmd:1219 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:A2_instruccio_tipus_I` | A2.qmd:1271, A2.qmd:1278 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:A2_instruccio_tipus_S` | A2.qmd:1334, A2.qmd:1341 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:A2_instruccio_tipus_U` | A2.qmd:1292, A2.qmd:1299 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:A3_instruccio_tipus_B` | A3.qmd:403, A3.qmd:410 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:A3_instruccio_tipus_J` | A3.qmd:511, A3.qmd:518 | gen_regs.py |  | sí | sí | 0 |  |  |
-| `registres.toml:A5_instruccio_tipus_R4` | A5.qmd:876, A5.qmd:883 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:A2_instruccio_tipus_R` | A2.qmd:1215, A2.qmd:1222 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:A2_instruccio_tipus_I` | A2.qmd:1274, A2.qmd:1281 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:A2_instruccio_tipus_S` | A2.qmd:1337, A2.qmd:1344 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:A2_instruccio_tipus_U` | A2.qmd:1295, A2.qmd:1302 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:A3_instruccio_tipus_B` | A3.qmd:407, A3.qmd:414 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:A3_instruccio_tipus_J` | A3.qmd:515, A3.qmd:522 | gen_regs.py |  | sí | sí | 0 |  |  |
+| `registres.toml:A5_instruccio_tipus_R4` | A5.qmd:878, A5.qmd:885 | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:A5_ieee754_format_registre` | A5.qmd:86, A5.qmd:93 | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:A5_fcsr` | 11_riscv.qmd:270, 11_riscv.qmd:277 … | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:A9_mstatus` | 11_riscv.qmd:462, 11_riscv.qmd:469 … | gen_regs.py |  | sí | sí | 0 |  |  |
@@ -219,18 +219,18 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | `registres.toml:A9_mip` | 11_riscv.qmd:508, 11_riscv.qmd:515 … | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:A9_mie` | 11_riscv.qmd:520, 11_riscv.qmd:527 … | gen_regs.py |  | sí | sí | 0 |  |  |
 | `registres.toml:A9_satp` | 11_riscv.qmd:565, 11_riscv.qmd:572 … | gen_regs.py |  | sí | sí | 0 |  |  |
-| `BA.toml:A3_ba_exemple` | A3.qmd:1777, A3.qmd:1784 | gen_BA.py |  | sí | sí | 0 |  |  |
-| `BA.toml:A3_ba_multi` | A3.qmd:1655, A3.qmd:1662 | gen_BA.py |  | sí | sí | 0 |  |  |
-| `BA.toml:A3_ba_general` | A3.qmd:1428, A3.qmd:1435 | gen_BA.py |  | sí | sí | 0 |  |  |
-| `BA.toml:A3_ba_func` | A3.qmd:1457, A3.qmd:1464 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `BA.toml:A3_ba_exemple` | A3.qmd:1778, A3.qmd:1785 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `BA.toml:A3_ba_multi` | A3.qmd:1656, A3.qmd:1663 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `BA.toml:A3_ba_general` | A3.qmd:1429, A3.qmd:1436 | gen_BA.py |  | sí | sí | 0 |  |  |
+| `BA.toml:A3_ba_func` | A3.qmd:1458, A3.qmd:1465 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `BA.toml:L3_ba_moda` | L3.qmd:344, L3.qmd:351 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `BA.toml:S3_ba_A` | S3.qmd:629, S3.qmd:636 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `BA.toml:S5_ba_variancia` | S5.qmd:758, S5.qmd:765 | gen_BA.py |  | sí | sí | 0 |  |  |
 | `mapa.toml:A3_mapa_memoria` | A3.qmd:1024, A3.qmd:1031 | gen_mapa.py |  | sí | sí | 0 |  |  |
-| `mapa.toml:A3_pila_uninivell` | A3.qmd:1387, A3.qmd:1394 | gen_mapa.py |  | sí | sí | 0 |  |  |
-| `mapa.toml:A3_pila_multinivell` | A3.qmd:1508, A3.qmd:1515 | gen_mapa.py |  | sí | sí | 0 |  |  |
-| `subrutines.toml:A3_deps_multi` | A3.qmd:1636, A3.qmd:1643 | gen_subrutines.py |  | sí | sí | 0 |  |  |
-| `subrutines.toml:A3_deps_exemple` | A3.qmd:1744, A3.qmd:1751 | gen_subrutines.py |  | sí | sí | 0 |  |  |
+| `mapa.toml:A3_pila_uninivell` | A3.qmd:1388, A3.qmd:1395 | gen_mapa.py |  | sí | sí | 0 |  |  |
+| `mapa.toml:A3_pila_multinivell` | A3.qmd:1509, A3.qmd:1516 | gen_mapa.py |  | sí | sí | 0 |  |  |
+| `subrutines.toml:A3_deps_multi` | A3.qmd:1637, A3.qmd:1644 | gen_subrutines.py |  | sí | sí | 0 |  |  |
+| `subrutines.toml:A3_deps_exemple` | A3.qmd:1745, A3.qmd:1752 | gen_subrutines.py |  | sí | sí | 0 |  |  |
 | `MC.toml:A7_escriptura_estat_inicial` | A7.qmd:564, A7.qmd:572 | gen_MC.py |  | sí | sí | 0 |  |  |
 | `MC.toml:A7_escriptura_estat_inicial_traca` | A7.qmd:579, A7.qmd:586 | gen_MC.py |  | sí | sí | 0 |  |  |
 | `MC.toml:A7_escriptura_immediata_amb_assignacio` | A7.qmd:605, A7.qmd:613 | gen_MC.py |  | sí | sí | 0 |  |  |
@@ -245,9 +245,9 @@ Generat per `25_scripts/inventari_figures.py` sobre `2b52382` (2026-10-09), amb 
 | `MC.toml:A7_mc_organitzacio` | A7.qmd:145, A7.qmd:152 | gen_MC.py |  | sí | sí | 0 |  |  |
 | `MC.toml:A7_assoc_conjunts_taula` | A7.qmd:354, A7.qmd:361 | gen_MC.py |  | sí | sí | 0 |  |  |
 | `MC.toml:A7_escriptura_dirty_bit` | A7.qmd:503, A7.qmd:510 | gen_MC.py |  | sí | sí | 0 |  |  |
-| `memoria.toml:A2_memoria_creix_avall` | A2.qmd:986, A2.qmd:993 | gen_memoria.py |  | sí | sí | 0 |  |  |
-| `memoria.toml:A2_big_endian` | A2.qmd:1026, A2.qmd:1033 | gen_memoria.py |  | sí | sí | 0 |  |  |
-| `memoria.toml:A2_little_endian` | A2.qmd:1040, A2.qmd:1047 | gen_memoria.py |  | sí | sí | 0 |  |  |
+| `memoria.toml:A2_memoria_creix_avall` | A2.qmd:989, A2.qmd:996 | gen_memoria.py |  | sí | sí | 0 |  |  |
+| `memoria.toml:A2_big_endian` | A2.qmd:1029, A2.qmd:1036 | gen_memoria.py |  | sí | sí | 0 |  |  |
+| `memoria.toml:A2_little_endian` | A2.qmd:1043, A2.qmd:1050 | gen_memoria.py |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres` | 11_riscv.qmd:40, 11_riscv.qmd:47 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 | `registres.toml:compendi_registres_RIS` | A2.qmd:270, A2.qmd:277 | gen_regs.py (COMPENDIS) |  | sí | sí | 0 |  |  |
 

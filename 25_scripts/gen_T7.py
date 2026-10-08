@@ -99,7 +99,7 @@ def multinivell():
     o = []
     yy = 26
     files = [
-        ('(a)', "Problema: el temps d'accés a l’MP limita el rendiment", [('CPU', None), ('MP', ('t', 'acc', None))]),
+        ('(a)', "Problema: el temps d'accés a l’MP limita el rendiment", [('CPU', None), ('MP', ('t', 'MP', None))]),
         ('(b)', 'Solució: una MC explota la localitat; el temps llarg només es paga a les fallades',
          [('CPU', None), ('MC', ('t', 'h', None)), ('MP', ('t', 'p', None))]),
         ('(c)', 'Les fallades de L1 que encerten a L2 paguen el temps d’encert de L2, no el de l’MP',

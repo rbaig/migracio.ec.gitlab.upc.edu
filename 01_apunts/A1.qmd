@@ -29,7 +29,7 @@ L'abstracció només és efectiva si les interfícies (fronteres) actuen com a c
 
 - ***Application Binary Interface*** (**ABI**): Contracte a nivell de binari. És el protocol que defineix com interactuen les peces ja compilades. Estableix les convencions de crida (pas de paràmetres per registres), la gestió de la pila (*stack*) i el format dels fitxers executables. L'ABI depèn del binomi **processador-SO** (ex: GNU/Linux sobre RISC-V). **Defineix com parlen els binaris**.
 
-- ***Instruction Set Architecture*** (**ISA**): Contracte a nivell de maquinari. Defineix el vocabulari d'instruccions, els registres físics i el model de memòria. **Defineix què sap fer el processador**.
+- ***Instruction Set Architecture*** (**ISA**): Contracte a nivell de maquinari. Defineix el vocabulari d'instruccions, els registres visibles per al programador i el model de memòria. **Defineix què sap fer el processador**.
 
 ::: {#imp-directe-sobre-processador .callout-important}
 A **EC**, s'assumeix que es **treballa directament sobre el processador**, si no s'especifica explícitament el contrari. Per tant, recursos vistos en aquest tema, com ara les API o l'SO, no estan disponibles per defecte.
@@ -71,7 +71,7 @@ El flux de generació del programari: les quatre etapes del *toolchain* GCC.
 ## GCC i Clang
 La [**GCC toolchain**](https://gcc.gnu.org/) (*GNU Compiler Collection*) és l'estàndard *de facto* de la indústria per a sistemes oberts. És un projecte de codi obert que ha evolucionat durant dècades, oferint un suport ampli per a múltiples arquitectures i estàndards de llenguatge.
 
-La [**Clang toolchain**](https://clang.llvm.org/) és una alternativa moderna que ha guanyat popularitat per la seva arquitectura modular i millor suport per a noves característiques del llenguatge C/C++.
+La [**Clang toolchain**](https://clang.llvm.org/) és una alternativa moderna que ha guanyat popularitat per la seva arquitectura modular i per uns missatges de diagnòstic més clars.
 :::
 
 ### El flux d'execució: la visió del processador {#sec-flux-dexecucio}
@@ -100,7 +100,7 @@ Des del punt de vista del programador, les interfícies actuen com a **normes de
 
 - **API**: El programador escriu `printf()`. El compilador sap què vol dir perquè l'API ho defineix.
 - **ABI**: El compilador decideix posar el primer argument a `a0` perquè l'ABI de RISC-V ho mana.
-- **ISA**: El compilador tradueix la suma al codi màquina `0x00B50533` perquè l'ISA ho especifica.
+- **ISA**: L'assemblador codifica la suma `add a0, a0, a1` (@tip-traduccio-c-asm) com a `0x00B50533` perquè l'ISA ho especifica.
 
 #### Les interfícies en la «visió del processador» (execució) {#sec-interficies-execucio}
 És al processador on les interfícies esdevenen el **protocol de funcionament real**:
@@ -108,7 +108,7 @@ Des del punt de vista del programador, les interfícies actuen com a **normes de
 - **L'ABI en execució**: Quan el programa executa `ecall`, el processador cedeix el control a l'entorn d'execució (l'SO o, a EC, el simulador), que llegeix el codi de servei del registre `a7` i l'interpreta segons la convenció de crides al sistema de l'**ABI**. Si la convenció diu que el codi `1` és «imprimir un enter» (és el cas de RARS), el sistema l'imprimeix. L'ABI és el que permet que el binari i l'entorn es basin en la mateixa «llengua» mentre el programa s'executa.
 - **L'ISA en execució**: És el moment de la veritat. La unitat de control del processador llegeix els bits del binari. Si aquests bits no coincideixen amb l'**ISA** del maquinari, el processador no sabrà quines portes lògiques obrir i el sistema fallarà (instrucció il·legal).
 
-La @tbl-impacte-canvi-interficies resumeix l'impacte que tenen els canvis a nivell de cada una de les interfícies.
+La @tbl-impacte-canvi-interficies resumeix l'impacte que tenen els canvis a cada una de les interfícies.
 
 ::: {#tbl-impacte-canvi-interficies tbl-colwidths="[15,25,60]" style="width: 90%;" .striped}
 | Si canvia la... | El codi s'ha de... | Perquè... |
@@ -135,8 +135,8 @@ En el desenvolupament de sistemes de baix nivell i, especialment, en els encasta
 #### Per què és important aquesta separació? {#sec-per-que-es-important-aquesta-separacio}
 
 - **Incompatibilitat de binaris**: Un binari generat per a RISC-V és una seqüència de bits inintel·ligible per a un processador Intel/AMD. Si s'intenta executar-lo directament al terminal de Linux/Windows, el sistema operatiu advertirà que el format de l'executable és invàlid.
-- **El paper del simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador s'executa en el host (x86), però l'interior de la bombolla entén la **ISA** i l'**ABI** de RISC-V.
-- **Portabilitat del codi font**: El codi en C és l'únic element que «viatja» entre ambdós mons. Es pot compilar el mateix fitxer `.c` per al host (per provar la lògica) o fer **cross-compilation** per al target.
+- **El paper del simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador s'executa en el host (x86-64 o ARM), però l'interior de la bombolla entén la **ISA** i l'**ABI** de RISC-V.
+- **Portabilitat del codi font**: El codi en C és l'únic element portable entre tots dos mons: es pot compilar el mateix fitxer `.c` per al host (per provar la lògica) o fer **cross-compilation** per al target.
 
 #### Compilació creuada (*cross-compilation*) {#sec-compilacio-creuada}
 
@@ -213,13 +213,13 @@ En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir q
 :::: {#wrn-picopi .callout-warning collapse=true}
 ## Treballant amb maquinari real: [Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) + [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)
 
-Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un ordinador personal), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i Flash), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (com GPIO, UART o ADC).
+Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un ordinador personal), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i, sovint, Flash), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (com GPIO, UART o ADC).
 
 El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en la **ISA RISC-V**. El programador tria l'arquitectura en compilar el programa, i la ROM d'arrencada activa els nuclis que corresponen a la imatge que hi troba.
 
 La **[Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)** és una placa de desenvolupament basada en el xip **RP2350**. Com a plataforma d'experimentació exposa els pins del microcontrolador per connectar-hi sensors, actuadors i depuradors.
 
-La **[Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)** és una sonda de depuració (***debug probe***). La interfície Serial Wire Debug (**SWD**) li permet controlar la CPU del target, carregar-hi binaris i inspeccionar registres o memòria en temps real. L'estàndard **CMSIS-DAP**, compatible amb la majoria d'eines de depuració de codi obert com OpenOCD o GDB, li permet la interacció amb l'ordinador del desenvolupador.
+La **[Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)** és una sonda de depuració (***debug probe***). La interfície Serial Wire Debug (**SWD**) li permet controlar la CPU del target, carregar-hi binaris i inspeccionar registres o memòria en temps real. L'estàndard **CMSIS-DAP**, compatible amb la majoria d'eines de depuració de codi obert, com OpenOCD (al qual es connecta GDB), li permet la interacció amb l'ordinador del desenvolupador.
 
 ::: {#fig-picopi-fases}
 ::: {.content-visible when-format="html"}
@@ -261,7 +261,7 @@ Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) 
 **Fase 3: Execució** / **Depuració** (***Runtime*** / ***Debugging***)
 
 - **Host** (ordinador):
-    - Envia ordres com «Atura't (`breakpoint`)», «Executa la instrucció següent (`step`)» o «Escriu el valor `5` al registre `a0`».
+    - Envia ordres com «Atura't (`break`)», «Executa la instrucció següent (`stepi`)» o «Escriu el valor `5` al registre `a0`».
 
 - **Target** (**Pi Pico 2**):
     - Respon enviant la informació en temps real: «Estic aturat a l'adreça `0x00000100`», «El registre `t0` val `42`» o «S'ha produït un error de memòria».
@@ -278,7 +278,7 @@ El pas de C++ a C és un exercici de **simplificació**. En C no existeixen les 
 
 - **Sense Classes ni Objectes**: El C és un llenguatge **procedimental**. No hi ha `class`, `public`, `private` ni herència. Les dades s'agrupen en `struct` (estructures de dades) i les funcions operen sobre elles de manera externa.
 - **Sense Standard Template Library (STL)**: No hi ha `std::vector`, `std::stack` o `std::map`. En C, si, per exemple, es vol una llista enllaçada, cal programar-la gestionant els punters manualment.
-- **Gestió manual de l'E/S**: No hi ha *streams* (`cin >>`, `cout <<`), sinó funcions de biblioteca com `scanf` i `printf`. Això obliga a especificar el **format de les dades** (`%d` per a enters, @tip-abstraccio-transparencia), el qual està íntimament lligat a la manera com es representen en bits.
+- **Gestió manual de l'E/S**: No hi ha els *streams* de C++ (`cin >>`, `cout <<`), sinó funcions de biblioteca com `scanf` i `printf`. Això obliga a especificar el **format de les dades** (`%d` per a enters, @tip-abstraccio-transparencia), el qual està íntimament lligat a la manera com es representen en bits.
 - **Gestió explícita de la memòria**: En C++ sovint la memòria s'allibera automàticament (destructors). En C, cada `malloc()` (reserva) requereix un `free()` (alliberament) manual.
 
 #### Per què C i no C++ a Estructura de Computadors? {#sec-per-que-c}
@@ -301,7 +301,7 @@ int n = 42;
 std::cout << n;
 ```
 - **Què passa aquí?** El programador no diu *com* és el número. L'objecte `cout` «endevina» que `n` és un enter (gràcies a la sobrecàrrega d'operadors) i decideix internament com transformar els bits de `n` en caràcters ASCII.
-- **Problema per a EC**: Hi ha molta «màgia» oculta. Per exemple, tant el pas de paràmetres com la gestió del tipus de dada a nivell de registre resten ocults.
+- **Problema per a EC**: Hi ha molta «màgia» oculta. Per exemple, tant el pas de paràmetres com la gestió del tipus de dada als registres resten ocults.
 
 En C, l'èmfasi en la transparència del format:
 ```{.c filename="C"}
@@ -336,13 +336,13 @@ Mentre que C es **compila** (es tradueix tot el codi font abans d'executar-lo), 
 
 ## Arquitectura física: el model de Von Neumann {#sec-von-neumann}
 
-La pràctica totalitat dels computadors actuals (des d'un supercomputador fins al processador d'un microones) segueixen l'arquitectura proposada per **John von Neumann** l'any 1945. El trencament conceptual més important d'aquest model és el concepte de **programa emmagatzemat**.
+La pràctica totalitat dels computadors actuals segueixen el model de programa emmagatzemat proposat per **John von Neumann** l'any 1945 (alguns microcontroladors separen la memòria d'instruccions de la de dades: arquitectura Harvard). El trencament conceptual més important d'aquest model és el concepte de **programa emmagatzemat**.
 
 ### El concepte de programa emmagatzemat: instruccions i dades a la mateixa memòria {#sec-programa-emmagatzemat}
 
 Abans de Von Neumann, per «reprogramar» una màquina calia canviar cables i interruptors físicament. En el model de Von Neumann:
 
-- Les **instruccions** (el codi binari, @sec-visio-isa) i les **dades** (els nombres que s'operen) resideixen al mateix lloc: la **memòria principal**.
+- Les **instruccions** (el codi binari, @sec-interficies-generacio) i les **dades** (els nombres que s'operen) resideixen al mateix lloc: la **memòria principal**.
 - El processador llegeix la memòria, interpreta què és una instrucció i l'executa.
 
 ### Els components del model {#sec-components-von-neumann}
@@ -352,6 +352,7 @@ L'arquitectura es divideix en quatre blocs funcionals connectats entre si (@fig-
 1. **Unitat central de processament** (**CPU**): El «cervell» que es divideix en:
     - **Unitat aritmeticològica** (**ALU**): On es fan les operacions matemàtiques i lògiques.
     - **Unitat de control** (**CU**): L'orquestra que llegeix la memòria i diu a la resta de components què han de fer.
+    - **Registres**: L'emmagatzematge intern de la CPU, el més ràpid (entre ells, el PC).
 2. **Memòria principal** (**MP**): Un vector gegant de cel·les on cada posició té una **adreça** única.
 3. **Sistema d'entrada/sortida** (**E/S**): Permet la comunicació amb el món exterior (teclat, pantalla, disc dur).
 4. **Busos**: Les «autopistes» de dades que connecten tots els components.
@@ -554,7 +555,7 @@ Donada una constant arbitrària $K$ (l'**excés**):
 $$x_s = x_u - K$$ {#eq-exces-interpretacio}
 $$x_u = x_s + K$$ {#eq-exces-representacio}
 
-L'elecció habitual és $K = 2^{n-1} - 1$, que centra el rang de manera simètrica amb el de Ca2:
+L'elecció habitual és $K = 2^{n-1} - 1$, amb un rang $x_s \in [-(2^{n-1}-1),\ 2^{n-1}]$ (amb 8 bits, $[-127, +128]$):
 
 ::: {#tip-exces .callout-tip}
 ## Interpretació i representació en excés
@@ -576,7 +577,7 @@ El bit de més pes indica el signe ($0$ positiu, $1$ negatiu) i els $n-1$ bits r
 
 **Rang**: $x_s \in [-(2^{n-1}-1),\ +2^{n-1}-1]$
 
-**Inconvenients**: doble representació del zero ($+0$ i $-0$) i circuit de suma diferent al dels naturals. No s'usa en processadors moderns.
+**Inconvenients**: doble representació del zero ($+0$ i $-0$) i circuit de suma diferent al dels naturals. No s'usa per als enters en els processadors moderns (sí, en canvi, a la coma flotant, @sec-tema-coma-flotant).
 
 ### Enters en complement a 1 (Ca1) {#sec-enters-en-ca1}
 
@@ -596,7 +597,7 @@ Per sumar dos enters en Ca2, s'aplica directament la suma binària, ignorant el 
 
 $$a + b \quad\Rightarrow\quad \text{Ca2}(a) + \text{Ca2}(b) \pmod{2^n}$$ {#eq-suma-ca2}
 
-El resultat és correcte si no hi ha **sobreeiximent**. El sobreeiximent es produeix quan el resultat matemàtic exacte cau fora del rang $[-2^{n-1},\ 2^{n-1}-1]$. La regla de detecció és: **hi ha sobreeiximent si i només si els dos operands tenen el mateix signe i el resultat té signe contrari**.
+El resultat és correcte si no hi ha **sobreeiximent** (***overflow***). El sobreeiximent es produeix quan el resultat matemàtic exacte cau fora del rang $[-2^{n-1},\ 2^{n-1}-1]$. La regla de detecció és: **hi ha sobreeiximent si i només si els dos operands tenen el mateix signe i el resultat té signe contrari**.
 
 ::: {#tip-suma-ca2 .callout-tip}
 ## Suma en Ca2
@@ -645,7 +646,7 @@ El ròssec entra al bit de signe (posició 7) però **no en surt**: aquesta asim
 
 ### Inversió de signe {#sec-inversio-signe}
 
-Per obtenir l'**invers** d'un enter en Ca2 s'aplica la regla següent: complementar tots els bits i sumar 1.
+Per obtenir l'**oposat** d'un enter en Ca2 s'aplica la regla següent: complementar tots els bits i sumar 1.
 
 $$-x \quad\Rightarrow\quad \overline{\text{Ca2}(x)} + 1 \pmod{2^n}$$ {#eq-inversio-signe}
 
@@ -680,7 +681,7 @@ Aplicar la inversió dues vegades retorna el valor inicial.
 ::: {#wrn-inversio-limit .callout-warning collapse=true}
 ## El cas límit $-2^{n-1}$
 
-El valor mínim de Ca2 ($-2^{n-1}$, representat com $1000\ldots0$) **no té invers representable** en $n$ bits. Aplicant la regla:
+El valor mínim de Ca2 ($-2^{n-1}$, representat com $1000\ldots0$) **no té oposat representable** en $n$ bits. Aplicant la regla:
 
 ```
   Original:   1000 0000   (−128)
@@ -690,12 +691,12 @@ El valor mínim de Ca2 ($-2^{n-1}$, representat com $1000\ldots0$) **no té inve
   Resultat:   1000 0000   (−128)  ← sobreeiximent: el resultat és el mateix!
 ```
 
-El valor $+128$ requeriria $n+1$ bits per ser representat en Ca2. És l'única excepció del format.
+El valor $+2^{n-1}$ ($+128$ amb 8 bits) requeriria $n+1$ bits per ser representat en Ca2. És l'única excepció del format.
 :::
 
 ### Resta en Ca2 {#sec-resta-ca2}
 
-La resta s'implementa com una suma amb el **negatiu del subtrahend** (vegeu @sec-inversio-signe per a la regla d'inversió de signe).
+La resta s'implementa com una suma amb l'**oposat del subtrahend** (vegeu @sec-inversio-signe per a la regla d'inversió de signe).
 
 $$a - b \equiv a + (-b) \quad\Rightarrow\quad \text{Ca2}(a) + \text{Ca2}(-b) \pmod{2^n}$$ {#eq-resta-ca2}
 
@@ -790,6 +791,8 @@ El mètode pràctic és:
 3. **Dividir les magnituds** com a naturals (divisió entera), obtenint quocient i residu de les magnituds.
 4. Aplicar el **signe del quocient** al quocient i codificar-lo en Ca2.
 5. El **residu** pren el signe del **dividend** i es codifica en Ca2.
+
+L'única divisió que desborda és $-2^{n-1} \div (-1)$, pel mateix motiu que @wrn-inversio-limit. Els casos especials de RISC-V, inclosa la divisió per zero, són a @sec-casos-especials-divisio.
 
 ::: {#tip-divisio-ca2 .callout-tip}
 ## Divisió en Ca2

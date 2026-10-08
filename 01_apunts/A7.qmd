@@ -43,9 +43,9 @@ Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidam
 Evolució del rendiment relatiu de processadors i memòria DRAM entre 1980 i 2010 (escala logarítmica). El creixement anual dels processadors (35–55% fins al 2000, molt més lent des del 2003–2005) supera àmpliament el de la latència de la DRAM (<7%), cosa que genera un *gap* de més de tres ordres de magnitud.
 :::
 
-Per veure l'impacte d'aquest *gap* en el rendiment, s'aplica la llei d'Amdahl (@sec-amdahl). Si $t_{acc}$ és el temps d'accés a la memòria principal i $t_{proc}$ el temps de la resta d'operacions d'una instrucció, el **CPI** és proporcional a $t_{proc} + t_{acc}$. Suposant $t_{acc} = 200 \cdot t_{proc}$, la fracció del temps d'execució que correspon al processament de la instrucció (sense l'accés a memòria) és:
+Per veure l'impacte d'aquest *gap* en el rendiment, s'aplica la llei d'Amdahl (@sec-amdahl). Si $t_{MP}$ és el temps d'accés a la memòria principal i $t_{proc}$ el temps de la resta d'operacions d'una instrucció, el **CPI** és proporcional a $t_{proc} + t_{MP}$. Suposant $t_{MP} = 200 \cdot t_{proc}$, la fracció del temps d'execució que correspon al processament de la instrucció (sense l'accés a memòria) és:
 
-$$P_x = \frac{t_{proc}}{t_{proc} + t_{acc}} \approx 0{,}005$$
+$$P_x = \frac{t_{proc}}{t_{proc} + t_{MP}} \approx 0{,}005$$
 
 Per la llei d'Amdahl, el màxim guany que es pot obtenir millorant únicament el processador (sense tocar la memòria) és:
 
@@ -55,7 +55,7 @@ $$s_{max} = \frac{1}{1 - P_x} \approx 1{,}005$$
 
 #### El punt d'inflexió: la fi de l'escalat de Dennard {#sec-fi-escalat-dennard}
 
-Cap al 2003–2005, la indústria va topar amb un límit físic fonamental: el **límit tèrmic**. Fins aleshores, reduir la mida dels transistors permetia augmentar la freqüència de rellotge mantenint la mateixa densitat de potència (un principi conegut com a escalat de Dennard, @wrn-dennard). Quan aquest escalat va deixar de funcionar, augmentar la freqüència va implicar disparar el consum i la calor generada fins a nivells inassumibles. Des d'aleshores, la freqüència sostinguda dels processadors s'ha estancat entre els 3 i els 5 GHz, amb pics puntuals de fins a 6 GHz en mode *turbo*.
+Cap al 2003–2005, la indústria va topar amb un límit físic fonamental: el **límit tèrmic**. Fins aleshores, reduir la mida dels transistors permetia augmentar la freqüència de rellotge mantenint la mateixa densitat de potència (un principi conegut com a escalat de Dennard, @wrn-dennard). Quan aquest escalat va deixar de funcionar, augmentar la freqüència va implicar disparar el consum i la calor generada fins a nivells inassumibles. Des d'aleshores, la freqüència sostinguda dels processadors s'ha estancat entre els 3 i els 5 GHz, amb pics puntuals de fins a uns 6 GHz en mode *turbo*.
 
 La indústria va respondre amb dues estratègies complementàries:
 
@@ -71,7 +71,7 @@ Malgrat tot, el *gap* entre processador i memòria no ha desaparegut: la latènc
 
 Si teniu una targeta gràfica per a jocs —o heu llegit sobre els acceleradors que entrenen models d'intel·ligència artificial com els que hi ha darrere de ChatGPT— potser us heu preguntat com funciona la seva memòria. La resposta és fascinant, i il·lustra fins on arriba el *gap* quan s'escalen les demandes.
 
-Una GPU moderna per a jocs (per exemple, una NVIDIA RTX 4090) integra milers de nuclis de càlcul dissenyats per executar moltíssimes operacions en paral·lel. Per alimentar tots aquests nuclis, necessita una amplada de banda de memòria enorme: mentre que un processador convencional accedeix a la DRAM amb una amplada de banda de l'ordre de desenes de GB/s, una GPU d'alt rendiment en necessita centenars. Per aconseguir-ho s'usa memòria **GDDR6** o **GDDR6X** o, en els acceleradors d'IA professionals, **HBM** (*High Bandwidth Memory*), una tecnologia que apila diverses capes de DRAM l'una sobre l'altra, en una pila que es col·loca al costat del xip de càlcul, dins del mateix encapsulat, i s'hi connecta amb un bus de milers de fils.
+Una GPU moderna per a jocs (per exemple, una NVIDIA RTX 4090) integra milers de nuclis de càlcul dissenyats per executar moltíssimes operacions en paral·lel. Per alimentar tots aquests nuclis, necessita una amplada de banda de memòria enorme: mentre que un processador convencional accedeix a la DRAM amb una amplada de banda de l'ordre de desenes de GB/s, una GPU d'alt rendiment en necessita centenars, o fins i tot més d'un TB/s. Per aconseguir-ho s'usa memòria **GDDR6** o **GDDR6X** o, en els acceleradors d'IA professionals, **HBM** (*High Bandwidth Memory*), una tecnologia que apila diverses capes de DRAM l'una sobre l'altra, en una pila que es col·loca al costat del xip de càlcul, dins del mateix encapsulat, i s'hi connecta amb un bus de milers de fils.
 
 La latència, però, segueix sent el problema de sempre: la GDDR6 augmenta l'**amplada de banda** amb una velocitat molt alta per fil, i l'HBM, amb la proximitat física i un bus molt ample, però la latència d'accés roman comparable a la de la DRAM convencional. Per això les GPU modernes també incorporen **jerarquies de memòria cau** pròpies: cada grup de nuclis (*streaming multiprocessor* a NVIDIA, *compute unit* a AMD) té la seva pròpia L1, i tots comparteixen una L2 de desenes de MiB.
 
@@ -136,7 +136,7 @@ L'MC no guarda dades soltes sinó **blocs** sencers de mida fixa $B$ bytes, on $
 Internament, l'MC s'organitza com una taula. Cada entrada d'aquesta taula s'anomena **línia** i pot contenir un bloc de dades o estar buida. Per a cada línia, l'MC emmagatzema tres elements (@fig-mc-organitzacio):
 
 - El **bit de validesa** ($V$, *valid bit*): indica si la línia conté un bloc vàlid ($V=1$) o està buida ($V=0$).
-- L'**etiqueta** (*tag* o *label*): identifica quin bloc de la memòria principal és guardat a la línia. Està formada pels bits del número de bloc (o una part d'aquests, com es veurà a la @sec-politica-emplacament).
+- L'**etiqueta** (*tag*): identifica quin bloc de la memòria principal és guardat a la línia. Està formada pels bits del número de bloc (o una part d'aquests, com es veurà a la @sec-politica-emplacament).
 - Les **dades**: el contingut del bloc de memòria que s'ha copiat a la línia.
 
 ::: {#fig-mc-organitzacio}
@@ -381,7 +381,7 @@ usa per extreure la dada sol·licitada.
 Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de $N$ vies.
 :::
 
-La correspondència directa és el cas particular $N = 1$: un sol conjunt per posició, un sol comparador, sense necessitat de multiplexor de vies.
+La correspondència directa és el cas particular $N = 1$: una sola via per conjunt (cada conjunt és una línia), un sol comparador, sense necessitat de multiplexor de vies.
 
 ### Memòria cau completament associativa {#sec-completament-associativa}
 
@@ -423,7 +423,7 @@ La memòria cau completament associativa és el cas límit $N_C = 1$: un sol con
 ::: {#cau-emplacament .callout-caution}
 ## Descomposició dels bits d'una adreça
 
-Per a una memòria cau amb $N_C = 2^{n_c}$ conjunts i blocs de $B = 2^b$ bytes, els bits d'una adreça de $w$ bits es distribueixen sempre de la mateixa manera, de menys a més pes:
+Per a una memòria cau amb $N_C = 2^{n_c}$ conjunts i blocs de $B = 2^b$ bytes, els bits d'una adreça de $w$ bits es distribueixen sempre de la mateixa manera, de més a menys pes (d'esquerra a dreta):
 
 $$A = \underbrace{\overbrace{\cdots}^{w - n_c - b}\;
                   \overbrace{\cdots}^{n_c}\;
@@ -442,7 +442,7 @@ Quan l'MC ha d'emmagatzemar un nou bloc i totes les vies del conjunt corresponen
 
 L'objectiu de qualsevol política de reemplaçament és minimitzar la taxa de fallades, és a dir, expulsar el bloc que tingui menys probabilitat de ser accedit en el futur. Com que el futur no és conegut, els algorismes reals intenten predir-lo a partir del comportament passat. Hi ha quatre algorismes principals:
 
-**LRU** (***Least Recently Used***): Reemplaça el bloc que fa més temps que no s'ha accedit. Es basa en la localitat temporal: si un bloc no s'ha usat recentment, és poc probable que es necessiti aviat. És l'algorisme que produeix la menor taxa de fallades en la majoria de casos pràctics, i és el que s'usarà en els problemes d'aquest curs.
+**LRU** (***Least Recently Used***): Reemplaça el bloc que fa més temps que no s'ha accedit. Es basa en la localitat temporal: si un bloc no s'ha usat recentment, és poc probable que es necessiti aviat. Entre els algorismes implementables, és dels que donen la taxa de fallades més baixa en la majoria de casos pràctics, i és el que s'usarà en els problemes d'aquest curs.
 
 La implementació d'LRU és senzilla per a 2 vies (un sol bit per conjunt n'és suficient), però es complica per a 4 o més vies. En la pràctica, per a 4 vies s'usa un **pseudo-LRU**: les vies s'agrupen en dues parelles, i tres bits per conjunt aproximen l'ordre d'ús (un bit indica quina parella ha estat accedida menys recentment, i un bit per parella, quina via dins de cadascuna).
 
@@ -487,11 +487,11 @@ Fins ara s'ha suposat que tots els accessos a memòria són lectures. Les escrip
 
 La política d'escriptura té dues dimensions independents: com es gestiona un **encert** d'escriptura, i com es gestiona una **fallada** d'escriptura.
 
-### Gestió de la coherència en cas d'encert {#sec-escriptura-encert}
+### Gestió de les escriptures en cas d'encert {#sec-escriptura-encert}
 
 Quan una escriptura produeix un encert, la dada és present a l'MC i cal decidir si s'actualitza també la memòria principal:
 
-**Escriptura immediata** (***write-through***): S'escriu simultàniament a l'MC i a la memòria principal. Ambdues còpies romanen sempre iguals (**coherència garantida**). Quan calgui reemplaçar un bloc, es pot fer directament sense cap escriptura prèvia a la memòria principal, ja que aquesta ja té la versió actualitzada.
+**Escriptura immediata** (***write-through***): S'escriu simultàniament a l'MC i a la memòria principal. La memòria principal rep totes les escriptures i mai no queda cap bloc modificat només a l'MC. Quan calgui reemplaçar un bloc, es pot fer directament sense cap escriptura prèvia a la memòria principal, ja que aquesta ja té la versió actualitzada.
 
 L'inconvenient és que cada escriptura accedeix a la memòria principal, que és lenta. Per mitigar-ho s'usa un **buffer d'escriptura**: les escriptures pendents s'encuen al buffer i es transfereixen a la memòria principal en segon pla mentre la CPU continua executant. Si el buffer s'omple (perquè el ritme d'escriptures supera la velocitat de buidatge), la CPU s'ha d'aturar fins que hi hagi espai.
 
@@ -775,11 +775,11 @@ Cal notar que $t_h$ **no** es multiplica per $(1 + p_m)$: el terme $t_h$ apareix
 
 #### TAM amb memòries cau separades d'instruccions i dades {#sec-tam-mc-separades}
 
-En moltes arquitectures, la CPU disposa de dues memòries cau independents: una memòria cau d'instruccions ($\text{MC}_i$, de sols lectura) i una memòria cau de dades ($\text{MC}_d$, usada pels `lw` i `sw`). Siguin:
+En moltes arquitectures, la CPU disposa de dues memòries cau independents: una memòria cau d'instruccions ($\text{MC}_i$, de sols lectura) i una memòria cau de dades ($\text{MC}_d$, usada per les instruccions de lectura i escriptura: `lw`, `sw`, `lb`, `sb`…). Siguin:
 
 - $n_{ins}$: nombre d'accessos a $\text{MC}_i$ (igual al nombre d'instruccions executades).
-- $n_{dat}$: nombre d'accessos a $\text{MC}_d$ (igual al nombre de `lw`
-  i `sw`).
+- $n_{dat}$: nombre d'accessos a $\text{MC}_d$ (igual al nombre d'instruccions de lectura
+  i escriptura).
 - $n_{refs} = n_{ins} + n_{dat}$: nombre total de referències a memòria.
 - $m_i$, $m_d$: taxes de fallades de $\text{MC}_i$ i $\text{MC}_d$.
 - $t_{pi}$, $t_{pd}$: temps de penalització de $\text{MC}_i$ i $\text{MC}_d$.
@@ -805,7 +805,7 @@ El terme $\text{CPI}_{ideal}$ inclou tots els cicles d'execució excepte les esp
 $$\text{CPI}_{penal} = \frac{t_p \cdot n_{fallades}}{n_{ins}}
 = t_p \cdot m \cdot \frac{n_{refs}}{n_{ins}} = t_p \cdot m \cdot n_r$$
 
-on $t_p$ i $m$ s'expressen en cicles i en fracció respectivament. El temps d'execució queda:
+on $t_p$ i $m$ s'expressen en cicles i en fracció respectivament. Partint de @eq-texe2, el temps d'execució queda:
 
 $$t_{exe} = (\text{CPI}_{ideal} + t_p \cdot m \cdot n_r) \cdot n_{ins}
 \cdot t_{clock}$$ {#eq-texe}
@@ -836,7 +836,7 @@ De l'expressió @eq-texe s'extreuen dues conclusions pràctiques:
 
 Les fallades de memòria cau es classifiquen segons la seva causa en tres categories, conegudes com les **tres C** (de l'anglès *compulsory*, *conflict* i *capacity*). Classificar-les permet raonar sobre per què es produeixen i sobre quines mesures de disseny poden reduir cadascuna.
 
-**Fallades d'arrencada en fred** (***cold-start***), també anomenades **obligatòries** (***compulsory***) o **de primera referència** (***first-reference***): es produeixen el primer cop que s'accedeix a un bloc. Cap memòria cau no pot tenir un bloc que encara no s'ha accedit mai, de manera que aquestes fallades **no depenen** de la política d'emplaçament, del grau d'associativitat ni de la capacitat de la memòria cau: n'hi ha tantes com blocs diferents accedeix el programa. Només les redueixen els blocs més grans, perquè cada fallada porta més dades veïnes a la memòria cau (localitat espacial).
+**Fallades d'arrencada en fred** (***cold-start***), també anomenades **obligatòries** (***compulsory***) o **de primera referència** (***first-reference***): es produeixen el primer cop que s'accedeix a un bloc. Cap memòria cau no pot tenir un bloc que encara no s'ha accedit mai, de manera que aquestes fallades **no depenen** de la política d'emplaçament, del grau d'associativitat ni de la capacitat de la memòria cau: n'hi ha tantes com blocs diferents accedeix el programa. Dels paràmetres de la memòria cau, només les redueixen els blocs més grans, perquè cada fallada porta més dades veïnes a la memòria cau (localitat espacial).
 
 **Fallades de conflicte** (o **de col·lisió**, ***conflict***): es produeixen quan dos o més blocs que s'accedeixen alternament es mapen al mateix conjunt i s'expulsen mútuament, encara que hi hagi línies lliures en altres conjunts. Només n'hi ha en les memòries cau amb indexació (correspondència directa i associativa per conjunts): **una fallada de conflicte seria un encert en una memòria cau completament associativa de la mateixa capacitat**. Augmentar el grau d'associativitat les redueix.
 
@@ -879,7 +879,7 @@ Una fallada que no és d'arrencada en fred és **de conflicte** si encertaria en
 
 En els processadors multinucli, cada nucli té la seva memòria cau privada (@sec-multinivell-actuals), i n'hi ha un quart tipus. La classificació passa a ser de les **quatre C**.
 
-**Fallades de coherència** (o **d'invalidació**, *coherence*): quan un nucli modifica una dada, les còpies d'aquell bloc a les memòries cau privades dels altres nuclis s'invaliden, perquè tots vegin el mateix valor. El pròxim accés d'un altre nucli a aquell bloc falla, i n'ha de tornar a portar la còpia actualitzada. Aquestes fallades no depenen de la capacitat ni de l'associativitat de cap memòria cau, sinó de les dades que comparteixen els nuclis.
+**Fallades de coherència** (o **d'invalidació**, *coherence*): quan un nucli modifica una dada, les còpies d'aquell bloc a les memòries cau privades dels altres nuclis s'invaliden, perquè tots vegin el mateix valor. El pròxim accés d'un altre nucli a aquell bloc falla, i n'ha de tornar a portar la còpia actualitzada. Aquestes fallades no depenen de la capacitat ni de l'associativitat de cap memòria cau, sinó de les dades que comparteixen els nuclis, i de la mida del bloc: dos nuclis que escriuen variables diferents d'un mateix bloc també s'invaliden mútuament.
 :::
 
 ### Exemple: fallades de conflicte i d'arrencada en fred {#sec-exemple-conflicte}
@@ -896,7 +896,7 @@ int f(int A[8], int B[8]) {
 }
 ```
 
-Suposem una memòria cau de correspondència directa amb 4 línies ($n_l = 2$), inicialment buida. Els vectors `A` i `B` es troben en posicions contigües de memòria: `A` comença al bloc 0 i `B` al bloc 4.
+Suposem una memòria cau **de dades** de correspondència directa amb 4 línies ($n_l = 2$), inicialment buida. Els vectors `A` i `B` es troben en posicions contigües de memòria: `A` comença al bloc 0 i `B` al bloc 4.
 
 Com que cada bloc conté 2 enters (8 bytes / 4 bytes per `int`), els elements `A[i]` i `A[i+1]` van al mateix bloc, i el mateix passa amb `B`. La taula següent mostra el mapatge complet:
 
@@ -933,14 +933,14 @@ El patró es repeteix per a $i \in \{4, 5\}$ i $i \in \{6, 7\}$. En total: **8 f
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A7_conflicte_exemple__MC_light.svg){width="80%"}
 :::
-Fallades de conflicte en el recorregut paral·lel de dos vectors amb una memòria cau de correspondència directa de 4 línies, en forma de traça: una fila per accés, amb el bloc que conté cada línia després de l'accés. `A[i]` i `B[i]` van sempre a la mateixa línia: a les $i$ parelles, les dues lectures són fallades obligatòries; a les senars, de conflicte. Fallen els 16 accessos.
+Fallades de conflicte en el recorregut paral·lel de dos vectors amb una memòria cau de correspondència directa de 4 línies, en forma de traça: una fila per accés, amb el bloc que conté cada línia després de l'accés. `A[i]` i `B[i]` van sempre a la mateixa línia: a les iteracions amb $i$ parell, les dues lectures són fallades obligatòries; amb $i$ senar, de conflicte. Fallen els 16 accessos.
 :::
 
-Una memòria cau associativa per conjunts de 2 vies eliminaria completament les fallades de conflicte d'aquest exemple: els blocs de `A` i `B` podrien coexistir a les dues vies del mateix conjunt.
+Una memòria cau associativa per conjunts de 2 vies i la mateixa capacitat (2 conjunts de 2 vies) eliminaria completament les fallades de conflicte d'aquest exemple: els blocs de `A` i `B` podrien coexistir a les dues vies del mateix conjunt.
 
 ### Exemple: fallades de capacitat {#sec-exemple-capacitat}
 
-Considerem ara la funció C següent, executada amb la mateixa configuració però amb una memòria cau **completament associativa** de 4 línies (eliminant així qualsevol conflicte):
+Considerem ara la funció C següent, executada amb la mateixa configuració però amb una memòria cau **de dades** **completament associativa** de 4 línies (eliminant així qualsevol conflicte):
 
 ```{.c filename="C"}
 int g(int V[16]) {
@@ -954,7 +954,7 @@ int g(int V[16]) {
 El vector `V` ocupa 8 blocs de 2 words cadascun. La memòria cau, amb 4 línies, només pot contenir la meitat del vector simultàniament (@fig-capacitat-exemple).
 
 - **Primer bucle**: els blocs de `V[0]`–`V[7]` entren a la memòria cau amb fallades obligatòries. Quan s'accedeix a `V[8]`–`V[15]`, la memòria cau és plena i els blocs de la primera meitat s'expulsen (LRU).
-- **Segon bucle**: quan es torna a accedir a `V[0]`–`V[7]`, els blocs ja no hi són. Fallen de nou: són **fallades de capacitat**.
+- **Segon bucle**: quan es torna a accedir a `V[0]`–`V[7]`, els blocs ja no hi són. Fallen de nou: són **fallades de capacitat**, i en tornar-los a portar s'expulsen els de `V[8]`–`V[15]`, que també tornaran a fallar: el segon bucle té 8 fallades de capacitat, tantes com obligatòries el primer.
 
 Augmentar l'associativitat no resoldria res: les fallades es produeixen perquè el working set (8 blocs) supera la capacitat de la memòria cau (4 línies), no per cap conflicte d'índex. Sense canviar el programa, l'única solució és augmentar la capacitat de la memòria cau fins a 64 bytes o més (per exemple, 8 línies de 8 bytes).
 
@@ -972,7 +972,7 @@ Augmentar l'associativitat no resoldria res: les fallades es produeixen perquè 
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A7_capacitat_exemple__MC_light.svg){width="80%"}
 :::
-Fallades de capacitat en una memòria cau completament associativa de 4 línies amb reemplaçament LRU, en forma de traça. Al primer bucle, cada bloc nou entra amb una fallada obligatòria i, a partir del cinquè, expulsa el més antic; al segon, els blocs de `V[0]` a `V[7]` ja no hi són i tornen a fallar, ara amb fallades de capacitat.
+Fallades de capacitat en una memòria cau completament associativa de 4 línies amb reemplaçament LRU, en forma de traça. Al primer bucle, cada bloc nou entra amb una fallada obligatòria i, a partir del cinquè, expulsa el més antic; al segon, els blocs de `V[0]` a `V[7]` ja no hi són i tornen a fallar, ara amb fallades de capacitat (la traça s'atura a `V[7]`: la segona meitat del segon bucle es comporta igual).
 :::
 
 ## Memòries cau multinivell {#sec-multinivell}
@@ -1008,7 +1008,7 @@ Les fallades de L1 que encerten a L2 paguen una penalització $t_{h_{L2}}$, molt
 
 $$\text{TAM} = t_{h_{L1}} + m_{L1} \cdot (t_{h_{L2}} + m_{L2} \cdot t_p)$$ {#eq-tam-multinivell}
 
-on $m_{L1}$ és la taxa de fallades de L1 i $m_{L2}$ és la taxa de fallades de L2 **entre les referències que han fallat a L1** (taxa de fallades local de L2).
+on $m_{L1}$ és la taxa de fallades de L1 i $m_{L2}$ és la taxa de fallades de L2 **entre les referències que han fallat a L1** (taxa de fallades local de L2). Aquí, $t_{h_{L2}}$ és tota la penalització d'una fallada de L1 que encerta a L2: inclou l'accés a L2 i la transferència del bloc a L1, sense cap $t_{bloc}$ a part.
 
 ### Disseny diferencial L1 i L2 {#sec-multinivell-disseny}
 
@@ -1034,7 +1034,7 @@ Tenir dos nivells permet orientar el disseny de cadascun a un objectiu diferent:
 | :--- | :---: | :---: |
 | **Objectiu** | Minimitzar $t_{h_{L1}}$ | Minimitzar $m_{L2}$ |
 | **Associativitat** | Més baixa | Més alta |
-| **Mida de bloc** | Petita | Gran |
+| **Mida de bloc** | Petita | Gran (als processadors actuals, sovint 64 B a tots els nivells) |
 | **Capacitat** | Moderada (32–64 KiB) | Gran (256 KiB–diversos MiB) |
 : {#tbl-disseny-l1-l2 tbl-colwidths="[30,35,35]" .striped}
 :::
@@ -1044,7 +1044,7 @@ Tenir dos nivells permet orientar el disseny de cadascun a un objectiu diferent:
 Als processadors actuals, el nivell L1 es divideix habitualment en dues memòries cau independents:
 
 - **L1i** (memòria cau d'instruccions): de sols lectura, s'usa durant el fetch de cada instrucció.
-- **L1d** (memòria cau de dades): s'usa pels `lw` i `sw`.
+- **L1d** (memòria cau de dades): s'usa per les instruccions de lectura i escriptura (`lw`, `sw`, `lb`, `sb`…).
 
 Aquesta separació permet que ambdues memòries cau operin en paral·lel (el fetch de la instrucció següent i l'accés a dades de la instrucció actual), cosa especialment rellevant en els processadors que comencen a buscar una instrucció abans d'acabar l'anterior (processadors segmentats, que no s'estudien a EC). A més, cadascuna es pot dissenyar de forma específica: L1i no necessita suportar escriptures i pot optimitzar-se per a accessos seqüencials.
 
@@ -1069,7 +1069,7 @@ L'augment en el nombre de nuclis (*cores*) integrats en un mateix xip ha increme
 Jerarquia de memòries cau en un processador multinucli: L1 i L2 són privades de cada nucli, i L3 és compartida entre tots. L1i i L1d són les memòries cau de primer nivell d'instruccions i de dades, separades (@sec-multinivell-split).
 :::
 
-Cada nucli disposa de L1i, L1d i L2 privades, orientades a minimitzar la latència per a aquell nucli. La L3 compartida actua com a darrer filtre abans de la memòria principal: redueix el nombre d'accessos a la DRAM i, per tant, el tràfic sobre el bus de memòria.
+Habitualment, cada nucli disposa de L1i, L1d i L2 privades, orientades a minimitzar la latència per a aquell nucli. La L3 compartida actua com a darrer filtre abans de la memòria principal: redueix el nombre d'accessos a la DRAM i, per tant, el tràfic sobre el bus de memòria.
 
 La incorporació de L3 respon a la mateixa lògica que va motivar L2: a mesura que el *gap* entre el processador i la memòria principal continua creixent, afegir un nivell intermedi addicional permet reduir la penalització efectiva i mantenir el $\text{CPI}_{penal}$ sota control.
 
@@ -1077,5 +1077,5 @@ La incorporació de L3 respon a la mateixa lògica que va motivar L2: a mesura q
 <!-- https://commons.wikimedia.org/wiki/File:Intel_Core_i9-13900K_Labelled_Die_Shot.jpg -->
 ![](/23_figs_externes/A7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg)
 
-Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 2022), amb els principals components etiquetats. S'hi distingeixen els nuclis de rendiment (*P-cores*) amb les seves memòries cau L2 privades, els nuclis d'eficiència (*E-cores*) agrupats en clústers, i la memòria cau L3 compartida que ocupa una fracció significativa de la superfície del xip (Font: [@intel_i9_die_shot]).
+Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 2022), amb els principals components etiquetats. S'hi distingeixen els nuclis de rendiment (*P-cores*) amb les seves memòries cau L2 privades, els nuclis d'eficiència (*E-cores*), agrupats en clústers de quatre que comparteixen una L2, i la memòria cau L3 compartida que ocupa una fracció significativa de la superfície del xip (Font: [@intel_i9_die_shot]).
 :::

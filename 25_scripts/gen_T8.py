@@ -952,6 +952,7 @@ def simula_exemple():
                     e['d'] = 1
                     ev['canvi_tlb'].add(n)
             ev['canvi_tp'].add(vpn)
+            ev['canvi_marcs'].add(tp[vpn]['ppn'])
             ev['d'] = True
         lru_pag = [x for x in lru_pag if x != vpn] + [vpn]
         lru_tlb = [x for x in lru_tlb if x != vpn] + [vpn]
