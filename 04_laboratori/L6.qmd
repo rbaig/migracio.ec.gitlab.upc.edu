@@ -401,7 +401,7 @@ fibuc_i:
         ecall
 ```
 
-Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator* amb **32 blocs de 4 paraules** i política **escriptura immediata amb assignació**.
+Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator* amb **32 blocs de 4 paraules** i correspondència directa. El simulador de RARS no té cap opció de política d'escriptura: en comptar encerts i fallades, tracta cada escriptura com una lectura (una escriptura amb fallada porta el bloc a la cau), que és el comportament de la política **amb assignació** d'aquest exercici, i no compta el trànsit cap a la memòria principal.
 
 ---
 
@@ -456,7 +456,7 @@ Com que `vec` comença a `0x10010000`:
 La lectura de `vec[max]` usa el valor de `max` **abans** de la seva possible actualització. Amb `vec = {20, -18, 45, 12, -1}`, `max = 0` fins que a `j = 2` es detecta el nou màxim `vec[2] = 45`; a partir d'aleshores `max = 2` durant la resta de la iteració (per això les lectures de `vec[max]` a `j = 1` i `j = 2` accedeixen a l'element 0, i les posteriors, a l'element 2).
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Executeu `ordenacio.s` a RARS amb el *Data Cache Simulator* configurat amb 32 blocs de 4 paraules i política d'escriptura immediata amb assignació. En acabar l'execució, el simulador mostra el nombre total de referències, encerts i fallades. Comproveu que el vector resultant, ordenat de gran a petit, és `{45, 20, 12, -1, -18}`.
+Executeu `ordenacio.s` a RARS amb el *Data Cache Simulator* configurat amb 32 blocs de 4 paraules i correspondència directa (les escriptures hi compten com amb assignació). En acabar l'execució, el simulador mostra el nombre total de referències, encerts i fallades. Comproveu que el vector resultant, ordenat de gran a petit, és `{45, 20, 12, -1, -18}`.
 
 Per seguir l'evolució accés a accés, poseu un *breakpoint* a la primera instrucció del bucle interior i avanceu pas a pas observant els canvis al panell *Cache*.
 :::
@@ -632,7 +632,7 @@ Els 3 accessos de cada iteració són fallades. Amb 128 iteracions i 3 accessos 
 $$\text{taxa d'encerts} = \frac{0}{384} = 0{,}00$$
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Configureu el *Data Cache Simulator* amb 16 blocs de 4 paraules, correspondència directa i escriptura immediata amb assignació. Executeu `suma_vectors.s` i observeu que la taxa d'encerts és exactament **0**: el simulador només comptabilitza els accessos a dades (les 384 lectures i escriptures als vectors), i totes són fallades.
+Configureu el *Data Cache Simulator* amb 16 blocs de 4 paraules i correspondència directa (les escriptures hi compten com amb assignació). Executeu `suma_vectors.s` i observeu que la taxa d'encerts és exactament **0**: el simulador només comptabilitza els accessos a dades (les 384 lectures i escriptures als vectors), i totes són fallades.
 :::
 :::
 
@@ -698,7 +698,7 @@ fifor:
 ```
 
 ::: {.callout-tip title="Comprovació pràctica"}
-Executeu `s6_4_2.s` amb el *Data Cache Simulator* (16 blocs, 4 paraules/bloc, correspondència directa, escriptura immediata amb assignació). La taxa d'encerts ha de ser 0,75. Comproveu també que el resultat al vector `C` coincideix amb el de `suma_vectors.s` original (els valors de `C` han de ser iguals en ambdós casos, ja que el farciment no afecta la lògica del programa).
+Executeu `s6_4_2.s` amb el *Data Cache Simulator* (16 blocs, 4 paraules/bloc, correspondència directa). La taxa d'encerts ha de ser 0,75. Comproveu també que el resultat al vector `C` coincideix amb el de `suma_vectors.s` original (els valors de `C` han de ser iguals en ambdós casos, ja que el farciment no afecta la lògica del programa).
 :::
 :::
 
@@ -769,7 +769,7 @@ En aquest exercici classificareu les fallades del programa `suma_vectors.s` sego
 
 Activeu la casella *Runtime Log* (*Enabled*) del Data Cache Simulator: per a cada accés, el registre indica l'adreça, l'etiqueta i si és un encert o una fallada. Tingueu present que **RARS no etiqueta el tipus de fallada**; la classificació és un pas de raonament vostre, a partir del mètode següent:
 
-- Una fallada és **d'arrencada en fred** si és la **primera** referència a aquell bloc (la primera vegada que apareix la seva etiqueta al registre).
+- Una fallada és **d'arrencada en fred** si és la **primera** referència a aquell bloc: la primera vegada que apareix al registre una adreça del bloc. El bloc s'identifica pel número de bloc, l'adreça sense els 4 bits del desplaçament (`adreça >> 4`), i no per l'etiqueta sola, que en correspondència directa comparteixen blocs diferents.
 - Les fallades que no són d'arrencada en fred són de **conflicte** o de **capacitat**. Per distingir-les, es compara amb una execució en què no hi pugui haver conflictes: una cau **completament associativa** de la mateixa capacitat. Les fallades que desapareixen en passar a completament associativa eren de **conflicte**; les que persisteixen (més enllà de les d'arrencada en fred) són de **capacitat**.
 
 1. Executeu `suma_vectors.s` amb la cau de **correspondència directa** de 16 blocs de 4 paraules (la de @exr-suma-vectors-cd). Amb el Runtime Log, determineu quantes de les fallades són d'arrencada en fred. (Pista: quants blocs diferents s'accedeixen en total?)
@@ -827,7 +827,7 @@ void main() {
 }
 ```
 
-`M` s'emmagatzema per files (*row-major order*, @sec-matrius-declaracio): els elements `M[i][0]`, `M[i][1]`, …, `M[i][15]` són contigus en memòria. El bucle interior recorre la fila `i` de `M` i tot el vector `V2` de manera seqüencial. A cada iteració del bucle exterior, `V2` es llegeix sencer (16 elements). Si la cau és prou gran per contenir `V2` i almenys una fila de `M` simultàniament, els accessos a `V2` a partir de la segona iteració exterior són encerts. Si la cau és massa petita, `V2` és expulsat a cada iteració i s'ha de tornar a carregar des de la memòria principal.
+`M` s'emmagatzema per files (*row-major order*, @sec-matrius-declaracio): els elements `M[i][0]`, `M[i][1]`, …, `M[i][15]` són contigus en memòria. El bucle interior recorre la fila `i` de `M` i tot el vector `V2` de manera seqüencial. A cada iteració del bucle exterior, `V2` es llegeix sencer (16 elements). Si la cau pot mantenir alhora `V2`, la fila de `M` i el bloc de `V1` en ús, sense que es facin conflicte, els accessos a `V2` a partir de la segona iteració exterior són encerts. Si la cau és massa petita, `V2` és expulsat a cada iteració i s'ha de tornar a carregar des de la memòria principal.
 
 La traducció a RV32IM de la versió original és:
 
@@ -883,7 +883,7 @@ fibuc_i:
         ecall
 ```
 
-L'optimització ***loop tiling*** (també anomenada ***loop blocking*** o ***tiling***) reorganitza el recorregut per aprofitar la localitat temporal de `V2`: en lloc de multiplicar tota una fila de `M` per tot `V2`, es processen **grups de 4 columnes** alhora. Primer s'itera per totes les files amb les columnes 0–3, després amb les columnes 4–7, i així fins a completar les 16 columnes. D'aquesta manera, els 4 elements de `V2` implicats en cada grup caben en un únic bloc de cau i es reutilitzen en totes les files abans de ser expulsats:
+L'optimització ***loop tiling*** (també anomenada ***loop blocking*** o ***tiling***) reorganitza el recorregut per aprofitar la localitat temporal de `V2`: en lloc de multiplicar tota una fila de `M` per tot `V2`, es processen **grups de 4 columnes** alhora. Primer s'itera per totes les files amb les columnes 0–3, després amb les columnes 4–7, i així fins a completar les 16 columnes. D'aquesta manera, els 4 elements de `V2` implicats en cada grup caben en un únic bloc de cau, que es pot reutilitzar en totes les files si cap altre bloc no l'expulsa:
 
 ```{.c filename="matvec_tiling.c"}
 int V1[16];              // global (inicialitzat a 0 en C)
@@ -1056,6 +1056,17 @@ fibuc_k:
 | 128 blocs | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 | 0,89 / 0,86 |
 : Taxes d'encerts de referència (solució) {.striped .hover}
 
-En general, el *tiling* millora la taxa d'encerts per a caus petites, on el vector `V2` no cau sencer: el *tiling* garanteix que els 4 elements del bloc actiu de `V2` sempre romanen a la cau durant tot el bucle interior.
+Les taxes, però, no comparen bé els dos programes: la versió amb *tiling* fa 640 accessos a dades, i l'original, 528, perquè hi afegeix 112 accessos a `V1` (una lectura i una escriptura per a cada parella `k`, `i`), que són gairebé tots encerts i fan pujar la taxa. El que cal comparar és el **nombre de fallades** (format *tiling* / original):
+
+| Capacitat | CD | Assoc. grau 2 | Assoc. grau 4 | Assoc. grau 8 | Comp. assoc. |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| 8 blocs | 306 / 300 | 105 / 99 | 82 / 114 | 84 / 144 | 84 / 144 |
+| 16 blocs | 190 / 184 | 78 / 72 | 78 / 72 | 78 / 72 | 84 / 72 |
+| 32 blocs | 131 / 126 | 76 / 72 | 76 / 72 | 76 / 72 | 72 / 72 |
+| 64 blocs | 100 / 97 | 73 / 72 | 72 / 72 | 72 / 72 | 72 / 72 |
+| 128 blocs | 72 / 72 | 72 / 72 | 72 / 72 | 72 / 72 | 72 / 72 |
+: Fallades de referència (solució) {.striped .hover}
+
+El *tiling* només redueix les fallades amb 8 blocs i grau 4 o més (també completament associativa): és el cas en què la cau no pot mantenir tot `V2` però sí el bloc actiu de `V2` al costat de la fila de `M`. Amb correspondència directa no les redueix: el bloc de `M[i][…]` i el de `V2` que es fan servir alhora cauen a la mateixa línia i s'expulsen l'un a l'altre. Amb prou capacitat, tots dos programes es queden en les 72 fallades d'arrencada en fred (64 blocs de `M`, 4 de `V2` i 4 de `V1`), i el *tiling* no aporta res.
 :::
 :::

@@ -89,7 +89,7 @@ mat4:   .word   2, 3, 1, 2, 4, 3  # int mat4[2][3] inicialitzada per files
         ecall
 ```
 
-La mida de cada `.space` s'escriu com a **literal ja calculat**, amb l'expressió aritmètica al comentari, perquè RARS no avalua expressions als operands (@nte-rars-operands-literals); per això, tot i estar definides amb `.eqv`, les dimensions `NF`/`NC` no es poden fer servir directament dins `.space`.
+La mida de cada `.space` s'escriu com a **literal ja calculat**, amb l'expressió aritmètica al comentari, perquè RARS no avalua expressions als operands (@nte-rars-operands-literals); per això, tot i estar definides amb `.eqv`, les dimensions `NF`/`NC` no es poden multiplicar dins `.space` (`NF1*NC1*4`): una constant `.eqv` sola sí que hi és vàlida, però no una expressió.
 
 `mat2` és de tipus `char` (1 byte), de manera que no requereix cap directiva `.align`. Tot i així, la variable **següent** (`mat3`) necessita alineació a 8 bytes: la directiva `.align 3` just abans de `mat3` garanteix que comença en una adreça múltiple de 8, independentment de quants bytes ocupa `mat2`.
 
@@ -413,7 +413,7 @@ fifor:
 ::: {.callout-tip title="Comprovació pràctica"}
 Executeu el programa amb RARS i comproveu que en acabar la variable global `resultat` conté el valor `20` (suma dels elements de la columna 2: $2 + 4 + 6 + 8$).
 
-Per verificar l'accés seqüencial, poseu un punt d'aturada a la instrucció `lw t4, 0(t0)` del bucle. A cada pulsació de *Resume* (F5), observeu com `t0` avança 24 bytes i `t4` pren successivament els valors `2`, `4`, `6` i `8`.
+Per verificar l'accés seqüencial, poseu un punt d'aturada a la instrucció `lw t4, 0(t0)` del bucle. A cada pulsació de *Run → Go* (F5), observeu com `t0` avança 24 bytes i `t4` pren successivament els valors `2`, `4`, `6` i `8`.
 :::
 
 ::: {.callout-warning collapse="true"}

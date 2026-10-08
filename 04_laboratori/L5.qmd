@@ -308,7 +308,7 @@ void descompon(int cf, int *s, int *e, int *m) {
 }
 ```
 
-Aquest codi és descriptiu de l'algorisme a nivell de bits: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, cosa que reforça per què en assemblador cal triar explícitament `srli` (i no `srai`) per obtenir el comportament desitjat.
+Aquest codi és descriptiu de l'algorisme a nivell de bits: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, per això en assemblador es fa servir `srli`, el desplaçament lògic, que és el que descriu l'algorisme. (Aquí `srai` donaria el mateix resultat: la màscara `0x7FFFFF` esborra els 8 bits que entren per l'esquerra.)
 
 L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 12 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menys pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
 
@@ -379,11 +379,9 @@ while:
 fiwhile:
 
         # cf = (cf >> 8) & 0x7FFFFF
-        # Usem srli (desplaçament lògic) i no srai (aritmètic): en aquest punt
-        # t0 té el bit 31 a 1 (resultat de la normalització), de manera que
-        # srai propagaria aquest bit i deixaria els 8 bits superiors a 1 abans
-        # de la màscara. srli garanteix que els bits desplaçats entrants siguin
-        # 0, fent que la màscara 0x7FFFFF elimini correctament el bit ocult.
+        # srli (desplaçament lògic): els 8 bits que entren per l'esquerra són
+        # 0. Amb srai, que hi propagaria el bit 31 (aquí, 1), el resultat seria
+        # el mateix: la màscara 0x7FFFFF esborra aquests bits i el bit ocult.
         srli    t0, t0, 8
         li      t2, 0x7FFFFF
         and     t0, t0, t2         # elimina el bit ocult i bits superiors

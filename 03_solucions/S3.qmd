@@ -328,11 +328,11 @@ Segons l'@eq-texe2, amb el període de rellotge expressat com a $1/f_{clock}$:
 
 $$t_{exe} = \frac{n_{ins} \times \text{CPI}}{f_{clock}} = \frac{10 \times 2}{2 \times 10^9} = 10^{-8}\ \text{s} = 10\ \text{ns}$$
 
-**d) CPI si el programa triga $5 \times 10^{-9}$ s a 2 GHz**
+**d) CPI si el programa, amb les 10 instruccions de l'apartat c), triga $5 \times 10^{-9}$ s a 2 GHz**
 
-$$\text{CPI} = \frac{t_{exe} \times f_{clock}}{n_{ins}} = \frac{5 \times 10^{-9} \times 2 \times 10^9}{55} = \frac{10}{55} \approx 0{,}18$$
+$$\text{CPI} = \frac{t_{exe} \times f_{clock}}{n_{ins}} = \frac{5 \times 10^{-9} \times 2 \times 10^9}{10} = \frac{10}{10} = 1$$
 
-Un CPI inferior a 1 indica que el model de cost no és uniforme (algunes instruccions costen menys d'1 cicle en mitjana) o que el processador és superescalar (executa més d'una instrucció per cicle).
+És a dir, el programa fa 10 cicles per a 10 instruccions.
 :::
 
 ::: {#sol-t3-bucles-suma-vector .callout-tip}
@@ -340,7 +340,7 @@ Un CPI inferior a 1 indica que el model de cost no és uniforme (algunes instruc
 
 **Enunciat**: @exr-t3-bucles-suma-vector.
 
-**Model de costos**: memòria = 4 cicles; salt pres = 2 cicles; salt no pres = 1 cicle; resta = 1 cicle.
+**Model de costos**: memòria = 4 cicles; salt pres = 2 cicles; salt no pres = 1 cicle; resta = 1 cicle. Les pseudoinstruccions es compten per les instruccions en què s'expandeixen: `la` en són dues, `auipc` + `addi` (@nte-la-auipc), i `li t3, N`, una, perquè se suposa que $N$ cap en 12 bits.
 
 Per a cada versió s'analitzen les instruccions executades per iteració i el temps total per a $N$ iteracions. Les instruccions fora del bucle (inicialització) es compten una sola vegada.
 
@@ -351,11 +351,11 @@ Per a cada versió s'analitzen les instruccions executades per iteració i el te
 Instruccions fora del bucle: `li t0` + `li t1` + `li t2` = 3 cicles.
 
 Per iteració ($N$ vegades, salt `j` pres):
-`li t3` (1) + `bge` no pres (1) + `la t4` (1) + `add t4` (1) + `lw t4` (4) + `add t0` (1) + `addi t2` (1) + `addi t1` (1) + `j` pres (2) = **13 cicles**.
+`li t3` (1) + `bge` no pres (1) + `la t4` (2) + `add t4` (1) + `lw t4` (4) + `add t0` (1) + `addi t2` (1) + `addi t1` (1) + `j` pres (2) = **14 cicles**.
 
 Última comprovació ($i = N$): `li t3` (1) + `bge` pres (2) = 3 cicles.
 
-**Total**: $3 + 13N + 3 = 13N + 6$ cicles.
+**Total**: $3 + 14N + 3 = 14N + 6$ cicles.
 
 ---
 
@@ -364,11 +364,11 @@ Per iteració ($N$ vegades, salt `j` pres):
 Instruccions fora del bucle: `li t0` + `li t1` = 2 cicles.
 
 Per iteració:
-`li t3` (1) + `bge` no pres (1) + `la t3` (1) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `j` pres (2) = **13 cicles**.
+`li t3` (1) + `bge` no pres (1) + `la t3` (2) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `j` pres (2) = **14 cicles**.
 
 Última comprovació: `li t3` (1) + `bge` pres (2) = 3 cicles.
 
-**Total**: $2 + 13N + 3 = 13N + 5$ cicles.
+**Total**: $2 + 14N + 3 = 14N + 5$ cicles.
 
 ---
 
@@ -377,11 +377,11 @@ Per iteració:
 Instruccions fora del bucle: `li t0` + `li t1` = 2 cicles.
 
 Per iteració (condició al final; última iteració: salt no pres):
-`la t3` (1) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `li t3` (1) + `blt` pres (2) = **12 cicles** per a les $N-1$ primeres iteracions.
+`la t3` (2) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `li t3` (1) + `blt` pres (2) = **13 cicles** per a les $N-1$ primeres iteracions.
 
-Última iteració: `blt` no pres (1) → cost = $12 - 2 + 1 = 11$ cicles.
+Última iteració: `blt` no pres (1) → cost = $13 - 2 + 1 = 12$ cicles.
 
-**Total**: $2 + 12(N-1) + 11 = 12N + 1$ cicles.
+**Total**: $2 + 13(N-1) + 12 = 13N + 1$ cicles.
 
 ---
 
@@ -390,24 +390,24 @@ Per iteració (condició al final; última iteració: salt no pres):
 Instruccions fora del bucle: `li t0` + `li t1` = 2 cicles.
 
 Per iteració (condició al final, comptador decreixent; salt `bge` pres $N-1$ vegades):
-`la t3` (1) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `bge` pres (2) = **11 cicles** per a les $N-1$ primeres iteracions.
+`la t3` (2) + `slli t2` (1) + `add t2` (1) + `lw t2` (4) + `add t0` (1) + `addi t1` (1) + `bge` pres (2) = **12 cicles** per a les $N-1$ primeres iteracions.
 
-Última iteració: `bge` no pres (1) → cost = $11 - 2 + 1 = 10$ cicles.
+Última iteració: `bge` no pres (1) → cost = $12 - 2 + 1 = 11$ cicles.
 
-**Total**: $2 + 11(N-1) + 10 = 11N + 1$ cicles.
+**Total**: $2 + 12(N-1) + 11 = 12N + 1$ cicles.
 
 ---
 
 **e)**
 
-Instruccions fora del bucle: `li t0` + `li t1` + `la t2` = 3 cicles.
+Instruccions fora del bucle: `li t0` (1) + `li t1` (1) + `la t2` (2) = 4 cicles.
 
 Per iteració (condició al final; salt `bne` pres $N-1$ vegades):
 `lw t3` (4) + `add t0` (1) + `addi t2` (1) + `addi t1` (1) + `bne` pres (2) = **9 cicles** per a les $N-1$ primeres iteracions.
 
 Última iteració: `bne` no pres (1) → cost = $9 - 2 + 1 = 8$ cicles.
 
-**Total**: $3 + 9(N-1) + 8 = 9N + 2$ cicles.
+**Total**: $4 + 9(N-1) + 8 = 9N + 3$ cicles.
 
 ---
 
@@ -428,15 +428,15 @@ bucle:
         bltu    t2, t1, bucle   # salta si p < sentinella
 ```
 
-Instruccions fora del bucle: 5 cicles.
+Instruccions fora del bucle: `li t0` (1) + `la t2` (2) + `li t1` (1) + `slli` (1) + `add` (1) = 6 cicles.
 
 Per iteració: `lw` (4) + `add` (1) + `addi` (1) + `bltu` pres (2) = **8 cicles** per a les $N-1$ primeres.
 
 Última iteració: `bltu` no pres (1) → 7 cicles.
 
-**Total**: $5 + 8(N-1) + 7 = 8N + 4$ cicles.
+**Total**: $6 + 8(N-1) + 7 = 8N + 5$ cicles.
 
-Respecte a l'apartat e) ($9N + 2$), s'estalvia 1 cicle per iteració a cost de 2 instruccions d'inicialització addicionals (+2 cicles). Totes dues versions costen el mateix per a $N = 2$; a partir de $N = 3$, la versió f) és millor.
+Respecte a l'apartat e) ($9N + 3$), s'estalvia 1 cicle per iteració a cost de 2 instruccions d'inicialització addicionals (+2 cicles). Totes dues versions costen el mateix per a $N = 2$; a partir de $N = 3$, la versió f) és millor.
 :::
 
 ## Subrutines: introducció
@@ -516,7 +516,7 @@ main:
 
 **b) Traducció de `examen`**
 
-`examen` és **uninivell**: no fa cap crida i no usa cap registre segur. El paràmetre `i` s'assigna a `t0` (temporal).
+`examen` és **uninivell**: no fa cap crida i no usa cap registre segur. La variable local `i` s'assigna a `t0` (temporal).
 
 ```{.s filename="RV32I"}
 examen:
@@ -712,7 +712,7 @@ La **càrrega** en memòria la fa el sistema operatiu i no forma part del procé
 
 **b) Qui resol les referències externes a `x` i `f` de `b.o`?**
 
-L'**enllaçador**, en la fase d'enllaçat. Durant l'assemblatge de `b.c`, `x` i `f` no estan definits en aquest mòdul, de manera que l'assemblador deixa adreces provisionals i les anota a la llista de referències externes. Quan l'enllaçador combina `a.o` i `b.o`, cerca `x` i `f` a la taula de símbols globals de `a.o` (on estan declarats amb `.globl`) i substitueix les adreces provisionals per les adreces definitives.
+L'**enllaçador**, en la fase d'enllaçat. Durant l'assemblatge de `b.s`, `x` i `f` no estan definits en aquest mòdul, de manera que l'assemblador deixa adreces provisionals i les anota a la llista de referències externes. Quan l'enllaçador combina `a.o` i `b.o`, cerca `x` i `f` a la taula de símbols globals de `a.o` (on estan declarats amb `.globl`) i substitueix les adreces provisionals per les adreces definitives.
 
 **c) Efecte de declarar `static int x = 42` a `a.c`**
 

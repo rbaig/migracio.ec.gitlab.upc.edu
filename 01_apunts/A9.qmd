@@ -73,7 +73,7 @@ A **EC** s'estudia el mecanisme d'excepcions en **mode M**, que és el més dire
 
 El mode en què opera el processador en cada moment es controla mitjançant uns registres especials anomenats **registres de control i estat** (***Control and Status Registers***, **CSR**). A aquests registres només s'hi pot accedir amb instruccions específiques.
 
-L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als CSR. Encara que en versions antigues de l'especificació aquestes instruccions formaven part de la ISA base, a partir de la versió 2.2 es van segregar en una extensió independent per permetre implementacions minimalistes sense suport CSR. En la pràctica, qualsevol processador RISC-V que implementi el mecanisme d'excepcions i interrupcions requereix Zicsr.
+L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als CSR. Encara que en versions antigues de l'especificació aquestes instruccions formaven part de la ISA base, a partir de la versió ratificada del 2019 (document 20190608, amb RV32I 2.1) es van segregar en una extensió independent per permetre implementacions minimalistes sense suport CSR. En la pràctica, qualsevol processador RISC-V que implementi el mecanisme d'excepcions i interrupcions requereix Zicsr.
 
 ::: {#nte-zicsr .callout-note}
 ## Zicsr ISA — Instruccions d'accés als CSR
@@ -94,7 +94,7 @@ Les pseudoinstruccions `csrr` i `csrw` (@nte-pseudoinstruccions-csr) són les fo
 {{< include ../21_riscv/Zicsr_pseudo.qmd >}}
 :::
 
-Les instruccions d'accés als CSR són **privilegiades**: en mode U, intentar executar-les genera una excepció d'instrucció il·legal.
+L'accés als CSR està **protegit pel nivell de privilegi**: cada CSR té un nivell mínim, codificat als bits 9:8 de la seva adreça de 12 bits, i accedir des de mode U a un CSR de mode M o S genera una excepció d'instrucció il·legal. Alguns CSR són de mode U, com `fcsr` (T5) o els comptadors `cycle` i `instret`.
 
 ::: {#wrn-zicsr-immediats .callout-warning collapse=true}
 ## Aprofundiment: variants immediates de les instruccions CSR
@@ -388,7 +388,7 @@ Si la RSE retornés sense ajustar `mepc` en el cas d'una `ecall`, el processador
 
 ### Exemple: RSE mínima en RISC-V {#sec-ei-rse-exemple}
 
-El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un *dispatcher*. Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa directives de GNU `as` (`.section`, `.align`) fora de l'abast de RARS:
+El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un *dispatcher*. Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
 
 ```{.s filename="RV32IZicsr"}
 .section .text.trap, "ax"
@@ -497,7 +497,7 @@ El SO és un programa resident al computador que gestiona els recursos compartit
 Els privilegis del mode M permeten dues coses que el mode U no pot fer:
 
 - **Accedir a adreces de memòria reservades al SO**: en mode U, un accés a aquestes adreces genera una excepció d'accés no permès.
-- **Executar instruccions privilegiades** (com les instruccions CSR): en mode U, intentar-ho genera una excepció d'instrucció il·legal.
+- **Executar instruccions privilegiades** (com `mret`) **o accedir a CSR de mode M o S**: en mode U, intentar-ho genera una excepció d'instrucció il·legal.
 
 ### `ecall` com a porta d'entrada controlada al SO {#sec-ei-ecall-porta}
 
@@ -588,7 +588,7 @@ Les crides al sistema segueixen una convenció estricta per passar el codi de se
 - **`a0`**: valor de retorn (i `a1` per a resultats de 64 bits en RV32).
 
 ::: {#cau-ecall-convencio-linux .callout-caution}
-La convenció de crides al sistema **no és la mateixa** que la convenció de crida a subrutines de l'ABI. En particular, el codi de servei va a **`a7`**, no a `a0`, i hi pot haver fins a sis arguments en lloc de quatre.
+La convenció de crides al sistema **no és la mateixa** que la convenció de crida a subrutines de l'ABI. En particular, el codi de servei va a **`a7`**, no a `a0`, i hi pot haver fins a sis arguments (`a0`–`a5`), en lloc dels vuit (`a0`–`a7`) de la convenció de crida a subrutines.
 :::
 
 ::: {#wrn-ecall-exemples-linux .callout-warning collapse=true}
@@ -653,8 +653,6 @@ Els exemples següents mostren les crides al sistema més habituals:
 | 65 | `readv` | `a0`=fd, `a1`=iov, `a2`=iovcnt | `a0`=bytes o error |
 | 66 | `writev` | `a0`=fd, `a1`=iov, `a2`=iovcnt | `a0`=bytes o error |
 | 78 | `readlinkat` | `a0`=dirfd, `a1`=path, `a2`=buf, `a3`=size | `a0`=bytes o error |
-| 79 | `fstatat` | `a0`=dirfd, `a1`=path, `a2`=stat, `a3`=flags | `a0`=0 o error |
-| 80 | `fstat` | `a0`=fd, `a1`=stat | `a0`=0 o error |
 | 93 | `exit` | `a0`=codi | — |
 | 94 | `exit_group` | `a0`=codi | — |
 | 96 | `set_tid_address` | `a0`=tidptr | `a0`=tid |
@@ -676,10 +674,11 @@ Els exemples següents mostren les crides al sistema més habituals:
 | 222 | `mmap` | `a0`=addr, `a1`=len, `a2`=prot, `a3`=flags, `a4`=fd, `a5`=off | `a0`=addr o error |
 | 261 | `prlimit64` | `a0`=pid, `a1`=res, `a2`=new, `a3`=old | `a0`=0 o error |
 | 278 | `getrandom` | `a0`=buf, `a1`=len, `a2`=flags | `a0`=bytes o error |
+| 291 | `statx` | `a0`=dirfd, `a1`=path, `a2`=flags, `a3`=mask, `a4`=buf | `a0`=0 o error |
 | 403 | `clock_gettime64` | `a0`=clkid, `a1`=tp | `a0`=0 o error |
 : {#tbl-syscalls .striped}
 
-A RV32, algunes d'aquestes crides corresponen a la variant específica per a mides de 32 bits (per exemple, `fcntl64`, `fstatat64` i `fstat64` en lloc de `fcntl`, `fstatat` i `fstat`), tot i que el número i els arguments es mantenen; `mmap` rep l'*offset* en pàgines de 4 KiB (semàntica `mmap2`) enlloc de bytes.
+A RV32, algunes d'aquestes crides corresponen a la variant específica per a mides de 32 bits (per exemple, `fcntl64` en lloc de `fcntl`), tot i que el número i els arguments es mantenen; `mmap` rep el desplaçament en pàgines de 4 KiB (semàntica `mmap2`) en lloc de bytes. RV32 no té `fstatat` ni `fstat` (79 i 80, que només existeixen a RV64): la informació d'un fitxer s'obté amb `statx`.
 :::
 
 ## Interrupcions de dispositius d'E/S {#sec-ei-interrupcions}
@@ -742,7 +741,7 @@ El sistema de permisos d'interrupcions té dos nivells independents:
 - **Màscares individuals `mie`**: cada bit habilita o deshabilita independentment un tipus d'interrupció. El SO els configura durant la inicialització per indicar quins dispositius poden interrompre el processador.
 
 ::: {#cau-permisos-interrupcions .callout-caution}
-Perquè una interrupció sigui atesa cal que es compleixin **simultàniament** les tres condicions de @cau-mip-mie-combinat:
+Perquè una interrupció sigui atesa cal que es compleixin **simultàniament** les tres condicions de @sec-ei-csr-mip-mie:
 
 1. `MIE = 1` (permís global habilitat).
 2. El bit corresponent de `mie` val 1 (permís específic habilitat).
@@ -763,7 +762,7 @@ Quan la RSE rep el control per una interrupció (bit 31 de `mcause` val 1), ha d
 ::: {#wrn-interrupcions-multiples .callout-warning collapse=true}
 ## Aprofundiment: múltiples peticions simultànies
 
-Pot succeir que mentre les interrupcions estaven inhibides (`MIE=0`) arribin peticions de diversos dispositius. En reprendre's el permís, tots els bits corresponents de `mip` estaran actius simultàniament. La RSE ha d'establir un ordre de prioritat per atendre'ls. RISC-V no imposa cap ordre de prioritat per maquinari: és responsabilitat del SO implementar la política que consideri adequada (per exemple, prioritat fixa, *round-robin*, etc.).
+Pot succeir que mentre les interrupcions estaven inhibides (`MIE=0`) arribin peticions de diversos dispositius. En reprendre's el permís, tots els bits corresponents de `mip` estaran actius simultàniament. La RSE ha d'establir un ordre de prioritat per atendre'ls. Entre els tipus d'interrupció, RISC-V fixa un ordre per maquinari (en mode M, externa, de programari i de temporitzador: `MEIP`, `MSIP`, `MTIP`), i `mcause` identifica la de més prioritat. Entre els dispositius que comparteixen la interrupció externa, en canvi, l'ordre és responsabilitat del SO, que implementa la política que consideri adequada (per exemple, prioritat fixa, *round-robin*, etc.).
 
 A més, pot succeir que un dispositiu hagi desactivat el senyal de petició abans que la RSE l'atengui (per exemple, per expiració d'un temporitzador intern). En aquest cas, el bit de `mip` ja no estarà actiu quan la RSE el comprovi, i la petició es perdrà.
 :::

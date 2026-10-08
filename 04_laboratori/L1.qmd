@@ -156,7 +156,7 @@ c) La pseudoinstrucció `li t2, 10` en canvi genera una sola instrucció. Per qu
 :::
 
 ::: {#sol-rars-pseudoinstruccio}
-a) `auipc t3, 0xfc10` seguida de `addi t3, t3, -12` (els valors exactes depenen de l'adreça de `V` i de la posició de `la` al programa; l'estructura auipc+addi és sempre la mateixa).
+a) El panell mostra `auipc x28,0x0000fc10` seguida de `addi x28,x28,0xfffffff4`, és a dir, `auipc t3, 0xfc10` i `addi t3, t3, -12` amb els noms ABI (els valors exactes depenen de l'adreça de `V` i de la posició de `la` al programa; l'estructura auipc+addi és sempre la mateixa).
 b) Perquè una adreça de memòria ocupa 32 bits, i cap instrucció tipus I té un immediat de 32 bits: `auipc` aporta els 20 bits alts (relatius al PC) i `addi` hi suma els 12 bits baixos amb signe.
 c) `10` cap dins el rang [−2048, 2047] d'un immediat de 12 bits amb signe, per tant una sola `addi` n'hi ha prou. Amb `li t2, 100000` **no** passaria el mateix: 100000 no cap en 12 bits, de manera que RARS generaria `lui t2, 0x18` seguida de `addi t2, t2, 1696` (dues instruccions), igual que amb `la`.
 :::
@@ -171,7 +171,7 @@ RARS ofereix tres modes d'execució:
 - **Execució pas a pas** (F7): executa una instrucció i s'atura. Útil per seguir el flux instrucció per instrucció.
 - **Reinici** (F12): torna el programa a l'estat inicial sense tornar a assemblar.
 
-El programa `hola.s` de la secció anterior no té bucles: el nombre d'instruccions és fix i petit. És el programa que s'usarà per al recompte manual.
+El programa `hola.s` de @sec-rars-primer-programa no té bucles: el nombre d'instruccions és fix i petit. És el programa que s'usarà per al recompte manual.
 
 ---
 
@@ -209,7 +209,7 @@ d) El panell mostra cada word com un valor hexadecimal de 32 bits. Quin ordre d'
 ::: {#sol-rars-memoria}
 a) `0x10010000` (adreça per defecte del segment `.data` a RARS).
 b) `0x1001000C` (= 0x10010000 + 3·4); conté `0xFFFFFFFC`.
-c) `0xFFFFFFFF`. S'obté calculant el complement a 2 de −1 en 32 bits: es complementen tots els bits d'1 (0x00000000 → 0xFFFFFFFF) i se suma 1, o de manera equivalent 2³² − 1 = 0xFFFFFFFF.
+c) `0xFFFFFFFF`. S'obté aplicant a +1 la regla del canvi de signe en Ca2 (@sec-enters-en-ca2): es complementen tots els bits d'1 (`0x00000001` → `0xFFFFFFFE`) i se suma 1; o, de manera equivalent, $2^{32} - 1$ = `0xFFFFFFFF`.
 d) RV32I és **little-endian**: el byte de menys pes s'emmagatzema a l'adreça més baixa.
 :::
 

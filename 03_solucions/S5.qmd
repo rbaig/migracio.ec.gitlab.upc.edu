@@ -402,16 +402,15 @@ El menor exponent és $e = -1$ (ft4). Cal desplaçar la seva mantissa 4 posicion
 ```{.default filename="Alineació"}
 ft2:            1,1111010110 0000000000000          × 2³
 ft4 original:   1,0010100000 0000000000000          × 2⁻¹
-ft4 alineat:  0,0000 1001010000 0000000000000       × 2³
-                     ↑
-              bit desplaçat fora: G=0, R=0, S=0
+ft4 alineat:    0,0001001010 0000000000000          × 2³
+                (els 4 bits que surten per la dreta són 0: G=0, R=0, S=0)
 ```
 
 **Pas 2. Suma de mantisses**
 
 ```{.default filename="Suma"}
   1,1111010110 0000000000000
-+ 0,0000100101 0000000000000
++ 0,0001001010 0000000000000
 = 10,0000100000 0000000000000
   ↑
   ròssec = 1 → cal renormalitzar
@@ -1032,8 +1031,8 @@ B alineat:  0,0000000011 | 0 1 | 01…      × 2⁶
 
 ```{.default filename="Suma"}
   1,1000111011 | 000
-+ 0,0000000011 | 101
-= 1,1000111110 | 101        (sense transport)
++ 0,0000000011 | 011
+= 1,1000111110 | 011        (sense ròssec)
 ```
 
 $G = 0$ → es **trunca**:
@@ -1071,7 +1070,7 @@ $$F = 0000001001 + 1 = 0000001010$$
 
 $$A \times B = 0\ |\ 01010\ |\ 0000001010 = \texttt{0x280A} = 0{,}03155517578125$$
 
-(És l'únic problema de T5 on el desempat «al parell» entra en joc: l'error comès és exactament ½ ULP $= 2^{-16}$.)
+(És l'únic problema resolt de T5 on el desempat «al parell» entra en joc: l'error comès és exactament ½ ULP $= 2^{-16}$.)
 
 **Operació 4: $A \times C$**
 
@@ -1111,7 +1110,7 @@ $$(A \times B) + (A \times C) = 0\ |\ 10010\ |\ 1110011100 = \texttt{0x4B9C} = \
 
 $$\boxed{A \times (B + C) = \texttt{0x4B9C} = 15{,}21875 = (A \times B) + (A \times C)}$$
 
-En aquest cas els dos camins **coincideixen**, tot i haver acumulat quatre arrodoniments diferents (un truncament, dos «al següent» i un empat «al parell»). Fixeu-vos, però, que els valors exactes dels dos camins són diferents ($15{,}21533\ldots$ i $15{,}21906\ldots$): tots dos s'arrodoneixen casualment al mateix representable. La igualtat és **fortuïta**, no una propietat.
+En aquest cas els dos camins **coincideixen**, tot i haver acumulat cinc arrodoniments (dos truncaments, dos «al següent» i un empat «al parell»). Fixeu-vos, però, que els valors exactes dels dos camins són diferents ($15{,}21533\ldots$ i $15{,}21905\ldots$): tots dos s'arrodoneixen casualment al mateix representable. La igualtat és **fortuïta**, no una propietat.
 
 **b) `A = 0xCEF9`, `B = 0xEFE6`, `C = 0x70FD`**
 

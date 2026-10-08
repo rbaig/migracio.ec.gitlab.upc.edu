@@ -458,14 +458,13 @@ L'stride del recorregut per columna és `N*4` bytes.
 
 L'adreça del primer element és `@A[0][4] = @A + 4*4`.
 
-La sentinella és `@A[N][4] = @A[0][4] + N*(N*4)`. Com que `N` no és necessàriament una potència de 2, cal `mul` per calcular `N*N*4` a partir de `N` i `N*4`.
+La sentinella és `@A[N][4] = @A[0][4] + N*(N*4)`. Com que `N` és una constant, el desplaçament `N*N*4` també ho és, i va directament a l'operand de `li` (@imp-ec-operands-expressions): no cal `mul`.
 
-```{.s filename="RV32IM"}
+```{.s filename="RV32I"}
         # a0 = @A, t2 = suma (inicialitzada prèviament a 0)
         addi    t3, a0, 4*4         # t3 = p = @A[0][4]
         li      t5, N*4             # stride = N*4
-        li      t4, N
-        mul     t4, t4, t5          # N * N*4 = N²*4
+        li      t4, N*N*4           # N²*4
         add     t4, t3, t4          # t4 = sentinella = @A[N][4]
         bgeu    t3, t4, fifor       # comprovació inicial
 bucle:
@@ -480,14 +479,13 @@ fifor:
 
 D'un element `A[i][i]` al següent `A[i+1][i+1]` hi ha $N + 1$ elements de distància: l'stride és `(N+1)*4` bytes (fila «diagonal principal» de la taula d'strides de @sec-matrius-recorreguts).
 
-El primer element és `@A[0][0] = @A`, i la sentinella, `@A + N*((N+1)*4)`: com a l'apartat b, cal `mul`.
+El primer element és `@A[0][0] = @A`, i la sentinella, `@A + N*((N+1)*4)`: com a l'apartat b, el desplaçament és constant i va a l'operand de `li`.
 
-```{.s filename="RV32IM"}
+```{.s filename="RV32I"}
         # a0 = @A, t2 = suma (inicialitzada prèviament a 0)
         mv      t3, a0              # t3 = p = @A[0][0]
         li      t5, (N+1)*4         # stride = (N+1)*4
-        li      t4, N
-        mul     t4, t4, t5          # N * (N+1)*4
+        li      t4, N*(N+1)*4       # N * (N+1)*4
         add     t4, t3, t4          # t4 = sentinella
         bgeu    t3, t4, fifor       # comprovació inicial
 bucle:
