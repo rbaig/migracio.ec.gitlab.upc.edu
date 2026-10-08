@@ -52,7 +52,7 @@ Per a la diferència $d = a - b$, es produeix sobreeiximent si i només si **la 
 ::: {#wrn-sobreeiximent-demostracio .callout-warning collapse=true}
 ## Demostració de les condicions de sobreeiximent en Ca2
 
-Considerem la suma exacta $s = a + b$, on $a$ i $b$ estan representats per les cadenes de bits $A = A_{n-1}\ldots A_0$ i $B = B_{n-1}\ldots B_0$. La suma exacta sempre es pot representar amb $n+1$ bits com $S = S_n\,S_{n-1}\ldots S_0$.
+Sigui la suma exacta $s = a + b$, on $a$ i $b$ estan representats per les cadenes de bits $A = A_{n-1}\ldots A_0$ i $B = B_{n-1}\ldots B_0$. La suma exacta sempre es pot representar amb $n+1$ bits com $S = S_n\,S_{n-1}\ldots S_0$.
 
 **Cas 1 — Signes oposats**: si $a < 0$ i $b \geq 0$, llavors $a \leq a+b < b$, de manera que $s$ sempre és representable amb $n$ bits: no hi ha sobreeiximent.
 
@@ -182,7 +182,7 @@ Per evitar guardar tots els productes parcials simultàniament, el circuit els v
   a cada iteració.
 - **MR** ($n$ bits): conté el multiplicador $y$. Es desplaça una posició a la dreta a cada iteració. El bit de menys pes s'usa per decidir si
   sumar o no.
-- **P** ($2n$ bits): acumulador del producte. S'inicialitza a zero i s'hi suma MD si el bit de menys pes de MR és 1.
+- **P** ($2n$ bits): acumulador del producte. S'inicialitza a zero i s'hi suma MD si el bit de menys pes d'MR és 1.
 
 ::: {#fig-multiplicador-sequencial}
 ::: {.content-visible when-format="html"}
@@ -265,7 +265,7 @@ Circuit multiplicador combinacional en arbre.
 
 ### Instruccions de multiplicació (extensió M) {#sec-extensio-m}
 
-Com s'ha vist a @sec-multiplicacio-potencies-2, `slli` permet multiplicar per potències de 2 de manera eficient; és la solució adequada per escalar índexs de vectors quan la mida de l'element és 1, 2, 4 o 8 bytes (@imp-ec-sll-acces-vector). Per al cas general, però, cal una instrucció de multiplicació d'enters: per exemple, per accedir a un element qualsevol d'una matriu, cal calcular `i*NC`, on el nombre de columnes `NC` no té per què ser una potència de 2.
+Com s'ha vist a la @sec-multiplicacio-potencies-2, `slli` permet multiplicar per potències de 2 de manera eficient; és la solució adequada per escalar índexs de vectors quan la mida de l'element és 1, 2, 4 o 8 bytes (@imp-ec-sll-acces-vector). Per al cas general, però, cal una instrucció de multiplicació d'enters: per exemple, per accedir a un element qualsevol d'una matriu, cal calcular `i*NC`, on el nombre de columnes `NC` no té per què ser una potència de 2.
 
 Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv): l'extensió **M** (@sec-extensio-m-t2) afegeix instruccions de multiplicació i divisió entera per maquinari. Per activar-la, cal afegir `m` al paràmetre `-march` del compilador: `-march=rv32im`.
 
@@ -283,7 +283,7 @@ Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv
 
 ```{.c filename="C"}
 int a = 5, b = 6, c;
-c = a * b;                    /* c = 30 */
+c = a * b;                    // c = 30
 ```
 
 Suposant que `a`, `b` i `c` ocupen `t0`, `t1` i `t2`:
@@ -318,7 +318,7 @@ Per obtenir el resultat exacte de 64 bits cal combinar `mul` amb `mulh` (enters)
 ```{.c filename="C"}
 int a, b, s;
 long long producte_exacte;
-s = a * b;                      /* resultat truncat a 32 bits */
+s = a * b;                      // resultat truncat a 32 bits
 producte_exacte = (long long)a * b;
 ```
 
@@ -493,7 +493,7 @@ En C, l'operador `/` entre enters no es pot traduir amb `sra` sola: cal `div` o 
 
 ## Matrius {#sec-matrius}
 
-Amb `mul` disponible, ja és possible calcular adreces arbitràries dins d'estructures de dades multidimensionals. Una **matriu** és una agrupació multidimensional d'elements del mateix tipus, identificats per un índex per cada dimensió. Les matrius de dues dimensions es representen habitualment com una **taula de NF files i NC columnes**:
+Amb `mul` disponible, ja és possible calcular adreces arbitràries dins d'estructures de dades multidimensionals. Una **matriu** és una agrupació multidimensional d'elements del mateix tipus, identificats per un índex per cada dimensió. Les matrius de dues dimensions es representen habitualment com una **taula d'NF files i NC columnes**:
 
 $$
 \begin{pmatrix}
@@ -788,15 +788,15 @@ Partint de la versió #1 amb accés seqüencial:
         add     t3, a0, t1          # p <- @mat[fila][0]
         li      t0, NC
         mv      t1, zero            # j = 0
-        bge     t1, t0, fifor       # comprovació inicial (0 iteracions)
 for:
         sw      zero, 0(t3)         #        mat[fila][j] = 0
         addi    t3, t3, 4           # [ctrl] p += stride
         addi    t1, t1, 1           # [ctrl] j++
         blt     t1, t0, for         # [ctrl] salta si j < NC
-fifor:
         ret
 ```
+
+Com que `NC` és una constant positiva, el bucle sempre fa alguna iteració i no cal la comprovació inicial (sí que cal a @tip-sumacolumna-sequencial, on el nombre de files és un paràmetre).
 
 La infraestructura de control queda en **3 instruccions per iteració**. El salt incondicional `j` ha desaparegut, substituït pel salt condicional al final `blt`.
 :::
@@ -820,12 +820,10 @@ Partint de la versió amb les optimitzacions #1 i #2:
         mul     t1, a1, t0
         add     t3, a0, t1          # p <- @mat[fila][0]
         add     t4, t3, t0          # t4 <- @mat[fila][NC] (sentinella)
-        bgeu    t3, t4, fifor       # comprovació inicial (0 iteracions)
 for:
         sw      zero, 0(t3)         #        mat[fila][j] = 0
         addi    t3, t3, 4           # [ctrl] p += stride
         bltu    t3, t4, for         # [ctrl] salta si p < sentinella
-fifor:
         ret
 ```
 

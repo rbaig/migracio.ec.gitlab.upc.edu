@@ -124,18 +124,18 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **`.globl` vs. `.global`**: s'usa `.globl` (forma estàndard de GNU AS); `.global` és un àlies acceptat però no s'usa als exemples ni al laboratori, i el text de T3 (`#nte-globl`) tampoc no l'esmenta: només el recull la taula de directives del compendi (`21_riscv/RARS_directives.qmd`) ([D-4]({{< var decisions >}}#d-4)).
 - **Mode base + desplaçament** (terme canònic a EC): el mode d'adreçament que usa la sintaxi `offset(rs1)` s'anomena **mode base + desplaçament** a EC. El terme **mode memòria** és un sinònim de la literatura; es menciona com a tal al callout `{#cau-mode-base-desplacament}` de T2, però no s'usa com a terme principal.
 - **Modes d'adreçament**: quatre modes a EC: registre, immediat, base+desplaçament, relatiu al PC. `lui` → immediat; `auipc` → relatiu al PC (A3, taula resum dels modes); `jalr` → base+desplaçament.
-- **Formats d'instrucció de RV32I**: **quatre de nuclears**, R, I, S i U, com diu la font de veritat (@riscv_rv32i, «four core instruction formats»); **B i J són variants** de S i U, respectivament, i no formats independents. Cap text no ha de donar «sis formats» com a total. Escrit a `A2.qmd §Format de les instruccions RV32I` (`#sec-format-instruccions`). **On es presenta cada format**: els quatre nuclears a T2 —R, I i S a §Modes d'adreçament i U amb `lui` i `auipc` (`#nte-format-u`; les dues instruccions, a §Operands en mode immediat, `#nte-instruccio-lui` i `#nte-instruccio-auipc`)— i les dues variants a T3, amb les instruccions de salt (`#nte-format-b`, `#nte-format-j`), que remeten al format nuclear de T2. Així cap variant no es presenta abans que el seu format nuclear ([D-5]({{< var decisions >}}#d-5)).
+- **Formats d'instrucció de RV32I**: **quatre de nuclears**, R, I, S i U, com diu la font de veritat (@riscv_rv32i, «four core instruction formats»); **B i J són variants** de S i U, respectivament, i no formats independents. Cap text no ha de donar «sis formats» com a total. Escrit a `A2.qmd §Format de les instruccions RV32I` (`#sec-format-instruccions`). **On es presenta cada format**: els quatre nuclears a T2 —R, I i S a §Format de les instruccions RV32I (`#nte-instruccions-tipus`) i U amb `lui` i `auipc` (les dues instruccions, a §Instruccions, `#sec-instruccions-assemblador`; el format, `#nte-format-u`, a §Operands en mode immediat)— i les dues variants a T3, amb les instruccions de salt (`#nte-format-b`, `#nte-format-j`), que remeten al format nuclear de T2. Així cap variant no es presenta abans que el seu format nuclear ([D-5]({{< var decisions >}}#d-5)).
 - **Terminologia de salts**: relatiu al PC (`beq`, `jal`) vs. indirecte (`jalr`). Tots els salts condicionals de RV32I són relatius al PC.
 - **Etiquetes de bucle**: `bucle:` i `fibucle:` als exemples didàctics; en la pràctica s'admeten etiquetes descriptives (`while:`, `fiwhile:`, etc.). El prefix de l'etiqueta de sortida és **`fi-`** (`fibucle:`, `fifor:`, `fiwhile:`).
     - **Més d'un bucle al mateix bloc**: quan un fragment conté dos bucles o més **al mateix àmbit d'assemblador**, les etiquetes es **numeren** (`for1:`/`fifor1:`, `for2:`/`fifor2:`), perquè dues etiquetes iguals al mateix bloc no assemblen. La numeració no és una desviació de la convenció: n'és l'extensió per al cas de bucles germans ([D-6]({{< var decisions >}}#d-6)).
 - **Registres als exemples**: `t0`, `t1`, `t2`... tant en C com en assemblador per eliminar el soroll del mapatge.
 - **`la label+offset`**: admès a EC (pissarra i exàmens) però no suportat per RARS; al laboratori cal `la` + `addi`.
-- **Pseudoinstruccions vs. macros**: distinció explícita establerta a T3. Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
+- **Pseudoinstruccions vs. macros**: distinció explícita establerta a T2 (`#sec-macros`); T3 hi afegeix la de macro vs. subrutina (`#cau-macros-vs-subrutines`). Les macros es defineixen amb `.macro`/`.end_macro` i són locals al programa.
 - **Alineació de la pila**: la mida del BA i el valor de `sp` han de ser **múltiples de 4 bytes** a EC (relaxació pedagògica). L'ABI estàndard de RV32I exigeix múltiples de 16 bytes; aquest fet és a `{#nte-abi-alineacio-pila}` de T3, i el criteri d'EC, a `{#imp-abi-alineacio-pila}`, just a continuació ([D-7]({{< var decisions >}}#d-7)).
 - **Retorn de resultats**: les subrutines retornen com a màxim dos resultats escalars, per `a0` i `a1`. El segon (`a1`) s'usa habitualment per a un codi d'error o un segon valor de retorn. Documentat a `{#nte-abi-pas-parametres}` de T3.
 - **Retorn de subrutines — `ret`**: als exemples s'usa sempre `ret` (pseudoinstrucció estàndard, més llegible), no `jalr x0, 0(ra)`.
 - **`.section`**: no s'utilitza. Només `.data` i `.text`, sense indentar, a columna 0, també al laboratori (§Convencions globals del laboratori). **No és una preferència d'estil: RARS 1.6 no admet la forma llarga.** `.section .data` i `.section .text` no assemblen (error `.section must be followed by a section name`), i les formes que sí que assemblen són pitjors, perquè fallen en silenci: no commuten de segment i, amb un nom reconegut (`.rodata`, `.sdata`), descarten tot el codi que les segueix ([D-8]({{< var decisions >}}#d-8)).
-    - Excepció legítima: la forma amb sufix i *flags* (`.section .text.trap, "ax"`) sí que assembla, i és la de l'exemple de RSE mínima d'A9 (`#sec-ei-rse-exemple`), declarat il·lustratiu i no executable. **No s'ha de tocar.**
+    - Excepció legítima: la forma amb sufix i *flags* (`.section .text.trap, "ax"`) sí que assembla, i és la de l'exemple d'RSE mínima d'A9 (`#sec-ei-rse-exemple`), declarat il·lustratiu i no executable. **No s'ha de tocar.**
 
 #### T4
 
@@ -152,12 +152,12 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 
 - **`quartet`** (no `nibble`): terme preferit per als grups de 4 bits.
 - **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació. La **precisió** $p$ compta els bits significatius de la mantissa, bit ocult inclòs: la fracció en té $p-1$ ($b_{-1} \ldots b_{-(p-1)}$), i l'exponent és $e$ tant en base 2 com en la notació científica decimal ($v = m \times 10^e$) ([D-12]({{< var decisions >}}#d-12)).
-- **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des del LSB.
-- **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`).
+- **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des de l'LSB.
+- **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`). És una regla dels problemes i les solucions: la teoria (A5) presenta aquests càlculs amb fórmules ([D-81]({{< var decisions >}}#d-81)).
 - **Solucions**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
 - **`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el camp `rm`** de la instrucció, no trunquen sempre. Sense operand de mode (`fcvt.w.s rd, rs1`), l'assemblador RISC-V hi assigna `dyn` (mode dinàmic: el del registre `frm`, RNE per defecte a RARS). Per traduir el *cast* `(int)` de C (que trunca cap a zero) cal escriure explícitament `fcvt.w.s rd, rs1, rtz`.
 - **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
-- **No-associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$.
+- **No-associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$. És l'exemple dels problemes i les solucions; A5 en fa servir un de precisió simple, la del tema ([D-81]({{< var decisions >}}#d-81)).
 
 #### T6
 
@@ -176,8 +176,8 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 
 #### T7
 
-- **$t_{bloc}$ (no $t_{block}$)**: notació canònica per al temps de transferència d'un bloc entre la MC i la memòria principal (teoria, enunciats i solucions).
-- **«línia» vs. «bloc»**: la **línia** és el contenidor de la MC; el **bloc** és el contingut (fragment de la memòria principal). Els enunciats especifiquen la geometria com a «$N$ línies amb blocs de $B$ bytes» o «$N$ vies per conjunt», mai «$N$ blocs» per comptar línies o vies.
+- **$t_{bloc}$ (no $t_{block}$)**: notació canònica per al temps de transferència d'un bloc entre l'MC i la memòria principal (teoria, enunciats i solucions).
+- **«línia» vs. «bloc»**: la **línia** és el contenidor de l'MC; el **bloc** és el contingut (fragment de la memòria principal). Els enunciats especifiquen la geometria com a «$N$ línies amb blocs de $B$ bytes» o «$N$ vies per conjunt», mai «$N$ blocs» per comptar línies o vies.
 - **Notació multinivell**: la dels subíndexs de nivell de la teoria (`@eq-tam-multinivell`): $t_{h_{L1}}$, $t_{h_{L2}}$, $m_{L1}$, $m_{L2}$; els subíndexs numèrics ($m_1$, $m_2$…) es reserven per enumerar alternatives dins d'un mateix exercici.
 - **Tipus de fallades (les tres C)**: fallades **d'arrencada en fred** (*cold-start*), també **obligatòries** (*compulsory*) o **de primera referència** (*first-reference*); **de conflicte** (o **de col·lisió**); i **de capacitat**. La quarta C, les **de coherència** (o **d'invalidació**) dels processadors multinucli, és d'aprofundiment (`#wrn-fallades-coherencia`). Les figures generades diuen «obligatòria», la forma curta. **A la resta del material** (P7, S7, S8 i L6): a la prosa, «d'arrencada en fred», amb *cold-start* en cursiva a la primera aparició de cada fitxer; a les taules i als llocs curts (parèntesis, subíndexs), «obligatòria», com a les figures. S8 l'aplica a les fallades de TLB, que segueixen la mateixa classificació ([D-17]({{< var decisions >}}#d-17)).
 
@@ -186,9 +186,9 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Bit de permís d'escriptura `E`**: la teoria, els enunciats i les solucions usen el bit **E** (`E = 1` → permís d'escriptura; `E = 0` → només lectura), **no `W`** ([D-18]({{< var decisions >}}#d-18)).
 - **Bit de validesa `V`**: la teoria, els enunciats i les solucions usen **V** (*valid bit*, notació RISC-V Sv32 / Harris & Harris) per al bit de presència d'una PTE, no **P**. `#wrn-mv-notacio-v` a `A8.qmd` documenta la notació `P` per a qui consulti exàmens anteriors ([D-18]({{< var decisions >}}#d-18)).
 - **Mida de pàgina explícita**: si un enunciat de memòria virtual no especifica la mida de pàgina però les adreces la impliquen, s'afegeix explícitament a l'enunciat (rigor i bona definició).
-- **Estat inicial del TLB**: quan es dona l'estat inicial d'un TLB completament associatiu amb LRU, cal especificar també l'**ordre d'ús** (MRU→LRU) de les entrades vàlides; sense això el reemplaçament és ambigu.
+- **Estat inicial del TLB**: quan es dona l'estat inicial d'un TLB completament associatiu amb LRU, cal especificar també l'**ordre d'ús** de les entrades vàlides, amb el sentit explícit (de la més recent a la més antiga, o a l'inrevés); sense això el reemplaçament és ambigu ([D-82]({{< var decisions >}}#d-82)).
 - **Canvi de mida de pàgina sobre un estat fix**: una pregunta que reutilitzi una taula de pàgines o un TLB donats per a una mida de pàgina concreta i en canviï la mida es torna incoherent; en aquests casos es reformula en clau **qualitativa** (efecte sobre el nombre de fallades).
-- **Model del TLB: el de RISC-V, no el de MIPS.** El TLB d'EC és un model docent (`#imp-mv-model-tlb`: a RISC-V el TLB no és arquitectònic), completament associatiu i amb LRU, que **només conté traduccions de pàgines residents**: la fallada de TLB la resol la MMU (recorregut de la taula de pàgines per maquinari, transparent al SO); si la PTE té V = 1 es copia al TLB i la traducció continua, i si té V = 0 **no es copia res** i es produeix la fallada de pàgina. En expulsar una pàgina, el SO posa V = 0 a la PTE de la víctima **i n'invalida l'entrada del TLB** (`sfence.vma`, T9), que queda lliure. El bit V d'una entrada del TLB vol dir «entrada ocupada», com el de les línies de la MC (T7), i mai no és una còpia del V de la PTE. El bit D s'actualitza per maquinari a la primera escriptura, al TLB i a la PTE (l'opció HW de RISC-V; Svade a `@wrn-tlb-bit-ad` de T9). El model antic de MIPS (TLB arquitectònic, *refill* per programari, encert de TLB amb V = 0) queda com a nota històrica a `#wrn-mv-tlb-hw-walker`, amb l'avís per als exàmens antics d'EC. Conseqüències als problemes: les entrades lliures del TLB es donen com a «V = 0, —», no amb un VPN residual; i amb tants marcs com entrades de TLB el reemplaçament LRU del TLB no arriba a actuar (l'exemple d'A8 ho diu explícitament i remet a `exr-t8-tlb-estat`) ([D-19]({{< var decisions >}}#d-19)).
+- **Model del TLB: el de RISC-V, no el de MIPS.** El TLB d'EC és un model docent (`#imp-mv-model-tlb`: a RISC-V el TLB no és arquitectònic), completament associatiu i amb LRU, que **només conté traduccions de pàgines residents**: la fallada de TLB la resol l'MMU (recorregut de la taula de pàgines per maquinari, transparent a l'SO); si la PTE té V = 1 es copia al TLB i la traducció continua, i si té V = 0 **no es copia res** i es produeix la fallada de pàgina. En expulsar una pàgina, l'SO posa V = 0 a la PTE de la víctima **i n'invalida l'entrada del TLB** (`sfence.vma`, T9), que queda lliure. El bit V d'una entrada del TLB vol dir «entrada ocupada», com el de les línies de l'MC (T7), i mai no és una còpia del V de la PTE. El bit D s'actualitza per maquinari a la primera escriptura, al TLB i a la PTE (l'opció HW de RISC-V; Svade a `@wrn-tlb-bit-ad` de T9). El model antic de MIPS (TLB arquitectònic, *refill* per programari, encert de TLB amb V = 0) queda com a nota històrica a `#wrn-mv-tlb-hw-walker`, amb l'avís per als exàmens antics d'EC. Conseqüències als problemes: les entrades lliures del TLB es donen com a «V = 0, —», no amb un VPN residual; i amb tants marcs com entrades de TLB el reemplaçament LRU del TLB no arriba a actuar (l'exemple d'A8 ho diu explícitament i remet a `exr-t8-tlb-estat`) ([D-19]({{< var decisions >}}#d-19)).
 - **Columnes de les taules de TLB**: `V | VPN | D | E | PPN` (V primer, com a bit d'ocupació de l'entrada); les de la taula de pàgines, `VPN | V | D | E | PPN`, amb el VPN com a índex.
 - **Fallades de TLB als problemes amb codi**: els enunciats que compten fallades de TLB sobre un bucle diuen «TLB de dades» i que no es consideren les captures d'instruccions (`exr-t8-tlb-basic`, `exr-t8-tlb-optimitzacio`).
 - **Exemple pràctic (`#tip-mv-tlb-exemple`)**: a la secció final del tema, `#sec-mv-exemple`. Els cinc accessos del PDF original, amb les dades del PDF, en text i en una taula resum; la traça és la figura dinàmica `#fig-mv-tlb-exemple`, generada per `gen_T8.py` a partir d'una simulació del model (que fa alhora de verificador numèric) ([D-20]({{< var decisions >}}#d-20)).
@@ -197,7 +197,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 
 - **`ecall`**: la convenció de crides al sistema Linux/RISC-V usa `a7` per al codi de servei (no `a0`) i admet fins a sis arguments (`a0`–`a5`).
 - **RSE**: cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
-- **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de la RSE, no del maquinari.
+- **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de l'RSE, no del maquinari.
 - **Zicsr**: les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
 - **Mode S**: el mecanisme d'excepcions s'estudia en mode M; el mode S s'introdueix a `#sec-ei-csr-modes` i s'aplica, al cos del text, al tractament de la fallada de pàgina (`satp`, `stval`, `sfence.vma`; `#sec-ei-tlb-modes`). La fallada de TLB no és una excepció: la resol el maquinari (§T8, «Model del TLB») ([D-21]({{< var decisions >}}#d-21)).
 
@@ -334,7 +334,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 | event | esdeveniment | Esmena lèxica. |
 | empotrat | encastat | p. ex. *embedded processors*. |
 | cache | cau | Especialment en títols. |
-| load/store | lectura/escriptura | Les instruccions que llegeixen o escriuen la memòria (`lw`, `sw`, `flw`…) i la seva operació, també els verbs (*llegir* i *escriure*). No hi entren la càrrega d'immediats o d'adreces (`li`, `lui`, `la`), la del programa, la d'una pàgina ni la d'un bloc a la MC, ni «emmagatzematge» com a disposició o com a suport (secundari, per files, *endianness*, categoria d'emmagatzemament de C). Els identificadors (`#nte-load-store`, `#sec-carrega-…`) no canvien ([D-35]({{< var decisions >}}#d-35)). |
+| load/store | lectura/escriptura | Les instruccions que llegeixen o escriuen la memòria (`lw`, `sw`, `flw`…) i la seva operació, també els verbs (*llegir* i *escriure*). No hi entren la càrrega d'immediats o d'adreces (`li`, `lui`, `la`), la del programa, la d'una pàgina ni la d'un bloc a l'MC, ni «emmagatzematge» com a disposició o com a suport (secundari, per files, *endianness*, categoria d'emmagatzemament de C). Els identificadors (`#nte-load-store`, `#sec-carrega-…`) no canvien ([D-35]({{< var decisions >}}#d-35)). |
 | offset | desplaçament | |
 | branch | salt | |
 | jump | salt | |
@@ -366,6 +366,8 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 - La **primera vegada** que apareixen s'han d'escriure les paraules completes seguides de la sigla entre parèntesis en majúscules. Exemple: `***Instruction Set Architecture*** (**ISA**)`.
 - Cada sigla **s'ha de recollir** al **compendi de sigles** `12_sigles_simbols.qmd`.
 - Un cop definida s'ha d'usar sempre (en majúscules i sense cursiva). Pot anar en negreta.
+- **Sense plural**: la sigla no porta marca de plural; el nombre el diu el determinant («les API», «dues GPU», «els LED») ([D-79]({{< var decisions >}}#d-79)).
+- **Article i preposició davant de la sigla**: s'apostrofen segons la pronúncia, com fixa la GIEC. Davant de les que es lletregen i comencen amb una lletra de nom vocàlic (a, e, i, o, u, efa, ela, ema, ena, erra, essa) o es llegeixen com un mot que comença en vocal: «l'ISA», «l'MMU», «l'MC», «l'RSE», «l'SO», «d'MP», «de l'LSB». Davant de les que es llegeixen com un mot que comença en consonant, no: «la RAM», «la ROM», «de RARS» ([D-80]({{< var decisions >}}#d-80)).
 
 **Criteri d'inclusió a `12_sigles_simbols.qmd`**: s'inclou tota sigla que aparegui al **cos del text** o als callouts `{.callout-caution}`, `{.callout-note}`, `{.callout-tip}` o `{.callout-important}`.
 
@@ -396,7 +398,7 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
 **Regla general**: el format el determina la **naturalesa de l'element**, no el context on apareix.
 
 - **Backtick** (`` ` ``) — **codi**: tot allò que existeix literalment en un programa, en una ISA o en un fitxer: registres (`t0`; també els CSR: `mepc`, `mstatus`…, fins i tot en títols de secció, com fa T9), instruccions (`addi`), directives (`.data`), variables i expressions C (`i`, `p++`), camps de bits (`opcode`), adreces concretes (`0x10010000`), fitxers, comandes i etiquetes.
-- **LaTeX math** (`$…$`) — **matemàtiques**: quantitats, variables i expressions matemàtiques: mides genèriques ($n$ bits, $B = 2^b$), índexs de fórmules i algorismes ($q_i$), rangs ($[-2^{11}, 2^{11}-1]$), operacions ($rd = M_w[rs1 + SignExt(offset)]$). Els superíndexs numèrics s'escriuen sempre en math (`$2^{8}$`), també dins de cel·les de taula; no s'usa la sintaxi Pandoc `2^8^`.
+- **LaTeX math** (`$…$`) — **matemàtiques**: quantitats, variables i expressions matemàtiques: mides genèriques ($n$ bits, $B = 2^b$), índexs de fórmules i algorismes ($q_i$), rangs ($[-2^{11}, 2^{11}-1]$), operacions ($rd \leftarrow M_w[rs1 + SignExt(offset)]$). Els superíndexs numèrics s'escriuen sempre en math (`$2^{8}$`), també dins de cel·les de taula; no s'usa la sintaxi Pandoc `2^8^`.
 - **Cursiva** — **llengua**: anglicismes en primera aparició (vegeu §Anglicismes) i èmfasi lleu. Mai per a codi ni per a variables matemàtiques.
 - **Text pla** — la resta: nombres amb unitats («8 bits», «4 bytes»), noms d'arquitectures i extensions (RISC-V, RV32I, extensió M), tipus de format d'instrucció (S, B).
 
@@ -442,7 +444,7 @@ Els símbols són els de la taula `## Notació` de `12_sigles_simbols.qmd`. Quan
     - Tipus d'instrucció S, B.
     - Ctrl + R.
     - A RARS: "F3", "Execute", "*Settings*".
-    - Operacions matemàtiques: $rd = M_{w}[rs1 + SignExt(offset)]$.
+    - Operacions matemàtiques: $rd \leftarrow M_{w}[rs1 + SignExt(offset)]$.
 - **Amb backtick**:
     - Registres ISA `x0`–`x31`, ABI `a0`–`a7`.
     - Registres CSR `mepc`, `mcause`, `mstatus`, `mtvec`, `mip`, `mie`, `mtval`, `satp`, etc.
@@ -535,7 +537,7 @@ La part mecànica dels criteris (F1–F4: columna 0 per a les directives de segm
 
 #### Política de generació SVG
 
-**La prioritat és sempre generar el SVG des de zero** amb elements natius (`<rect>`, `<line>`, `<text>`, etc.). El PDF original es pot usar com a referència visual, però la figura es reprodueix com a SVG natiu.
+**La prioritat és sempre generar l'SVG des de zero** amb elements natius (`<rect>`, `<line>`, `<text>`, etc.). El PDF original es pot usar com a referència visual, però la figura es reprodueix com a SVG natiu.
 
 **Figures de nova creació (opció per defecte, tots els temes):**
 - Construïdes des de zero amb elements SVG (`<rect>`, `<line>`, `<text>`, etc.).
@@ -630,7 +632,7 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 
 | Fitxer font | SVG a `22_figs_originals/` | Figures generades a `auto_figs/` | Contingut |
 | :--- | :--- | :--- | :--- |
-| `24_specs/A7_mc_politiques_resum__graphviz.gv` | `A7_mc_politiques_resum__graphviz.svg` | `A7_mc_politiques_resum__graphviz__original_light.svg` i `…__original_dark.svg` | Arbre de polítiques de MC (emplaçament, reemplaçament, escriptura) |
+| `24_specs/A7_mc_politiques_resum__graphviz.gv` | `A7_mc_politiques_resum__graphviz.svg` | `A7_mc_politiques_resum__graphviz__original_light.svg` i `…__original_dark.svg` | Arbre de polítiques d'MC (emplaçament, reemplaçament, escriptura) |
 
 #### Figures dinàmiques
 
@@ -795,7 +797,13 @@ A més, com a criteri d'estil de redacció:
 - **Direccionalitat**: les referències cap endavant (a contingut encara no presentat, sigui d'una secció posterior o d'un tema posterior) només s'admeten com a **punter explícit** («s'estudia a…», «es veurà a…», «vegeu…»), mai com a **dependència conceptual**: el text s'ha de poder seguir sense visitar la destinació. Punters cap endavant acceptats actualment:
     - T1/T2 → T3/T4: compilació, subrutines i pila, matrius, i optimitzacions de bucle (vegeu §T2 i T3).
     - T2 → T3: el punt d'entrada del programa sense etiqueta i el motiu *bare-metal* (`@nte-punt-entrada-etiqueta`).
-    - T2/T3 → T9: `ecall` (`@sec-ei-ecall`).
+    - T1/T2/T3 → T9: `ecall` (`@sec-ei-ecall`; T1, [D-78]({{< var decisions >}}#d-78)).
+    - T1 → T2/T3: les pseudoinstruccions i els salts indirectes a l'exemple de `ret` (`@sec-pseudoinstruccions`, `@sec-salts-incondicionals-indirectes`) ([D-78]({{< var decisions >}}#d-78)).
+    - T1 → T3: la memòria dinàmica (`@sec-estructura-memoria`) ([D-78]({{< var decisions >}}#d-78)).
+    - T1 → T4: l'extensió M i la multiplicació mòdul $2^n$ (`@sec-extensio-m`, `@wrn-mul-modul-2n`) ([D-78]({{< var decisions >}}#d-78)).
+    - T1 → T5: l'exponent en excés de la coma flotant (`@sec-tema-coma-flotant`) ([D-78]({{< var decisions >}}#d-78)).
+    - T2 → T3: els formats B i J (`@nte-format-b`, `@nte-format-j`), l'expansió de `la` amb `auipc` (`@nte-la-auipc`), i els salts, els desplaçaments i les instruccions lògiques dels exemples de bucles i de macros (`@sec-salts`, `@sec-desplacaments-de-bits`, `@sec-instruccions-logiques-bit-a-bit`) ([D-78]({{< var decisions >}}#d-78)).
+    - T2 → T9: les pseudoinstruccions d'accés als CSR, a la presentació de les pseudoinstruccions ([D-78]({{< var decisions >}}#d-78)).
     - T3 → T6: temps d'execució i CPI als problemes de T3 que en calculen (`@eq-texe2`; `exr-t3-bucles-for` i `exr-t3-bucles-multiplicacio`) ([D-70]({{< var decisions >}}#d-70)).
     - T2 → T8: memòria virtual i MMU (`@sec-mv-espais`).
     - T5 → T9: `fcsr` fa obligatòria l'extensió Zicsr (`@nte-zicsr`), que es presenta a T9.

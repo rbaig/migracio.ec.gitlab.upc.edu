@@ -157,7 +157,7 @@ def fig_semisumador_sumador_complet():
            '<title>Semisumador i sumador complet</title>',
            '<desc>(a) Semisumador: una porta XOR dona el bit de suma s = a xor b i una porta AND dona el bit de ròssec c = a and b. '
            '(b) Sumador complet fet amb dos semisumadors i una porta OR: el primer suma a_i i b_i; el segon suma el resultat, a_i xor b_i, amb el ròssec d\'entrada c_i i dona s_i; '
-           'la OR combina a_i and b_i i (a_i xor b_i) and c_i en el ròssec de sortida c_(i+1).</desc>']
+           'l’OR combina a_i and b_i i (a_i xor b_i) and c_i en el ròssec de sortida c_(i+1).</desc>']
     svg += out + ["</svg>", ""]
     return "\n".join(svg)
 

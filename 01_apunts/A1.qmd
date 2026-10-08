@@ -4,7 +4,7 @@ number-sections: true
 
 # {{< var tema1 >}} {#sec-tema-introduccio}
 
-## La gestió de la complexitat: Capes i interfícies {#sec-capes-interficies}
+## La gestió de la complexitat: capes i interfícies {#sec-capes-interficies}
 Un **computador** és un sistema d'una complexitat extraordinària, però que, en el seu nivell més fonamental, només és capaç d'executar **operacions** aritmètiques, lògiques i de control **elementals**. La distància conceptual que separa aquestes instruccions bàsiques de les aplicacions tan sofisticades actuals és tan gran que és impossible dissenyar qualsevol sistema operatiu (SO) o programa modern que interactuï directament amb els components físics del processador.
 
 ### Nivells d'abstracció {#sec-nivells-abstraccio}
@@ -13,15 +13,15 @@ Per gestionar aquesta distància conceptual tan gran i fer viable el disseny de 
 
 - **Nivell de components físics**: Constitueix el fonament material del computador. Inclou els elements de l'electrònica de base com transistors, resistències, condensadors, díodes, interconnexions físiques, etc.
 - **Nivell d'unitats funcionals i lògica digital**: En aquest estadi s'agrupen els components per formar portes lògiques, descodificadors, sumadors, comparadors, busos, etc. Aquest nivell d'abstracció és l'objecte d'estudi de l'assignatura **Introducció als computadors** (**IC**).
-- **Nivell de microarquitectura**: És la implementació específica de l'arquitectura del repertori d'instruccions, que és el nivell següent. Defineix com s'organitzen i s'interconnecten les unitats funcionals (com l'ALU, els busos o les memòries cau) i com es dissenya el camí de dades (*datapath*) per executar les instruccions. Dos processadors poden implementar el mateix repertori d'instruccions i comportar-se de manera idèntica per al programador, però tenir microarquitectures completament diferents (per exemple, Intel i AMD amb x86).
-- **Nivell de l'arquitectura del repertori d'instruccions** (**ISA**): És la **frontera** crítica entre el **maquinari** i el **programari**. Estableix, entre d'altres, el conjunt d'instruccions que la unitat central de processament (***Central Processing Unit***, **CPU**) és capaç d'executar, el model de memòria i els registres visibles per al programador. A **EC**, la **ISA** de referència és **RISC-V** (vegeu @imp-llenguatges-de-referencia).
-- **Nivell de sistema (baix nivell)**: És l'àmbit d'estudi principal d'**Estructura de computadors** (**EC**). Aquí el programari té un control directe sobre els recursos definits per l'ISA. Dins d'aquest nivell trobem:
+- **Nivell de microarquitectura**: És la implementació específica de l'arquitectura del repertori d'instruccions, que és el nivell següent. Defineix com s'organitzen i s'interconnecten les unitats funcionals (com la unitat aritmeticològica, els busos o les memòries cau) i com es dissenya el camí de dades (*datapath*) per executar les instruccions. Dos processadors poden implementar el mateix repertori d'instruccions i comportar-se de manera idèntica per al programador, però tenir microarquitectures completament diferents (per exemple, Intel i AMD amb x86).
+- **Nivell de l'arquitectura del repertori d'instruccions** (**ISA**): És la **frontera** crítica entre el **maquinari** i el **programari**. Estableix, entre d'altres, el conjunt d'instruccions que la unitat central de processament (***Central Processing Unit***, **CPU**) és capaç d'executar, el model de memòria i els registres visibles per al programador. A **Estructura de computadors** (**EC**), l'**ISA** de referència és **RISC-V** (vegeu @imp-llenguatges-de-referencia).
+- **Nivell de sistema (baix nivell)**: És l'àmbit d'estudi principal d'**EC**. Aquí el programari té un control directe sobre els recursos definits per l'ISA. Aquest nivell inclou:
     - **Llenguatge màquina**: Instruccions codificades en binari que la unitat de control del processador interpreta i executa.
     - **Llenguatge d'assemblador**: Una representació simbòlica del llenguatge màquina que utilitza **mnemònics**. Un programa anomenat **assemblador** s'encarrega de fer la **traducció directa** a codi **binari**.
 - **Nivell d'aplicació (alt nivell)**: Nivell on es desenvolupa el programari d'usuari utilitzant llenguatges d'alt nivell com el **C** (**el de referència a EC**), C++ o Rust. Un programa anomenat **compilador** tradueix el codi d'alt nivell (codi font) a instruccions d'assemblador. L'abstracció d'aquest nivell permet al programador gestionar dades i algorismes sense haver de conèixer els detalls de la microarquitectura o el mapa de registres específic.
 - **Nivell d'usuari**: Representa el punt de contacte amb l'usuari final, que interacciona amb el sistema mitjançant aplicacions i la **interfície d'usuari (UI)**, ja sigui a través de línies de comandes o d'entorns gràfics.
 
-### Interfícies: Els contractes del sistema {#sec-interficies}
+### Interfícies: els contractes del sistema {#sec-interficies}
 
 L'abstracció només és efectiva si les interfícies (fronteres) actuen com a contractes rígids que cap de les parts pot violar sense trencar la funcionalitat del sistema. En un entorn **allotjat** (***hosted***) amb **SO** —el cas més habitual, per exemple el de Programació I (PRO1)—, n'hi ha tres:
 
@@ -32,17 +32,17 @@ L'abstracció només és efectiva si les interfícies (fronteres) actuen com a c
 - ***Instruction Set Architecture*** (**ISA**): Contracte a nivell de maquinari. Defineix el vocabulari d'instruccions, els registres físics i el model de memòria. **Defineix què sap fer el processador**.
 
 ::: {#imp-directe-sobre-processador .callout-important}
-A **EC**, s'assumeix que es **treballa directament sobre el processador**, si no s'especifica explícitament el contrari. Per tant, recursos vistos en aquest tema, com ara APIs o SO, no estan disponibles per defecte.
+A **EC**, s'assumeix que es **treballa directament sobre el processador**, si no s'especifica explícitament el contrari. Per tant, recursos vistos en aquest tema, com ara les API o l'SO, no estan disponibles per defecte.
 
 El **RARS** és una **excepció important** d'aquesta assumpció, ja que disposa d'un simulador de **syscall**, un recurs bàsic de qualsevol SO, el qual es fa servir en algunes sessions de laboratori.
 
 :::
 
-## El cicle de vida del programa: Generació vs. Execució {#sec-cicle-de-vida}
+## El cicle de vida del programa: generació vs. execució {#sec-cicle-de-vida}
 
 Per entendre la relació entre les interfícies (**API**, **ABI**, **ISA**), cal diferenciar dues etapes totalment separades en el temps i, sovint, en l'espai (màquines diferents o, fins i tot, arquitectures diferents).
 
-### El flux de generació: La visió del programador {#sec-flux-de-generacio}
+### El flux de generació: la visió del programador {#sec-flux-de-generacio}
 
 El procés de transformació d’una idea abstracta en un fitxer executable no és un pas directe, sinó una cadena de muntatge (***toolchain***) altament coordinada on intervenen diferents eines de sistema. Aquest flux, que va des de l'escriptura del codi fins a la generació del binari executable, es pot desglossar en quatre (més una) etapes fonamentals on les interfícies **API**, **ABI** i **ISA** (vegeu @sec-interficies) actuen com a garanties de compatibilitat:
 
@@ -69,19 +69,19 @@ El flux de generació del programari: les quatre etapes del *toolchain* GCC.
 
 ::: {#tip-gcc-vs-clang .callout-tip}
 ## GCC i Clang
-La [**GCC toolchain**](https://gcc.gnu.org/) és l'estàndard *de facto* de la indústria per a sistemes oberts. És un projecte de codi obert que ha evolucionat durant dècades, oferint un suport ampli per a múltiples arquitectures i estàndards de llenguatge.
+La [**GCC toolchain**](https://gcc.gnu.org/) (*GNU Compiler Collection*) és l'estàndard *de facto* de la indústria per a sistemes oberts. És un projecte de codi obert que ha evolucionat durant dècades, oferint un suport ampli per a múltiples arquitectures i estàndards de llenguatge.
 
 La [**Clang toolchain**](https://clang.llvm.org/) és una alternativa moderna que ha guanyat popularitat per la seva arquitectura modular i millor suport per a noves característiques del llenguatge C/C++.
 :::
 
-### El flux d'execució: La visió del processador {#sec-flux-dexecucio}
+### El flux d'execució: la visió del processador {#sec-flux-dexecucio}
 Un cop obtingut el binari, aquest s'ha d'executar. El camí que segueixen les dades depèn de l'entorn de treball:
 
 #### Entorn allotjat (*hosted*) {#sec-entorn-allotjat-hosted}
-És el model d'un PC convencional. El binari no és autònom:
+És el model d'un ordinador personal convencional. El binari no és autònom:
 
 1. El **sistema operatiu** carrega el binari a la memòria.
-2. El binari s'executa i, quan necessita interactuar amb l'exterior, fa una crida al sistema (`ecall`), seguint les convencions de l'**ABI**.
+2. El binari s'executa i, quan necessita interactuar amb l'exterior, fa una crida al sistema (`ecall`, *environment call*; @sec-ei-ecall), seguint les convencions de l'**ABI**.
 3. L'**SO** rep la petició i utilitza la **ISA** (instruccions privilegiades) per gestionar el maquinari.
 
 #### Entorn autònom (*bare-metal*) {#sec-entorn-autonom-bare-metal}
@@ -95,14 +95,14 @@ Un cop obtingut el binari, aquest s'ha d'executar. El camí que segueixen les da
 
 Les interfícies defineixen el binari durant la **generació**, però també regeixen el seu comportament durant l'**execució**. Són el contracte que garanteix que el binari i la màquina (o simulador) s'entenguin en temps real.
 
-#### Les interfícies en la «Visió del Programador» (Generació) {#sec-interficies-generacio}
+#### Les interfícies en la «visió del programador» (generació) {#sec-interficies-generacio}
 Des del punt de vista del programador, les interfícies actuen com a **normes de construcció**.
 
 - **API**: El programador escriu `printf()`. El compilador sap què vol dir perquè l'API ho defineix.
 - **ABI**: El compilador decideix posar el primer argument a `a0` perquè l'ABI de RISC-V ho mana.
 - **ISA**: El compilador tradueix la suma al codi màquina `0x00B50533` perquè l'ISA ho especifica.
 
-#### Les interfícies en la «Visió del Processador» (Execució) {#sec-interficies-execucio}
+#### Les interfícies en la «visió del processador» (execució) {#sec-interficies-execucio}
 És al processador on les interfícies esdevenen el **protocol de funcionament real**:
 
 - **L'ABI en execució**: Quan el programa executa `ecall`, el processador cedeix el control a l'entorn d'execució (l'SO o, a EC, el simulador), que llegeix el codi de servei del registre `a7` i l'interpreta segons la convenció de crides al sistema de l'**ABI**. Si la convenció diu que el codi `1` és «imprimir un enter» (és el cas de RARS), el sistema l'imprimeix. L'ABI és el que permet que el binari i l'entorn es basin en la mateixa «llengua» mentre el programa s'executa.
@@ -124,7 +124,7 @@ La @tbl-impacte-canvi-interficies resumeix l'impacte que tenen els canvis a nive
 En el desenvolupament de sistemes de baix nivell i, especialment, en els encastats, on el dispositiu que executarà el codi sol mancar dels recursos necessaris per allotjar eines de programació, cal diferenciar clarament entre dos ordinadors que juguen rols diferents:
 
 1. **Màquina amfitriona** (***host***):
-    - **Què és**: L'ordinador que utilitza el programador per escriure el codi (per exemple, un PC de la facultat o un portàtil).
+    - **Què és**: L'ordinador que utilitza el programador per escriure el codi (per exemple, un ordinador de la facultat o un portàtil).
     - **Arquitectura**: Habitualment **x86-64** o **ARM**.
     - **Funció**: Executar l'editor de text i el **compilador**. El compilador és un programa «nadiu» del host que s'encarrega de «fabricar» el binari.
 2. **Màquina destí** (***target***):
@@ -144,7 +144,7 @@ S'utilitza un entorn hosted, per exemple, amb arquitectura **x86** i sistema **L
 
 ::: {#tip-toolchain .callout-tip}
 ## RISC-V GNU Compiler Toolchain
-La [RISC-V GNU Compiler Toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) permet crear codi des de diversos hosts GNU/Linux o macOS per a gran quantitat d'ISAs RISC-V.
+La [RISC-V GNU Compiler Toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) permet crear codi des de diversos hosts GNU/Linux o macOS per a moltes ISA RISC-V.
 :::
 
 Un cop obtingut al host, el binari es carrega al target mitjançant un cable i un protocol apropiat.
@@ -153,11 +153,11 @@ Un cop obtingut al host, el binari es carrega al target mitjançant un cable i u
 
 La depuració s'ha de fer en l'entorn del target, el qual pot ser:
 
-- **Amb simulador**: Un programa (el simulador) en un PC recrea per programari el comportament dels registres i la memòria de la CPU de destí i fa visible els efectes sobre els components del maquinari simulat a través d'interfícies gràfiques. És el cas del **RARS**, el **simulador d'EC**.
+- **Amb simulador**: Un programa (el simulador) en un ordinador personal recrea per programari el comportament dels registres i la memòria de la CPU de destí i fa visible els efectes sobre els components del maquinari simulat a través d'interfícies gràfiques. És el cas del **RARS**, el **simulador d'EC**.
 
-- **Amb target real**: El binari s'envia des del host al xip real (el target) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LEDs, sensors, motors).
+- **Amb target real**: El binari s'envia des del host al xip real (el target) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LED, sensors, motors).
 
-### El llenguatge C: El pont de l'abstracció {#sec-el-llenguatge-c}
+### El llenguatge C: el pont de l'abstracció {#sec-el-llenguatge-c}
 
 A **EC**, el llenguatge **C** és l'eina de referència perquè ocupa una posició estratègica única: és prou «alt» per ser llegible, però prou «baix» per reflectir fidelment el que passa a la **ISA**.
 
@@ -183,11 +183,11 @@ Tot i que el codi C és portable, el seu comportament final depèn de l'**ABI**:
 - La mida d'un `int` (16, 32 o 64 bits) no l'estableix el llenguatge, sinó l'ABI del sistema on s'executarà el programa.
 - El pas de paràmetres a les funcions el gestiona el compilador seguint l'ABI, però el programador de C ha de ser conscient d'aquestes regles quan interactua amb codi escrit directament en **assemblador**.
 
-### Traducció: De C al llenguatge de màquina {#sec-traduccio-c-asm}
+### Traducció: de C al llenguatge de màquina {#sec-traduccio-c-asm}
 
 El procés de traducció no és un pas únic, sinó una cadena de transformacions (coneguda com a *toolchain*) on cada etapa acosta el codi una mica més al maquinari (vegeu les quatre etapes a @sec-flux-de-generacio i la visió general a @sec-interficies i @fig-flux-compilacio). **El compilador de referència a EC és el GCC**, amb les eines `cpp` (preprocessat), `cc1` (compilació), `as` (assemblat) i `ld` (enllaçat).
 
-#### El llenguatge d'assemblador: La visió de l'ISA {#sec-visio-isa}
+#### El llenguatge d'assemblador: la visió de l'ISA {#sec-visio-isa}
 
 **La compilació és rellevant a EC**, ja que l'assemblador és la representació textual de la **ISA**.
 
@@ -206,20 +206,20 @@ suma:
         ret                 # Pseudoinstrucció: retorna el control al cridant
 ```
 
-En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir que els paràmetres `a` i `b` es passen a través dels registres `a0` i `a1` (registres d'argument). La instrucció `add` és una operació definida per la **ISA** de RISC-V que realitza la suma i en deixa el resultat a `a0` (registre de retorn). Finalment, la instrucció `ret` és una pseudoinstrucció que s'expandeix a `jalr x0, 0(ra)`: un salt indirecte a l'adreça de retorn continguda al registre `ra`.
+En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir que els paràmetres `a` i `b` es passen a través dels registres `a0` i `a1` (registres d'argument). La instrucció `add` és una operació definida per la **ISA** de RISC-V que realitza la suma i en deixa el resultat a `a0` (registre de retorn). Finalment, la instrucció `ret` és una pseudoinstrucció (@sec-pseudoinstruccions) que s'expandeix a `jalr x0, 0(ra)` (`jalr`, *jump and link register*): un salt indirecte (@sec-salts-incondicionals-indirectes) a l'adreça de retorn continguda al registre `ra`.
 
 :::
 
 :::: {#wrn-picopi .callout-warning collapse=true}
 ## Treballant amb maquinari real: [Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) + [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)
 
-Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un PC), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i Flash), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (com GPIO, UART o ADC).
+Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un ordinador personal), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i Flash), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (com GPIO, UART o ADC).
 
 El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en la **ISA RISC-V**. El programador tria l'arquitectura en compilar el programa, i la ROM d'arrencada activa els nuclis que corresponen a la imatge que hi troba.
 
 La **[Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)** és una placa de desenvolupament basada en el xip **RP2350**. Com a plataforma d'experimentació exposa els pins del microcontrolador per connectar-hi sensors, actuadors i depuradors.
 
-La **[Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)** és una sonda de depuració (***debug probe***). La interfície Serial Wire Debug (**SWD**) li permet controlar la CPU del target, carregar-hi binaris i inspeccionar registres o memòria en temps real. L'estàndard **CMSIS-DAP**, compatible amb la majoria d'eines de depuració de codi obert com OpenOCD o GDB, li permet la interacció amb el PC del desenvolupador.
+La **[Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)** és una sonda de depuració (***debug probe***). La interfície Serial Wire Debug (**SWD**) li permet controlar la CPU del target, carregar-hi binaris i inspeccionar registres o memòria en temps real. L'estàndard **CMSIS-DAP**, compatible amb la majoria d'eines de depuració de codi obert com OpenOCD o GDB, li permet la interacció amb l'ordinador del desenvolupador.
 
 ::: {#fig-picopi-fases}
 ::: {.content-visible when-format="html"}
@@ -236,7 +236,7 @@ La **[Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe
 Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) + Target (*Pi Pico 2*).
 :::
 
-- **Host** (**PC**):
+- **Host** (ordinador):
     - Executa el programa **depurador** ([GDB/OpenOCD](https://openocd.org/)), que, a través de CMSIS-DAP, dona **ordres** a la sonda i en rep les **respostes**.
 
 - **Sonda** (**Pi Debug Probe**):
@@ -247,12 +247,12 @@ Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) 
 
 **Fase 1: Creació**
 
-- **Host** (**PC**):
+- **Host** (ordinador):
     - Genera el binari ([riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain)).
 
 **Fase 2: Càrrega** (***Flashing*** / ***Deployment***)
 
-- **Host** (**PC**):
+- **Host** (ordinador):
     - El depurador envia el binari a la sonda.
 
 - **Target** (**Pi Pico 2**):
@@ -260,7 +260,7 @@ Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) 
 
 **Fase 3: Execució** / **Depuració** (***Runtime*** / ***Debugging***)
 
-- **Host** (**PC**):
+- **Host** (ordinador):
     - Envia ordres com «Atura't (`breakpoint`)», «Executa la instrucció següent (`step`)» o «Escriu el valor `5` al registre `a0`».
 
 - **Target** (**Pi Pico 2**):
@@ -272,7 +272,7 @@ Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) 
 
 La majoria d'estudiants arriben a EC havent après **C++**, el llenguatge de referència a PRO1. Tot i que el C++ és un descendent directe del C i en conserva gairebé tota la sintaxi bàsica, la seva orientació és radicalment diferent de la requerida a **EC**.
 
-#### Diferències fonamentals: Què es «perd» en passar a C? {#sec-diferencies-c-cpp}
+#### Diferències fonamentals: què es «perd» en passar a C? {#sec-diferencies-c-cpp}
 
 El pas de C++ a C és un exercici de **simplificació**. En C no existeixen les capes d'abstracció d'alt nivell que faciliten la vida en programació de programari complex:
 
@@ -334,11 +334,11 @@ Mentre que C es **compila** (es tradueix tot el codi font abans d'executar-lo), 
 
 **Els llenguatges interpretats no són apropiats per EC** perquè, en general, fan molt més opacs els detalls d'arquitectura, que és precisament l'àmbit d'interès de l'assignatura.
 
-## Arquitectura física: El model de Von Neumann {#sec-von-neumann}
+## Arquitectura física: el model de Von Neumann {#sec-von-neumann}
 
 La pràctica totalitat dels computadors actuals (des d'un supercomputador fins al processador d'un microones) segueixen l'arquitectura proposada per **John von Neumann** l'any 1945. El trencament conceptual més important d'aquest model és el concepte de **programa emmagatzemat**.
 
-### El concepte de programa emmagatzemat: Instruccions i dades a la mateixa memòria {#sec-programa-emmagatzemat}
+### El concepte de programa emmagatzemat: instruccions i dades a la mateixa memòria {#sec-programa-emmagatzemat}
 
 Abans de Von Neumann, per «reprogramar» una màquina calia canviar cables i interruptors físicament. En el model de Von Neumann:
 
@@ -420,14 +420,14 @@ Donat un natural $x_u$, la seva representació en $n$ bits s'obté dels residus 
 
 | Divisió | Quocient | Residu (bit) |
 | :--- | :---: | :---: |
-| $25 / 2$ | $12$ | $X_0 = 1$ |
-| $12 / 2$ | $6$ | $X_1 = 0$ |
-| $6 / 2$ | $3$ | $X_2 = 0$ |
-| $3 / 2$ | $1$ | $X_3 = 1$ |
-| $1 / 2$ | $0$ | $X_4 = 1$ |
-| $0 / 2$ | $0$ | $X_5 = 0$ |
-| $0 / 2$ | $0$ | $X_6 = 0$ |
-| $0 / 2$ | $0$ | $X_7 = 0$ |
+| $25 \div 2$ | $12$ | $X_0 = 1$ |
+| $12 \div 2$ | $6$ | $X_1 = 0$ |
+| $6 \div 2$ | $3$ | $X_2 = 0$ |
+| $3 \div 2$ | $1$ | $X_3 = 1$ |
+| $1 \div 2$ | $0$ | $X_4 = 1$ |
+| $0 \div 2$ | $0$ | $X_5 = 0$ |
+| $0 \div 2$ | $0$ | $X_6 = 0$ |
+| $0 \div 2$ | $0$ | $X_7 = 0$ |
 
 **Resposta**: $X = 0001\,1001_2$
 
@@ -471,7 +471,7 @@ Cada dígit hexadecimal ($0$–$9$, $A$–$F$) representa exactament un **quarte
 :::
 
 ::: {#cau-hexadecimal-no-interpreta .callout-caution}
-La notació hexadecimal és només una manera d'**escriure** un patró de bits de forma compacta; no en canvia la interpretació. Un mateix patró, com `0x19`, pot representar un natural, un enter en Ca2 o qualsevol altra codificació segons el context (vegeu @sec-codificacio-enters).
+La notació hexadecimal és només una manera d'**escriure** un patró de bits de forma compacta; no en canvia la interpretació. Un mateix patró, com `0x19`, pot representar un natural, un enter en complement a 2 o qualsevol altra codificació segons el context (vegeu @sec-codificacio-enters).
 :::
 
 ## Codificació de nombres enters en base 2 {#sec-codificacio-enters}
@@ -547,7 +547,7 @@ Com a drecera pràctica per interpretar directament un patró de bits, sense pas
 
 ### Enters en excés {#sec-enters-en-exces}
 
-La codificació en excés (o en desplaçament) assigna la representació $000\ldots0_2$ al valor més negatiu i $111\ldots1_2$ al més positiu, de manera que l'ordre de les representacions coincideix amb l'ordre numèric dels enters. Això permet **comparar enters amb el mateix circuit que compara naturals**.
+La codificació en excés assigna la representació $000\ldots0_2$ al valor més negatiu i $111\ldots1_2$ al més positiu, de manera que l'ordre de les representacions coincideix amb l'ordre numèric dels enters. Això permet **comparar enters amb el mateix circuit que compara naturals**.
 
 Donada una constant arbitrària $K$ (l'**excés**):
 
@@ -776,7 +776,7 @@ $$\text{Ca2}(-30): \overline{0001\,1110} + 1 = 1110\,0010$$
 :::
 
 ::: {#imp-multiplicacio-isa .callout-important}
-A **EC**, les instruccions de multiplicació i divisió com a operacions de la **ISA** (extensió **M**: `mul`, `mulh`, `div`, `divu`, etc.) s'estudien al **Tema 4**.
+A **EC**, les instruccions de multiplicació i divisió com a operacions de la **ISA** (extensió **M**: `mul`, `mulh`, `div`, `divu`, etc.) s'estudien al [Tema 4](#sec-tema-enters-matrius) (@sec-extensio-m).
 :::
 
 ### Divisió en Ca2 {#sec-divisio-ca2}

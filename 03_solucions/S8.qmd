@@ -134,8 +134,8 @@ Pàgines de 4 KiB → $\text{VPN} = \lfloor \text{adreça}/4096 \rfloor$. TLB de
 | 8912 | 2 | **Sí** | **Sí** | 14 |
 : {.striped}
 
-- 4095 (VPN 0): fallada de TLB; la MMU llegeix la PTE, que té $V = 1$ (PPN 5), i la copia a l'entrada lliure, sense fallada de pàgina.
-- 7193 (VPN 1): fallada de TLB i la PTE té $V = 0$ → **fallada de pàgina**; el SO carrega la pàgina i li assigna PPN 13. En reexecutar l'accés, la MMU copia la PTE al TLB reemplaçant l'entrada del VPN 11 (l'única no reutilitzada des de l'inici → la més antiga).
+- 4095 (VPN 0): fallada de TLB; l'MMU llegeix la PTE, que té $V = 1$ (PPN 5), i la copia a l'entrada lliure, sense fallada de pàgina.
+- 7193 (VPN 1): fallada de TLB i la PTE té $V = 0$ → **fallada de pàgina**; l'SO carrega la pàgina i li assigna PPN 13. En reexecutar l'accés, l'MMU copia la PTE al TLB reemplaçant l'entrada del VPN 11 (l'única no reutilitzada des de l'inici → la més antiga).
 - 8912 (VPN 2): fallada de TLB i $V = 0$ → fallada de pàgina (PPN 14); en reexecutar, es reemplaça l'entrada del VPN 0 (la més antiga de la pila en aquest punt).
 
 TLB final: (VPN 1, PPN 13), (VPN 7, PPN 4), (VPN 3, PPN 6), (VPN 2, PPN 14). Taula de pàgines: VPN 1 → V 1/PPN 13, VPN 2 → V 1/PPN 14.
@@ -233,18 +233,18 @@ Com que la traducció i la indexació es fan alhora, el temps d'accés és pràc
 **c) Fallada de TLB però pàgina present a memòria**:
 
 1. El VPN no és al TLB → **fallada de TLB**. Es llegeix la PTE de la taula de pàgines a memòria (adreça del registre de taula de pàgines + VPN × 4, la mida d'una PTE).
-2. La PTE té $V = 1$ (pàgina present) → **no hi ha fallada de pàgina**. La MMU copia la PTE al TLB (entrada lliure o reemplaçament LRU), sense interrompre el programa.
+2. La PTE té $V = 1$ (pàgina present) → **no hi ha fallada de pàgina**. L'MMU copia la PTE al TLB (entrada lliure o reemplaçament LRU), sense interrompre el programa.
 3. La traducció continua amb el PPN de la PTE: l'etiqueta física (el PPN i b11) es compara amb la de la cau → encert de cau → dada.
 
 El cost addicional respecte de b) és **un accés a memòria** per llegir la PTE (amb la taula de pàgines plana del tema; amb una taula multinivell, un per nivell).
 
 **d)** Com s'explica a @sec-mv-vipt, perquè una cau **VIPT** no pateixi **aliàsing** (*aliasing*) (i es comporti, pel que fa a la selecció de la línia, com una **PIPT**), l'índex de la cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:
 
-$$C \leq a \cdot T$$
+$$N_C \cdot B \leq T$$
 
-on $C$ és la mida de la cau, $a$ l'associativitat i $T$ la mida de pàgina. Aquí: $C = 64 \times 32 = 2 \text{ KiB}$, $a = 1$, $T = 4 \text{ KiB}$:
+on $N_C$ és el nombre de conjunts, $B$ la mida del bloc (el producte és la mida d'una via) i $T$ la mida de pàgina. Aquí, la cau és de correspondència directa, amb $N_C = 64$ conjunts d'una línia, $B = 32$ bytes i $T = 4 \text{ KiB}$:
 
-$$2 \text{ KiB} \leq 1 \times 4 \text{ KiB} \quad \checkmark$$
+$$64 \times 32 = 2 \text{ KiB} \leq 4 \text{ KiB} \quad \checkmark$$
 
 es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaçament de pàgina), de manera que la cau no pateix aliàsing: l'índex selecciona la mateixa línia amb l'adreça lògica que amb la física.
 :::
@@ -258,7 +258,7 @@ Enters de 4 B. MC: 4 vies × 64 conjunts × 32 B/bloc $= 8$ KiB; un bloc conté 
 
 Adreça de l'element `A[i][j]`: byte $= (i \cdot 1024 + j) \cdot 4 = i \cdot 4096 + j \cdot 4$.
 
-- Conjunt de MC: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{32} \right\rfloor \bmod 64 = \left(i \cdot 128 + \lfloor j/8 \rfloor\right) \bmod 64 = \lfloor j/8 \rfloor \bmod 64$ → **depèn només de $j$**.
+- Conjunt d'MC: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{32} \right\rfloor \bmod 64 = \left(i \cdot 128 + \lfloor j/8 \rfloor\right) \bmod 64 = \lfloor j/8 \rfloor \bmod 64$ → **depèn només de $j$**.
 - Pàgina: $\left\lfloor \dfrac{i \cdot 4096 + j \cdot 4}{8192} \right\rfloor = \lfloor i/2 \rfloor$ → **depèn només de $i$**.
 
 **Versió A** (recorregut per files, accés seqüencial en memòria):
@@ -271,11 +271,11 @@ Adreça de l'element `A[i][j]`: byte $= (i \cdot 1024 + j) \cdot 4 = i \cdot 409
 - MC: per a un $j$ fix, els 128 elements `A[0..127][j]` són blocs diferents que mapen **tots al mateix conjunt** ($\lfloor j/8 \rfloor \bmod 64$, independent de $i$). Amb només 4 vies, els 128 blocs s'expulsen entre ells abans de poder-se reutilitzar a la iteració següent de $j$. **Cap reutilització**: totes les referències fallen $= 128 \times 1024 = \mathbf{131\,072}$.
 - TLB: per a cada $j$, el bucle intern recorre `A[0..127][j]`, que toca les pàgines $\lfloor i/2 \rfloor = 0, 0, 1, 1, \ldots, 63, 63$: **64 pàgines diferents**, una fallada cadascuna (la segona visita, $i$ senar, encerta). Són 64 fallades per cada valor de $j$: $64 \times 1024 = \mathbf{65\,536}$.
 
-| | Fallades de MC | Fallades de TLB |
+| | Fallades d'MC | Fallades de TLB |
 | :--- | :---: | :---: |
 | Versió A (per files) | 16 384 | 64 |
 | Versió B (per columnes) | 131 072 | 65 536 |
 : {tbl-colwidths="[40,30,30]" .striped}
 
-La versió B multiplica per 8 les fallades de MC i per 1024 les de TLB. El recorregut per columnes no només destrueix la localitat espacial (cada accés toca un bloc i una pàgina nous), sinó que a més pateix un **conflicte de conjunt** sistemàtic: com que el *stride* entre files (4096 B) és múltiple del nombre de conjunts per la mida de bloc, totes les files competeixen pel mateix conjunt de la MC.
+La versió B multiplica per 8 les fallades d'MC i per 1024 les de TLB. El recorregut per columnes no només destrueix la localitat espacial (cada accés toca un bloc i una pàgina nous), sinó que a més pateix un **conflicte de conjunt** sistemàtic: com que el *stride* entre files (4096 B) és múltiple del nombre de conjunts per la mida de bloc, totes les files competeixen pel mateix conjunt de l'MC.
 :::

@@ -101,6 +101,12 @@ L'estàndard IEEE 754 en anglès prefereix formalment *significand* perquè *man
 
 Fins al 2026-10-03, `A5.qmd §Representació binària` donava $p$ bits a la fracció, i §Notació científica normalitzada deia $n$ a l'exponent.
 
+### D-81
+
+**Els blocs `.default` i l'exemple *half* de §T5 són dels problemes i les solucions** · `13_contrib.qmd §T5` · 2026-10-09
+
+Decisió de l'usuari (2026-10-09, fase 8a, decisió 8), a proposta de Claude Code. La revisió tècnica d'A5 de la fase 8a va preguntar si les dues regles obligaven també la teoria: A5 presenta els càlculs pas a pas IEEE 754 amb fórmules (`$$\begin{array}…$$`), no amb blocs `.default`, i l'exemple de no-associativitat d'A5 és de precisió simple. A5 no canvia; la guia ho diu.
+
 ### D-13
 
 **Ordre dins de §Potència (T6)** · `13_contrib.qmd §T6` · 2026-10-01 · `666835c`
@@ -142,6 +148,12 @@ Quan un enunciat heretat usava `W` (`1` = només lectura, polaritat oposada), s'
 **Model del TLB: el de RISC-V, no el de MIPS** · `13_contrib.qmd §T8` · 2026-10-05 · `fc356d7`
 
 Decisió de l'usuari (2026-10-05), a la revisió externa de T8 (MR `!8`, Adrià Armejach), que va passar E8, S8 i A9 al model de RISC-V del TLB. Fins llavors el model era el de MIPS (TLB arquitectònic, *refill* per programari, encert de TLB amb V = 0), que es conserva com a nota històrica a `#wrn-mv-tlb-hw-walker`.
+
+### D-82
+
+**L'ordre d'ús de l'estat inicial del TLB, amb el sentit explícit** · `13_contrib.qmd §T8` · 2026-10-09
+
+Decisió de l'usuari (2026-10-09, fase 8a, decisió 10), a proposta de Claude Code. Fins llavors la regla deia «l'ordre d'ús (MRU→LRU)», i l'exemple d'A8 dona l'ordre «de més antic a més recent», amb el sentit explícit, mentre que P8 el dona de la més recent a la més antiga. No hi ha ambigüitat si el sentit és explícit: la regla demana el sentit, no en fixa cap. A8 no canvia.
 
 ### D-20
 
@@ -321,6 +333,18 @@ Proposta de la revisió externa de T3 (`A3.qmd:121`, a `ab48732`) i decisió de 
 
 Decisió de l'usuari (2026-10-03). Fins llavors el criteri d'exclusió les posava d'exemple de nom de camp exclòs, i la taula les incloïa.
 
+### D-79
+
+**Les sigles, sense plural** · `13_contrib.qmd §Sigles, símbols i notació` · 2026-10-09
+
+Decisió de l'usuari (2026-10-09, fase 8a: «regles noves acceptades»), a proposta de Claude Code. S'aplicava des de la fase 7g (A9: «SOs», «PTEs»), però no era escrita. La fase 8a en va trobar cinc a A1–A8 («APIs», «ISAs», «LEDs», «GPUs» ×2), que es van corregir en el mateix commit que la regla. És el criteri de l'Optimot: la sigla és invariable, i el nombre el diu el determinant.
+
+### D-80
+
+**L'article i la preposició davant de les sigles, segons la pronúncia (GIEC)** · `13_contrib.qmd §Sigles, símbols i notació` · 2026-10-09
+
+Decisió de l'usuari (2026-10-09, fase 8a, decisió 6: «el de la GIEC («l'ISA», «l'MMU», «l'LSB»…)»; l'abast, «a tot el corpus», en respondre una pregunta de Claude Code el mateix dia). Fins llavors el corpus barrejava les formes («la ISA» i «l'ISA»), i «la MMU», «la MC», «la MP», «la RSE» i «el SO» anaven sense apostrofar. L'escombrada del 2026-10-09 les va canviar a tot el corpus, figures i generadors inclosos; als generadors, amb l'apòstrof tipogràfic de la resta dels seus rètols. Es van deixar fora els originals conservats que el llibre no consumeix ([D-68](#d-68)), que esmena l'editor, i els marcadors d'`index.qmd`. Les sigles que es llegeixen com un mot que comença en consonant no s'apostrofen («la RAM», «de RARS»).
+
 ### D-41
 
 **`\texttt{…}`, no `\mathtt{…}`** · `13_contrib.qmd §Codi, matemàtiques i cursiva` · 2026-10-03 · `d61a848`
@@ -346,6 +370,12 @@ Decisió de l'usuari (2026-10-01), que escriu l'ús que el corpus ja feia majori
 **Punter cap endavant T3 → T6: temps d'execució i CPI** · `13_contrib.qmd §Referències creuades` · 2026-10-08
 
 Decisió de l'usuari (2026-10-08, fase 7g, decisió 8), a proposta de Claude Code. Dos problemes de T3, `exr-t3-bucles-for` (apartats c i d) i `exr-t3-bucles-multiplicacio` (apartats d i e), demanen temps d'execució i CPI, que la teoria presenta a T6 (`@eq-texe2`); a A1–A3 i E1–E2 no hi ha cap ocurrència de «CPI» (mesurat a `7a1640e`). Venen de l'original de MIPS, on el rendiment era a T1. L'alternativa, treure o moure aquells apartats, es va descartar: la dependència és de càlcul, amb la fórmula citada a la solució (S3), i es pot seguir com a punter explícit.
+
+### D-78
+
+**Els punters cap endavant de la fase 8a, inscrits a la llista** · `13_contrib.qmd §Referències creuades` · 2026-10-09
+
+Decisió de l'usuari (2026-10-09, fase 8a: «regles noves acceptades»), a proposta de Claude Code. La revisió tècnica d'A1–A8 de la fase 8a va trobar onze punters cap endavant que no eren a la llista: d'A1, cap a T3 (el *heap*), T4 (l'extensió M) i T5 (l'exponent en excés); d'A2, cap a T3 (els formats B i J, l'expansió de `la`, els salts, els desplaçaments i les instruccions lògiques) i cap a T9 (les pseudoinstruccions dels CSR). Tots eren explícits, i el text s'entén sense seguir-los: es van inscriure a la llista sense tocar el text, i A1:779 («Tema 4», sense enllaç) va passar a enllaçar-hi. En aplicar les correccions de la mateixa fase n'hi van entrar tres més, des d'A1: `ecall` (T9), les pseudoinstruccions i els salts indirectes (T2/T3) i `@wrn-mul-modul-2n` (T4).
 
 ### D-44
 

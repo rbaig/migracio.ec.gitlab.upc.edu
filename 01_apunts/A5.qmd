@@ -214,7 +214,7 @@ $$\varepsilon = 5{,}371 \times 10^{-5}$$
 :::
 
 ::: {#tip-ieee754-decodificacio .callout-tip}
-## Conversió des de IEEE 754 de precisió simple a base 10
+## Conversió des d'IEEE 754 de precisió simple a base 10
 
 Converteix a decimal el nombre `0x45814140`.
 
@@ -250,9 +250,9 @@ $$v = 4136{,}15625$$
 
 ### Rang i precisió {#sec-rang-precisio}
 
-El **rang** de la representació és l'interval $[-v_{\max},\ +v_{\max}]$, on $v_{\max}$ és el nombre positiu més gran representable. S'obté amb la màxima fracció (tots els bits a 1) i el màxim exponent ($e = 127$ en precisió simple):
+El **rang** de la representació és l'interval $[-v_{max},\ +v_{max}]$, on $v_{max}$ és el nombre positiu més gran representable. S'obté amb la màxima fracció (tots els bits a 1) i el màxim exponent ($e = 127$ en precisió simple):
 
-$$v_{\max} = (2 - 2^{-23}) \times 2^{127} \approx 3{,}4 \times 10^{38}$$
+$$v_{max} = (2 - 2^{-23}) \times 2^{127} \approx 3{,}4 \times 10^{38}$$
 
 Si el resultat d'una operació té un exponent $e > 127$, no és representable i es produeix una excepció de sobreeiximent (*overflow*).
 
@@ -285,18 +285,18 @@ El resultat exacte $v$ d'una operació pot no ser representable amb un nombre fi
 
 Per a un nombre normalitzat qualsevol de la forma $v_0 = m \times 2^e$, el valor representable següent és $v_1 = (m + 2^{-23}) \times 2^e$, de manera que l'error absolut màxim és:
 
-$$\varepsilon_{\max} < 2^{e-23}$$
+$$\varepsilon_{max} < 2^{e-23}$$
 
 Dividint per $v_0$ i tenint en compte que $m \geq 1{,}0$, l'error relatiu queda acotat uniformement (@wrn-error-relatiu-formal):
 
-$$\eta_{\max} < 2^{-23} = 1\ \text{ULP}$$
+$$\eta_{max} < 2^{-23} = 1\ \text{ULP}$$
 
-La quantitat $1\ \text{ULP}$ (***Unit in the Last Place***) és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menys pes de la mantissa. La fita $\eta_{\max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
+La quantitat $1\ \text{ULP}$ (***Unit in the Last Place***) és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menys pes de la mantissa. La fita $\eta_{max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
 
 ::: {#cau-underflow .callout-caution}
 ## Subdesbordament
 
-Hi ha una excepció important a la fita d'error relatiu. Quan el valor absolut del resultat és inferior al mínim positiu normalitzat representable $2^{E_{\min}} = 2^{-126}$, si s'aproxima simplement per zero l'error relatiu és $\eta = 1$, és a dir, de l'ordre del 100%. Això pot invalidar completament el significat del resultat.
+Hi ha una excepció important a la fita d'error relatiu. Quan el valor absolut del resultat és inferior al mínim positiu normalitzat representable $2^{E_{min}} = 2^{-126}$, si s'aproxima simplement per zero l'error relatiu és $\eta = 1$, és a dir, de l'ordre del 100%. Això pot invalidar completament el significat del resultat.
 
 Quan el maquinari detecta aquesta situació genera una **excepció de subdesbordament** (*underflow*), que permet al programari tractar-la adequadament. Els nombres **denormals** (@sec-codificacions-especials) són el mecanisme que defineix l'IEEE 754 per reduir aquest error de forma gradual.
 :::
@@ -306,15 +306,15 @@ Quan el maquinari detecta aquesta situació genera una **excepció de subdesbord
 
 Donat $v_0 = m \times 2^e$ i $v_1 = (m + 2^{-23}) \times 2^e$, l'error absolut màxim a l'interval $(v_0, v_1)$ és:
 
-$$\varepsilon_{\max} < |v_1 - v_0| = 2^{-23} \times 2^e = 2^{e-23}$$
+$$\varepsilon_{max} < |v_1 - v_0| = 2^{-23} \times 2^e = 2^{e-23}$$
 
 Per a l'error relatiu, el cas pitjor dins l'interval és el valor de menor magnitud, que és $v_0$:
 
-$$\eta_{\max} < \frac{\varepsilon_{\max}}{|v_0|} = \frac{2^{e-23}}{m \times 2^e} = \frac{2^{-23}}{m}$$
+$$\eta_{max} < \frac{\varepsilon_{max}}{|v_0|} = \frac{2^{e-23}}{m \times 2^e} = \frac{2^{-23}}{m}$$
 
 Com que la mantissa normalitzada satisfà $m \geq 1{,}0$, resulta:
 
-$$\eta_{\max} < 2^{-23} = 1\ \text{ULP} \approx 1{,}19 \times 10^{-7}$$
+$$\eta_{max} < 2^{-23} = 1\ \text{ULP} \approx 1{,}19 \times 10^{-7}$$
 
 Aquesta fita és independent de $e$ i de $m$: l'error relatiu de representació és uniformement acotat per $1\ \text{ULP}$ arreu del rang normalitzat.
 :::
@@ -367,7 +367,7 @@ A diferència dels nombres normalitzats, **no hi ha bit ocult per als denormals*
 
 Amb denormals, la fita d'error absolut dins l'interval $(0,\ 2^{-126})$ és la mateixa que a l'interval normalitzat adjacent $(2^{-126},\ 2^{-125})$:
 
-$$\varepsilon_{\max} < 2^{-149}$$
+$$\varepsilon_{max} < 2^{-149}$$
 
 L'**error relatiu creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com a **subdesbordament gradual** (*gradual underflow*).
 
@@ -474,7 +474,7 @@ Durant una suma o resta, la mantissa del sumand de menor magnitud es desplaça a
 
 **Exemple** (precisió $p = 6$ bits):
 
-```{.default}
+```{.default filename="Resta amb G, R i S (p = 6)"}
   1,00000
 - 0,00001 101   ← G=1, R=0, S=1 → al següent
 -----------
@@ -533,8 +533,8 @@ $$y = 1\;|\;1000\,0001\;|\;000\,0000\,0000\,0000\,0000\,0100_2$$
 
 **Descodificació dels operands**:
 
-- $x$: $S=0$, $E_u = 126 \Rightarrow e = -1$, mantissa $= +1{,}1000\,0000\,0000\,0000\,0001\,101_2 \times 2^{-1}$
-- $y$: $S=1$, $E_u = 129 \Rightarrow e = +2$, mantissa $= -1{,}0000\,0000\,0000\,0000\,0000\,100_2 \times 2^{2}$
+- $x$: $S=0$, $E_u = 126 \Rightarrow e = -1$; $x = +1{,}1000\,0000\,0000\,0000\,0001\,101_2 \times 2^{-1}$.
+- $y$: $S=1$, $E_u = 129 \Rightarrow e = +2$; $y = -1{,}0000\,0000\,0000\,0000\,0000\,100_2 \times 2^{2}$.
 
 **Pas 1. Igualar exponents** (al major, $e = 2$; cal desplaçar $x$ 3 posicions a la dreta):
 
@@ -619,8 +619,8 @@ $$y = 1\;|\;0111\,1101\;|\;101\,0000\,0000\,0000\,0000\,0010_2$$
 
 **Descodificació**:
 
-- $x$: $S=0$, $e=-1$, mantissa $= +1{,}1100\,0000\,0000\,0000\,0000\,000_2$
-- $y$: $S=1$, $e=-2$, mantissa $= -1{,}1010\,0000\,0000\,0000\,0000\,010_2$
+- $x$: $S=0$, $e=-1$, mantissa $1{,}1100\,0000\,0000\,0000\,0000\,000_2$.
+- $y$: $S=1$, $e=-2$, mantissa $1{,}1010\,0000\,0000\,0000\,0000\,010_2$.
 
 **Pas 1. Sumar els exponents**: $e = -1 + (-2) = -3$
 

@@ -108,8 +108,8 @@ Descomposició per camps:
 | Desplaçament (bits 3–0) | `1100` | `0xC` |
 : {.striped .hover}
 
-a. **Número del bloc de MP**: l'adreça `0x1001014C` dividida per la mida del bloc (16 bytes) és $\lfloor \texttt{0x1001014C} / 16 \rfloor = \texttt{0x1001014}$.
-b. **Índex de la línia de MC**: $\texttt{0x1001014} \bmod 32 = 20 = \texttt{0x14}$.
+a. **Número del bloc d'MP**: l'adreça `0x1001014C` dividida per la mida del bloc (16 bytes) és $\lfloor \texttt{0x1001014C} / 16 \rfloor = \texttt{0x1001014}$.
+b. **Índex de la línia d'MC**: $\texttt{0x1001014} \bmod 32 = 20 = \texttt{0x14}$.
 c. **Etiqueta**: `0x080080`.
 
 **Apartat 3. Encert o fallada.**
@@ -170,7 +170,7 @@ Considereu la memòria cau de correspondència directa amb **32 línies amb bloc
 
 1. Ompliu la taula següent per a les **10 primeres iteracions** del bucle. Per a cada iteració, indiqueu l'adreça de `vector[i]`, la línia de la memòria cau a què s'accedeix i si la referència és un encert (En) o una fallada (F).
 
-| Iteració | Adreça de `vector[i]` | Línia de MC | En / F |
+| Iteració | Adreça de `vector[i]` | Línia d'MC | En / F |
 | :---: | :--- | :---: | :---: |
 | 1 | | | |
 | 2 | | | |
@@ -196,7 +196,7 @@ Verifiqueu les respostes amb el *Data Cache Simulator* de RARS.
 
 `vector[0]` comença a `0x10010000`. Cada element ocupa 4 bytes; el bloc té 16 bytes (4 paraules), de manera que cada bloc conté 4 elements consecutius del vector. L'índex de línia és $\lfloor \text{adreça} / 16 \rfloor \bmod 32$.
 
-| Iteració | Adreça de `vector[i]` | Línia de MC | En / F |
+| Iteració | Adreça de `vector[i]` | Línia d'MC | En / F |
 | :---: | :--- | :---: | :---: |
 | 1 | `0x10010000` | 0 | F |
 | 2 | `0x10010004` | 0 | En |
@@ -212,7 +212,7 @@ Verifiqueu les respostes amb el *Data Cache Simulator* de RARS.
 
 **Apartat 2.**
 
-El vector té 100 elements. Cada bloc de MC conté 4 elements: la primera referència a cada grup de 4 és una fallada d'arrencada en fred (*cold-start*) i les tres restants són encerts. Hi ha $\lceil 100 / 4 \rceil = 25$ blocs de MP accedits, cadascun amb 1 fallada i 3 encerts.
+El vector té 100 elements. Cada bloc d'MC conté 4 elements: la primera referència a cada grup de 4 és una fallada d'arrencada en fred (*cold-start*) i les tres restants són encerts. Hi ha $\lceil 100 / 4 \rceil = 25$ blocs d'MP accedits, cadascun amb 1 fallada i 3 encerts.
 
 $$\text{taxa d'encerts} = \frac{75}{100} = 0{,}75$$
 :::
@@ -262,7 +262,7 @@ Modifiqueu el programa `suma_vector.s` per invertir l'ordre del recorregut i ver
 ::: {#sol-recorregut-invers}
 La taxa d'encerts és **la mateixa**: $0{,}75$.
 
-El patró de fallades no depèn de la direcció del recorregut, sinó de la relació entre la mida del bloc i l'*stride* d'accés (@sec-opt-acces-sequencial). En ambdós casos, cada bloc de MC conté 4 elements consecutius del vector: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres restants són encerts, independentment de si el recorregut és creixent o decreixent.
+El patró de fallades no depèn de la direcció del recorregut, sinó de la relació entre la mida del bloc i l'*stride* d'accés (@sec-opt-acces-sequencial). En ambdós casos, cada bloc d'MC conté 4 elements consecutius del vector: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres restants són encerts, independentment de si el recorregut és creixent o decreixent.
 :::
 
 ---
@@ -274,7 +274,7 @@ Considereu un sistema amb memòria cau d'instruccions i de dades separades. La c
 
 - Temps de cicle: $t_c = 10\ \text{ns}$.
 - Temps d'accés en cas d'encert: $t_h = 1\ \text{cicle}$.
-- Temps per copiar un bloc de MP a MC: $t_{bloc} = 10\ \text{cicles}$.
+- Temps per copiar un bloc d'MP a MC: $t_{bloc} = 10\ \text{cicles}$.
 
 Useu el programa `suma_vector.s` de @sec-l6-recorregut-vector. Per obtenir el nombre d'instruccions executades i el nombre de fallades, useu les eines *Tools → Instruction Statistics* i *Tools → Data Cache Simulator* de RARS.
 
@@ -426,7 +426,7 @@ Els 5 elements de `vec` ocupen $5 \times 4 = 20$ bytes. Com que 20 > 16 (la mida
 
 Com que `vec` comença a `0x10010000`:
 
-| Element | Adreça | Línia de MC |
+| Element | Adreça | Línia d'MC |
 | :--- | :--- | :---: |
 | `vec[0]` | `0x10010000` | 0 |
 | `vec[1]` | `0x10010004` | 0 |
@@ -597,7 +597,7 @@ Carregueu aquest programa a RARS i activeu el *Data Cache Simulator*.
 
 Considereu una memòria cau de correspondència directa amb **16 línies amb blocs de 4 paraules** i política d'**escriptura immediata amb assignació**. Les variables globals comencen a `0x10010000`.
 
-1. Calculeu la mida en blocs de cada vector. Determineu a quines línies de MC es mapen els blocs de `A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
+1. Calculeu la mida en blocs de cada vector. Determineu a quines línies d'MC es mapen els blocs de `A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
 
 2. Calculeu la taxa d'encerts esperada. Justifiqueu el resultat a partir de l'anàlisi de conflictes.
 
@@ -609,7 +609,7 @@ Verifiqueu la resposta amb el *Data Cache Simulator* configurat amb 16 línies (
 ::: {#sol-suma-vectors-cd}
 **Apartat 1. Mapatge i conflictes.**
 
-Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapatge en correspondència directa assigna el bloc $n$ de MP a la línia $n \bmod 16$. Per simplicitat, numerem els blocs de manera relativa a l'inici de `A` (el bloc que conté `A[0]` és el bloc 0).
+Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapatge en correspondència directa assigna el bloc $n$ d'MP a la línia $n \bmod 16$. Per simplicitat, numerem els blocs de manera relativa a l'inici de `A` (el bloc que conté `A[0]` és el bloc 0).
 
 `A` comença a `0x10010000` → bloc MP 0 a la línia 0, bloc MP 1 a la línia 1, …, bloc MP 15 a la línia 15, bloc MP 16 a la línia 0, …
 
@@ -617,11 +617,11 @@ Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau
 
 `C` comença a `0x10010000 + 1024 = 0x10010400` → bloc MP 64 a la línia 0, bloc MP 65 a la línia 1, … Els blocs de `C` es mapen també a les **mateixes línies** que `A` i `B`.
 
-Els tres vectors es mapen a les mateixes 16 línies: **conflicte total**. A cada iteració del bucle, l'accés a `A[i]`, `B[i]` i `C[i]` accedeix a la mateixa línia de MC, expulsant el bloc anterior en cada accés.
+Els tres vectors es mapen a les mateixes 16 línies: **conflicte total**. A cada iteració del bucle, l'accés a `A[i]`, `B[i]` i `C[i]` accedeix a la mateixa línia d'MC, expulsant el bloc anterior en cada accés.
 
 **Apartat 2. Taxa d'encerts.**
 
-A cada iteració es fan 3 accessos (lectura `A[i]`, lectura `B[i]`, escriptura `C[i]`), cadascun a la mateixa línia de MC. Seqüència per a la iteració $i$:
+A cada iteració es fan 3 accessos (lectura `A[i]`, lectura `B[i]`, escriptura `C[i]`), cadascun a la mateixa línia d'MC. Seqüència per a la iteració $i$:
 
 1. `lw A[i]`: fallada (el bloc de `A[i]` no és a MC o ha estat expulsat).
 2. `lw B[i]`: fallada (expulsa el bloc de `A[i]` que s'acaba de portar).
@@ -717,7 +717,7 @@ Verifiqueu la resposta amb el *Data Cache Simulator* configurat en mode completa
 ---
 
 ::: {#sol-completament-associativa}
-En una cau completament associativa, qualsevol bloc de MP pot anar a qualsevol línia: no hi ha mapatge fix i, per tant, **no hi ha fallades de conflicte**. Podria semblar que hi haurà fallades de capacitat, ja que els tres vectors sumen $3 \times 32 = 96$ blocs mentre que la cau només en té 16 ($96 > 16$); però el que determina les fallades de capacitat no és l'ocupació total del programa, sinó el *working set* instantani (els blocs realment vius en un moment donat).
+En una cau completament associativa, qualsevol bloc d'MP pot anar a qualsevol línia: no hi ha mapatge fix i, per tant, **no hi ha fallades de conflicte**. Podria semblar que hi haurà fallades de capacitat, ja que els tres vectors sumen $3 \times 32 = 96$ blocs mentre que la cau només en té 16 ($96 > 16$); però el que determina les fallades de capacitat no és l'ocupació total del programa, sinó el *working set* instantani (els blocs realment vius en un moment donat).
 
 A cada iteració del bucle s'accedeix a un bloc de `A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment són els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres referències restants al mateix bloc (els altres 3 elements) són encerts.
 
@@ -745,7 +745,7 @@ Verifiqueu la resposta amb el *Data Cache Simulator* ajustant el camp *Set size*
 ---
 
 ::: {#sol-grau-minim}
-Amb 16 conjunts i blocs de 4 paraules (16 bytes), el mapatge és: bloc de MP $n$ → conjunt $n \bmod 16$. Els tres vectors ocupen 32 blocs cadascun i es mapen als mateixos 16 conjunts amb el mateix patró que en correspondència directa: els blocs $i$, $i + 32$ i $i + 64$ (un de cada vector) van tots al conjunt $i \bmod 16$.
+Amb 16 conjunts i blocs de 4 paraules (16 bytes), el mapatge és: bloc d'MP $n$ → conjunt $n \bmod 16$. Els tres vectors ocupen 32 blocs cadascun i es mapen als mateixos 16 conjunts amb el mateix patró que en correspondència directa: els blocs $i$, $i + 32$ i $i + 64$ (un de cada vector) van tots al conjunt $i \bmod 16$.
 
 Amb grau 1 (correspondència directa), els 3 blocs que competeixen per cada conjunt s'expulsen contínuament: taxa d'encerts = 0.
 

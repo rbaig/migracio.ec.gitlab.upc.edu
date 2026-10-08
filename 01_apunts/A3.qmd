@@ -51,8 +51,8 @@ Donada la representació en Ca2 d'un enter $x_s$, guardada a `t2`,
 
 Si $x_u$ i $x_u'$ són els valors de les representacions en Ca2 i en Ca1 llegides com a naturals, les fórmules que les relacionen amb l'enter representat $x_s$ són (la de Ca2 és la de @cau-ca2-drecera-natural; la de Ca1 se'n dedueix de la mateixa manera, amb $2^n - 1$ en lloc de $2^n$):
 
-- **Ca2**: $x_s = x_u - X_{n-1} \cdot 2^n$
-- **Ca1**: $x_s = x_u' - X_{n-1} \cdot (2^n - 1)$
+- **Ca2**: $x_s = x_u - X_{n-1} \cdot 2^n$.
+- **Ca1**: $x_s = x_u' - X_{n-1} \cdot (2^n - 1)$.
 
 on $X_{n-1}$ és el bit de signe (el mateix en els dos casos).
 
@@ -121,7 +121,7 @@ L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sl
 ## Traducció de `<<` i `>>`
 
 ```{.c filename="C"}
-a = (a << b) >> 2;   /* a i b són enters (int) */
+a = (a << b) >> 2;   // a i b són enters (int)
 ```
 
 Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
@@ -152,12 +152,12 @@ Per exemple, la divisió entera (-15 / 4) dona quocient -3 i residu -3, mentre q
 
 ## Operacions lògiques bit a bit {#sec-operacions-logiques-bit-a-bit}
 
-### Instruccions `&`, `|` i `^` (`and`, `or` i `xor`) {#sec-instruccions-logiques-bit-a-bit}
+### Operadors `&`, `|` i `^` (`and`, `or` i `xor`) {#sec-instruccions-logiques-bit-a-bit}
 
-Les instruccions **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori` i `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que la resta d'instruccions de tipus I.
+Els operadors **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori` i `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que la resta d'instruccions de tipus I.
 
 ::: {#cau-immediats-logics-extensio-signe .callout-caution}
-Els immediats de `andi`, `ori` i `xori` s'interpreten en **complement a 2**: si el bit 11 de l'immediat val `1`, el valor estès a 32 bits té els bits 31..12 a `1`. Això pot produir màscares no desitjades. Per exemple:
+Els immediats de `andi`, `ori` i `xori` s'interpreten en **complement a 2**: si el bit 11 de l'immediat val `1`, el valor estès a 32 bits té els bits [31:12] a `1`. Això pot produir màscares no desitjades. Per exemple:
 
 ```{.s filename="RV32I"}
         andi    t0, t1, -2048   # t0 = t1 & 0xFFFFF800  (no t1 & 0x00000800!)
@@ -200,7 +200,7 @@ Selecció dels 16 bits de menys pes de `rs1`:
         and     rd, rs1, t0
 ```
 
-`0xFFFF` no cap en l'immediat de 12 bits de `andi` (rang −2048..+2047), per la qual cosa cal carregar la màscara en un registre i fer servir la variant registre-registre `and`.
+`0xFFFF` no cap en l'immediat de 12 bits de `andi` (rang $[-2^{11}, 2^{11}-1]$, és a dir, $[-2048, 2047]$), per la qual cosa cal carregar la màscara en un registre i fer servir la variant registre-registre `and`.
 :::
 
 ### Aplicació d'`or`: posar bits a `1` {#sec-or-bits-a-1}
@@ -248,7 +248,7 @@ En C, unes expressions no nul·les s'interpreten com a certes **sense ser iguals
 
 ### Instruccions de comparació: `slt` i `sltu` {#sec-instruccions-comparacio-slt}
 
-La instrucció `slt` compara dos enters i **posa a** `1` al registre destinació (LSB a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
+La instrucció `slt` compara dos enters i **posa a** `1` al registre destinació (LSb a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
 
 ::: {#nte-instruccions-comparacio .callout-note}
 ## RV32I ISA — Instruccions de comparació
@@ -286,7 +286,7 @@ t2 = (t0 != 0);
 **Comparació entre dos registres**:
 
 ```{.c filename="C"}
-t2 = (t0 == t1);        /* equival a: t2 = ((t0 - t1) == 0) */
+t2 = (t0 == t1);        // equival a: t2 = ((t0 - t1) == 0)
 ```
 ```{.s filename="RV32I"}
         sub     t2, t0, t1
@@ -294,7 +294,7 @@ t2 = (t0 == t1);        /* equival a: t2 = ((t0 - t1) == 0) */
 ```
 
 ```{.c filename="C"}
-t2 = (t0 != t1);        /* equival a: t2 = ((t0 - t1) != 0) */
+t2 = (t0 != t1);        // equival a: t2 = ((t0 - t1) != 0)
 ```
 ```{.s filename="RV32I"}
         sub     t2, t0, t1
@@ -311,7 +311,7 @@ La negació booleana no es pot traduir amb `xori rd, rs, -1` (negació bit a bit
 Si `t0` i `t1` són enters:
 
 ```{.c filename="C"}
-t1 = !t0;               /* equival a: t1 = (t0 == 0) */
+t1 = !t0;               // equival a: t1 = (t0 == 0)
 ```
 ```{.s filename="RV32I"}
         sltiu   t1, t0, 1
@@ -320,7 +320,7 @@ t1 = !t0;               /* equival a: t1 = (t0 == 0) */
 - Si se sap amb certesa que `t0` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
 
 ```{.s filename="RV32I"}
-        xori    t1, t0, 1       # inverteix el LSb
+        xori    t1, t0, 1       # inverteix l'LSb
 ```
 :::
 
@@ -339,14 +339,14 @@ Si `t0`, `t1` i `t2` són enters:
 ```
 
 ```{.c filename="C"}
-        t2 = (t0 > t1);        /* equival a: t1 < t0 */
+        t2 = (t0 > t1);        // equival a: t1 < t0
 ```
 ```{.s filename="RV32I"}
         slt     t2, t1, t0
 ```
 
 ```{.c filename="C"}
-        t2 = (t0 <= t1);       /* equival a: !(t0 > t1) */
+        t2 = (t0 <= t1);       // equival a: !(t0 > t1)
 ```
 ```{.s filename="RV32I"}
         slt     t2, t1, t0
@@ -354,7 +354,7 @@ Si `t0`, `t1` i `t2` són enters:
 ```
 
 ```{.c filename="C"}
-        t2 = (t0 >= t1);       /* equival a: !(t0 < t1) */
+        t2 = (t0 >= t1);       // equival a: !(t0 < t1)
 ```
 ```{.s filename="RV32I"}
         slt     t2, t0, t1
@@ -364,7 +364,7 @@ Si `t0`, `t1` i `t2` són enters:
 - **Atenció**: Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes les traduccions d'aquest exemple.
 :::
 
-### Traducció de `&&` i `||`: Avaluació *lazy* {#sec-traduccio-operadors-logics}
+### Traducció de `&&` i `||`: avaluació gandula {#sec-traduccio-operadors-logics}
 
 En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de forma **gandula** (***lazy***): si el valor del primer operand ja determina el resultat de tota la condició, **el segon operand no s'avalua**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert. La seva traducció implica l'ús d'instruccions de salt i s'estudia a la secció de sentències alternatives (@sec-if-then-else).
 
@@ -480,8 +480,8 @@ El desplaçament es calcula respecte a l'adreça de la instrucció de salt (`0x0
 Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits 2 i 6:
 
 ```{.c filename="C"}
-a = b & 0x55;       /* màscara: selecció bits 0, 2, 4 i 6 */
-if (a == 0x11)      /* bits 0 i 4 actius, 2 i 6 inactius */
+a = b & 0x55;       // màscara: selecció bits 0, 2, 4 i 6
+if (a == 0x11)      // bits 0 i 4 actius, 2 i 6 inactius
     { ... }
 ```
 
@@ -582,7 +582,7 @@ A **RV32I**, els salts **incondicionals** poden ser **relatius al PC** (`jal`, `
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
 Ara que ja s'han presentat totes les instruccions de processament i control de flux de la base **RV32I** (@nte-riscv-rv32i), tret de `ecall` (@sec-ei-ecall) —les instruccions de sistema, com `ecall` i `ebreak` (presentada a Tema 9), queden fora d'aquesta classificació—, l'exercici de classificar-les segons el **mode d'adreçament**
-(@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de la ISA, sinó també, a nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
+(@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de l'ISA, sinó també, a nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
 
 La classificació proposada inclou quatre decisions que cal justificar:
 
@@ -650,7 +650,7 @@ fisi:
 ```
 :::
 
-### Avaluació *lazy* als salts condicionals encadenats {#sec-avaluacio-lazy-encadenats}
+### Avaluació gandula als salts condicionals encadenats {#sec-avaluacio-lazy-encadenats}
 
 L'avaluació lazy es tradueix naturalment amb salts condicionals encadenats.
 
@@ -956,7 +956,7 @@ Per exemple, en el `for` anterior, en lloc de calcular `@v[i] = @v[0] + i*4` a c
 ```{.c filename="C"}
 int sum = 0;
 int *p = v;
-int *fi = v + N;    /* adreça del primer element fora del vector */
+int *fi = v + N;    // adreça del primer element fora del vector
 while (p != fi) {
     sum += *p;
     p++;
@@ -994,13 +994,13 @@ A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament)
 ## Els tres tipus d'emmagatzemament
 
 ```{.c filename="C"}
-int gvec[100];      /* global: emmagatzemament estàtic (.data) */
-int *pvec;          /* global: punter a dada dinàmica (heap) */
+int gvec[100];      // global: emmagatzemament estàtic (.data)
+int *pvec;          // global: punter a dada dinàmica (heap)
 
 int f() {
-    int lvec[100];  /* local: emmagatzemament dinàmic (pila) */
+    int lvec[100];  // local: emmagatzemament dinàmic (pila)
     ...
-    pvec = malloc(400);     /* reserva espai al heap */
+    pvec = malloc(400);     // reserva espai al heap
     ...
     pvec[10] = gvec[10] + lvec[10];
     ...
@@ -1008,7 +1008,7 @@ int f() {
 
 int g() {
     ...
-    free(pvec);     /* allibera espai del heap */
+    free(pvec);     // allibera espai del heap
     ...
 }
 ```
@@ -1137,8 +1137,8 @@ Per analogia, és comú emprar els termes mare/pare i fill/a, per referir-se als
 :::
 
 ::: {#nte-caller-saved-vs-callee-saved .callout-note}
-## RV32I ABI — Gestió dels registres de propòsit general: *caller-saved* vs *callee-saved*
-La columna «Qui el guarda (*Saver*)» de les taules de registres de la ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
+## RV32I ABI — Gestió dels registres de propòsit general: *caller-saved* vs. *callee-saved*
+La columna «Qui el guarda (*Saver*)» de les taules de registres de l'ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
 
 - **Caller-saved**: És el caller qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
 - **Callee-saved**: És el callee qui ha de preservar-lo si vol usar-lo i, per tant, ha de restaurar-lo abans de retornar.
@@ -1167,7 +1167,7 @@ int suma2(int a, int b) {
 }
 
 void main() {
-    int x, y, z;   /* en t0, t1, t2 */
+    int x, y, z;   // en t0, t1, t2
     ...
     z = suma2(x, y);
     ...
@@ -1175,7 +1175,6 @@ void main() {
 ```
 
 ```{.s filename="RV32I"}
-main:
         ...
         mv      a0, t0          # passa x
         mv      a1, t1          # passa y
@@ -1219,9 +1218,9 @@ Les funcions `printf` (formatat —`%d` per enters— i impressió de dades) i `
 
 ```{.c filename="C"}
 int x = 42;
-printf("%d", x);    /* pas per valor: printf rep una còpia de x (42) */
-scanf("%d", &x);    /* pas per referència: scanf rep l'adreça de x    */
-                    /* i pot modificar-ne el contingut directament    */
+printf("%d", x);    // pas per valor: printf rep una còpia de x (42)
+scanf("%d", &x);    // pas per referència: scanf rep l'adreça de x
+                    // i pot modificar-ne el contingut directament
 ```
 
 Després de `scanf`, `x` pot tenir un valor diferent de `42`. Després de `printf`, `x` segueix valent `42` — `printf` no pot modificar-lo perquè només n'ha rebut una còpia.
@@ -1232,13 +1231,13 @@ Després de `scanf`, `x` pot tenir un valor diferent de `42`. Després de `print
 
 ```{.c filename="C"}
 void sub(int *p) {
-    *p = *p + 10;   /* actualitza el contingut de l'adreça apuntada */
+    *p = *p + 10;   // actualitza el contingut de l'adreça apuntada
 }
 
 void f() {
     int a, b;
-    sub(&a);        /* passa un punter a a */
-    sub(&b);        /* passa un punter a b */
+    sub(&a);        // passa un punter a a
+    sub(&b);        // passa un punter a b
 }
 ```
 :::
@@ -1254,7 +1253,7 @@ Els **vectors** i **matrius** només es poden passar per **referència**.
 short x[10], y, z;
 
 void funcA() {
-    int k;                      /* k a t0 */
+    int k;                      // k a t0
     ...
     z = funcB(x, y, k);
     ...
@@ -1320,11 +1319,11 @@ int f5(int vi[]);
 **Pregunta**: A quina capçalera correspon cada crida?
 
 ```{.c filename="C"}
-a = f?(V1);         /* (1) */
-a = f?(p);          /* (2) */
-a = f?(&V2[10]);    /* (3) */
-a = f?(V2[10]);     /* (4) */
-a = f?(*p);         /* (5) */
+a = f?(V1);         // (1)
+a = f?(p);          // (2)
+a = f?(&V2[10]);    // (3)
+a = f?(V2[10]);     // (4)
+a = f?(*p);         // (5)
 ```
 
 **Solució**:
@@ -1442,9 +1441,9 @@ Estructura general del bloc d'activació: variables locals al cim de la pila i r
 ## Funció uninivell amb variables locals a la pila
 
 ```{.c filename="C"}
-char func(int i) {          /* i en a0 */
+char func(int i) {          // i en a0
     char v[10];
-    int w[10], k;           /* k en t0 */
+    int w[10], k;           // k en t0
     ...
     return v[w[i] + k];
 }
@@ -1582,7 +1581,7 @@ La secció de codi d'una subrutina multinivell es divideix en tres parts:
 sub:
         # pròleg
         addi    sp, sp, -BA_MIDA    # reserva d'espai per al BA
-        sw      s0, 0(sp)           # desa registres segurs caller
+        sw      s0, 0(sp)           # desa els registres segurs (callee-saved)
         sw      s1, 4(sp)
         ...                         # tants com sigui necessari (màxim 12)
         sw      ra, BA_MIDA-4(sp)   # desa ra (si és multinivell)
@@ -1759,13 +1758,13 @@ Dependències de dades de la subrutina `exemple`, en dues representacions. Les d
 Anotació de registres sobre el codi:
 
 ```{.c filename="C"}
-char exemple(int a, int b, int c) { /* a → a0, b → a1, c → s0 */
-    int d,  e,  q;                  /* d → s1, e → t0, q → pila */
-    char v[18], w[20];              /* v → pila, w → pila */
+char exemple(int a, int b, int c) { // a → a0, b → a1, c → s0
+    int d,  e,  q;                  // d → s1, e → t0, q → pila
+    char v[18], w[20];              // v → pila, w → pila
     ...
-    res_f = f(d, &q);               /* f(d, &q)  → s2 */
-    res_g = g(v, w);                /* g(v, w)   → a0 (temporal) */
-    e = res_f + res_g;              /* e = s2 + a0 */
+    res_f = f(d, &q);               // f(d, &q)  → s2
+    res_g = g(v, w);                // g(v, w)   → a0 (temporal)
+    e = res_f + res_g;              // e = s2 + a0
     ...
 }
 ```
@@ -1848,10 +1847,10 @@ exemple:
 
 En general, el procés pel qual un programa escrit en **C** es **converteix en** un programa **executable** consta de quatre passos: 
 
-1. **compilació**
-2. **assemblatge**
-3. **enllaçat**
-4. **càrrega**
+1. **Compilació**.
+2. **Assemblatge**.
+3. **Enllaçat**.
+4. **Càrrega**.
 
 A la @sec-traduccio-c-asm hi ha una introducció a aquest procés. En aquesta secció s'analitza amb més detall, posant èmfasi en com cada pas gestiona les **etiquetes** i les **adreces** del programa.
 
@@ -1913,7 +1912,7 @@ L'**assemblador** pren com a entrada el **fitxer assemblador** `.s` i el traduei
 
 #### Expansió de macros i pseudoinstruccions {#sec-expansio-macros-pseudo}
 
-L'assemblador expandeix les macros i pseudoinstruccions en les seqüències d'instruccions reals equivalents. Per exemple, `li t0, 0x0030D900` s'expandeix en `lui` + `addi`, i `ret` s'expandeix en `jalr zero, ra, 0`.
+L'assemblador expandeix les macros i pseudoinstruccions en les seqüències d'instruccions reals equivalents. Per exemple, `li t0, 0x0030D900` s'expandeix en `lui` + `addi`, i `ret` s'expandeix en `jalr x0, 0(ra)`.
 
 #### Construcció de la taula de símbols {#sec-construccio-taula-simbols}
 
@@ -1992,14 +1991,14 @@ Els fitxers objecte contindran:
 
 **Mòdul A**:
 
-- Reubicació: posició `+36` (text), tipus `la`, desplaçament `+4` (data)
-- Símbols globals: `X` al desplaçament `+0` (data)
-- Referències externes: posició `+60` (text), tipus `jal`, etiqueta `g`
+- Reubicació: posició `+36` (text), tipus `la`, desplaçament `+4` (data).
+- Símbols globals: `X` al desplaçament `+0` (data).
+- Referències externes: posició `+60` (text), tipus `jal`, etiqueta `g`.
 
 **Mòdul B**:
 
-- Símbols globals: `g` al desplaçament `+16` (text)
-- Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`
+- Símbols globals: `g` al desplaçament `+16` (text).
+- Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`.
 :::
 
 ### Enllaçat {#sec-enllacat}
@@ -2064,7 +2063,7 @@ El `void main()` dels programes en C d'aquests apunts no contradiu res del que s
 ::: {#wrn-flux-gcc-complet .callout-warning collapse=true}
 ## Flux de generació detallat amb GCC/Clang
 
-El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** fem servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa al *host* (x86) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
+El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa al *host* (x86) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
 
 ::: {#fig-flux-gcc-complet}
 ::: {.content-visible when-format="html"}

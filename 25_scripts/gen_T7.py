@@ -10,10 +10,10 @@ Escriu tres SVG natius a `22_figs_originals/`:
   `add`, `lw`) etapa per etapa, amb una MC ideal i amb una fallada al segon
   `lw`, que hi afegeix la penalització. Substitueix el placeholder.
 - `A7_multinivell_diagrama.svg` (`#fig-multinivell-diagrama`): (a) la CPU
-  connectada a la MP, (b) amb una MC i (c) amb L1 i L2, amb els temps de cada
+  connectada a l’MP, (b) amb una MC i (c) amb L1 i L2, amb els temps de cada
   enllaç.
 - `A7_multinivell_multicore.svg` (`#fig-multinivell-multicore`): xip de quatre
-  nuclis amb L1i, L1d i L2 privades, L3 compartida i la MP (DRAM) fora del xip.
+  nuclis amb L1i, L1d i L2 privades, L3 compartida i l’MP (DRAM) fora del xip.
 - `A7_tipus_fallades.svg` (`#fig-tipus-fallades`): gràfica qualitativa de la
   taxa de fallades segons la mida i l'associativitat, amb les àrees de cada tipus
   de fallada (figura 6.27 del PDF original).
@@ -99,10 +99,10 @@ def multinivell():
     o = []
     yy = 26
     files = [
-        ('(a)', "Problema: el temps d'accés a la MP limita el rendiment", [('CPU', None), ('MP', ('t', 'accés', None))]),
+        ('(a)', "Problema: el temps d'accés a l’MP limita el rendiment", [('CPU', None), ('MP', ('t', 'acc', None))]),
         ('(b)', 'Solució: una MC explota la localitat; el temps llarg només es paga a les fallades',
          [('CPU', None), ('MC', ('t', 'h', None)), ('MP', ('t', 'p', None))]),
-        ('(c)', 'Les fallades de L1 que encerten a L2 paguen el temps d’encert de L2, no el de la MP',
+        ('(c)', 'Les fallades de L1 que encerten a L2 paguen el temps d’encert de L2, no el de l’MP',
          [('CPU', None), ('L1', ('t', 'h', 'L1')), ('L2', ('t', 'h', 'L2')), ('MP', ('t', 'p', None))]),
     ]
     W = 660
@@ -126,9 +126,9 @@ def multinivell():
             o.append(t(157, y + 52, 'per a L2, la «CPU» és el conjunt CPU + L1', 9, GRIS, italic=True))
         yy += 92
     return svg(W, yy - 6, "Memòries cau multinivell",
-               "Tres configuracions: (a) la CPU connectada a la MP, amb un temps d'accés llarg; (b) una MC entre la "
-               "CPU i la MP, amb temps d'encert t sub h i penalització t sub p a les fallades; (c) L1 i L2 entre la "
-               "CPU i la MP: les fallades de L1 que encerten a L2 paguen t sub h sub L2, i només les que també fallen "
+               "Tres configuracions: (a) la CPU connectada a l’MP, amb un temps d'accés llarg; (b) una MC entre la "
+               "CPU i l’MP, amb temps d'encert t sub h i penalització t sub p a les fallades; (c) L1 i L2 entre la "
+               "CPU i l’MP: les fallades de L1 que encerten a L2 paguen t sub h sub L2, i només les que també fallen "
                "a L2 paguen t sub p.", o)
 
 
@@ -171,7 +171,7 @@ def tipus_fallades():
     corbes = [('correspondència directa', 1.00), ('associativa de 2 vies', 0.80), ('associativa de 4 vies', 0.70),
               ('completament associativa', 0.58)]
 
-    def y_de(a, u):                               # u ∈ [0, 1]: mida de la MC, de petita a gran
+    def y_de(a, u):                               # u ∈ [0, 1]: mida de l’MC, de petita a gran
         v = COLD + a * 0.9 / (1 + 7 * u)
         return Y1 - v * (Y1 - Y0)
 

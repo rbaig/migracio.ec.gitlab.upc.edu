@@ -26,13 +26,13 @@ language:
 4. Guarda el mode de privilegi actual a `MPP` i passa a mode M.
 5. Salta a l'adreça de la rutina de servei d'excepcions (RSE) continguda a `mtvec`.
 
-**d)** La RSE ha de salvar **tots** els registres generals (`x1`–`x31`) sense excepció. A diferència d'una subrutina normal, el programa interromput no ha cedit el control voluntàriament i no pot saber quins registres modificarà la RSE. Les convencions ABI (registres salvats vs. temporals) no s'apliquen.
+**d)** L'RSE ha de salvar **tots** els registres generals (`x1`–`x31`) sense excepció. A diferència d'una subrutina normal, el programa interromput no ha cedit el control voluntàriament i no pot saber quins registres modificarà l'RSE. Les convencions ABI (registres salvats vs. temporals) no s'apliquen.
 :::
 
 ::: {#sol-t9-exc-rse .callout-tip}
 ## Solució: RSE mínima en assemblador
 
-**Enunciat**: @exr-t9-exc-rse. *Vegeu l'estructura general de la RSE a @sec-ei-rse.*
+**Enunciat**: @exr-t9-exc-rse. *Vegeu l'estructura general de l'RSE a @sec-ei-rse.*
 
 ```{.s filename="RV32IZicsr"}
 rse:
@@ -150,7 +150,7 @@ $$\texttt{mepc} = \texttt{0x80002008}$$
 
 En retornar amb `mret`, el processador salta a `mepc`, és a dir, a `0x80002008`: la instrucció que seguia el `lw`.
 
-**c)** En **mode directe** (`MODE = 0`), totes les excepcions i interrupcions salten a `BASE`. La RSE llegeix `mcause` per identificar la causa i derivar el control al gestor específic.
+**c)** En **mode directe** (`MODE = 0`), totes les excepcions i interrupcions salten a `BASE`. L'RSE llegeix `mcause` per identificar la causa i derivar el control al gestor específic.
 
 En **mode vectoritzat** (`MODE = 1`), les *interrupcions* salten a `BASE + 4 × causa`; les *excepcions* sempre salten a `BASE`.
 
@@ -158,7 +158,7 @@ Per a una interrupció de temporitzador en mode M (codi de causa 7):
 
 $$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
 
-**d)** Sense l'increment, `mret` retornaria a la mateixa instrucció `ecall`, que causaria una nova excepció indefinidament. La RSE ha d'incrementar `mepc` perquè l'`ecall` ja ha estat atesa i el programa ha de continuar a la instrucció *següent*:
+**d)** Sense l'increment, `mret` retornaria a la mateixa instrucció `ecall`, que causaria una nova excepció indefinidament. L'RSE ha d'incrementar `mepc` perquè l'`ecall` ja ha estat atesa i el programa ha de continuar a la instrucció *següent*:
 
 ```{.s filename="RV32IZicsr"}
         csrr    t0, mepc            # llegir l'adreça de retorn
@@ -355,7 +355,7 @@ rse_ret_teclat:
         mret
 ```
 
-**c)** El codi de causa (`mcause`, codi 11) i el bit `MEIP` de `mip` indiquen que hi ha una **interrupció externa** pendent, però no quin dispositiu específic l'ha causada. Per identificar que la interrupció prové del teclat cal llegir directament el **registre d'estat del dispositiu** (`0xF0001000`, bit 0): és l'únic lloc on el controlador del teclat indica que té una dada disponible. En sistemes amb múltiples dispositius d'E/S, la RSE ha d'interrogar cadascun per determinar quin ha generat la petició.
+**c)** El codi de causa (`mcause`, codi 11) i el bit `MEIP` de `mip` indiquen que hi ha una **interrupció externa** pendent, però no quin dispositiu específic l'ha causada. Per identificar que la interrupció prové del teclat cal llegir directament el **registre d'estat del dispositiu** (`0xF0001000`, bit 0): és l'únic lloc on el controlador del teclat indica que té una dada disponible. En sistemes amb múltiples dispositius d'E/S, l'RSE ha d'interrogar cadascun per determinar quin ha generat la petició.
 :::
 
 ## Fallada de pàgina
@@ -374,7 +374,7 @@ En tots dos casos, `mtval` conté l'**adreça virtual** que ha causat la fallada
 
 Cal recordar que, a RISC-V, l'excepció només es produeix quan la pàgina no és a la memòria física (bit V = 0 a la PTE): la fallada de TLB amb la pàgina present la resol el recorregut de la taula de pàgines (*page-table walker*) sense interrompre el programa (@cau-tlb-miss-excepcio).
 
-**b)** El flux que ha de seguir la RSE (la rutina completa és a @sec-ei-tlb-modes-rutina):
+**b)** El flux que ha de seguir l'RSE (la rutina completa és a @sec-ei-tlb-modes-rutina):
 
 1. Llegir `mtval` per obtenir l'adreça virtual que ha causat la fallada.
 2. Extreure'n el VPN (els bits per sobre del desplaçament de pàgina) i localitzar la PTE corresponent a la taula de pàgines del procés actiu (a partir del registre de taula de pàgines; `satp` en mode S).

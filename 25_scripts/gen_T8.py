@@ -8,7 +8,7 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
 (i els fotogrames de la figura dinàmica):
 
 - `A8_mv_espais.svg` (`#fig-mv-espais`): els espais lògics de dos processos,
-  la MMU, la memòria física i el disc.
+  l’MMU, la memòria física i el disc.
 - `A8_mv_jerarquia.svg` (`#fig-mv-jerarquia`): la piràmide de la jerarquia
   de memòria amb el disc, i els temps d'accés orientatius (figura 7.2 del tema
   antic, amb la geometria de `A7_jerarquia_piramide.svg`).
@@ -40,8 +40,8 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
   pàgines i la memòria física després de cada accés.
 
 El model del TLB és el del tema (RISC-V, `A8.qmd §Traducció ràpida: el TLB`):
-el TLB només conté PTE vàlides, la fallada de TLB la resol la MMU i, en
-expulsar una pàgina, el SO n'invalida l'entrada del TLB.
+el TLB només conté PTE vàlides, la fallada de TLB la resol l’MMU i, en
+expulsar una pàgina, l’SO n'invalida l'entrada del TLB.
 
 Les dades són les dels exemples d'A8: la taula de pàgines i el TLB de
 `#tip-mv-tlb-exemple`, i la compartició de `#tip-mv-comparticio`. Colors de
@@ -188,7 +188,7 @@ def llegenda(x, y, items):
 
 def espais():
     """Com la figura 7.1 del tema antic: els espais lògics de dos processos amb l'adreça inicial i final de
-    cada pàgina, la MMU, una memòria física de 16 KiB (quatre marcs, amb les adreces) i el disc, on només es
+    cada pàgina, l’MMU, una memòria física de 16 KiB (quatre marcs, amb les adreces) i el disc, on només es
     dibuixen les pàgines que no són a la memòria física. Mateixa assignació que `pagines_marcs`."""
     o = []
     H = 26                                   # alçada d'una pàgina o d'un marc
@@ -260,7 +260,7 @@ def espais():
                "A banda i banda, l'espai lògic de dos processos, de 0x00000000 a 0xFFFFFFFF, amb l'adreça inicial "
                "i final de cada pàgina de 4 KiB: el procés 1, en blau, usa les pàgines A (0x00000000) i B "
                "(0x00001000) i la darrera, C (0xFFFFF000); el procés 2, en verd, usa X (0x00000000) i Y "
-               "(0x00001000). Les dues columnes envien adreces lògiques a la MMU, al centre, que les tradueix a "
+               "(0x00001000). Les dues columnes envien adreces lògiques a l’MMU, al centre, que les tradueix a "
                "adreces físiques. A sota, la memòria física de 16 KiB, amb quatre marcs: X a 0x0000, A a 0x1000, "
                "Y a 0x2000 i C a 0x3000, en un ordre que no és el dels espais lògics. A sota, el disc, amb la "
                "pàgina B, que no és a la memòria física i hi arriba amb una fletxa discontínua.", o)
@@ -621,7 +621,7 @@ def tlb_estructura():
     ctlb = [('V', 34), ('VPN', 76), ('D', 34), ('E', 34), ('PPN', 56)]
     o += taula(XT, Y, ctlb, ftlb)
     o.append(t(XT + 117, 22, 'TLB', 12, INK, bold=True))
-    o.append(t(XT + 117, 36, '(a la MMU)', 10, GRIS))
+    o.append(t(XT + 117, 36, '(a l’MMU)', 10, GRIS))
     o.append(t(XT + 72, Y + 3 * 22 + 15, 'lliure', 10, GRIS, italic=True))
     xa, xb = XP + 158, XT - 2
     fila = {vpn: k for k, (vpn, *_) in enumerate(TAULA)}
@@ -642,8 +642,8 @@ def tlb_estructura():
 
 def flux():
     """Flux de la traducció al model del tema (RISC-V), en tres columnes i dues zones, com la figura 7.8 del tema
-    antic. A la zona del maquinari (MMU), l'encert de TLB, a l'esquerra, i la fallada de TLB, al centre, que la MMU
-    resol sense interrompre el programa i que continua com un encert. A la zona del SO, a la dreta, la fallada de
+    antic. A la zona del maquinari (MMU), l'encert de TLB, a l'esquerra, i la fallada de TLB, al centre, que l’MMU
+    resol sense interrompre el programa i que continua com un encert. A la zona de l’SO, a la dreta, la fallada de
     pàgina, que és una excepció. El flux entra amb el VPN, a dalt, i surt amb el PPN, a baix; la fallada de pàgina
     acaba amb una fletxa que no connecta amb res, la reexecució de la instrucció."""
     o = []
@@ -658,7 +658,7 @@ def flux():
     DY = 40                          # espai de dalt per al VPN i la reexecució
     HW_F, HW_S = '#e6f1fb', P1_S     # zona del maquinari (MMU)
     SO_F, SO_S = DISC_F, DISC_S      # zona del sistema operatiu
-    SO_N = '#ffffff'                 # nodes de la zona del SO
+    SO_N = '#ffffff'                 # nodes de la zona de l’SO
     ab_f, ab_s = NEUTRE, GRIS
     # Zones (fons ombrejat), abans de tot.
     o.append(f'<rect x="4" y="0" width="668" height="{hb}" rx="10" fill="{HW_F}" stroke="{HW_S}" '
@@ -679,7 +679,7 @@ def flux():
     o.append(cami([(L, 242), (L, 257)]))                                   # V = 1? sí → copia la PTE al TLB
     o.append(cami([(645, r[2]), (713, r[2])]))                              # V = 1? no → excepció → adreça vàlida?
     o.append(cami([(435, r[3]), (418, r[3]), (418, yj), (C, yj)], TLB_S))   # copia → continua com un encert
-    o.append(cami([(865, r[2]), (905, r[2]), (905, 175)]))                  # adreça vàlida? no → el SO avorta
+    o.append(cami([(865, r[2]), (905, r[2]), (905, 175)]))                  # adreça vàlida? no → l’SO avorta
     o.append(cami([(R, 242), (R, 257)]))                                   # adreça vàlida? sí → marc lliure?
     o.append(cami([(715, r[3]), (697, r[3]), (697, r[7]), (701, r[7])]))    # marc lliure? sí → copia la pàgina nova
     o.append(cami([(R, 322), (R, 341)]))                                   # marc lliure? no → tria la víctima
@@ -699,7 +699,7 @@ def flux():
                        (706, r[3] - 6, 'sí', 'middle'), (R + 6, 336, 'no', 'start'),
                        (R + 6, r[5] + 43, 'sí', 'start'), (880, r[5] - 6, 'no', 'middle')):
         o.append(t(x, y, s, 12, INK, a, italic=True))
-    o.append(t(687, r[2] + 17, 'excepció', 10, MISS_S, 'start', bold=True))   # ja dins de la zona del SO
+    o.append(t(687, r[2] + 17, 'excepció', 10, MISS_S, 'start', bold=True))   # ja dins de la zona de l’SO
     o.append(t(C + 8, -DY + 22, 'VPN', 12, INK, 'start', mono=True, bold=True))
     o.append(t(C, hb + 58, "PPN (finalitzar l'accés a memòria)", 12, INK, bold=True))
     o.append(t(xr - 8, -DY + 22, 'Reexecuta la instrucció', 12, MISS_S, 'end', bold=True))
@@ -708,16 +708,16 @@ def flux():
     o.append(node(C, rc[1], 190, 64, ['Encert de TLB?'], HIT_F, HIT_S, 'rombe'))
     o.append(node(C, rc[2], 190, 64, ['Escriptura', 'i E = 0?'], HIT_F, HIT_S, 'rombe'))
     o.append(node(C, rc[3], 190, 64, ['Escriptura', 'i D = 0?'], HIT_F, HIT_S, 'rombe'))
-    o.append(node(E, rc[2], 150, 56, ['Excepció de', 'protecció: el SO', 'avorta el procés'], SO_F, SO_S, 'terminal', 12))
+    o.append(node(E, rc[2], 150, 56, ['Excepció de', 'protecció: l’SO', 'avorta el procés'], SO_F, SO_S, 'terminal', 12))
     o.append(node(E, rc[3], 150, 44, ['Posa D = 1 al', 'TLB i a la PTE'], HIT_F, HIT_S))
     o.append(node(L, r[1], 230, 66, ['Llegeix la PTE de la', 'taula de pàgines',
                                      ('(recorregut per maquinari,', 10, GRIS),
                                      ('sense interrompre el programa)', 10, GRIS)], TLB_F, TLB_S))
     o.append(node(L, r[2], 190, 64, ['V = 1?'], TLB_F, TLB_S, 'rombe'))
     o.append(node(L, r[3], 230, 66, ['Copia la PTE al TLB', ('(a una entrada lliure o,', 10, GRIS),
-                                     ('si no n’hi ha, a la LRU)', 10, GRIS)], TLB_F, TLB_S))
+                                     ('si no n’hi ha, a l’LRU)', 10, GRIS)], TLB_F, TLB_S))
     o.append(node(R, r[2], 150, 64, ['Adreça', 'vàlida?'], SO_N, MISS_S, 'rombe'))
-    o.append(node(870, 145, 148, 58, ['Adreça invàlida: el SO', 'avorta el procés',
+    o.append(node(870, 145, 148, 58, ['Adreça invàlida: l’SO', 'avorta el procés',
                                      ('(segmentation fault)', 10, GRIS)], ab_f, ab_s, 'terminal', 11))
     o.append(node(R, r[3], 150, 64, ['Hi ha cap marc', '(PPN) lliure?'], SO_N, MISS_S, 'rombe'))
     o.append(node(R, r[4], 176, 58, ['Tria marc (PPN) a reemplaçar:', 'V = 0 a la seva PTE', 'i també al TLB'],
@@ -738,13 +738,13 @@ def flux():
     cos = f'<g transform="translate(0,{DY})">\n' + '\n'.join(o) + '\n</g>'
     return svg(960, DY + r[7] + 65, "Flux complet de traducció d'una adreça",
                "Diagrama de flux en tres columnes, agrupades en dues zones ombrejades: la blava, el que fa el "
-               "maquinari (la MMU), i la rosa, el que resol el sistema operatiu. El flux entra a dalt, amb el VPN, "
+               "maquinari (l’MMU), i la rosa, el que resol el sistema operatiu. El flux entra a dalt, amb el VPN, "
                "i surt a baix, amb el PPN, per finalitzar l'accés a memòria. A l'esquerra, en verd, el camí de "
                "l'encert: es cerca el VPN al TLB; si hi és, es comprova si és una escriptura amb E = 0, que provoca "
-               "una excepció de protecció i el SO avorta el procés, i si és una escriptura amb D = 0, que posa D = 1 "
-               "al TLB i a la PTE. Al centre, en groc, la fallada de TLB, que resol la MMU: llegeix la PTE de la "
+               "una excepció de protecció i l’SO avorta el procés, i si és una escriptura amb D = 0, que posa D = 1 "
+               "al TLB i a la PTE. Al centre, en groc, la fallada de TLB, que resol l’MMU: llegeix la PTE de la "
                "taula de pàgines i, si V = 1, la copia al TLB i la traducció continua com en un encert. Si V = 0, "
-               "es produeix una excepció, la fallada de pàgina, que resol el SO, a la dreta: si l'adreça no és "
+               "es produeix una excepció, la fallada de pàgina, que resol l’SO, a la dreta: si l'adreça no és "
                "vàlida, avorta el procés (segmentation fault); si ho és i no hi ha cap marc lliure, tria el "
                "marc (PPN) a reemplaçar i posa V = 0 a la seva PTE i també al TLB, i, si D = 1, copia la pàgina reemplaçada al disc; "
                "després copia la pàgina nova del disc a memòria i actualitza la PTE amb V = 1, D = 0 i el PPN. Una fletxa que surt cap "
@@ -852,8 +852,8 @@ def pipt():
     o += cronograma(222, False)
     return svg(680, 300, 'Memòria cau indexada físicament (PIPT)',
                "Diagrama de blocs en una fila: la CPU envia l'adreça lògica al TLB, en groc; amb un encert de TLB, "
-               "l'adreça física passa a la MC, en blau, i amb un encert de MC en surt la dada. Si la MC falla, "
-               "accedeix a la MP, en verd, a sota. A sota, el cronograma: l'accés al TLB i el de la MC, un darrere "
+               "l'adreça física passa a l’MC, en blau, i amb un encert d’MC en surt la dada. Si l’MC falla, "
+               "accedeix a l’MP, en verd, a sota. A sota, el cronograma: l'accés al TLB i el de l’MC, un darrere "
                "l'altre, en sèrie.", o)
 
 
@@ -885,10 +885,10 @@ def vipt():
     o += cronograma(322, True)
     return svg(680, 400, 'Memòria cau indexada virtualment i etiquetada físicament (VIPT)',
                "La CPU genera l'adreça lògica, dividida en VPN i desplaçament. Dos camins en paral·lel: a dalt, els "
-               "bits del desplaçament indexen la MC, en blau, que en llegeix les etiquetes i les dades; a sota, el VPN "
-               "va al TLB, en groc, que dona el PPN. Un comparador, a la dreta, confronta l'etiqueta llegida de la MC "
-               "amb el PPN: si coincideixen, encert, i en surt la dada; si no, fallada, i s'accedeix a la MP, en verd. "
-               "A sota, el cronograma: el TLB i la MC alhora, i després la comparació.", o)
+               "bits del desplaçament indexen l’MC, en blau, que en llegeix les etiquetes i les dades; a sota, el VPN "
+               "va al TLB, en groc, que dona el PPN. Un comparador, a la dreta, confronta l'etiqueta llegida de l’MC "
+               "amb el PPN: si coincideixen, encert, i en surt la dada; si no, fallada, i s'accedeix a l’MP, en verd. "
+               "A sota, el cronograma: el TLB i l’MC alhora, i després la comparació.", o)
 
 
 # ── Exemple de traducció amb TLB: simulació i figures ───────
@@ -918,7 +918,7 @@ def simula_exemple():
         hit = any(e['v'] and e['vpn'] == vpn for e in tlb)
         if not hit:
             ev['tlb_miss'] = True
-            if not tp[vpn]['v']:                       # fallada de pàgina: la resol el SO
+            if not tp[vpn]['v']:                       # fallada de pàgina: la resol l’SO
                 ev['pf'] = True
                 lliures = [p for p, v in marcs.items() if v is None]
                 if lliures:

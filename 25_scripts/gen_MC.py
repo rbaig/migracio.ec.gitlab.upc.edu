@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gen_MC.py — Genera les figures de memòria cau (T7) a partir de `24_specs/MC.toml`, simulant la MC.
+gen_MC.py — Genera les figures de memòria cau (T7) a partir de `24_specs/MC.toml`, simulant l’MC.
 
 Ús, com a pas del pre-render de Quarto (`_quarto.yml`):
 
@@ -17,14 +17,14 @@ associativa LRU de les mateixes línies; i de conflicte, si no.
 
 Estils (`estil`):
 
-- `"sequencia"`: la MP, la seqüència d'accessos i l'estat de la MC després de
+- `"sequencia"`: l’MP, la seqüència d'accessos i l'estat de l’MC després de
   cada accés. Escriu `<nom>__MC_light.svg`.
 - `"traca"`: una taula amb una fila per accés (accés, bloc, línia o conjunt,
   resultat i el bloc que conté cada línia després de l'accés). És la forma
   compacta, pensada per al PDF.
-- `"estat"`: l'estat de la MC en un moment donat (després dels accessos
+- `"estat"`: l'estat de l’MC en un moment donat (després dels accessos
   d'`inicial`), sense seqüència: les taules d'organització de T7. Amb `ubica`
-  (una adreça), també la MP i on pot anar el bloc d'aquella adreça.
+  (una adreça), també l’MP i on pot anar el bloc d'aquella adreça.
 
 Amb `fotogrames = true`, escriu a més un fotograma per pas,
 `<nom>_pas<k>__MC_light.svg` (k = 0 és l'estat inicial), per a la figura
@@ -52,7 +52,7 @@ INK, GRIS, TRAC, NEUTRE, BLANC = "#343a40", "#6c757d", "#adb5bd", "#f8f9fa", "#f
 ENCERT, FALLADA = "#198754", "#dc3545"
 COLORS = [("#cfe2ff", "#084298"), ("#d1e7dd", "#0a3622"), ("#fff3cd", "#664d03"), ("#f8d7da", "#842029")]
 FS = 11          # mida de lletra base
-H = 22           # alçada d'una fila de la MC
+H = 22           # alçada d'una fila de l’MC
 
 
 def esc(s):
@@ -150,13 +150,13 @@ def explicacio(r, mc, spec, desti):
     linia = desti(r['conj'], r.get('via'))
     if r['encert']:
         if r['op'] == 'L':
-            return 'Llegeix de la MC'
-        return 'Escriu només a la MC (D ← 1)' if mc.retardada else 'Escriu a la MC i a la MP'
+            return 'Llegeix de l’MC'
+        return 'Escriu només a l’MC (D ← 1)' if mc.retardada else 'Escriu a l’MC i a l’MP'
     if r.get('via') is None:
-        return 'Escriu només a la MP; la MC no canvia'
+        return 'Escriu només a l’MP; l’MC no canvia'
     parts = []
     if r.get('expulsat') is not None and r['expulsat_D']:
-        parts.append(f"Escriu el bloc {r['expulsat']} (modificat) a la MP")
+        parts.append(f"Escriu el bloc {r['expulsat']} (modificat) a l’MP")
     accio = f"copia el bloc {r['bloc']} a {linia}"
     if r.get('expulsat') is not None:
         accio += f" (expulsa el bloc {r['expulsat']})"
@@ -164,7 +164,7 @@ def explicacio(r, mc, spec, desti):
         accio += ', lliure'
     parts.append(accio[0].upper() + accio[1:] if not parts else accio)
     if r['op'] == 'E':
-        parts.append('hi escriu (D ← 1)' if mc.retardada else 'escriu a la MC i a la MP')
+        parts.append('hi escriu (D ← 1)' if mc.retardada else 'escriu a l’MC i a l’MP')
     return '; '.join(parts)
 
 
@@ -181,7 +181,7 @@ def bits(v, n):
 
 
 # ═══════════════════════════════════════════════════════════
-# Estil «sequencia»: MP, accessos i estat de la MC a cada pas
+# Estil «sequencia»: MP, accessos i estat de l’MC a cada pas
 # ═══════════════════════════════════════════════════════════
 
 class Geometria:
@@ -215,7 +215,7 @@ class Geometria:
         return f'bytes 0x{a:0{self.nh}X}–0x{z:0{self.nh}X}' if self.hex else f'bytes {a}–{z}'
 
     def color_bloc(self, bloc):
-        """Un color per vector (`color = "vector"`) o per bloc, en l'ordre en què surten a la MP: així
+        """Un color per vector (`color = "vector"`) o per bloc, en l'ordre en què surten a l’MP: així
         dos blocs que es veuen alhora no comparteixen color (el mòdul 4 donava el mateix a 1, 9 i 13).
         Amb `color = "uniforme"`, el mateix per a tots (sense MP, el color no distingeix res)."""
         if self.spec.get('color') == 'uniforme':
@@ -236,7 +236,7 @@ class Geometria:
 
 
 def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True, cap_lru='LRU'):
-    """Taula de la MC: una fila per conjunt (línia), i les vies una al costat de l'altra."""
+    """Taula de l’MC: una fila per conjunt (línia), i les vies una al costat de l'altra."""
     y = y0
     if mostra_cap:
         for v in range(g.N):
@@ -285,7 +285,7 @@ def dibuixa_mc(o, g, x0, y0, estat, ressalt=None, lru=None, mostra_cap=True, cap
 
 
 def dibuixa_mp(o, g, x0, y0, pos=None):
-    """Columna de la MP: adreça en binari (o element), contingut i número de bloc. Amb `pos` (un dict),
+    """Columna de l’MP: adreça en binari (o element), contingut i número de bloc. Amb `pos` (un dict),
     hi deixa on és cada bloc: `pos[bloc] = (y_dalt, y_baix)`, i les x de l'adreça (`xa`) i del contingut (`xc`)."""
     spec = g.spec
     y = y0
@@ -509,15 +509,15 @@ def traca(spec):
 
 
 # ═══════════════════════════════════════════════════════════
-# Estil «estat»: l'estat de la MC en un moment donat
+# Estil «estat»: l'estat de l’MC en un moment donat
 # ═══════════════════════════════════════════════════════════
 
 RESSALT = "#842029"      # el que la figura vol fer veure (svg.md §16)
 
 
 def estat(spec):
-    """Estil «estat»: la MC després dels accessos d'`inicial`, sense seqüència. `ressalta_columna = "D"`
-    emmarca la columna del bit D. Amb `ubica` (una adreça), dibuixa també la MP i on pot anar el bloc
+    """Estil «estat»: l’MC després dels accessos d'`inicial`, sense seqüència. `ressalta_columna = "D"`
+    emmarca la columna del bit D. Amb `ubica` (una adreça), dibuixa també l’MP i on pot anar el bloc
     d'aquella adreça: l'índex, que tria el conjunt, i una fletxa a cada via del conjunt."""
     g = Geometria(spec)
     mc = MC(spec)
@@ -542,11 +542,11 @@ def estat(spec):
     bloc = adr // g.B
     conj = bloc % g.NC
     _, stroke = g.color_bloc(bloc)
-    x0 = 16                                                     # la MC; a l'esquerra, el camí de l'índex
+    x0 = 16                                                     # l’MC; a l'esquerra, el camí de l'índex
     xv = [x0 + 24 + v * (g.col_via + 12) for v in range(g.N)]
     x_fi = xv[-1] + g.col_via
-    # MP, amb el contingut del bloc centrat sobre la MC, i l'índex emmarcat
-    x_mp = round((x0 + 24 + x_fi) / 2) - 134                 # 134: de l'inici de la MP al centre del contingut
+    # MP, amb el contingut del bloc centrat sobre l’MC, i l'índex emmarcat
+    x_mp = round((x0 + 24 + x_fi) / 2) - 134                 # 134: de l'inici de l’MP al centre del contingut
     pos = {}
     dibuixa_mp(o, g, x_mp, 56, pos)
     ya, yz = pos[bloc]
@@ -554,7 +554,7 @@ def estat(spec):
     xi0 = pos['xa'] + 44 - n * 3.0 + (g.t + 1) * 6.0 - 2
     xi1 = xi0 + g.c * 6.0 + 4
     o.append(rect(xi0, ya + 2, xi1 - xi0, yz - ya - 4, 'none', stroke, 1.5))
-    # què passa amb el bloc, a la dreta de la MP
+    # què passa amb el bloc, a la dreta de l’MP
     xp = pos['xc'] + 76 + 56
     e, ix, off = adr >> (g.b + g.c), (adr >> g.b) & ((1 << g.c) - 1), adr & ((1 << g.b) - 1)
     o.append(text(xp, ya - 2, f'Adreça {adr}', 11, INK, anchor='start', bold=True))
@@ -588,7 +588,7 @@ def estat(spec):
 
 def lectura(spec):
     """Diagrama de blocs d'una lectura: l'adreça partida en camps, les vies (o les línies) en
-    paral·lel amb el seu comparador i la seva AND amb V, la OR que dona l'encert, el multiplexor
+    paral·lel amb el seu comparador i la seva AND amb V, l’OR que dona l'encert, el multiplexor
     que tria la via i el que tria la dada pel desplaçament. `organitzacio`: "directa",
     "conjunts" o "completa" (completament associativa: un sol conjunt, cada línia és una via)."""
     org = spec['organitzacio']
