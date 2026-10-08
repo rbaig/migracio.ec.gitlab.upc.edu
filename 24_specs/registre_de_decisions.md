@@ -30,6 +30,12 @@ Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa tau
 
 A diferència dels altres scripts de `25_scripts/`, aquest no es crida des del `pre-render` de `_quarto.yml`: Quarto resol els `{{< include >}}` dels capítols en un escaneig de configuració que s'executa *abans* del pre-render, de manera que el fitxer fusionat ha d'existir al disc abans d'invocar `quarto`.
 
+### D-77
+
+**Zifencei, fora de les extensions d'EC** · `13_contrib.qmd §Extensions RISC-V a EC` · 2026-10-09
+
+Decisió de l'usuari (2026-10-09, fase 8a, decisió 2), a proposta de Claude Code. Fins llavors la taula d'extensions deia «Zifencei · Instruccions de barrera d'instruccions (`fence.i`) · T9», amb el `filename` `RV32IZicsrZifencei`, i `A2.qmd` (`#imp-ec-nomes-rv32i-m-f`) la situava a T9. Però cap fitxer de T9 no en parlava, cap bloc no portava aquell `filename`, i el mateix A2 (`#wrn-model-memoria-relaxat`) deixa `fence`, `fence.tso` i `fence.i` fora de l'abast. L'alternativa, presentar `fence.i` a A9, es va descartar. Ho va detectar la fase 7e, en partir la guia (`TODO.md §T9`, avui a §Entrades retirades → Executades), i ho va confirmar la revisió tècnica d'A2 de la fase 8a.
+
 ## Decisions per tema
 
 ### D-4

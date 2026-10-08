@@ -282,7 +282,7 @@ La taula de pàgines és a la memòria principal. Això implica que cada accés 
 ::: {#imp-mv-model-tlb .callout-important}
 ## El model de TLB d'EC: canvi respecte del temari anterior (MIPS)
 
-**El TLB no forma part de la ISA de RISC-V**: l'arquitectura defineix com es tradueix una adreça amb la taula de pàgines, però deixa a cada implementació si guarda traduccions en una memòria cau, i amb quina organització. El TLB d'aquest tema és un **model**, el mateix per a la teoria i els problemes: completament associatiu, amb reemplaçament LRU i amb les entrades que descriu la @sec-mv-tlb-estructura. L'únic que la ISA fixa, i que aquest model respecta, és que el TLB només conté traduccions vàlides, que el sistema operatiu mai no veu les fallades de TLB, i que ha d'invalidar les traduccions d'una pàgina quan en modifica la PTE. Al temari anterior d'EC, basat en MIPS, el TLB formava part de la ISA i podia contenir entrades de pàgines no residents (@wrn-mv-tlb-hw-walker).
+**El TLB no forma part de la ISA de RISC-V**: l'arquitectura defineix com es tradueix una adreça amb la taula de pàgines, però deixa a cada implementació si guarda traduccions en una memòria cau, i amb quina organització. El TLB d'aquest tema és un **model**, el mateix per a la teoria i els problemes: completament associatiu, amb reemplaçament LRU i amb les entrades que descriu la @sec-mv-tlb-estructura. L'únic que la ISA fixa, i que aquest model respecta, és que el sistema operatiu mai no veu les fallades de TLB, i que ha d'invalidar les traduccions d'una pàgina quan en modifica la PTE; el model d'EC, a més, només hi guarda traduccions vàlides. Al temari anterior d'EC, basat en MIPS, el TLB formava part de la ISA i podia contenir entrades de pàgines no residents (@wrn-mv-tlb-hw-walker).
 :::
 
 ### Estructura i funcionament {#sec-mv-tlb-estructura}
@@ -362,7 +362,7 @@ El TLB és una còpia parcial de la taula de pàgines, i cal mantenir-les cohere
 
 ### El bit D: consistència amb la taula de pàgines {#sec-mv-tlb-bitd}
 
-El bit D és l'únic camp del TLB que pot modificar l'execució del programa: quan una instrucció d'escriptura (`sw`, `fsw`, etc.) accedeix a una pàgina amb D = 0, el bit D s'ha de posar a 1, i la taula de pàgines ho ha de saber, perquè és la PTE la que consulta el sistema operatiu quan ha de reemplaçar la pàgina.
+El bit D és l'únic camp del TLB que l'execució del programa pot modificar: quan una instrucció d'escriptura (`sw`, `fsw`, etc.) accedeix a una pàgina amb D = 0, el bit D s'ha de posar a 1, i la taula de pàgines ho ha de saber, perquè és la PTE la que consulta el sistema operatiu quan ha de reemplaçar la pàgina.
 
 A EC assumim que l'actualització del bit D **la fa el maquinari**, sense cap excepció ni intervenció del sistema operatiu: la MMU segueix una política d'**escriptura immediata** i, a la primera escriptura en una pàgina (D = 0 al TLB), posa D = 1 simultàniament a l'entrada del TLB i a la PTE de la taula de pàgines. Això requereix un accés addicional a la memòria principal, però només succeeix la primera vegada que s'escriu en cada pàgina, no en cada instrucció d'escriptura. És una de les dues opcions que admet RISC-V per actualitzar els bits A i D de la PTE; l'altra, que ho faci el sistema operatiu a través d'una excepció, no la farem servir, i s'explica a l'aprofundiment @wrn-tlb-bit-ad del Tema 9.
 
@@ -498,7 +498,7 @@ La solució més habitual als processadors actuals, per a la memòria cau de pri
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A8_mv_vipt__original_light.svg)
 :::
-Memòria cau VIPT: la indexació de la memòria cau i la traducció del TLB es fan en paral·lel, i l'etiqueta física elimina el problema de l'aliàsing. A sota, el temps d'accés, a la mateixa escala que a la @fig-mv-pipt.
+Memòria cau VIPT: la indexació de la memòria cau i la traducció del TLB es fan en paral·lel, i, com que l'índex només fa servir bits del desplaçament, no hi ha aliàsing. A sota, el temps d'accés, a la mateixa escala que a la @fig-mv-pipt.
 :::
 
 La condició perquè VIPT funcioni sense aliàsing és que l'índex de la memòria cau usi exclusivament bits del desplaçament (és a dir, bits que no canvien amb la traducció). L'índex d'una memòria cau de mida $C$, associativitat $a$ i mida de bloc $B$ ocupa $\log_2(C / (a \cdot B))$ bits. Perquè tots aquests bits pertanyin al desplaçament (els $t = \log_2 T$ bits de menys pes), cal que:
@@ -580,7 +580,7 @@ Fallada de TLB i fallada de pàgina. La víctima LRU és VPN 2 (al marc `0x02`),
 | L | `0x00005120` | `0x00005` | sí | sí | `0x00002` | sí (VPN 2) | `0x02` | `0x2120` |
 : Resum dels cinc accessos {.striped tbl-colwidths="[5,16,11,10,10,16,12,8,12]"}
 
-En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x02`) i VPN 1 (`0x03`), totes amb D = 0, i el TLB té exactament aquestes quatre traduccions. Observeu que, amb tants marcs com entrades de TLB, el reemplaçament LRU del TLB no arriba a actuar mai: cada fallada de pàgina allibera una entrada del TLB abans que la pàgina nova la necessiti. El reemplaçament del TLB només entra en joc quan hi ha més pàgines residents que entrades, com a @exr-t8-tlb-estat. La @fig-mv-tlb-exemple mostra l'estat del TLB i de la memòria física després de cada accés.
+En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x02`) i VPN 1 (`0x03`), totes amb D = 0, i el TLB té exactament aquestes quatre traduccions. Observeu que, amb tants marcs com entrades de TLB, el reemplaçament LRU del TLB no arriba a actuar mai: mentre hi ha marcs lliures, també hi ha entrades lliures, i quan el TLB és ple hi són totes les pàgines residents, de manera que una fallada de TLB és sempre una fallada de pàgina, i en invalidar l'entrada de la víctima n'allibera una. El reemplaçament del TLB només entra en joc quan hi ha més pàgines residents que entrades, com a @exr-t8-tlb-estat. La @fig-mv-tlb-exemple mostra l'estat del TLB i de la memòria física després de cada accés.
 :::
 
 ::::: {#fig-mv-tlb-exemple}

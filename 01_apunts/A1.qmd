@@ -13,8 +13,8 @@ Per gestionar aquesta distància conceptual tan gran i fer viable el disseny de 
 
 - **Nivell de components físics**: Constitueix el fonament material del computador. Inclou els elements de l'electrònica de base com transistors, resistències, condensadors, díodes, interconnexions físiques, etc.
 - **Nivell d'unitats funcionals i lògica digital**: En aquest estadi s'agrupen els components per formar portes lògiques, descodificadors, sumadors, comparadors, busos, etc. Aquest nivell d'abstracció és l'objecte d'estudi de l'assignatura **Introducció als computadors** (**IC**).
+- **Nivell de microarquitectura**: És la implementació específica de l'arquitectura del repertori d'instruccions, que és el nivell següent. Defineix com s'organitzen i s'interconnecten les unitats funcionals (com l'ALU, els busos o les memòries cau) i com es dissenya el camí de dades (*datapath*) per executar les instruccions. Dos processadors poden implementar el mateix repertori d'instruccions i comportar-se de manera idèntica per al programador, però tenir microarquitectures completament diferents (per exemple, Intel i AMD amb x86).
 - **Nivell de l'arquitectura del repertori d'instruccions** (**ISA**): És la **frontera** crítica entre el **maquinari** i el **programari**. Estableix, entre d'altres, el conjunt d'instruccions que la unitat central de processament (***Central Processing Unit***, **CPU**) és capaç d'executar, el model de memòria i els registres visibles per al programador. A **EC**, la **ISA** de referència és **RISC-V** (vegeu @imp-llenguatges-de-referencia).
-- **Nivell de microarquitectura**: És la implementació específica d'una **ISA**. Defineix com s'organitzen i s'interconnecten les unitats funcionals (com l'ALU, els busos o les memòries cau) i com es dissenya el camí de dades (*datapath*) per executar les instruccions. Dos processadors poden implementar la mateixa ISA i comportar-se de manera idèntica per al programador, però tenir microarquitectures completament diferents (per exemple, Intel i AMD amb x86).
 - **Nivell de sistema (baix nivell)**: És l'àmbit d'estudi principal d'**Estructura de computadors** (**EC**). Aquí el programari té un control directe sobre els recursos definits per l'ISA. Dins d'aquest nivell trobem:
     - **Llenguatge màquina**: Instruccions codificades en binari que la unitat de control del processador interpreta i executa.
     - **Llenguatge d'assemblador**: Una representació simbòlica del llenguatge màquina que utilitza **mnemònics**. Un programa anomenat **assemblador** s'encarrega de fer la **traducció directa** a codi **binari**.
@@ -105,7 +105,7 @@ Des del punt de vista del programador, les interfícies actuen com a **normes de
 #### Les interfícies en la «Visió del Processador» (Execució) {#sec-interficies-execucio}
 És al processador on les interfícies esdevenen el **protocol de funcionament real**:
 
-- **L'ABI en execució**: Quan el programa fa un `ecall`, el processador s'atura i «mira» el registre `a7`. El simulador (o l'SO) interpreta aquest número basant-se en l'**ABI**. Si l'ABI diu que el codi `1` és «imprimir», el sistema imprimeix. L'ABI és el que permet que el binari i l'entorn es basin en la mateixa «llengua» mentre el programa s'executa.
+- **L'ABI en execució**: Quan el programa executa `ecall`, el processador cedeix el control a l'entorn d'execució (l'SO o, a EC, el simulador), que llegeix el codi de servei del registre `a7` i l'interpreta segons la convenció de crides al sistema de l'**ABI**. Si la convenció diu que el codi `1` és «imprimir un enter» (és el cas de RARS), el sistema l'imprimeix. L'ABI és el que permet que el binari i l'entorn es basin en la mateixa «llengua» mentre el programa s'executa.
 - **L'ISA en execució**: És el moment de la veritat. La unitat de control del processador llegeix els bits del binari. Si aquests bits no coincideixen amb l'**ISA** del maquinari, el processador no sabrà quines portes lògiques obrir i el sistema fallarà (instrucció il·legal).
 
 La @tbl-impacte-canvi-interficies resumeix l'impacte que tenen els canvis a nivell de cada una de les interfícies.
@@ -155,7 +155,7 @@ La depuració s'ha de fer en l'entorn del target, el qual pot ser:
 
 - **Amb simulador**: Un programa (el simulador) en un PC recrea per programari el comportament dels registres i la memòria de la CPU de destí i fa visible els efectes sobre els components del maquinari simulat a través d'interfícies gràfiques. És el cas del **RARS**, el **simulador d'EC**.
 
-- **Amb target real**: El binari s'envia des del host a través d'una placa de desenvolupament (*debugger*) al xip real (el target). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LEDs, sensors, motors).
+- **Amb target real**: El binari s'envia des del host al xip real (el target) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LEDs, sensors, motors).
 
 ### El llenguatge C: El pont de l'abstracció {#sec-el-llenguatge-c}
 
@@ -215,7 +215,7 @@ En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir q
 
 Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un PC), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i Flash), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (com GPIO, UART o ADC).
 
-El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en la **ISA RISC-V**. El programador pot triar quina arquitectura utilitzar en temps de compilació.
+El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en la **ISA RISC-V**. El programador tria l'arquitectura en compilar el programa, i la ROM d'arrencada activa els nuclis que corresponen a la imatge que hi troba.
 
 La **[Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)** és una placa de desenvolupament basada en el xip **RP2350**. Com a plataforma d'experimentació exposa els pins del microcontrolador per connectar-hi sensors, actuadors i depuradors.
 
@@ -330,7 +330,7 @@ printf("%d", n);
 
 ### Llenguatges interpretats {#sec-llenguatges-interpretats}
 
-Mentre que C es **compila** (es tradueix tot el codi font abans d'executar-lo), altres llenguatges com Python s'**interpreten**: un programa anomenat **intèrpret** llegeix el codi font i el tradueix a instruccions de la ISA *mentre* el programa s'executa.
+Mentre que C es **compila** (es tradueix tot el codi font abans d'executar-lo), altres llenguatges com Python s'**interpreten**: un programa anomenat **intèrpret** llegeix el codi font (o una forma intermèdia, com el *bytecode* de Python) i l'executa directament, sentència a sentència, sense generar cap binari per a l'ISA.
 
 **Els llenguatges interpretats no són apropiats per EC** perquè, en general, fan molt més opacs els detalls d'arquitectura, que és precisament l'àmbit d'interès de l'assignatura.
 
@@ -476,9 +476,9 @@ La notació hexadecimal és només una manera d'**escriure** un patró de bits d
 
 ## Codificació de nombres enters en base 2 {#sec-codificacio-enters}
 
-Un nombre enter $x_s$ de $n$ bits es representa com una cadena de bits $X = X_{n-1} \ldots X_1 X_0$, on el bit de més pes $X_{n-1}$ indica el signe: $0$ si positiu, $1$ si negatiu.
+Un nombre enter $x_s$ de $n$ bits es representa com una cadena de bits $X = X_{n-1} \ldots X_1 X_0$, on, en Ca2, en Ca1 i en signe i magnitud, el bit de més pes $X_{n-1}$ indica el signe: $0$ si no és negatiu i $1$ si ho és.
 
-Els enters positius es codifiquen igual que els naturals equivalents.
+En aquestes tres codificacions, els enters no negatius es codifiquen igual que els naturals equivalents. La codificació en excés (@sec-enters-en-exces) segueix una altra regla.
 
 ### Enters en complement a 2 (Ca2) {#sec-enters-en-ca2}
 
@@ -743,14 +743,14 @@ Els mateixos exemples amb la fila de **préstec** (*borrow*) explícita:
               0 1 1 0 1 1 1 1   (+111 en Ca2, no −145)
 ```
 
-El minuend és negatiu i el subtrahend positiu (signes contraris), però el resultat surt amb signe **contrari al del subtrahend** (positiu, en lloc del negatiu que li tocaria si el minuend fos prou petit): **sobreeiximent**.
+El minuend és negatiu i el subtrahend positiu (signes contraris), però el resultat surt amb signe **contrari al del minuend** (positiu, quan el resultat exacte, −145, és negatiu): **sobreeiximent**.
 :::
 
 
 
 ### Multiplicació en Ca2 {#sec-multiplicacio-ca2}
 
-La multiplicació en Ca2 **no** pot aplicar directament l'algorisme dels naturals, perquè la codificació del signe interfereix amb el producte bit a bit. El mètode pràctic és:
+Per obtenir el producte complet de $2n$ bits, la multiplicació en Ca2 **no** pot aplicar directament l'algorisme dels naturals, perquè la codificació del signe interfereix amb els bits de més pes del producte (els $n$ bits de menys pes, en canvi, coincideixen: @wrn-mul-modul-2n). El mètode pràctic és:
 
 1. Determinar el **signe del resultat**: el producte de dos nombres del mateix signe és positiu; de signes contraris, negatiu.
 2. Obtenir les **magnituds** (valor absolut de cada operand).

@@ -281,7 +281,7 @@ Recta de la coma flotant IEEE 754 (precisió simple): $\pm\infty$ i NaN als extr
 
 ### Error de representació i subdesbordament {#sec-error-representacio}
 
-El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut** de representació es defineix com $\varepsilon = |v - v_0|$ i l'**error relatiu** com $\eta = \varepsilon\,/\,|v|$.
+El resultat exacte $v$ d'una operació pot no ser representable amb un nombre finit de bits de fracció. En aquest cas cal aproximar-lo per un dels dos valors representables més pròxims $v_0 < v < v_1$. L'**error absolut** de representació es defineix com $\varepsilon = |v - \tilde{v}|$, on $\tilde{v} \in \{v_0, v_1\}$ és el valor que tria l'arrodoniment, i l'**error relatiu**, com $\eta = \varepsilon\,/\,|v|$.
 
 Per a un nombre normalitzat qualsevol de la forma $v_0 = m \times 2^e$, el valor representable següent és $v_1 = (m + 2^{-23}) \times 2^e$, de manera que l'error absolut màxim és:
 
@@ -396,13 +396,13 @@ Zoom al voltant del zero: $\pm 0$ i els denormals ($E=0$) omplen el buit entre e
 
 #### Infinit {#sec-codificacio-infinit}
 
-L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expressió $1\,/\,(1 + 100/x)$ per a valors de $x$ pròxims a zero resulta que, sense infinit, el càlcul $100/x$ produiria una excepció de sobreeiximent que avortaria el programa, tot i que el resultat final de l'expressió convergeix a zero. Amb infinit, la seqüència d'operacions és $100/x = \pm\infty$, $1 + \infty = \infty$, $1/\infty = 0$, i el programa continua sense excepcions.
+L'infinit s'incorpora a l'aritmètica per raons pràctiques. Considerant l'expressió $1\,/\,(1 + 100/x)$ per a valors de $x$ pròxims a zero resulta que, sense infinit, el càlcul $100/x$ produiria una excepció de sobreeiximent que avortaria el programa, tot i que el resultat final de l'expressió convergeix a zero. Amb infinit, la seqüència d'operacions és $100/x = \pm\infty$, $1 + \infty = \infty$, $1/\infty = 0$, i el programa continua sense avortar: l'excepció de sobreeiximent només activa el seu indicador (@nte-fcsr).
 
 L'infinit es codifica amb tots els bits d'exponent a 1 i tots els de fracció a zero. S'apliquen regles aritmètiques senzilles: $1/0 = \infty$, $1/\infty = 0$, $x + \infty = \infty$, etc.
 
 #### NaN {#sec-codificacio-nan}
 
-Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN** (***Not a Number***), i l'execució continua. Qualsevol operació posterior amb un operand NaN produeix un altre NaN, de manera que l'error es propaga fins al resultat final, on el programa pot fer un únic test.
+Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN** (***Not a Number***), i l'execució continua. Qualsevol operació aritmètica posterior amb un operand NaN produeix un altre NaN (les comparacions, en canvi, retornen 0: @nte-instruccions-comparacio-f), de manera que l'error es propaga fins al resultat final, on el programa pot fer un únic test.
 
 Un NaN es codifica amb tots els bits d'exponent a 1 i almenys un bit de fracció no nul (per distingir-lo de l'infinit). El valor concret de la fracció no està fixat per l'estàndard.
 
@@ -835,7 +835,7 @@ sub:
 
 ### Instruccions {#sec-instruccions-rvf}
 
-Totes les instruccions de coma flotant de precisió simple porten el sufix **`.s`**. Tots els operands han de ser en registres de coma flotant, sense cap excepció. **No hi ha operands immediats flotants** ni instruccions que combinin registres enters i flotants en una mateixa operació aritmètica. Les instruccions de lectura i escriptura usen un registre enter com a base d'adreça.
+Les instruccions aritmètiques, de comparació i de conversió de precisió simple porten el sufix **`.s`** (`fadd.s`, `flt.s`, `fcvt.w.s`); les de lectura i escriptura (`flw`, `fsw`) i les de moviment de bits (`fmv.x.w`, `fmv.w.x`) porten la lletra de la mida, com les enteres. Els operands de les instruccions **aritmètiques** són tots registres de coma flotant: **no hi ha operands immediats flotants** ni instruccions aritmètiques que combinin registres enters i flotants. Els registres enters només hi apareixen com a base d'adreça (`flw`, `fsw`), com a destí de les comparacions i com a origen o destí de les conversions i dels moviments.
 
 ::: {#nte-instruccions-flw-fsw .callout-note}
 ## RV32F ISA — Lectura i escriptura

@@ -26,7 +26,7 @@ La RAM es pot implementar com a memòria estàtica (**SRAM**) o dinàmica (**DRA
 
 ### El problema de la diferència (*gap*) entre processador i memòria {#sec-gap-memoria}
 
-Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidament que la velocitat de la memòria principal. La @fig-gap-processador-memoria il·lustra aquesta divergència entre 1980 i 2010: mentre el rendiment dels processadors creixia a un ritme d'entre el 35% i el 55% anual, la latència de la DRAM millorava menys d'un 7% anual. El resultat és que el temps d'accés a la memòria principal pot arribar a ser de 200 a 400 cicles de CPU, és a dir, centenars de vegades superior al temps que tarda la resta d'operacions d'una instrucció (descodificació, lectura de registres, ALU, etc.). Aquesta diferència s'anomena ***gap*** entre processador i memòria.
+Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidament que la velocitat de la memòria principal. La @fig-gap-processador-memoria il·lustra aquesta divergència entre 1980 i 2010: mentre el rendiment dels processadors creixia a un ritme d'entre el 35% i el 55% anual fins al 2000, i molt més lentament a partir del 2003–2005 (@sec-fi-escalat-dennard), la latència de la DRAM millorava menys d'un 7% anual. El resultat és que el temps d'accés a la memòria principal pot arribar a ser de 200 a 400 cicles de CPU, és a dir, centenars de vegades superior al temps que tarda la resta d'operacions d'una instrucció (descodificació, lectura de registres, ALU, etc.). Aquesta diferència s'anomena ***gap*** entre processador i memòria.
 
 ::: {#fig-gap-processador-memoria}
 ::: {.content-visible when-format="html"}
@@ -40,7 +40,7 @@ Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidam
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A7_gap_processador_memoria__original_light.svg)
 :::
-Evolució del rendiment relatiu de processadors i memòria DRAM entre 1980 i 2010 (escala logarítmica). El creixement anual dels processadors (35–55%) supera àmpliament el de la latència de la DRAM (<7%), cosa que genera un *gap* de fins a dos ordres de magnitud.
+Evolució del rendiment relatiu de processadors i memòria DRAM entre 1980 i 2010 (escala logarítmica). El creixement anual dels processadors (35–55% fins al 2000, molt més lent des del 2003–2005) supera àmpliament el de la latència de la DRAM (<7%), cosa que genera un *gap* de més de tres ordres de magnitud.
 :::
 
 Per veure l'impacte d'aquest *gap* en el rendiment, apliquem la llei d'Amdahl (@sec-amdahl). Si $t_{acc}$ és el temps d'accés a la memòria principal i $t_{proc}$ el temps de la resta d'operacions d'una instrucció, el **CPI** és proporcional a $t_{proc} + t_{acc}$. Suposant $t_{acc} = 200 \cdot t_{proc}$, la fracció del temps d'execució que correspon al processament de la instrucció (sense l'accés a memòria) és:
@@ -71,9 +71,9 @@ Malgrat tot, el *gap* entre processador i memòria no ha desaparegut: la latènc
 
 Si teniu una targeta gràfica per a jocs —o heu llegit sobre els acceleradors que entrenen models d'intel·ligència artificial com els que hi ha darrere de ChatGPT— potser us heu preguntat com funciona la seva memòria. La resposta és fascinant, i il·lustra fins on arriba el *gap* quan s'escalen les demandes.
 
-Una GPU moderna per a jocs (per exemple, una NVIDIA RTX 4090) integra milers de nuclis de càlcul dissenyats per executar moltíssimes operacions en paral·lel. Per alimentar tots aquests nuclis, necessita una amplada de banda de memòria enorme: mentre que un processador convencional accedeix a la DRAM amb una amplada de banda de l'ordre de desenes de GB/s, una GPU d'alt rendiment en necessita centenars. Per aconseguir-ho s'usa memòria **GDDR6** o **GDDR6X** o, en els acceleradors d'IA professionals, **HBM** (*High Bandwidth Memory*), una tecnologia que apila múltiples capes de DRAM directament sobre el xip i les interconnecta amb milers de fils paral·lels.
+Una GPU moderna per a jocs (per exemple, una NVIDIA RTX 4090) integra milers de nuclis de càlcul dissenyats per executar moltíssimes operacions en paral·lel. Per alimentar tots aquests nuclis, necessita una amplada de banda de memòria enorme: mentre que un processador convencional accedeix a la DRAM amb una amplada de banda de l'ordre de desenes de GB/s, una GPU d'alt rendiment en necessita centenars. Per aconseguir-ho s'usa memòria **GDDR6** o **GDDR6X** o, en els acceleradors d'IA professionals, **HBM** (*High Bandwidth Memory*), una tecnologia que apila diverses capes de DRAM l'una sobre l'altra, en una pila que es col·loca al costat del xip de càlcul, dins del mateix encapsulat, i s'hi connecta amb un bus de milers de fils.
 
-La latència, però, segueix sent el problema de sempre: la GDDR6 i l'HBM augmenten enormement l'**amplada de banda** gràcies a la proximitat física i als busos amples, però la latència d'accés roman comparable a la de la DRAM convencional. Per això les GPUs modernes també incorporen **jerarquies de memòria cau** pròpies: cada grup de nuclis (*streaming multiprocessor* a NVIDIA, *compute unit* a AMD) té la seva pròpia L1, i tots comparteixen una L2 de desenes de MiB.
+La latència, però, segueix sent el problema de sempre: la GDDR6 augmenta l'**amplada de banda** amb una velocitat molt alta per fil, i l'HBM, amb la proximitat física i un bus molt ample, però la latència d'accés roman comparable a la de la DRAM convencional. Per això les GPUs modernes també incorporen **jerarquies de memòria cau** pròpies: cada grup de nuclis (*streaming multiprocessor* a NVIDIA, *compute unit* a AMD) té la seva pròpia L1, i tots comparteixen una L2 de desenes de MiB.
 
 Els acceleradors d'IA porten aquesta lògica a l'extrem. En entrenar una xarxa neuronal, s'han de moure quantitats ingents de dades (pesos del model, activacions, gradients) entre la memòria i els nuclis de càlcul milers de vegades per segon. El coll d'ampolla no sol ser la velocitat de càlcul sinó precisament l'**amplada de banda de memòria**: és el que determina quants paràmetres del model es poden processar per segon. Això ha portat a dissenyar xips com el H100 de NVIDIA amb fins a 80 GiB d'HBM3 i una amplada de banda de 3,35 TB/s, un valor que hauria semblat de ciència-ficció fa una dècada.
 
@@ -450,7 +450,7 @@ L'objectiu de qualsevol política de reemplaçament és minimitzar la taxa de fa
 
 La implementació de LRU és senzilla per a 2 vies (un sol bit per conjunt n'és suficient), però es complica per a 4 o més vies. En la pràctica, per a 4 vies s'usa un **pseudo-LRU**: les vies s'agrupen en dues parelles, i tres bits per conjunt aproximen l'ordre d'ús (un bit indica quina parella ha estat accedida menys recentment, i un bit per parella, quina via dins de cadascuna).
 
-**Aleatori** (***Random***): Selecciona la via víctima a l'atzar, normalment mitjançant un mecanisme de maquinari senzill (per exemple, un comptador cíclic). No és tan eficient com LRU, però la seva implementació és molt simple i la seva taxa de fallades s'aproxima a la de LRU quan el grau d'associativitat és alt. És una alternativa atractiva en aquests casos.
+**Aleatori** (***Random***): Selecciona la via víctima a l'atzar, normalment mitjançant un mecanisme de maquinari senzill. No és tan eficient com LRU, però la seva implementació és molt simple i la seva taxa de fallades s'aproxima a la de LRU quan la memòria cau és gran. És una alternativa atractiva en aquests casos.
 
 **FIFO** (***First In, First Out***): Reemplaça el bloc que fa més temps que va ingressar al conjunt. No s'ha de confondre amb LRU: FIFO considera quan va entrar el bloc, independentment de si s'ha accedit des d'aleshores. És menys eficient que LRU perquè un bloc que s'ha accedit recentment pot ser expulsat si va entrar fa molt de temps.
 
@@ -536,7 +536,7 @@ Combinant una política d'encert amb una política de fallada s'obté la **polí
 | **Escriptura retardada** | ✓ | — |
 : Combinacions habituals de política d'escriptura {#tbl-politiques-escriptura style="width: 55%; margin: auto;" .striped}
 
-L'escriptura retardada sense assignació és poc habitual: si no es copia el bloc a la MC en la fallada d'escriptura, el bit $D$ no té cap efecte útil. En aquest curs s'estudien les tres combinacions marcades:
+L'escriptura retardada sense assignació és poc habitual: les escriptures a un bloc que no és a la MC anirien totes a la memòria principal, una per una, i es perdria precisament el que aporta l'escriptura retardada, que és agrupar-les en una sola còpia del bloc. En aquest curs s'estudien les tres combinacions marcades:
 
 1. **Escriptura immediata amb assignació**
 2. **Escriptura immediata sense assignació**
@@ -960,7 +960,7 @@ El vector `V` ocupa 8 blocs de 2 words cadascun. La memòria cau, amb 4 línies,
 - **Primer bucle**: els blocs de `V[0]`–`V[7]` entren a la memòria cau amb fallades obligatòries. Quan s'accedeix a `V[8]`–`V[15]`, la memòria cau és plena i els blocs de la primera meitat s'expulsen (LRU).
 - **Segon bucle**: quan es torna a accedir a `V[0]`–`V[7]`, els blocs ja no hi són. Fallen de nou: són **fallades de capacitat**.
 
-Augmentar l'associativitat no resoldria res: les fallades es produeixen perquè el working set (8 blocs) supera la capacitat de la memòria cau (4 línies), no per cap conflicte d'índex. L'única solució seria una memòria cau de 8 o més línies.
+Augmentar l'associativitat no resoldria res: les fallades es produeixen perquè el working set (8 blocs) supera la capacitat de la memòria cau (4 línies), no per cap conflicte d'índex. Sense canviar el programa, l'única solució és augmentar la capacitat de la memòria cau fins a 64 bytes o més (per exemple, 8 línies de 8 bytes).
 
 ::: {#fig-capacitat-exemple}
 ::::: {.content-visible when-format="html"}
@@ -1020,13 +1020,13 @@ Tenir dos nivells permet orientar el disseny de cadascun a un objectiu diferent:
 
 **L1** s'optimitza per minimitzar $t_{h_{L1}}$, ja que qualsevol cicle afegit aquí incrementa $\text{CPI}_{ideal}$ i afecta totes les instruccions. Per aconseguir-ho:
 
-- **Associativitat baixa** (1 o 2 vies): menys comparadors, accés més ràpid.
+- **Associativitat més baixa** que la de L2: menys comparadors, accés més ràpid.
 - **Blocs petits**: menys dades a transferir i multiplexors més simples.
 - **Capacitat moderada**: augmentar la capacitat incrementa el temps d'accés.
 
 **L2** s'optimitza per minimitzar $m_{L2}$, ja que una fallada a L2 accedeix a la memòria principal i paga la penalització completa. Com que $t_{h_{L2}}$ ja no afecta $\text{CPI}_{ideal}$, es pot sacrificar lleugerament a canvi d'una taxa de fallades menor:
 
-- **Associativitat alta** (4, 8 o més vies): redueix les fallades de
+- **Associativitat més alta** que la de L1: redueix les fallades de
   conflicte.
 - **Blocs grans**: explota millor la localitat espacial.
 - **Molta capacitat**: redueix les fallades de capacitat.
@@ -1037,7 +1037,7 @@ Tenir dos nivells permet orientar el disseny de cadascun a un objectiu diferent:
 | | L1 | L2 |
 | :--- | :---: | :---: |
 | **Objectiu** | Minimitzar $t_{h_{L1}}$ | Minimitzar $m_{L2}$ |
-| **Associativitat** | Baixa (1–2 vies) | Alta (4–8 vies) |
+| **Associativitat** | Més baixa | Més alta |
 | **Mida de bloc** | Petita | Gran |
 | **Capacitat** | Moderada (32–64 KiB) | Gran (256 KiB–diversos MiB) |
 : {#tbl-disseny-l1-l2 tbl-colwidths="[30,35,35]" .striped}

@@ -14,7 +14,7 @@ A **EC**, les traduccions de C a assemblador han de ser **el més literals possi
 
 Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions especificat als **5 bits** de menys pes del **registre** `rs2`, omplint les posicions vacants amb **`0`s**. Les variants `slli` i `srli` fan la mateixa operació però el nombre de posicions es codifica directament com un **immediat** de **5 bits** (`shamt`, *shift amount*)[^shamt]. En tots els casos, el nombre de posicions s'interpreta com un natural.
 
-[^shamt]: La resta de bits de l'immediat de 12 bits s'ignoren.
+[^shamt]: Els 7 bits de més pes de l'immediat de 12 bits (`imm[11:5]`) no formen part del nombre de posicions: fan de `funct7` i distingeixen `srli` (`0000000`) de `srai` (`0100000`).
 
 ::: {#nte-instruccions-desplacament-logic .callout-note}
 ## RV32I ISA — Instruccions de desplaçament lògic
@@ -49,7 +49,7 @@ Donada la representació en Ca2 d'un enter $x_s$, guardada a `t2`,
 
 **Solució**:
 
-Les dues fórmules que relacionen el valor explícit $x_u$ amb l'enter representat $x_s$ (@sec-codificacio-enters) són:
+Si $x_u$ i $x_u'$ són els valors de les representacions en Ca2 i en Ca1 llegides com a naturals, les fórmules que les relacionen amb l'enter representat $x_s$ són (la de Ca2 és la de @cau-ca2-drecera-natural; la de Ca1 se'n dedueix de la mateixa manera, amb $2^n - 1$ en lloc de $2^n$):
 
 - **Ca2**: $x_s = x_u - X_{n-1} \cdot 2^n$
 - **Ca1**: $x_s = x_u' - X_{n-1} \cdot (2^n - 1)$
@@ -237,7 +237,7 @@ Complement dels bits parells de `t0`:
 
 ## Comparacions i operacions booleanes {#sec-comparacions-i-operacions-booleanes}
 
-En **C**, les expressions enteres admeten els **operadors de comparació** `==`, `!=`, `<`, `<=`, `>`, `>=`. A diferència d'altres llenguatges, en C **no existeix el tipus booleà**: el resultat d'una comparació és l'enter `1` si la comparació és certa, o altrament és un `0`. Les **comparacions** seran **amb signe o sense signe** segons el tipus declarat dels operands.
+En **C**, les expressions enteres admeten els **operadors de comparació** `==`, `!=`, `<`, `<=`, `>`, `>=`. En C, el resultat d'una comparació **no és d'un tipus booleà**, sinó un `int`: l'enter `1` si la comparació és certa, o altrament un `0` (el tipus `_Bool` de C99 no canvia aquesta regla). Les **comparacions** seran **amb signe o sense signe** segons el tipus declarat dels operands.
 
 En **C** existeixen també els **operadors booleans** `&&`, `||`, `!`. Cada operand s'interpreta com a **fals** si val `0`, o com a **cert** si val **diferent de `0`**. El resultat és també un enter **normalitzat**: `1` si cert, `0` si fals.
 
@@ -518,7 +518,7 @@ La instrucció `jal` és de format **Tipus-J** (@nte-format-j), variant del form
 ![](/auto_figs/A3_instruccio_tipus_J__registre_light.svg)
 :::
 
-Com en el format B, els bits de l'immediat estan reordenats (`imm[20|10:1|11|19:12]` a [31:12]) per mantenir `rd` en la mateixa posició que en els formats R, I i U, cosa que simplifica la descodificació al maquinari.
+Com en el format B, els bits de l'immediat estan reordenats (`imm[20|10:1|11|19:12]` a [31:12]) perquè cada bit coincideixi tant com sigui possible amb la posició que ocupa als altres formats —el de signe, sempre al bit 31—, cosa que simplifica el maquinari que reconstrueix l'immediat. `rd` queda a la mateixa posició que en els formats R, I i U perquè l'immediat ocupa, com al format U, els bits [31:12].
 ::::
 
 ::: {#nte-instruccions-salt-incondicional-relatiu-jal .callout-note}
@@ -572,7 +572,7 @@ La pseudoinstrucció `la` carrega l'adreça de 32 bits d'una etiqueta en un regi
 :::
 
 ::: {#imp-ec-rol-salts .callout-important}
-A **EC**, els salts tenen rols ben diferenciats: els salts **relatius al PC** (`jal`, `j`) s'usen per implementar estructures de control de flux local (`if-then-else`, bucles), mentre que els salts **indirectes** (`jalr`, `jr`, `ret`) s'usen quan la destinació està en un registre, com en retorns de subrutina, vectors de salts o salts a adreces carregades explícitament.
+A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'usen per implementar el control de flux local (`if-then-else`, bucles); `jal` (amb `rd = ra`), per cridar subrutines; i els salts **indirectes** (`jalr`, `jr`, `ret`), quan la destinació està en un registre, com en retorns de subrutina, vectors de salts o salts a adreces carregades explícitament.
 :::
 
 ::: {#cau-salts-incondicionals .callout-caution}
@@ -874,7 +874,7 @@ bucle:
 És el mateix patró que deixa l'avaluació de la condició al final d'un `while` (@tip-optimitzacio-bucle-2-avaluacio-condicio-final), sense la comprovació d'entrada.
 
 ::: {#tip-traduccio-do-while .callout-tip}
-## `do-while`: validació d'un valor dins d'un rang
+## `do-while`: cerca del primer element no negatiu
 
 ```{.c filename="C"}
 int n;
@@ -986,7 +986,7 @@ Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el
 
 Les dades (instruccions i variables) d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
 
-A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants simbòliques** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` per a les instruccions del programa en assemblador i `.data` per a les variables globals i constants simbòliques, als quals s'escriu en temps de compilació mitjançant les directives de segment (@nte-segments-memoria).
+A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants globals** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` per a les instruccions del programa en assemblador i `.data` per a les variables i les constants globals, als quals s'escriu en temps de compilació mitjançant les directives de segment (@nte-segments-memoria).
 
 A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap***. La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el heap s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fa explícitament per part del programador (mitjançant `malloc()` i `free()`).
 
@@ -1085,7 +1085,7 @@ on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `a
 - `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
 - `addi x5, x5, 0` → `x5 = 0x10010000` ✓
 
-La raó d'usar `auipc` en lloc de `lui` és que en un fitxer objecte *reubicable* les adreces absolutes no es coneixen fins que l'enllaçador combina tots els mòduls. Amb adreces relatives al PC, el codi és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació (vegeu @sec-compilacio).
+La raó d'usar `auipc` en lloc de `lui` és que, amb adreces relatives al PC, el codi enllaçat és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada no canvia on sigui que es carregui el programa en memòria. L'enllaçador l'ha de calcular igualment, com l'adreça absoluta de `lui` (vegeu @sec-compilacio).
 :::
 
 ## Subrutines {#sec-subrutines}
@@ -1203,7 +1203,7 @@ Cal distingir el **mecanisme físic** de pas del paràmetre (com es transmet la 
 | :--- | :--- | :--- |
 | Registre (`a0`–`a7`) | Valor | Paràmetre escalar (`int`, `char`) |
 | Registre (`a0`–`a7`) | Referència | Paràmetre punter (`int *`) |
-| Pila | Valor | Escalar que no cap en registre |
+| Pila | Valor | Paràmetre escalar quan `a0`–`a7` ja són ocupats |
 
 En **C**, el mecanisme és sempre per registre o pila, però la **semàntica** depèn del tipus: un **escalar** és pas per **valor**, un **punter** és pas per **referència**.
 :::
@@ -1292,6 +1292,8 @@ funcB:
         add     a0, a0, a2      # @vec[i] = vec + desplaçament
         lh      a0, 0(a0)       # vec[i] (amb ext. de signe)
         sub     a0, a0, a1      # resultat = vec[i] - n
+        slli    a0, a0, 16      # retorn: short, amb extensió
+        srai    a0, a0, 16      #   de signe
         ret
 ...
 ```
@@ -1490,7 +1492,7 @@ La pila del programa és, doncs, una successió de blocs d'activació que creix 
 
 ::: {#nte-rars-fons-pila .callout-note}
 ## RARS — Fons de pila
-A RARS, la regió de pila arriba fins a `0x7FFFFFFC`, però l'entorn reserva l'espai per sobre d'aquesta adreça: el **fons de pila**, és a dir, el valor inicial d'`sp`, és `0x7FFFEFFC`.
+A RARS, la regió de pila arriba fins a `0x7FFFFFFC`, però l'entorn reserva els 4 KiB que hi ha entre `0x7FFFEFFC` i aquesta adreça: el **fons de pila**, és a dir, el valor inicial d'`sp`, és `0x7FFFEFFC`.
 :::
 
 ::: {#tip-exemple-pila-multinivell .callout-tip}
@@ -1822,7 +1824,9 @@ exemple:
         add     t1, t1, sp      # sp + (d+c)
         lb      t3, 22(t1)      # w[d+c]
 
-        add     a0, t2, t3      # resultat → a0
+        add     a0, t2, t3      # v[e+q] + w[d+c]
+        slli    a0, a0, 24      # retorn: char, amb extensió
+        srai    a0, a0, 24      #   de signe
 
         # epíleg
         lw      s0, 44(sp)
@@ -1897,7 +1901,7 @@ No és una peculiaritat de l'assignatura, sinó la diferència entre un entorn *
 
 El **compilador** pren com a entrada el codi font en C i el tradueix a llenguatge assemblador (fitxer `.s`). Durant aquest procés aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable, i genera les instruccions de la **ISA** de destí.
 
-El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen totes les que fan referència al mòdul mateix, i les que no es poden resoldre (perquè referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combini tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'enllaçarà.
+El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen les que no depenen d'on es col·locarà el mòdul (els salts relatius al PC dins del mateix mòdul), i la resta (les adreces absolutes i les que referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combini tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'enllaçarà.
 
 ### Assemblatge {#sec-assemblatge}
 
