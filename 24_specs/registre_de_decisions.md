@@ -538,6 +538,8 @@ El cas: `980434b` (2026-09-25) va afegir un conflicte a `.gitignore` amb `temes4
 
 Amb altres professors ja dins de la revisió, qualsevol canvi transversal té un cost de coordinació molt més alt. Per a T3, T4, T5, T6 i T8 això ja havia passat el 2026-10-01 (la revisió externa hi era en curs), i des del 2026-10-06 l'abast declarat és A1–A8 sencer.
 
+**Suspesa fins al 2026-10-09 a la tarda** (declaració de l'usuari, 2026-10-08, literal: «fins demà a la tarda pots fer canvis a tots els fitxers. Els revisors externs ja s'adaptaran a aquests canvis.»). Ho va dir en respondre la proposta de Claude Code de revisar A1–A8 només amb informes, sense canvis. Durant la finestra s'apliquen a A1–A8 els canvis transversals pendents, sense coordinar-los abans; la comprovació de les branques (`git ls-remote`, fusió de prova) continua.
+
 ## Historial de l'estat del projecte
 
 Fins al 2026-10-07 era a `CLAUDE.md §Revisió interna`, §Estat dels materials i §Pla de treball. Les declaracions de l'usuari es conserven literals; el detall de cada tancament de tema és a `TODO.md §Entrades retirades`.

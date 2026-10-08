@@ -957,7 +957,7 @@ truncar:
         ret
 ```
 
-Si s'escriu `fcvt.w.s a0, fa0` (sense operand de mode) l'assemblador hi assigna `dyn` (mode dinàmic): la conversió s'arrodoneix segons el mode vigent al camp `frm` del `fcsr` (@nte-fcsr), que per defecte és RNE (al més pròxim, empat al parell). Per a $x = 2{,}5$, això dona resultats diferents:
+Si s'escriu `fcvt.w.s a0, fa0` (sense operand de mode) l'assemblador hi assigna `dyn` (mode dinàmic): la conversió s'arrodoneix segons el mode vigent al camp `frm` del `fcsr` (@nte-fcsr), que per defecte és RNE (al més pròxim, empat al parell). Per a $x = 2{,}5$, tots dos modes donen el mateix resultat, però per motius diferents: `rtz` trunca i RNE desempata al parell:
 
 | Instrucció | Mode | Resultat |
 | :--- | :--- | :---: |
@@ -965,6 +965,8 @@ Si s'escriu `fcvt.w.s a0, fa0` (sense operand de mode) l'assemblador hi assigna 
 | `fcvt.w.s a0, fa0` | `dyn` → RNE per defecte | $2$ (empat, al parell) |
 
 Per a $x = 3{,}5$, en canvi, la diferència és explícita: `rtz` dona $3$; `dyn`/RNE dona $4$ (empat, al parell). La instrucció `fcvt.w.s` trunca només quan se n'indica el mode `rtz`.
+
+RARS 1.6 no segueix l'especificació en el primer cas: amb RNE (el mode per defecte, o `rne` explícit), `fcvt.w.s` hi dona $3$ per a $2{,}5$ (i $-3$ per a $-2{,}5$), tot i que $0{,}5$ i $1{,}5$ sí que els desempata al parell ($0$ i $2$).
 :::
 
 ::: {#imp-no-immediats-flotants .callout-important}

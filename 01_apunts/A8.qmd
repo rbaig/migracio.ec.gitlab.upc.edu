@@ -229,7 +229,7 @@ Taula de pàgines de dos nivells (Sv32). Els 10 bits de més pes del VPN, VPN[1]
 
 En un sistema de 32 bits amb pàgines de 4 KiB, la taula de pàgines té $2^{20}$ entrades. Si cada entrada ocupa 4 bytes, la taula ocupa 4 MiB per procés, tots a la memòria principal. En sistemes de 64 bits el problema s'aguditza: amb adreces de 48 bits significatius i pàgines de 4 KiB, la taula tindria $2^{36}$ entrades, cosa inviable.
 
-La solució és estructurar la taula de pàgines en **múltiples nivells**. En una taula de dos nivells, els bits del VPN es divideixen en dues parts: els bits superiors indexen una **taula de primer nivell** (o directori de pàgines), on cada entrada apunta a una **taula de segon nivell**. Cada taula de segon nivell conté les PTEs d'un subconjunt de l'espai lògic.
+La solució és estructurar la taula de pàgines en **múltiples nivells**. En una taula de dos nivells, els bits del VPN es divideixen en dues parts: els bits superiors indexen una **taula de primer nivell** (o directori de pàgines), on cada entrada apunta a una **taula de segon nivell**. Cada taula de segon nivell conté les PTE d'un subconjunt de l'espai lògic.
 
 L'avantatge clau és que les taules de segon nivell només s'assignen per a les regions de l'espai lògic que el procés utilitza realment. Com que la majoria dels processos fan servir només una fracció petita dels $2^{32}$ o $2^{48}$ bytes d'espai lògic possible, la memòria ocupada per la taula de pàgines es redueix dràsticament. El nombre de nivells depèn de l'arquitectura i de la configuració del sistema: per exemple, a x86-64 Linux fa servir habitualment quatre nivells (cinc en els processadors que ho admeten), i a RISC-V de 64 bits, tres (Sv39), quatre (Sv48) o cinc (Sv57), segons el que admeti el processador i triï el nucli en arrencar.
 :::
@@ -420,7 +420,7 @@ Aquest mecanisme té diverses aplicacions pràctiques:
 Hi pot haver situacions en què un procés (per exemple, P1) vulgui permetre a un altre (per exemple, P2) accedir al seu espai d'adreçament. El sistema operatiu, a petició de P1, pot habilitar la compartició simplement escrivint una entrada a la taula de pàgines del procés P2 que assigni una pàgina lògica de P2 a la mateixa pàgina física que P1 vol compartir (@fig-mv-comparticio). A petició del procés P1, la pàgina compartida pot tenir permís d'escriptura o no per al procés P2: només cal que el sistema operatiu inicialitzi adequadament el bit E de la pàgina lògica de P2.
 
 ::: {#tip-mv-comparticio .callout-tip}
-## Exemple de compartició de pàgines
+## Compartició de pàgines
 
 El procés P1 vol compartir la seva pàgina VPN = `0x00000` (carregada al marc PPN = `0x02`) amb el procés P2 en mode escriptura. El sistema operatiu escriu una entrada a la taula de pàgines de P2 que assigna VPN = `0x00001` al mateix PPN = `0x02`, amb E = 1.
 
@@ -484,7 +484,7 @@ La solució més habitual als processadors actuals, per a la memòria cau de pri
 
 - L'**índex** de la memòria cau s'extreu dels bits del desplaçament de l'adreça lògica (els $t$ bits de menys pes, que coincideixen exactament amb els de l'adreça física, ja que el desplaçament no es tradueix).
 - Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.
-- Un cop acabats els dos accessos en paral·lel, es compara el PPN obtingut del TLB amb les etiquetes físiques llegides de la memòria cau per determinar si hi ha encert.
+- Un cop acabats els dos accessos en paral·lel, es compara l'etiqueta física de l'adreça —el PPN obtingut del TLB, més els bits del desplaçament de pàgina que l'índex i el desplaçament de bloc no fan servir, si n'hi ha— amb les etiquetes llegides de la memòria cau per determinar si hi ha encert.
 
 ::: {#fig-mv-vipt}
 ::: {.content-visible when-format="html"}
@@ -525,7 +525,7 @@ VIPT és l'esquema habitual als processadors actuals per a la memòria cau L1. L
 Aquesta secció recorre un exemple complet: una seqüència de cinc accessos a memòria en un sistema amb TLB, amb la traducció de cada adreça, les fallades de TLB i de pàgina, el reemplaçament i el bit D, seguint el flux de la @fig-mv-flux-traduccio.
 
 ::: {#tip-mv-tlb-exemple .callout-tip}
-## Exemple de traducció amb TLB
+## Traducció amb TLB
 
 Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB ($t = 12$), una memòria física de 16 KiB (4 marcs de pàgina, adreces físiques de 14 bits) i un TLB de 4 entrades amb reemplaçament LRU, tant per al TLB com per a les pàgines. L'estat inicial és:
 

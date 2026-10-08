@@ -225,7 +225,7 @@ Cal notar que índex + desplaçament de bloc $= 6 + 5 = 11$ bits, tots dins dels
 1. La CPU genera l'adreça lògica. **En paral·lel**: els bits d'índex (b10–b5, part del desplaçament) seleccionen la línia de la cau, i el VPN (b31–b12) s'envia al TLB.
 2. El TLB troba el VPN (encert) i retorna el PPN.
 3. La cau llegeix l'etiqueta i les dades de la línia indexada.
-4. Es compara el PPN (etiqueta física) amb l'etiqueta llegida de la cau → coincideixen → **encert de cau**.
+4. Es compara l'etiqueta física —el PPN i el bit b11, que és del desplaçament de pàgina i no canvia en traduir l'adreça— amb l'etiqueta llegida de la cau → coincideixen → **encert de cau**.
 5. Es lliura la dada (el desplaçament de bloc, b4–b0, selecciona el byte/paraula).
 
 Com que la traducció i la indexació es fan alhora, el temps d'accés és pràcticament el d'accedir a la cau.
@@ -234,7 +234,7 @@ Com que la traducció i la indexació es fan alhora, el temps d'accés és pràc
 
 1. El VPN no és al TLB → **fallada de TLB**. Es llegeix la PTE de la taula de pàgines a memòria (adreça del registre de taula de pàgines + VPN × 4, la mida d'una PTE).
 2. La PTE té $V = 1$ (pàgina present) → **no hi ha fallada de pàgina**. La MMU copia la PTE al TLB (entrada lliure o reemplaçament LRU), sense interrompre el programa.
-3. La traducció continua amb el PPN de la PTE: es compara amb l'etiqueta de la cau → encert de cau → dada.
+3. La traducció continua amb el PPN de la PTE: l'etiqueta física (el PPN i b11) es compara amb la de la cau → encert de cau → dada.
 
 El cost addicional respecte de b) és **un accés a memòria** per llegir la PTE (amb la taula de pàgines plana del tema; amb una taula multinivell, un per nivell).
 
