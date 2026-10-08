@@ -110,3 +110,33 @@
     \ec@centra{\IfBooleanTF{#1}{\ec@includegraphics*[#2]{#3}}{\ec@includegraphics[#2]{#3}}}}%
 }
 \makeatother
+
+% Blocs de codi amb filename, que Quarto escriu com a codelisting: un flotant amb peu
+% («Codi 9.1 RV32I») i estil ruled. Al PDF no han de flotar (fase 7g, 2026-10-08): dels
+% 559 llistats, els 210 de fora dels callouts anaven on LaTeX els hi cabien, lluny del
+% text que els presenta («el codi següent»), i els de més d'una pàgina se n'anaven al
+% final del capítol (l'RSE mínima d'A9, deu pàgines més enllà; s3_4_2.s, s4_2_2.s,
+% s6_5_1.s). Els de dins dels callouts porten [H], que fa una caixa sense salt de pàgina:
+% la solució de l'RSE de S9 (106 línies) es tallava al peu i la resta no sortia enlloc.
+% Aquí el llistat és un bloc normal, amb les ratlles i el peu del flotant (comptador,
+% \label i llista de llistats), que es parteix entre pàgines com qualsevol paràgraf.
+\makeatletter
+\newcommand\ec@peullistat[2][]{%
+  \refstepcounter{codelisting}%
+  \addcontentsline{lop}{codelisting}{\protect\numberline{\thecodelisting}#2}%
+  \noindent{\bfseries\fname@codelisting~\thecodelisting}\enskip#2\par\nopagebreak
+  \kern2pt\hrule\kern2pt\nopagebreak}
+\newenvironment{ec@codelisting}[1][]{%
+  \par\addvspace{\medskipamount}%
+  \def\@captype{codelisting}\let\caption\ec@peullistat
+  \hrule\kern2pt\nopagebreak}{%
+  \par\kern2pt\hrule\par\addvspace{\medskipamount}}
+\AtBeginDocument{%
+  \let\codelisting\ec@codelisting
+  \let\endcodelisting\endec@codelisting}
+% Dins d'un callout (tcolorbox), el fons gris del bloc (Shaded = snugshade, de framed)
+% és una caixa que tcolorbox no sap partir: el bloc hi va sense fons, línia a línia, i
+% el callout es parteix entre pàgines on calgui.
+\AddToHook{env/tcolorbox/begin}{%
+  \ifdefined\Shaded\renewenvironment{Shaded}{}{}\fi}
+\makeatother

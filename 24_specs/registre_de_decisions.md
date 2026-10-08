@@ -418,6 +418,14 @@ Decisió de l'usuari 4 de la fase 7c.
 
 Fins al 2026-10-06 sortien alineades a l'esquerra. Quan es va escriure, totes les imatges sense peu dels callouts eren figures de registres més amples que el callout, de manera que la regla no hi tenia cap efecte visible: és per a la primera que no ho sigui.
 
+### D-69
+
+**Blocs de codi al PDF: no floten i es parteixen entre pàgines** · `13_contrib.qmd §Presentació visual` · 2026-10-08
+
+Detectat a la fase 7g, a partir d'una observació de l'usuari: la secció «Exemple: RSE mínima en RISC-V» d'A9 (§9.4.4) diu «El codi següent…» i, al PDF, no hi havia cap codi. Quarto escriu cada bloc amb `filename` com a flotant `codelisting` (paquet `float`, estil `ruled`). Dels 559 llistats del llibre (2026-10-08), els 349 de dins dels callouts porten `[H]`, que en fa una caixa que no es parteix, i els 210 de fora, la posició per defecte `h`: LaTeX els posa on li caben. Conseqüències mesurades sobre el PDF: l'RSE d'A9 (96 línies) sortia deu pàgines més enllà, al final del capítol, i els llistats de laboratori de més d'una pàgina (`s3_4_2.s`, `s4_2_2.s`, `s6_5_1.s`) també anaven a parar al final de la sessió; i la solució de l'RSE de S9 (106 línies, dins d'un callout) es tallava al peu de la pàgina, i la resta no sortia enlloc.
+
+`preamble.tex` redefineix `codelisting` com un bloc normal que conserva el peu, el comptador, la llista de llistats i les ratlles de l'estil `ruled`. Dins d'un callout, el bloc va sense el fons gris (`Shaded`, de `framed`), que `tcolorbox` no sap partir. El PDF passa de 588 a 569 pàgines: eren els buits que deixaven els flotants. Alternatives descartades: `\floatplacement{codelisting}{H}` per a tots, que hauria fet caixes sense salt de pàgina (els llistats de més d'una pàgina haurien desbordat el peu, com el de S9); i treure el `filename` dels blocs, que és la convenció de §Blocs de codi.
+
 ### D-57
 
 **Fórmules en línia a l'HTML: `overflow` només a les llargues** · `13_contrib.qmd §Presentació visual` · 2026-10-06 · `74507d7`
