@@ -27,7 +27,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 | Instruccions de lectura i escriptura (`lw`, `sw`, `lb`, `sb`, `lbu`) | @nte-load-store |
 | `long long` en RV32I: dos registres per valor de 64 bits | @cau-long-long-2-regs |
 | Instrucció de multiplicació entera (`mul`) | @nte-rv32im-instruccions-multiplicacio |
-| Pas de matrius per referència com a paràmetre | @tip-exemple-pas-vector |
+| Pas de matrius per referència com a paràmetre | @tip-matriu-pas-referencia |
 | Subrutines multinivell: registres segurs i bloc d'activació | @sec-multinivell-pila, @nte-abi-variables-locals |
 | Accés seqüencial i stride | @sec-opt-acces-sequencial, @eq-stride |
 : {.striped .hover}
@@ -128,7 +128,7 @@ Aplicant la fórmula $@\texttt{mat[i][j]} = @\texttt{mat[0][0]} + (i \cdot \text
 | `mat4[0][2]` | 3 | 4 | `@mat4 + (0·3 + 2)·4` | `@mat4 + 8` |
 : {.striped .hover}
 
-Per a `mat3`, $T = 8$ perquè cada element és de tipus `long long` (64 bits). L'element `mat3[1][0]` ocupa les adreces `@mat3 + 16` (paraula baixa) i `@mat3 + 20` (paraula alta) (@cau-long-long-2-regs).
+Per a `mat3`, $T = 8$ perquè cada element és de tipus `long long` (64 bits). L'element `mat3[1][0]` ocupa les adreces `@mat3 + 16` (paraula baixa) i `@mat3 + 20` (paraula alta), en ordre *little-endian* (@sec-endianness).
 :::
 
 ---
@@ -159,7 +159,7 @@ int subr(int x[][3], int i, int j) {
 Abans d'escriure cap instrucció:
 
 1. Determineu si `subr` és uninivell o multinivell i per què.
-2. Determineu si el programa principal fa crides i quines conseqüències té per a la gestió del context. Tingueu en compte que és el punt d'entrada del programa —és el primer bloc del segment `.text`—: no és cridat per cap altra subrutina i acaba amb `ecall` (@sec-multinivell-pila).
+2. Determineu si el programa principal fa crides i quines conseqüències té per a la gestió del context. Tingueu en compte que és el punt d'entrada del programa —és el primer bloc del segment `.text`—: no és cridat per cap altra subrutina i acaba amb `ecall` (@nte-punt-entrada-etiqueta).
 3. Per a cada funció, identifiqueu quines dades es generen **abans** d'una crida i s'usen **després** (@sec-multinivell-pila). Assigneu-les a registres segurs.
 4. Dibuixeu el bloc d'activació de cada funció amb els desplaçaments de cada element.
 
@@ -189,7 +189,7 @@ Entre la primera crida a `subr` i la segona, el programa principal necessita les
 
 **Pas 4. Blocs d'activació.**
 
-Cap dels dos blocs no necessita bloc d'activació: `subr` és uninivell i sense variables locals, i el programa principal no ha de preservar cap registre. Tots dos BA són buits.
+Cap de les dues rutines no necessita bloc d'activació: `subr` és uninivell i sense variables locals, i el programa principal no ha de preservar cap registre. Tots dos BA són buits.
 
 ```{.s filename="s4_2_2.s"}
 

@@ -16,9 +16,9 @@ language:
 
 Tots els passos s'executen en la **màquina RISC-V**. El traductor binari (element 2) és executable en RISC-V i permet convertir qualsevol binari x86-64 a RISC-V.
 
-1. **Traduir el compilador de C a RISC-V**: S'aplica el traductor x86→RISC-V (element 2) al compilador de C (element 1, binari x86-64). S'obté un compilador de C **executable en RISC-V**, però que genera codi x86-64 (és un **compilador creuat**: s'executa en RISC-V i produeix binaris x86-64).
+1. **Traduir el compilador de C a RISC-V**: S'aplica el traductor x86-64→RISC-V (element 2) al compilador de C (element 1, binari x86-64). S'obté un compilador de C **executable en RISC-V**, però que genera codi x86-64 (és un **compilador creuat**: s'executa en RISC-V i produeix binaris x86-64).
 2. **Compilar l'intèrpret de Python**: S'usa el compilador del pas 1 per compilar l'intèrpret de Python (element 3, escrit en C). S'obté un binari x86-64 de l'intèrpret de Python.
-3. **Traduir l'intèrpret de Python a RISC-V**: S'aplica de nou el traductor x86→RISC-V (element 2) al binari x86-64 del pas 2. S'obté un intèrpret de Python **executable en RISC-V**.
+3. **Traduir l'intèrpret de Python a RISC-V**: S'aplica de nou el traductor x86-64→RISC-V (element 2) al binari x86-64 del pas 2. S'obté un intèrpret de Python **executable en RISC-V**.
 4. **Executar el programa Python**: S'usa l'intèrpret del pas 3 per executar el programa en Python a la màquina RISC-V.
 :::
 
@@ -60,7 +60,7 @@ $25 \div 2$: residus $1, 0, 0, 1, 1, 0, 0, 0$ (de LSb a MSb) $\rightarrow 0001\,
 
 $173 \div 2$: residus $1, 0, 1, 1, 0, 1, 0, 1$ $\rightarrow 1010\,1101_2$. ✓
 
-$256$ en 8 bits: $256 > 2^8 - 1 = 255$. **NC** (no representable en 8 bits).
+$256$ en 8 bits: $256 > 2^8 - 1 = 255$. **NC** (no codificable en 8 bits).
 
 $173$ en 16 bits: extensió de zeros (@sec-extensio-zeros) de $1010\,1101_2$ $\rightarrow 0000\,0000\,1010\,1101_2$. ✓
 
@@ -79,9 +79,9 @@ $173$ en 16 bits: extensió de zeros (@sec-extensio-zeros) de $1010\,1101_2$ $\r
 
 Amb $n = 13$ bits, el rang de Ca2 és $[-2^{12},\ 2^{12}-1] = [-4096,\ +4095]$.
 
-El menor enter (el més negatiu) és $x_s = -4096 = -2^{12}$.
+L'enter més petit (el més negatiu) és $x_s = -4096 = -2^{12}$.
 
-**a) En hexadecimal**: el patró de bits és $x_u = 2^{12} = 4096 = 1\,0000\,0000\,0000_2$ (13 bits). Completant aquest **patró** amb zeros a l'esquerra fins a 16 bits per poder-lo expressar en hexadecimal: $\texttt{0x1000}$.
+**a) En hexadecimal**: el patró de bits és $x_u = x_s + 2^{13} = -4096 + 8192 = 2^{12} = 1\,0000\,0000\,0000_2$ (13 bits; @cau-ca2-drecera-natural). Completant aquest **patró** amb zeros a l'esquerra fins a 16 bits per poder-lo expressar en hexadecimal: $\texttt{0x1000}$.
 
 **b) En decimal**: $-4096$.
 
@@ -95,7 +95,7 @@ El valor $\texttt{0x1000}$ anterior és només el patró de 13 bits escrit en he
 
 **Enunciat**: @exr-t1-enters-maxim13.
 
-El major enter positiu és $x_s = 2^{12} - 1 = 4095$.
+L'enter positiu més gran és $x_s = 2^{12} - 1 = 4095$.
 
 **a) En hexadecimal**: $4095 = 0\,1111\,1111\,1111_2 = \texttt{0x0FFF}$.
 
@@ -276,15 +276,15 @@ $$x_s = 1{\cdot}2^8 + 1{\cdot}2^5 + 1{\cdot}2^1 + 1{\cdot}2^0 = 256 + 32 + 2 + 1
 
 $\texttt{0xFE23} = 1111\,1110\,0010\,0011_2$. El bit de signe (bit 15) és $1$ → nombre negatiu.
 
-Aplicant @eq-ca2-interpretacio (equivalentment, la drecera $x_s = x_u - 2^n$ de @cau-ca2-drecera-natural):
+Aplicant la drecera $x_s = x_u - 2^n$ de @cau-ca2-drecera-natural (equivalent a @eq-ca2-interpretacio), amb $x_u = \texttt{0xFE23} = 15 \cdot 4096 + 14 \cdot 256 + 2 \cdot 16 + 3 = 65\,059$:
 
-$$x_s = \texttt{0xFE23} - 2^{16} = 65\,059 - 65\,536 = -477$$
+$$x_s = 65\,059 - 2^{16} = 65\,059 - 65\,536 = -477$$
 
 **Verificació**: $|-477| = 477 = 0000\,0001\,1101\,1101_2$; complementant i sumant 1: $\overline{0000\,0001\,1101\,1101} + 1 = 1111\,1110\,0010\,0010 + 1 = 1111\,1110\,0010\,0011 = \texttt{0xFE23}$ ✓
 :::
 
 ::: {#sol-t1-enters-codificacio .callout-tip}
-## Solució: Ca2 en mínim format (8 o 16 bits)
+## Solució: Ca2 en el format mínim (8 o 16 bits)
 
 **Enunciat**: @exr-t1-enters-codificacio.
 
@@ -334,7 +334,7 @@ Ca2: $-45 \rightarrow 1101\,0011$; $-30 \rightarrow 1110\,0010$.
 
 $$\underbrace{1101\,0011}_{-45} + \underbrace{1110\,0010}_{-30} = \underbrace{1011\,0101}_{-75}$$
 
-(El ròssec (*carry*) final es descarta.) $1011\,0101_2 = -75$ en Ca2. **Sense sobreeiximent** ✓
+(El ròssec de sortida (*carry-out*) es descarta.) $1011\,0101_2 = -75$ en Ca2. **Sense sobreeiximent** ✓
 
 **d) $(-100) + (-80)$**
 

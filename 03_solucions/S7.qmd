@@ -50,7 +50,7 @@ Evolució de la seqüència (MC inicialment buida):
 
 Encerts: 3. Fallades: 8. Taxa d'encerts: $h = 3/11 \approx 27{,}3\%$.
 
-De les 8 fallades, 7 són **d'arrencada en fred** (*cold-start*: el primer accés a cadascun dels blocs 0, 1, 3, 12, 10, 7 i 15) i la de l'accés 11 és de **conflicte**: el bloc 3, carregat a l'accés 4, ha estat expulsat pels blocs 7 i 15, que competeixen amb ell per la línia 3 (en una memòria cau completament associativa de la mateixa capacitat, aquest accés seria un encert). El conflicte a la línia 3 és especialment greu: cap dels tres blocs aconsegueix mantenir-s'hi.
+De les 8 fallades, 7 són **d'arrencada en fred** (*cold-start*: el primer accés a cadascun dels blocs 0, 1, 3, 12, 10, 7 i 15) i la de l'accés 11 és de **conflicte**: el bloc 3, carregat a l'accés 4, ha estat expulsat pels blocs 7 i 15, que competeixen amb ell per la línia 3 (en una memòria cau completament associativa de la mateixa capacitat, aquest accés seria un encert). El conflicte a la línia 3 és especialment greu: els tres blocs s'hi expulsen l'un a l'altre, i el bloc 3 només hi encerta un cop (a l'accés 7).
 :::
 
 ::: {#sol-t7-cache-politiques .callout-tip}
@@ -171,7 +171,7 @@ $$\text{TAM}_2 = t_h + m_2 \cdot \bar{t}_{p_2} = 10 + 0{,}15 \cdot 143{,}3 \appr
 
 L'escriptura immediata sense assignació és més ràpida ($18{,}8$ vs. $31{,}5$ ns). Té una taxa de fallades inferior ($10\%$ vs. $15\%$) i, sobretot, una penalització mitjana per fallada molt menor: les fallades d'escriptura no paguen penalització i les de lectura no generen write-backs. La penalització mitjana de l'escriptura retardada és un 63% més gran ($143{,}3$ vs. $88$ ns).
 
-**b)** Per a un programa de sols lectures ($p_e = 0$), ambdues polítiques es comporten de manera **idèntica**: en absència d'escriptures, no hi ha diferència entre escriptura immediata i retardada ($p_m = 0$, cap bloc es modifica), i ambdues polítiques carreguen blocs a la MC exactament igual en les fallades de lectura. La taxa de fallades seria la mateixa per a ambdues i la penalització també ($t_{bloc} + t_h = 110$ ns), de manera que cap de les dues alternatives seria més ràpida que l'altra.
+**b)** Per a un programa de només lectures ($p_e = 0$), ambdues polítiques es comporten de manera **idèntica**: en absència d'escriptures, no hi ha diferència entre escriptura immediata i retardada ($p_m = 0$, cap bloc es modifica), i ambdues polítiques carreguen blocs a la MC exactament igual en les fallades de lectura. La taxa de fallades seria la mateixa per a ambdues i la penalització també ($t_{bloc} + t_h = 110$ ns), de manera que cap de les dues alternatives seria més ràpida que l'altra.
 :::
 
 ::: {#sol-t7-rend-cpi-separat .callout-tip}
@@ -316,7 +316,7 @@ Un accés a memòria segueix la cadena L1 → L2 → MP:
 2. En cas de fallada a L1 (probabilitat $m_{L1}$), s'accedeix a L2 amb temps $t_{h_{L2}}$.
 3. En cas de fallada a L2 (probabilitat $m_{L2}$, local), s'accedeix a MP amb penalització $t_p$.
 
-El temps mitjà d'accés és la suma del temps d'L1 més les penalitzacions ponderades:
+El temps mitjà d'accés és la suma del temps de L1 més les penalitzacions ponderades:
 
 $$\boxed{\text{TAM} = t_{h_{L1}} + m_{L1} \cdot \bigl(t_{h_{L2}} + m_{L2} \cdot t_p\bigr)}$$
 

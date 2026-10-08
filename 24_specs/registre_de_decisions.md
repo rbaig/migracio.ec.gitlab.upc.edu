@@ -239,6 +239,12 @@ Decisió de l'usuari (2026-10-01). L'excepció del format reduït té dos casos,
 
 Decisió de l'usuari (2026-10-01). Aplicada a tot el corpus el 2026-10-01: el material de T5 (teoria, problemes, solucions, laboratori i figures), després de fusionar `temes456`.
 
+### D-72
+
+**Adjectius qualificatius, preferentment darrere del nom** · `13_contrib.qmd §Criteris generals` · 2026-10-08
+
+Decisió de l'usuari (2026-10-08, fase 7g): «Per aquests casos la preferència és l'adjectiu després del substantiu, per tant, «una creixent importància» → «una importància creixent»». El revisor lingüístic havia marcat el cas de S6 com a error contra D-31, i Claude Code el va rebaixar a qüestió d'estil, perquè «creixent» és qualificatiu i D-31 només parlava dels classificadors; l'usuari en fixa la preferència. Les excepcions de D-31 (ordinals, quantificadors, «mateix», «propi», «altre», valoratius idiomàtics) continuen valent.
+
 ### D-32
 
 **«No» davant d'un nom, amb guionet** · `13_contrib.qmd §Criteris generals` · 2026-10-01 · `bb12c2b`

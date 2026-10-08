@@ -38,7 +38,7 @@ a) Salvi tots els registres generals a la pila.
 b) Llegeixi `mcause` i salti a un gestor específic si la causa és una crida al sistema (`ecall`) des de mode usuari (codi de causa 8); altrament, salti a un gestor d'error genèric.
 c) Restauri tots els registres i retorni amb `mret`.
 
-Assumiu que el processador opera en mode M i que el registre `sp` apunta a una pila vàlida en entrar a la RSE.
+Suposeu que el processador opera en mode M i que el registre `sp` apunta a una pila vàlida en entrar a la RSE.
 :::
 
 ::: {#exr-t9-exc-mepc-mtvec}
@@ -93,7 +93,7 @@ e) Finalitzi correctament.
 Responeu les preguntes següents sobre els mecanismes d'entrada/sortida:
 
 a) Quina diferència hi ha entre E/S per consulta d'estat (*polling*) i E/S per interrupcions? Quins són els avantatges i inconvenients de cadascun?
-b) En un sistema amb E/S per interrupcions, quins passos cal seguir per configurar el controlador d'interrupcions i habilitar les interrupcions en RISC-V (registres `mstatus` i `mie`)?
+b) En un sistema amb E/S per interrupcions, quins passos cal seguir per habilitar les interrupcions en RISC-V (registres `mstatus` i `mie`)?
 c) Quin és el rol del bit `MIE` del registre `mstatus` i del bit `MTIE` del registre `mie` en el control de les interrupcions de temporitzador?
 :::
 
@@ -126,7 +126,7 @@ c) Per distingir entre una interrupció de teclat i una altra interrupció exter
 *Vegeu @sec-ei-tlb.*
 
 ::: {#exr-t9-exc-tlb-miss}
-A RISC-V, la fallada de TLB (*TLB miss*) la resol el maquinari (*page-table walker*) de manera transparent, sense generar cap excepció; només quan el walker troba que la pàgina no és a la memòria física (bit V = 0 a la PTE) es genera una excepció de **fallada de pàgina** (@cau-tlb-miss-excepcio). En canvi, en arquitectures amb TLB gestionat per **programari** (com MIPS), la mateixa fallada de TLB genera una excepció, i és una rutina del SO qui llegeix la taula de pàgines i actualitza el TLB (@wrn-mv-tlb-hw-walker).
+A RISC-V, la fallada de TLB (*TLB miss*) la resol el maquinari, amb el recorregut de la taula de pàgines (*page-table walker*), de manera transparent i sense generar cap excepció; només quan el recorregut troba que la pàgina no és a la memòria física (bit V = 0 a la PTE) es genera una excepció de **fallada de pàgina** (@cau-tlb-miss-excepcio). En canvi, en arquitectures amb TLB gestionat per **programari** (com MIPS), la mateixa fallada de TLB genera una excepció, i és una rutina del SO qui llegeix la taula de pàgines i actualitza el TLB (@wrn-mv-tlb-hw-walker).
 
 a) En RISC-V, quin codi de causa (`mcause`) s'assigna a una fallada de pàgina en una lectura de dada? I en una escriptura? Quin valor pren `mtval` en tots dos casos?
 b) Descriviu els passos que ha de seguir la RSE de RISC-V per gestionar una fallada de pàgina: com localitza la PTE a partir de `mtval`, què fa segons el bit V, quin paper hi té `sfence.vma` i com es prepara la reexecució de la instrucció causant.

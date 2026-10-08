@@ -209,7 +209,7 @@ Resultat: $P =$ `000011 011000`$_2 = 216_{10}$ ✓
 
 $$2 \cdot \texttt{t2} \equiv \texttt{0xFFFFFFFA} \pmod{2^{32}}$$
 
-Com que el multiplicador ($2$) i el mòdul ($2^{32}$) no són coprimers, la solució **no és única**: n'hi ha exactament dues, separades per $2^{31}$:
+Com que el factor $2$ i el mòdul ($2^{32}$) no són coprimers, la solució **no és única**: n'hi ha exactament dues, separades per $2^{31}$:
 
 - `t2 = 0xFFFFFFFD`: interpretant els valors com a enters, $2 \times (-3) = -6 =$ `0xFFFFFFFA` ✓
 - `t2 = 0x7FFFFFFD`: interpretant-los com a naturals, $2 \times 2\,147\,483\,645 = 4\,294\,967\,290 =$ `0xFFFFFFFA` ✓
@@ -367,7 +367,7 @@ void main() {
 
 `func` és **uninivell**. El paràmetre `veci` arriba per `a0` (adreça base del vector). `j` s'assigna a `t0`.
 
-L'stride del recorregut per fila és 4 bytes (mida d'un `int`). Per eliminar la variable d'inducció, es controla el bucle amb el punter.
+L'*stride* del recorregut per fila és 4 bytes (mida d'un `int`). El bucle es controla amb el punter; la variable `j` es manté, perquè se'n necessita el valor (`veci[j] = j`).
 
 ```{.s filename="RV32I"}
 func:
@@ -375,7 +375,7 @@ func:
         mv      t1, a0              # t1 = p = @veci[0]
         addi    t2, a0, 4*4         # t2 = sentinella = @veci[4]
         li      t0, 0               # j = 0
-        bgeu    t1, t2, fibucle1    # comprovació inicial (longitud 4 > 0: mai no s'executa)
+        bgeu    t1, t2, fibucle1    # comprovació inicial (longitud 4 > 0: mai no salta)
 bucle1:
         sw      t0, 0(t1)           # veci[j] = j
         addi    t1, t1, 4           # p += stride (4 bytes)
@@ -398,7 +398,7 @@ main:
 
         la      s0, mati            # s0 = p = @mati[0][0]  (segur: sobreviu a la crida)
         addi    s1, s0, 5*4*4       # s1 = fi = @mati[5][0]
-        bgeu    s0, s1, fibucle2    # comprovació inicial (5 > 0, mai s'executa)
+        bgeu    s0, s1, fibucle2    # comprovació inicial (5 > 0: mai no salta)
 bucle2:
         mv      a0, s0              # a0 = p
         jal     ra, func
@@ -599,7 +599,7 @@ bucle:
 fibucle:
 ```
 
-*Nota*: la inicialització `p = p1` (`mv t1, a0`) no apareix al fragment de l'enunciat, que comença a `li t0, 0`; s'ha inclòs aquí per completesa.
+**Nota**: la inicialització `p = p1` (`mv t1, a0`) no apareix al fragment de l'enunciat, que comença a `li t0, 0`; s'ha inclòs aquí per completesa.
 :::
 
 ::: {#sol-t4-opt-condicio-final .callout-tip}

@@ -84,9 +84,9 @@ Error in : Instruction load access error
 Go: execution terminated with errors.
 ```
 
-**La primera pista és el nom del fitxer**: `Go: running s5_1_1.s` diu que RARS ha començat pel fitxer de la subrutina, i ho diu **abans** del missatge d'error. Si el programa s'atura amb un error d'accés a instrucció just en començar, mireu aquella línia abans que res.
+**La primera pista és el nom del fitxer**: `Go: running s5_1_1.s` diu que RARS ha començat pel fitxer de la subrutina, i ho diu **abans** del missatge d'error. Si el programa s'atura amb un error d'accés a instrucció just en començar, cal mirar aquella línia abans que res.
 
-A la solució de l'exercici hi ha els dos segments de text comparats instrucció per instrucció, per si voleu veure què hi canvia.
+A la solució de l'exercici hi ha els dos segments de text comparats instrucció per instrucció, per a qui vulgui veure què hi canvia.
 :::
 
 ---
@@ -251,7 +251,7 @@ Address     Code        Basic                    Line  Source
 
 Dues coses que el bolcat no diu tot sol:
 
-1. **Amb l'ordre incorrecte, la primera instrucció de `.text` és de la subrutina `abs`** (`bge a0, zero, positiu`). És allà on RARS posa el PC, de manera que el programa comença pel mig d'`abs`, amb `a0` sense inicialitzar.
+1. **Amb l'ordre incorrecte, la primera instrucció de `.text` és de la subrutina `abs`** (`bge a0, zero, positiu`). És allà on RARS posa el PC, de manera que el programa comença per la primera instrucció d'`abs`, amb `a0` sense inicialitzar.
 2. **La mateixa instrucció font canvia de codificació.** `jal ra, abs` és `0x01c000ef` en un cas i `0xff1ff0ef` en l'altre —un salt endavant i un enrere—, i el `la t0, resultat` passa d'`addi x5,x5,-8` a `addi x5,x5,-20` per arribar a la mateixa adreça. Són desplaçaments relatius al PC, corregits segons on ha quedat cada mòdul: és la correcció d'adreces de @sec-enllacat, aquí visible en dos bolcats.
 :::
 :::
@@ -548,9 +548,9 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 
 3. En quina instrucció concreta del codi C de `descompon` es produeix la pèrdua de precisió?
 
-4. Quin dels quatre modes d'arrodoniment (@sec-arrodoniment) aplica aquest programa de conversió? Justifiqueu-ho.
+4. Quin dels modes d'arrodoniment (@sec-arrodoniment) aplica aquest programa de conversió? Justifiqueu-ho.
 
-5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE 754 de precisió simple però fora del rang del format de coma fixa. Indiqueu també quin és el menor nombre potència de 2 que compleix aquesta condició.
+5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE 754 de precisió simple però fora del rang del format de coma fixa. Indiqueu també quin és la potència de 2 més petita que compleix aquesta condició.
 :::
 
 ---

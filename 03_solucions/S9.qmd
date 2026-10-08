@@ -158,7 +158,7 @@ Per a una interrupció de temporitzador en mode M (codi de causa 7):
 
 $$\text{adreça} = \texttt{BASE} + 4 \times 7 = \texttt{BASE} + 28$$
 
-**d)** Sense l'increment, `mret` retornaria a la mateixa instrucció `ecall`, que causaria una nova excepció indefinidament. La RSE ha d'incrementar `mepc` perquè la `ecall` ja ha estat atesa i el programa ha de continuar a la instrucció *següent*:
+**d)** Sense l'increment, `mret` retornaria a la mateixa instrucció `ecall`, que causaria una nova excepció indefinidament. La RSE ha d'incrementar `mepc` perquè l'`ecall` ja ha estat atesa i el programa ha de continuar a la instrucció *següent*:
 
 ```{.s filename="RV32IZicsr"}
         csrr    t0, mepc            # llegir l'adreça de retorn
@@ -379,7 +379,7 @@ Cal recordar que, a RISC-V, l'excepció només es produeix quan la pàgina no é
 1. Llegir `mtval` per obtenir l'adreça virtual que ha causat la fallada.
 2. Extreure'n el VPN (els bits per sobre del desplaçament de pàgina) i localitzar la PTE corresponent a la taula de pàgines del procés actiu (a partir del registre de taula de pàgines; `satp` en mode S).
 3. Si l'adreça no pertany a cap regió vàlida del procés, avortar el programa (*segmentation fault*).
-4. Si la pàgina és vàlida però no present (V = 0): copiar-la del disc a un marc lliure (reemplaçant-ne un si cal, i escrivint-lo prèviament al disc si té D = 1) i actualitzar la PTE (V ← 1, PPN ← marc assignat, D ← 0).
+4. Si la pàgina és vàlida però no present ($V = 0$): copiar-la del disc a un marc lliure (reemplaçant-ne un si cal, i escrivint-lo prèviament al disc si té $D = 1$) i actualitzar la PTE ($V \leftarrow 1$, $PPN \leftarrow$ marc assignat, $D \leftarrow 0$).
 5. Executar `sfence.vma` perquè el TLB no conservi cap còpia obsoleta de la PTE i el walker la torni a llegir.
 6. No incrementar `mepc`: la instrucció causant s'ha de **reexecutar**; en la reexecució, el walker trobarà la PTE vàlida i l'accés es completarà.
 :::

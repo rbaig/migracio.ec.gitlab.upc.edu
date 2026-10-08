@@ -716,18 +716,11 @@ L'**enllaçador**, en la fase d'enllaçat. Durant l'assemblatge de `b.s`, `x` i 
 
 **c) Efecte de declarar `static int x = 42` a `a.c`**
 
-Amb `static`, `x` passa a tenir **vinculació interna** (*internal linkage*): deixa de ser visible fora del mòdul `a.c`. L'assemblador **no** l'inclou a la taula de símbols globals del fitxer objecte `a.o`. En conseqüència, quan l'enllaçador intenta resoldre la referència externa a `x` de `b.o`, no la troba i finalitza amb un error del tipus `unresolved reference to symbol x`.
+Amb `static`, `x` passa a tenir **vinculació interna** (*internal linkage*): deixa de ser visible fora del mòdul `a.c`. L'assemblador **no** l'inclou a la taula de símbols globals del fitxer objecte `a.o`. En conseqüència, quan l'enllaçador intenta resoldre la referència externa a `x` de `b.o`, no la troba i finalitza amb un error (amb el muntador de GNU, `undefined reference to 'x'`).
 
-**d) Per què `la t0, x` necessita dues instruccions (`auipc` + `addi`)?**
+**d) Per què `la t0, x` es tradueix amb `auipc` i no amb `lui`?**
 
-En RV32I, les adreces de 32 bits no caben en un únic immediat de 12 bits. La pseudoinstrucció `la` s'expandeix en:
-
-```{.s filename="RV32I"}
-        auipc   t0, hi_20(offset)    # t0 ← PC + (hi_20(offset) << 12)
-        addi    t0, t0, lo_12(offset) # t0 ← t0 + lo_12(offset)
-```
-
-on `offset = @x − PC` és la distància entre la instrucció `auipc` i el símbol `x`. `auipc` usa els 20 bits superiors del desplaçament i `addi` afegeix els 12 bits inferiors. D'aquesta manera es pot referenciar qualsevol adreça dins d'un rang de ±2 GiB respecte al PC.
+L'expansió en `auipc` + `addi` i el rang de ±2 GiB són els de @sol-t3-compilacio-auipc.
 
 La raó d'usar `auipc` (relatiu al PC) en lloc de `lui` (adreça absoluta) és que en un fitxer objecte reubicable les adreces absolutes no es coneixen fins a l'enllaçat. Amb adreces relatives al PC, el desplaçament entre la instrucció i el símbol és constant independentment d'on es carregui el programa en memòria, cosa que simplifica la reubicació.
 :::

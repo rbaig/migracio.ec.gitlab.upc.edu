@@ -10,9 +10,9 @@ number-sections: true
 
 Durant l'execució normal d'un programa, el processador segueix un flux d'instruccions determinat per les instruccions de salt explícites (`beq`, `jal`, etc.). Les **excepcions** i les **interrupcions** són un mecanisme que permet alterar aquest flux de manera imprevista, sense que cap instrucció de salt ho hagi causat. La necessitat d'aquest mecanisme sorgeix de dues fonts ben diferenciades.
 
-D'una banda, durant l'execució d'una instrucció poden aparèixer condicions errònies o especials que el processador no pot resoldre per si sol: un accés a una adreça de memòria no alineada o una instrucció amb un codi d'operació inexistent. En tots aquests casos, cal interrompre el programa i transferir el control a un codi del sistema operatiu (**SO**) que en faci el tractament adequat.
+D'una banda, durant l'execució d'una instrucció poden aparèixer condicions errònies o especials que el processador no pot resoldre per si sol: un accés a una adreça de memòria no alineada o una instrucció amb un codi d'operació inexistent. En tots dos casos, cal interrompre el programa i transferir el control a un codi del sistema operatiu (**SO**) que en faci el tractament adequat.
 
-De l'altra, els dispositius d'**entrada/sortida** (**E/S**) necessiten notificar al processador que han completat una operació o que requereixen atenció, perquè esperar activament que el dispositiu acabi (consultant-ne l'estat repetidament, *polling*) desaprofita el processador. La solució és que el dispositiu, quan estigui llest, avisi el processador, i que el processador pugui interrompre temporalment el programa en execució per atendre'l.
+De l'altra, els dispositius d'**entrada/sortida** (**E/S**) necessiten notificar al processador que han completat una operació o que requereixen atenció, perquè esperar activament que el dispositiu acabi (consultant-ne l'estat repetidament) desaprofita el processador. La solució és que el dispositiu, quan estigui llest, avisi el processador, i que el processador pugui interrompre temporalment el programa en execució per atendre'l.
 
 En tots dos casos, el mecanisme és el mateix: el processador interromp l'execució del programa, transfereix el control a una **rutina de servei d'excepcions** (**RSE**) del SO, i un cop feta la gestió, pot reprendre el programa interromput.
 
@@ -32,7 +32,7 @@ La taula següent classifica els principals tipus d'excepcions i interrupcions, 
 | Accés no alineat | Adreça no múltiple de la mida de dada | Durant la instrucció | Avorta^1^ | Excepció |
 | Instrucció il·legal | Codi d'operació inexistent | Durant la instrucció | Avorta^1^ | Excepció |
 | Fallada de pàgina | Pàgina absent de la memòria física | Durant la instrucció | Reexecuta la instrucció causant | Excepció |
-| Crida al sistema (`ecall`) | Instrucció `ecall` explícita | Durant la instrucció | Continua a instrucció+4 | Excepció |
+| Crida al sistema (`ecall`) | Instrucció `ecall` explícita | Durant la instrucció | Continua a la instrucció següent | Excepció |
 | Interrupció d'E/S | Senyal extern d'un dispositiu | En acabar la instrucció en curs | Continua a la instrucció següent | Interrupció |
 : Tipologia d'excepcions i interrupcions {#tbl-tipologia .striped}
 
@@ -44,10 +44,10 @@ Cal destacar dues diferències clau entre excepcions i interrupcions que la taul
     - Les **excepcions** es detecten **durant** l'execució de la instrucció causant, que s'avorta sense escriure cap resultat ni incrementar el PC.
     - Les **interrupcions** es detecten **en acabar** la instrucció en curs, quan el PC ja s'ha incrementat.
 - **Acció en acabar la RSE**:
-    - En les **excepcions** que:
-        - **es poden resoldre** (fallada de pàgina): cal **reexecutar** la instrucció causant.
-        - **no alteren l'estat del programa** (crida al sistema): cal **continuar** a la instrucció següent.
-        - **són irrecuperables**: el programa s'*avorta*.
+    - En les **excepcions**, depèn de l'excepció:
+        - Si **es pot resoldre** (fallada de pàgina), cal **reexecutar** la instrucció causant.
+        - Si **no altera l'estat del programa** (crida al sistema), cal **continuar** a la instrucció següent.
+        - Si **és irrecuperable**, el programa s'*avorta*.
     - En les **interrupcions**, el programa sempre es reprèn a la instrucció següent.
 
 ## Suport de maquinari: registres de control i estat {#sec-ei-csr}
@@ -62,7 +62,7 @@ RISC-V defineix tres **modes de privilegi**, que determinen quines **instruccion
 | Mode | Privilegi | Nom | Ús habitual | Obligatori |
 | :---: | :--- | :--- | :--- | :--- |
 | M | Màxim | *Machine* (màquina) | Firmware, arrencada, gestió d'excepcions de baix nivell | Sí |
-| S | Mitja | *Supervisor* | Sistema operatiu (Linux, etc.) | No |
+| S | Mitjà | *Supervisor* | Sistema operatiu (Linux, etc.) | No |
 | U | Mínim | *User* (usuari) | Programes d'usuari | No |
 : {tbl-colwidths="[8,12,19,48,13]" .striped}
 :::
@@ -139,11 +139,9 @@ A la figura, *Int.* és el bit 31 (*Interrupt*).
 
 ### `mepc` — Adreça de retorn {#sec-ei-csr-mepc}
 
-El registre **`mepc`** (*Machine Exception Program Counter*) guarda l'adreça on la RSE ha de retornar el control en acabar: la de la instrucció causant o la de la següent, segons el tipus d'esdeveniment.
+El registre **`mepc`** (*Machine Exception Program Counter*) guarda l'adreça on la RSE ha de retornar el control en acabar: la de la instrucció causant o la de la següent, segons el tipus d'esdeveniment:
 
-El valor que el maquinari hi escriu depèn del tipus d'esdeveniment.
-
-- **Excepció**: `mepc` apunta a la instrucció causant (la que s'ha interromput sense finalitzar). En casos on es vol continuar a la instrucció següent (per exemple, `ecall`), la pròpia RSE incrementa `mepc` en 4 abans de retornar.
+- **Excepció**: `mepc` apunta a la instrucció causant (la que s'ha interromput sense finalitzar). En els casos en què cal continuar a la instrucció següent (per exemple, `ecall`), la pròpia RSE incrementa `mepc` en 4 abans de retornar.
 - **Interrupció**: `mepc` apunta a la instrucció que *hauria* executat el processador a continuació (la instrucció causant ja ha finalitzat i el PC ja s'ha incrementat).
 
 ::: {#nte-mepc .callout-note}
@@ -263,7 +261,7 @@ Els registres **`mip`** (*Machine Interrupt Pending*) i **`mie`** (*Machine Inte
 {{< include ../21_riscv/RV32I_csr_mip_mie_taula.qmd >}}
 : {.striped}
 
-- **`mip`**: cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. Els bits de mode M (`MEIP`, `MTIP`, `MSIP`) són de **sols lectura** per al programari (els actualitza el maquinari).
+- **`mip`**: cada bit s'activa quan el dispositiu corresponent ha enviat una petició d'interrupció i la manté activa. Els bits de mode M (`MEIP`, `MTIP`, `MSIP`) són de **només lectura** per al programari (els actualitza el maquinari).
 - **`mie`**: cada bit és una màscara independent que habilita o deshabilita les interrupcions d'un tipus concret. És de **lectura/escriptura**.
 :::
 
@@ -312,7 +310,7 @@ Les accions 1–5 les executa el **maquinari** de forma atòmica, sense interven
 Tot i que el flux de maquinari és el mateix, hi ha dues diferències importants segons el tipus d'esdeveniment:
 
 - **Moment de detecció**:
-    - En una **excepció**, la instrucció causant s'**avorta** en mig de l'execució: no escriu cap resultat, no accedeix a memòria i el PC no s'incrementa. El valor guardat a `mepc` és l'adreça d'aquesta instrucció (vegeu @sec-ei-csr-mepc).
+    - En una **excepció**, la instrucció causant s'**avorta** a mitja execució: no escriu cap resultat, no accedeix a memòria i el PC no s'incrementa. El valor guardat a `mepc` és l'adreça d'aquesta instrucció (vegeu @sec-ei-csr-mepc).
     - En una **interrupció**, el processador no la comprova fins que la instrucció en curs ha **finalitzat** completament i el PC ja s'ha incrementat. El valor guardat a `mepc` és l'adreça de la instrucció que *hauria* executat a continuació (vegeu @sec-ei-csr-mepc).
 
 - **Escriptura a `mtval`**: en algunes excepcions, el maquinari escriu informació addicional al registre `mtval` per ajudar la RSE en el tractament (vegeu @sec-ei-csr-mtval). En les interrupcions, `mtval` s'escriu a zero.
@@ -345,7 +343,7 @@ Un cop el maquinari ha completat les accions de @sec-ei-flux-hardware-accions, e
     - **Continuar a la instrucció següent** (crida al sistema, interrupció d'E/S): la RSE executa el servei sol·licitat i el programa es reprèn a la instrucció següent.
     - **Avortar el programa** (accés no alineat, instrucció il·legal): la RSE emet un missatge d'error i cedeix el control a un altre procés.
 
-4. **Ajustar `mepc` si cal**: en els casos on el programa ha de continuar a la instrucció *següent* a la causant (per exemple, `ecall`), la RSE incrementa `mepc` en 4. En la resta de casos no cal cap ajust (vegeu @sec-ei-rse-ajust-mepc).
+4. **Ajustar `mepc` si cal**: en els casos en què el programa ha de continuar a la instrucció *següent* a la causant (per exemple, `ecall`), la RSE incrementa `mepc` en 4. En la resta de casos no cal cap ajust (vegeu @sec-ei-rse-ajust-mepc).
 
 5. **Restaurar l'estat**: la RSE restaura tots els registres salvats al pas 1.
 
@@ -480,7 +478,7 @@ rse:
         mret
 ```
 
-El *dispatcher* (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar la RSE. El *dispatcher* consulta `mcause` per cridar el *handler* específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
+El dispatcher (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar la RSE. El dispatcher consulta `mcause` per cridar el handler específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
 ::: {#wrn-rse-pila .callout-warning collapse=true}
 ## La pila de la RSE
@@ -516,7 +514,7 @@ Això garanteix que hi ha un únic punt d'entrada al SO (l'adreça de la RSE a `
 
 ### Convenció de crides al sistema a RARS {#sec-ei-ecall-abi-rars}
 
-Els SOs estableixen una convenció de crides al sistema per passar el codi de servei, els paràmetres de les crides i els registres que cal emprar. Per exemple, RARS estableix el codi de servei al registre **`a7`** i l'argument principal i el valor de retorn al registre **`a0`**. També estableix dos codis de servei per a sortir del programa, `exit` (codi de servei 10) i `exit2` (codi de servei 93). La diferència és que `exit2` permet especificar el codi de sortida (normalment 0 per a una terminació correcta), que es retorna al procés pare (normalment el SO).
+Els SO estableixen una convenció de crides al sistema per passar el codi de servei, els paràmetres de les crides i els registres que cal emprar. Per exemple, RARS estableix el codi de servei al registre **`a7`** i l'argument principal i el valor de retorn al registre **`a0`**. També estableix dos codis de servei per sortir del programa, `exit` (codi de servei 10) i `exit2` (codi de servei 93). La diferència és que `exit2` permet especificar el codi de sortida (normalment 0 per a una terminació correcta), que es retorna al procés pare (normalment el SO).
 
 Els dos números tenen orígens diferents, i això explica la duplicitat. El catàleg de RARS [@rars_v16] combina dues famílies de serveis: els heretats de **MARS**, el simulador de MIPS del qual RARS descendeix, i els compatibles amb les eines de Linux. El **10** prové de la primera. El **93**, en canvi, és el número real de la crida `exit` a **Linux/RISC-V** (`asm-generic/unistd.h`), el mateix origen que el `63` (`read`), el `64` (`write`) o el `214` (`brk`) de @sec-ei-ecall-abi-linux. RARS conserva els dos noms heretats de MARS i adopta per a `exit2` el número de Linux; per això el mateix servei apareix com a `exit2` a la taula de RARS i com a `exit` a la de Linux.
 
@@ -555,11 +553,11 @@ Els exemples següents mostren les crides al sistema més habituals a RARS:
         ecall                       # a0 ← enter llegit
 ```
 
-**Imprimir un string (codi 4)**:
+**Imprimir una cadena de caràcters (codi 4)**:
 
 ```{.s filename="RV32I"}
         li      a7, 4               # codi de print_string
-        la      a0, missatge        # adreça del string (acabat en '\0')
+        la      a0, missatge        # adreça de la cadena (acabada en '\0')
         ecall
 ```
 
@@ -685,7 +683,7 @@ A RV32, algunes d'aquestes crides corresponen a la variant específica per a mid
 
 ### Sincronització per enquesta vs. per interrupcions {#sec-ei-interrupcions-sincronitzacio}
 
-La comunicació amb els dispositius d'E/S està dominada per la necessitat de tolerar les seves llargues latències. Quan un programa inicia una operació en un dispositiu (per exemple, una lectura de disc), l'operació pot trigar milions de cicles en completar-se. Hi ha dues estratègies per gestionar aquesta espera:
+La comunicació amb els dispositius d'E/S està dominada per la necessitat de tolerar les seves latències llargues. Quan un programa inicia una operació en un dispositiu (per exemple, una lectura de disc), l'operació pot trigar milions de cicles en completar-se. Hi ha dues estratègies per gestionar aquesta espera:
 
 - **Sincronització per enquesta** (*polling*): el processador consulta repetidament l'estat del dispositiu fins que l'operació acaba. És simple d'implementar però desaprofita completament el processador durant l'espera.
 
@@ -697,10 +695,10 @@ bucle:
     # continuar quan el dispositiu ha acabat
 ```
 
-- **Sincronització per interrupcions**: el processador continua executant altres tasques mentre el dispositiu treballa. Quan l'operació acaba, el dispositiu activa un senyal de **petició d'interrupció** que notifica al processador. El processador interromp el programa en curs, atén el dispositiu a la RSE, i després reprèn el programa.
+- **Sincronització per interrupcions**: el processador continua executant altres tasques mentre el dispositiu treballa. Quan l'operació acaba, el dispositiu activa un senyal de **petició d'interrupció** que notifica al processador. El processador interromp el programa en curs, atén el dispositiu a la RSE i després reprèn el programa.
 
 ::: {#cau-polling-vs-interrupcions .callout-caution}
-La sincronització per **interrupcions** és molt més eficient que el *polling*: permet al processador fer feina útil mentre el dispositiu treballa, en lloc d'esperar activament. El SO pot aprofitar aquest temps per executar altres programes.
+La sincronització per **interrupcions** és molt més eficient que el polling: permet al processador fer feina útil mentre el dispositiu treballa, en lloc d'esperar activament. El SO pot aprofitar aquest temps per executar altres programes.
 :::
 
 ### El cicle de vida d'una interrupció {#sec-ei-interrupcions-cicle}
@@ -713,7 +711,7 @@ El flux complet d'una interrupció, des de la petició fins al retorn, segueix l
 
 3. **Acceptació**: el maquinari executa les accions de @sec-ei-flux-hardware-accions: guarda el PC a `mepc`, escriu `mcause` amb bit 31=1 i el codi de causa, desactiva `MIE` i salta a `mtvec`.
 
-4. **Servei**: la RSE identifica el dispositiu (llegint `mcause` i `mip`), executa el tractament corresponent (per exemple, llegir les dades del dispositiu) i crida l'*exception handler* específic.
+4. **Servei**: la RSE identifica el dispositiu (llegint `mcause` i `mip`), executa el tractament corresponent (per exemple, llegir les dades del dispositiu) i crida l'exception handler específic.
 
 5. **Retorn**: la RSE executa `mret`, que restaura `MIE` i retorna al programa interromput, que reprèn l'execució a la instrucció que hauria executat a continuació (ja guardada a `mepc`).
 
@@ -729,7 +727,7 @@ El flux complet d'una interrupció, des de la petició fins al retorn, segueix l
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T9_cicle_interrupcio__original_light.svg)
 :::
-Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucció i+1; en acabar-la, el processador detecta la interrupció, guarda `mepc` apuntant a la instrucció i+2 i salta a la RSE; en retornar amb `mret`, el programa es reprèn a partir d'i+2.
+Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucció $i+1$; en acabar-la, el processador detecta la interrupció, guarda `mepc` apuntant a la instrucció $i+2$ i salta a la RSE; en retornar amb `mret`, el programa es reprèn a partir d'i+2.
 :::
 
 ### Permisos: `MIE` global i màscares `mie` {#sec-ei-interrupcions-permisos}
@@ -773,15 +771,15 @@ La **fallada de pàgina** és l'exemple més complet del mecanisme d'excepcions 
 
 ### Del TLB a la fallada de pàgina {#sec-ei-tlb-recordatori}
 
-Com s'ha vist a @sec-mv-tlb, el **TLB** (*translation-lookaside buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan la traducció d'una adreça no és al TLB, es produeix una **fallada de TLB** (*TLB miss*).
+Com s'ha vist a @sec-mv-tlb, el **TLB** (*Translation Lookaside Buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan la traducció d'una adreça no és al TLB, es produeix una **fallada de TLB** (*TLB miss*).
 
-A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el *hardware page-table walker* de la MMU, que recorre la taula de pàgines, copia la PTE al TLB i deixa continuar l'accés sense interrompre el programa (@sec-mv-tlb-fallada). L'excepció apareix només quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari.
+A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el recorregut de la taula de pàgines (*page-table walker*) que fa el maquinari de la MMU, que recorre la taula de pàgines, copia la PTE al TLB i deixa continuar l'accés sense interrompre el programa (@sec-mv-tlb-fallada). L'excepció apareix només quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari.
 
 ::: {#cau-tlb-miss-excepcio .callout-caution}
-A RISC-V, la **fallada de TLB** la resol el maquinari (*page-table walker*) de forma transparent. Només la **fallada de pàgina** (V = 0) és una excepció: la instrucció causant s'avorta, `sepc` (o `mepc`) hi apunta, i la RSE l'ha de **reexecutar** en acabar (sense incrementar `sepc`). En la reexecució, el walker troba la PTE vàlida i l'accés continua normalment.
+A RISC-V, la **fallada de TLB** la resol el maquinari (el recorregut de la taula de pàgines) de forma transparent. Només la **fallada de pàgina** (V = 0) és una excepció: la instrucció causant s'avorta, `sepc` (o `mepc`) hi apunta, i la RSE l'ha de **reexecutar** en acabar (sense incrementar `sepc`). En la reexecució, el walker troba la PTE vàlida i l'accés continua normalment.
 :::
 
-El bit V de la PTE que desencadena la fallada és el que s'ha estudiat a @sec-mv-pte. Recordeu que l'especificació RISC-V l'anomena `V` —no `P`—, tal com s'explica a @wrn-mv-notacio-v.
+El bit V de la PTE que desencadena la fallada és el que s'ha estudiat a @sec-mv-pte. Cal recordar que l'especificació RISC-V l'anomena `V` —no `P`—, tal com s'explica a @wrn-mv-notacio-v.
 
 ### Codi de causa i adreça de la fallada {#sec-ei-tlb-mecanisme}
 
@@ -823,7 +821,7 @@ El registre `satp` té el format següent en RV32:
 - **`PPN`** (bits 21:0): número de pàgina física (*Physical Page Number*) de la taula de pàgines de primer nivell.
 :::
 
-Quan la RSE en mode S modifica la taula de pàgines en memòria, executa la instrucció **`sfence.vma`** per invalidar les entrades del TLB afectades i garantir que el walker torni a llegir la PTE actualitzada.
+Quan la RSE en mode S modifica la taula de pàgines en memòria, executa la instrucció **`sfence.vma`** per invalidar les entrades del TLB afectades i garantir que el recorregut de la taula de pàgines torni a llegir la PTE actualitzada.
 
 ::: {#nte-sfence .callout-note}
 ## Supervisor ISA — `sfence.vma`
@@ -875,5 +873,5 @@ En el context de la fallada de pàgina, el bit D té dos efectes:
 ::: {#wrn-tlb-bit-ad .callout-warning collapse=true}
 ## Actualització dels bits A i D
 
-L'especificació RISC-V permet que el maquinari actualitzi els bits A (*accessed*) i D de la PTE de forma autònoma (extensió Svadu). Les implementacions que no ho suporten generen una excepció de fallada de pàgina en el primer accés a una pàgina nova —o en la primera escriptura a una pàgina amb D = 0—, i la RSE en mode S actualitza els bits A i D manualment abans de reexecutar la instrucció causant.
+L'especificació RISC-V permet que el maquinari actualitzi els bits A (*accessed*) i D de la PTE de forma autònoma (extensió Svadu). Les implementacions que no ho admeten generen una excepció de fallada de pàgina en el primer accés a una pàgina nova —o en la primera escriptura a una pàgina amb D = 0—, i la RSE en mode S actualitza els bits A i D manualment abans de reexecutar la instrucció causant.
 :::

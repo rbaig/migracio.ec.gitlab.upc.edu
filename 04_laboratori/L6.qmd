@@ -236,7 +236,7 @@ Verifiqueu les respostes canviant la geometria al *Data Cache Simulator* i execu
 ::: {#sol-mida-cache}
 **Apartat 1. Doblar el nombre de línies (64 línies amb blocs de 4 paraules).**
 
-La mida del bloc no canvia (4 paraules = 16 bytes), de manera que cada referència al vector continua portant exactament 4 elements. El patró de fallades és idèntic: 1 fallada cada 4 accessos. La taxa d'encerts **no varia**: $0{,}75$.
+La mida del bloc no canvia (4 paraules = 16 bytes), de manera que cada fallada continua portant un bloc de 4 elements. El patró de fallades és idèntic: 1 fallada cada 4 accessos. La taxa d'encerts **no varia**: $0{,}75$.
 
 **Apartat 2. Doblar el nombre de paraules per bloc (32 línies amb blocs de 8 paraules).**
 
@@ -458,7 +458,7 @@ La lectura de `vec[max]` usa el valor de `max` **abans** de la seva possible act
 ::: {.callout-tip title="Comprovació pràctica"}
 Executeu `ordenacio.s` a RARS amb el *Data Cache Simulator* configurat amb 32 línies (*Number of blocks*) amb blocs de 4 paraules i correspondència directa (les escriptures hi compten com amb assignació). En acabar l'execució, el simulador mostra el nombre total de referències, encerts i fallades.
 
-Per seguir l'evolució accés a accés, poseu un *breakpoint* a la primera instrucció del bucle interior i avanceu pas a pas observant els canvis al panell *Cache*.
+Per seguir l'evolució accés a accés, poseu un *breakpoint* a la primera instrucció del bucle interior i avanceu pas a pas observant els canvis a la vista *Cache Block Table* del simulador.
 :::
 
 **Apartat 2. Accessos i encerts per iteració del bucle exterior.**
@@ -739,7 +739,7 @@ Considereu una memòria cau **associativa per conjunts** (@sec-associativa-conju
 
 Quin ha de ser el **grau mínim d'associativitat** (nombre de vies per conjunt) perquè la taxa d'encerts del programa `suma_vectors.s` sigui superior a 0? Raoneu la resposta sense usar el simulador.
 
-Verifiqueu la resposta amb el *Data Cache Simulator* ajustant el camp *Set size* al valor que s'aproximi més al grau calculat (el simulador només accepta potències de 2).
+Verifiqueu la resposta amb el *Data Cache Simulator* ajustant el camp *Set size* a la potència de 2 igual o immediatament superior al grau calculat (el simulador només accepta potències de 2).
 :::
 
 ---
@@ -883,7 +883,7 @@ fibuc_i:
         ecall
 ```
 
-L'optimització ***loop tiling*** (també anomenada ***loop blocking*** o ***tiling***) reorganitza el recorregut per aprofitar la localitat temporal de `V2`: en lloc de multiplicar tota una fila de `M` per tot `V2`, es processen **grups de 4 columnes** alhora. Primer s'itera per totes les files amb les columnes 0–3, després amb les columnes 4–7, i així fins a completar les 16 columnes. D'aquesta manera, els 4 elements de `V2` implicats en cada grup caben en un únic bloc de cau, que es pot reutilitzar en totes les files si cap altre bloc no l'expulsa:
+L'optimització ***loop tiling*** (també anomenada ***loop blocking*** o *tiling*) reorganitza el recorregut per aprofitar la localitat temporal de `V2`: en lloc de multiplicar tota una fila de `M` per tot `V2`, es processen **grups de 4 columnes** alhora. Primer s'itera per totes les files amb les columnes 0–3, després amb les columnes 4–7, i així fins a completar les 16 columnes. D'aquesta manera, els 4 elements de `V2` implicats en cada grup caben en un únic bloc de cau, que es pot reutilitzar en totes les files si cap altre bloc no l'expulsa:
 
 ```{.c filename="matvec_tiling.c"}
 int V1[16];              // global (inicialitzat a 0 en C)
@@ -1004,7 +1004,7 @@ buc_i:
         mul     t2, s1, t0      # t2 = i * NJ
         slli    t2, t2, 2       # t2 = i * NJ * 4 (bytes)
         add     t2, s4, t2      # t2 = @M[i][0]
-        slli    t0, s0, 4       # t0 = k * 16 (offset de columna en bytes)
+        slli    t0, s0, 4       # t0 = k * 16 (desplaçament de columna en bytes)
         add     t2, t2, t0      # t2 = @M[i][k*4]
 
         mv      t4, t3          # t4 = @V2[k*4] (còpia local per al bucle j)

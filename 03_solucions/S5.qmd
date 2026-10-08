@@ -117,7 +117,7 @@ La classificació només depèn dels camps $E$ (exponent) i $F$ (fracció), sego
 
 Aplicant aquestes regles a cada fila:
 
-| Signe | Exponent | Fracció | NRM | DNRM | 0 | INF | NAN |
+| Signe | Exponent | Fracció | NRM | DNRM | 0 | INF | NaN |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
 | 0 | `0000 0000` | `110 0010 0000 1110 1110 1011` | | X | | | |
 | 0 | `0000 0000` | `000 0000 0000 0000 0000 0000` | | | X | | |
@@ -141,9 +141,9 @@ Observacions:
 
 **Enunciat**: @exr-t5-ieee-rang.
 
-**a) Major nombre positiu representable**
+**a) Nombre positiu més gran representable**
 
-El major exponent vàlid en format normalitzat és $e = +127$ (correspon a $E_u = 254$; $E_u = 255$ és reservat per a infinit i NaN). La major fracció possible és tota la fracció a `1`:
+L'exponent vàlid més gran en format normalitzat és $e = +127$ (correspon a $E_u = 254$; $E_u = 255$ és reservat per a infinit i NaN). La fracció més gran possible és tota la fracció a `1`:
 
 $$F = 1111\,1111\,1111\,1111\,1111\,111_2 = 1 - 2^{-23}$$
 
@@ -160,9 +160,9 @@ F  = 111 1111 1111 1111 1111 1111b
 
 $$\boxed{v_{\max} = (2 - 2^{-23}) \times 2^{127} \approx 3{,}403 \times 10^{38} = \texttt{0x7F7FFFFF}}$$
 
-**b) Menor nombre positiu no nul en format normalitzat**
+**b) Nombre positiu no nul més petit en format normalitzat**
 
-El menor exponent vàlid normalitzat és $e = -126$ ($E_u = 1$). La menor mantissa normalitzada és $1{,}000\ldots0$ (fracció a zero, bit ocult = 1):
+L'exponent vàlid normalitzat més petit és $e = -126$ ($E_u = 1$). La mantissa normalitzada més petita és $1{,}000\ldots0$ (fracció a zero, bit ocult = 1):
 
 ```{.default filename="Càlcul"}
 S = 0
@@ -173,9 +173,9 @@ F  = 000 0000 0000 0000 0000 0000b
 
 $$\boxed{v_{\min,\text{norm}} = 1{,}0 \times 2^{-126} \approx 1{,}175 \times 10^{-38} = \texttt{0x00800000}}$$
 
-**c) Menor nombre positiu no nul en format denormal**
+**c) Nombre positiu no nul més petit en format denormal**
 
-En format denormal ($E_u = 0$), el valor és $0{,}F \times 2^{-126}$. El menor valor no nul s'obté amb un sol bit a `1` a la posició menys significativa de la fracció (1 ULP):
+En format denormal ($E_u = 0$), el valor és $0{,}F \times 2^{-126}$. El valor no nul més petit s'obté amb un sol bit a `1` a la posició menys significativa de la fracció (1 ULP):
 
 ```{.default filename="Càlcul"}
 S = 0
@@ -284,11 +284,11 @@ Es treballa amb $A = -1609{,}5$ i $B = -938{,}8125$.
 
 **$A = -1609{,}5$**
 
-**Part entera:**
+**Part entera**:
 
 $$1609 = 1024 + 512 + 64 + 8 + 1 = 2^{10} + 2^9 + 2^6 + 2^3 + 2^0 = 11001001001_2$$
 
-**Part fraccionària:**
+**Part fraccionària**:
 
 $$0{,}5 = 0{,}1_2$$
 
@@ -326,11 +326,11 @@ $$\boxed{A_{\text{doble}} = \texttt{0xC099260000000000}, \quad \varepsilon_A = 0
 
 **$B = -938{,}8125$**
 
-**Part entera:**
+**Part entera**:
 
 $$938 = 512 + 256 + 128 + 32 + 8 + 2 = 2^9 + 2^8 + 2^7 + 2^5 + 2^3 + 2^1 = 1110101010_2$$
 
-**Part fraccionària:**
+**Part fraccionària**:
 
 $$0{,}8125 = 0{,}5 + 0{,}25 + 0{,}0625 = 2^{-1} + 2^{-2} + 2^{-4} = 0{,}1101_2$$
 
@@ -397,7 +397,7 @@ Valor = 1,001 0100 0000b × 2⁻¹ = 0,578125
 
 **Pas 1. Alinear exponents**
 
-El menor exponent és $e = -1$ (ft4). Cal desplaçar la seva mantissa 4 posicions a la dreta per igualar $e = 3$:
+L'exponent més petit és $e = -1$ (ft4). Cal desplaçar la seva mantissa 4 posicions a la dreta per igualar $e = 3$:
 
 ```{.default filename="Alineació"}
 ft2:            1,1111010110 0000000000000          × 2³
@@ -746,7 +746,7 @@ Només `vec` i `q` han de **sobreviure a alguna crida** i, per tant, necessiten 
 - `m` → `fs0` (flotant, preservat — no era imprescindible; un temporal `ft` hauria bastat)
 - `vquadrats` → BA (400 bytes)
 
-**Registres a preservar a la pila:** `ra` (adreça de retorn), `s0`, `s1`, `fs0`, `fs1`.
+**Registres a preservar a la pila**: `ra` (adreça de retorn), `s0`, `s1`, `fs0`, `fs1`.
 
 **b) Traducció a RISC-V**
 
@@ -990,7 +990,7 @@ $$\boxed{A + (B + C) = 0}$$
 
 $$(A + B) + C = 1 \neq 0 = A + (B + C)$$
 
-La suma en coma flotant **no és associativa**. La pèrdua de precisió es produeix en calcular $B + C$: $C = 1$ és $2^{13}$ vegades més petit que $B = 16360$, diferència que supera els 10 bits de fracció del format *half*, i queda completament absorbit per arrodoniment. En canvi, quan es calcula $(A+B)$ primer, la cancel·lació exacta de $A$ i $B$ deixa zero, i llavors $C$ és prou gran per ser representat.
+La suma en coma flotant **no és associativa**. La pèrdua de precisió es produeix en calcular $B + C$: els exponents de $C = 1$ i de $B = 16360$ difereixen en 13, més que els 10 bits de fracció del format *half*, i $C$ queda completament absorbit per l'arrodoniment. En canvi, quan es calcula $(A+B)$ primer, la cancel·lació exacta de $A$ i $B$ deixa zero, i llavors $C$ és prou gran per ser representat.
 
 :::
 

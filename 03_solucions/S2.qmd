@@ -90,7 +90,7 @@ Instrucció per instrucció:
 ## Constants i immediats
 
 ::: {#sol-t2-immediats-luiaddi .callout-tip}
-## Solució: expansió de `lui` + `addi` i rang d'immediats
+## Solució: expansió de `li` en `lui` + `addi` i rang d'immediats
 
 **Enunciat**: @exr-t2-immediats-luiaddi.
 
@@ -98,13 +98,13 @@ Instrucció per instrucció:
 
 El valor `0xDEADBEEF` no cap en 12 bits, de manera que calen dues instruccions. Es divideix en:
 
-- **20 bits superiors** ($hi_{20}$): `0xDEADB`
-- **12 bits inferiors** ($lo_{12}$): `0xEEF` = $1110\,1110\,1111_2$
+- **20 bits superiors** ($hi_{20}$): `0xDEADB`.
+- **12 bits inferiors** ($lo_{12}$): `0xEEF` = $1110\,1110\,1111_2$.
 
 El bit 11 de $lo_{12}$ val 1, de manera que `addi` aplicarà extensió de signe i restarà `0x111` (273 en positiu). Cal incrementar $hi_{20}$ en 1 per compensar:
 
-- $hi_{20}$ ajustat: `0xDEADB + 1 = 0xDEADC`
-- $lo_{12}$ com a enter de 12 bits amb signe: `0xEEF - 0x1000 = -273`
+- $hi_{20}$ ajustat: `0xDEADB + 1 = 0xDEADC`.
+- $lo_{12}$ com a enter de 12 bits amb signe: `0xEEF - 0x1000 = -273`.
 
 ```{.s filename="RV32I"}
         lui     t0, 0xDEADC    # t0 = 0xDEADC000
@@ -592,7 +592,7 @@ w:      .space  40      # int w[10]
 
 Declaracions: `int vec[100]` global; `i` a `t0`, `val` a `t1`; el resultat (l'índex de la primera ocurrència o −1) s'ha de deixar a `t2`.
 
-El bucle recorre el vector i compara cada element amb `val`. La novetat respecte als bucles de @exr-t2-vectors-bucle és la **sortida anticipada**: en trobar la primera coincidència, se surt del bucle immediatament amb l'índex actual, sense recórrer la resta del vector.
+El bucle recorre el vector i compara cada element amb `val`. La novetat respecte als bucles de @sol-t2-vectors-bucle és la **sortida anticipada**: en trobar la primera coincidència, se surt del bucle immediatament amb l'índex actual, sense recórrer la resta del vector.
 
 ```{.s filename="RV32I"}
         la      t3, vec         # invariant: @vec[0]

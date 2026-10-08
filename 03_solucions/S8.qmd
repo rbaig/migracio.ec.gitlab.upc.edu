@@ -27,7 +27,7 @@ $$6 + 1 + 1 = 8 \text{ bits} = 1 \text{ byte/entrada}$$
 
 $$\text{Mida taula de pàgines} = 2^{16} \times 1 \text{ B} = 64 \text{ KiB}$$
 
-**b)** El VPN és $\lfloor \text{adreça} / \texttt{0x100} \rfloor$ (els dos dígits hexadecimals inferiors són el desplaçament de 8 bits). Hi caben 3 pàgines a memòria física, amb reemplaçament LRU. Seqüència de VPN: 0, 1, 1, 2, 0, 1, 4, 5, 1.
+**b)** El VPN és $\lfloor \text{adreça} / \texttt{0x100} \rfloor$ (els dos dígits hexadecimals inferiors són el desplaçament de 8 bits). Cada programa pot tenir com a màxim 3 pàgines a memòria física, amb reemplaçament LRU. Seqüència de VPN: 0, 1, 1, 2, 0, 1, 4, 5, 1.
 
 | Adreça | A — Pàg. | B — Fallada | C — Reempl. | Pila LRU (MRU→LRU) |
 | :---: | :---: | :---: | :---: | :---: |
@@ -68,7 +68,7 @@ $$\underbrace{4 \text{ KiB}}_{\text{N1}} + 1024 \times \underbrace{4 \text{ KiB}
 
 **d)** Una taula de **nivell únic** tindria $2^{20}$ entrades de 4 B $= 4$ MiB. La jerarquia de dos nivells, en el pitjor cas, ocupa lleugerament **més** (4 MiB + 4 KiB: el sobrecost del directori de primer nivell).
 
-L'avantatge apareix en el **cas típic**, en què el procés només usa una fracció de l'espai lògic: només cal assignar les taules de segon nivell de les regions realment utilitzades. Per exemple, un procés que toqui codi, dades i pila en 3 regions disjuntes necessita la taula de primer nivell (4 KiB) i unes poques de segon nivell, de l'ordre de **desenes de KiB** en lloc de 4 MiB. Amb un nivell únic, en canvi, sempre cal reservar els 4 MiB sencers encara que la majoria d'entrades siguin invàlides.
+L'avantatge apareix en el **cas típic**, en què el procés només usa una fracció de l'espai lògic: només cal assignar les taules de segon nivell de les regions realment utilitzades. Per exemple, un procés que toqui codi, dades i pila en 3 regions disjuntes necessita la taula de primer nivell (4 KiB) i tres de segon nivell (una per regió), és a dir, **16 KiB** en lloc de 4 MiB. Amb un nivell únic, en canvi, sempre cal reservar els 4 MiB sencers encara que la majoria d'entrades siguin invàlides.
 :::
 
 ::: {#sol-t8-mv-taula-referencies .callout-tip}
@@ -230,9 +230,9 @@ Cal notar que índex + desplaçament de bloc $= 6 + 5 = 11$ bits, tots dins dels
 
 Com que la traducció i la indexació es fan alhora, el temps d'accés és pràcticament el d'accedir a la cau.
 
-**c) Fallada de TLB però pàgina present a memòria:**
+**c) Fallada de TLB però pàgina present a memòria**:
 
-1. El VPN no és al TLB → **fallada de TLB**. Es llegeix la PTE de la taula de pàgines a memòria (registre de taula de pàgines + VPN).
+1. El VPN no és al TLB → **fallada de TLB**. Es llegeix la PTE de la taula de pàgines a memòria (adreça del registre de taula de pàgines + VPN × 4, la mida d'una PTE).
 2. La PTE té $V = 1$ (pàgina present) → **no hi ha fallada de pàgina**. La MMU copia la PTE al TLB (entrada lliure o reemplaçament LRU), sense interrompre el programa.
 3. La traducció continua amb el PPN de la PTE: es compara amb l'etiqueta de la cau → encert de cau → dada.
 
@@ -263,13 +263,13 @@ Adreça de l'element `A[i][j]`: byte $= (i \cdot 1024 + j) \cdot 4 = i \cdot 409
 
 **Versió A** (recorregut per files, accés seqüencial en memòria):
 
-- *MC*: cada bloc de 8 enters es carrega un cop i s'aprofita 8 vegades. Fallades $= 16\,384$ blocs $= \mathbf{16\,384}$ (1 de cada 8 accessos).
-- *TLB*: es recorren les 64 pàgines en ordre, una fallada per pàgina $= \mathbf{64}$.
+- MC: cada bloc de 8 enters es carrega un cop i s'aprofita 8 vegades. Fallades $= 16\,384$ blocs $= \mathbf{16\,384}$ (1 de cada 8 accessos).
+- TLB: es recorren les 64 pàgines en ordre, una fallada per pàgina $= \mathbf{64}$.
 
 **Versió B** (recorregut per columnes, *stride* de 4096 B):
 
-- *MC*: per a un $j$ fix, els 128 elements `A[0..127][j]` són blocs diferents que mapen **tots al mateix conjunt** ($\lfloor j/8 \rfloor \bmod 64$, independent de $i$). Amb només 4 vies, els 128 blocs s'expulsen entre ells abans de poder-se reutilitzar a la iteració següent de $j$. **Cap reutilització**: totes les referències fallen $= 128 \times 1024 = \mathbf{131\,072}$.
-- *TLB*: per a cada $j$, el bucle intern recorre `A[0..127][j]`, que toca les pàgines $\lfloor i/2 \rfloor = 0, 0, 1, 1, \ldots, 63, 63$: **64 pàgines diferents**, una fallada cadascuna (la segona visita, $i$ senar, encerta). Són 64 fallades per cada valor de $j$: $64 \times 1024 = \mathbf{65\,536}$.
+- MC: per a un $j$ fix, els 128 elements `A[0..127][j]` són blocs diferents que mapen **tots al mateix conjunt** ($\lfloor j/8 \rfloor \bmod 64$, independent de $i$). Amb només 4 vies, els 128 blocs s'expulsen entre ells abans de poder-se reutilitzar a la iteració següent de $j$. **Cap reutilització**: totes les referències fallen $= 128 \times 1024 = \mathbf{131\,072}$.
+- TLB: per a cada $j$, el bucle intern recorre `A[0..127][j]`, que toca les pàgines $\lfloor i/2 \rfloor = 0, 0, 1, 1, \ldots, 63, 63$: **64 pàgines diferents**, una fallada cadascuna (la segona visita, $i$ senar, encerta). Són 64 fallades per cada valor de $j$: $64 \times 1024 = \mathbf{65\,536}$.
 
 | | Fallades de MC | Fallades de TLB |
 | :--- | :---: | :---: |

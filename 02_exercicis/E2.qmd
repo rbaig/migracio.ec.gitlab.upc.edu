@@ -77,7 +77,7 @@ b) Expliqueu textualment i de forma concisa què fa el fragment següent:
         lw      t1, 0(t1)
 ```
 
-**Nota**: La sintaxi `la label+offset` és admesa a EC (teoria i exàmens), però a RARS cal substituir-la per `la` + `addi`. A més, `lw` sobre una adreça no múltiple de 4 genera una excepció d'alineació.
+**Nota**: la sintaxi `la label+offset` és admesa a EC (teoria i exàmens), però a RARS cal substituir-la per `la` + `addi`. A més, `lw` sobre una adreça no múltiple de 4 genera una excepció d'alineació.
 :::
 
 ::: {#exr-t2-immediats-contingut}
@@ -97,7 +97,7 @@ G:      .dword  0x10010008
 :::
 
 ::: {#exr-t2-immediats-luiaddi}
-En RISC-V, la pseudoinstrucció `li rd, imm` s'expandeix en instruccions reals quan l'immediat no cap en 12 bits amb extensió de signe.
+En RISC-V, la pseudoinstrucció `li rd, imm` s'expandeix en una sola instrucció real (`addi`) si l'immediat cap en 12 bits amb extensió de signe, i en dues (`lui` + `addi`) si no hi cap.
 
 a) Quina seqüència d'instruccions genera l'assemblador per carregar el valor `0xDEADBEEF` al registre `t0`? Calculeu els valors exactes dels operands de cada instrucció.
 b) Per què cal ajustar el camp immediat d'`addi` quan el bit 11 del valor original és 1? Il·lustreu-ho amb el valor `0xDEADBEEF`.
@@ -118,7 +118,7 @@ Donada la declaració de dades següent, emmagatzemada a partir de l'adreça `0x
         .word   0x12345678
 ```
 
-Indiqueu quin és el valor en hexadecimal del **byte** emmagatzemat a cada una de les adreces `0x1001000C` i `0x1001001C`. Poseu NA si no es pot determinar a partir de la declaració.
+Indiqueu quin és el valor en hexadecimal del **byte** emmagatzemat a cada una de les adreces `0x1001000C` i `0x1001001C`. Poseu NA (no aplicable) si no es pot determinar a partir de la declaració.
 :::
 
 ::: {#exr-t2-memoria-lw-sw}
@@ -151,7 +151,7 @@ Donada la declaració següent:
 A:      .byte   0, 0, 0, 0, 0
 ```
 
-Escriviu un fragment de no més de 12 línies de codi assemblador que guardi **el valor complet de `t1`** (32 bits) a partir de l'adreça `A+1`, sense produir cap excepció d'alineació. Podeu escriure valors temporals a la posició `A` de memòria si cal (és una adreça alineada a word).
+Escriviu un fragment de no més de 12 línies de codi assemblador que guardi **el valor complet de `t1`** (32 bits) a partir de l'adreça `A+1`, sense produir cap excepció d'alineació. Podeu escriure valors temporals a la posició `A` de memòria si cal (és una adreça alineada a paraula).
 :::
 
 ::: {#exr-t2-memoria-contingut}
@@ -233,7 +233,7 @@ u2:     .byte   '3'
 d3:     .byte   0
 ```
 
-Cada dada `u1` i `u2` conté un caràcter ASCII que representa un **dígit decimal individual**. Escriviu un programa en assemblador que sumi els naturals representats per `u1` i `u2` i deixi el resultat en binari (natural) a `d3`. Com que cada operand és un sol dígit (rang $[0, 9]$), la suma màxima és $9+9=18$ i sempre cap en un sol byte.
+Cadascuna de les dades `u1` i `u2` conté un caràcter ASCII que representa un **dígit decimal individual**. Escriviu un programa en assemblador que sumi els naturals representats per `u1` i `u2` i deixi el resultat en binari (natural) a `d3`. Com que cada operand és un sol dígit (rang $[0, 9]$), la suma màxima és $9+9=18$ i sempre cap en un sol byte.
 :::
 
 ::: {#exr-t2-ascii-contingut}
@@ -321,11 +321,11 @@ Desassembleu els valors hexadecimals següents a les instruccions RISC-V corresp
 a) `0x00B50633`
 b) `0xFFC50413`
 c) `0x0062A023`
-d) `0x0062A2B3` (instrucció `slt`, presentada al [Tema 3](#sec-tema-traduccio); vegeu @sec-instruccions-comparacio-slt)
+d) `0x0062A2B3` (instrucció `slt`, presentada al [{{< var tema3 >}}](#sec-tema-traduccio); vegeu @sec-instruccions-comparacio-slt)
 :::
 
 ::: {#exr-t2-format-modificacions}
-S'estudien dues possibles modificacions a l'arquitectura RISC-V:
+S'estudien dues modificacions possibles a l'arquitectura RISC-V:
 
 1. Passar de 32 registres a 8 registres.
 2. Passar de 12 bits per a l'operand immediat a 6 bits.
@@ -554,7 +554,7 @@ void main() {
 
 a) Escriviu en assemblador RISC-V el bucle que inicialitza tots els elements de `v` a zero.
 b) Escriviu el bucle que calcula la suma de tots els elements de `v` i deixa el resultat a `suma`.
-c) Escriviu el bucle que copia els elements de `v` al revés en un nou vector `w` de la mateixa mida declarat a continuació de `v`.
+c) Escriviu el bucle que copia els elements de `v` al revés en un nou vector `w` de la mateixa longitud declarat a continuació de `v`.
 :::
 
 ::: {#exr-t2-vectors-cerca}
