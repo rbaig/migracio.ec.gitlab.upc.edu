@@ -6,9 +6,9 @@ gen_T4_sumador.py — Genera les figures del sumador de T4 (A4, #wrn-sobreeixime
 
 Escriu dos SVG natius a `22_figs_originals/`:
 
-- `T4_semisumador_sumador_complet.svg`: (a) semisumador (XOR i AND) i
+- `A4_semisumador_sumador_complet.svg`: (a) semisumador (XOR i AND) i
   (b) sumador complet fet amb dos semisumadors i una OR.
-- `T4_sumador_propagacio_rossec.svg`: cadena de sumadors complets amb la
+- `A4_sumador_propagacio_rossec.svg`: cadena de sumadors complets amb la
   XOR que dona el sobreeiximent, v = c_{n-1} xor c_n.
 
 No forma part del pre-render: el font versionat és l'SVG, i aquest script
@@ -214,8 +214,8 @@ def fig_sumador_propagacio_rossec():
 
 
 FIGURES = {
-    "T4_semisumador_sumador_complet.svg": fig_semisumador_sumador_complet,
-    "T4_sumador_propagacio_rossec.svg": fig_sumador_propagacio_rossec,
+    "A4_semisumador_sumador_complet.svg": fig_semisumador_sumador_complet,
+    "A4_sumador_propagacio_rossec.svg": fig_sumador_propagacio_rossec,
 }
 
 if __name__ == "__main__":

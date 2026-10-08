@@ -7,35 +7,35 @@ gen_T8.py — Genera les figures de T8 (A8): memòria virtual.
 Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
 (i els fotogrames de la figura dinàmica):
 
-- `T8_mv_espais.svg` (`#fig-mv-espais`): els espais lògics de dos processos,
+- `A8_mv_espais.svg` (`#fig-mv-espais`): els espais lògics de dos processos,
   la MMU, la memòria física i el disc.
-- `T8_mv_jerarquia.svg` (`#fig-mv-jerarquia`): la piràmide de la jerarquia
+- `A8_mv_jerarquia.svg` (`#fig-mv-jerarquia`): la piràmide de la jerarquia
   de memòria amb el disc, i els temps d'accés orientatius (figura 7.2 del tema
-  antic, amb la geometria de `T7_jerarquia_piramide.svg`).
-- `T8_mv_adreca_exemple.svg` (figura sense caption de §Pàgines i marcs):
+  antic, amb la geometria de `A7_jerarquia_piramide.svg`).
+- `A8_mv_adreca_exemple.svg` (figura sense caption de §Pàgines i marcs):
   l'adreça 0x10010004 descomposta en VPN i desplaçament, com al tema antic.
-- `T8_mv_traduccio.svg` (`#fig-mv-traduccio`): la traducció d'una adreça
+- `A8_mv_traduccio.svg` (`#fig-mv-traduccio`): la traducció d'una adreça
   lògica de 32 bits a una de física de 14 (figura 7.4 del tema antic).
-- `T8_mv_pagines_marcs.svg` (`#fig-mv-pagines-marcs`): pàgines de dos
+- `A8_mv_pagines_marcs.svg` (`#fig-mv-pagines-marcs`): pàgines de dos
   processos assignades a marcs, i una que és al disc.
-- `T8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la figura 7.5 del tema
+- `A8_mv_taula_pagines.svg` (`#fig-mv-taula-pagines`): la figura 7.5 del tema
   antic, amb el bit E: l'adreça lògica, el registre de taula de pàgines, la
   taula indexada pel VPN i l'adreça física.
-- `T8_mv_traduccio_exemple.svg` (`#fig-mv-traduccio-exemple`): la figura 7.6
+- `A8_mv_traduccio_exemple.svg` (`#fig-mv-traduccio-exemple`): la figura 7.6
   del tema antic, la traducció de 0x00001801 amb la taula del procés 2.
-- `T8_mv_taula_multinivell.svg` (`#fig-mv-taula-multinivell`): la taula de
+- `A8_mv_taula_multinivell.svg` (`#fig-mv-taula-multinivell`): la taula de
   dos nivells de Sv32, amb la descomposició de l'adreça lògica.
-- `T8_mv_tlb_estructura.svg` (`#fig-mv-tlb-estructura`): el TLB com a còpia
+- `A8_mv_tlb_estructura.svg` (`#fig-mv-tlb-estructura`): el TLB com a còpia
   parcial de la taula de pàgines.
-- `T8_mv_flux_traduccio.svg` (`#fig-mv-flux-traduccio`): el diagrama de flux
+- `A8_mv_flux_traduccio.svg` (`#fig-mv-flux-traduccio`): el diagrama de flux
   de la traducció. Substitueix el placeholder.
-- `T8_mv_comparticio.svg` (`#fig-mv-comparticio`): dues taules de pàgines que
+- `A8_mv_comparticio.svg` (`#fig-mv-comparticio`): dues taules de pàgines que
   apunten al mateix marc.
-- `T8_mv_pipt.svg` i `T8_mv_vipt.svg` (`#fig-mv-pipt`, `#fig-mv-vipt`): la
+- `A8_mv_pipt.svg` i `A8_mv_vipt.svg` (`#fig-mv-pipt`, `#fig-mv-vipt`): la
   integració del TLB i la memòria cau, en sèrie i en paral·lel.
-- `T8_mv_exemple_tlb.svg` (`#fig-mv-tlb-exemple`): la traça dels cinc accessos
+- `A8_mv_exemple_tlb.svg` (`#fig-mv-tlb-exemple`): la traça dels cinc accessos
   de `#tip-mv-tlb-exemple`, simulats per `simula_exemple()`, i els fotogrames
-  `T8_mv_exemple_tlb_pas<k>.svg` (k = 0, l'estat inicial) de la figura
+  `A8_mv_exemple_tlb_pas<k>.svg` (k = 0, l'estat inicial) de la figura
   dinàmica de l'HTML (`figures_dinamiques.html`), amb el TLB, la taula de
   pàgines i la memòria física després de cada accés.
 
@@ -270,7 +270,7 @@ def espais():
 
 def jerarquia():
     """La piràmide de la figura 7.2 del tema antic, amb la geometria i els colors de la de T7
-    (`T7_jerarquia_piramide.svg`), les anotacions originals (proper, ràpid, car, petit / llunyà, lent, barat,
+    (`A7_jerarquia_piramide.svg`), les anotacions originals (proper, ràpid, car, petit / llunyà, lent, barat,
     gran) i, a la dreta, el temps d'accés orientatiu de cada nivell."""
     o = []
     nivells = [('Registres', P1_F, P1_S, '~0,25 ns'),
@@ -1122,24 +1122,24 @@ def parteix(text, n):
 
 
 FIGURES = {
-    'T8_mv_espais.svg': espais,
-    'T8_mv_jerarquia.svg': jerarquia,
-    'T8_mv_adreca_exemple.svg': adreca_exemple,
-    'T8_mv_traduccio.svg': traduccio,
-    'T8_mv_pagines_marcs.svg': pagines_marcs,
-    'T8_mv_taula_pagines.svg': taula_pagines,
-    'T8_mv_traduccio_exemple.svg': lambda: taula_pagines(exemple=True),
-    'T8_mv_taula_multinivell.svg': taula_multinivell,
-    'T8_mv_tlb_estructura.svg': tlb_estructura,
-    'T8_mv_flux_traduccio.svg': flux,
-    'T8_mv_comparticio.svg': comparticio,
-    'T8_mv_pipt.svg': pipt,
-    'T8_mv_vipt.svg': vipt,
-    'T8_mv_exemple_tlb.svg': exemple_tlb,
+    'A8_mv_espais.svg': espais,
+    'A8_mv_jerarquia.svg': jerarquia,
+    'A8_mv_adreca_exemple.svg': adreca_exemple,
+    'A8_mv_traduccio.svg': traduccio,
+    'A8_mv_pagines_marcs.svg': pagines_marcs,
+    'A8_mv_taula_pagines.svg': taula_pagines,
+    'A8_mv_traduccio_exemple.svg': lambda: taula_pagines(exemple=True),
+    'A8_mv_taula_multinivell.svg': taula_multinivell,
+    'A8_mv_tlb_estructura.svg': tlb_estructura,
+    'A8_mv_flux_traduccio.svg': flux,
+    'A8_mv_comparticio.svg': comparticio,
+    'A8_mv_pipt.svg': pipt,
+    'A8_mv_vipt.svg': vipt,
+    'A8_mv_exemple_tlb.svg': exemple_tlb,
 }
 # Fotogrames de la figura dinàmica de l'exemple (figures_dinamiques.html): <nom>_pas<k>.svg, k = 0 l'estat inicial.
 for _k in range(len(EX_ACCESSOS) + 1):
-    FIGURES[f'T8_mv_exemple_tlb_pas{_k}.svg'] = (lambda k: lambda: exemple_tlb_pas(k))(_k)
+    FIGURES[f'A8_mv_exemple_tlb_pas{_k}.svg'] = (lambda k: lambda: exemple_tlb_pas(k))(_k)
 
 
 def main():

@@ -13,7 +13,7 @@ l'última escriptura a l'últim ús: blava si travessa alguna crida i grisa si n
 amb el nom de la dada al capdamunt i el registre al peu. Dins del codi, les
 dades porten el color de la seva barra.
 
-És la segona representació de les figures `T3_deps_*` d'A3, al costat de la de
+És la segona representació de les figures `A3_deps_*` d'A3, al costat de la de
 fletxes de `22_figs_originals/` (subfigures (a) i (b)). Model (b) de la fase 7c
 (`24_specs/svg.md §17`): la definició és el font i l'SVG no es versiona. Només
 fa servir la biblioteca estàndard.

@@ -476,6 +476,12 @@ Amb el generador, les figures de BA i el mapa passen a la classe `estreta` de `2
 
 Decisió de l'usuari del 2026-10-04 (fase 7c), quan A3 va passar a consumir els BA de `multi` i d'`exemple` generats per `gen_BA.py`: els originals es conserven, perquè l'usuari també els fa servir per a les diapositives, i les esmenes que necessitin les fa ell mateix (`TODO.md §Tasques per tema → T3`, «Retocs manuals pendents»). Fins al 2026-10-07 només constava a `24_specs/svg.md §17` i a l'inventari, que els llista a part dels orfes. Es va escriure com a regla el 2026-10-07 (fase 7f), en conservar també, per decisió de l'usuari, els originals de `T3_ba_func`, `T3_ba_general`, `T3_mapa_memoria`, `T3_pila_uninivell` i `T3_pila_multinivell`.
 
+### D-76
+
+**Noms de les figures pel fitxer que les consumeix: `A<N>_`, `P<N>_`, `S<N>_`, `L<N>_`** · `13_contrib.qmd §Figures i material gràfic` · 2026-10-08
+
+Decisió de l'usuari (2026-10-08): «noms de fitxers de figures `Tx_*` -> `Ax_*`, `Px_*`, `Sx_*`, `Ly_*`»; l'abast, a proposta de Claude Code. Fins llavors el prefix era el del tema (`T3_`), que no deia on surt la figura, i tres figures de les solucions i del laboratori duien el prefix d'un tema que no les consumeix. Es va fer abans que els equips de revisió comencessin, dins de la finestra de canvis de [D-65](#d-65), perquè toca A1–A9. De 96 arrels consumides, 93 passen a `A<N>_` (les set que també surten al compendi, `11_riscv.qmd`, prenen el prefix del tema: A5 i A9); `T3_ba_A`, `T5_ba_variancia` i `T3_ba_moda` passen a `S3_`, `S5_` i `L3_`. Els 15 originals conservats (D-68) prenen el de la versió generada (`A3_`, `A7_`). Canvien els fitxers de `22_figs_originals/`, `23_figs_externes/` i el `.gv` de `24_specs/`, les seccions dels `.toml` dels generadors, les sortides d'`auto_figs/`, `svg.md`, el `TODO.md` viu i els `.qmd`. Els scripts conserven el nom (`gen_T4_sumador.py`, `gen_T7.py`, `gen_T8.py`), com dos noms que no són figures: `T4_P_tasques.md` (un fitxer històric) i `PDF_originals/01_apunts/T6_Memoria_cache.pdf`. Les entrades d'aquest registre i del `TODO.md` anteriors al canvi citen els noms d'abans (`git log --follow`).
+
 ## Eines
 
 ### D-58

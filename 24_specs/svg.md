@@ -1,8 +1,8 @@
 # SVG specs — EC
 
 Figures de referència (es generen al pre-render, §17):
-- Mapa de memòria: `auto_figs/T3_mapa_memoria__mapa_light.svg`, de `24_specs/mapa.toml`
-- Bloc d'activació: `auto_figs/T3_ba_general__BA_light.svg`, de `24_specs/BA.toml`
+- Mapa de memòria: `auto_figs/A3_mapa_memoria__mapa_light.svg`, de `24_specs/mapa.toml`
+- Bloc d'activació: `auto_figs/A3_ba_general__BA_light.svg`, de `24_specs/BA.toml`
 
 ---
 
@@ -93,9 +93,9 @@ Quan el contingut és gran (vectors llargs, moltes zones), cal reduir l'escala p
 
 **Tria de l'escala:** usar la més gran que mantingui la figura llegible i les coordenades en múltiples de 10 (o 5 com a mínim). L'escala s'aplica uniformement a totes les zones d'una mateixa figura.
 
-**Vectors massa llargs.** Un vector que no hi cap ni a ×¼ es dibuixa amb el primer element i el darrer a l'escala i el tram elidit del mig d'una alçada fixa (`mig`, a `BA.toml`); la mida i els desplaçaments que s'hi rotulen són els reals. És el cas de `T5_ba_variancia` (`float[100]`, 400 bytes), que a ×¼ faria 2 000 px d'alt (fase 7g, 2026-10-08; D-71 del registre de decisions).
+**Vectors massa llargs.** Un vector que no hi cap ni a ×¼ es dibuixa amb el primer element i el darrer a l'escala i el tram elidit del mig d'una alçada fixa (`mig`, a `BA.toml`); la mida i els desplaçaments que s'hi rotulen són els reals. És el cas de `S5_ba_variancia` (`float[100]`, 400 bytes), que a ×¼ faria 2 000 px d'alt (fase 7g, 2026-10-08; D-71 del registre de decisions).
 
-Exemple: `T3_ba_func` (`v` char×10 + `w` int×10 = 52 bytes) usa ×½ = 10 px/byte:
+Exemple: `A3_ba_func` (`v` char×10 + `w` int×10 = 52 bytes) usa ×½ = 10 px/byte:
 ```
 v   (10 bytes) →  100 px   (sub-rect sup 10 px + dash 80 px + sub-rect inf 10 px)
 ali ( 2 bytes) →   20 px
@@ -265,7 +265,7 @@ Sense espais i amb vuit dígits, com al text (`13_contrib.qmd §Criteris general
 0x00000000 · 0x00400000 · 0x10010000 · 0x10040000 · 0x7FFFEFFC
 ```
 
-Fins a la fase 7c, aquesta secció deia «espai cada 4 dígits», contra el text; decisió de l'usuari 10 de la fase 7c (2026-10-03), aplicada el 2026-10-05 a les tres figures que en portaven (`T3_mapa_memoria`, `T7_mc_encert` i `T7_mc_fallada`).
+Fins a la fase 7c, aquesta secció deia «espai cada 4 dígits», contra el text; decisió de l'usuari 10 de la fase 7c (2026-10-03), aplicada el 2026-10-05 a les tres figures que en portaven (`A3_mapa_memoria`, `A7_mc_encert` i `A7_mc_fallada`).
 
 ### Etiquetes de rol («adr. baixes» / «adr. altes» / «sp →»)
 
@@ -303,7 +303,7 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | Graella i vores secundàries | — | `#dee2e6` |
 | Pila ocupada abans d'una crida (piles en fila) | `#adb5bd` | `#6c757d` |
 
-Els dos últims colors s'hi van afegir el 2026-10-06 (decisió de l'usuari, a proposta de Claude Code), perquè ja els feien servir diverses figures amb aquest paper: `#e6f1fb`, `T1_von_neumann` i `T8_mv_flux_traduccio`; `#dee2e6`, `T4_matriu_emmagatzematge`, `T4_matriu_offset_ij` i `T7_gap_processador_memoria`. La resta de colors que quedaven fora de la paleta es van migrar el mateix dia (§14). La paleta s'ha de revisar per reduir-ne la quantitat de colors (`TODO.md`).
+Els dos últims colors s'hi van afegir el 2026-10-06 (decisió de l'usuari, a proposta de Claude Code), perquè ja els feien servir diverses figures amb aquest paper: `#e6f1fb`, `A1_von_neumann` i `A8_mv_flux_traduccio`; `#dee2e6`, `A4_matriu_emmagatzematge`, `A4_matriu_offset_ij` i `A7_gap_processador_memoria`. La resta de colors que quedaven fora de la paleta es van migrar el mateix dia (§14). La paleta s'ha de revisar per reduir-ne la quantitat de colors (`TODO.md`).
 
 ---
 
@@ -428,7 +428,7 @@ REPLACEMENTS = [
     ('#664d03', '#ffd966'),
     ('#f8d7da', '#3a1a1e'),  # .text / executable (rosa)
     ('#842029', '#f1a8ae'),
-    ('#cc0000', '#ff6b6b'),  # dependències de dades: resultats intermedis (T3_deps_*, vegeu §14)
+    ('#cc0000', '#ff6b6b'),  # dependències de dades: resultats intermedis (A3_deps_*, vegeu §14)
     ('#f8d0d3', '#3d1a1e'),  # Miss zona bloc (vermell clar → fosc)
     ('#dc3545', '#f07080'),  # Miss zona bloc stroke
     ('#c8ebd8', '#1a3328'),  # Hit zona bloc (verd clar → fosc)
@@ -452,9 +452,9 @@ Els colors dins els marcadors `<polygon fill="...">` també es substitueixen aut
 
 Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
-**Figures de dependències de dades** (`T3_deps_*`): el color `#cc0000` (resultats intermedis i usos posteriors a la crida) forma part de la taula de substitució dark (§13) amb l'equivalent `#ff6b6b`; la variant dark es genera automàticament.
+**Figures de dependències de dades** (`A3_deps_*`): el color `#cc0000` (resultats intermedis i usos posteriors a la crida) forma part de la taula de substitució dark (§13) amb l'equivalent `#ff6b6b`; la variant dark es genera automàticament.
 
-**Colors llegat: migrats el 2026-10-06.** Fins llavors, diverses figures natives (T1, T3, T5, T6, T7) feien servir colors fora de la paleta §10, que §13 convertia per al fosc; dues, `T3_pila_uninivell` i `T3_pila_multinivell`, en feien servir un (`#e6e9ec`) que no hi era, i al fosc la memòria lliure sortia d'un gris molt clar. Es van passar a la paleta: el negre de les figures natives de T5, a `#343a40`; els blaus de T1 i de `T7_mc_fallada`, a `#084298` i `#cfe2ff`; els grisos de text de T3, a `#343a40`; els de traç de T1, a `#adb5bd`; i el de la pila, a `#f8f9fa`. Dos colors que feien servir diverses figures amb un paper propi es van afegir a §10 (`#e6f1fb` i `#dee2e6`). §13 va perdre les 32 entrades que ja no feia servir cap fitxer: les 23 de les figures externes de T7 retirades a la fase 7c i les 9 que la migració va deixar lliures. Un color nou fora de §10 s'ha d'afegir a §13 en el mateix commit, o el fosc el deixa igual (`gen_dark.py` l'avisa al render).
+**Colors llegat: migrats el 2026-10-06.** Fins llavors, diverses figures natives (T1, T3, T5, T6, T7) feien servir colors fora de la paleta §10, que §13 convertia per al fosc; dues, `A3_pila_uninivell` i `A3_pila_multinivell`, en feien servir un (`#e6e9ec`) que no hi era, i al fosc la memòria lliure sortia d'un gris molt clar. Es van passar a la paleta: el negre de les figures natives de T5, a `#343a40`; els blaus de T1 i de `A7_mc_fallada`, a `#084298` i `#cfe2ff`; els grisos de text de T3, a `#343a40`; els de traç de T1, a `#adb5bd`; i el de la pila, a `#f8f9fa`. Dos colors que feien servir diverses figures amb un paper propi es van afegir a §10 (`#e6f1fb` i `#dee2e6`). §13 va perdre les 32 entrades que ja no feia servir cap fitxer: les 23 de les figures externes de T7 retirades a la fase 7c i les 9 que la migració va deixar lliures. Un color nou fora de §10 s'ha d'afegir a §13 en el mateix commit, o el fosc el deixa igual (`gen_dark.py` l'avisa al render).
 
 ---
 
@@ -483,13 +483,13 @@ Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com
 
 | Figura | PDF d'origen | Contingut |
 |:---|:---|:---|
-| `T6_amdahl` | `T6_amdahl.pdf` | Barres $t_0/t_1$, fraccions $P_x$, $s_x$ (Llei d'Amdahl) |
-| `T6_tc_tc_prima` | `T6_tc_tc_prima.pdf` | Barres A/B, $t_c$ vs $t_c'$ (reducció de temps de cicle) |
-| `T6_not_cmos` | `T6_not__cmos___1_0___0_1.pdf` | Porta NOT: representació funcional i CMOS |
-| `T6_not_1_0` | `T6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=V_{CC}(1-e^{-t/RC})$ |
-| `T6_not_0_1` | `T6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=V_{CC}\,e^{-t/RC}$ |
+| `A6_amdahl` | `A6_amdahl.pdf` | Barres $t_0/t_1$, fraccions $P_x$, $s_x$ (Llei d'Amdahl) |
+| `A6_tc_tc_prima` | `A6_tc_tc_prima.pdf` | Barres A/B, $t_c$ vs $t_c'$ (reducció de temps de cicle) |
+| `A6_not_cmos` | `A6_not__cmos___1_0___0_1.pdf` | Porta NOT: representació funcional i CMOS |
+| `A6_not_1_0` | `A6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=V_{CC}(1-e^{-t/RC})$ |
+| `A6_not_0_1` | `A6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=V_{CC}\,e^{-t/RC}$ |
 
-Les cinc figures de T6 ja no són el resultat directe de l'extracció: el 2026-10-06 se'ls va treure el `textLength` (que `rsvg-convert` no implementa), els subíndexs es van passar a `<tspan dy>` dins d'un sol `<text>` (a `T6_amdahl`, els 38 `<text>` d'un caràcter o d'un subíndex es van refer en 15), el text es va posar en la notació d'A6 ($V_{CC}$, $V_{in}$, $V_{out}$, $s_x$, $t_{\text{no-millorat}}$, PMOS i NMOS) i els colors, a la paleta (el negre a `#343a40`, i el gris mig de les barres, `#999999` i `#b3b3b3`, a `#adb5bd`). Si mai es tornen a extreure del PDF, cal refer-ho. Un espai que obre un `<tspan>` després d'un subíndex, `rsvg-convert` se'l menja si el `<text>` no porta `xml:space="preserve"`.
+Les cinc figures de T6 ja no són el resultat directe de l'extracció: el 2026-10-06 se'ls va treure el `textLength` (que `rsvg-convert` no implementa), els subíndexs es van passar a `<tspan dy>` dins d'un sol `<text>` (a `A6_amdahl`, els 38 `<text>` d'un caràcter o d'un subíndex es van refer en 15), el text es va posar en la notació d'A6 ($V_{CC}$, $V_{in}$, $V_{out}$, $s_x$, $t_{\text{no-millorat}}$, PMOS i NMOS) i els colors, a la paleta (el negre a `#343a40`, i el gris mig de les barres, `#999999` i `#b3b3b3`, a `#adb5bd`). Si mai es tornen a extreure del PDF, cal refer-ho. Un espai que obre un `<tspan>` després d'un subíndex, `rsvg-convert` se'l menja si el `<text>` no porta `xml:space="preserve"`.
 
 
 ---
@@ -506,8 +506,8 @@ Convenció fixada a la fase 5 (2026-10-03, decisió de l'usuari) amb les figures
 
 | Figura | Generador | Contingut |
 |:---|:---|:---|
-| `T4_semisumador_sumador_complet` | `25_scripts/gen_T4_sumador.py` | (a) Semisumador; (b) sumador complet amb dos semisumadors i una OR |
-| `T4_sumador_propagacio_rossec` | `25_scripts/gen_T4_sumador.py` | Cadena de sumadors complets i XOR del sobreeiximent |
+| `A4_semisumador_sumador_complet` | `25_scripts/gen_T4_sumador.py` | (a) Semisumador; (b) sumador complet amb dos semisumadors i una OR |
+| `A4_sumador_propagacio_rossec` | `25_scripts/gen_T4_sumador.py` | Cadena de sumadors complets i XOR del sobreeiximent |
 
 Els SVG generats es versionen a `22_figs_originals/`: el generador no forma part del pre-render. Si es canvia, cal regenerar-los (`25_scripts/gen_T4_sumador.py`) i versionar-ne el resultat.
 
@@ -537,26 +537,26 @@ Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
 
 | Figura | Generador | Contingut |
 |:---|:---|:---|
-| `T7_texe_diagrama` | `25_scripts/gen_T7.py` | Tres instruccions etapa per etapa, amb una MC ideal i amb una fallada |
-| `T7_multinivell_diagrama` | `25_scripts/gen_T7.py` | CPU–MP, CPU–MC–MP i CPU–L1–L2–MP, amb els temps de cada enllaç |
-| `T7_multinivell_multicore` | `25_scripts/gen_T7.py` | Xip de quatre nuclis amb L1i, L1d i L2 privades i L3 compartida |
-| `T7_tipus_fallades` | `25_scripts/gen_T7.py` | Taxa de fallades segons la mida i l'associativitat (qualitativa) |
-| `T8_mv_espais` | `25_scripts/gen_T8.py` | Espais lògics de dos processos, la MMU, la memòria física i el disc |
-| `T8_mv_jerarquia` | `25_scripts/gen_T8.py` | Piràmide de la jerarquia de memòria amb el disc i els temps d'accés (figura 7.2 del tema antic) |
-| `T8_mv_adreca_exemple` | `25_scripts/gen_T8.py` | L'adreça 0x10010004 descomposta en VPN i desplaçament (sense peu) |
-| `T8_mv_traduccio` | `25_scripts/gen_T8.py` | Traducció d'una adreça lògica de 32 bits a una de física de 14 (figura 7.4 del tema antic) |
-| `T8_mv_pagines_marcs` | `25_scripts/gen_T8.py` | Pàgines de dos processos assignades a marcs, i una al disc |
-| `T8_mv_taula_pagines` | `25_scripts/gen_T8.py` | Adreça lògica, registre de taula de pàgines, taula indexada pel VPN i adreça física (figura 7.5 del tema antic, amb el bit E) |
-| `T8_mv_traduccio_exemple` | `25_scripts/gen_T8.py` | La traducció de 0x00001801 amb la taula del procés 2 (figura 7.6 del tema antic) |
-| `T8_mv_taula_multinivell` | `25_scripts/gen_T8.py` | Taula de dos nivells de Sv32, amb VPN[1], VPN[0] i el desplaçament |
-| `T8_mv_tlb_estructura` | `25_scripts/gen_T8.py` | El TLB com a còpia parcial de la taula de pàgines |
-| `T8_mv_flux_traduccio` | `25_scripts/gen_T8.py` | Diagrama de flux de la traducció, amb les zones del maquinari i del SO |
-| `T8_mv_comparticio` | `25_scripts/gen_T8.py` | Dues taules de pàgines que apunten al mateix marc |
-| `T8_mv_pipt` | `25_scripts/gen_T8.py` | TLB i MC en sèrie, amb el cronograma de l'accés |
-| `T8_mv_vipt` | `25_scripts/gen_T8.py` | TLB i MC en paral·lel i el comparador, amb el cronograma a la mateixa escala |
-| `T8_mv_exemple_tlb` | `25_scripts/gen_T8.py` | Traça dels cinc accessos de `#tip-mv-tlb-exemple`, simulats, i els fotogrames `_pas<k>` de la figura dinàmica |
+| `A7_texe_diagrama` | `25_scripts/gen_T7.py` | Tres instruccions etapa per etapa, amb una MC ideal i amb una fallada |
+| `A7_multinivell_diagrama` | `25_scripts/gen_T7.py` | CPU–MP, CPU–MC–MP i CPU–L1–L2–MP, amb els temps de cada enllaç |
+| `A7_multinivell_multicore` | `25_scripts/gen_T7.py` | Xip de quatre nuclis amb L1i, L1d i L2 privades i L3 compartida |
+| `A7_tipus_fallades` | `25_scripts/gen_T7.py` | Taxa de fallades segons la mida i l'associativitat (qualitativa) |
+| `A8_mv_espais` | `25_scripts/gen_T8.py` | Espais lògics de dos processos, la MMU, la memòria física i el disc |
+| `A8_mv_jerarquia` | `25_scripts/gen_T8.py` | Piràmide de la jerarquia de memòria amb el disc i els temps d'accés (figura 7.2 del tema antic) |
+| `A8_mv_adreca_exemple` | `25_scripts/gen_T8.py` | L'adreça 0x10010004 descomposta en VPN i desplaçament (sense peu) |
+| `A8_mv_traduccio` | `25_scripts/gen_T8.py` | Traducció d'una adreça lògica de 32 bits a una de física de 14 (figura 7.4 del tema antic) |
+| `A8_mv_pagines_marcs` | `25_scripts/gen_T8.py` | Pàgines de dos processos assignades a marcs, i una al disc |
+| `A8_mv_taula_pagines` | `25_scripts/gen_T8.py` | Adreça lògica, registre de taula de pàgines, taula indexada pel VPN i adreça física (figura 7.5 del tema antic, amb el bit E) |
+| `A8_mv_traduccio_exemple` | `25_scripts/gen_T8.py` | La traducció de 0x00001801 amb la taula del procés 2 (figura 7.6 del tema antic) |
+| `A8_mv_taula_multinivell` | `25_scripts/gen_T8.py` | Taula de dos nivells de Sv32, amb VPN[1], VPN[0] i el desplaçament |
+| `A8_mv_tlb_estructura` | `25_scripts/gen_T8.py` | El TLB com a còpia parcial de la taula de pàgines |
+| `A8_mv_flux_traduccio` | `25_scripts/gen_T8.py` | Diagrama de flux de la traducció, amb les zones del maquinari i del SO |
+| `A8_mv_comparticio` | `25_scripts/gen_T8.py` | Dues taules de pàgines que apunten al mateix marc |
+| `A8_mv_pipt` | `25_scripts/gen_T8.py` | TLB i MC en sèrie, amb el cronograma de l'accés |
+| `A8_mv_vipt` | `25_scripts/gen_T8.py` | TLB i MC en paral·lel i el comparador, amb el cronograma a la mateixa escala |
+| `A8_mv_exemple_tlb` | `25_scripts/gen_T8.py` | Traça dels cinc accessos de `#tip-mv-tlb-exemple`, simulats, i els fotogrames `_pas<k>` de la figura dinàmica |
 
-**Figures dinàmiques (només a l'HTML).** Amb `fotogrames = true`, `gen_MC.py` escriu també un fotograma per pas, `<nom>_pas<k>__MC_{light,dark}.svg`, tots de la mateixa mida (i `gen_T8.py`, de model (a), els de `#fig-mv-tlb-exemple`, `22_figs_originals/T8_mv_exemple_tlb_pas<k>.svg`, que el pre-render converteix com la resta d'originals), i `figures_dinamiques.html` (inclòs a l'HTML per `_quarto.yml`) converteix la figura en un navegador de passos. El PDF hi porta la figura estàtica del mateix script i de la mateixa definició, de manera que els dos formats no poden divergir. Prototip: `#fig-lru-exemple` (bloc 9 de la fase 7c, 2026-10-04); el marcatge és a `13_contrib.qmd §Figures dinàmiques`.
+**Figures dinàmiques (només a l'HTML).** Amb `fotogrames = true`, `gen_MC.py` escriu també un fotograma per pas, `<nom>_pas<k>__MC_{light,dark}.svg`, tots de la mateixa mida (i `gen_T8.py`, de model (a), els de `#fig-mv-tlb-exemple`, `22_figs_originals/A8_mv_exemple_tlb_pas<k>.svg`, que el pre-render converteix com la resta d'originals), i `figures_dinamiques.html` (inclòs a l'HTML per `_quarto.yml`) converteix la figura en un navegador de passos. El PDF hi porta la figura estàtica del mateix script i de la mateixa definició, de manera que els dos formats no poden divergir. Prototip: `#fig-lru-exemple` (bloc 9 de la fase 7c, 2026-10-04); el marcatge és a `13_contrib.qmd §Figures dinàmiques`.
 
 **Figures de memòria cau (`gen_MC.py`).** Dos estils, de la mateixa simulació: `sequencia` (la MP, cada accés amb l'explicació que en calcula l'script, i l'estat de la MC després de cada accés) i `traca` (una fila per accés, amb el bloc que conté cada línia després de l'accés; en color, el que acaba de canviar, i amb vora gruixuda, la línia accedida). Un tercer, `estat`, dibuixa només la MC després dels accessos d'`inicial`: són les taules d'organització d'A7 (`#fig-mc-organitzacio`, `#fig-assoc-conjunts-taula` i `#fig-escriptura-dirty-bit`, natives fins al 2026-10-06), amb una cel·la de dades per línia (`dades = "bloc"`) i, amb `ubica`, la MP i les vies on pot anar el bloc d'una adreça. Decisió de l'usuari (2026-10-04): al PDF, la seqüència per als exemples curts (estat inicial, polítiques d'escriptura, LRU) i la traça per als llargs (conflicte, capacitat); l'estat inicial, en totes dues, com a subfigures, perquè l'alumne faci la transició d'una a l'altra. A l'HTML hi anirà la figura dinàmica (fotogrames de l'estil `sequencia`). Els colors són un per bloc, en l'ordre en què surten a la MP, o un per vector (`color = "vector"`), i la terminologia és la de la decisió 11 de la fase 7c: «Lectura», «Escriptura», «Encert», «Fallada» i fallades «obligatòria», «de capacitat» i «de conflicte».
 

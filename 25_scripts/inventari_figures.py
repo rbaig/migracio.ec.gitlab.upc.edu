@@ -346,7 +346,7 @@ def main():
                 if estatica(f):
                     continue
                 # una figura generada amb la mateixa arrel, o amb una arrel que n'és el començament
-                # (T7_capacitat_exemple aplega les dues passades de T7_capacitat_exemple_bucle_*)
+                # (A7_capacitat_exemple aplega les dues passades de A7_capacitat_exemple_bucle_*)
                 if any(':' in k and tija.startswith(k.split(':', 1)[1]) and consumides.get(k) for k in fonts):
                     avisos['Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives)'].append(f'`{f}`')
                 else:

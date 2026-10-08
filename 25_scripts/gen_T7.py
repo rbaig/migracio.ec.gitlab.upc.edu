@@ -6,15 +6,15 @@ gen_T7.py — Genera les figures soltes de T7 (A7): temps d'execució, memòries
 
 Escriu tres SVG natius a `22_figs_originals/`:
 
-- `T7_texe_diagrama.svg` (`#fig-texe-diagrama`): tres instruccions (`lw`,
+- `A7_texe_diagrama.svg` (`#fig-texe-diagrama`): tres instruccions (`lw`,
   `add`, `lw`) etapa per etapa, amb una MC ideal i amb una fallada al segon
   `lw`, que hi afegeix la penalització. Substitueix el placeholder.
-- `T7_multinivell_diagrama.svg` (`#fig-multinivell-diagrama`): (a) la CPU
+- `A7_multinivell_diagrama.svg` (`#fig-multinivell-diagrama`): (a) la CPU
   connectada a la MP, (b) amb una MC i (c) amb L1 i L2, amb els temps de cada
   enllaç.
-- `T7_multinivell_multicore.svg` (`#fig-multinivell-multicore`): xip de quatre
+- `A7_multinivell_multicore.svg` (`#fig-multinivell-multicore`): xip de quatre
   nuclis amb L1i, L1d i L2 privades, L3 compartida i la MP (DRAM) fora del xip.
-- `T7_tipus_fallades.svg` (`#fig-tipus-fallades`): gràfica qualitativa de la
+- `A7_tipus_fallades.svg` (`#fig-tipus-fallades`): gràfica qualitativa de la
   taxa de fallades segons la mida i l'associativitat, amb les àrees de cada tipus
   de fallada (figura 6.27 del PDF original).
 
@@ -211,10 +211,10 @@ def tipus_fallades():
 
 
 FIGURES = {
-    'T7_texe_diagrama.svg': texe,
-    'T7_multinivell_diagrama.svg': multinivell,
-    'T7_multinivell_multicore.svg': multicore,
-    'T7_tipus_fallades.svg': tipus_fallades,
+    'A7_texe_diagrama.svg': texe,
+    'A7_multinivell_diagrama.svg': multinivell,
+    'A7_multinivell_multicore.svg': multicore,
+    'A7_tipus_fallades.svg': tipus_fallades,
 }
 
 

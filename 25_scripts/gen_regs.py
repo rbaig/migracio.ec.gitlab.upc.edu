@@ -17,7 +17,7 @@ gen_regs.py — Generador de figures SVG de registres de bits per al projecte EC
 Arguments posicionals:
     specs_file      Fitxer de definicions de registres (p. ex. 24_specs/registres.toml).
     output_sufix    Sufix afegit al nom base de cada fitxer de sortida.
-                    Exemple: __registre_light  ⇒  T2_instruccio_tipus_R__registre_light.svg
+                    Exemple: __registre_light  ⇒  A2_instruccio_tipus_R__registre_light.svg
 
 Arguments opcionals:
     --output-dir    Directori on es desen els SVG generats (per defecte: auto_figs/).
@@ -202,7 +202,7 @@ def _ins_type_label(fname: str) -> str:
     if idx == -1:
         return ''
     suffix = fname[idx + len(INSTRUCCIO_PREFIX):]
-    # elimina prefix de tema (T2_, T3_, T5_) si n'hi ha
+    # elimina prefix de fitxer (A2_, A3_, A5_) si n'hi ha
     # el suffix ja és el tipus (R, I, S, B, U, J, R4)
     return suffix
 
@@ -657,7 +657,7 @@ def main() -> None:
         'output_sufix',
         help=(
             "Sufix afegit al nom base de cada fitxer de sortida. "
-            "Exemple: __registre_light  ⇒  T2_instruccio_tipus_R__registre_light.svg"
+            "Exemple: __registre_light  ⇒  A2_instruccio_tipus_R__registre_light.svg"
         ),
     )
     parser.add_argument(
