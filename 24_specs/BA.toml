@@ -1,0 +1,241 @@
+# BA.toml — Definicions dels blocs d'activació (BA) per al projecte EC.
+#
+# Font de veritat de les figures `auto_figs/<nom>__BA_{light,dark}.svg`, que
+# genera `25_scripts/gen_BA.py` al pre-render (`_quarto.yml`). La geometria,
+# els colors i el text segueixen `24_specs/svg.md §2–§11`.
+#
+# Format de cada BA:
+#
+#   [BA.<nom>]                      # nom del fitxer, sense sufix ni extensió
+#   title  = "…"                    # <title> de l'SVG
+#   desc   = "…"                    # <desc> de l'SVG: és el text alternatiu de la figura
+#   escala = 10                     # px per byte (svg.md §3: 20, 10 o 5)
+#   desplacaments = true            # opcional: el desplaçament des de sp de cada zona, a l'esquerra
+#   classe = "estreta"              # opcional (svg.md §2); per defecte, estreta (340 px)
+#
+#   [[BA.<nom>.zones]]              # de l'adreça baixa (sp) a l'alta, en ordre
+#   tipus = "escalar"               # una dada de `bytes` bytes (int, registre desat…)
+#   bytes = 4
+#   rol   = "local"                 # "local" (blau), "segur" (verd) o "ra" (ambre)
+#   nom   = "q"                     # el text de la zona, en monoespaiat
+#   text  = ["`ra` desat", "…"]     # o bé, en lloc de `nom`, text lliure (svg.md §8)
+#
+#   tipus = "vector"                # un vector: primer element, mig discontinu i darrer element
+#   element = 1                     # bytes per element
+#   n = 18                          # nombre d'elements
+#   ctype = "char"                  # tipus C de l'element
+#   nom = "v"                       # els elements es rotulen v[0] i v[17]
+#   rol = "local"
+#
+#   tipus = "alineacio"             # farciment d'alineació, de `bytes` bytes
+#   bytes = 2
+#   text  = "…"                     # opcional; per defecte, «Alineació (2 bytes)»
+#
+#   tipus = "generica"              # zona sense mida concreta (el BA en general): sòlid,
+#   rol   = "local"                 #   mig discontinu i sòlid (svg.md §4)
+#   bytes = [2, 6, 1]               # l'alçada de cada part, en bytes de l'escala
+#   ratlles = "curtes"              # opcional: totes curtes (svg.md §6); per defecte, curta·llarga·curta
+#   text  = ["Variables locals", "…"]   # la primera línia, en negreta (svg.md §8)
+#
+# Al text lliure, `codi` va en monoespaiat i *cursiva*, en cursiva.
+
+[BA.T3_ba_exemple]
+title  = "Bloc d'activació de la subrutina exemple"
+desc   = "Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes: q (int, 4 bytes, desplaçament +0), v (char[18], 18 bytes, +4), w (char[20], 20 bytes, +22), 2 bytes d'alineació (+42), i els registres desats s0 (+44), s1 (+48), s2 (+52) i ra (+56)."
+escala = 10
+desplacaments = true
+
+[[BA.T3_ba_exemple.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "local"
+nom   = "q"
+
+[[BA.T3_ba_exemple.zones]]
+tipus   = "vector"
+element = 1
+n       = 18
+ctype   = "char"
+nom     = "v"
+rol     = "local"
+
+[[BA.T3_ba_exemple.zones]]
+tipus   = "vector"
+element = 1
+n       = 20
+ctype   = "char"
+nom     = "w"
+rol     = "local"
+
+[[BA.T3_ba_exemple.zones]]
+tipus = "alineacio"
+bytes = 2
+
+[[BA.T3_ba_exemple.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s0"
+
+[[BA.T3_ba_exemple.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s1"
+
+[[BA.T3_ba_exemple.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s2"
+
+[[BA.T3_ba_exemple.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "ra"
+nom   = "ra"
+
+[BA.T3_ba_multi]
+title  = "Bloc d'activació de la subrutina multi"
+desc   = "Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes: els registres desats s0 (desplaçament +0), s1 (+4) i ra (+8)."
+escala = 20
+desplacaments = true
+
+[[BA.T3_ba_multi.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s0"
+
+[[BA.T3_ba_multi.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s1"
+
+[[BA.T3_ba_multi.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "ra"
+nom   = "ra"
+
+# A3, @fig-ba-general: el BA en general, sense cap subrutina concreta.
+[BA.T3_ba_general]
+title  = "Estructura general del bloc d'activació"
+desc   = "La pila, d'adreces baixes, amb sp a dalt, a adreces altes, amb quatre zones: les variables locals (tipus estructurats, i escalars sense registre disponible o dels quals es pren l'adreça amb &), en blau; l'alineació fins a un múltiple de 4, en gris; els registres segurs desats, de s0 a s11 els necessaris, si la subrutina és multinivell, en verd; i ra desat, si la subrutina és multinivell, en groc, a les adreces més altes."
+escala = 20
+
+[[BA.T3_ba_general.zones]]
+tipus   = "generica"
+rol     = "local"
+bytes   = [2, 6, 1]
+ratlles = "curtes"
+text    = ["Variables locals", "tipus estructurats i escalars", "sense registre disponible o amb &"]
+
+[[BA.T3_ba_general.zones]]
+tipus = "alineacio"
+bytes = 3
+text  = "Alineació (múltiple de 4)"
+
+[[BA.T3_ba_general.zones]]
+tipus = "generica"
+rol   = "segur"
+bytes = [4, 4, 4]
+text  = ["Registres segurs desats", "`s0`–`s11` (els necessaris)", "si la subrutina és multinivell"]
+
+[[BA.T3_ba_general.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "ra"
+text  = ["`ra` desat", "si la subrutina és multinivell"]
+
+# A3, @fig-ba-func (#tip-exemple-variables-pila).
+[BA.T3_ba_func]
+title  = "Bloc d'activació de la funció func"
+desc   = "Bloc d'activació de 52 bytes, d'adreces baixes (sp) a altes: v (char[10], 10 bytes, desplaçament +0), 2 bytes d'alineació (+10) i w (int[10], 40 bytes, +12)."
+escala = 10
+desplacaments = true
+
+[[BA.T3_ba_func.zones]]
+tipus   = "vector"
+element = 1
+n       = 10
+ctype   = "char"
+nom     = "v"
+rol     = "local"
+
+[[BA.T3_ba_func.zones]]
+tipus = "alineacio"
+bytes = 2
+
+[[BA.T3_ba_func.zones]]
+tipus   = "vector"
+element = 4
+n       = 10
+ctype   = "int"
+nom     = "w"
+rol     = "local"
+
+# L3, @fig-ba-moda (#sol-moda).
+[BA.T3_ba_moda]
+title  = "Bloc d'activació de la funció moda"
+desc   = "Bloc d'activació de 60 bytes, d'adreces baixes (sp) a altes: histo (int[10], 40 bytes, desplaçament +0) i els registres desats s0 (+40), s1 (+44), s2 (+48), s3 (+52) i ra (+56)."
+escala = 10
+desplacaments = true
+
+[[BA.T3_ba_moda.zones]]
+tipus   = "vector"
+element = 4
+n       = 10
+ctype   = "int"
+nom     = "histo"
+rol     = "local"
+
+[[BA.T3_ba_moda.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s0"
+
+[[BA.T3_ba_moda.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s1"
+
+[[BA.T3_ba_moda.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s2"
+
+[[BA.T3_ba_moda.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "segur"
+nom   = "s3"
+
+[[BA.T3_ba_moda.zones]]
+tipus = "escalar"
+bytes = 4
+rol   = "ra"
+nom   = "ra"
+
+# S3, @fig-ba-funcio-A (@exr-t3-ba-funcioA, apartat b).
+[BA.T3_ba_A]
+title  = "Bloc d'activació de la funció A"
+desc   = "Bloc d'activació de 12 bytes, d'adreces baixes (sp) a altes: r (char[10], 10 bytes, desplaçament +0) i 2 bytes d'alineació (+10)."
+escala = 20
+desplacaments = true
+
+[[BA.T3_ba_A.zones]]
+tipus   = "vector"
+element = 1
+n       = 10
+ctype   = "char"
+nom     = "r"
+rol     = "local"
+
+[[BA.T3_ba_A.zones]]
+tipus = "alineacio"
+bytes = 2

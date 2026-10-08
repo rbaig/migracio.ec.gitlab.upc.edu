@@ -1,8 +1,8 @@
 # SVG specs — EC
 
-Figures de referència:
-- Mapa de memòria: `auto_figs/T3_mapa_memoria_light.svg`
-- Bloc d'activació: `auto_figs/T3_ba_general_light.svg`
+Figures de referència (es generen al pre-render, §17):
+- Mapa de memòria: `auto_figs/T3_mapa_memoria__mapa_light.svg`, de `24_specs/mapa.toml`
+- Bloc d'activació: `auto_figs/T3_ba_general__BA_light.svg`, de `24_specs/BA.toml`
 
 ---
 
@@ -69,14 +69,14 @@ width="100%"   viewBox="0 0 {W} {H}"
 **Excepcions:**
 
 - **Registres de bits** (`gen_regs.py`): `W = 2 + total_bits × 22 + 2` px (708 px per a 32 bits). `width="100%"` igual.
-- **BA i mapes de memòria** *(pendent de migrar a `estreta`)*: marges fixos `sup=inf=10 px`, `esq=76 px`, `dret=10 px`; `w_rect=230 px`; `W=316 px`. Vegeu `TODO.md` per al pla de migració.
-- **Figures estretes generades** (`gen_BA.py` i `gen_memoria.py`): `width="{W}" height="{H}"` en px, i no `width="100%"`. A l'HTML, una figura de 326 o 340 px amb `width="100%"` s'estira a tota la columna (937 px, ×2,9) i el text hi surt a uns 31 px; amb l'amplada en px es mostra a la mida natural, i en un visor estret s'encongeix igualment fins a l'amplada de la columna. Al PDF no canvia res: `rsvg-convert` ja en feia servir la mida del `viewBox`. Decisió de l'usuari (2026-10-05, fase 7c, bloc 11). Des del bloc 12 (2026-10-06), la mida a l'HTML la fixa el filtre `figures.lua` per a totes les figures (vegeu més amunt), i l'amplada en px d'aquests dos generadors ja no hi influeix; es manté perquè és innòcua.
+- **BA i mapes de memòria** (`gen_BA.py` i `gen_mapa.py`): classe `estreta`, amb marges `sup=inf=10 px`, columna d'etiquetes de 76 px, rectangles a `x_rect=86 px` de `w_rect=244 px` i marge dret de 10 px, igual que el superior i l'inferior. Les piles en fila (`gen_mapa.py`, tipus `piles`) són `estreta` o `estàndard` segons el nombre de columnes, amb columnes de 60 px a totes dues. Fins al 2026-10-07 (fase 7f), les figures de BA i el mapa de memòria eren de 326 px, amb `w_rect=230 px`, i les piles, de 310 i 510 px.
+- **Figures estretes generades** (`gen_BA.py`, `gen_mapa.py` i `gen_memoria.py`): `width="{W}" height="{H}"` en px, i no `width="100%"`. A l'HTML, una figura de 326 o 340 px amb `width="100%"` s'estira a tota la columna (937 px, ×2,9) i el text hi surt a uns 31 px; amb l'amplada en px es mostra a la mida natural, i en un visor estret s'encongeix igualment fins a l'amplada de la columna. Al PDF no canvia res: `rsvg-convert` ja en feia servir la mida del `viewBox`. Decisió de l'usuari (2026-10-05, fase 7c, bloc 11). Des del bloc 12 (2026-10-06), la mida a l'HTML la fixa el filtre `figures.lua` per a totes les figures (vegeu més amunt), i l'amplada en px d'aquests dos generadors ja no hi influeix; es manté perquè és innòcua.
 
 ---
 
 ## 3. Escala i alçades
 
-> **Nota:** Els valors numèrics de coordenades i dimensions de les seccions §3–§11 corresponen al canvas actual de les figures de BA i mapes de memòria (`w_rect=230`, `W=316 px`). S'actualitzaran quan s'executi la migració a classe `estreta` (340 px); vegeu `TODO.md`.
+> **Nota:** Els valors numèrics de coordenades i dimensions de les seccions §3–§11 corresponen a la classe `estreta` (`W=340 px`, `w_rect=244 px`), la de les figures de BA i del mapa de memòria. Les primitives que les dibuixen són a `25_scripts/columna_memoria.py`, que comparteixen `gen_BA.py` i `gen_mapa.py` (§17).
 
 **Factor d'escala de referència: 20 px/byte.**
 
@@ -117,9 +117,9 @@ Cada zona es construeix amb **3 sub-rectangles apilats**:
 └─────────────────┘    h = P bytes × 20 px
 ```
 
-**Excepció — zona d'un sol bloc** (p. ex. `ra`, alineació simple):
+**Excepció — zona d'un sol bloc** (p. ex. `ra`, alineació):
 - Un sol `<rect>` amb stroke sòlid, ratlles i text centrat.
-- O un sol `<rect>` amb vores verticals discontínues si la mida no és múltiple de 4.
+- **L'alineació**: un sol `<rect>` amb contorn continu `#adb5bd` (el traç de la paleta, §10) i sense ratlles, perquè no conté dades. Els seus bytes són del BA —compten a la mida i al desplaçament de `sp`—, com la zona reservada del mapa, que també té contorn continu. Fins al 2026-10-07 tenia les vores verticals discontínues i cap vora horitzontal, com si fos un buit (decisió de l'usuari, 2026-10-07, a proposta de Claude Code).
 
 ### Sub-rect sòlid
 
@@ -128,7 +128,7 @@ Cada zona es construeix amb **3 sub-rectangles apilats**:
       fill="{fill}" stroke="{stroke}" stroke-width="1"/>
 ```
 
-Porta **ratlles indicadores** als costats esquerre i dret (vegeu §6). Valors de `x_rect` i `w_rect`: vegeu §5.
+Porta **ratlles indicadores** als costats esquerre i dret (vegeu §6). Valors de `x_rect` i `w_rect`: vegeu §5. A les figures generades, el rectangle porta només el farciment i les vores verticals: les horitzontals, les de dalt i les de baix de cada zona, es dibuixen al final, segons el color de la zona veïna (§7).
 
 ### Sub-rect mig (discontíu)
 
@@ -142,13 +142,15 @@ Porta **ratlles indicadores** als costats esquerre i dret (vegeu §6). Valors de
 
 El text es col·loca centrat verticalment dins aquest sub-rect (vegeu §8).
 
+**Trams continus d'un byte.** Les vores verticals del sub-rect mig són contínues durant un byte (l'escala, §3) a cada extrem, i discontínues entre mig; si el sub-rect mig fa menys de 3 bytes, són contínues de dalt a baix. Així es veu que el tram elidit continua sense tall el que té a sobre i a sota, i el contingut elidit es distingeix de l'espai lliure, que no és de ningú i és discontinu de dalt a baix. Una línia discontínua, doncs, només vol dir contingut elidit (amb els trams continus) o espai lliure. Val per al mig dels vectors (entre el primer element i el darrer) i de les zones genèriques. Ho fa `vlines_elidides()`, de `25_scripts/columna_memoria.py`. Proposta de l'usuari (2026-10-07).
+
 ---
 
 ## 5. Columna de rectangles
 
 ```
 x_rect  = 86 px      (= marge_esq + 10 = 76 + 10)
-w_rect  = 230 px
+w_rect  = 244 px     (marge dret de 10 px: W = 86 + 244 + 10 = 340)
 ```
 
 Els sub-rectangles són adjacents (sense espai entre ells).
@@ -157,12 +159,12 @@ Els sub-rectangles són adjacents (sense espai entre ells).
 
 ## 6. Ratlles indicadores de mida
 
-Les ratlles van als sub-rects **sòlids** (superior i inferior), mai al mig.
+Les ratlles van als sub-rects **sòlids** (superior i inferior), mai al mig, i només als que fan 40 px o més: en un de més petit no hi caben.
 S'apliquen als **costats esquerre i dret** del rectangle, cap a l'interior.
 
 ```
 x_esq_interior = 87   (= x_rect + 1)
-x_dret_interior = 315  (= x_rect + w_rect - 1)
+x_dret_interior = 329  (= x_rect + w_rect - 1)
 L_curta  = 6 px
 L_llarga = 12 px
 ```
@@ -177,9 +179,9 @@ L_llarga = 12 px
 <line x1="87"  y1="{y+h*0.50}" x2="99"  y2="{y+h*0.50}" stroke="{stroke}" stroke-width="1"/>
 <line x1="87"  y1="{y+h*0.75}" x2="93"  y2="{y+h*0.75}" stroke="{stroke}" stroke-width="1"/>
 <!-- Dreta -->
-<line x1="315" y1="{y+h*0.25}" x2="309" y2="{y+h*0.25}" stroke="{stroke}" stroke-width="1"/>
-<line x1="315" y1="{y+h*0.50}" x2="303" y2="{y+h*0.50}" stroke="{stroke}" stroke-width="1"/>
-<line x1="315" y1="{y+h*0.75}" x2="309" y2="{y+h*0.75}" stroke="{stroke}" stroke-width="1"/>
+<line x1="329" y1="{y+h*0.25}" x2="323" y2="{y+h*0.25}" stroke="{stroke}" stroke-width="1"/>
+<line x1="329" y1="{y+h*0.50}" x2="317" y2="{y+h*0.50}" stroke="{stroke}" stroke-width="1"/>
+<line x1="329" y1="{y+h*0.75}" x2="323" y2="{y+h*0.75}" stroke="{stroke}" stroke-width="1"/>
 ```
 
 ### Patró totes curtes (per a zones no múltiples de 4, p. ex. variables locals)
@@ -209,6 +211,12 @@ Una línia grisa fina a cada frontera entre zones (no entre sub-rects de la mate
 
 S'inclou la línia a `y = marge_sup` (inici) i a `y = H - marge_inf` (final).
 
+### Vores horitzontals entre zones
+
+Cada zona amb traç dibuixa les seves vores horitzontals **per dins de la seva àrea**, desplaçades mig gruix (0,5 px). Entre dues zones de color diferent es veuen, doncs, dues línies d'1 px, una de cada color; entre dues del mateix color, una de sola, compartida, a la frontera; i al costat d'una zona sense traç (l'espai lliure), la de la zona amb traç, sencera. L'alineació té traç, `#adb5bd` (§4). Ho fa `vores()`, de `25_scripts/columna_memoria.py`, un cop dibuixades totes les zones.
+
+Fins al 2026-10-07, cada zona era un `<rect>` amb el traç centrat a la vora, i la que es dibuixava després tapava la meitat del traç de l'anterior amb el farciment i, si en tenia, l'altra meitat amb el seu traç: el resultat depenia de l'ordre de dibuix (mitja línia vermella sota la blava entre `.text` i `.data`; la vora inferior del heap, a mig gruix sota l'espai lliure). Decisió de l'usuari (2026-10-07, opció A), a proposta de Claude Code; la que alternava a ratlles els dos colors es va descartar perquè, en aquesta família, una línia discontínua vol dir «elidit» (§4). L'apliquen `gen_BA.py` i `gen_mapa.py`; la resta de figures, `TODO.md`.
+
 ---
 
 ## 8. Text dins les zones
@@ -219,7 +227,7 @@ S'inclou la línia a `y = marge_sup` (inici) i a `y = H - marge_inf` (final).
 font-size:    12 px
 font-weight:  bold
 text-anchor:  middle
-x:            201  (centre de la columna = 86 + 230/2)
+x:            208  (centre de la columna = 86 + 244/2)
 y:            y_mig + h_mig/2 - (n_línies-1)×16/2   (centrat vertical)
 fill:         color del stroke de la zona
 ```
@@ -230,7 +238,7 @@ fill:         color del stroke de la zona
 font-size:    11 px
 font-weight:  normal
 text-anchor:  middle
-x:            201
+x:            208
 y:            y_títol + 16×i   (interlineat 16 px)
 fill:         color del stroke de la zona
 ```
@@ -265,6 +273,12 @@ Fins a la fase 7c, aquesta secció deia «espai cada 4 dígits», contra el text
 «adr. altes»   font-size=10  fill=#6c757d   y = H - marge_inf + 3
 ```
 
+A les piles en fila (`gen_mapa.py`, tipus `piles`), cada zona de la pila (els BA i la pila ocupada) porta el seu contorn, del seu color i amb les vores de §7, i la part lliure, a dalt, és com l'espai lliure del mapa: vores verticals discontínues i cap vora horitzontal. «sp →» va a l'esquerra de cada pila, a l'altura del cim, i una línia de 2 px del mateix color marca el cim: el color de la zona del cim diu quin BA és actiu (gris sobre la pila ocupada). «adr. baixes» i «adr. altes» hi van en dues línies, a l'esquerra de la primera pila.
+
+### Desplaçaments des de `sp` (BA)
+
+Amb `desplacaments = true` (`gen_BA.py`), cada zona porta a la vora superior el seu desplaçament des de `sp` (`+4`, `+22`…), amb la posició i el color de les etiquetes d'adreça, en monoespaiat. La primera zona no en porta: el seu desplaçament, `+0`, és el de «sp →». Amb els desplaçaments, la figura fa la feina de la taula «Desplaçament des de `sp`», que ja no cal (decisió de l'usuari, 2026-10-07).
+
 ---
 
 ## 10. Paleta de colors per zona
@@ -285,6 +299,7 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | Hit (zona de bloc) — fons de cel·la MC/MP   | `#c8ebd8` | `#198754` |
 | Zona o contenidor (la CPU, el maquinari d'un flux) | `#e6f1fb` | `#084298` |
 | Graella i vores secundàries | — | `#dee2e6` |
+| Pila ocupada abans d'una crida (piles en fila) | `#adb5bd` | `#6c757d` |
 
 Els dos últims colors s'hi van afegir el 2026-10-06 (decisió de l'usuari, a proposta de Claude Code), perquè ja els feien servir diverses figures amb aquest paper: `#e6f1fb`, `T1_von_neumann` i `T8_mv_flux_traduccio`; `#dee2e6`, `T4_matriu_emmagatzematge`, `T4_matriu_offset_ij` i `T7_gap_processador_memoria`. La resta de colors que quedaven fora de la paleta es van migrar el mateix dia (§14). La paleta s'ha de revisar per reduir-ne la quantitat de colors (`TODO.md`).
 
@@ -292,44 +307,29 @@ Els dos últims colors s'hi van afegir el 2026-10-06 (decisió de l'usuari, a pr
 
 ## 11. Fletxes de creixement (heap i pila)
 
-### Marcadors (`<defs>`)
+Una línia vertical de 1,5 px i una punta triangular de 8 px (`<polygon>`), del color del traç de la zona, que surten de la zona cap a l'espai lliure; la variant fosca en canvia el color com el de qualsevol altre element (§13). Les dibuixa `fletxa()`, de `25_scripts/columna_memoria.py`.
 
-```xml
-<!-- Punta cap amunt (pila) -->
-<marker id="arr-up" markerWidth="8" markerHeight="8"
-        refX="4" refY="0" orient="auto">
-  <polygon points="0,8 4,0 8,8" fill="#664d03"/>
-</marker>
-<!-- Punta cap avall (heap) -->
-<marker id="arr-dn" markerWidth="8" markerHeight="8"
-        refX="4" refY="8" orient="auto">
-  <polygon points="0,0 4,8 8,0" fill="#0a3622"/>
-</marker>
-```
-
-El color del `fill` del marcador coincideix amb el `stroke` de la zona.
-
-### Heap (fletxa cap avall, a la dreta del rectangle)
+### Heap (fletxa cap avall, a la dreta)
 
 ```
-x_fletxa = x_rect + 208 = 294   (dins del canvas, a la dreta de w_rect)
-y_inici  = y_heap + 47
-y_fi     = y_heap_fi + 33
-stroke   = #0a3622   stroke-width="1.5"   marker-end="url(#arr-dn)"
+x        = x_rect + w_rect - 22 = 308
+y_inici  = y_heap_fi - 15          (dins del heap)
+y_fi     = y_heap_fi + 35          (la punta, a l'espai lliure)
+stroke   = #0a3622   stroke-width="1.5"
 ```
 
-### Pila (fletxa cap amunt, a l'esquerra del rectangle)
+### Pila (fletxa cap amunt, a l'esquerra)
 
 ```
-x_fletxa = x_rect + 22 = 108
-y_inici  = y_pila + 8
-y_fi     = y_pila - 33
-stroke   = #664d03   stroke-width="1.5"   marker-end="url(#arr-up)"
+x        = x_rect + 22 = 108
+y_inici  = y_pila + 15             (dins de la pila)
+y_fi     = y_pila - 35             (la punta, a l'espai lliure)
+stroke   = #664d03   stroke-width="1.5"
 ```
 
 ### Text «creix» rotat
 
-Fórmula per a un text centrat al costat d'una línia vertical en `(x_L, y_centre)`:
+A 8 px de la fletxa, cap enfora de la columna (a la dreta de la del heap, a l'esquerra de la de la pila), centrat a la meitat de la fletxa i **desplaçat 6 px cap a la punta**: centrat a la meitat, la «c» tocava la vora entre la zona i l'espai lliure (decisió de l'usuari, 2026-10-07). Fórmula per a un text centrat al costat d'una línia vertical en `(x_L, y_centre)`:
 
 ```
 rotate(+90):  <text x=" y_centre" y="-x_L"  transform="rotate(90)"  ...>
@@ -523,10 +523,13 @@ Generadors del pre-render (model (b)). El sufix de cada un és a la taula de suf
 | Definició | Generador | Sufix | Figures |
 |:---|:---|:---|:---|
 | `24_specs/registres.toml` | `25_scripts/gen_regs.py` | `__registre` | Registres de bits i formats d'instrucció (T2, T3, T5, T9) |
-| `24_specs/ba.toml` | `25_scripts/gen_BA.py` | `__BA` | Blocs d'activació, amb les zones de §3–§11 (T3) |
+| `24_specs/BA.toml` | `25_scripts/gen_BA.py` | `__BA` | Blocs d'activació, amb les zones de §3–§11 (T3): escalars, vectors, alineació i zones genèriques amb text lliure, i, si cal, el desplaçament de cada zona (§9) |
+| `24_specs/mapa.toml` | `25_scripts/gen_mapa.py` | `__mapa` | Mapes de memòria (T3): les regions de la memòria de RARS, amb les adreces i les fletxes de creixement, i la pila en diversos moments d'una crida, una columna per moment |
 | `24_specs/subrutines.toml` | `25_scripts/gen_subrutines.py` | `__subrutina` | Dependències de dades d'una subrutina: el codi, les crides en franges i una barra de vida per dada (T3) |
-| `24_specs/mc.toml` | `25_scripts/gen_MC.py` | `__MC` | Memòria cau (T7): simula la MC sobre una seqüència d'accessos i en dibuixa la seqüència pas a pas, la taula de traça o l'estat en un moment donat; i els diagrames de blocs de la lectura |
+| `24_specs/MC.toml` | `25_scripts/gen_MC.py` | `__MC` | Memòria cau (T7): simula la MC sobre una seqüència d'accessos i en dibuixa la seqüència pas a pas, la taula de traça o l'estat en un moment donat; i els diagrames de blocs de la lectura |
 | `24_specs/memoria.toml` | `25_scripts/gen_memoria.py` | `__memoria` | Memòria per bytes (T2): una fila per byte, amb l'adreça, la dada i una nota (MSB, LSB) o una fletxa de creixement |
+
+`gen_BA.py` i `gen_mapa.py` comparteixen les primitives de la columna de memòria (zones, ratlles, etiquetes, fletxes), que són a `25_scripts/columna_memoria.py`: no és cap generador, i no té sufix.
 
 Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
 
@@ -555,4 +558,4 @@ Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
 
 **Figures de memòria cau (`gen_MC.py`).** Dos estils, de la mateixa simulació: `sequencia` (la MP, cada accés amb l'explicació que en calcula l'script, i l'estat de la MC després de cada accés) i `traca` (una fila per accés, amb el bloc que conté cada línia després de l'accés; en color, el que acaba de canviar, i amb vora gruixuda, la línia accedida). Un tercer, `estat`, dibuixa només la MC després dels accessos d'`inicial`: són les taules d'organització d'A7 (`#fig-mc-organitzacio`, `#fig-assoc-conjunts-taula` i `#fig-escriptura-dirty-bit`, natives fins al 2026-10-06), amb una cel·la de dades per línia (`dades = "bloc"`) i, amb `ubica`, la MP i les vies on pot anar el bloc d'una adreça. Decisió de l'usuari (2026-10-04): al PDF, la seqüència per als exemples curts (estat inicial, polítiques d'escriptura, LRU) i la traça per als llargs (conflicte, capacitat); l'estat inicial, en totes dues, com a subfigures, perquè l'alumne faci la transició d'una a l'altra. A l'HTML hi anirà la figura dinàmica (fotogrames de l'estil `sequencia`). Els colors són un per bloc, en l'ordre en què surten a la MP, o un per vector (`color = "vector"`), i la terminologia és la de la decisió 11 de la fase 7c: «Lectura», «Escriptura», «Encert», «Fallada» i fallades «obligatòria», «de capacitat» i «de conflicte».
 
-Una mateixa figura pot tenir alhora una versió original i una de generada, amb el mateix nom i un sufix diferent: les dependències de `multi` i d'`exemple` (A3) són a `22_figs_originals/` (amb fletxes) i a `subrutines.toml` (amb barres de vida), i A3 les mostra totes dues, com a subfigures (a) i (b); dels BA de `multi` i d'`exemple`, A3 consumeix la generada, i els originals es conserven (p. ex. per a les diapositives). Decisions de l'usuari (2026-10-04).
+Una mateixa figura pot tenir alhora una versió original i una de generada, amb el mateix nom i un sufix diferent: les dependències de `multi` i d'`exemple` (A3) són a `22_figs_originals/` (amb fletxes) i a `subrutines.toml` (amb barres de vida), i A3 les mostra totes dues, com a subfigures (a) i (b). Quan el llibre consumeix només la generada, l'original es conserva a `22_figs_originals/` (`13_contrib.qmd §Convencions SVG`): els BA de `multi` i d'`exemple` des del 2026-10-04, i des del 2026-10-07, els de `func` i el general, el mapa de memòria i les dues piles en fila (A3).

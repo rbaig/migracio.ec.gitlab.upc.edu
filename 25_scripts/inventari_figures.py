@@ -136,9 +136,10 @@ PLACEHOLDER = '013175106fe4'   # hash de 22_figs_originals/TODO.svg, el placehol
 
 GENERADORS = {
     'registre':  ('24_specs/registres.toml', 'registers', 'gen_regs.py'),
-    'BA':        ('24_specs/ba.toml', 'ba', 'gen_BA.py'),
+    'BA':        ('24_specs/BA.toml', 'BA', 'gen_BA.py'),
+    'mapa':      ('24_specs/mapa.toml', 'mapa', 'gen_mapa.py'),
     'subrutina': ('24_specs/subrutines.toml', 'subrutina', 'gen_subrutines.py'),
-    'MC':        ('24_specs/mc.toml', 'mc', 'gen_MC.py'),
+    'MC':        ('24_specs/MC.toml', 'MC', 'gen_MC.py'),
     'memoria':   ('24_specs/memoria.toml', 'memoria', 'gen_memoria.py'),
 }
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-gen_MC.py — Genera les figures de memòria cau (T7) a partir de `24_specs/mc.toml`, simulant la MC.
+gen_MC.py — Genera les figures de memòria cau (T7) a partir de `24_specs/MC.toml`, simulant la MC.
 
 Ús, com a pas del pre-render de Quarto (`_quarto.yml`):
 
-    25_scripts/gen_MC.py 24_specs/mc.toml "__MC_light" --output-dir="auto_figs/"
+    25_scripts/gen_MC.py 24_specs/MC.toml "__MC_light" --output-dir="auto_figs/"
 
-Per a cada `[mc.<nom>]` del TOML, el generador **simula** la memòria cau sobre la
+Per a cada `[MC.<nom>]` del TOML, el generador **simula** la memòria cau sobre la
 seqüència d'accessos (emplaçament, reemplaçament LRU, escriptura immediata o
 retardada, amb assignació o sense) i en dibuixa el resultat. Els encerts, les
 fallades, el tipus de fallada (obligatòria, de capacitat o de conflicte), el
@@ -732,11 +732,11 @@ def svg(spec, w, h, cos):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[1])
-    ap.add_argument('specs', type=Path, help='24_specs/mc.toml')
+    ap.add_argument('specs', type=Path, help='24_specs/MC.toml')
     ap.add_argument('sufix', help='sufix del fitxer de sortida, p. ex. "__MC_light"')
     ap.add_argument('--output-dir', type=Path, default=Path('.'))
     args = ap.parse_args()
-    dades = tomllib.loads(args.specs.read_text(encoding='utf-8')).get('mc', {})
+    dades = tomllib.loads(args.specs.read_text(encoding='utf-8')).get('MC', {})
     args.output_dir.mkdir(parents=True, exist_ok=True)
     n = errors = 0
     for nom, spec in dades.items():

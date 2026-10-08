@@ -1,0 +1,123 @@
+# mapa.toml — Mapes de memòria per al projecte EC: la memòria de RARS i la pila
+# en diversos moments d'una crida.
+#
+# Font de veritat de les figures `auto_figs/<nom>__mapa_{light,dark}.svg`, que
+# genera `25_scripts/gen_mapa.py` al pre-render (`_quarto.yml`), amb les
+# primitives que comparteix amb `gen_BA.py` (`25_scripts/columna_memoria.py`).
+# La geometria, els colors i el text segueixen `24_specs/svg.md §2–§11`.
+#
+# Dos tipus de figura:
+#
+#   [mapa.<nom>]
+#   tipus  = "regions"              # una columna de regions, d'adreces baixes (a dalt) a altes
+#   title  = "…"                    # <title> de l'SVG
+#   desc   = "…"                    # <desc> de l'SVG: és el text alternatiu de la figura
+#   adr_final = "0x7FFFEFFC"        # opcional: l'adreça de la vora inferior
+#
+#   [[mapa.<nom>.regions]]
+#   rol    = "text"                 # reservada, text, data, heap, lliure o pila (svg.md §10)
+#   alcada = 60                     # en px: les regions no són a escala
+#   adr    = "0x00400000"           # opcional: l'adreça d'inici, a la columna esquerra (svg.md §9)
+#   text   = ["`.text`", "…"]       # la primera línia, en negreta (tret de reservada i lliure)
+#   fletxa = "avall"                # opcional: fletxa de creixement cap a l'espai lliure (svg.md §11)
+#
+#   [mapa.<nom>]
+#   tipus   = "piles"               # la pila en diversos moments, una columna per moment
+#   classe  = "estreta"             # svg.md §2: estreta (340 px) o estandard (680 px)
+#   alcada  = 130                   # alçada de cada pila, en px
+#   ocupada = 30                    # la pila ocupada abans de la crida, al fons
+#
+#   [[mapa.<nom>.columnes]]
+#   titol = ["abans de", "cridar a", "*funcB*"]       # tres línies a sobre de la pila
+#   blocs = [{ nom = "BA *funcB*", rol = "pila", alcada = 60 }]   # de baix a dalt; el rol, el color
+#
+# Al text, `codi` va en monoespaiat i *cursiva*, en cursiva.
+
+# A3, @fig-mapa-memoria.
+[mapa.T3_mapa_memoria]
+tipus = "regions"
+title = "Mapa de memòria de RARS"
+desc  = "Una columna de memòria amb les adreces creixent cap avall: la zona reservada, des de 0x00000000; .text, les instruccions del programa, des de 0x00400000, en vermell; .data, les variables globals i constants, des de 0x10010000, en blau; el heap, de gestió explícita amb malloc() i free(), des de 0x10040000, en verd, que creix cap avall; l'espai lliure; i la pila, de gestió automàtica amb sp, en groc, amb el fons a 0x7FFFEFFC, que creix cap amunt."
+adr_final = "0x7FFFEFFC"
+
+[[mapa.T3_mapa_memoria.regions]]
+rol    = "reservada"
+alcada = 30
+adr    = "0x00000000"
+text   = ["reservada"]
+
+[[mapa.T3_mapa_memoria.regions]]
+rol    = "text"
+alcada = 60
+adr    = "0x00400000"
+text   = ["`.text`", "Instruccions del programa"]
+
+[[mapa.T3_mapa_memoria.regions]]
+rol    = "data"
+alcada = 60
+adr    = "0x10010000"
+text   = ["`.data`", "Variables globals i constants"]
+
+[[mapa.T3_mapa_memoria.regions]]
+rol    = "heap"
+alcada = 70
+adr    = "0x10040000"
+text   = ["Heap", "Gestió explícita", "`malloc()` / `free()`"]
+fletxa = "avall"
+
+[[mapa.T3_mapa_memoria.regions]]
+rol    = "lliure"
+alcada = 60
+text   = ["(espai lliure)"]
+
+[[mapa.T3_mapa_memoria.regions]]
+rol    = "pila"
+alcada = 70
+text   = ["Pila (*stack*)", "Gestió automàtica", "`sp`"]
+fletxa = "amunt"
+
+# A3, @fig-func-uninivell-pila (#tip-func-uninivell-bloc-activacio). El codi C és al callout, just a sobre.
+[mapa.T3_pila_uninivell]
+tipus   = "piles"
+classe  = "estreta"
+title   = "Evolució de sp en una crida a una funció fulla"
+desc    = "Tres columnes de la pila, d'adreces baixes a altes, amb sp marcat a cada una: abans de cridar funcB, amb sp al cim de la pila ocupada, en gris; mentre s'executa sentB, amb sp més amunt, al cim del BA de funcB, en groc; i després de retornar de funcB, amb sp a la posició inicial."
+alcada  = 130
+ocupada = 30
+
+[[mapa.T3_pila_uninivell.columnes]]
+titol = ["abans de", "cridar a", "*funcB*"]
+
+[[mapa.T3_pila_uninivell.columnes]]
+titol = ["mentre", "s'executa", "*sentB*"]
+blocs = [{ nom = "BA *funcB*", rol = "pila", alcada = 60 }]
+
+[[mapa.T3_pila_uninivell.columnes]]
+titol = ["després de", "retornar de", "*funcB*"]
+
+# A3, @fig-pila-crides-multinivell (#tip-exemple-pila-multinivell). El codi C és al callout, just a sobre.
+[mapa.T3_pila_multinivell]
+tipus   = "piles"
+classe  = "estandard"
+title   = "Evolució de sp en una crida multinivell"
+desc    = "Cinc columnes de la pila, d'adreces baixes a altes, amb sp marcat a cada una, del color del bloc del cim: abans de cridar funcA, al cim de la pila ocupada, en gris; mentre s'executa sentA1, al cim del BA de funcA, en blau; mentre s'executa sentB, al cim del BA de funcB, en groc, a sobre del de funcA; mentre s'executa sentA2, de nou al cim del de funcA; i després de retornar de funcA, a la posició inicial."
+alcada  = 180
+ocupada = 30
+
+[[mapa.T3_pila_multinivell.columnes]]
+titol = ["abans de", "cridar a", "*funcA*"]
+
+[[mapa.T3_pila_multinivell.columnes]]
+titol = ["mentre", "s'executa", "*sentA1*"]
+blocs = [{ nom = "BA *funcA*", rol = "local", alcada = 60 }]
+
+[[mapa.T3_pila_multinivell.columnes]]
+titol = ["mentre", "s'executa", "*sentB*"]
+blocs = [{ nom = "BA *funcA*", rol = "local", alcada = 60 }, { nom = "BA *funcB*", rol = "pila", alcada = 50 }]
+
+[[mapa.T3_pila_multinivell.columnes]]
+titol = ["mentre", "s'executa", "*sentA2*"]
+blocs = [{ nom = "BA *funcA*", rol = "local", alcada = 60 }]
+
+[[mapa.T3_pila_multinivell.columnes]]
+titol = ["després de", "retornar de", "*funcA*"]
