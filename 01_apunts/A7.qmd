@@ -161,7 +161,7 @@ $$\text{num\_bloc} = A \div B$$
 :::
 
 ::: {#eq-mc-desplacament}
-$$\text{offset} = A \bmod B$$
+$$\text{desplaçament} = A \bmod B$$
 :::
 
 Com que $B = 2^b$, aquestes operacions es redueixen a una simple descomposició de bits: els $b$ bits de menys pes de $A$ són el desplaçament, i la resta és el número de bloc.
@@ -172,11 +172,11 @@ Com que $B = 2^b$, aquestes operacions es redueixen a una simple descomposició 
 **Solució**: Descomposem l'adreça en binari separant els 4 bits de menys pes:
 
 $$A = \underbrace{0001\,0000\,0000\,0001\,0000\,0000\,1111}_{\text{num\_bloc}
-= \texttt{0x100100F}}\;\underbrace{1000}_{\text{offset} = 8}$$
+= \texttt{0x100100F}}\;\underbrace{1000}_{\text{desplaçament} = 8}$$
 
-Si l'accés és a un word de 4 bytes (`lw`), el **word offset** (posició del word dins el bloc) és:
+Si l'accés és a una paraula de 4 bytes (`lw`), el **desplaçament de paraula** (posició de la paraula dins el bloc) és:
 
-$$\text{word\_offset} = \text{offset} \div 4 = 2$$
+$$\text{desplaçament de paraula} = \text{desplaçament} \div 4 = 2$$
 
 ::: {#fig-mc-numbloc-descomposicio}
 ::: {.content-visible when-format="html"}
@@ -190,7 +190,7 @@ $$\text{word\_offset} = \text{offset} \div 4 = 2$$
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T7_mc_descomposicio_bits__original_light.svg)
 :::
-Descomposició de l'adreça `0x100100F8` amb blocs de 16 bytes: número de bloc i desplaçament, i el desplaçament, en `word_offset` i byte dins de la paraula.
+Descomposició de l'adreça `0x100100F8` amb blocs de 16 bytes: número de bloc i desplaçament; i el desplaçament, en paraula dins del bloc i byte dins de la paraula.
 :::
 ::::
 
@@ -272,7 +272,7 @@ Com que $N_L$ és potència de 2, el mòdul és simplement els $n_l$ bits de men
 
 $$A = \underbrace{\cdots}_{\text{etiqueta}} \;
      \underbrace{\cdots}_{\text{índex}\;(n_l\text{ bits})} \;
-     \underbrace{\cdots}_{\text{offset}\;(b\text{ bits})}$$
+     \underbrace{\cdots}_{\text{desplaçament}\;(b\text{ bits})}$$
 
 Com que tots els blocs que es mapen a una mateixa línia comparteixen el mateix índex, l'etiqueta pot prescindir d'aquests bits: n'hi ha prou amb els bits restants del número de bloc per identificar unívocament el bloc guardat (@fig-cd-descomposicio-bits).
 
@@ -288,7 +288,7 @@ Com que tots els blocs que es mapen a una mateixa línia comparteixen el mateix 
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/T7_cd_descomposicio_bits__original_light.svg)
 :::
-Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de correspondència directa amb $N_L = 8$ línies i blocs de $B = 16$ bytes.
+Descomposició dels bits d'una adreça en etiqueta, índex i desplaçament per a una memòria cau de correspondència directa amb $N_L = 8$ línies i blocs de $B = 16$ bytes.
 :::
 
 ::: {#tip-cd-exemple .callout-tip}
@@ -304,7 +304,7 @@ El bloc s'emmagatzema a la línia 7. En binari, l'índex correspon als 3 bits de
 
 $$A = \underbrace{0001\,0000\,0000\,0001\,0000\,0000\,1}_{\text{etiqueta}}\,
 \underbrace{111}_{\text{índex}=7}\,
-\underbrace{1000}_{\text{offset}=8}$$
+\underbrace{1000}_{\text{desplaçament}=8}$$
 :::
 
 El diagrama de blocs de la @fig-cd-diagrama mostra el maquinari necessari per a una lectura. Els bits d'índex de l'adreça seleccionen una línia mitjançant un **descodificador**. Es llegeixen simultàniament l'etiqueta guardada, el bit de validesa i el bloc de dades. Els bits d'etiqueta de l'adreça es comparen amb l'etiqueta guardada: si coincideixen i $V=1$, es produeix un encert i el **multiplexor** selecciona la dada indicada pel desplaçament.
@@ -334,7 +334,7 @@ L'assignació de blocs als conjunts segueix el mateix criteri que la correspond�
 
 $$A = \underbrace{\cdots}_{\text{etiqueta}} \;
      \underbrace{\cdots}_{\text{índex}\;(n_c\text{ bits})} \;
-     \underbrace{\cdots}_{\text{offset}\;(b\text{ bits})}$$
+     \underbrace{\cdots}_{\text{desplaçament}\;(b\text{ bits})}$$
 
 ::: {#tip-assoc-conjunts-exemple .callout-tip}
 **Pregunta**: Suposem adreces de 8 bits, blocs de $B = 4$ bytes ($b = 2$) i una memòria cau associativa per conjunts de 4 conjunts ($n_c = 2$) amb 3 vies. A quin conjunt pertany el byte de l'adreça `0b00000100` (adreça 4)?
@@ -349,7 +349,7 @@ El bloc s'ha d'emmagatzemar al conjunt 1, però pot ocupar qualsevol de les 3 vi
 
 $$A = \underbrace{0000}_{\text{etiqueta}}\,
 \underbrace{01}_{\text{índex}=1}\,
-\underbrace{00}_{\text{offset}=0}$$
+\underbrace{00}_{\text{desplaçament}=0}$$
 :::
 
 ::: {#fig-assoc-conjunts-taula}
@@ -394,7 +394,7 @@ La **memòria cau completament associativa** (*fully associative*) porta la flex
 Com que no hi ha índex, l'adreça es descompon només en dos camps:
 
 $$A = \underbrace{\cdots}_{\text{etiqueta}} \;
-     \underbrace{\cdots}_{\text{offset}\;(b\text{ bits})}$$
+     \underbrace{\cdots}_{\text{desplaçament}\;(b\text{ bits})}$$
 
 L'etiqueta és el número de bloc sencer. El nombre de línies no cal que sigui potència de 2.
 
@@ -435,7 +435,7 @@ $$A = \underbrace{\overbrace{\cdots}^{w - n_c - b}\;
 
 $$\underbrace{\hspace{4.5em}}_{\text{etiqueta}}
 \underbrace{\hspace{2em}}_{\text{índex}}
-\underbrace{\hspace{2em}}_{\text{offset}}$$
+\underbrace{\hspace{2em}}_{\text{desplaçament}}$$
 
 Els casos extrems encaixen naturalment: si $N_C = N_L$ (correspondència directa), $n_c = n_l$ i l'etiqueta és mínima; si $N_C = 1$ (completament associativa), $n_c = 0$ i no hi ha bits d'índex.
 :::

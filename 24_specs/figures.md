@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `8c009f9` (2026-10-08), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `63cb6e2` (2026-10-08), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **87** etiquetes `#fig-`: 84 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 61 consumits i 15 sense consumir.
@@ -59,7 +59,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `8c009f9` (2026-10-08), amb 
 | `fig-mc-numbloc-descomposicio` | `A7.qmd:181` | `22_figs_originals/T7_mc_descomposicio_bits.svg` | Inkscape | `tip-mc-numbloc` | 0 | Descomposició de l'adreça `0x100100F8` amb blocs de 16 bytes: número de bloc i desplaçame… | Descomposició dels 32 bits de l'adreça 0x100100F8 en num_bl… |
 | `fig-mc-encert` | `A7.qmd:220` | `22_figs_originals/T7_mc_encert.svg` | Inkscape |  | 1 | Encert en un accés a l'adreça `0x100100F8`: la dada es transfereix directament de la MC a… | Diagrama que mostra el flux d'un encert de memòria cau: la … |
 | `fig-mc-fallada` | `A7.qmd:242` | `22_figs_originals/T7_mc_fallada.svg` | Inkscape |  | 1 | Fallada en un accés a l'adreça `0x100100F8`: el bloc es copia de la MP a la MC i la dada … | Diagrama que mostra els quatre passos d'una fallada de memò… |
-| `fig-cd-descomposicio-bits` | `A7.qmd:279` | `22_figs_originals/T7_cd_descomposicio_bits.svg` | Inkscape |  | 1 | Descomposició dels bits d'una adreça en etiqueta, índex i offset per a una memòria cau de… | Descomposició dels 32 bits de l'adreça 0x100100F8 en etique… |
+| `fig-cd-descomposicio-bits` | `A7.qmd:279` | `22_figs_originals/T7_cd_descomposicio_bits.svg` | Inkscape |  | 1 | Descomposició dels bits d'una adreça en etiqueta, índex i desplaçament per a una memòria … | Descomposició dels 32 bits de l'adreça 0x100100F8 en etique… |
 | `fig-cd-diagrama` | `A7.qmd:312` | `MC.toml:T7_cd_diagrama` | gen_MC.py |  | 1 | Diagrama de blocs d'una lectura en una memòria cau de correspondència directa. | L'adreça es parteix en etiqueta, índex i desplaçament. L'ín… |
 | `fig-assoc-conjunts-taula` | `A7.qmd:355` | `MC.toml:T7_assoc_conjunts_taula` | gen_MC.py |  | 1 | Organització d'una memòria cau associativa per conjunts de 4 conjunts i 3 vies: el bloc d… | A dalt, el bloc 1 de la MP, bytes 4 a 7, amb les adreces en… |
 | `fig-assoc-conjunts-diagrama` | `A7.qmd:373` | `MC.toml:T7_assoc_conjunts_diagrama` | gen_MC.py |  | 1 | Diagrama de blocs d'una lectura en una memòria cau associativa per conjunts de $N$ vies. | L'adreça es parteix en etiqueta, índex i desplaçament. L'ín… |
@@ -163,7 +163,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `8c009f9` (2026-10-08), amb 
 | `22_figs_originals/T6_tc_tc_prima.svg` | A6.qmd:149, A6.qmd:156 | extreta de PDF | 284 | sí | sí | 10 |  |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_primera_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 235 |  |  |
 | `22_figs_originals/T7_capacitat_exemple_bucle_segona_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 266 |  |  |
-| `22_figs_originals/T7_cd_descomposicio_bits.svg` | A7.qmd:282, A7.qmd:289 | Inkscape | 545 | sí | sí | 19 |  |  |
+| `22_figs_originals/T7_cd_descomposicio_bits.svg` | A7.qmd:282, A7.qmd:289 | Inkscape | 545 | sí | sí | 21 |  |  |
 | `22_figs_originals/T7_conflicte_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 120 | #000000 |  |
 | `22_figs_originals/T7_escriptura_estat_inicial.svg` | **orfe** | Inkscape | 800 | sí | sí | 167 | #000000 |  |
 | `22_figs_originals/T7_escriptura_immediata_amb_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 101 | #000000 |  |
@@ -173,7 +173,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `8c009f9` (2026-10-08), amb 
 | `22_figs_originals/T7_jerarquia_piramide.svg` | A7.qmd:106, A7.qmd:99 | SVG natiu | 580 | sí | sí | 7 |  |  |
 | `22_figs_originals/T7_lru_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 237 | #000000 |  |
 | `22_figs_originals/T7_mc_descomposicio_bits.svg` | A7.qmd:184, A7.qmd:191 | Inkscape | 590 | sí | sí | 18 |  |  |
-| `22_figs_originals/T7_mc_encert.svg` | A7.qmd:223, A7.qmd:230 | Inkscape | 575 | sí | sí | 29 |  |  |
+| `22_figs_originals/T7_mc_encert.svg` | A7.qmd:223, A7.qmd:230 | Inkscape | 575 | sí | sí | 30 |  |  |
 | `22_figs_originals/T7_mc_fallada.svg` | A7.qmd:245, A7.qmd:252 | Inkscape | 575 | sí | sí | 48 |  |  |
 | `22_figs_originals/T7_mc_politiques_resum__graphviz.svg` | A7.qmd:683, A7.qmd:690 | Graphviz | 459 | sí | sí | 19 |  |  |
 | `22_figs_originals/T7_multinivell_diagrama.svg` | A7.qmd:1006, A7.qmd:999 | script (gen_T7.py) | 660 | sí | sí | 22 |  |  |

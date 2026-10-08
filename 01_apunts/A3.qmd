@@ -137,7 +137,7 @@ Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
 Desplaçar a l'esquerra un enter o natural amb `sll`/`slli` equival a **multiplicar-lo** per una potència de 2: `rd` ← `rs1` × $2^{\texttt{shamt}}$.
 
 ::: {#imp-ec-sll-acces-vector .callout-important}
-A **EC**, l'**offset** en bytes d'un element d'un vector o d'una matriu (@eq-acces-aleatori-vector) es calcula multiplicant l'índex per la mida de l'element amb `slli` (un desplaçament de $\log_2$ de la mida), no amb `mul`: a EC, les mides dels elements (1, 2, 4 o 8 bytes) són sempre potències de 2. Amb elements d'1 byte, no cal desplaçar.
+A **EC**, el **desplaçament** en bytes d'un element d'un vector o d'una matriu (@eq-acces-aleatori-vector) es calcula multiplicant l'índex per la mida de l'element amb `slli` (un desplaçament de bits de $\log_2$ de la mida), no amb `mul`: a EC, les mides dels elements (1, 2, 4 o 8 bytes) són sempre potències de 2. Amb elements d'1 byte, no cal desplaçar.
 :::
 
 ### Aplicació d'`sll`/`slli`: divisió entera per potències de 2 {#sec-sll-divisio-potencies}
@@ -377,7 +377,7 @@ En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**: la imposa la sem
 Les instruccions de salt modifiquen el flux d'execució **desviant-lo** a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen dos eixos de classificació:
 
 - **Condicional vs. incondicional**: els salts condicionals (`beq`, `bne`, etc.) salten només si es compleix una condició; els incondicionals (`jal`, `jalr`) salten sempre.
-- **Relatiu al PC vs. indirecte**: els salts relatius al PC calculen l'adreça de destinació sumant un offset al valor actual del PC; els salts indirectes la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
+- **Relatiu al PC vs. indirecte**: els salts relatius al PC calculen l'adreça de destinació sumant un desplaçament al valor actual del PC; els salts indirectes la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
 
 La combinació d'aquests dos eixos dona lloc a tres categories:
 
@@ -392,7 +392,7 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 
 ### Salts condicionals {#sec-salts-condicionals}
 
-Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest offset a partir de l'etiqueta.
+Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest desplaçament a partir de l'etiqueta.
 
 Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b), variant del format **Tipus-S** ja presentat a [Tema 2](#sec-format-instruccions) (@nte-instruccions-Tipus-S). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** (@cau-prefixos-binaris) respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*compressed*).
 
@@ -442,7 +442,7 @@ Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` 
 
 
 ::: {#tip-exemple-beq-offset .callout-tip}
-## Càlcul de l'offset d'un salt condicional
+## Càlcul del desplaçament d'un salt condicional
 
 Sigui el programa següent i el seu *memory dump*:
 
@@ -462,16 +462,16 @@ etiqueta:
 | `0x0040000C` | `0x40000033` | `sub x0, x0, x0` | `sub zero, zero, zero` |
 : {tbl-colwidths="[22,21,27,30]"}
 
-L'assemblador ha calculat l'offset com:
+L'assemblador ha calculat el desplaçament com:
 
-$$\text{offset} = @\text{etiqueta} - @\text{beq} = \texttt{0x0040000C} - \texttt{0x00400000} = 12 = \texttt{0x0000000C}$$
+$$\text{desplaçament} = @\text{etiqueta} - @\text{beq} = \texttt{0x0040000C} - \texttt{0x00400000} = 12 = \texttt{0x0000000C}$$
 
 Aquest valor apareix directament al panell *Basic* de RARS com `0x0000000c`,
 confirmat per la codificació binària de la instrucció: `0x00000663`.
 
 **Per què `0x0040000C` i no `0x00400008`?**
 
-L'offset es calcula respecte a l'adreça de la instrucció de salt (`0x00400000`), no respecte a la instrucció següent. L'adreça de `etiqueta` és `0x0040000C` perquè hi ha 3 instruccions de 4 bytes entre `beq` i `etiqueta` (`beq` + dues `nop`).
+El desplaçament es calcula respecte a l'adreça de la instrucció de salt (`0x00400000`), no respecte a la instrucció següent. L'adreça de `etiqueta` és `0x0040000C` perquè hi ha 3 instruccions de 4 bytes entre `beq` i `etiqueta` (`beq` + dues `nop`).
 :::
 
 ::: {#tip-exemple-and-mascara-2 .callout-tip}
@@ -727,7 +727,7 @@ Suposant que `t0` conté el resultat de l'expressió del `switch` i que `switch_
 
 ```{.s filename="RV32I"}
         la      t1, switch_vec  # adreça base del vector
-        slli    t2, t0, 2       # offset = índex * 4 (mida d'una paraula)
+        slli    t2, t0, 2       # desplaçament = índex * 4 (mida d'una paraula)
         add     t1, t1, t2      # adreça efectiva de l'element
         lw      t3, 0(t1)       # llegeix l'adreça de la clàusula
         jalr    zero, t3, 0     # salta al codi de la clàusula (equivalent a: jr t3)
@@ -1288,8 +1288,8 @@ funcA:
         ret
 ...
 funcB:
-        slli    a2, a2, 1       # offset = i * 2  (sizeof(short) = 2)
-        add     a0, a0, a2      # @vec[i] = vec + offset
+        slli    a2, a2, 1       # desplaçament = i * 2  (sizeof(short) = 2)
+        add     a0, a0, a2      # @vec[i] = vec + desplaçament
         lh      a0, 0(a0)       # vec[i] (amb ext. de signe)
         sub     a0, a0, a1      # resultat = vec[i] - n
         ret
@@ -1474,7 +1474,7 @@ func:
         add     t4, t4, sp      # sp + i*4
         lw      t4, 12(t4)      # w[i]
         add     t4, t4, t0      # w[i] + k
-        # @v[w[i]+k] = sp + offset
+        # @v[w[i]+k] = sp + desplaçament
         add     t5, sp, t4
         lb      a0, 0(t5)       # retorna v[w[i]+k]
         addi    sp, sp, 52      # allibera espai
@@ -1915,7 +1915,7 @@ L'assemblador expandeix les macros i pseudoinstruccions en les seqüències d'in
 
 El llenguatge assemblador usa **etiquetes** per referir-se a adreces, tant al codi com a les dades. Una etiqueta pot ser usada dins el fitxer fins i tot abans de ser definida (**referència anticipada**). Per gestionar-ho, l'assemblador fa **dues passades** sobre el fitxer:
 
-- **Primera passada**: llegeix tot el codi font i construeix una **taula de símbols** que associa cada etiqueta amb la seva posició (offset en bytes respecte a l'inici de la secció on està definida).
+- **Primera passada**: llegeix tot el codi font i construeix una **taula de símbols** que associa cada etiqueta amb la seva posició (desplaçament en bytes respecte a l'inici de la secció on està definida).
 - **Segona passada**: codifica les instruccions, usant la taula de símbols per resoldre les etiquetes.
 
 Cal notar que les adreces que assigna l'assemblador **no són les adreces definitives** en memòria, ja que l'assemblador no coneix el codi i les dades definits en altres mòduls. Les adreces definitives les assignarà l'enllaçador.
@@ -1924,12 +1924,12 @@ Cal notar que les adreces que assigna l'assemblador **no són les adreces defini
 
 Algunes instruccions necessiten l'adreça absoluta d'una etiqueta per ser codificades completament:
 
-- Els **salts relatius al PC** (`beq`, `bne`, `blt`, `jal`, etc.) codifiquen un offset relatiu al PC, que no depèn de l'adreça absoluta del codi. L'assemblador pot codificar-los completament si l'etiqueta de destinació és al mateix mòdul.
+- Els **salts relatius al PC** (`beq`, `bne`, `blt`, `jal`, etc.) codifiquen un desplaçament relatiu al PC, que no depèn de l'adreça absoluta del codi. L'assemblador pot codificar-los completament si l'etiqueta de destinació és al mateix mòdul.
 - La pseudoinstrucció `la` (`auipc` + `addi`) i els **salts indirectes** (`jalr`) que depenen d'una adreça externa necessiten una adreça absoluta que l'assemblador no coneix en temps d'assemblatge. L'assemblador hi escriu un valor provisional i anota la instrucció a la llista de reubicació perquè l'enllaçador la corregeixi.
 
 L'assemblador genera per a cada fitxer objecte:
 
-- Una **llista de reubicació**: posició de cada instrucció que conté una adreça provisional que caldrà corregir, el seu tipus, i l'offset provisional.
+- Una **llista de reubicació**: posició de cada instrucció que conté una adreça provisional que caldrà corregir, el seu tipus, i el desplaçament provisional.
 - Una **taula de símbols globals**: etiquetes declarades amb `.globl` i les seves adreces provisionals, visibles des d'altres mòduls.
 - Una **llista de referències externes no resoltes**: instruccions que fan referència a etiquetes definides en altres mòduls.
 
@@ -1988,13 +1988,13 @@ Els fitxers objecte contindran:
 
 **Mòdul A**:
 
-- Reubicació: posició `+36` (text), tipus `la`, offset `+4` (data)
-- Símbols globals: `X` a offset `+0` (data)
+- Reubicació: posició `+36` (text), tipus `la`, desplaçament `+4` (data)
+- Símbols globals: `X` al desplaçament `+0` (data)
 - Referències externes: posició `+60` (text), tipus `jal`, etiqueta `g`
 
 **Mòdul B**:
 
-- Símbols globals: `g` a offset `+16` (text)
+- Símbols globals: `g` al desplaçament `+16` (text)
 - Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`
 :::
 
@@ -2006,7 +2006,7 @@ L'**enllaçador** (*linker*) combina múltiples fitxers objecte i fitxers de bib
 
 **2. Combinació de seccions.** Les seccions `.text` i `.data` de tots els mòduls es concatenen. Les seccions dels mòduls que no són el primer queden desplaçades. L'enllaçador calcula i anota el desplaçament sofert per les seccions de cada mòdul.
 
-**3. Reubicació d'adreces internes.** Es corregeixen les instruccions de les llistes de reubicació. L'adreça definitiva s'obté sumant l'adreça absoluta inicial de la secció (`0x00400000` per a `.text` i `0x10010000` per a `.data` en RARS) amb el desplaçament sofert pel mòdul i l'offset provisional que l'assemblador hi havia codificat.
+**3. Reubicació d'adreces internes.** Es corregeixen les instruccions de les llistes de reubicació. L'adreça definitiva s'obté sumant l'adreça absoluta inicial de la secció (`0x00400000` per a `.text` i `0x10010000` per a `.data` en RARS) amb el desplaçament del mòdul dins de la secció i el desplaçament provisional que l'assemblador hi havia codificat.
 
 **4. Resolució d'adreces externes.** Es corregeixen les instruccions amb referències externes. L'adreça definitiva s'obté de manera anàloga, usant l'adreça del símbol global tal com consta a la taula de símbols.
 
@@ -2022,8 +2022,8 @@ Inici codi:  0x00400000
 Inici dades: 0x10010000
 
 .text:
-  codi A  (offset +0  .. +79)   → adreces 0x00400000..0x0040004F
-  codi B  (offset +80 .. +139)  → adreces 0x00400050..0x0040008B
+  codi A  (desplaçament +0  .. +79)   → adreces 0x00400000..0x0040004F
+  codi B  (desplaçament +80 .. +139)  → adreces 0x00400050..0x0040008B
 
 .data:
   X: .word -1   → adreça 0x10010000  (+0)
