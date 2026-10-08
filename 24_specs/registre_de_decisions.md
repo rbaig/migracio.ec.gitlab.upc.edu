@@ -175,6 +175,12 @@ Decisió de l'usuari (2026-10-07, fase 7e), a proposta de Claude Code. Fins llav
 
 Aplicada en el mateix commit a les dues ocurrències de «problemari» del corpus; els usos d'«exercici» per a un problema, a una entrada del `TODO.md`. El títol bibliogràfic «Solucionari de la Col·lecció de Problemes» de `14_LICENSE.qmd` és el d'una obra i no es toca.
 
+### D-73
+
+**Selecció de solucions, sense taula de criteris** · `13_contrib.qmd §Problemes i solucions` · 2026-10-08
+
+Decisió de l'usuari (2026-10-08, fase 7g), a proposta de Claude Code: es retira `03_solucions/S_criteris_seleccio.qmd`, i el criteri passa a la guia. El fitxer era una taula, per tema, dels problemes resolts amb la dificultat i el temari, comentada a `_quarto.yml`; `index.qmd` hi remetia amb deu enllaços que, per això, no portaven enlloc (ara remeten a les solucions de cada tema). L'auditoria de la fase 7g hi va trobar 10 solucions que no hi eren (T2 2 i T4 8), cinc descripcions que no corresponien a l'enunciat i la solució, i un criteri («~1 resolt per cada 2–3») que no es complia (188 problemes, 108 solucions, 1:1,74). Mantenir-la al dia era una feina sense lector. L'escala de dificultat (1 a 5) no es conserva: cap altre fitxer no la feia servir. El fitxer es recupera amb `git show 210e6de:03_solucions/S_criteris_seleccio.qmd`.
+
 ## Laboratori
 
 ### D-25
@@ -497,6 +503,12 @@ Des del 2026-10-06. Amb DejaVu Sans Mono el registre de LaTeX ja no hi dona cap 
 **El hook d'abans del commit avisa, però no pregunta** · `13_contrib.qmd §IAs` · 2026-10-03 · `722c522`, `980434b`
 
 Fins al 2026-10-03 la revisió de prosa i l'avís de `make render-complet` demanaven confirmació; decisió de l'usuari: no cal, perquè el flux ja fa `make render-complet` abans de cada push. El `make render` del hook va trigar **2 min 38 s** el 2026-09-25.
+
+### D-74
+
+**Calendari del laboratori: `verifica_calendari.py`, l'agent `verificador-calendari` i el hook** · `13_contrib.qmd §IAs` · 2026-10-08
+
+Decisió de l'usuari (2026-10-08, fase 7g): «Com que canviarà a cada quadrimestre, escriu un agent per fer-ne la comprovació i afegeix-lo al protocol de comprovació de commits que afectin a `Lcalendari.qmd`». L'auditoria de la fase hi va trobar una data que no cau en el dia de la seva fila (el 07/05/2026, dijous, a la fila dels divendres). La part mecànica (dates, dies, ordre i sessions) la fa un script, perquè no depengui del model; el que demana judici (quadrimestre vigent, festius, una data amb l'horari d'un altre dia), l'agent, que només informa. El hook d'abans del commit hi afegeix el pas 4, que no bloqueja, com els altres avisos (D-61). Al mateix temps, el calendari passa a ser només de l'HTML: al PDF, un capítol «Calendari» amb la remissió al web (abans hi sortia un capítol buit amb el títol del quadrimestre, perquè Quarto en treia el títol fora del bloc HTML).
 
 ## Operació de les sessions
 

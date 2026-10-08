@@ -40,8 +40,8 @@ risc és que la taula sencera no hi càpiga.
     python3 25_scripts/verifica_taules.py --aplica   # i l'escriu al font (al peu de la taula)
 
 No mira els fitxers que no arriben al PDF: 13_contrib.qmd (HTML) ni els blocs
-`.content-visible when-format="html"`. S_criteris_seleccio.qmd sí, tot i que
-avui és comentat a _quarto.yml.
+`.content-visible when-format="html"`. Els fitxers comentats a _quarto.yml, sí:
+són del projecte i arribaran al PDF quan es descomentin.
 """
 
 import re

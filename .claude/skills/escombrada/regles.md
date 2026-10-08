@@ -103,7 +103,7 @@ del mecanisme, no el seu nom, i el bloc diu ara `suma:` (`c2a9171`).
 Un fitxer comentat als `chapters:` segueix sent del projecte (vegeu
 `CLAUDE.md §Abast del projecte`) i el seu contingut sortirà imprès quan es descomenti:
 l'únic «TODO» escrit com a text de llibre era a `S_criteris_seleccio.qmd`, que
-avui no es renderitza, i per això cap escombrada del `_book/` no el veia. A
+llavors no es renderitzava (el fitxer es va retirar el 2026-10-08, a la fase 7g), i per això cap escombrada del `_book/` no el veia. A
 l'inrevés, `13_contrib.qmd` és **HTML-only** (`.content-visible when-format="html"`
 obert a l'inici i tancat al final): res del que s'hi escriu no arriba al PDF.
 L'escombrada es fa sempre **sobre el font**, no sobre la sortida.

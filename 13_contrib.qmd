@@ -178,7 +178,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **$t_{bloc}$ (no $t_{block}$)**: notació canònica per al temps de transferència d'un bloc entre la MC i la memòria principal (teoria, enunciats i solucions).
 - **«línia» vs. «bloc»**: la **línia** és el contenidor de la MC; el **bloc** és el contingut (fragment de la memòria principal). Els enunciats especifiquen la geometria com a «$N$ línies amb blocs de $B$ bytes» o «$N$ vies per conjunt», mai «$N$ blocs» per comptar línies o vies.
 - **Notació multinivell**: la dels subíndexs de nivell de la teoria (`@eq-tam-multinivell`): $t_{h_{L1}}$, $t_{h_{L2}}$, $m_{L1}$, $m_{L2}$; els subíndexs numèrics ($m_1$, $m_2$…) es reserven per enumerar alternatives dins d'un mateix exercici.
-- **Tipus de fallades (les tres C)**: fallades **d'arrencada en fred** (*cold-start*), també **obligatòries** (*compulsory*) o **de primera referència** (*first-reference*); **de conflicte** (o **de col·lisió**); i **de capacitat**. La quarta C, les **de coherència** (o **d'invalidació**) dels processadors multinucli, és d'aprofundiment (`#wrn-fallades-coherencia`). Les figures generades diuen «obligatòria», la forma curta. **A la resta del material** (E7, S7, S8, L6 i `S_criteris_seleccio.qmd`): a la prosa, «d'arrencada en fred», amb *cold-start* en cursiva a la primera aparició de cada fitxer; a les taules i als llocs curts (parèntesis, subíndexs), «obligatòria», com a les figures. S8 l'aplica a les fallades de TLB, que segueixen la mateixa classificació ([D-17]({{< var decisions >}}#d-17)).
+- **Tipus de fallades (les tres C)**: fallades **d'arrencada en fred** (*cold-start*), també **obligatòries** (*compulsory*) o **de primera referència** (*first-reference*); **de conflicte** (o **de col·lisió**); i **de capacitat**. La quarta C, les **de coherència** (o **d'invalidació**) dels processadors multinucli, és d'aprofundiment (`#wrn-fallades-coherencia`). Les figures generades diuen «obligatòria», la forma curta. **A la resta del material** (E7, S7, S8 i L6): a la prosa, «d'arrencada en fred», amb *cold-start* en cursiva a la primera aparició de cada fitxer; a les taules i als llocs curts (parèntesis, subíndexs), «obligatòria», com a les figures. S8 l'aplica a les fallades de TLB, que segueixen la mateixa classificació ([D-17]({{< var decisions >}}#d-17)).
 
 #### T8
 
@@ -212,6 +212,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
     - **PDF**: és un sol document LaTeX, amb un sol `\newtheorem{exercise}`, i les metadades de cada fitxer no hi arriben. `_quarto.yml` (`format: pdf: language:`) hi posa «⁂» com a títol i prefix; `preamble.tex` fa que «⁂» s'expandeixi a `\exercisename`; i un bloc `{=latex}` amb `\renewcommand{\exercisename}{…}` a l'inici d'`E1.qmd` («Problema») i d'`L1.qmd` («Exercici») el canvia a cada part. Una referència pren el nom de la part on és.
     - ⚠️ **No es pot fer** amb un bloc `crossref:` a la capçalera del fitxer ni escrivint `\exercisename` directament al prefix: totes dues formes s'han provat i no funcionen ([D-23]({{< var decisions >}}#d-23)).
 - **Detall de les solucions**: **pas a pas**, excepte els passos trivials.
+- **Selecció de solucions**: cada tema publica la solució d'una selecció dels problemes, aproximadament un de cada dos o tres, triats perquè cobreixin els continguts del tema i diversos nivells de dificultat ([D-73]({{< var decisions >}}#d-73)).
 - **Veu dels enunciats**: segona persona del plural (§Criteris generals → Veu impersonal).
 
 #### Convencions globals del laboratori
@@ -1026,13 +1027,14 @@ El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi
 | Peça | Què fa | Regla |
 | :--- | :--- | :--- |
 | Hook `guarda-git.sh` | Bloqueja el push al remot `mirror` i les ordres que reescriuen l'historial (`--force`, `rebase`, `--amend`, `reset --hard`, `filter-branch`) | `CLAUDE.md §Flux de treball` |
-| Hook `abans-commit.sh` | Abans de cada `git commit`, `make render`: si falla, no hi ha commit. Després, revisió de prosa de les línies afegides i avís de `make render-complet` si el canvi pot afectar el PDF: en tots dos casos ni bloqueja ni pregunta, sinó que passa l'avís a Claude i el mostra a l'usuari ([D-61]({{< var decisions >}}#d-61)) | §Commits, §Verificació de l'entorn |
+| Hook `abans-commit.sh` | Abans de cada `git commit`, `make render`: si falla, no hi ha commit. Després, revisió de prosa de les línies afegides, avís de `make render-complet` si el canvi pot afectar el PDF i, si toca `04_laboratori/Lcalendari.qmd`, el resultat de `25_scripts/verifica_calendari.py` i l'avís de passar l'agent `verificador-calendari`: en tots els casos ni bloqueja ni pregunta, sinó que passa l'avís a Claude i el mostra a l'usuari ([D-61]({{< var decisions >}}#d-61), [D-74]({{< var decisions >}}#d-74)) | §Commits, §Verificació de l'entorn |
 | Skill `escombrada` | Les regles de les escombrades (`regles.md`), amb el cas de cadascuna, i `25_scripts/escombrada.sh` | §Escombrades i verificació del corpus |
 | Skill `render` | Verificació del render: esperar-lo en segon pla, referències trencades, HTML en clar i en fosc, registre de LaTeX | §Verificació de l'entorn, §Renderitzar el projecte |
 | Skill `rars` | Verificació empírica a RARS 1.6 sense interfície, i `verifica_laboratoris.py` | §Verificació empírica a RARS |
 | Skill `figures` | Llista de comprovacions per a una figura nova, canviada o retirada | §Figures i material gràfic |
 | Subagent `auditor-xifres` | Reprodueix les xifres que publica un commit o un rang (Opus, effort alt, només lectura) | §Escombrades i verificació del corpus |
 | Subagent `revisor-linguistic` | Revisió en català normatiu d'un diff (Sonnet, només informa) | §Llenguatge |
+| Subagent `verificador-calendari` | Comprova el calendari del laboratori abans d'un commit que el toqui: dates i dies de la setmana (amb `verifica_calendari.py`), sessions, quadrimestre, festius i examen (Sonnet, només informa) ([D-74]({{< var decisions >}}#d-74)) | §Convencions globals del laboratori |
 
 Els dos scripts de `25_scripts/` que hi intervenen també es fan servir a mà: `python3 25_scripts/lint_prosa.py` (línies afegides respecte d'`HEAD`, o fitxers sencers si se n'hi donen) i `25_scripts/escombrada.sh --help`.
 
