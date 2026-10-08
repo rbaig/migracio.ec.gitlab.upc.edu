@@ -47,12 +47,12 @@ def capitols():
     """Fitxers del llibre en ordre (només teoria, problemes, solucions i laboratori)."""
     cfg = (ARREL / "_quarto.yml").read_text(encoding="utf-8")
     fitxers = re.findall(r"^\s*file:\s*(\S+)\s*$", cfg, re.M)
-    return [f for f in fitxers if re.match(r"0[1-4]_[a-z]+/[AESL]\d\.qmd$", f)]
+    return [f for f in fitxers if re.match(r"0[1-4]_[a-z]+/[APSL]\d\.qmd$", f)]
 
 
 def tema(fitxer):
     nom = Path(fitxer).stem
-    return f"T{nom[1]}" if nom[0] in "AES" else f"Lab. {nom[1]}"
+    return f"T{nom[1]}" if nom[0] in "APS" else f"Lab. {nom[1]}"
 
 
 def presentacions():

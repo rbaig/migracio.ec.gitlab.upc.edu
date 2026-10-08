@@ -181,6 +181,12 @@ Aplicada en el mateix commit a les dues ocurrències de «problemari» del corpu
 
 Decisió de l'usuari (2026-10-08, fase 7g), a proposta de Claude Code: es retira `03_solucions/S_criteris_seleccio.qmd`, i el criteri passa a la guia. El fitxer era una taula, per tema, dels problemes resolts amb la dificultat i el temari, comentada a `_quarto.yml`; `index.qmd` hi remetia amb deu enllaços que, per això, no portaven enlloc (ara remeten a les solucions de cada tema). L'auditoria de la fase 7g hi va trobar 10 solucions que no hi eren (T2 2 i T4 8), cinc descripcions que no corresponien a l'enunciat i la solució, i un criteri («~1 resolt per cada 2–3») que no es complia (188 problemes, 108 solucions, 1:1,74). Mantenir-la al dia era una feina sense lector. L'escala de dificultat (1 a 5) no es conserva: cap altre fitxer no la feia servir. El fitxer es recupera amb `git show 210e6de:03_solucions/S_criteris_seleccio.qmd`.
 
+### D-75
+
+**Directori `02_problemes/` i fitxers `P1.qmd`–`P9.qmd`** · `README.md §Estructura del projecte` · 2026-10-08
+
+Decisió de l'usuari (2026-10-08, fase 7g), com a part de l'harmonització de [D-24](#d-24): el directori es deia `02_exercicis/` i els fitxers, `E1.qmd`–`E9.qmd`, l'únic lloc on «exercici» encara designava els problemes. Les entrades d'aquest registre i del `TODO.md` anteriors al canvi els citen amb el nom d'abans, que és el de l'historial (`git log --follow -- 02_problemes/P1.qmd`). Les URL publicades de les pàgines de problemes canvien amb el nom (`02_exercicis/E1.html` → `02_problemes/P1.html`), com van canviar les àncores amb [D-22](#d-22).
+
 ## Laboratori
 
 ### D-25
@@ -380,7 +386,7 @@ Els blocs que porten `int main` **no són excepcions: són l'altra meitat de la 
 | Bloc | Per què hi va `int main` |
 | :--- | :--- |
 | `A2.qmd` @tip-forcar-error-tipus | És l'únic C del corpus del qual se cita literalment la sortida del compilador: es compila de debò amb `gcc -Wall -Wextra -Wpedantic`. Amb `void main()`, gcc hi afegiria un diagnòstic nou i la citació deixaria de ser reproduïble. |
-| `E3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio | El problema tracta del **flux de compilació i enllaçat**: el C hi és l'objecte d'estudi, no notació. El `return f(x)` és justament el que fa visible la referència externa que s'ha de resoldre en l'enllaçat. |
+| `P3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio | El problema tracta del **flux de compilació i enllaçat**: el C hi és l'objecte d'estudi, no notació. El `return f(x)` és justament el que fa visible la referència externa que s'ha de resoldre en l'enllaçat. |
 
 ### D-50
 

@@ -26,7 +26,7 @@ Aquest document de convencions només està disponible en la versió web:
 - No es permet que un nivell de profunditat tingui un sol ítem. En aquest cas, s'ha de pujar el contingut un nivell.
 - L'arquitectura de referència és RISC-V. No s'ha de fer cap referència a MIPS (tret d'on ja s'ha fet explícitament).
 - **Prioritats**: les màximes són la **coherència pedagògica** i el **rigor tècnic** en tot el contingut. La revisió és tècnica i profunda, i la lingüística, en **català normatiu** (§Llenguatge).
-- **Precedència textual**: els apunts (`Ax.qmd`) prevalen sobre els problemes (`Ex.qmd`) i les solucions (`Sx.qmd`); dins dels apunts, el cos del text i els `.callout-note` prevalen sobre la resta de callouts i continguts. S'aplica, per exemple, als bits `E` i `V` de §T8 ([D-1]({{< var decisions >}}#d-1)).
+- **Precedència textual**: els apunts (`Ax.qmd`) prevalen sobre els problemes (`Px.qmd`) i les solucions (`Sx.qmd`); dins dels apunts, el cos del text i els `.callout-note` prevalen sobre la resta de callouts i continguts. S'aplica, per exemple, als bits `E` i `V` de §T8 ([D-1]({{< var decisions >}}#d-1)).
 
 ### Fitxer de referència tècnica (`11_riscv.qmd`) i directori `21_riscv/` {#sec-contrib-reftecnica}
 
@@ -178,7 +178,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **$t_{bloc}$ (no $t_{block}$)**: notació canònica per al temps de transferència d'un bloc entre la MC i la memòria principal (teoria, enunciats i solucions).
 - **«línia» vs. «bloc»**: la **línia** és el contenidor de la MC; el **bloc** és el contingut (fragment de la memòria principal). Els enunciats especifiquen la geometria com a «$N$ línies amb blocs de $B$ bytes» o «$N$ vies per conjunt», mai «$N$ blocs» per comptar línies o vies.
 - **Notació multinivell**: la dels subíndexs de nivell de la teoria (`@eq-tam-multinivell`): $t_{h_{L1}}$, $t_{h_{L2}}$, $m_{L1}$, $m_{L2}$; els subíndexs numèrics ($m_1$, $m_2$…) es reserven per enumerar alternatives dins d'un mateix exercici.
-- **Tipus de fallades (les tres C)**: fallades **d'arrencada en fred** (*cold-start*), també **obligatòries** (*compulsory*) o **de primera referència** (*first-reference*); **de conflicte** (o **de col·lisió**); i **de capacitat**. La quarta C, les **de coherència** (o **d'invalidació**) dels processadors multinucli, és d'aprofundiment (`#wrn-fallades-coherencia`). Les figures generades diuen «obligatòria», la forma curta. **A la resta del material** (E7, S7, S8 i L6): a la prosa, «d'arrencada en fred», amb *cold-start* en cursiva a la primera aparició de cada fitxer; a les taules i als llocs curts (parèntesis, subíndexs), «obligatòria», com a les figures. S8 l'aplica a les fallades de TLB, que segueixen la mateixa classificació ([D-17]({{< var decisions >}}#d-17)).
+- **Tipus de fallades (les tres C)**: fallades **d'arrencada en fred** (*cold-start*), també **obligatòries** (*compulsory*) o **de primera referència** (*first-reference*); **de conflicte** (o **de col·lisió**); i **de capacitat**. La quarta C, les **de coherència** (o **d'invalidació**) dels processadors multinucli, és d'aprofundiment (`#wrn-fallades-coherencia`). Les figures generades diuen «obligatòria», la forma curta. **A la resta del material** (P7, S7, S8 i L6): a la prosa, «d'arrencada en fred», amb *cold-start* en cursiva a la primera aparició de cada fitxer; a les taules i als llocs curts (parèntesis, subíndexs), «obligatòria», com a les figures. S8 l'aplica a les fallades de TLB, que segueixen la mateixa classificació ([D-17]({{< var decisions >}}#d-17)).
 
 #### T8
 
@@ -206,10 +206,10 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Referències creuades cap a la teoria** (Nivell 2): als problemes i a les solucions, afegir referències `@sec-nom` a la secció de teoria rellevant quan el concepte clau no és obvi o quan l'estudiant típicament s'encalla. No de forma mecànica a tots els problemes, sinó selectivament. Nivell 3 (`@nte-`, `@tip-`...) admès quan la solució és aplicació directa d'un exemple concret de teoria.
   - Format recomanat als enunciats: nota al final del bloc `{#exr-}` o sota la capçalera de secció: «*Vegeu `@sec-nom`.*» (al text real la referència va **sense** cometes invertides; les d'aquí marquen la metavariable).
   - Format recomanat a les solucions: integrat al text de la solució on es fa servir el concepte.
-- **Identificadors d'enunciats i solucions**: `#exr-t<N>-<slug>` i `#sol-t<N>-<slug>`, on `<N>` és el tema del fitxer que els defineix (`E<N>.qmd`/`S<N>.qmd`) i el `<slug>` és el mateix a l'enunciat i a la solució ([D-22]({{< var decisions >}}#d-22)).
+- **Identificadors d'enunciats i solucions**: `#exr-t<N>-<slug>` i `#sol-t<N>-<slug>`, on `<N>` és el tema del fitxer que els defineix (`P<N>.qmd`/`S<N>.qmd`) i el `<slug>` és el mateix a l'enunciat i a la solució ([D-22]({{< var decisions >}}#d-22)).
 - **Etiqueta visible: «Problema» a Problemes i Solucions, «Exercici» al laboratori.** Tots dos fan servir `#exr-`, de manera que l'etiqueta no es pot fixar un sol cop a `_quarto.yml`. Cada format ho fa d'una manera:
-    - **HTML**: cada `Ex.qmd` i `Sx.qmd` porta a la capçalera `language:` amb `crossref-exr-title: "Problema"` i `crossref-exr-prefix: "Problema"`. Un fitxer nou d'enunciats o de solucions l'ha de copiar.
-    - **PDF**: és un sol document LaTeX, amb un sol `\newtheorem{exercise}`, i les metadades de cada fitxer no hi arriben. `_quarto.yml` (`format: pdf: language:`) hi posa «⁂» com a títol i prefix; `preamble.tex` fa que «⁂» s'expandeixi a `\exercisename`; i un bloc `{=latex}` amb `\renewcommand{\exercisename}{…}` a l'inici d'`E1.qmd` («Problema») i d'`L1.qmd` («Exercici») el canvia a cada part. Una referència pren el nom de la part on és.
+    - **HTML**: cada `Px.qmd` i `Sx.qmd` porta a la capçalera `language:` amb `crossref-exr-title: "Problema"` i `crossref-exr-prefix: "Problema"`. Un fitxer nou d'enunciats o de solucions l'ha de copiar.
+    - **PDF**: és un sol document LaTeX, amb un sol `\newtheorem{exercise}`, i les metadades de cada fitxer no hi arriben. `_quarto.yml` (`format: pdf: language:`) hi posa «⁂» com a títol i prefix; `preamble.tex` fa que «⁂» s'expandeixi a `\exercisename`; i un bloc `{=latex}` amb `\renewcommand{\exercisename}{…}` a l'inici de `P1.qmd` («Problema») i d'`L1.qmd` («Exercici») el canvia a cada part. Una referència pren el nom de la part on és.
     - ⚠️ **No es pot fer** amb un bloc `crossref:` a la capçalera del fitxer ni escrivint `\exercisename` directament al prefix: totes dues formes s'han provat i no funcionen ([D-23]({{< var decisions >}}#d-23)).
 - **Detall de les solucions**: **pas a pas**, excepte els passos trivials.
 - **Selecció de solucions**: cada tema publica la solució d'una selecció dels problemes, aproximadament un de cada dos o tres, triats perquè cobreixin els continguts del tema i diversos nivells de dificultat ([D-73]({{< var decisions >}}#d-73)).
@@ -291,7 +291,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 - **«No» davant d'un nom**: amb guionet, com fixa l'IEC per a aquest ús de *no* («no-violència», «no-intervenció»): «no-associativitat», «no-distributivitat». Davant d'un adjectiu, sense guionet: «no és distributiva» ([D-32]({{< var decisions >}}#d-32)).
 - **Veu impersonal**: Sempre: «Cal verificar que no hi ha errors» (no «hem de verificar»). Excepcions ([D-33]({{< var decisions >}}#d-33)):
     - **`{.callout-tip}`**: segona persona del singular per a instruccions directes a l'estudiant (*calcula*, *determina*, *suposa que...*). També hi van les solucions dels problemes. **Excepció dins la pròpia excepció**: als exemples *narrats* (una traça o un escenari que es va desenvolupant pas a pas, no una instrucció puntual), s'admet el «nosaltres» expositiu (*Considerem un sistema amb...*, *Suposem que...*, *Sabem que...*). El criteri per triar entre tots dos: si la frase estableix el marc o l'estat d'un exemple, «nosaltres»; si demana una acció puntual a l'estudiant («calcula», «indica»), 2a persona del singular.
-    - **Enunciats dels problemes (`#exr-` d'`E1.qmd`–`E9.qmd`)**: segona persona del **plural** («Traduïu», «Calculeu», «Contesteu»; no «Tradueix», «Calcula», «Contesta»).
+    - **Enunciats dels problemes (`#exr-` de `P1.qmd`–`P9.qmd`)**: segona persona del **plural** («Traduïu», «Calculeu», «Contesteu»; no «Tradueix», «Calcula», «Contesta»).
     - **Instruccions operatives pas a pas**: imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*).
 
 ### Puntuació
@@ -518,7 +518,7 @@ El camp `filename` indica el llenguatge o el context del bloc:
 - Indentats: múltiples de 4.
 - Comentaris d'una sola línia: `//`. Més d'una línia: `/* */`.
 - Punt d'entrada: **`void main()` quan el C és notació per traduir a mà a assemblador; `int main` quan el C es compila de debò o quan la cadena de compilació és el tema.** Fora d'EC, en un programa de C normal compilat per a un SO, cal `int main` ([D-49]({{< var decisions >}}#d-49)).
-- Porten `int main` el bloc d'`A2.qmd` @tip-forcar-error-tipus, que es compila de debò i del qual se cita la sortida del compilador, i el d'`E3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio, que tracta del flux de compilació i enllaçat. No són excepcions: són l'altra meitat de la regla.
+- Porten `int main` el bloc d'`A2.qmd` @tip-forcar-error-tipus, que es compila de debò i del qual se cita la sortida del compilador, i el de `P3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio, que tracta del flux de compilació i enllaçat. No són excepcions: són l'altra meitat de la regla.
 
 #### Estil de codi RISC-V
 

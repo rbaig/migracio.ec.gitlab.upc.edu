@@ -29,7 +29,7 @@ Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inc
 
 ## Abast del projecte
 
-L'estructura de directoris i la convenció de noms dels fitxers (`Ax.qmd`, `Ex.qmd`, `Sx.qmd`, `Ly.qmd`) són a `README.md §Estructura del projecte`.
+L'estructura de directoris i la convenció de noms dels fitxers (`Ax.qmd`, `Px.qmd`, `Sx.qmd`, `Ly.qmd`) són a `README.md §Estructura del projecte`.
 
 Tots els fitxers `.qmd` dels `chapters:` de `_quarto.yml` formen part del projecte, encara que estiguin comentats (es comenten per escurçar el temps de renderització en proves).
 
@@ -38,7 +38,7 @@ Els PDFs originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas
 ## Estat del projecte
 
 - **Revisió interna: tancada sencera** (declaracions de l'usuari): teoria i laboratori, el 2026-09-23; enunciats i solucions, el 2026-10-01.
-- **Revisió externa: en curs.** La fan altres professors de l'assignatura. Abast (declaracions de l'usuari, 2026-10-06): A1–A8, també T3–T6; A9, Ex, Sx i Ly en queden fora, de moment; les branques de revisió les crea cada equip. El text literal és a `TODO.md §Decisions obertes → Branques del remot`. Les revisions de T3 (`!5`), T4–T6 (`!7`) i T8 (`!8`, fins a §8.7 exclosa) ja són a `main`.
+- **Revisió externa: en curs.** La fan altres professors de l'assignatura. Abast (declaracions de l'usuari, 2026-10-06): A1–A8, també T3–T6; A9, Px, Sx i Ly en queden fora, de moment; les branques de revisió les crea cada equip. El text literal és a `TODO.md §Decisions obertes → Branques del remot`. Les revisions de T3 (`!5`), T4–T6 (`!7`) i T8 (`!8`, fins a §8.7 exclosa) ja són a `main`.
 - L'historial de les dues revisions i de les fases fetes del pla és al registre de decisions, `§Historial de l'estat del projecte`.
 - El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
@@ -69,8 +69,8 @@ Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ s�
 | 7d | Tasques independents dels equips de revisió | ✅ 2026-10-06 i 2026-10-07 (de `82e7c99` a `35be646`; `9f8e746` i següents) | F | Opus, High |
 | 7e | Partir `13_contrib.qmd`: regles, registre de decisions i skills; aprimar `CLAUDE.md` | ✅ 2026-10-07 (`f2c8ed2`, `924321a`, `c0f44b9`, `de004da` i el següent) | G | Opus, High |
 | 7f | Pseudoinstruccions (opció B) i família de figures de memòria d'A3 | ✅ 2026-10-07 (`75ea6c6` i el següent) | H | Opus, High |
-| 7g | **Control de qualitat fora de la revisió externa i petits pendents** (`TODO.md`): passada tècnica i lingüística d'A9, Ex, Sx i Ly amb els subagents i els verificadors; l'slug `#sec-casos-especials`; i les línies partides dels blocs de codi al mòbil. Acceptada per l'usuari el 2026-10-07 («Propostes acceptades: 1, 2 i 3»), a proposta de Claude Code. No toca el que revisaran els equips, tret de l'slug d'A4. | Pendent | I | Opus, High |
-| 8 | **Preparar el material per als equips de revisió d'A1–A8** (declaracions de l'usuari, 2026-10-06: la revisió externa afecta, de moment, A1–A8, «també T3--T6»; A9, Ex, Sx i Ly en queden fora; «Les branches de revisió les crearà cada equip de revisió»). La feina d'aquesta fase és el material, no les branques: una nota per als revisors i l'estat de cada fitxer d'A1–A8. Els equips i el calendari els decideix l'usuari; cada equip crea la seva branca, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). T8 ja és en revisió: `!8`, fusionada el 2026-10-06 fins a §8.7 exclosa. | Pendent | — | — |
+| 7g | **Control de qualitat fora de la revisió externa i petits pendents** (`TODO.md`): passada tècnica i lingüística d'A9, Px, Sx i Ly amb els subagents i els verificadors; l'slug `#sec-casos-especials`; i les línies partides dels blocs de codi al mòbil. Acceptada per l'usuari el 2026-10-07 («Propostes acceptades: 1, 2 i 3»), a proposta de Claude Code. No toca el que revisaran els equips, tret de l'slug d'A4. | Pendent | I | Opus, High |
+| 8 | **Preparar el material per als equips de revisió d'A1–A8** (declaracions de l'usuari, 2026-10-06: la revisió externa afecta, de moment, A1–A8, «també T3--T6»; A9, Px, Sx i Ly en queden fora; «Les branches de revisió les crearà cada equip de revisió»). La feina d'aquesta fase és el material, no les branques: una nota per als revisors i l'estat de cada fitxer d'A1–A8. Els equips i el calendari els decideix l'usuari; cada equip crea la seva branca, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). T8 ja és en revisió: `!8`, fusionada el 2026-10-06 fins a §8.7 exclosa. | Pendent | — | — |
 
 Sense fase pròpia, quan hi hagi ocasió i sense bloquejar res: `#cau-boolea-c` (pendent d'un col·lega), el protocol de gestió d'errades i la taula de referències d'`index.qmd` (`TODO.md`). Les eines de les sessions són a `13_contrib.qmd §IAs` (skills, subagents i hooks).
 

@@ -16,11 +16,11 @@ Directori `01_apunts/`:
 | :--- | :--- |
 | `A1.qmd`–`A9.qmd` | Teoria del Tema x (x = 1–9) |
 
-Directori `02_exercicis/`:
+Directori `02_problemes/`:
 
 | Fitxer | Contingut |
 | :--- | :--- |
-| `E1.qmd`–`E9.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
+| `P1.qmd`–`P9.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
 
 Directori `03_solucions/`:
 
@@ -69,7 +69,7 @@ Directori `04_laboratori/`:
 ├── .github/                    # Workflow de publicació a GitHub Pages
 ├── .vscode/                    # Diccionari
 ├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
-├── 02_exercicis/               # Problemes     (`Ex.qmd`, x ∈ [1, 9])
+├── 02_problemes/               # Problemes     (`Px.qmd`, x ∈ [1, 9])
 ├── 03_solucions/               # Solucions     (`Sx.qmd`, x ∈ [1, 9])
 ├── 04_laboratori/              # Laboratori    (`Ly.qmd`, y ∈ [1, 6])
 ├── 05_diapositives/            # Reservat (encara sense contingut)
