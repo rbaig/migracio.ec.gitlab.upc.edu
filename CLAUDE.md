@@ -20,7 +20,7 @@ Repartiment de responsabilitats entre fitxers:
 
 - `13_contrib.qmd` (el capítol «Contribueix-hi») és **el fitxer de referència** del projecte i ha d'estar sempre actualitzat. Hi va qualsevol regla de format, estil, terminologia o convenció, curta i sense historial.
 - `24_specs/registre_de_decisions.md` recull el perquè i l'historial de cada regla, i l'historial de l'estat del projecte. Una regla nova o canviada hi porta la seva entrada, en el mateix commit.
-- `.claude/skills/` recull els procediments que només fan servir les sessions de Claude Code: `escombrada`, `render`, `rars` i `figures` (`13_contrib.qmd §IAs`).
+- `.claude/skills/` recull els procediments que només fan servir les sessions de Claude Code: `escombrada`, `render`, `rars` i `figures` (`13_contrib.qmd §IA`).
 - `CLAUDE.md` (aquest fitxer) recull **només** l'operació de les sessions de Claude Code. Qualsevol altre aspecte va a `13_contrib.qmd`.
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
 - `TODO.md` només conté contingut transitori. El que ha de quedar buit al final és **el fitxer mateix**: no hi ha de restar cap entrada viva.
@@ -33,7 +33,7 @@ L'estructura de directoris i la convenció de noms dels fitxers (`Ax.qmd`, `Px.q
 
 Tots els fitxers `.qmd` dels `chapters:` de `_quarto.yml` formen part del projecte, encara que estiguin comentats (es comenten per escurçar el temps de renderització en proves).
 
-Els PDFs originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas de dubte sobre els continguts.
+Els PDF originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas de dubte sobre els continguts.
 
 ## Estat del projecte
 
@@ -73,10 +73,10 @@ Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ s�
 | 7g | Control de qualitat fora de la revisió externa (A9, Px, Sx i Ly) i petits pendents: l'slug d'A4, les línies partides del mòbil i els ítems nous de l'usuari; després, dins de la finestra de canvis, les possibles errades d'A1–A8, els títols `#nte-`, «offset» i els noms de les figures (D-76) | ✅ 2026-10-08 (de `ca02ad8` a `060ab36`; després, de `03e3d7c` a `18a94aa` i el de tancament) | I | Opus, High |
 | 7h | **Vores compartides de la resta de figures** (`TODO.md §Tasques globals → SVG`): 54 figures amb dues vores que comparteixen el traç (`svg.md §7`), als generadors i als SVG natius. Acceptada per l'usuari el 2026-10-08, a proposta de Claude Code. No canvia el text que llegeixen els revisors. | Pendent | — | Opus, Medium–High |
 | 7i | **Suggeriments de la 7g i desajustos de la guia i del glossari** (`TODO.md §Tasques transversals`): els 86 suggeriments sense proposta d'A9, Px, Sx, Ly i `index.qmd`, i `13_contrib.qmd:156`, la taula de §Figures Graphviz i `12_sigles_simbols.qmd:202`. Acceptada per l'usuari el 2026-10-08, a proposta de Claude Code. Fora de la revisió externa. | Pendent | — | Opus, High |
-| 8a | Revisió tècnica i lingüística d'A1–A8, amb canvis: les errades, les harmonitzacions i els suggeriments amb proposta, i les regles D-77 a D-82 (el que queda, al `TODO.md`) | ✅ 2026-10-09 (`2b52382`, `66b6cab`, `19b9913` i el de tancament) | J | Opus, High |
+| 8a | Revisió tècnica i lingüística d'A1–A8, amb canvis: les errades, les harmonitzacions i els suggeriments amb proposta, i les regles D-77 a D-82; i, el mateix dia, les convencions D-83 a D-86 i la lectura lingüística frase a frase (el que queda, al `TODO.md`) | ✅ 2026-10-09 (`2b52382`, `66b6cab`, `19b9913`, `0bd83ea` i el del seguiment) | J | Opus, High |
 | 8 | **Preparar el material per als equips de revisió d'A1–A8** (declaracions de l'usuari, 2026-10-06: la revisió externa afecta, de moment, A1–A8, «també T3--T6»; A9, Px, Sx i Ly en queden fora; «Les branches de revisió les crearà cada equip de revisió»). La feina d'aquesta fase és el material, no les branques: una nota per als revisors i l'estat de cada fitxer d'A1–A8. Els equips i el calendari els decideix l'usuari; cada equip crea la seva branca, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). T8 ja és en revisió: `!8`, fusionada el 2026-10-06 fins a §8.7 exclosa. | Pendent | — | — |
 
-Sense fase pròpia, quan hi hagi ocasió i sense bloquejar res: `#cau-boolea-c` (pendent d'un col·lega), el protocol de gestió d'errades i la taula de referències d'`index.qmd` (`TODO.md`). Les eines de les sessions són a `13_contrib.qmd §IAs` (skills, subagents i hooks).
+Sense fase pròpia, quan hi hagi ocasió i sense bloquejar res: `#cau-boolea-c` (pendent d'un col·lega), el protocol de gestió d'errades i la taula de referències d'`index.qmd` (`TODO.md`). Les eines de les sessions són a `13_contrib.qmd §IA` (skills, subagents i hooks).
 
 ## Flux de treball
 

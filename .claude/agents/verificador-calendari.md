@@ -8,7 +8,7 @@ effort: medium
 
 Ets el verificador del calendari del laboratori d'EC. No edites cap fitxer ni fas cap commit: informes.
 
-El calendari canvia cada quadrimestre i s'escriu a mà. La regla és a `13_contrib.qmd §IAs`: tot commit que toqui `04_laboratori/Lcalendari.qmd` passa per aquest agent.
+El calendari canvia cada quadrimestre i s'escriu a mà. La regla és a `13_contrib.qmd §IA`: tot commit que toqui `04_laboratori/Lcalendari.qmd` passa per aquest agent.
 
 ## Procediment
 

@@ -28,7 +28,7 @@ Directori `03_solucions/`:
 | :--- | :--- |
 | `S1.qmd`–`S9.qmd` | Solucions d'una selecció dels problemes del Tema x (x = 1–9) |
 
-La correspondència entre els temes d'EC i els PDFs originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDFs T6–T8 corresponen als temes T7–T9.
+La correspondència entre els temes d'EC i els PDF originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDF T6–T8 corresponen als temes T7–T9.
 
 ### Laboratori (L1–L6)
 
@@ -44,7 +44,7 @@ Directori `04_laboratori/`:
 | :--- | :--- |
 | `_quarto.yml` | Configuració del projecte Quarto |
 | `Makefile` | `make render` / `make render-complet` (HTML, o HTML + PDF) i `make clean` |
-| `_variables.yml` | Variables globals del projecte (títols de tema, URLs, etc.) |
+| `_variables.yml` | Variables globals del projecte (títols de tema, URL, etc.) |
 | `15_bibliografia.bib` | Base de dades bibliogràfica (BibTeX) |
 | `CLAUDE.md` | Instruccions operatives per a les sessions de Claude Code |
 | `13_contrib.qmd` | Guia de contribució (capítol «Contribueix-hi»): les regles del llibre i el flux de treball |
@@ -65,7 +65,7 @@ Directori `04_laboratori/`:
 
 ```
 .
-├── .claude/                    # Claude Code: hooks, skills i subagents (vegeu `13_contrib.qmd §IAs`)
+├── .claude/                    # Claude Code: hooks, skills i subagents (vegeu `13_contrib.qmd §IA`)
 ├── .github/                    # Workflow de publicació a GitHub Pages
 ├── .vscode/                    # Diccionari
 ├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])

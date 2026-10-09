@@ -559,11 +559,11 @@ Primer cal fixar les adreces de les instruccions. La pseudoinstrucció `la` s'ex
 | $A$ | `auipc ra, ...` | expansió de `la ra, etiq` |
 | $A + 4$ | `addi ra, ra, ...` | expansió de `la ra, etiq` |
 | $A + 8$ | `addi ra, ra, -4` | |
-| $A + 12$ | `jalr ra, ra, 0` | `etiq` |
+| $A + 12$ | `jalr ra, 0(ra)` | `etiq` |
 
 Per tant, `etiq` $= A + 12$.
 
-Per fer el seguiment cal recordar la semàntica de `jalr rd, rs1, imm12`: l'adreça de destinació es calcula amb el valor **actual** de `rs1`, i **després** s'escriu `rd` ← PC + 4. Quan `rd` i `rs1` són el mateix registre (com aquí, `ra`), la lectura es fa abans de l'escriptura.
+Per fer el seguiment cal recordar la semàntica de `jalr rd, offset(rs1)`: l'adreça de destinació es calcula amb el valor **actual** de `rs1`, i **després** s'escriu `rd` ← PC + 4. Quan `rd` i `rs1` són el mateix registre (com aquí, `ra`), la lectura es fa abans de l'escriptura.
 
 Seguiment pas a pas:
 
@@ -679,7 +679,7 @@ A:
 
 on `offset = @symbol − PC` és la distància entre la instrucció `auipc` i el símbol.
 
-**Per què en calen dues?** Un desplaçament de 32 bits no cap en cap immediat de RV32I: el més gran és el de 20 bits del format U. Calen dues instruccions per construir els 32 bits: `auipc` aporta els 20 bits superiors (sumats al PC) i `addi` els 12 bits inferiors. Com en l'expansió de `li` amb `lui` + `addi`, si el bit 11 de `lo_12` val 1 cal incrementar `hi_20` en 1 per compensar l'extensió de signe d'`addi` (el mecanisme detallat és a @exr-t2-immediats-luiaddi).
+**Per què en calen dues?** Un desplaçament de 32 bits no cap en cap immediat d'RV32I: el més gran és el de 20 bits del format U. Calen dues instruccions per construir els 32 bits: `auipc` aporta els 20 bits superiors (sumats al PC) i `addi` els 12 bits inferiors. Com en l'expansió de `li` amb `lui` + `addi`, si el bit 11 de `lo_12` val 1 cal incrementar `hi_20` en 1 per compensar l'extensió de signe d'`addi` (el mecanisme detallat és a @exr-t2-immediats-luiaddi).
 
 **Limitació del desplaçament**: l'expansió codifica un desplaçament de 32 bits amb signe, $[-2^{31}, 2^{31}-1]$, de manera que el símbol ha de ser dins d'un rang de **±2 GiB** respecte al PC. En RV32I, on l'espai d'adreces és de 32 bits (4 GiB) i l'aritmètica d'adreces és mòdul $2^{32}$, aquest rang cobreix a la pràctica tot l'espai d'adreces; en arquitectures de 64 bits, en canvi, és una limitació real que obliga a usar altres mecanismes per a símbols més llunyans.
 :::

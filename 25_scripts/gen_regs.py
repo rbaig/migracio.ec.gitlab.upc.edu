@@ -77,7 +77,7 @@ INSTRUCCIO_PREFIX = 'instruccio_tipus_'
 # extensió) → (formats en ordre canònic, títol, descripció). El complet és el
 # del compendi de referència (11_riscv.qmd); el de R, I i S és el d'A2
 # (#nte-instruccions-tipus), perquè cap format no es presenta abans del seu
-# lloc (13_contrib.qmd §T2 i T3, «Formats d'instrucció de RV32I»).
+# lloc (13_contrib.qmd §T2 i T3, «Formats d'instrucció d'RV32I»).
 COMPENDIS = {
     'compendi_registres': (
         ['R', 'I', 'S', 'B', 'U', 'J', 'R4'],

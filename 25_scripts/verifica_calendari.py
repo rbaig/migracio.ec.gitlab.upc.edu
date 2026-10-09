@@ -2,7 +2,7 @@
 """Comprovacions mecàniques del calendari del laboratori (04_laboratori/Lcalendari.qmd).
 
 El calendari canvia cada quadrimestre i s'escriu a mà; aquest script en mira el que
-es pot mirar sense judici (fase 7g, 2026-10-08; 13_contrib.qmd §IAs):
+es pot mirar sense judici (fase 7g, 2026-10-08; 13_contrib.qmd §IA):
 
   1. El quadrimestre: la línia «**Quadrimestre <primavera|tardor> AAAA-BB**» hi és i
      en dona l'any de les dates (primavera: 20BB; tardor: AAAA).

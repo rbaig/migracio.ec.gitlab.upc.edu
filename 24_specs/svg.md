@@ -87,9 +87,9 @@ width="100%"   viewBox="0 0 {W} {H}"
 
 Quan el contingut és gran (vectors llargs, moltes zones), cal reduir l'escala per mantenir la figura en una mida raonable. Factors admesos, en ordre decreixent:
 
-- ×1  = 20 px/byte (defecte; per a BAs petits o figures de referència)
-- ×½  = 10 px/byte (recomanat per a la majoria de BAs amb vectors)
-- ×¼  =  5 px/byte (per a BAs molt grans)
+- ×1  = 20 px/byte (defecte; per a BA petits o figures de referència)
+- ×½  = 10 px/byte (recomanat per a la majoria de BA amb vectors)
+- ×¼  =  5 px/byte (per a BA molt grans)
 
 **Tria de l'escala:** usar la més gran que mantingui la figura llegible i les coordenades en múltiples de 10 (o 5 com a mínim). L'escala s'aplica uniformement a totes les zones d'una mateixa figura.
 
@@ -458,15 +458,15 @@ Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
 ---
 
-## 15. Figures extretes de PDFs existents
+## 15. Figures extretes dels PDF existents
 
-Algunes figures del projecte provenen de PDFs originals (material docent anterior) i es generen amb el script Python `25_scripts/extract_pdf_figure.py` (o equivalent), que fa servir `pymupdf` i `text_as_path=True`.
+Algunes figures del projecte provenen dels PDF originals (material docent anterior) i es generen amb el script Python `25_scripts/extract_pdf_figure.py` (o equivalent), que fa servir `pymupdf` i `text_as_path=True`.
 
 ### Característiques tècniques
 
 - **Text traçat**: el text es converteix a corbes de Bézier. No és editable com a text, però és totalment portable (sense dependència de fonts instal·lades al sistema). Per editar el text cal partir del PDF original i regenerar.
 - **Negre implícit fet explícit**: el SVG generat afegeix `fill="#000000" stroke="none"` a l'element `<svg>` arrel. Això fa que el negre per defecte (heretat implícitament per tots els paths i formes sense color explícit) sigui substituïble per `gen_dark.py` com qualsevol altre color de la paleta.
-- **Fons verd eliminat**: el color `#d9ffd9` (realçat del visor de PDFs) s'elimina durant l'extracció.
+- **Fons verd eliminat**: el color `#d9ffd9` (realçat del visor de PDF) s'elimina durant l'extracció.
 
 ### Generació de la variant dark
 

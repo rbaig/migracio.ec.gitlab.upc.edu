@@ -6,7 +6,7 @@
 #   3. Si el canvi toca el PDF, `make render-complet` és obligatori
 #      (13_contrib.qmd §Verificació de l'entorn), i un render HTML no ho exercita.
 #   4. Si el canvi toca el calendari del laboratori, verifica_calendari.py i l'avís
-#      de passar l'agent verificador-calendari (13_contrib.qmd §IAs).
+#      de passar l'agent verificador-calendari (13_contrib.qmd §IA).
 # Els punts 2, 3 i 4 no bloquegen ni pregunten: els avisos arriben a Claude
 # (additionalContext) i a l'usuari, a la pantalla (systemMessage). Fins al
 # 2026-10-03 demanaven confirmació («ask»); decisió de l'usuari: el flux ja fa
@@ -63,10 +63,10 @@ if [ -n "$pdf" ]; then
 fi
 
 # 4. Calendari del laboratori: canvia cada quadrimestre i s'escriu a mà
-#    (13_contrib.qmd §IAs; decisió de l'usuari, 2026-10-08).
+#    (13_contrib.qmd §IA; decisió de l'usuari, 2026-10-08).
 if grep -qx '04_laboratori/Lcalendari.qmd' <<<"$fitxers"; then
   calendari=$(python3 25_scripts/verifica_calendari.py 2>&1)
-  avisos+=$'\n'"Aquest commit toca 04_laboratori/Lcalendari.qmd: abans del commit cal passar l'agent verificador-calendari (13_contrib.qmd §IAs). Resultat de 25_scripts/verifica_calendari.py:"$'\n'"$calendari"$'\n'
+  avisos+=$'\n'"Aquest commit toca 04_laboratori/Lcalendari.qmd: abans del commit cal passar l'agent verificador-calendari (13_contrib.qmd §IA). Resultat de 25_scripts/verifica_calendari.py:"$'\n'"$calendari"$'\n'
 fi
 
 if [ -n "$avisos" ]; then

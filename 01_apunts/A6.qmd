@@ -36,7 +36,7 @@ Un avió A porta 100 passatgers a 1200 km/h. Un avió B porta 500 passatgers a 1
 
 **Pregunta**: Quin té més rendiment?
 
-**Resposta**: A té menor temps d'execució i, per tant, més rendiment (@eq-rendiment). B té major productivitat.
+**Resposta**: A té un temps d'execució menor i, per tant, més rendiment (@eq-rendiment). B té una productivitat major.
 :::
 
 ::: {#tip-rendiment-cpu .callout-tip}
@@ -45,7 +45,7 @@ Un computador A té 1 CPU que tarda $10\ \mu\text{s}$. B té 200 CPU que tarden 
 
 **Pregunta**: Quin té més rendiment?
 
-**Resposta**: A té menor temps d'execució i, per tant, més rendiment (@eq-rendiment). B té major productivitat.
+**Resposta**: A té un temps d'execució menor i, per tant, més rendiment (@eq-rendiment). B té una productivitat major.
 :::
 
 Quina **relació** hi ha entre **productivitat** i **temps d'execució**?
@@ -63,14 +63,12 @@ $$\text{Guany} = s = \frac{\text{Rendiment}_{nou}}{\text{Rendiment}_{\text{refer
 ## Interpretació del guany
 Un guany de 2 significa que el sistema nou és el doble de ràpid que el de referència.
 
-- Si $t_{\text{referència}} = 10\ \text{s}$ i $t_{nou} = 5\ \text{s}$,
-- el guany és:
-    - $s = 10\ \text{s} / 5\ \text{s} = 2$.
+Si $t_{\text{referència}} = 10\ \text{s}$ i $t_{nou} = 5\ \text{s}$, el guany és $s = 10\ \text{s} / 5\ \text{s} = 2$.
 :::
 
 ### Factors que influeixen en el temps d'execució {#sec-factors-que-influeixen-en-el-temps-dexecucio}
 
-Per tal d'entendre quins aspectes influeixen en el temps d'execució, i per tant conèixer com és possible millorar-lo, es desglossa en els seus components:
+Per tal d'entendre quins aspectes influeixen en el temps d'execució, i, per tant, conèixer com és possible millorar-lo, es desglossa en els seus components:
 
 $$t_{exe} = n_{cicles} \cdot t_{clock} = n_{cicles} / f_{clock} \qquad [\text{s}]$$ {#eq-texe1}
 
@@ -85,7 +83,7 @@ I, per tant, el temps d'execució és:
 
 $$t_{exe} = n_{ins} \cdot \text{CPI} \cdot t_{clock}$$ {#eq-texe2}
 
-Per a reduir $n_{ins}$ cal millorar l'algorisme, l'eficiència del compilador o l'ISA. El CPI d'un programa determinat és una mitjana que depèn del retard de cada tipus d'instrucció ($\text{CPI}_{i}$) i de quantes n'hi ha de cada tipus ($n_{i}$), fent una **mitjana ponderada**. Així, suposant que té $m$ tipus diferents d'instruccions, el seu CPI és:
+Per a reduir $n_{ins}$ cal millorar l'algorisme, l'eficiència del compilador o l'ISA. El CPI d'un programa determinat és una mitjana que depèn del retard de cada tipus d'instrucció ($\text{CPI}_{i}$) i de quantes n'hi ha de cada tipus ($n_{i}$): és una **mitjana ponderada**. Així, suposant que té $m$ tipus diferents d'instruccions, el seu CPI és:
 
 $$\text{CPI} = \frac{1}{n_{ins}} \cdot \left(\sum_{i=1}^{m} n_{i} \cdot \text{CPI}_{i}\right)$$ {#eq-cpi}
 
@@ -93,20 +91,20 @@ Conseqüentment, el **temps d'execució** és:
 
 $$t_{exe} = \left(\sum_{i=1}^{m} n_{i} \cdot \text{CPI}_{i}\right) \cdot t_{clock}$$ {#eq-texe3}
 
-Es pot reduir el temps d'execució reduint el retard $\text{CPI}_{i}$ de cada tipus d'instrucció, però això requereix millorar el disseny de la microarquitectura. També es pot reduir el nombre d'instruccions $n_{i}$ d'aquells tipus d'instruccions més lentes (amb major $\text{CPI}_{i}$), encara que sigui a costa d'augmentar el nombre de les més ràpides, si la suma total de cicles resultant és inferior.
+Es pot reduir el temps d'execució reduint el retard $\text{CPI}_{i}$ de cada tipus d'instrucció, però això requereix millorar el disseny de la microarquitectura. També es pot reduir el nombre d'instruccions $n_{i}$ dels tipus més lents (amb major $\text{CPI}_{i}$), encara que sigui a costa d'augmentar el nombre de les més ràpides, si la suma total de cicles resultant és inferior.
 
 Cal anar amb compte amb el concepte CPI, perquè es pot fer referència a:
 
 - La quantitat de **cicles per instrucció d'un programa en conjunt**, o, fins i tot, a un conjunt de programes en un cert computador.
 - La quantitat, en molts casos fixa, de **cicles d'un tipus concret d'instruccions** en un cert computador ($\text{CPI}_{i}$ per al tipus $i$).[^CPIins]
 
-[^CPIins]: Però alerta! No sempre és cert que un tipus d'instrucció tardi un temps fix, ja que com es veurà al [Tema 7](#sec-tema-mc), les instruccions de lectura (*load*) i d'escriptura (*store*) d'un mateix programa poden tardar més o menys depenent de l'estat de la memòria cau en cada instant. No obstant això, encara es pot parlar del CPI de les instruccions de lectura, cas en què es fa referència a la mitjana de les instruccions de lectura dins d'un determinat programa.
+[^CPIins]: Però cal anar amb compte: no sempre és cert que un tipus d'instrucció tardi un temps fix, ja que, com es veurà al [Tema 7](#sec-tema-mc), les instruccions de lectura (*load*) i d'escriptura (*store*) d'un mateix programa poden tardar més o menys depenent de l'estat de la memòria cau en cada instant. No obstant això, encara es pot parlar del CPI de les instruccions de lectura, cas en què es fa referència a la mitjana de les instruccions de lectura dins d'un determinat programa.
 
 En comparar el rendiment de dues versions d'un mateix programa generades per compiladors diferents, en realitat s'està comparant l'efectivitat dels compiladors. Com que el temps de cicle és el mateix, la comparació dels temps d'execució es pot fer comparant el nombre de cicles de rellotge.
 
 ::: {#tip-comparacio-versions-programa .callout-tip}
 ## Comparació de dues versions d'un programa
-Es comparen dues versions d'un programa en un mateix computador, que disposa de 3 tipus d'instruccions A, B i C, amb CPI de 1, 2 i 3 respectivament. El programa 1 (P1) consta de: 2 instruccions d'A, 1 de B i 2 de C. El programa 2 (P2) consta de: 4 instruccions d'A, 1 de B i 1 de C.
+Es comparen dues versions d'un programa en un mateix computador, que disposa de tres tipus d'instruccions A, B i C, amb CPI de 1, 2 i 3, respectivament. El programa 1 (P1) consta de: 2 instruccions d'A, 1 de B i 2 de C. El programa 2 (P2) consta de: 4 instruccions d'A, 1 de B i 1 de C.
 
 **Pregunta 1**: Quin és més ràpid?
 
@@ -135,13 +133,13 @@ Es comparen dues versions d'un programa en un mateix computador, que disposa de 
 
 #### Augment de la freqüència de rellotge (reducció del temps de cicle) {#sec-augment-de-la-frequencia-de-rellotge-reduccio-del-temps-de-cicle}
 
-Sigui un circuit combinacional A que llegeix dades d'entrada d'un biestable i escriu dades de sortida en un altre biestable. En principi, reduint el temps de cicle del circuit A es pot aconseguir que calculi més resultats per unitat de temps, reduint doncs el temps total d'execució de les tasques.
+Sigui un circuit combinacional A que llegeix dades d'entrada d'un biestable i escriu dades de sortida en un altre biestable. En principi, reduint el temps de cicle del circuit A es pot aconseguir que calculi més resultats per unitat de temps i, doncs, reduir el temps total d'execució de les tasques.
 
 Però cal parar atenció: reduir excessivament el temps de cicle pot fer que les dades de sortida de A encara no estiguin calculades, i que el resultat correcte no s'obtingui fins al cicle de rellotge següent. En aquest cas, haurà augmentat el nombre de cicles per executar la mateixa tasca i, per tant, no és segur que s'hi guanyi.
 
 :::: {#tip-augment-freq .callout-tip}
 ## La reducció del temps de cicle no sempre és una millora
-Per exemple, suposem dos circuits A i B de diferent retard, que formen part del mateix processador i escriuen repetidament el seu resultat sobre un biestable quan arriba el flanc de rellotge. Suposem que inicialment el temps de cicle és $t_{clock}$ i volem reduir-lo a $t_{clock}'$:
+Per exemple, suposem dos circuits A i B de retards diferents, que formen part del mateix processador i escriuen repetidament el seu resultat en un biestable quan arriba el flanc de rellotge. Suposem que inicialment el temps de cicle és $t_{clock}$ i volem reduir-lo a $t_{clock}'$:
 
 :::: {#fig-tc-tc-prima}
 ::: {.content-visible when-format="html"}
@@ -155,7 +153,7 @@ Per exemple, suposem dos circuits A i B de diferent retard, que formen part del 
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A6_tc_tc_prima__original_light.svg){width="40%"}
 :::
-Mateixos components, diferents temps de cicle.
+Els mateixos components, temps de cicle diferents.
 ::::
 
 Després de reduir el temps de cicle, la tasca A es realitzarà en menys temps, ja que
@@ -275,7 +273,7 @@ No totes les portes commuten en cada cicle de rellotge. Es defineix el factor d'
 
 $$P_{d} = \alpha \cdot C \cdot V_{CC}^{2} \cdot f_{clock}$$ {#eq-potencia-dinamica}
 
-Per tenir una idea, són bastant comuns els valors de $\alpha$ pròxims a 0,1. L'energia dissipada en joules durant un temps $t$ és:
+A tall d'indicació, són bastant comuns els valors de $\alpha$ pròxims a 0,1. L'energia dissipada en joules durant un temps $t$ és:
 
 $$E = P \cdot t$$ {#eq-energia}
 
@@ -301,7 +299,7 @@ Porta NOT, representació funcional i implementació amb CMOS.
 
 El transistor *p-channel metal–oxide–semiconductor* (PMOS) condueix quan la tensió d'entrada baixa d'un cert llindar (*threshold*) $V_{t}$, i roman tallat (circuit obert) si la tensió és superior. A la inversa, un transistor *n-channel metal–oxide–semiconductor* (NMOS) condueix quan la tensió d'entrada puja per sobre d'un cert llindar $V_{t}$, i resta obert si la tensió és inferior. Aquests llindars determinen els nivells lògics 1 i 0.
 
-**Càrrega**: Quan la tensió a l'entrada de la porta $V_{in}$ passa del valor lògic 1 al 0 (funció graó de flanc descendent), el transistor PMOS passa a conduir i l'NMOS queda obert. En conduir, el corrent flueix a través de la seva resistència equivalent $R$, i la càrrega elèctrica s'acumula en les etapes d'entrada del circuit A (en les portes d'altres transistors), que actuen així a manera d'un condensador $C$. El circuit equivalent i la gràfica de tensió $V(t) = V_{CC}(1 - e^{-t/RC})$ són a la @fig-not-1-0:
+**Càrrega**: Quan la tensió a l'entrada de la porta $V_{in}$ passa del valor lògic 1 al 0 (funció graó de flanc descendent), el transistor PMOS passa a conduir i l'NMOS queda obert. En conduir, el corrent flueix a través de la seva resistència equivalent $R$, i la càrrega elèctrica s'acumula en les etapes d'entrada del circuit A (en les portes d'altres transistors), que actuen així a manera de condensador $C$. El circuit equivalent i la gràfica de tensió $V(t) = V_{CC}(1 - e^{-t/RC})$ són a la @fig-not-1-0:
 
 :::: {#fig-not-1-0}
 ::: {.content-visible when-format="html"}
@@ -342,7 +340,7 @@ A diferència de la dinàmica, la potència estàtica ($P_{s}$) no depèn de la 
 
 Els corrents de fuita tenen dos orígens principals:
 
-- **Fuita subllindar** (*subthreshold leakage*): corrent que circula entre drenador i font d'un transistor amb una tensió de porta per sota del llindar $V_{t}$. Creix com més petit és aquest llindar, i els transistors miniaturitzats el redueixen per poder funcionar a tensions $V_{CC}$ més baixes.
+- **Fuita subllindar** (*subthreshold leakage*): corrent que circula entre drenador i font d'un transistor amb una tensió de porta per sota del llindar $V_{t}$. Creix a mesura que aquest llindar és més petit, i els transistors miniaturitzats el redueixen per poder funcionar a tensions $V_{CC}$ més baixes.
 - **Fuita de porta** (*gate leakage*): corrent que travessa l'òxid aïllant de la porta, cada cop més prim a mesura que es miniaturitza el transistor.
 
 Donada la tensió d'alimentació $V_{CC}$ i el corrent de fuita agregat de tot el circuit $I_{fuita}$, la potència estàtica és el seu producte:
@@ -360,7 +358,7 @@ La miniaturització que fa possible la llei de Moore permet reduir el temps de c
 ::: {#wrn-dennard .callout-warning collapse=true}
 ## L'escalat de Dennard i la fi del creixement de freqüència
 
-Durant dècades, la reducció de la mida dels transistors no sols permetia encabir-ne més al xip (llei de Moore) sinó que, gràcies a l'escalat de Robert Dennard (IBM), també mantenia la **densitat de potència constant**: transistors més petits consumien proporcionalment menys energia, de manera que duplicar-ne la quantitat no disparava el consum total. Això permetia augmentar la freqüència de rellotge sense problemes tèrmics.
+Durant dècades, la reducció de la mida dels transistors no sols permetia encabir-ne més al xip (llei de Moore), sinó que, gràcies a l'escalat de Robert Dennard (IBM), també mantenia la **densitat de potència constant**: transistors més petits consumien proporcionalment menys energia, de manera que duplicar-ne la quantitat no disparava el consum total. Això permetia augmentar la freqüència de rellotge sense problemes tèrmics.
 
 Cap al 2003–2005, però, l'escalat de Dennard va deixar de funcionar. En arribar a dimensions de transistor molt petites, els **corrents de fuita** ($I_{fuita}$, @eq-potencia-estatica) ja no eren negligibles i creixien amb cada nova generació, tot i que la freqüència no augmentés. A partir d'aquí, augmentar la freqüència implicava disparar la potència total per sobre dels límits tèrmics tolerables. Des d'aleshores, la freqüència sostinguda dels processadors s'ha estancat entre els 3 i els 5 GHz, amb pics puntuals de fins a uns 6 GHz en mode *turbo*.
 

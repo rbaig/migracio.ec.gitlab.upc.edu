@@ -10,7 +10,7 @@ number-sections: true
 
 Quan es compila i s'enllaça un programa, l'enllaçador assigna adreces de memòria a les instruccions i les dades. Però en un computador modern s'executen múltiples programes simultàniament, tots compartint la mateixa memòria física. Això planteja dos problemes fonamentals:
 
-- **Reubicació.** Si dos programes han estat compilats per ocupar les mateixes adreces, no poden coexistir a la memòria sense que les seves dades i instruccions col·lisionin. Cal un mecanisme que permeti que cada programa cregui que ocupa les adreces que li han estat assignades en compilació, però que en realitat estigui ubicat en una zona diferent de la memòria física.
+- **Reubicació.** Si dos programes han estat compilats per ocupar les mateixes adreces, no poden coexistir a la memòria sense que les seves dades i instruccions col·lideixin. Cal un mecanisme que permeti que cada programa cregui que ocupa les adreces que se li han assignat en compilar-lo, però que en realitat estigui ubicat en una zona diferent de la memòria física.
 - **Mida limitada.** El conjunt d'instruccions i dades de tots els programes en execució pot superar fàcilment la capacitat de la memòria física. Sense cap mecanisme addicional, això impossibilitaria l'execució de certs programes o combinacions de programes.
 
 La solució a tots dos problemes és la **memòria virtual**.
@@ -19,9 +19,9 @@ La solució a tots dos problemes és la **memòria virtual**.
 
 La memòria virtual es fonamenta en la distinció entre dos espais d'adreçament independents.
 
-- L'**espai d'adreçament lògic** (o virtual) és el conjunt d'adreces que utilitza un programa: tant en temps de compilació com en temps d'execució, la CPU treballa exclusivament amb adreces lògiques. Cada procés té el seu propi espai d'adreçament lògic, independent del dels altres, amb una mida màxima determinada pel nombre de bits d'adreça del processador (per exemple, $2^{32}$ bytes = 4 GiB en un sistema de 32 bits; vegeu @cau-prefixos-binaris per la notació). Això proporciona a cada procés la il·lusió de disposar de tota la memòria per a ell sol.
+- L'**espai d'adreçament lògic** (o virtual) és el conjunt d'adreces que utilitza un programa: tant en temps de compilació com en temps d'execució, la CPU treballa exclusivament amb adreces lògiques. Cada procés té el seu propi espai d'adreçament lògic, independent del dels altres, amb una mida màxima determinada pel nombre de bits d'adreça del processador (per exemple, $2^{32}$ bytes = 4 GiB en un sistema de 32 bits; vegeu @cau-prefixos-binaris per a la notació). Això proporciona a cada procés la il·lusió de disposar de tota la memòria per a ell sol.
 - L'**espai d'adreçament físic** és el conjunt d'adreces de la memòria física real. La seva mida depèn de la quantitat de RAM instal·lada al sistema, i és totalment independent de l'espai d'adreçament lògic.
-- La **unitat de gestió de memòria** (*memory management unit* o **MMU**) és el component maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.
+- La **unitat de gestió de memòria** (*memory management unit* o **MMU**) és el component de maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.
 
 La @fig-mv-espais il·lustra aquests tres elements amb dos processos.
 
@@ -44,7 +44,7 @@ Cada procés disposa d'un espai d'adreçament lògic propi i independent, de `0x
 
 Una de les motivacions originals de la memòria virtual era donar solució al problema de no poder encabir tot un programa a la memòria física, la mida de la qual era antigament molt limitada. Tradicionalment, això s'havia solucionat mitjançant la tècnica de les superposicions (*overlays*): el programador divideix el programa en blocs, que va movent selectivament entre la memòria física i el disc, mantenint a la memòria únicament els blocs indispensables en cada moment. La memòria virtual funciona d'una manera semblant, ja que també fa servir el disc per emmagatzemar temporalment les parts d'un programa que no s'estan fent servir, però això ho gestiona el sistema operatiu, amb l'ajuda del maquinari, i allibera els programadors d'aquesta tasca.
 
-En un computador amb memòria virtual, el disc (o SSD) passa a ser una capa més de la jerarquia de memòria de la @sec-jerarquia (@fig-mv-jerarquia). De la mateixa manera que la memòria cau només conté un subconjunt de les dades del nivell inferior (de la memòria principal), la memòria física d'un computador amb memòria virtual només conté un subconjunt de les dades necessàries per a l'execució d'un programa. La totalitat de les dades és sempre emmagatzemada al nivell inferior, el disc, que es troba a la base de la jerarquia.
+En un computador amb memòria virtual, el disc (o SSD) passa a ser una capa més de la jerarquia de memòria de la @sec-jerarquia (@fig-mv-jerarquia). De la mateixa manera que la memòria cau només conté un subconjunt de les dades del nivell inferior (de la memòria principal), la memòria física d'un computador amb memòria virtual només conté un subconjunt de les dades necessàries per a l'execució d'un programa. Totes les dades són sempre al nivell inferior, el disc, que es troba a la base de la jerarquia.
 
 ::: {#fig-mv-jerarquia}
 ::: {.content-visible when-format="html"}
@@ -83,7 +83,7 @@ Donada una adreça lògica $A$ d'un programa, per exemple la d'una dada, es pot 
 ![](/auto_figs/A8_mv_adreca_exemple__original_light.svg)
 :::
 
-Cada computador disposa d'una determinada capacitat de memòria física, que ocupa un rang d'adreces anomenat espai d'adreçament físic, totalment independent del rang d'adreces lògiques (pot ser més petit, igual o més gran). L'espai d'adreçament físic se subdivideix en blocs de mida $T$, la mateixa que les pàgines lògiques, anomenats **marcs de pàgina** (*page frames*), que es poden imaginar com a «contenidors» que poden allotjar una pàgina lògica. Cada marc de pàgina té associat un **número de pàgina física** (*physical page number* o **PPN**), que indica la posició que ocupa dins l'espai d'adreçament físic, començant pel 0.
+Cada computador disposa d'una determinada capacitat de memòria física, que ocupa un rang d'adreces anomenat espai d'adreçament físic, totalment independent del rang d'adreces lògiques (pot ser més petit, igual o més gran). L'espai d'adreçament físic se subdivideix en blocs de mida $T$, la mateixa que les pàgines lògiques, anomenats **marcs de pàgina** (*page frames*), que es poden imaginar com a «contenidors» on es pot allotjar una pàgina lògica. Cada marc de pàgina té associat un **número de pàgina física** (*physical page number* o **PPN**), que indica la posició que ocupa dins l'espai d'adreçament físic, començant pel 0.
 
 Cada procés consta d'un cert nombre de pàgines virtuals, no totes necessàriament contigües, que ocupen unes adreces determinades en temps de compilació. Les adreces d'aquestes pàgines virtuals són totalment independents de les adreces físiques que ocuparan després, en temps d'execució. Inicialment, un procés resideix a l'emmagatzematge secundari (el disc), i durant l'execució el sistema operatiu haurà d'anar carregant del disc a la memòria física les pàgines que es vagin necessitant. Si no hi queden marcs de pàgina lliures, el sistema n'haurà de reemplaçar un d'ocupat, i possiblement haurà d'escriure'n la pàgina al disc abans de carregar-hi la nova. En un moment donat, les pàgines d'un procés que no són a la memòria física són al disc. Es deixen per a més endavant els detalls de com es llegeixen i s'escriuen les pàgines al disc. Per simplificar, se suposa que **la memòria física conté un subconjunt de les pàgines d'un procés, la totalitat de les quals es troba al disc**: el disc fa, respecte de la memòria física, el mateix paper que la memòria física feia respecte de la memòria cau al @sec-tema-mc. (En un sistema real, les pàgines que un procés crea durant l'execució, com les de la pila, no tenen còpia al disc fins que el sistema operatiu no les hi ha d'escriure per fer lloc.)
 
@@ -248,11 +248,11 @@ Quan la CPU accedeix a una adreça lògica i el bit V de la PTE corresponent val
 La fallada de pàgina és una **excepció**: la instrucció que l'ha provocat s'interromp i el processador passa el control a una rutina del sistema operatiu, que en el primer cas resol la fallada carregant la pàgina des del disc:
 
 1. Es localitza la pàgina al disc.
-2. Si hi ha un marc de pàgina lliure, s'hi carrega la pàgina. Si no n'hi ha cap de lliure, cal **reemplaçar** un marc ocupat: es tria una pàgina víctima, s'escriu al disc si ha estat modificada (D = 1), i es posa V = 0 a la seva PTE, perquè deixa de ser a la memòria física.
+2. Si hi ha un marc de pàgina lliure, s'hi carrega la pàgina. Si no n'hi ha cap de lliure, cal **reemplaçar** un marc ocupat: es tria una pàgina víctima, s'escriu al disc si ha estat modificada (D = 1) i es posa V = 0 a la seva PTE, perquè deixa de ser a la memòria física.
 3. S'actualitza la PTE de la pàgina nova: es posa V = 1, D = 0 i s'escriu el PPN del marc assignat.
 4. Es reexecuta la instrucció que ha causat la fallada, que ara troba la pàgina a la memòria.
 
-Com que un accés al disc és centenars o milers de vegades més lent que un accés a la memòria principal (desenes de milers, o més, en el cas d'un disc magnètic), la fallada de pàgina és, amb diferència, l'incident més costós de tot el sistema de memòria. Per aquest motiu, les dades no es llegeixen ni s'escriuen mai al disc individualment, sinó sempre per pàgines senceres: primer es carrega la pàgina a la memòria física i després s'hi accedeix. Les fallades de pàgina que requereixen un accés al disc s'anomenen **fallades majors** (*major page faults*); els sistemes reals tenen també **fallades menors** (*minor page faults*), que el sistema operatiu resol sense accedir al disc (per exemple, quan la pàgina ja era a la memòria física però encara no tenia PTE, com en una pàgina nova de la pila), i que no es considera en aquest tema.
+Com que un accés al disc és centenars o milers de vegades més lent que un accés a la memòria principal (desenes de milers, o més, en el cas d'un disc magnètic), la fallada de pàgina és, amb diferència, l'incident més costós de tot el sistema de memòria. Per aquest motiu, les dades no es llegeixen ni s'escriuen mai al disc individualment, sinó sempre per pàgines senceres: primer es carrega la pàgina a la memòria física i després s'hi accedeix. Les fallades de pàgina que requereixen un accés al disc s'anomenen **fallades majors** (*major page faults*); els sistemes reals tenen també **fallades menors** (*minor page faults*), que el sistema operatiu resol sense accedir al disc (per exemple, quan la pàgina ja era a la memòria física però encara no tenia PTE, com en una pàgina nova de la pila), i que no es consideren en aquest tema.
 
 ::: {#cau-mv-fallada-pagina .callout-caution}
 ## Mecanisme de la fallada de pàgina
@@ -260,7 +260,7 @@ Com que un accés al disc és centenars o milers de vegades més lent que un acc
 Una fallada de pàgina es produeix quan V = 0 en la PTE del VPN sol·licitat. És una excepció: si la pàgina és vàlida, el sistema operatiu la carrega des del disc (reemplaçant-ne una altra si no hi ha cap marc lliure), actualitza les PTE afectades i reexecuta la instrucció causant. Si l'adreça és invàlida, el procés s'avorta.
 :::
 
-Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament. A l'assignatura es fa servir l'algorisme **LRU** (*least recently used*), com a les memòries cau (@sec-politica-reemplacament): es reemplaça la pàgina que fa més temps que no s'ha accedit. Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions). Si el processador guarda traduccions en un TLB (@sec-mv-tlb), el sistema operatiu també n'ha d'invalidar l'entrada de la pàgina víctima, com s'explica a la @sec-mv-tlb-invalidacio.
+Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament. A l'assignatura es fa servir l'algorisme **LRU** (*least recently used*), com a les memòries cau (@sec-politica-reemplacament): es reemplaça la pàgina que fa més temps que no s'utilitza. Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions). Si el processador guarda traduccions en un TLB (@sec-mv-tlb), el sistema operatiu també n'ha d'invalidar l'entrada de la pàgina víctima, com s'explica a la @sec-mv-tlb-invalidacio.
 
 La zona del disc on s'emmagatzemen les pàgines reemplaçades s'anomena **espai d'intercanvi** (*swap space*).
 
@@ -362,7 +362,7 @@ El TLB és una còpia parcial de la taula de pàgines, i cal mantenir-les cohere
 
 ### El bit D: consistència amb la taula de pàgines {#sec-mv-tlb-bitd}
 
-El bit D és l'únic camp del TLB que l'execució del programa pot modificar: quan una instrucció d'escriptura (`sw`, `fsw`, etc.) accedeix a una pàgina amb D = 0, el bit D s'ha de posar a 1, i la taula de pàgines ho ha de saber, perquè és la PTE la que consulta el sistema operatiu quan ha de reemplaçar la pàgina.
+El bit D és l'únic camp del TLB que l'execució del programa pot modificar: quan una instrucció d'escriptura (`sw`, `fsw`, etc.) accedeix a una pàgina amb D = 0, el bit D s'ha de posar a 1, i la taula de pàgines ho ha de saber, perquè el sistema operatiu consulta la PTE quan ha de reemplaçar la pàgina.
 
 A EC se suposa que l'actualització del bit D **la fa el maquinari**, sense cap excepció ni intervenció del sistema operatiu: l'MMU segueix una política d'**escriptura immediata** i, a la primera escriptura en una pàgina (D = 0 al TLB), posa D = 1 simultàniament a l'entrada del TLB i a la PTE de la taula de pàgines. Això requereix un accés addicional a la memòria principal, però només succeeix la primera vegada que s'escriu en cada pàgina, no en cada instrucció d'escriptura. És una de les dues opcions que admet RISC-V per actualitzar els bits A i D de la PTE; l'altra, que ho faci el sistema operatiu a través d'una excepció, no es fa servir, i s'explica a l'aprofundiment @wrn-tlb-bit-ad del Tema 9.
 
@@ -403,7 +403,7 @@ Una de les funcions més importants de la memòria virtual és permetre que múl
 
 El mecanisme de traducció d'adreces proporciona protecció entre processos de manera natural: com que cada procés té la seva pròpia taula de pàgines, i l'MMU usa exclusivament la taula del procés actiu per a totes les traduccions, un procés no pot generar cap adreça física que correspongui a una pàgina assignada a un altre procés, tret que el sistema operatiu ho hagi volgut així (@sec-mv-comparticio). L'aïllament no requereix cap comprovació addicional en cada accés: és conseqüència del contingut de la taula de pàgines.
 
-Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al sistema operatiu (el sistema operatiu, aquí, és el seu nucli, *kernel* en anglès), accessible només quan el processador opera en un mode privilegiat. A RISC-V, els programes d'usuari s'executen en **mode usuari** (U) i el nucli del sistema operatiu en **mode supervisor** (S): en mode U, qualsevol intent d'accedir a la zona del nucli provoca una fallada de pàgina; el sistema operatiu, en tractar-la, detecta que l'adreça no és vàlida per al procés i l'avorta (*segmentation fault*), com en qualsevol accés a una adreça invàlida (@sec-mv-fallada-pagina). Qualsevol intent d'escriure el registre de taula de pàgines (`satp`) o d'invalidar el TLB (`sfence.vma`), en canvi, provoca una excepció d'instrucció il·legal. El [Tema 9](#sec-tema-excepcions-interrupcions) descriu amb més detall els modes d'execució (@sec-ei-csr-privilegis) i el mecanisme d'excepcions.
+Perquè aquest mecanisme sigui efectiu, cal que cap procés pugui modificar la seva pròpia taula de pàgines ni el registre de taula de pàgines. Per garantir-ho, les taules de pàgines es troben a la zona de memòria reservada al nucli del sistema operatiu (*kernel*), accessible només quan el processador opera en un mode privilegiat. A RISC-V, els programes d'usuari s'executen en **mode usuari** (U) i el nucli del sistema operatiu en **mode supervisor** (S): en mode U, qualsevol intent d'accedir a la zona del nucli provoca una fallada de pàgina; el sistema operatiu, en tractar-la, detecta que l'adreça no és vàlida per al procés i l'avorta (*segmentation fault*), com en qualsevol accés a una adreça invàlida (@sec-mv-fallada-pagina). Qualsevol intent d'escriure el registre de taula de pàgines (`satp`) o d'invalidar el TLB (`sfence.vma`), en canvi, provoca una excepció d'instrucció il·legal. El [Tema 9](#sec-tema-excepcions-interrupcions) descriu amb més detall els modes d'execució (@sec-ei-csr-privilegis) i el mecanisme d'excepcions.
 
 ### Protecció contra escriptura {#sec-mv-proteccio-escriptura}
 
@@ -474,9 +474,9 @@ L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adre�
 
 ### Memòria cau indexada i etiquetada virtualment {#sec-mv-cache-virtual}
 
-Per reduir la latència, una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtually tagged* o **VIVT**) usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense necessitat de la traducció; només cal el TLB en cas de fallada, per anar a buscar el bloc a la memòria principal amb l'adreça física.
+Una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtually tagged* o **VIVT**) redueix la latència perquè usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense necessitat de la traducció; només cal el TLB en cas de fallada, per anar a buscar el bloc a la memòria principal amb l'adreça física.
 
-El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física (@sec-mv-comparticio), el mateix bloc pot ocupar dues línies diferents de la memòria cau, una per a cada adreça lògica. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, trencant la coherència.
+El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física (@sec-mv-comparticio), el mateix bloc pot ocupar dues línies diferents de la memòria cau, una per a cada adreça lògica. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, cosa que trenca la coherència.
 
 L'altre problema són els **homònims**: la mateixa adreça lògica de dos processos correspon a dades físiques diferents. Per això, en cada canvi de context, cal invalidar la memòria cau sencera o afegir a cada etiqueta l'identificador del procés, com fa l'ASID amb el TLB (@sec-mv-tlb-invalidacio).
 
@@ -539,7 +539,7 @@ Considerem un sistema amb adreces lògiques de 32 bits, pàgines de 4 KiB ($t = 
 | 0 | — | — | — | — |
 : TLB (estat inicial) {.striped}
 
-I la taula de pàgines (entrades rellevants):
+La taula de pàgines (entrades rellevants) és:
 
 | VPN | V | D | E | PPN |
 | :---: | :---: | :---: | :---: | :---: |
@@ -551,25 +551,25 @@ I la taula de pàgines (entrades rellevants):
 | `0x00005` | 0 | 0 | 1 | — |
 : Taula de pàgines (entrades rellevants) {.striped}
 
-Sabem que sols 3 dels 4 marcs de pàgina estan ocupats (PPN = `0x03` és lliure), i que els 3 darrers accessos han estat a VPN = `0x00003`, VPN = `0x00000` i VPN = `0x00002`, en aquest ordre (de més antic a més recent). Les tres pàgines residents tenen entrada al TLB, de manera que l'ordre LRU del TLB i el de les pàgines coincideixen.
+Sabem que només tres dels quatre marcs de pàgina estan ocupats (PPN = `0x03` és lliure), i que els tres darrers accessos han estat a VPN = `0x00003`, VPN = `0x00000` i VPN = `0x00002`, en aquest ordre (de més antic a més recent). Les tres pàgines residents tenen entrada al TLB, de manera que l'ordre LRU del TLB i el de les pàgines coincideixen.
 
-**Accés 1**: Escriptura a `0x00002A0B` → VPN = `0x00002`.
+**Accés 1**: escriptura a `0x00002A0B` → VPN = `0x00002`.
 
 Encert de TLB. Com que és una escriptura amb E = 1 i D = 0, s'aplica la política d'escriptura immediata descrita a la @sec-mv-tlb-bitd: es posa D = 1 al TLB i a la PTE. PPN = `0x02`. Adreça física (14 bits): `0x2A0B`. VPN 2 passa a ser la pàgina més recent (ja ho era).
 
-**Accés 2**: Lectura a `0x00001F21` → VPN = `0x00001`.
+**Accés 2**: lectura a `0x00001F21` → VPN = `0x00001`.
 
 Fallada de TLB. L'MMU llegeix la PTE de VPN 1: V = 0, fallada de pàgina; no es copia res al TLB. El sistema operatiu troba el marc lliure (PPN = `0x03`), hi carrega la pàgina des del disc i actualitza la PTE (V = 1, D = 0, PPN = `0x03`). En reexecutar la lectura, torna a fallar el TLB, però ara la PTE té V = 1 i l'MMU la copia a l'entrada lliure. PPN = `0x03`. Adreça física: `0x3F21`. Ordre LRU: VPN 3, 0, 2, 1.
 
-**Accés 3**: Lectura a `0x0000420C` → VPN = `0x00004`.
+**Accés 3**: lectura a `0x0000420C` → VPN = `0x00004`.
 
-Fallada de TLB i, en llegir la PTE, fallada de pàgina. Cap marc lliure: el sistema operatiu tria la víctima LRU, VPN 3 (al marc `0x00`), que té D = 1 i cal escriure primer al disc. Posa V = 0 a la PTE de VPN 3 i n'**invalida l'entrada del TLB**, que queda lliure. Carrega VPN 4 al marc `0x00` i actualitza la seva PTE (V = 1, D = 0, PPN = `0x00`). En reexecutar la lectura, l'MMU copia la PTE de VPN 4 a l'entrada que acaba de quedar lliure. PPN = `0x00`. Adreça física: `0x020C`. Ordre LRU: VPN 0, 2, 1, 4.
+Fallada de TLB i, en llegir la PTE, fallada de pàgina. Cap marc lliure: el sistema operatiu tria la víctima LRU, VPN 3 (al marc `0x00`), que té D = 1 i que cal escriure primer al disc. Posa V = 0 a la PTE de VPN 3 i n'**invalida l'entrada del TLB**, que queda lliure. Carrega VPN 4 al marc `0x00` i actualitza la seva PTE (V = 1, D = 0, PPN = `0x00`). En reexecutar la lectura, l'MMU copia la PTE de VPN 4 a l'entrada que acaba de quedar lliure. PPN = `0x00`. Adreça física: `0x020C`. Ordre LRU: VPN 0, 2, 1, 4.
 
-**Accés 4**: Lectura a `0x00003001` → VPN = `0x00003`.
+**Accés 4**: lectura a `0x00003001` → VPN = `0x00003`.
 
 Fallada de TLB (l'entrada de VPN 3 s'ha invalidat a l'accés 3) i fallada de pàgina. La víctima LRU és VPN 0 (al marc `0x01`), amb D = 0: no cal escriure-la al disc. V = 0 a la seva PTE i entrada del TLB invalidada. Es carrega VPN 3 al marc `0x01` (PTE: V = 1, D = 0, PPN = `0x01`; en tornar del disc la pàgina ja no està modificada) i, en reexecutar, s'instal·la a l'entrada lliure. PPN = `0x01`. Adreça física: `0x1001`. Ordre LRU: VPN 2, 1, 4, 3.
 
-**Accés 5**: Lectura a `0x00005120` → VPN = `0x00005`.
+**Accés 5**: lectura a `0x00005120` → VPN = `0x00005`.
 
 Fallada de TLB i fallada de pàgina. La víctima LRU és VPN 2 (al marc `0x02`), que té D = 1 des de l'accés 1: s'escriu al disc. V = 0 a la seva PTE i entrada del TLB invalidada. Es carrega VPN 5 al marc `0x02` (PTE: V = 1, D = 0, PPN = `0x02`) i s'instal·la al TLB. PPN = `0x02`. Adreça física: `0x2120`. Ordre LRU: VPN 1, 4, 3, 5.
 
