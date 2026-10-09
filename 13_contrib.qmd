@@ -42,7 +42,7 @@ El directori `21_riscv/` conté els **fragments de taula reutilitzables** (sols 
 - **Pseudoinstruccions**: fragment propi, `<extensió>_pseudo_<descripció>.qmd`, i mai dins d'una taula ISA. Les columnes són sempre «Pseudoinstrucció | Operació | Expansió», amb l'operació en la notació de les taules ISA (§Codi, matemàtiques i cursiva); `li`, que té una expansió per a cada cas, hi afegeix «Condició» davant de l'expansió ([D-66]({{< var decisions >}}#d-66)).
 - Excepció: els callouts que contenen **figures SVG** no s'externalitzen; es reprodueixen íntegrament a `11_riscv.qmd` amb ID `#nte-rv-*`. Les figures, com totes les dels callouts `#nte-` (§Callouts), van sense etiqueta ni peu ([D-2]({{< var decisions >}}#d-2)).
 
-**ID dels callouts a `11_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Ax.qmd`), per evitar conflictes de ID Quarto. Les figures que contenen no porten etiqueta.
+**ID dels callouts a `11_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Ax.qmd`), per evitar conflictes de ID Quarto.
 
 **Referències creuades cap als Apunts:** cada callout de `11_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) de l'`Ax.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemes i solucions). Quan un mateix contingut es presenta a més d'un `Ax.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
 
@@ -230,7 +230,6 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
 - **Lliuraments** i **Lectura prèvia**: dues seccions fixes al principi de cada sessió, en aquest ordre (§Ordre i atribut de seccions no numerades). «Lliuraments» porta una taula amb els exercicis i el nom del fitxer de lliurament; «Lectura prèvia» porta una taula amb columnes «Concepte» i «On trobar-ho».
-- **Nom de figura SVG**: `L<N>_nom_figura.svg` (fitxer font a `22_figs_originals/`). El pre-render genera `auto_figs/L<N>_nom_figura__original_light.svg` i `_dark` automàticament.
 - **Oracle i tècnica: on va cada cosa**. Una verificació a RARS té dues parts, i tenen destinataris diferents ([D-27]({{< var decisions >}}#d-27)):
     - L'**oracle** (els valors que l'estudiant ha d'obtenir) va **al final de l'enunciat `{#exr-...}`**, en prosa, amb l'imperatiu «Comproveu que…». Sense callout ni negreta.
     - Un oracle és una parella **(entrada, resultat esperat)**. Si cal fixar una entrada perquè el resultat estigui determinat (p. ex. «afegint `li s2, 7` abans del fragment»), la fixació va amb el resultat.
@@ -482,7 +481,6 @@ Regles generals:
 - Referenciar sempre amb `@prefix-etiqueta` des del cos del text, altres callouts, etc.
 - El títol `## títol` no és obligatori en callouts curts.
 - **Localització**: a continuació de la referència o explicació al text.
-- No hi ha d'haver repeticions: ús de referències creuades.
 
 **Numeració**: tot callout amb etiqueta (`#nte-`, `#imp-`, `#cau-`, `#tip-`, `#wrn-`) el numera Quarto **automàticament** (el mateix mecanisme de `crossref` que numera figures i taules), amb el prefix propi de cada tipus definit a `_quarto.yml §language` (`crossref-nte-prefix: "RISC-V"`, `crossref-tip-prefix: "Exemple"`, `crossref-cau-prefix: "Essencial"`, `crossref-wrn-prefix: "Aprofundiment"`, `crossref-imp-prefix: "EC"`; les claus `callout-*-title` fixen el mateix text com a títol visible dins el bloc). No cal cap acció ni cap etiquetatge més enllà del prefix habitual: la numeració («RISC-V 5.3», «Exemple 5.2»...) és conseqüència directa de tenir `{#prefix-nom}`.
 
@@ -495,7 +493,7 @@ Regles generals:
 | Essencial | `#cau-` | `.callout-caution` | Vermell | Sí | No | Contingut indispensable o recordatori fonamental. Per defecte, sense títol, curt, en **negretes**, i s'ha de llegir com un ressaltat del text. Si el contingut supera ~4 línies o barreja diversos aspectes, s'admet un títol curt en lloc de forçar la brevetat. |
 | Exemple | `#tip-` | `.callout-tip` | Groc | Marg. | Sí | Il·lustració d'explicacions. Format opcional: **Pregunta** → **Solució** → **Resposta**. Veu: §Criteris generals → Veu impersonal. No s'introdueix al text. Als temes pilot (de moment, T1), la part de resposta dels exemples de pregunta i solució va dins d'un div `::: {.resposta}`, que l'HTML plega sota «Mostra la solució» i el PDF deixa igual; els exemples il·lustratius, sense pregunta, no en porten ([D-90]({{< var decisions >}}#d-90)). |
 | Aprofundiment | `#wrn-` | `.callout-warning` | Lila | No | Sí | Contingut d'enriquiment no avaluable. No s'introdueix al text; s'hi pot remetre puntualment amb una referència `@wrn-…` com a **punter opcional**, mai com a dependència (el cos del text ha de ser autocontingut sense l'aprofundiment). Si >1 línia: `collapse=true`. |
-| Figura | `#fig-` | | | | No | Porta caption. Les del cos del text s'introdueixen amb una remissió `@fig-…` (al PDF poden flotar lluny del text); les dels callouts, no cal ([D-44]({{< var decisions >}}#d-44)). |
+| Figura | `#fig-` | | | | No | Porta caption. Remissió des del text: §Referències creuades. |
 | Taula | `#tbl-` | | | | No | Porta caption. |
 | Codi | `#lst-` | | | | No | Porta caption. |
 | Equació | `#eq-` | | | | No | |
@@ -571,11 +569,9 @@ L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que
 
 El pipeline de pre-render és a `_quarto.yml` (clau `project.pre-render`), que n'és la font de veritat: no es duplica aquí. Els generadors que hi intervenen, i el sufix que deixa cadascun a `auto_figs/`, són a la taula de sufixos de §Convencions SVG; a més, `25_scripts/gen_crops.py` hi fa els retalls (§Retalls) i `25_scripts/gen_dark.py`, les variants `_dark`.
 
-En tots els casos, la font de veritat per a fonts i colors és `24_specs/svg.md`.
-
 #### Paleta de colors
 
-La paleta completa (colors light i dark, per zona semàntica) és a `24_specs/svg.md §10`. La taula de substitució light → dark per al pipeline automàtic és el bloc `#svg-dark-replacements` de `24_specs/svg.md §13`. Per modificar qualsevol color, editeu **només** aquells blocs.
+La paleta completa (colors light i dark, per zona semàntica) és a `24_specs/svg.md §10`. La taula de substitució light → dark per al pipeline automàtic és el bloc `#svg-dark-replacements` de `24_specs/svg.md §13`. Per modificar qualsevol color, editeu **només** aquells blocs. Les variants fosques no es generen ni s'editen a mà: les fa `25_scripts/gen_dark.py` al pre-render, per a totes les figures (natives, extretes de PDF, de registres i generades).
 
 El codi de colors és consistent al llarg de tot el llibre i s'aplica tant a les figures SVG com a les taules amb color. Cada tema pot introduir associacions semàntiques pròpies (per exemple, a T7: blau=memòria cau, verd=memòria principal, groc=SSD, vermell=disc; a T8, blau i verd per als processos P1 i P2, blau per a les PTE vàlides, groc per al TLB i vermell per al disc i la fallada de pàgina, i, com a T7, blau=memòria cau i verd=memòria principal), però sempre dins la mateixa paleta.
 
@@ -691,12 +687,6 @@ h = 250   # alçada
 
 L'script `25_scripts/gen_crops.py` només reescriu `viewBox`/`width`/`height` de l'element arrel; no toca cap altre contingut. S'executa com a pas de `pre-render` **després** de `norm_font.py` (necessita la font ja normalitzada a `auto_figs/`) i **abans** de `gen_dark.py` (perquè el retall també rebi automàticament la seva variant dark).
 
-#### Generació de la versió dark
-
-> **Les variants dark no es generen ni editen manualment.** Es generen automàticament per `25_scripts/gen_dark.py` com a pas `pre-render` de Quarto. La font de veritat de la taula de substitució de colors és el bloc `#svg-dark-replacements` a `24_specs/svg.md §13`.
-
-Per a figures creades manualment, extretes de PDF o de registres de bits, **no cal fer res**: el pipeline automàtic les cobreix totes. Consulteu `24_specs/svg.md` (pipeline, taula de colors, canvas i mapa de fonts) i `24_specs/registres.toml` (definicions de registres de bits) per als detalls tècnics.
-
 #### Integració al `.qmd`
 
 ``` code
@@ -781,7 +771,7 @@ Per al criteri d'ús de LaTeX math vs. backticks per context, vegeu §Codi, mate
 Les referències creuades funcionen de manera diferent a HTML i a PDF. Per assegurar la compatibilitat amb les dues sortides:
 
 - **Seccions, callouts, figures, taules, equacions**: useu sempre la sintaxi `@etiqueta`, sola (funciona a HTML i PDF).
-- **Figures del cos del text**: cadascuna porta almenys una remissió `@fig-…` des del text, perquè al PDF la figura pot flotar a una altra pàgina; les dels callouts i les subfigures, no cal. L'inventari (`24_specs/figures.md`, «Figures del cos del text sense cap remissió `@`») les llista ([D-44]({{< var decisions >}}#d-44)).
+- **Figures del cos del text**: cadascuna porta almenys una remissió `@fig-…` des del text, perquè al PDF la figura pot flotar a una altra pàgina; les dels callouts i les subfigures, no cal. L'inventari (`24_specs/figures.md`, «Figures del cos del text sense cap remissió `@`») llista les que no en tenen. Les taules es referencien opcionalment ([D-44]({{< var decisions >}}#d-44)).
 - **Enllaços amb text propi a una secció**, del mateix fitxer o d'un altre: `[text](#sec-etiqueta)` (funciona a HTML i PDF).
 - ⛔ **No useu** `[@sec-etiqueta]` ni `[text](@sec-etiqueta)`: aquestes dues formes **només funcionen a PDF**.
 
@@ -805,7 +795,6 @@ A més, com a criteri d'estil de redacció:
 - Article determinat:
     - **Amb**: "La" `@sec-exemple`, `@fig-exemple`, `@tbl-exemple` mostra...
     - **Sense**: "`@nte-exemple` recull..."
-- **Figures i taules**: les figures, sempre referenciades (les del cos del text, amb la remissió `@fig-…` de més amunt); les taules, opcionalment ([D-44]({{< var decisions >}}#d-44)).
 - **Direccionalitat**: les referències cap endavant (a contingut encara no presentat, sigui d'una secció posterior o d'un tema posterior) només s'admeten com a **punter explícit** («s'estudia a…», «es veurà a…», «vegeu…»), mai com a **dependència conceptual**: el text s'ha de poder seguir sense visitar la destinació. Punters cap endavant acceptats actualment:
     - T1/T2 → T3/T4: compilació, subrutines i pila, matrius, i optimitzacions de bucle (vegeu §T2 i T3).
     - T2 → T3: el punt d'entrada del programa sense etiqueta i el motiu *bare-metal* (`@nte-punt-entrada-etiqueta`).
@@ -895,7 +884,7 @@ Comproveu que el projecte renderitza correctament abans de fer push. Des de la l
 make render
 ```
 
-(equivalent a generar les taules fusionades de `11_riscv.qmd` amb `25_scripts/gen_taules_auto.py` i després `quarto render --to html`; vegeu §Fitxer de referència tècnica). Si preferiu invocar `quarto render --to html`/`--to pdf` directament, assegureu-vos que `auto_riscv/` ja existeix i està al dia: `make taules` el regenera pel seu compte, sense renderitzar res.
+(genera les taules fusionades de `11_riscv.qmd` i després fa `quarto render --to html`; per invocar `quarto` directament, vegeu §Fitxer de referència tècnica).
 
 `make render` només genera l'HTML, que és el bucle diari. **`make
 render-complet` (HTML + PDF, ~7 min) és obligatori** abans de tocar res que
@@ -1050,7 +1039,7 @@ El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi
 | Peça | Què fa | Regla |
 | :--- | :--- | :--- |
 | Hook `guarda-git.sh` | Bloqueja el push al remot `mirror` i les ordres que reescriuen l'historial (`--force`, `rebase`, `--amend`, `reset --hard`, `filter-branch`) | `CLAUDE.md §Flux de treball` |
-| Hook `abans-commit.sh` | Abans de cada `git commit`, `make render`: si falla, no hi ha commit. Després, revisió de prosa de les línies afegides, avís de `make render-complet` si el canvi pot afectar el PDF i, si toca `04_laboratori/Lcalendari.qmd`, el resultat de `25_scripts/verifica_calendari.py` i l'avís de passar l'agent `verificador-calendari`: en tots els casos ni bloqueja ni pregunta, sinó que passa l'avís a Claude i el mostra a l'usuari ([D-61]({{< var decisions >}}#d-61), [D-74]({{< var decisions >}}#d-74)) | §Commits, §Verificació de l'entorn |
+| Hook `abans-commit.sh` | Abans de cada `git commit`, `make render`, que triga uns minuts i, com qualsevol `make render`, esborra el PDF de `_book/` (§Renderitzar el projecte): si falla, no hi ha commit. Després, revisió de prosa de les línies afegides, avís de `make render-complet` si el canvi pot afectar el PDF i, si toca `04_laboratori/Lcalendari.qmd`, el resultat de `25_scripts/verifica_calendari.py` i l'avís de passar l'agent `verificador-calendari`: en tots els casos ni bloqueja ni pregunta, sinó que passa l'avís a Claude i el mostra a l'usuari ([D-61]({{< var decisions >}}#d-61), [D-74]({{< var decisions >}}#d-74)) | §Commits, §Verificació de l'entorn |
 | Skill `escombrada` | Les regles de les escombrades (`regles.md`), amb el cas de cadascuna, i `25_scripts/escombrada.sh` | §Escombrades i verificació del corpus |
 | Skill `render` | Verificació del render: esperar-lo en segon pla, referències trencades, HTML en clar i en fosc, registre de LaTeX | §Verificació de l'entorn, §Renderitzar el projecte |
 | Skill `rars` | Verificació empírica a RARS 1.6 sense interfície, i `verifica_laboratoris.py` | §Verificació empírica a RARS |
@@ -1060,8 +1049,6 @@ El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi
 | Subagent `verificador-calendari` | Comprova el calendari del laboratori abans d'un commit que el toqui: dates i dies de la setmana (amb `verifica_calendari.py`), sessions, quadrimestre, festius i examen (Sonnet, només informa) ([D-74]({{< var decisions >}}#d-74)) | §Convencions globals del laboratori |
 
 Els dos scripts de `25_scripts/` que hi intervenen també es fan servir a mà: `python3 25_scripts/lint_prosa.py` (línies afegides respecte d'`HEAD`, o fitxers sencers si se n'hi donen) i `25_scripts/escombrada.sh --help`.
-
-⚠️ **El hook d'abans del commit fa un `make render` sencer**, que triga uns minuts, i, com qualsevol `make render`, **esborra el PDF de `_book/`** (§Renderitzar el projecte).
 
 Els permisos que no han de demanar confirmació són a `.claude/settings.json`, també versionat. Les aprovacions que Claude Code desa pel seu compte van a `.claude/settings.local.json`, que git ignora: les que hagin de valer per a tothom s'han de passar a mà a `settings.json`.
 

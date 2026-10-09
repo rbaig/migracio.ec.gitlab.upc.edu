@@ -433,9 +433,9 @@ Decisió de l'usuari (2026-10-09, fase 8a: «regles noves acceptades»), a propo
 
 ### D-44
 
-**Una remissió `@fig-` a cada figura del cos del text** · `13_contrib.qmd §Callouts`, `§Referències creuades` · 2026-10-03 · `e806916`
+**Una remissió `@fig-` a cada figura del cos del text** · `13_contrib.qmd §Referències creuades` · 2026-10-03 · `e806916`
 
-Decisió de l'usuari 8 de la fase 7c (2026-10-03), aplicada el 2026-10-06 a les 25 figures que no en tenien.
+Decisió de l'usuari 8 de la fase 7c (2026-10-03), aplicada el 2026-10-06 a les 25 figures que no en tenien. Fins al 2026-10-09 la regla era a tres llocs de la guia: la fila «Figura» de la taula de §Callouts i dues vinyetes de §Referències creuades; en esporgar la guia, es va deixar en una.
 
 Fins al 2026-10-07, §Referències creuades deia també «Figures i Taules: no han d'estar necessàriament referenciades al text», que la contradeia per a les figures des del 2026-10-03. Decisió de l'usuari (2026-10-07, fase 7e): «Figures sempre, taules opcional».
 
