@@ -463,7 +463,7 @@ Per seguir l'evolució accés a accés, poseu un *breakpoint* a la primera instr
 
 **Apartat 2. Accessos i encerts per iteració del bucle exterior.**
 
-A cada iteració `i`, el bucle interior fa $2 \times (4 - i)$ lectures (dues per cada valor de `j`, de `i+1` a 4) i l'intercanvi hi afegeix 4 accessos més (2 lectures + 2 escriptures):
+A cada iteració `i`, el bucle interior fa $2 \times (4 - i)$ lectures (dues per cada valor de `j`, d'`i+1` a 4) i l'intercanvi hi afegeix 4 accessos més (2 lectures + 2 escriptures):
 
 | Iteració `i` | Accessos | Fallades | Encerts |
 | :---: | :---: | :---: | :---: |
@@ -597,7 +597,7 @@ Carregueu aquest programa a RARS i activeu el *Data Cache Simulator*.
 
 Considereu una memòria cau de correspondència directa amb **16 línies amb blocs de 4 paraules** i política d'**escriptura immediata amb assignació**. Les variables globals comencen a `0x10010000`.
 
-1. Calculeu la mida en blocs de cada vector. Determineu a quines línies d'MC es mapen els blocs de `A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
+1. Calculeu la mida en blocs de cada vector. Determineu a quines línies d'MC es mapen els blocs d'`A`, `B` i `C`. Identifiqueu si hi ha conflictes entre els tres vectors i expliqueu-ne la causa.
 
 2. Calculeu la taxa d'encerts esperada. Justifiqueu el resultat a partir de l'anàlisi de conflictes.
 
@@ -609,11 +609,11 @@ Verifiqueu la resposta amb el *Data Cache Simulator* configurat amb 16 línies (
 ::: {#sol-suma-vectors-cd}
 **Apartat 1. Mapatge i conflictes.**
 
-Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapatge en correspondència directa assigna el bloc $n$ d'MP a la línia $n \bmod 16$. Per simplicitat, numerem els blocs de manera relativa a l'inici de `A` (el bloc que conté `A[0]` és el bloc 0).
+Cada vector té 128 enters × 4 bytes = 512 bytes = 32 blocs de 16 bytes. La cau té 16 línies. El mapatge en correspondència directa assigna el bloc $n$ d'MP a la línia $n \bmod 16$. Per simplicitat, numerem els blocs de manera relativa a l'inici d'`A` (el bloc que conté `A[0]` és el bloc 0).
 
 `A` comença a `0x10010000` → bloc MP 0 a la línia 0, bloc MP 1 a la línia 1, …, bloc MP 15 a la línia 15, bloc MP 16 a la línia 0, …
 
-`B` comença a `0x10010000 + 512 = 0x10010200` → bloc MP 32 a la línia 0, bloc MP 33 a la línia 1, … Els blocs de `B` es mapen exactament a les **mateixes línies** que els de `A`.
+`B` comença a `0x10010000 + 512 = 0x10010200` → bloc MP 32 a la línia 0, bloc MP 33 a la línia 1, … Els blocs de `B` es mapen exactament a les **mateixes línies** que els d'`A`.
 
 `C` comença a `0x10010000 + 1024 = 0x10010400` → bloc MP 64 a la línia 0, bloc MP 65 a la línia 1, … Els blocs de `C` es mapen també a les **mateixes línies** que `A` i `B`.
 
@@ -623,8 +623,8 @@ Els tres vectors es mapen a les mateixes 16 línies: **conflicte total**. A cada
 
 A cada iteració es fan 3 accessos (lectura `A[i]`, lectura `B[i]`, escriptura `C[i]`), cadascun a la mateixa línia d'MC. Seqüència per a la iteració $i$:
 
-1. `lw A[i]`: fallada (el bloc de `A[i]` no és a MC o ha estat expulsat).
-2. `lw B[i]`: fallada (expulsa el bloc de `A[i]` que s'acaba de portar).
+1. `lw A[i]`: fallada (el bloc d'`A[i]` no és a MC o ha estat expulsat).
+2. `lw B[i]`: fallada (expulsa el bloc d'`A[i]` que s'acaba de portar).
 3. `sw C[i]`: fallada en escriptura amb assignació (expulsa el bloc de `B[i]`).
 
 Els 3 accessos de cada iteració són fallades. Amb 128 iteracions i 3 accessos cadascuna:
@@ -655,7 +655,7 @@ Verifiqueu el resultat amb el *Data Cache Simulator*.
 ::: {#sol-padding}
 Amb 16 línies i blocs de 4 paraules (16 bytes), la cau cobreix $16 \times 16 = 256$ bytes. Els conflictes es produeixen perquè `A`, `B` i `C` estan separats exactament 512 bytes = 32 blocs, múltiple del nombre de línies (16), de manera que es mapen a les mateixes línies.
 
-Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapen a línies **diferents**: en cada iteració del bucle, els blocs de `A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada d'arrencada en fred: 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
+Per aconseguir una taxa d'encerts de 0,75 cal que 3 de cada 4 accessos siguin encerts. Això s'obté quan els tres vectors es mapen a línies **diferents**: en cada iteració del bucle, els blocs d'`A[i]`, `B[i]` i `C[i]` van a línies distintes, de manera que no s'expulsen mútuament. Amb 128 elements i blocs de 4 paraules, hi ha 32 blocs per vector. La primera referència a cada bloc és una fallada d'arrencada en fred: 32 fallades per vector × 3 vectors = 96 fallades. El total d'accessos és 384. Taxa d'encerts:
 
 $$\text{taxa d'encerts} = \frac{384 - 96}{384} = \frac{288}{384} = 0{,}75$$
 
@@ -719,7 +719,7 @@ Verifiqueu la resposta amb el *Data Cache Simulator* configurat en mode completa
 ::: {#sol-completament-associativa}
 En una cau completament associativa, qualsevol bloc d'MP pot anar a qualsevol línia: no hi ha mapatge fix i, per tant, **no hi ha fallades de conflicte**. Podria semblar que hi haurà fallades de capacitat, ja que els tres vectors sumen $3 \times 32 = 96$ blocs mentre que la cau només en té 16 ($96 > 16$); però el que determina les fallades de capacitat no és l'ocupació total del programa, sinó el *working set* instantani (els blocs realment vius en un moment donat).
 
-A cada iteració del bucle s'accedeix a un bloc de `A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment són els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres referències restants al mateix bloc (els altres 3 elements) són encerts.
+A cada iteració del bucle s'accedeix a un bloc d'`A`, un de `B` i un de `C`. Amb política LRU i 16 línies, els blocs actius en qualsevol moment són els tres blocs corrents (un per vector). Com que 3 < 16, els tres blocs sempre caben a la cau simultàniament sense expulsar-se: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres referències restants al mateix bloc (els altres 3 elements) són encerts.
 
 El comportament és idèntic al d'accés seqüencial sense conflictes: 32 fallades per vector × 3 vectors = 96 fallades, 384 − 96 = 288 encerts.
 
@@ -749,7 +749,7 @@ Amb 16 conjunts i blocs de 4 paraules (16 bytes), el mapatge és: bloc d'MP $n$ 
 
 Amb grau 1 (correspondència directa), els 3 blocs que competeixen per cada conjunt s'expulsen contínuament: taxa d'encerts = 0.
 
-Amb grau **2**, cada conjunt té 2 vies. A cada iteració hi ha 3 blocs actius que competeixen pel mateix conjunt (un de `A`, un de `B`, un de `C`): 3 > 2, de manera que amb LRU un dels tres blocs és expulsat a cada accés. Encara hi haurà conflictes i la taxa d'encerts continuarà sent 0.
+Amb grau **2**, cada conjunt té 2 vies. A cada iteració hi ha 3 blocs actius que competeixen pel mateix conjunt (un d'`A`, un de `B`, un de `C`): 3 > 2, de manera que amb LRU un dels tres blocs és expulsat a cada accés. Encara hi haurà conflictes i la taxa d'encerts continuarà sent 0.
 
 Amb grau **3**, cada conjunt té 3 vies: els 3 blocs actius ($A[i]$, $B[i]$, $C[i]$) caben simultàniament al mateix conjunt sense expulsar-se. La primera referència a cada bloc és una fallada d'arrencada en fred i les tres referències restants al bloc són encerts. La taxa d'encerts és 0,75 > 0.
 
@@ -951,7 +951,7 @@ El programa és **pla**: no fa cap crida, de manera que tot el codi és al bloc 
 | `@M[0][0]` | `s4` | adreça base de `M`; invariant durant tota l'execució |
 | `@V2[0]` | `s5` | adreça base de `V2`; invariant durant tota l'execució |
 | `j` | `t0` | índex del bucle interior |
-| `tmp` | `t1` | acumulador parcial; reinicialitzat a cada iteració de `i` |
+| `tmp` | `t1` | acumulador parcial; reinicialitzat a cada iteració d'`i` |
 | punter `@M[i][k*4+j]` | `t2` | avança 4 bytes a cada iteració de `j`; recalculat a cada `i` |
 | `@V2[k*4]` | `t3` | adreça base del bloc de `V2` per al `k` actual; recalculada a cada `k` |
 | còpia de `t3` per al bucle `j` | `t4` | avança 4 bytes a cada iteració de `j` |

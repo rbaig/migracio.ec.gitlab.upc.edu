@@ -43,13 +43,13 @@ El directori `21_riscv/` conté els **fragments de taula reutilitzables** (sols 
 
 **ID dels callouts a `11_riscv.qmd`:** prefix `#nte-rv-` (en comptes del `#nte-` dels `Ax.qmd`), per evitar conflictes de ID Quarto. Les figures que contenen no porten etiqueta.
 
-**Referències creuades cap als Apunts:** cada callout de `11_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) del `Ax.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemes i solucions). Quan un mateix contingut es presenta a més d'un `Ax.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
+**Referències creuades cap als Apunts:** cada callout de `11_riscv.qmd` acaba amb una nota «*Vegeu `@X`[, `@Y`] i `@Z`.*» que apunta al callout (o callouts) de l'`Ax.qmd` on es presenta el contingut per primer cop, amb el mateix format que les referències dels enunciats (§Problemes i solucions). Quan un mateix contingut es presenta a més d'un `Ax.qmd` (p. ex. `mv`/`not`/`neg` a T2/T3/T4), es llisten totes les referències. Els callouts sense cap presentació a la teoria (material exclusiu del compendi, com les directives RARS) no en porten.
 
 **Taules amb més d'un fragment font:** Quarto no permet encadenar dos `{{< include >}}` consecutius dins la mateixa taula *pipe*. Quan una taula de `11_riscv.qmd` combina files de més d'un fitxer de `21_riscv/` (p. ex. aritmètica + `lui` sota un sol header), els fragments es fusionen prèviament en un únic fitxer generat per `25_scripts/gen_taules_auto.py` (manifest: `24_specs/taules_fusio.toml`) i `11_riscv.qmd` hi fa un únic `{{< include auto_riscv/NOM.qmd >}}`. El directori `auto_riscv/` és generat (gitignored); no s'edita a mà.
 
 L'script **no** és al `pre-render` de `_quarto.yml`: el fitxer fusionat ha d'existir abans d'invocar `quarto` ([D-3]({{< var decisions >}}#d-3)). `make taules` el genera, i `make render` i `make render-complet` ja el criden; sense `make`, cal executar-lo a mà (`python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"`) el primer cop i sempre que s'editi un fitxer de `21_riscv/` que aparegui a `24_specs/taules_fusio.toml`. Si `quarto render` diu `could not find file .../auto_riscv/NOM.qmd`, és que falta aquest pas. Si no, `auto_riscv/` queda desactualitzat en silenci: `quarto render` no fallarà, però la taula final no reflectirà el canvi. Els fitxers font de `21_riscv/` continuen sent l'única font de veritat.
 
-**Contingut d'Aprofundiment exclòs de `11_riscv.qmd`:** el compendi de referència tècnica no pot incloure contingut que provingui únicament d'un callout d'Aprofundiment d'un `Ax.qmd` (material opcional, no bàsic). Exemple: `Zicsr_instruccions_immediats.qmd` (`csrrwi`/`csrrsi`/`csrrci`) es presenta a `A9.qmd` dins un callout d'Aprofundiment; per això `11_riscv.qmd` només inclou `Zicsr_instruccions.qmd` (les instruccions base), no la taula d'immediats. El fitxer de `21_riscv/` es manté igualment, per a l'ús des del `Ax.qmd` corresponent.
+**Contingut d'Aprofundiment exclòs de `11_riscv.qmd`:** el compendi de referència tècnica no pot incloure contingut que provingui únicament d'un callout d'Aprofundiment d'un `Ax.qmd` (material opcional, no bàsic). Exemple: `Zicsr_instruccions_immediats.qmd` (`csrrwi`/`csrrsi`/`csrrci`) es presenta a `A9.qmd` dins un callout d'Aprofundiment; per això `11_riscv.qmd` només inclou `Zicsr_instruccions.qmd` (les instruccions base), no la taula d'immediats. El fitxer de `21_riscv/` es manté igualment, per a l'ús des de l'`Ax.qmd` corresponent.
 
 **Fitxers `21_riscv/` existents:**
 
@@ -284,6 +284,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
     - Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres.
     - La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`.
     - **Separador de milers**: espai («65 535»), no coma anglesa («65,535», ambigua amb la coma decimal catalana) ni punt.
+    - **Unitats de mesura i percentatges**: entre el nombre i la unitat o el símbol %, un espai («80 %», «32 bits», «4 KiB», «2 GHz»), com demana l'Optimot. Al font s'escriu un espai normal, i el filtre `25_scripts/espai_unitats.lua` el converteix en un espai que no es parteix a final de línia; a les fórmules, `\ ` («$39{,}2\ \%$») ([D-87]({{< var decisions >}}#d-87)).
 - **Prefixos de mida binaris vs. decimals**: `KiB`, `MiB`, `GiB`, `TiB` (IEC, base 2) per a qualsevol mida que sigui una potència de 2 —mida de cau, de memòria, de pàgina, de bloc, rangs d'adreçament, etc.—, que és la immensa majoria de casos a EC: registres, memòries cau i memòria principal. `KB`, `MB`, `GB`, `TB` (base 10) es reserven per a les mides genuïnament decimals: l'emmagatzematge secundari (p. ex. la capacitat comercial anunciada d'un disc), els costos ($/GB) i les amplades de banda (GB/s, TB/s) ([D-86]({{< var decisions >}}#d-86)). Explicat a `A2.qmd` (@cau-prefixos-binaris), primera aparició al llibre; en cas de dubte, per defecte `KiB`/`MiB`/`GiB`/`TiB`.
 - **Hexadecimals**: tres regles.
     - **Majúscules o minúscules**: la preferència és per majúscules (p. ex. `0xE6666666`), però s'admeten minúscules perquè és el criteri de RARS. No cal, doncs, unificar-ho sistemàticament allà on ja apareguin totes dues grafies.
@@ -322,6 +323,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 - **Aparicions posteriors**: Es pot utilitzar l'anglicisme directament, sempre sense cursiva.
 - **Triples asteriscs (`***`)**: S'utilitzen exclusivament quan el terme és un anglicisme en la seva primera aparició **i alhora** és un concepte nuclear que requereix negreta. Exemple: `**maquinari** (***hardware***)`.
 - **Terminologia obligatòria**: cal aplicar sistemàticament les substitucions recollides a la taula de substitucions obligatòries (vegeu més avall).
+- **Terme català o anglès**: si un terme no és a l'[Optimot](https://optimot.cat/) (que inclou el Termcat) ni al [diccionari anglès-català de Softcatalà](https://www.softcatala.org/diccionari-angles-catala/), es fa servir el terme anglès, en cursiva a la primera aparició. També es manté l'anglès quan el terme català és molt poc usat; aquestes excepcions es documenten a la taula de més avall ([D-88]({{< var decisions >}}#d-88)).
 
 #### Substitucions obligatòries
 
@@ -359,6 +361,14 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 
 <!--- cSpell:enable --->
 
+**Termes que es mantenen en anglès** ([D-88]({{< var decisions >}}#d-88)):
+
+| Terme | Terme català (si n'hi ha) | Motiu |
+| :--- | :--- | :--- |
+| *heap* | *monticle* (Optimot) | El terme català és molt poc usat, i a l'Optimot és de l'estructura de dades |
+| *target* | — | No és a l'Optimot |
+| *caller*, *callee* | «la funció que crida», «la funció cridada» | Al text, la perífrasi catalana; a les figures i a les columnes de les taules de registres, l'anglès, per l'espai. Els termes de l'ABI *caller-saved* i *callee-saved* es mantenen en anglès |
+
 - **`enter` vs. `natural`**: a EC, **enter** vol dir **amb signe** (Ca2, tipus `int`) i **natural**, **sense signe** (tipus `unsigned`), com a T1 (@sec-codificacio-naturals). Per tant, «enter amb signe» i «natural sense signe» són redundants, i «enter sense signe» és contradictori: s'escriu «enter» o «natural». S'admet la glossa entre parèntesis allà on el text explica la correspondència amb l'anglès o defineix un símbol, com «naturals (sense signe)» a la presentació de `lhu`/`lbu` (A2) o $x_u$ a `12_sigles_simbols.qmd` ([D-39]({{< var decisions >}}#d-39)).
 - **`mida` vs. `longitud`**: `mida` designa l'espai que ocupa un tipus o una variable en memòria (p. ex. *la mida d'un `int` és de 4 bytes*); `longitud` designa el nombre d'unitats d'un element seqüenciable —bits d'un registre o camp, elements d'un vector, caràcters d'una cadena— (p. ex. *la longitud del camp `opcode` és de 7 bits*). El terme `tamany` no és normatiu i no s'ha d'usar mai.
 
@@ -368,7 +378,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 - Cada sigla **s'ha de recollir** al **compendi de sigles** `12_sigles_simbols.qmd`.
 - Un cop definida s'ha d'usar sempre (en majúscules i sense cursiva). Pot anar en negreta.
 - **Sense plural**: la sigla no porta marca de plural; el nombre el diu el determinant («les API», «dues GPU», «els LED») ([D-79]({{< var decisions >}}#d-79)).
-- **Article i preposició davant de la sigla**: s'apostrofen segons la pronúncia, com fixa la GIEC. Davant de les que es lletregen i comencen amb una lletra de nom vocàlic (a, e, i, o, u, efa, ela, ema, ena, erra, essa) o es llegeixen com un mot que comença en vocal: «l'ISA», «l'MMU», «l'MC», «l'RSE», «l'SO», «d'MP», «de l'LSB», «d'RV32I», «d'UNIX», «d'NVIDIA». Davant de les que es llegeixen com un mot que comença en consonant, no: «la RAM», «la ROM», «de RARS». «La IA», com a l'Optimot ([D-80]({{< var decisions >}}#d-80)).
+- **Article i preposició davant de la sigla**: s'apostrofen segons la pronúncia, com fixa la GIEC. Davant de les que es lletregen i comencen amb una lletra de nom vocàlic (a, e, i, o, u, efa, ela, ema, ena, erra, essa) o es llegeixen com un mot que comença en vocal: «l'ISA», «l'MMU», «l'MC», «l'RSE», «l'SO», «d'MP», «de l'LSB», «d'RV32I», «d'UNIX», «d'NVIDIA». Davant de les que es llegeixen com un mot que comença en consonant, no: «la RAM», «la ROM», «de RARS». «La IA», com a l'Optimot. El mateix criteri val per al codi, que es llegeix com un mot: «d'`addi`», «l'`a0`», però «de `lw`», «la `sp`» ([D-80]({{< var decisions >}}#d-80)).
 
 **Criteri d'inclusió a `12_sigles_simbols.qmd`**: s'inclou tota sigla que aparegui al **cos del text** o als callouts `{.callout-caution}`, `{.callout-note}`, `{.callout-tip}` o `{.callout-important}`.
 
@@ -554,7 +564,7 @@ L'extracció via `pymupdf` (`text_as_path=True`) és el recurs per a figures que
 - Generades automàticament pel pre-render (`25_scripts/gen_regs.py`).
 - Inclou formats d'instrucció (R, I, S, B, U, J, R4) i dos compendis, generats automàticament a partir de les entrades `instruccio_tipus_*` del TOML, sense entrada pròpia: `compendi_registres`, amb els set formats (el del compendi de referència, `11_riscv.qmd`), i `compendi_registres_RIS`, amb R, I i S (el d'A2, `#nte-instruccions-tipus`; vegeu §T2 i T3, «Formats d'instrucció d'RV32I»). Quins formats porta cada compendi ho diu `COMPENDIS`, a `gen_regs.py`.
 - Figures de registres CSR: `A5_fcsr`, `A9_mstatus`, `A9_mtvec`, `A9_mepc`, `A9_mcause`, `A9_mip`, `A9_mie`, `A9_satp`.
-- El nom d'un camp d'un bit va girat, perquè no hi cap; la clau `horitzontals` d'un registre en llista els que no s'han de girar (la «S» de `A5_ieee754_format_registre`) ([D-52]({{< var decisions >}}#d-52)).
+- El nom d'un camp d'un bit va girat, perquè no hi cap; la clau `horitzontals` d'un registre en llista els que no s'han de girar (la «S» d'`A5_ieee754_format_registre`) ([D-52]({{< var decisions >}}#d-52)).
 
 **Flux de pre-render** (`_quarto.yml`):
 
@@ -828,7 +838,7 @@ Regla dels `:` addicionals:
 
 - **`{style="text-align: center;"}`** centra el contingut *dins* del contenidor, però el contenidor en si ocupa tota l'amplada disponible. Amb `{#fig-}`, `{#tbl-}`, etc. no cal perquè ja centren automàticament (les figures SVG, vegeu §Integració al `.qmd`).
     - Imatges dins callouts (**només HTML**; al PDF no té efecte).
-- **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100% de l'amplada.
+- **`{style="width: X%; margin: auto;"}`** centra el *contenidor* com a bloc. Funciona bé per a taules i elements de bloc amb amplada definida (`width: X%`), però no té efecte si el contenidor ja ocupa el 100 % de l'amplada.
     - Taules.
     - Elements de bloc.
 - **Imatges sense peu dins dels callouts, al PDF**: `preamble.tex` les centra. Ho fa a les que comencen un paràgraf dins d'un `tcolorbox`, que és com Quarto escriu els callouts; una imatge dins d'una línia de text no es toca, i fora dels callouts no canvia res ([D-56]({{< var decisions >}}#d-56)).
@@ -1016,6 +1026,7 @@ quarto render             # les dues sortides
 | `25_scripts/figures.lua` | HTML (i `alt` als dos) | Text alternatiu des del `<desc>` de l'SVG i amplada comuna de les figures (§Figures i material gràfic) |
 | `25_scripts/titols_pdf.lua` | PDF | Marcadors amb els títols curts del menú de l'HTML («T1 Introducció», «S1 RARS»), presos dels `text:` de `chapters:`; la pàgina, l'índex i la capçalera conserven el títol llarg |
 | `25_scripts/versio.lua` | HTML i PDF | Hash curt del commit renderitzat, entre parèntesis, després de la data de «Publicat» de la portada i a la portada del PDF, amb `-dirty` si l'arbre té canvis no confirmats |
+| `25_scripts/espai_unitats.lua` | HTML i PDF | Espai que no es parteix entre un nombre i la seva unitat o el % (§Criteris generals, «Nombres») |
 | `figures_dinamiques.html` | HTML | Navegador de passos de les figures dinàmiques |
 | `formules_en_linia.html` | HTML | Desplaçament horitzontal només per a les fórmules en línia que no caben (§Presentació visual) |
 | `preamble.tex` | PDF | Capçaleres, colors i comptadors dels callouts, algorismes en rodona, «Problema»/«Exercici», els caràcters que la font del cos no té (`\newunicodechar`: ✓, ↔, ≡, ≠, ⌊⌋ amb el símbol matemàtic; ⚠ i les icones de les capçaleres de la presentació amb la de `fontawesome5`, i el caràcter original als marcadors) i les imatges centrades dins dels callouts. Un caràcter nou que surti en blanc al PDF hi ha d'afegir la seva línia: el registre de LaTeX el dona com a «Missing character» |

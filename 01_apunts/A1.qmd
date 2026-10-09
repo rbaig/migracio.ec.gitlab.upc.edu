@@ -123,35 +123,35 @@ La @tbl-impacte-canvi-interficies resumeix l'impacte que tenen els canvis a cada
 : Impacte del canvi d'interfícies
 :::
 
-### La dualitat de l'entorn: *host* vs. *target* {#sec-host-vs-target}
+### La dualitat de l'entorn: amfitrió vs. *target* {#sec-host-vs-target}
 
 En el desenvolupament de sistemes de baix nivell i, especialment, en els encastats, on el dispositiu que executarà el codi sol mancar dels recursos necessaris per allotjar eines de programació, cal diferenciar clarament entre dos ordinadors que fan papers diferents:
 
 1. **Màquina amfitriona** (***host***):
     - **Què és**: L'ordinador que utilitza el programador per escriure el codi (per exemple, un ordinador de la facultat o un portàtil).
     - **Arquitectura**: Habitualment **x86-64** o **ARM**.
-    - **Funció**: Executar l'editor de text i el **compilador**. El compilador és un programa «nadiu» del host que s'encarrega de «fabricar» el binari.
+    - **Funció**: Executar l'editor de text i el **compilador**. El compilador és un programa «nadiu» de l'amfitrió que s'encarrega de «fabricar» el binari.
 2. **Màquina destí** (***target***):
     - **Què és**: El sistema on realment s'executarà el programa final.
     - **Arquitectura**: A **EC**, l'**ISA** de destí és **RISC-V**.
-    - **Funció**: Executar el binari generat pel host. En aquest cas, el target no és una placa física (inicialment), sinó un **simulador** (com el RARS) que reprodueix el comportament d'una CPU RISC-V sobre el host.
+    - **Funció**: Executar el binari generat per l'amfitrió. En aquest cas, el target no és una placa física (inicialment), sinó un **simulador** (com el RARS) que reprodueix el comportament d'una CPU RISC-V sobre el host.
 
 #### Per què és important aquesta separació? {#sec-per-que-es-important-aquesta-separacio}
 
-- **Incompatibilitat de binaris**: Un binari generat per a RISC-V és una seqüència de bits inintel·ligible per a un processador Intel/AMD. Si s'intenta executar-lo directament al terminal de Linux/Windows, el sistema operatiu advertirà que el format de l'executable és invàlid (tret que el host tingui configurat un emulador, com `qemu-user`, que el sistema invoqui automàticament per a aquest format).
-- **El paper del simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador s'executa en el host (x86-64 o ARM), però l'interior de la bombolla entén l'**ISA** i l'**ABI** de RISC-V.
-- **Portabilitat del codi font**: El codi en C és l'únic element portable entre tots dos mons: es pot compilar el mateix fitxer `.c` per al host (per provar la lògica) o fer una **compilació creuada** per al target (@sec-compilacio-creuada).
+- **Incompatibilitat de binaris**: Un binari generat per a RISC-V és una seqüència de bits inintel·ligible per a un processador Intel/AMD. Si s'intenta executar-lo directament al terminal de Linux/Windows, el sistema operatiu advertirà que el format de l'executable és invàlid (tret que l'amfitrió tingui configurat un emulador, com `qemu-user`, que el sistema invoqui automàticament per a aquest format).
+- **El paper del simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador s'executa en l'amfitrió (x86-64 o ARM), però l'interior de la bombolla entén l'**ISA** i l'**ABI** de RISC-V.
+- **Portabilitat del codi font**: El codi en C és l'únic element portable entre tots dos mons: es pot compilar el mateix fitxer `.c` per a l'amfitrió (per provar la lògica) o fer una **compilació creuada** per al target (@sec-compilacio-creuada).
 
 #### Compilació creuada (*cross-compilation*) {#sec-compilacio-creuada}
 
-S'utilitza un entorn allotjat, per exemple, amb arquitectura **x86** i sistema **Linux**, per generar un binari destinat a una arquitectura diferent (per exemple, **RISC-V**). El compilador s'executa en el ***host*** però genera codi per al ***target***.
+S'utilitza un entorn allotjat, per exemple, amb arquitectura **x86** i sistema **Linux**, per generar un binari destinat a una arquitectura diferent (per exemple, **RISC-V**). El compilador s'executa en l'**amfitrió** però genera codi per al ***target***.
 
 ::: {#tip-toolchain .callout-tip}
 ## RISC-V GNU Compiler Toolchain
 La [RISC-V GNU Compiler Toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) permet crear codi des de diversos hosts GNU/Linux o macOS per a moltes ISA RISC-V.
 :::
 
-Un cop obtingut al host, el binari es carrega al target mitjançant un cable i un protocol apropiat.
+Un cop obtingut a l'amfitrió, el binari es carrega al target mitjançant un cable i un protocol apropiat.
 
 #### Depuració creuada (*cross-debugging*) {#sec-depuracio-creuada}
 
@@ -159,7 +159,7 @@ La depuració s'ha de fer en l'entorn del target, el qual pot ser:
 
 - **Amb simulador**: Un programa (el simulador) en un ordinador personal recrea per programari el comportament dels registres i la memòria de la CPU de destí i fa visibles els efectes sobre els components del maquinari simulat a través d'interfícies gràfiques. És el cas del **RARS**, el **simulador d'EC**.
 
-- **Amb target real**: El binari s'envia des del host al xip real (el target) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LED, sensors, motors).
+- **Amb target real**: El binari s'envia des de l'amfitrió al xip real (el target) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LED, sensors, motors).
 
 ### El llenguatge C: el pont de l'abstracció {#sec-el-llenguatge-c}
 
@@ -193,7 +193,7 @@ El procés de traducció no és un pas únic, sinó una cadena de transformacion
 
 #### El llenguatge d'assemblador: la visió de l'ISA {#sec-visio-isa}
 
-**La compilació és rellevant a EC**, ja que l'assemblador és la representació textual de l'**ISA**.
+**El llenguatge d'assemblador és rellevant a EC** perquè és la representació textual de l'**ISA**: cada instrucció d'assemblador correspon a una instrucció de llenguatge màquina (llevat de les pseudoinstruccions, que l'assemblador expandeix). La **compilació** hi és rellevant perquè és el pas que tradueix el C a aquest llenguatge (@sec-flux-de-generacio).
 
 ::: {#tip-traduccio-c-asm .callout-tip}
 ## Traducció de **C** a **assemblador RISC-V**
@@ -237,26 +237,26 @@ La **[Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A1_picopi_fases__original_light.svg)
 :::
-Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) + Target (*Pi Pico 2*).
+Configuració física i fases d'ús del conjunt Amfitrió + Sonda (*Pi Debug Probe*) + Target (*Pi Pico 2*).
 :::
 
-- **Host** (ordinador):
+- **Amfitrió** (ordinador):
     - Executa el programa **depurador** ([GDB/OpenOCD](https://openocd.org/)), que, a través de CMSIS-DAP, dona **ordres** a la sonda i en rep les **respostes**.
 
 - **Sonda** (**Pi Debug Probe**):
-    - Actua de **pont**. Tradueix els missatges del host a senyals elèctrics de baix nivell que el target pot entendre i viceversa.
+    - Actua de **pont**. Tradueix els missatges de l'amfitrió a senyals elèctrics de baix nivell que el target pot entendre i viceversa.
 
 - **Target** (**Pi Pico 2**):
-    - És on resideix l'**ISA de RISC-V** que **executa** el binari.
+    - És on hi ha el processador RISC-V que **executa** el binari.
 
 **Fase 1: Creació**
 
-- **Host** (ordinador):
+- **Amfitrió** (ordinador):
     - Genera el binari ([riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain)).
 
 **Fase 2: Càrrega** (***Flashing*** / ***Deployment***)
 
-- **Host** (ordinador):
+- **Amfitrió** (ordinador):
     - El depurador envia el binari a la sonda.
 
 - **Target** (**Pi Pico 2**):
@@ -264,7 +264,7 @@ Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) 
 
 **Fase 3: Execució** / **Depuració** (***Runtime*** / ***Debugging***)
 
-- **Host** (ordinador):
+- **Amfitrió** (ordinador):
     - Envia ordres com «Atura't (`break`)», «Executa la instrucció següent (`stepi`)» o «Escriu el valor `5` al registre `a0`».
 
 - **Target** (**Pi Pico 2**):

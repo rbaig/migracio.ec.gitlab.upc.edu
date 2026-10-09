@@ -581,7 +581,7 @@ A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'us
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
-Ara que ja s'han presentat totes les instruccions de processament i control de flux de la base **RV32I** (@nte-riscv-rv32i), tret de `ecall` (@sec-ei-ecall) —les instruccions de sistema, com `ecall` i `ebreak` (presentada a Tema 9), queden fora d'aquesta classificació—, l'exercici de classificar-les segons el **mode d'adreçament**
+Ara que ja s'han presentat totes les instruccions de processament i control de flux de la base **RV32I** (@nte-riscv-rv32i), tret d'`ecall` (@sec-ei-ecall) —les instruccions de sistema, com `ecall` i `ebreak` (presentada a Tema 9), queden fora d'aquesta classificació—, l'exercici de classificar-les segons el **mode d'adreçament**
 (@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de l'ISA, sinó també, a un nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
 
 La classificació proposada inclou quatre decisions que cal justificar:
@@ -718,7 +718,7 @@ switch (expressio) {
 }
 ```
 
-El mètode més senzill de traducció és una **cadena de `if-then-else`** que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en un **vector de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
+El mètode més senzill de traducció és una **cadena d'`if-then-else`** que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en un **vector de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
 
 ::: {#tip-traduccio-switch .callout-tip}
 ## `switch` amb vector de salts
@@ -750,7 +750,7 @@ Aquesta versió simplificada assumeix que l'expressió del `switch` només pot v
 ::: {#wrn-switch-jump-table .callout-warning collapse=true}
 ## Implementació del vector de salts en detall
 
-El vector de salts és eficient quan les constants del `switch` formen un rang dens (per exemple, `0`, `1`, `2`, `3`). Si les constants estan disperses o el seu rang és molt gran, és preferible la cadena de `if-then-else`, ja que el vector de salts requeriria moltes entrades per a constants que no existeixen.
+El vector de salts és eficient quan les constants del `switch` formen un rang dens (per exemple, `0`, `1`, `2`, `3`). Si les constants estan disperses o el seu rang és molt gran, és preferible la cadena d'`if-then-else`, ja que el vector de salts requeriria moltes entrades per a constants que no existeixen.
 
 Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor mínim al resultat de l'expressió abans d'indexar el vector. Per exemple, si les constants van de `5` a `8`:
 
@@ -988,7 +988,7 @@ Les dades (instruccions i variables) d'un programa poden tenir un mode d'emmagat
 
 A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants globals** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` per a les instruccions del programa en assemblador i `.data` per a les variables i les constants globals, als quals s'escriu en temps de compilació mitjançant les directives de segment (@nte-segments-memoria).
 
-A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap***. La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el heap s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fan explícitament per part del programador (mitjançant `malloc()` i `free()`).
+A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap*** (a l'Optimot, *monticle*, un terme poc usat). La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el heap s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fan explícitament per part del programador (mitjançant `malloc()` i `free()`).
 
 ::: {#tip-exemple-tipus-variables .callout-tip}
 ## Les tres ubicacions de les dades: `.data`, pila i heap
@@ -1130,18 +1130,18 @@ sub:
 ::: {#cau-caller-callee .callout-caution}
 Un codi és:
 
-- ***Caller***, si fa una crida a una subrutina.
-- ***Callee***, si és la subrutina cridada.
+- **Funció que crida** (***caller***), si fa una crida a una subrutina.
+- **Funció cridada** (***callee***), si és la subrutina cridada.
 
-Per analogia, és comú emprar els termes mare/pare i fill/filla per referir-se al *caller* i al *callee*, respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
+Per analogia, és comú emprar els termes mare/pare i fill/filla per referir-se a la funció que crida i a la funció cridada, respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
 :::
 
 ::: {#nte-caller-saved-vs-callee-saved .callout-note}
 ## RV32I ABI — Gestió dels registres de propòsit general: *caller-saved* vs. *callee-saved*
 La columna «Qui el guarda (*Saver*)» de les taules de registres de l'ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
 
-- **Caller-saved**: És el caller qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
-- **Callee-saved**: És el callee qui ha de preservar-lo si vol usar-lo i, per tant, ha de restaurar-lo abans de retornar.
+- **Caller-saved**: És la funció que crida qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
+- **Callee-saved**: És la funció cridada qui ha de preservar-lo si vol usar-lo i, per tant, ha de restaurar-lo abans de retornar.
 :::
 
 El registre `ra` és **caller-saved**, ja que la instrucció que el pare empra per fer la crida (`jal`, @nte-instruccions-salt-incondicional-relatiu-jal) escriu a `ra` l'adreça de retorn que el fill utilitzarà per retornar-li el control de flux. Aquesta escriptura implica la **pèrdua per sobreescriptura** de l'adreça de retorn que ell, el pare, ha d'utilitzar per tornar el control de flux a l'avi.
@@ -1353,7 +1353,7 @@ Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen visibil
 ::: {#nte-bloc-activacio .callout-note}
 ## RV32I ABI — El bloc d'activació — Registre de pila `sp`
 
-Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux al caller. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
+Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux a la funció que crida. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
 La reserva i l'alliberament d'espai de memòria per al BA es fan mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
 
@@ -1519,7 +1519,7 @@ Evolució del registre `sp` durant la crida i el retorn de la funció multinivel
 :::
 :::
 
-Una subrutina multinivell ha de preservar, com a mínim, el valor de `ra` abans de la crida al *callee* i restaurar-lo després:
+Una subrutina multinivell ha de preservar, com a mínim, el valor de `ra` abans de la crida a la funció cridada i restaurar-lo després:
 ```{.s filename="RV32I"}
 sub:
         ...
@@ -1539,7 +1539,7 @@ Els registres, però, són compartits per totes les subrutines. Per tant, hi ha 
 
 L'**ABI** d'RV32I resol aquest problema mitjançant una solució elegant i eficient, però que pot semblar contraintuïtiva a primera vista.
 
-Aquesta solució es basa en la classificació dels registres en **temporals** (*caller-saved* en terminologia ABI) i **segurs** (*callee-saved* en terminologia ABI) i en el repartiment de responsabilitats entre caller i callee per preservar-los (@nte-caller-saved-vs-callee-saved). Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat del caller, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és del callee.
+Aquesta solució es basa en la classificació dels registres en **temporals** (*caller-saved* en terminologia ABI) i **segurs** (*callee-saved* en terminologia ABI) i en el repartiment de responsabilitats entre la funció que crida i la funció cridada per preservar-los (@nte-caller-saved-vs-callee-saved). Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat de la funció que crida, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és de la funció cridada.
 
 Que el pare hagi de prendre mesures per preservar el seu context sembla raonable, ja que és qui té la necessitat de recuperar-lo després de la crida. El que pot semblar contraintuïtiu és que el fill hagi d'ajudar el pare a preservar el context d'aquest últim preservant-ne els valors dels registres segurs, tot i no tenir-ne cap dependència. No obstant això, aquesta solució és molt eficient perquè permet a **les subrutines** modificar lliurement els registres temporals sense haver de preocupar-se de preservar-los: només han de preservar **els registres segurs**, de manera que, per economia, només fan servir els registres que realment necessiten.
 
@@ -1576,7 +1576,7 @@ La secció de codi d'una subrutina multinivell es divideix en tres parts:
 
 - **Pròleg**: és el codi que s'executa a l'inici de la subrutina per generar el bloc d'activació.
 - **Cos**: és el codi que implementa la funcionalitat de la subrutina. 
-- **Epíleg**: és el codi que s'executa al final de la subrutina, just abans de retornar el control de flux al caller, per restituir el context.
+- **Epíleg**: és el codi que s'executa al final de la subrutina, just abans de retornar el control de flux a la funció que crida, per restituir el context.
 
 ```{.s filename="RV32I"}
 sub:
@@ -2064,7 +2064,7 @@ El `void main()` dels programes en C d'aquests apunts no contradiu res del que s
 ::: {#wrn-flux-gcc-complet .callout-warning collapse=true}
 ## Flux de generació detallat amb GCC/Clang
 
-El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa al *host* (x86-64 o ARM) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
+El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa a l'amfitrió (*host*, x86-64 o ARM) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
 
 ::: {#fig-flux-gcc-complet}
 ::: {.content-visible when-format="html"}

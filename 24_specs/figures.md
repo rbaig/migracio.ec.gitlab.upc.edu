@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `0bd83ea` (2026-10-09), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `5e55cc8` (2026-10-09), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **87** etiquetes `#fig-`: 84 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 61 consumits i 15 sense consumir.
@@ -11,7 +11,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `0bd83ea` (2026-10-09), amb 
 | Etiqueta | Lloc | Font | Origen | Callout | @ | Peu | `<desc>` |
 | :--- | :--- | :--- | :--- | :--- | ---: | :--- | :--- |
 | `fig-flux-compilacio` | `A1.qmd:59` | `22_figs_originals/A1_flux_compilacio.svg` | Inkscape |  | 1 | El flux de generació del programari: les quatre etapes del *toolchain* GCC. | Diagrama que mostra el flux de generació d'un programa exec… |
-| `fig-picopi-fases` | `A1.qmd:228` | `22_figs_originals/A1_picopi_fases.svg` | Inkscape | `wrn-picopi` | 0 | Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) + Target (*P… | Quatre diagrames en una sola figura: fase de creació (el ho… |
+| `fig-picopi-fases` | `A1.qmd:228` | `22_figs_originals/A1_picopi_fases.svg` | Inkscape | `wrn-picopi` | 0 | Configuració física i fases d'ús del conjunt Amfitrió + Sonda (*Pi Debug Probe*) + Target… | Quatre diagrames en una sola figura: fase de creació (l'amf… |
 | `fig-von-neumann` | `A1.qmd:364` | `22_figs_originals/A1_von_neumann.svg` | Inkscape |  | 1 | Arquitectura de Von Neumann: CPU (ALU, CU i registres), memòria principal i sistema d'E/S… | CPU, Memòria Principal i Sistema d'E/S en disposició horitz… |
 | `fig-memoria-creix-avall` | `A2.qmd:987` | `memoria.toml:A2_memoria_creix_avall` | gen_memoria.py | `imp-adrecament-a-nivell-byte` | 0 | Representació gràfica de la memòria. | Una columna de cel·les d'un byte cadascuna, amb l'adreça a … |
 | `fig-big-endian` | `A2.qmd:1027` | `memoria.toml:A2_big_endian` | gen_memoria.py | `tip-endianness` | 0 | Big-endian. | Quatre bytes consecutius, de l'adreça 0x10010000 a la 0x100… |
