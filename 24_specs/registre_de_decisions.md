@@ -353,7 +353,7 @@ Aplicat a tot el corpus el 2026-10-07 (decisió de l'usuari): fins llavors A2 pr
 
 **«Ròssec», «semisumador» i «sumador complet»** · `13_contrib.qmd §Substitucions obligatòries` · 2026-10-03 · `e49c014`
 
-«Ròssec» és el terme del Termcat (decisió de l'usuari, 2026-10-03), i substitueix «arrossegament», que el corpus usava fins aleshores. «Semisumador» i «sumador complet» són de la mateixa sessió (fase 5), pendents de confirmar al Termcat.
+«Ròssec» és el terme del Termcat (decisió de l'usuari, 2026-10-03), i substitueix «arrossegament», que el corpus usava fins aleshores. «Semisumador» i «sumador complet» són de la mateixa sessió (fase 5); l'usuari no els va poder trobar a la interfície nova del Termcat, i els va confirmar el 2026-10-09 (literal: «Confirmat»).
 
 ### D-37
 

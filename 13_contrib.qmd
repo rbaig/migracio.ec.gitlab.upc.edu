@@ -156,7 +156,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació. La **precisió** $p$ compta els bits significatius de la mantissa, bit ocult inclòs: la fracció en té $p-1$ ($b_{-1} \ldots b_{-(p-1)}$), i l'exponent és $e$ tant en base 2 com en la notació científica decimal ($v = m \times 10^e$) ([D-12]({{< var decisions >}}#d-12)).
 - **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des de l'LSB.
 - **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`). És una regla dels problemes i les solucions: la teoria (A5) presenta aquests càlculs amb fórmules ([D-81]({{< var decisions >}}#d-81)).
-- **Solucions**: estructura de cada solució: `**Enunciat:** @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
+- **Solucions**: estructura de cada solució: `**Enunciat**: @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
 - **`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el camp `rm`** de la instrucció, no trunquen sempre. Sense operand de mode (`fcvt.w.s rd, rs1`), l'assemblador RISC-V hi assigna `dyn` (mode dinàmic: el del registre `frm`, RNE per defecte a RARS). Per traduir el *cast* `(int)` de C (que trunca cap a zero) cal escriure explícitament `fcvt.w.s rd, rs1, rtz`.
 - **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
 - **No-associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$. És l'exemple dels problemes i les solucions; A5 en fa servir un de precisió simple, la del tema ([D-81]({{< var decisions >}}#d-81)).
@@ -344,8 +344,8 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 | overflow | sobreeiximent | |
 | underflow | subdesbordament | |
 | carry | ròssec | Termcat. Derivats: *carry-in* → «ròssec d'entrada», *carry-out* → «ròssec de sortida», *ripple carry* → «propagació del ròssec» ([D-36]({{< var decisions >}}#d-36)). |
-| half-adder | semisumador | Pendent de confirmar al Termcat (`TODO.md`). Primera aparició en un fitxer: «**semisumador** (*half-adder*)». |
-| full-adder | sumador complet | Pendent de confirmar al Termcat (`TODO.md`); el Termcat dona *adder* → «sumador». Primera aparició en un fitxer: «**sumador complet** (*full-adder*)». |
+| half-adder | semisumador | Termcat. Primera aparició en un fitxer: «**semisumador** (*half-adder*)». |
+| full-adder | sumador complet | Termcat. Primera aparició en un fitxer: «**sumador complet** (*full-adder*)». |
 | promig | mitjana | |
 | tamany | mida | No normatiu. Per a la distinció `mida` vs. `longitud`, vegeu la nota posterior. |
 | string | cadena de caràcters | Cadena (si apareix sovint) |
@@ -638,9 +638,11 @@ Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `
 
 **Figures Graphviz existents:**
 
-| Fitxer font | SVG a `22_figs_originals/` | Figures generades a `auto_figs/` | Contingut |
-| :--- | :--- | :--- | :--- |
-| `24_specs/A7_mc_politiques_resum__graphviz.gv` | `A7_mc_politiques_resum__graphviz.svg` | `A7_mc_politiques_resum__graphviz__original_light.svg` i `…__original_dark.svg` | Arbre de polítiques d'MC (emplaçament, reemplaçament, escriptura) |
+| Fitxer font (a `24_specs/`) | Contingut |
+| :--- | :--- |
+| `A7_mc_politiques_resum__graphviz.gv` | Arbre de polítiques d'MC (emplaçament, reemplaçament, escriptura) |
+
+L'SVG de `22_figs_originals/` i les variants d'`auto_figs/` prenen el nom de la font (vegeu «Fitxers», més amunt).
 
 #### Figures dinàmiques
 
