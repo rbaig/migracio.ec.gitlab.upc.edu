@@ -307,6 +307,8 @@ Decisió de l'usuari (2026-10-09, en respondre els dubtes de la lectura lingüí
 
 Decisió de l'usuari (2026-10-01). L'excepció del format reduït té dos casos, `exr-t7-fallades-programa` i `exr-t8-mv-proteccio`: l'usuari va declarar (2026-10-01) que el format hi és correcte i que s'explicita amb la nota. Fins al 2026-10-07 les tres regles dels hexadecimals (majúscules, amplada i separadors) eren a dos llocs de la guia.
 
+**A les figures** (`24_specs/svg.md §9`), les adreces segueixen la mateixa regla. Fins a la fase 7c, `svg.md` hi deia «espai cada 4 dígits», contra el text; decisió de l'usuari 10 de la fase 7c (2026-10-03), aplicada el 2026-10-05 a les tres figures que en portaven, `A3_mapa_memoria`, `A7_mc_encert` i `A7_mc_fallada` (`06f0c0c`) (fins al 2026-10-09, a `24_specs/svg.md`).
+
 ### D-31
 
 **Ordre substantiu–adjectiu** · `13_contrib.qmd §Criteris generals` · 2026-10-01 · `681556a`, `d50b0ba`
@@ -519,7 +521,9 @@ La remissió la genera el filtre a partir de l'slug compartit ([D-22](#d-22)), e
 
 **El `<desc>` com a text alternatiu, i una mida comuna a l'HTML** · `13_contrib.qmd §Figures i material gràfic` · 2026-10-06 · `e806916`
 
-Que el `<desc>` no repeteixi el peu és la decisió 6 de la fase 7c (2026-10-03). L'amplada del `viewBox` per 1,4 a l'HTML és decisió de l'usuari (2026-10-06).
+Que el `<desc>` no repeteixi el peu és la decisió 6 de la fase 7c (2026-10-03). L'amplada del `viewBox` per 1,4 a l'HTML és decisió de l'usuari (2026-10-06). Fins llavors, una figura amb `width="100%"` s'estirava a tota la columna, i una amb l'amplada en px es quedava a la mida natural (`TODO.md`, «Mida de les figures a l'HTML», avui a `24_specs/arxiu_todo.md`).
+
+**Les figures estretes generades** (`gen_BA.py`, `gen_mapa.py` i `gen_memoria.py`, `24_specs/svg.md §2`) porten l'amplada en px, i no `width="100%"`, per una decisió anterior de l'usuari (2026-10-05, fase 7c, bloc 11): a l'HTML, una figura de 326 o 340 px amb `width="100%"` s'estirava a tota la columna (937 px, ×2,9) i el text hi sortia a uns 31 px; amb l'amplada en px es mostrava a la mida natural, i en un visor estret s'encongia igualment fins a l'amplada de la columna. Al PDF no canviava res: `rsvg-convert` ja en feia servir la mida del `viewBox`. Des del bloc 12 (2026-10-06), la mida a l'HTML la fixa el filtre `figures.lua` per a totes les figures, i l'amplada en px d'aquests generadors ja no hi influeix; es manté perquè és innòcua (fins al 2026-10-09, a `24_specs/svg.md`).
 
 ### D-52
 
@@ -543,7 +547,7 @@ Fins al 2026-10-06 el `.bib` hi deia CC BY-SA 2.0 i només Fritzchens Fritz; la 
 
 **Figures dinàmiques a l'HTML, seqüència estàtica al PDF** · `13_contrib.qmd §Figures dinàmiques` · 2026-10-04 · `2d14b8f`
 
-Decisió de l'usuari 4 de la fase 7c.
+Decisió de l'usuari 4 de la fase 7c. Prototip: `#fig-lru-exemple` (bloc 9 de la fase 7c, 2026-10-04) (fins al 2026-10-09, a `24_specs/svg.md`).
 
 ### D-56
 
@@ -579,6 +583,8 @@ Decisió de l'usuari (2026-10-08, fase 7g, decisió 10): el BA de `variancia` de
 
 Amb el generador, les figures de BA i el mapa passen a la classe `estreta` de `24_specs/svg.md §2` (340 px), amb `w_rect` de 244 px: el marge dret queda de 10 px, com el superior i l'inferior. L'altra opció, mantenir `w_rect` a 230 px, deixava un marge dret de 24 px. La que proposava el `TODO.md`, 254 px, s'havia calculat amb el rectangle a x = 76, que és l'amplada de la columna d'etiquetes; els generadors i `svg.md §5` el posen a x = 86. A les piles, la línia de `sp` deixa el vermell `#cc0000`, que la paleta reserva a les dependències de dades, i pren el color de la zona del cim, com «sp →» als BA (`svg.md §9`). Les piles no porten el codi C a dins, que ja és al bloc C del callout, just a sobre. En revisar les figures, l'usuari en va afegir dues convencions a `svg.md`: les vores horitzontals de cada zona, per dins de la seva àrea, perquè la frontera entre dues zones de color diferent no depengui de l'ordre de dibuix (§7, opció A de Claude Code; la de ratlles de dos colors, de l'usuari, es va descartar perquè la línia discontínua ja vol dir «elidit»); i un byte de línia contínua a cada extrem del tram elidit d'un vector o d'una zona genèrica (§4, proposta de l'usuari). Per decisió de l'usuari, a proposta de Claude Code, l'alineació passa a tenir contorn continu `#adb5bd` (§4): els seus bytes són del BA, i així la línia discontínua només vol dir contingut elidit o espai lliure. També a petició de l'usuari, cada zona de les piles en fila porta el seu contorn (§9). Els rètols «creix» del mapa es desplacen 6 px cap a la punta de la fletxa, perquè la «c» no toqui la vora (§11). Decisions de l'usuari (2026-10-07, fase 7f), a proposta de Claude Code. De pas, a petició de l'usuari, `ba.toml` i `mc.toml` passen a `BA.toml` i `MC.toml`, per coherència amb els seus generadors (`gen_BA.py`, `gen_MC.py`).
 
+**De `svg.md`** (fins al 2026-10-09 hi era com a historial, al costat de les regles): fins a la fase 7f, les figures de BA i el mapa de memòria eren de 326 px, amb `w_rect=230 px`, i les piles, de 310 i 510 px (§2). L'alineació tenia les vores verticals discontínues i cap vora horitzontal, com si fos un buit (§4). Cada zona era un `<rect>` amb el traç centrat a la vora, i la que es dibuixava després tapava la meitat del traç de l'anterior amb el farciment i, si en tenia, l'altra meitat amb el seu traç: el resultat depenia de l'ordre de dibuix (mitja línia vermella sota la blava entre `.text` i `.data`; la vora inferior del heap, a mig gruix sota l'espai lliure) (§7). I amb `desplacaments = true` (`gen_BA.py`), cada zona del BA porta el seu desplaçament des de `sp`, de manera que la figura fa la feina de la taula «Desplaçament des de `sp`», que ja no cal (decisió de l'usuari, 2026-10-07; §9): per això les dues taules de desplaçaments d'A3 van sortir.
+
 ### D-68
 
 **Els originals substituïts per una figura generada es conserven** · `13_contrib.qmd §Convencions SVG` · 2026-10-04 · 2026-10-07
@@ -590,6 +596,30 @@ Decisió de l'usuari del 2026-10-04 (fase 7c), quan A3 va passar a consumir els 
 **Noms de les figures pel fitxer que les consumeix: `A<N>_`, `P<N>_`, `S<N>_`, `L<N>_`** · `13_contrib.qmd §Figures i material gràfic` · 2026-10-08
 
 Decisió de l'usuari (2026-10-08): «noms de fitxers de figures `Tx_*` -> `Ax_*`, `Px_*`, `Sx_*`, `Ly_*`»; l'abast, a proposta de Claude Code. Fins llavors el prefix era el del tema (`T3_`), que no deia on surt la figura, i tres figures de les solucions i del laboratori duien el prefix d'un tema que no les consumeix. Es va fer abans que els equips de revisió comencessin, dins de la finestra de canvis de [D-65](#d-65), perquè toca A1–A9. De 96 arrels consumides, 93 passen a `A<N>_` (les set que també surten al compendi, `11_riscv.qmd`, prenen el prefix del tema: A5 i A9); `T3_ba_A`, `T5_ba_variancia` i `T3_ba_moda` passen a `S3_`, `S5_` i `L3_`. Els 15 originals conservats (D-68) prenen el de la versió generada (`A3_`, `A7_`). Canvien els fitxers de `22_figs_originals/`, `23_figs_externes/` i el `.gv` de `24_specs/`, les seccions dels `.toml` dels generadors, les sortides d'`auto_figs/`, `svg.md`, el `TODO.md` viu i els `.qmd`. Els scripts conserven el nom (`gen_T4_sumador.py`, `gen_T7.py`, `gen_T8.py`), com dos noms que no són figures: `T4_P_tasques.md` (un fitxer històric) i `PDF_originals/01_apunts/T6_Memoria_cache.pdf`. Les entrades d'aquest registre i del `TODO.md` anteriors al canvi citen els noms d'abans (`git log --follow`).
+
+### D-92
+
+**Les figures natives, a la paleta: dos colors afegits, els de fora migrats i les figures de T6 retocades** · `24_specs/svg.md §10`, `§14` i `§15` · 2026-10-06 · `c7180d9`, `77e6bce`
+
+Decisions de l'usuari (2026-10-06, a proposta de Claude Code), en tancar els avisos de l'inventari de la fase 7c (D5–D8). **Dos colors afegits a §10**, perquè ja els feien servir diverses figures amb aquest paper: `#e6f1fb` (zona o contenidor), a `A1_von_neumann` i `A8_mv_flux_traduccio`, i `#dee2e6` (graella i vores secundàries), a `A4_matriu_emmagatzematge`, `A4_matriu_offset_ij` i `A7_gap_processador_memoria`. **Els colors de fora de la paleta, migrats.** Fins llavors, diverses figures natives (T1, T3, T5, T6, T7) en feien servir, que §13 convertia per al fosc; dues, `A3_pila_uninivell` i `A3_pila_multinivell`, en feien servir un (`#e6e9ec`) que no hi era, i al fosc la memòria lliure sortia d'un gris molt clar. Es van passar a la paleta: el negre de les figures natives de T5, a `#343a40`; els blaus de T1 i d'`A7_mc_fallada`, a `#084298` i `#cfe2ff`; els grisos de text de T3, a `#343a40`; els de traç de T1, a `#adb5bd`; i el de la pila, a `#f8f9fa`. §13 va perdre les 32 entrades que ja no feia servir cap fitxer: les 23 de les figures externes de T7 retirades a la fase 7c i les 9 que la migració va deixar lliures. **Les cinc figures de T6, extretes de PDF** (§15): se'ls va treure el `textLength`, els subíndexs es van passar a `<tspan dy>` dins d'un sol `<text>` (a `A6_amdahl`, els 38 `<text>` d'un caràcter o d'un subíndex es van refer en 15), el text es va posar en la notació d'A6 ($V_{CC}$, $V_{in}$, $V_{out}$, $s_x$, $t_{\text{no-millorat}}$, PMOS i NMOS) i els colors, a la paleta (el negre a `#343a40`, i el gris mig de les barres, `#999999` i `#b3b3b3`, a `#adb5bd`). Fins al 2026-10-09, tot això era a `svg.md` com a historial, al costat de les regles. La paleta té pendent una revisió per reduir-ne els colors (`TODO.md`).
+
+### D-93
+
+**Portes lògiques: la forma distintiva ANSI/IEEE 91** · `24_specs/svg.md §16` · 2026-10-03 · `184832c`
+
+Convenció fixada a la fase 5 (2026-10-03, decisió de l'usuari), amb les figures del sumador de T4 (`#fig-semisumador-sumador-complet` i `#fig-sumador-propagacio-rossec`, de `25_scripts/gen_T4_sumador.py`). La forma distintiva és la de les diapositives de l'assignatura i la d'IC; es descarta la rectangular de l'IEC. Fins al 2026-10-09, la data i la decisió eren a `svg.md §16`.
+
+### D-94
+
+**Figures generades: model (a) per a les soltes, model (b) per a les famílies** · `24_specs/svg.md §17` · 2026-10-03 · `4fa6fd3`
+
+Model de generació de la fase 7c (2026-10-03, decisió de l'usuari), escrit a `svg.md` l'endemà, amb els primers generadors del pre-render (`4fa6fd3`). En el model (b), la definició és un TOML i l'SVG no es versiona: una convenció nova s'aplica a tota la família d'un sol cop. En el model (a), l'SVG versionat és el font i l'script el regenera, amb `--comprova` perquè un retoc fet a mà a l'SVG i no a l'script surti com a diferència (`make comprova-figures`). Fins al 2026-10-09, la data i la decisió eren a `svg.md §17`.
+
+### D-95
+
+**Figures de memòria cau: seqüència, traça i estat** · `24_specs/svg.md §17` · 2026-10-04 · `218e195`, `d59ae41`
+
+Decisió de l'usuari (2026-10-04, fase 7c): al PDF, la seqüència per als exemples curts (estat inicial, polítiques d'escriptura, LRU) i la traça per als llargs (conflicte, capacitat); l'estat inicial, en totes dues, com a subfigures, perquè l'alumne faci la transició d'una a l'altra; i a l'HTML, la figura dinàmica ([D-55](#d-55)). La terminologia de les figures («Lectura», «Escriptura», «Encert», «Fallada» i les fallades «obligatòria», «de capacitat» i «de conflicte») és la decisió 11 de la fase 7c. El tercer estil, `estat`, és del 2026-10-06 (`d59ae41`, decisions D1–D4 de l'usuari): les tres taules d'organització d'A7 (`#fig-mc-organitzacio`, `#fig-assoc-conjunts-taula` i `#fig-escriptura-dirty-bit`), que fins llavors eren natives. Fins al 2026-10-09, les dates i les decisions eren a `svg.md §17`.
 
 ## Eines
 
