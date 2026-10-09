@@ -795,7 +795,8 @@ def comparticio():
         if k == 2:
             o.append(f'<rect x="{XM}" y="{y}" width="50" height="{hm}" fill="{P1_F}"/>')
             o.append(f'<rect x="{XM + 50}" y="{y}" width="50" height="{hm}" fill="{P2_F}"/>')
-            o.append(f'<rect x="{XM}" y="{y}" width="100" height="{hm}" fill="none" stroke="{INK}" stroke-width="1.5"/>')
+            # La vora, per dins del marc (svg.md §7), perquè el marc següent no la tapi.
+            o.append(f'<rect x="{XM + 0.75}" y="{y + 0.75}" width="98.5" height="{hm - 1.5}" fill="none" stroke="{INK}" stroke-width="1.5"/>')
             o.append(linies(XM + 50, y + hm / 2, [('VPN 0x00000 (P1)', 9, P1_S), ('VPN 0x00001 (P2)', 9, P2_S)]))
         else:
             o.append(cel(XM, y, 100, hm, NEUTRE, TRAC))
@@ -1031,8 +1032,8 @@ def ex_marcs(o, x, y, est, h=20, canvis=(), w=96):
             d = est['tp'][vpn]['d']
             o.append(cel(x, yy, w, h, P1_F, P1_S, f'VPN {vpn}' + (' · D = 1' if d else ''), P1_S, 10, mono=False))
         o.append(t(x - 6, yy + h / 2 + 4, f'0x{ppn:02X}', 10, GRIS, 'end', mono=True))
-        if ppn in canvis:
-            o.append(f'<rect x="{x}" y="{yy}" width="{w}" height="{h}" fill="none" stroke="{INK}" stroke-width="2"/>')
+    for ppn in canvis:                   # després de tots els marcs, perquè el següent no tapi la vora gruixuda
+        o.append(f'<rect x="{x}" y="{y + ppn * h}" width="{w}" height="{h}" fill="none" stroke="{INK}" stroke-width="2"/>')
     o.append(t(x - 6, y - 8, 'PPN', 10, GRIS, 'end', bold=True))
 
 

@@ -726,8 +726,8 @@ def lectura(spec):
 
 
 def svg(spec, w, h, cos):
-    return '\n'.join([f'<svg width="100%" viewBox="0 0 {round(w)} {round(h)}" xmlns="http://www.w3.org/2000/svg" role="img">',
-                      f'<title>{esc(spec["title"])}</title>', f'<desc>{esc(spec["desc"])}</desc>', *cos, '</svg>']) + '\n'
+    return figlib.vores_compartides('\n'.join([f'<svg width="100%" viewBox="0 0 {round(w)} {round(h)}" xmlns="http://www.w3.org/2000/svg" role="img">',
+                                                f'<title>{esc(spec["title"])}</title>', f'<desc>{esc(spec["desc"])}</desc>', *cos, '</svg>']) + '\n')
 
 
 def main():

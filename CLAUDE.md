@@ -53,11 +53,10 @@ Els PDF originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas 
 
 ### Pla de treball
 
-Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ són allà. **Una sessió nova per fase o per grup de fases**, amb el model de la columna: aquesta taula és la que ho decideix, no el nom de la tasca. Les fases fetes (de la 1 a la 7g, i la 8a; del 2026-10-01 al 2026-10-09), amb la descripció, les decisions i els commits de cadascuna, són al registre de decisions (`§Historial de l'estat del projecte → Fases del pla de treball`); la taula que les llistava amb la sessió i el model de cadascuna, a `git show c29b58d:CLAUDE.md`.
+Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ són allà. **Una sessió nova per fase o per grup de fases**, amb el model de la columna: aquesta taula és la que ho decideix, no el nom de la tasca. Les fases fetes (de la 1 a la 7h, i la 8a; del 2026-10-01 al 2026-10-09), amb la descripció, les decisions i els commits de cadascuna, són al registre de decisions (`§Historial de l'estat del projecte → Fases del pla de treball`); la taula que les llistava amb la sessió i el model de cadascuna, a `git show c29b58d:CLAUDE.md`.
 
 | Fase | Què | Estat | Sessió | Model i effort |
 | :---: | :--- | :--- | :--- | :--- |
-| 7h | **Vores compartides de la resta de figures** (`TODO.md §Tasques globals → SVG`): 54 figures amb dues vores que comparteixen el traç (`svg.md §7`), als generadors i als SVG natius. Acceptada per l'usuari el 2026-10-08, a proposta de Claude Code. No canvia el text que llegeixen els revisors. | Pendent | — | Opus, Medium–High |
 | 7i | **Suggeriments de la 7g** (`TODO.md §Tasques transversals`): els 86 suggeriments sense proposta d'A9, Px, Sx, Ly i `index.qmd` (els tres desajustos de la guia i del glossari, fets el 2026-10-09). Acceptada per l'usuari el 2026-10-08, a proposta de Claude Code. Fora de la revisió externa. | Pendent | — | Opus, High |
 | 8 | **Preparar el material per als equips de revisió d'A1–A8** (l'abast i les branques, a §Estat del projecte). La feina d'aquesta fase és el material, no les branques: una nota per als revisors i l'estat de cada fitxer d'A1–A8. Els equips i el calendari els decideix l'usuari; cada equip crea la seva branca, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). T8 ja és en revisió: `!8`, fusionada el 2026-10-06 fins a §8.7 exclosa. | Pendent | — | — |
 

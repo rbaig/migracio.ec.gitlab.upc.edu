@@ -2,7 +2,7 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**19 entrades vives** (recompte del 2026-10-09, en retirar «Taula de traduccions anglès–castellà–català», retirada per l'usuari; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**19 entrades vives** (recompte del 2026-10-09, en retirar «Vores compartides amb el traç centrat: la resta de figures», executada a la fase 7h, i registrar-ne el pendent dels originals conservats; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
@@ -130,14 +130,13 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ### SVG
 
-- **Vores compartides amb el traç centrat: la resta de figures** (registrada el 2026-10-07, fase 7f; decisió de l'usuari G2). **Fase 7h de `CLAUDE.md §Pla de treball`** (acceptada per l'usuari el 2026-10-08). Els noms de les figures són els de després de D-76 (`A4_…`, 2026-10-08). `24_specs/svg.md §7` diu, des del 2026-10-07, que cada zona amb traç dibuixa les seves vores per dins de la seva àrea, perquè la frontera entre dues zones de color diferent no depengui de l'ordre de dibuix. Ho apliquen `gen_BA.py` i `gen_mapa.py`. A la resta, dos `<rect>` amb traç de color diferent comparteixen una vora (el segon tapa el primer), o un farciment sense traç en tapa mitja. Hi ha 54 figures amb almenys una vora així: 44 de consumides —17 de `gen_regs.py` (`__registre`), 7 de `gen_MC.py` (`__MC`) i 20 originals: `A4_matriu_emmagatzematge`, `A4_matriu_offset_ij`, `A4_matriu_recorreguts_strides`, `A5_grs_esquema`, `A7_cd_descomposicio_bits`, `A7_mc_descomposicio_bits`, `A7_mc_encert`, `A7_mc_fallada`, `A7_texe_diagrama` (`gen_T7.py`), deu de T8 (`gen_T8.py`) i `A9_cicle_interrupcio`— i 10 originals conservats que el llibre no consumeix (els cinc de T3 de la família de memòria i cinc de T7, D-68). Els generadors es corregeixen al generador; els SVG natius, a mà. Toca figures d'A2–A5 i A7–A9 i del compendi. Mesurat el 2026-10-07 sobre `auto_figs/` (cal un render previ), sense els fotogrames `_pas`.
+- **Vores compartides als originals conservats (Roger)** (registrada el 2026-10-09, en tancar la fase 7h de `CLAUDE.md §Pla de treball`; l'entrada de la fase és a l'arxiu, `24_specs/arxiu_todo.md` §Entrades retirades → Executades). Les figures que el llibre consumeix ja segueixen `24_specs/svg.md §7` ([D-99](24_specs/registre_de_decisions.md#d-99)); els originals de `22_figs_originals/conservats/`, no, per decisió de l'usuari (2026-10-09, opció (a)): les esmenes que necessitin les fa l'usuari, perquè els fa servir per a les diapositives ([D-68](24_specs/registre_de_decisions.md#d-68)). En són 12, amb almenys una vora compartida per dos `<rect>` amb traç de color diferent, o mig tapada per un farciment: cinc de T3 (`A3_ba_exemple`, `A3_ba_func`, `A3_ba_general`, `A3_ba_multi` i `A3_mapa_memoria`) i set de T7 (`A7_capacitat_exemple_bucle_primera_passada`, `A7_capacitat_exemple_bucle_segona_passada`, `A7_conflicte_exemple`, `A7_escriptura_estat_inicial`, `A7_escriptura_immediata_amb_assignacio`, `A7_escriptura_immediata_sense_assignacio` i `A7_escriptura_retardada`). Si l'usuari els vol corregir amb la mateixa funció que els natius del llibre, `vores_compartides()` de `25_scripts/figlib.py` ho fa en un pas.
 
   ```bash
-  python3 - <<'PY'   # 54 {'registre': 17, 'original': 30, 'MC': 7}
-  import re, glob, collections
-  r = collections.Counter()
-  for f in sorted(glob.glob('auto_figs/*_light.svg')):
-      if '_pas' in f: continue
+  python3 - <<'PY'   # 12 (2026-10-09)
+  import re, glob
+  n = 0
+  for f in sorted(glob.glob('22_figs_originals/conservats/*.svg')):
       R = [(float(a['x']), float(a['y']), float(a['width']), float(a['height']), a.get('stroke', 'none').lower(), a.get('fill', '').lower())
            for a in (dict(re.findall(r'([\w-]+)="([^"]*)"', m)) for m in re.findall(r'<rect\b([^>]*)>', open(f).read()))
            if 'transform' not in a and all(k in a for k in ('x', 'y', 'width', 'height'))]
@@ -146,11 +145,10 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
           toca = ((abs(y1 + h1 - y2) < .01 or abs(y2 + h2 - y1) < .01) and min(x1 + w1, x2 + w2) - max(x1, x2) > 1) or \
                  ((abs(x1 + w1 - x2) < .01 or abs(x2 + w2 - x1) < .01) and min(y1 + h1, y2 + h2) - max(y1, y2) > 1)
           if not toca: return False
-          if 'none' not in (s1, s2): return s1 != s2                        # dos traços de color diferent
-          return (s1 == 'none') != (s2 == 'none') and (f1 if s1 == 'none' else f2) not in ('none', '')   # un farciment tapa mitja vora
-      if any(xoc(p, q) for i, p in enumerate(R) for q in R[i + 1:]):
-          r[f.split('__')[-1].replace('_light.svg', '')] += 1
-  print(sum(r.values()), dict(r))
+          if 'none' not in (s1, s2): return s1 != s2
+          return (s1 == 'none') != (s2 == 'none') and (f1 if s1 == 'none' else f2) not in ('none', '')
+      n += any(xoc(p, q) for i, p in enumerate(R) for q in R[i + 1:])
+  print(n)
   PY
   ```
 

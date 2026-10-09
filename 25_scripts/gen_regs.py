@@ -37,6 +37,10 @@ import tomllib
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True       # cap __pycache__ dins de 25_scripts/
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from figlib import vores_compartides  # noqa: E402
+
 # ═══════════════════════════════════════════════════════════
 # Paleta i constants de dibuix
 # ═══════════════════════════════════════════════════════════
@@ -321,7 +325,7 @@ def make_svg(fname: str, rows_data: list, title_ca: str, desc_ca: str,
         row_y = idx * (ROW_H + BIT_NUM_H)
         lines.append(_generate_row(fields, row_y, total_bits, bit_msb, horitzontals))
     lines.append('</svg>')
-    return '\n'.join(lines)
+    return vores_compartides('\n'.join(lines))
 
 
 # ═══════════════════════════════════════════════════════════
@@ -386,7 +390,7 @@ def make_svg_instruccio(fname: str, fields_raw: list, title_ca: str, desc_ca: st
             )
 
     lines.append('</svg>')
-    return '\n'.join(lines)
+    return vores_compartides('\n'.join(lines))
 
 
 # ═══════════════════════════════════════════════════════════
@@ -506,7 +510,7 @@ def make_svg_compendi(registers: dict, formats: list, title_ca: str, desc_ca: st
         f'viewBox="0 0 {INS_W_TOTAL} {H_real}" role="img">'
     )
     lines.append('</svg>')
-    return '\n'.join(lines)
+    return vores_compartides('\n'.join(lines))
 
 
 # ═══════════════════════════════════════════════════════════

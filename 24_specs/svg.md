@@ -217,7 +217,13 @@ S'inclou la línia a `y = marge_sup` (inici) i a `y = H - marge_inf` (final).
 
 Cada zona amb traç dibuixa les seves vores horitzontals **per dins de la seva àrea**, desplaçades mig gruix (0,5 px). Entre dues zones de color diferent es veuen, doncs, dues línies d'1 px, una de cada color; entre dues del mateix color, una de sola, compartida, a la frontera; i al costat d'una zona sense traç (l'espai lliure), la de la zona amb traç, sencera. L'alineació té traç, `#adb5bd` (§4). Ho fa `vores()`, de `25_scripts/columna_memoria.py`, un cop dibuixades totes les zones.
 
-L'apliquen `gen_BA.py` i `gen_mapa.py`; a la resta de figures, encara no (`TODO.md`, «Vores compartides amb el traç centrat…»). El perquè i l'alternativa descartada, a [D-67](registre_de_decisions.md#d-67).
+L'apliquen `gen_BA.py` i `gen_mapa.py`. El perquè i l'alternativa descartada, a [D-67](registre_de_decisions.md#d-67).
+
+### Vores compartides a la resta de figures
+
+La mateixa regla val per a qualsevol figura on dues zones (dos `<rect>` plens) es toquen, en horitzontal o en vertical: camps d'un registre, cel·les d'una taula o d'una graella, trams d'una línia de temps. Si les dues zones tenen traç del mateix color i gruix, la vora és una de sola, centrada a la frontera. Si no, cada zona amb traç dibuixa les seves vores per dins de la seva àrea, desplaçades mig gruix, també les de fora: entre dues zones de color diferent es veuen dues línies, una de cada color, i al costat d'una zona sense traç, la de la zona amb traç, sencera. Una zona amb les cantonades arrodonides (`rx`) dibuixa sempre totes les vores per dins, també al costat d'una del mateix color. Dues zones no se solapen: la frontera és on acaba l'una i comença l'altra.
+
+Ho fa `vores_compartides()`, de `25_scripts/figlib.py`, sobre l'SVG acabat: redibuixa els grups de zones que es toquen on hi ha almenys una vora en conflicte (el farciment, sense traç, i les vores, a part), i deixa com són els grups sense conflicte i les zones soltes. La fan servir `gen_regs.py`, `gen_MC.py`, `gen_T7.py` i `gen_T8.py`; les figures natives (`22_figs_originals/`) ja la porten aplicada, i una de nova l'ha de seguir. Un ressalt sense farciment (una vora gruixuda sobre una fila o una cel·la) no és una zona: es dibuixa després de totes les zones que toca, perquè cap farciment no en tapi la meitat. Els originals conservats (`conservats/`, [D-68](registre_de_decisions.md#d-68)) no la porten ([D-99](registre_de_decisions.md#d-99)).
 
 ---
 
