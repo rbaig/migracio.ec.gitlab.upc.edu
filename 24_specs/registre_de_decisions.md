@@ -42,6 +42,12 @@ Decisió de l'usuari (2026-10-09, fase 8a, decisió 2), a proposta de Claude Cod
 
 Decisió de l'usuari (2026-10-09), en fixar les convencions de D-83 i D-84: «el no seguiment d'aquests convenis no penalitza l'avaluació de l'assignatura a no ser que estigui explícitament indicat el contrari». Es diu una sola vegada, al primer callout `#imp-` dels apunts (`#imp-convencions-ec`, A1; la presentació, `index.qmd`, en té un abans, la taula de referències tècniques), i hi remet el criteri de format del codi d'A2 (`#imp-codi-format-criteris`), que ja deia que el format no s'avalua per si mateix.
 
+### D-97
+
+**«Laboratori 1», o L1: no «Sessió 1» ni «S1»** · `13_contrib.qmd §Ús d'aquesta guia` · 2026-10-09 · `d325f26`
+
+Decisió de l'usuari (2026-10-09), literal: «Laboratori: `Laboratori Y` i `LY`. Per tant, substitueix totes les instàncies `Sessió Y` o `SY`. Justificació: simplificació de la nomenclatura ("Laboratoris" -> "Laboratori 1", "L1", etc.) i resolució ambigüitat amb "Solució/ons"». «S1» volia dir alhora la primera sessió del laboratori al menú i les solucions del tema 1. L'usuari va canviar el menú i els títols (`_quarto.yml`, `_variables.yml`, `d325f26`), amb els títols curts de la resta de parts: «A1», «P1» i «S1», en lloc de «T1» a totes tres. La resta és la proposta de Claude Code que va acceptar: els textos numerats («Sessió 1» a la capçalera del calendari, l'exemple de la guia, el `README.md`, la columna «Tema» del glossari de termes, que deia «Lab. 1», i l'agent del calendari). Es queden com eren: «sessió» com a esdeveniment («abans de l'inici de la sessió»); els identificadors (`sessio1`, `#sec-sessio-*`), que no es veuen; els títols dels quaderns antics citats a `14_LICENSE.qmd` i al `.bib`; i els noms dels lliuraments (`s3_4_1.s`). De pas es va veure que `25_scripts/titols_pdf.lua` només reconeixia els títols curts de la forma «T1 …» i «S1 …»: des de `d325f26`, els marcadors del PDF dels apunts, dels problemes i del laboratori tornaven a dur el títol llarg, i només els de les solucions duien el curt. El filtre reconeix ara «A1», «P1», «S1» i «L1».
+
 ## Decisions per tema
 
 ### D-4

@@ -36,7 +36,7 @@ Directori `04_laboratori/`:
 
 | Fitxer | Contingut |
 | :--- | :--- |
-| `L1.qmd`–`L6.qmd` | Laboratori, sessió y (y = 1–6) |
+| `L1.qmd`–`L6.qmd` | Laboratori y, Ly (y = 1–6) |
 
 ### Fitxers transversals
 

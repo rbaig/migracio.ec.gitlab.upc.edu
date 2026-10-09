@@ -52,7 +52,7 @@ def capitols():
 
 def tema(fitxer):
     nom = Path(fitxer).stem
-    return f"T{nom[1]}" if nom[0] in "APS" else f"Lab. {nom[1]}"
+    return f"T{nom[1]}" if nom[0] in "APS" else f"L{nom[1]}"
 
 
 def presentacions():

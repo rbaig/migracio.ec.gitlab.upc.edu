@@ -2,10 +2,11 @@
 titols_pdf.lua — Marcadors del PDF amb els títols curts del menú de l'HTML.
 
 Al PDF, els capítols de teoria, problemes, solucions i laboratori es diuen «Tema 1:
-Introducció» o «Sessió 1: Introducció al simulador RARS», i el llistat desplegable de
-marcadors en mostrava el títol sencer. El menú de l'HTML els anomena «T1 Introducció» i
-«S1 RARS» (`chapters:` de `_quarto.yml`), i aquests són els que ha de mostrar el llistat
-(petició de l'usuari, 2026-10-04).
+Introducció» o «Laboratori 1: Introducció al simulador RARS», i el llistat desplegable de
+marcadors en mostrava el títol sencer. El menú de l'HTML els anomena «A1 Introducció»,
+«P1 Introducció», «S1 Introducció» i «L1 RARS» (`chapters:` de `_quarto.yml`), i aquests són
+els que ha de mostrar el llistat (petició de l'usuari, 2026-10-04; fins al 2026-10-09, el menú
+deia «T1 …» als apunts, als problemes i a les solucions, i «S1 …» al laboratori).
 
 El filtre embolcalla el títol de cada capítol amb `\texorpdfstring{títol}{títol curt}`:
 la pàgina, l'índex i la capçalera de pàgina en fan servir el primer argument, com fins
@@ -13,7 +14,7 @@ ara, i hyperref posa el segon als marcadors. Els títols curts són els `text:` 
 `_quarto.yml`, de manera que no hi ha cap llista paral·lela que mantenir: per a cada
 `file:` del llibre, el filtre en llegeix l'identificador de la capçalera de nivell 1
 (`# {{< var tema1 >}} {#sec-tema-introduccio}`) i hi associa el `text:` que el precedeix.
-Només s'hi apliquen els títols curts de la forma «T1 …» i «S1 …»; la resta de capítols
+Només s'hi apliquen els títols curts de la forma «A1 …», «P1 …», «S1 …» i «L1 …»; la resta de capítols
 (presentació, compendi, glossari…) no canvien.
 
 Només actua al PDF. A `_quarto.yml` s'executa `at: post-quarto`, perquè el títol del capítol
@@ -49,7 +50,7 @@ do
     else
       local fitxer = linia:match('^%s*file:%s*(%S+)%s*$')
       if fitxer then
-        if text and text:match('^[TS]%d ') then
+        if text and text:match('^[APSL]%d ') then
           local font = llegeix(fitxer)
           local id = font and (('\n' .. font):match('\n# [^\n]-{#([%w%-]+)'))
           if id then curts[id] = text end
