@@ -105,6 +105,8 @@ Directori `04_laboratori/`:
 └── _variables.yml
 ```
 
+**Temes.** Un tema `Tx` (T1–T9) és el conjunt dels seus apunts, problemes i solucions, `Ax.qmd`, `Px.qmd` i `Sx.qmd`; és el sentit de «T3» a la guia, al `TODO.md` i al registre de decisions (`13_contrib.qmd §T2 i T3`, per exemple). El laboratori (`Ly.qmd`) es numera per sessions, no per temes.
+
 ## Renderitzar el projecte
 
 Directori de treball:
