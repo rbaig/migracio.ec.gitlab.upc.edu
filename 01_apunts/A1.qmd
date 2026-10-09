@@ -82,13 +82,13 @@ Un cop obtingut el binari, aquest s'ha d'executar. El camí que segueixen les da
 
 1. El **sistema operatiu** carrega el binari a la memòria.
 2. El binari s'executa i, quan necessita interactuar amb l'exterior, fa una crida al sistema (`ecall`, *environment call*; @sec-ei-ecall), seguint les convencions de l'**ABI**.
-3. L'**SO** rep la petició i utilitza la **ISA** (instruccions privilegiades) per gestionar el maquinari.
+3. L'**SO** rep la petició i utilitza l'**ISA** (instruccions privilegiades) per gestionar el maquinari.
 
 #### Entorn autònom (*bare-metal*) {#sec-entorn-autonom-bare-metal}
 És el **model** dels sistemes encastats (***embedded** systems*) simples i el d'**EC**:
 
 1. El binari es carrega directament a la memòria del processador (o via simulador).
-2. El programa té el control total i executa les instruccions de la **ISA** sense intermediaris.
+2. El programa té el control total i executa les instruccions de l'**ISA** sense intermediaris.
 3. Aquí l'**ABI** no serveix per parlar amb un SO, sinó per garantir que el codi és compatible amb les biblioteques i per interactuar amb el **simulador** (per exemple, mitjançant `ecall` per imprimir per consola).
 
 ### El rol de les interfícies {#sec-rol-de-les-interficies}
@@ -129,13 +129,13 @@ En el desenvolupament de sistemes de baix nivell i, especialment, en els encasta
     - **Funció**: Executar l'editor de text i el **compilador**. El compilador és un programa «nadiu» del host que s'encarrega de «fabricar» el binari.
 2. **Màquina destí** (***target***):
     - **Què és**: El sistema on realment s'executarà el programa final.
-    - **Arquitectura**: A **EC**, la **ISA** de destí és **RISC-V**.
+    - **Arquitectura**: A **EC**, l'**ISA** de destí és **RISC-V**.
     - **Funció**: Executar el binari generat pel host. En aquest cas, el target no és una placa física (inicialment), sinó un **simulador** (com el RARS) que reprodueix el comportament d'una CPU RISC-V sobre el host.
 
 #### Per què és important aquesta separació? {#sec-per-que-es-important-aquesta-separacio}
 
 - **Incompatibilitat de binaris**: Un binari generat per a RISC-V és una seqüència de bits inintel·ligible per a un processador Intel/AMD. Si s'intenta executar-lo directament al terminal de Linux/Windows, el sistema operatiu advertirà que el format de l'executable és invàlid.
-- **El paper del simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador s'executa en el host (x86-64 o ARM), però l'interior de la bombolla entén la **ISA** i l'**ABI** de RISC-V.
+- **El paper del simulador**: El simulador actua com una «bombolla» de l'arquitectura de destí. El simulador s'executa en el host (x86-64 o ARM), però l'interior de la bombolla entén l'**ISA** i l'**ABI** de RISC-V.
 - **Portabilitat del codi font**: El codi en C és l'únic element portable entre tots dos mons: es pot compilar el mateix fitxer `.c` per al host (per provar la lògica) o fer **cross-compilation** per al target.
 
 #### Compilació creuada (*cross-compilation*) {#sec-compilacio-creuada}
@@ -153,13 +153,13 @@ Un cop obtingut al host, el binari es carrega al target mitjançant un cable i u
 
 La depuració s'ha de fer en l'entorn del target, el qual pot ser:
 
-- **Amb simulador**: Un programa (el simulador) en un ordinador personal recrea per programari el comportament dels registres i la memòria de la CPU de destí i fa visible els efectes sobre els components del maquinari simulat a través d'interfícies gràfiques. És el cas del **RARS**, el **simulador d'EC**.
+- **Amb simulador**: Un programa (el simulador) en un ordinador personal recrea per programari el comportament dels registres i la memòria de la CPU de destí i fa visibles els efectes sobre els components del maquinari simulat a través d'interfícies gràfiques. És el cas del **RARS**, el **simulador d'EC**.
 
 - **Amb target real**: El binari s'envia des del host al xip real (el target) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LED, sensors, motors).
 
 ### El llenguatge C: el pont de l'abstracció {#sec-el-llenguatge-c}
 
-A **EC**, el llenguatge **C** és l'eina de referència perquè ocupa una posició estratègica única: és prou «alt» per ser llegible, però prou «baix» per reflectir fidelment el que passa a la **ISA**.
+A **EC**, el llenguatge **C** és l'eina de referència perquè ocupa una posició estratègica única: és prou «alt» per ser llegible, però prou «baix» per reflectir fidelment el que passa a l'**ISA**.
 
 #### Origen i dualitat {#sec-origen-i-dualitat}
 
@@ -189,7 +189,7 @@ El procés de traducció no és un pas únic, sinó una cadena de transformacion
 
 #### El llenguatge d'assemblador: la visió de l'ISA {#sec-visio-isa}
 
-**La compilació és rellevant a EC**, ja que l'assemblador és la representació textual de la **ISA**.
+**La compilació és rellevant a EC**, ja que l'assemblador és la representació textual de l'**ISA**.
 
 ::: {#tip-traduccio-c-asm .callout-tip}
 ## Traducció de **C** a **assemblador RISC-V**
@@ -206,7 +206,7 @@ suma:
         ret                 # Pseudoinstrucció: retorna el control al cridant
 ```
 
-En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir que els paràmetres `a` i `b` es passen a través dels registres `a0` i `a1` (registres d'argument). La instrucció `add` és una operació definida per la **ISA** de RISC-V que realitza la suma i en deixa el resultat a `a0` (registre de retorn). Finalment, la instrucció `ret` és una pseudoinstrucció (@sec-pseudoinstruccions) que s'expandeix a `jalr x0, 0(ra)` (`jalr`, *jump and link register*): un salt indirecte (@sec-salts-incondicionals-indirectes) a l'adreça de retorn continguda al registre `ra`.
+En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir que els paràmetres `a` i `b` es passen a través dels registres `a0` i `a1` (registres d'argument). La instrucció `add` és una operació definida per l'**ISA** de RISC-V que realitza la suma i en deixa el resultat a `a0` (registre de retorn). Finalment, la instrucció `ret` és una pseudoinstrucció (@sec-pseudoinstruccions) que s'expandeix a `jalr x0, 0(ra)` (`jalr`, *jump and link register*): un salt indirecte (@sec-salts-incondicionals-indirectes) a l'adreça de retorn continguda al registre `ra`.
 
 :::
 
@@ -215,7 +215,7 @@ En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir q
 
 Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un ordinador personal), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (RAM i, sovint, Flash), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (com GPIO, UART o ADC).
 
-El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en la **ISA RISC-V**. El programador tria l'arquitectura en compilar el programa, i la ROM d'arrencada activa els nuclis que corresponen a la imatge que hi troba.
+El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en l'**ISA RISC-V**. El programador tria l'arquitectura en compilar el programa, i la ROM d'arrencada activa els nuclis que corresponen a la imatge que hi troba.
 
 La **[Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)** és una placa de desenvolupament basada en el xip **RP2350**. Com a plataforma d'experimentació exposa els pins del microcontrolador per connectar-hi sensors, actuadors i depuradors.
 
@@ -243,7 +243,7 @@ Configuració física i fases d'ús del conjunt Host + Sonda (*Pi Debug Probe*) 
     - Actua de **pont**. Tradueix els missatges del host a senyals elèctrics de baix nivell que el target pot entendre i viceversa.
 
 - **Target** (**Pi Pico 2**):
-    - És on resideix la **ISA de RISC-V** que **executa** el binari.
+    - És on resideix l'**ISA de RISC-V** que **executa** el binari.
 
 **Fase 1: Creació**
 
@@ -751,7 +751,7 @@ El minuend és negatiu i el subtrahend positiu (signes contraris), però el resu
 
 ### Multiplicació en Ca2 {#sec-multiplicacio-ca2}
 
-Per obtenir el producte complet de $2n$ bits, la multiplicació en Ca2 **no** pot aplicar directament l'algorisme dels naturals, perquè la codificació del signe interfereix amb els bits de més pes del producte (els $n$ bits de menys pes, en canvi, coincideixen: @wrn-mul-modul-2n). El mètode pràctic és:
+Per obtenir el producte complet de $2n$ bits en Ca2, **no** es pot aplicar directament l'algorisme dels naturals, perquè la codificació del signe interfereix amb els bits de més pes del producte (els $n$ bits de menys pes, en canvi, coincideixen: @wrn-mul-modul-2n). El mètode pràctic és:
 
 1. Determinar el **signe del resultat**: el producte de dos nombres del mateix signe és positiu; de signes contraris, negatiu.
 2. Obtenir les **magnituds** (valor absolut de cada operand).
@@ -777,7 +777,7 @@ $$\text{Ca2}(-30): \overline{0001\,1110} + 1 = 1110\,0010$$
 :::
 
 ::: {#imp-multiplicacio-isa .callout-important}
-A **EC**, les instruccions de multiplicació i divisió com a operacions de la **ISA** (extensió **M**: `mul`, `mulh`, `div`, `divu`, etc.) s'estudien al [Tema 4](#sec-tema-enters-matrius) (@sec-extensio-m).
+A **EC**, les instruccions de multiplicació i divisió com a operacions de l'**ISA** (extensió **M**: `mul`, `mulh`, `div`, `divu`, etc.) s'estudien al [Tema 4](#sec-tema-enters-matrius) (@sec-extensio-m).
 :::
 
 ### Divisió en Ca2 {#sec-divisio-ca2}
@@ -792,7 +792,7 @@ El mètode pràctic és:
 4. Aplicar el **signe del quocient** al quocient i codificar-lo en Ca2.
 5. El **residu** pren el signe del **dividend** i es codifica en Ca2.
 
-L'única divisió que desborda és $-2^{n-1} \div (-1)$, pel mateix motiu que @wrn-inversio-limit. Els casos especials de RISC-V, inclosa la divisió per zero, són a @sec-casos-especials-divisio.
+L'única divisió que produeix sobreeiximent és $-2^{n-1} \div (-1)$, pel mateix motiu que @wrn-inversio-limit. Els casos especials de RISC-V, inclosa la divisió per zero, són a @sec-casos-especials-divisio.
 
 ::: {#tip-divisio-ca2 .callout-tip}
 ## Divisió en Ca2

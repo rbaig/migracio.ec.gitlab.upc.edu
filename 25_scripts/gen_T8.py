@@ -631,7 +631,7 @@ def tlb_estructura():
     o.append(t((xa + xb) / 2, 54, 'còpia', 10, GRIS, italic=True))
     return svg(680, Y + len(files) * 22 + 20, 'La taula de pàgines i el TLB',
                "A l'esquerra, la taula de pàgines, a la memòria principal, amb columnes V, D, E i PPN i el VPN a fora "
-               "com a índex, de 0x00000 a 0x00005 i 0xFFFFF; les entrades vàlides, en blau. A la dreta, el TLB, a la "
+               "com a índex, de 0x00000 a 0x00005 i 0xFFFFF; les entrades vàlides, en blau. A la dreta, el TLB, a l’"
                "MMU, amb quatre entrades i columnes V, VPN, D, E i PPN: tres entrades vàlides, en groc, amb els VPN "
                "0x00003, 0x00000 i 0x00002, i una quarta entrada lliure, amb V = 0, en gris. Tres fletxes "
                "discontínues porten cada PTE vàlida de la taula a l'entrada del TLB que n'és còpia. Són les dades "

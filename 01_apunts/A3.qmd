@@ -117,7 +117,7 @@ No existeix la instrucció ~~`sla`~~ ni la ~~`slai`~~.
 
 ### Traducció dels operadors C `<<` i `>>` {#sec-traduccio-desplacament-c}
 
-L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix segons el tipus de l'operand esquerre: amb `srl`/`srli` si és un natural (de tipus `unsigned`), o amb `sra`/`srai` si és un enter (amb un enter negatiu, el C deixa el resultat a la implementació; els compiladors habituals, com `gcc`, fan el desplaçament aritmètic).
+L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix segons el tipus de l'operand esquerre: amb `srl`/`srli` si és un natural (de tipus `unsigned`), o amb `sra`/`srai` si és un enter (amb un enter negatiu, el resultat depèn de la implementació de C; els compiladors habituals, com `gcc`, fan el desplaçament aritmètic).
 
 ::: {#tip-traduccio-desplacament-c .callout-tip}
 ## Traducció de `<<` i `>>`
@@ -582,7 +582,7 @@ A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'us
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
 Ara que ja s'han presentat totes les instruccions de processament i control de flux de la base **RV32I** (@nte-riscv-rv32i), tret de `ecall` (@sec-ei-ecall) —les instruccions de sistema, com `ecall` i `ebreak` (presentada a Tema 9), queden fora d'aquesta classificació—, l'exercici de classificar-les segons el **mode d'adreçament**
-(@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de l'ISA, sinó també, a nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
+(@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de l'ISA, sinó també, a un nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
 
 La classificació proposada inclou quatre decisions que cal justificar:
 
@@ -1085,7 +1085,7 @@ on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `a
 - `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
 - `addi x5, x5, 0` → `x5 = 0x10010000` ✓
 
-La raó d'usar `auipc` en lloc de `lui` és que, amb adreces relatives al PC, el codi enllaçat és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada no canvia on sigui que es carregui el programa en memòria. L'enllaçador l'ha de calcular igualment, com l'adreça absoluta de `lui` (vegeu @sec-compilacio).
+La raó d'usar `auipc` en lloc de `lui` és que, amb adreces relatives al PC, el codi enllaçat és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada no canvia on sigui que es carregui el programa en memòria. L'enllaçador l'ha de calcular igualment, com ho fa amb l'adreça absoluta de `lui` (vegeu @sec-compilacio).
 :::
 
 ## Subrutines {#sec-subrutines}
@@ -1899,9 +1899,9 @@ No és una peculiaritat de l'assignatura, sinó la diferència entre un entorn *
 
 ### Compilació {#sec-compilacio-proces}
 
-El **compilador** pren com a entrada el codi font en C i el tradueix a llenguatge assemblador (fitxer `.s`). Durant aquest procés aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable, i genera les instruccions de la **ISA** de destí.
+El **compilador** pren com a entrada el codi font en C i el tradueix a llenguatge assemblador (fitxer `.s`). Durant aquest procés aplica les regles de l'**ABI** per decidir quins registres usar per a cada variable, i genera les instruccions de l'**ISA** de destí.
 
-El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen les que no depenen d'on es col·locarà el mòdul (els salts relatius al PC dins del mateix mòdul), i la resta (les adreces absolutes i les que referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combini tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els que s'enllaçarà.
+El compilador no assigna adreces absolutes ni a les dades ni al codi, sinó que fa servir **etiquetes**. Aquestes etiquetes són resoltes a adreces absolutes més tard. Durant l'assemblatge es resolen les que no depenen d'on es col·locarà el mòdul (els salts relatius al PC dins del mateix mòdul), i la resta (les adreces absolutes i les que referencien dades o codi d'altres mòduls) es deixen amb adreces provisionals que l'enllaçador corregirà quan combini tots els mòduls. D'aquesta manera, el compilador pot generar codi per a cada mòdul de manera independent, sense necessitat de conèixer els detalls dels altres mòduls amb els quals s'enllaçarà.
 
 ### Assemblatge {#sec-assemblatge}
 

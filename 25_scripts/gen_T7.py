@@ -163,8 +163,8 @@ def multicore():
 # ── Tipus de fallades segons la mida i l'associativitat ──────
 
 def tipus_fallades():
-    """Gràfica qualitativa (figura 6.27 del PDF original): taxa de fallades en funció de la mida de la
-    MC per a quatre graus d'associativitat, amb les àrees de cada tipus de fallada."""
+    """Gràfica qualitativa (figura 6.27 del PDF original): taxa de fallades en funció de la mida de
+    l’MC per a quatre graus d'associativitat, amb les àrees de cada tipus de fallada."""
     o = []
     X0, X1, Y0, Y1 = 150, 600, 40, 300            # eix x de X0 a X1; eix y de Y1 (0) a Y0 (màxim)
     COLD = 0.06
