@@ -47,8 +47,8 @@ fi
 # 3. Canvis que depenen del PDF.
 fitxers=$( { git diff HEAD --name-only; git ls-files --others --exclude-standard; } | sort -u)
 pdf=""
-# El registre de decisions és a 24_specs/, però no el llegeix cap pas del render.
-rutes=$(grep -E '^(preamble\.tex|_quarto\.yml|22_figs_originals/|23_figs_externes/|24_specs/)' <<<"$fitxers" | grep -v '^24_specs/registre_de_decisions\.md$')
+# El registre de decisions i l'arxiu del TODO.md són a 24_specs/, però no els llegeix cap pas del render.
+rutes=$(grep -E '^(preamble\.tex|_quarto\.yml|22_figs_originals/|23_figs_externes/|24_specs/)' <<<"$fitxers" | grep -v -E '^24_specs/(registre_de_decisions|arxiu_todo)\.md$')
 [ -n "$rutes" ] && pdf+="- fitxers: $(tr '\n' ' ' <<<"$rutes")"$'\n'
 qmd=$(grep -E '\.qmd$' <<<"$fitxers")
 if [ -n "$qmd" ]; then

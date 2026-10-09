@@ -166,15 +166,19 @@ decisions, amb la data entre parèntesis.
 
 **12. Una afirmació d'absència ha d'excloure els fitxers que documenten el
 cas.** Quan una entrada diu «X ja no és al corpus», la comprovació ha
-d'excloure els fitxers que el documenten: el `TODO.md`, perquè hi registra la
-tasca; `13_contrib.qmd` i `24_specs/registre_de_decisions.md`, perquè hi
+d'excloure els fitxers que el documenten: el `TODO.md` i el seu arxiu,
+`24_specs/arxiu_todo.md`, perquè hi registren la tasca; `13_contrib.qmd` i `24_specs/registre_de_decisions.md`, perquè hi
 escriuen la regla i el seu perquè; i `.claude/`, perquè les skills hi escriuen
 la lliçó. Totes aquestes còpies són **cites, no ocurrències**. Si no s'exclouen, documentar una correcció la fa aparèixer com a
 no feta:
 
 ```bash
-git grep -c "00c000ef" -- . ':!TODO.md' ':!13_contrib.qmd' ':!24_specs/registre_de_decisions.md' ':!.claude/'
+git grep -c "00c000ef" -- . ':!TODO.md' ':!24_specs/arxiu_todo.md' ':!13_contrib.qmd' ':!24_specs/registre_de_decisions.md' ':!.claude/'
 ```
+
+Des del 2026-10-09 les entrades retirades i les dades preservades del `TODO.md` són a
+`24_specs/arxiu_todo.md` (D-91 del registre de decisions), i l'exclusió
+hi va amb elles (regla 1).
 
 Fins al 2026-10-07 aquestes regles eren a `13_contrib.qmd`, i l'exclusió era
 `':!TODO.md' ':!13_contrib.qmd'`. En partir la guia (fase 7e de

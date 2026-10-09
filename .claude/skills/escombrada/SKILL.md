@@ -20,7 +20,7 @@ Les regles són a `regles.md`, en aquest mateix directori, i cadascuna porta el 
 - el repartiment per fitxer, amb la comprovació que suma el total;
 - l'ordre `git grep … | wc -l` que ho reprodueix.
 
-Mecanitza les regles **1, 4, 10, 11, 12 i 12 bis**. Per defecte no distingeix majúscules, cobreix tots els tipus de fitxer versionats i exclou els fitxers que documenten els casos (regla 12): `TODO.md`, `13_contrib.qmd`, `24_specs/registre_de_decisions.md` i `.claude/`. Les opcions ho canvien i la capçalera de la sortida ho diu.
+Mecanitza les regles **1, 4, 10, 11, 12 i 12 bis**. Per defecte no distingeix majúscules, cobreix tots els tipus de fitxer versionats i exclou els fitxers que documenten els casos (regla 12): `TODO.md` i el seu arxiu (`24_specs/arxiu_todo.md`), `13_contrib.qmd`, `24_specs/registre_de_decisions.md` i `.claude/`. Les opcions ho canvien i la capçalera de la sortida ho diu.
 
 ## En publicar una xifra
 
