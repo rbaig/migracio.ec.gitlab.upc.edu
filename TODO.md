@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**26 entrades vives** (recompte del 2026-10-09, en esporgar el fitxer; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**25 entrades vives** (recompte del 2026-10-09, en retirar «Esporgar els fitxers operatius», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 8 · `§Tasques per tema` 5 · `§Tasques globals` 9 (suma 26, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 8 · `§Tasques per tema` 5 · `§Tasques globals` 8 (suma 25, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -201,15 +201,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### Eines
 
 - **Valorar si les taules de `21_riscv/` haurien de passar a `.json` o `.toml`** (petició de l'usuari, 2026-10-02, per al futur). Avui són 44 fragments `.qmd` (`git ls-files 21_riscv | grep -c "\.qmd$"`, a `4658e90`) amb files de taula *pipe*, inclosos amb `{{< include >}}` als callouts dels temes i a `11_riscv.qmd`; les taules que combinen fragments es fusionen amb `25_scripts/gen_taules_auto.py` i `24_specs/taules_fusio.toml`, que s'han d'executar a mà abans del render. Una font estructurada permetria generar les taules (i les fusions) per script i validar-ne el contingut; el cost és un generador nou i una dependència més del render. Cal valorar-ho abans de decidir res.
-
-- **Esporgar els fitxers operatius** (petició de l'usuari, 2026-10-09: «En algun moment, aviat, caldrà fer pruning dels fitxers operatius, tant de Claude com d'humans (`TODO.md`, `13_contrib.qmd`, etc.)»). Mides del 2026-10-09 (`wc -c`, en kB de 1000 bytes): `TODO.md` 203 kB (la part viva, 75 kB, de la qual la línia del recompte sola fa 14 kB; §Entrades retirades i les §Dades preservades, 128 kB), `13_contrib.qmd` 113 kB, el registre de decisions 92 kB, `24_specs/figures.md` 41 kB, `24_specs/svg.md` 38 kB, `CLAUDE.md` 15 kB, i les skills i els subagents, 21 kB. Una sessió nova llegeix `CLAUDE.md`, `13_contrib.qmd` i `TODO.md` sencers abans de començar: més de 330 kB. **Proposta de Claude Code**, per ordre de guany:
-
-  - `TODO.md`: (i) el recompte, només l'actual, amb l'ordre que el mesura (l'historial de recomptes és a `git log -p TODO.md`); (ii) §Entrades retirades i les §Dades preservades, fora del fitxer: a un arxiu (`24_specs/todo_retirades.md`) o substituïdes per un punter al darrer commit que les conté; les invariants que encara valen (la de `_start`, per exemple) passen a la guia o al registre. El fitxer que ha de quedar buit deixaria de dur-ne 128 kB de passat.
-  - `CLAUDE.md`: el pla de treball, només amb les fases pendents (les fetes ja són al registre, §Historial de l'estat del projecte → Fases del pla de treball), i l'estat del projecte, sense historial.
-  - `13_contrib.qmd`: és un capítol del llibre i ja no porta historial (una sola data); la poda és de regles dites a dos llocs i de procediments que només fan servir les sessions de Claude Code, que van a les skills.
-  - `24_specs/svg.md` (18 línies amb data) i `24_specs/figures.md`: l'historial, al registre.
-
-  El registre de decisions no s'esporga: és l'arxiu. Restricció: D-63 (abans d'esborrar una secció, se'n registren els pendents i les declaracions de l'usuari). Sessió: Opus, effort alt (cada tros demana decidir si és regla, historial o pendent); un commit per fitxer.
 
 ### `index.qmd`
 
