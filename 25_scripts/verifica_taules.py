@@ -40,7 +40,7 @@ risc és que la taula sencera no hi càpiga.
     python3 25_scripts/verifica_taules.py --aplica   # i l'escriu al font (al peu de la taula)
 
 No mira els fitxers que no arriben al PDF: 13_contrib.qmd (HTML) ni els blocs
-`.content-visible when-format="html"`. Els fitxers comentats a _quarto.yml, sí:
+`.content-visible when-format="html"` o `unless-format="pdf"` (el calendari del laboratori). Els fitxers comentats a _quarto.yml, sí:
 són del projecte i arribaran al PDF quan es descomentin.
 """
 
@@ -363,7 +363,7 @@ def taules(fitxer):
             # un peu seguit d'una línia no buida: Pandoc les ajunta, i els atributs surten literals
             peu_enganxat = (k_peu is not None and k_peu + 1 < len(lin)
                             and lin[k_peu + 1][1].strip() != "" and not DIV_TANCA.match(lin[k_peu + 1][1]))
-            html = any('when-format="html"' in a for a, _ in pila)
+            html = any('when-format="html"' in a or 'unless-format="pdf"' in a for a, _ in pila)
             callout = any(".callout" in a for a, _ in pila)
             colw = COLW.search(peu)
             n_colw = n_peu if colw else None

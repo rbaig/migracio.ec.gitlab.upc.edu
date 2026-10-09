@@ -6,7 +6,10 @@ es pot mirar sense judici (fase 7g, 2026-10-08; 13_contrib.qmd §IA):
 
   1. El quadrimestre: la línia «**Quadrimestre <primavera|tardor> AAAA-BB**» hi és i
      en dona l'any de les dates (primavera: 20BB; tardor: AAAA).
-  2. Cada data (DD/MM) cau en el dia de la setmana de la columna «Dia».
+  2. Cada data (DD/MM) cau en el dia de la setmana de la columna «Dia», tret de les
+     marcades com a canvi de dia, `[DD/MM †]{.canvi-dia}`, amb la nota «†» sota la
+     taula (13_contrib.qmd §Convencions globals del laboratori, D-74): aquestes, al
+     revés, no hi han de caure, i surten com a informació, no com a error.
   3. Les columnes de sessió remeten, en ordre, a les seccions #sec-sessio-* de
      L1.qmd–L6.qmd, i n'hi ha tantes com sessions de laboratori a _quarto.yml.
   4. Dins de cada fila, les dates són creixents.
@@ -42,6 +45,7 @@ def sessions_del_laboratori():
 def main():
     text = CALENDARI.read_text(encoding="utf-8")
     errors = []
+    avisos = []
 
     m = re.search(r"\*\*Quadrimestre (primavera|tardor) (\d{4})-(\d{2})\*\*", text)
     if not m:
@@ -80,7 +84,12 @@ def main():
                 continue
             data = datetime.date(any_dates, int(d.group(2)), int(d.group(1)))
             real = DIES[data.weekday()]
-            if real != dia:
+            canvi = ".canvi-dia" in c
+            if canvi and real == dia:
+                errors.append(f"fila «{cel[0]}»: {d.group(0)} és marcat com a canvi de dia, i és {real.lower()}, el dia de la fila")
+            elif canvi:
+                avisos.append(f"fila «{cel[0]}»: {d.group(0)}/{any_dates} és {real.lower()}, canvi de dia declarat")
+            elif real != dia:
                 errors.append(f"fila «{cel[0]}»: {d.group(0)}/{any_dates} és {real.lower()}, no {dia.lower()}")
             if anteriors and data <= anteriors[-1]:
                 errors.append(f"fila «{cel[0]}»: {d.group(0)} no és posterior a la data anterior")
@@ -88,6 +97,10 @@ def main():
 
     print(f"Quadrimestre de {estacio} {any1}-{m.group(3)}: dates de {any_dates}, "
           f"{len(sessions)} sessions, {len(files) - 2} files.")
+    if avisos and not re.search(r"^\[†\]\{\.canvi-dia\}", text, re.M):
+        errors.append("hi ha canvis de dia marcats i cap nota «[†]{.canvi-dia} …» que els expliqui")
+    for a in avisos:
+        print(f"ℹ {a}")
     for e in errors:
         print(f"✗ {e}")
     if not errors:

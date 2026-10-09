@@ -17,6 +17,7 @@ El calendari canvia cada quadrimestre i s'escriu a mà. La regla és a `13_contr
    - **Quadrimestre**: el de la línia «**Quadrimestre … AAAA-BB**», comparat amb la data d'avui (`date +%F`). Digues si és el quadrimestre en curs, el següent o un de passat.
    - **Festius**: llista les dates que coincideixin amb festius generals a Catalunya (1 i 6 de gener, Divendres Sant i Dilluns de Pasqua, 1 de maig, 24 de juny, 15 d'agost, 11 i 24 de setembre, 12 d'octubre, 1 de novembre, 6, 8 i 25 de desembre). El calendari acadèmic de la UPC i de la FIB no el pots consultar: pregunta-ho, no ho donis per bo.
    - **Discrepàncies de dia**: per a cada data que l'script marqui, proposa'n les dues lectures (una errada, o un dia que la universitat fa amb l'horari d'un altre, com un dijous amb horari de divendres) i deixa-ho per decidir.
+   - **Canvi de dia**: una data `[DD/MM †]{.canvi-dia}` és una sessió en un altre dia de la setmana, declarada (D-74): l'script la dona com a informació (ℹ). Comprova que la nota de sota la taula, que comença amb `[†]{.canvi-dia}`, l'explica i en diu el dia real.
    - **Examen**: és la darrera columna, és posterior a L6 (el laboratori 6) de cada fila i els subgrups que comparteixen dia tenen la mateixa data.
    - **Subgrups**: cap subgrup no hi és dues vegades, i cap fila no queda buida.
 3. **Format**: la taula és dins del bloc `.content-visible unless-format="pdf"`, el títol del capítol és «Calendari» i els `tbl-colwidths` sumen 100 i en tenen un per columna.
