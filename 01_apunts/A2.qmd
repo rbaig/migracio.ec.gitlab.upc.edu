@@ -42,7 +42,7 @@ A la pràctica, tots dos aspectes s'estudien de forma conjunta, ja que les decis
 
 El terme ***Reduced Instruction Set Computer*** (**RISC**) apareix a principis dels anys 80 per designar l'arquitectura de certs processadors dissenyats amb criteris innovadors respecte a la tendència dels processadors existents fins llavors, els quals van passar a anomenar-se per contraposició ***Complex Instruction Set Computers*** (**CISC**).
 
-Abans que els processadors **RISC** fossin populars, els ràpids avenços en la tecnologia d'integració a escala molt gran (***Very Large Scale Integration***, **VLSI**) havien permès als arquitectes integrar circuits cada cop més complexos, i adoptar llenguatges d'assemblador cada cop més potents, amb l'objectiu de reduir la **diferència semàntica** amb els llenguatges d'alt nivell. Així, per exemple,, en alguns processadors es podien realitzar amb una sola instrucció de llenguatge màquina operacions tan complexes com avaluar un polinomi en coma flotant, o copiar una cadena de caràcters traduint-los prèviament per mitjà d'una taula de conversió. Per abastar tal varietat i sofisticació de tasques calia un repertori amplíssim d'instruccions, amb un nombre variable d'operands, cosa que obligava a codificar-les amb un **format de mida variable**. Per especificar la ubicació dels operands es necessitaven molts **modes d'adreçament** i **indireccions de memòria complexes**. Algunes instruccions involucraven tantes operacions que per interpretar-les es necessitava executar cada cop un petit programa escrit en **microcodi**, en una ***Read Only Memory*** (**ROM**) interna. Aquestes arquitectures són les que van ser més tard conegudes com **CISC**.
+Abans que els processadors **RISC** fossin populars, els ràpids avenços en la tecnologia d'integració a escala molt gran (***Very Large Scale Integration***, **VLSI**) havien permès als arquitectes integrar circuits cada cop més complexos, i adoptar llenguatges d'assemblador cada cop més potents, amb l'objectiu de reduir la **diferència semàntica** amb els llenguatges d'alt nivell. Així, per exemple, en alguns processadors es podien realitzar amb una sola instrucció de llenguatge màquina operacions tan complexes com avaluar un polinomi en coma flotant, o copiar una cadena de caràcters traduint-los prèviament per mitjà d'una taula de conversió. Per abastar tal varietat i sofisticació de tasques calia un repertori amplíssim d'instruccions, amb un nombre variable d'operands, cosa que obligava a codificar-les amb un **format de mida variable**. Per especificar la ubicació dels operands es necessitaven molts **modes d'adreçament** i **indireccions de memòria complexes**. Algunes instruccions involucraven tantes operacions que per interpretar-les es necessitava executar cada cop un petit programa escrit en **microcodi**, en una ***Read Only Memory*** (**ROM**) interna. Aquestes arquitectures són les que van ser més tard conegudes com **CISC**.
 
 Però aquesta tendència va començar a canviar quan alguns estudis estadístics van mostrar que les **instruccions més complexes a penes es feien servir** en la pràctica, ja que responien a necessitats tan particulars que els compiladors trobaven moltes dificultats per aplicar-les. Aviat es va fer evident que tot i que les instruccions complexes podien resoldre problemes particulars de manera molt eficient, la seva implementació augmentava la complexitat del processador de tal manera que comportava sovint que l'execució de les instruccions més simples s'alentís. La filosofia **RISC** va tendir doncs a suprimir les instruccions complexes i lentes, seguint el principi que la mateixa tasca es pot realitzar amb una seqüència d'**instruccions simples**, i que suprimir-les del repertori permet dissenyar un **maquinari** més simple, capaç d'executar més ràpidament les altres instruccions (***make the common case fast***, una de les grans idees de [@patterson2020riscv]). La principal característica de les arquitectures **RISC** (**ARM**, **PowerPC**, **MIPS**, **RISC-V**, **Alpha**, **SPARC**, etc.) consistia en un joc d'instruccions dissenyat amb el criteri bàsic del **rendiment**. El més característic dels **RISC** era el fet de tenir **instruccions de mida fixa** (normalment 32 bits), pocs **modes d'adreçament** (les operacions aritmètiques i lògiques, només amb operands en registre o immediats), i que l'**accés a memòria** es feia només amb instruccions específiques de lectura i escriptura de memòria.
 
@@ -554,7 +554,7 @@ Sigui la sentència en C:
 f = (g + h) - (i - 100);
 ```
 
-Suposant que `f`, `g`, `h`, `i` són variables locals enteres emmagatzemades als registres `t0`, `t1`, `t2`, `t3`:
+Suposem que `f`, `g`, `h`, `i` són variables locals enteres emmagatzemades als registres `t0`, `t1`, `t2`, `t3`:
 
 ```{.s filename="RV32I"}
         add     t4, t1, t2      # t4 = g + h
@@ -955,7 +955,7 @@ En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (
 
 ::: {#wrn-model-memoria-relaxat .callout-warning collapse=true}
 ## Model de memòria relaxat i instruccions `FENCE`
-RISC-V defineix un **model de memòria relaxat** (*RISC-V Weak Memory Ordering*, RVWMO) que regula l'ordre en què esdevenen visibles els accessos a memòria **entre múltiples nuclis o fils d'execució** (*harts*). Les instruccions `fence` i `fence.tso` permeten imposar restriccions d'ordenació en aquests contextos concurrents, i `fence.i` (extensió **Zifencei**) sincronitza la lectura d'instruccions després de modificar el codi en temps d'execució.
+RISC-V defineix un **model de memòria relaxat** (*RISC-V Weak Memory Ordering*, RVWMO) que regula l'ordre en què esdevenen visibles els accessos a memòria entre múltiples nuclis o **fils d'execució de maquinari** (***harts***). Les instruccions `fence` i `fence.tso` permeten imposar restriccions d'ordenació en aquests contextos concurrents, i `fence.i` (extensió **Zifencei**) sincronitza la lectura d'instruccions després de modificar el codi en temps d'execució.
 
 A **EC** s'estudia un **únic processador**, sense concurrència, sense dispositius que accedeixin a la memòria pel seu compte i sense codi que es modifiqui a si mateix: en aquest context, aquestes instruccions no tenen cap efecte observable. Per aquest motiu queden fora de l'abast de l'assignatura.
 :::
@@ -1726,7 +1726,7 @@ La multiplicació, per exemple, no és permesa.
 
 L'**estàndard** de C **no especifica** què passa si s'accedeix a una àrea de memòria il·legítima. Es produeix el que es coneix com a **comportament indefinit** (*undefined behavior*). Conseqüentment, l'estàndard no garanteix ni cap error específic ni cap resultat concret. A efectes pràctics, depenent del context i de la memòria, pot ocórrer una d'aquestes tres situacions, per ordre creixent de **perillositat**:
 
-1. **error de segmentació** (***segmentation fault***, ***segfault***): És l'error més comú en temps d'execució. L'SO detecta que el programa intenta llegir o escriure en una adreça de memòria que no li pertany (una zona protegida o no assignada) i finalitza el procés immediatament.
+1. **Error de segmentació** (***segmentation fault***), o *segfault*: És l'error més comú en temps d'execució. L'SO detecta que el programa intenta llegir o escriure en una adreça de memòria que no li pertany (una zona protegida o no assignada) i finalitza el procés immediatament.
 2. **Corrupció (silenciosa) de dades**: Si l'adreça calculada amb l'aritmètica de punters encara cau dins de la memòria que el programa té assignada (per exemple, on hi ha una altra variable veïna al segment de dades, @sec-memoria-t2), **el programa continuarà funcionant**, però **accedint a dades indeterminades** sense cap indicació d'error.
 3. **Vulnerabilitats de seguretat**: Si l'accés és a la pila (*stack*, @sec-multinivell-pila), es pot produir un **desbordament de memòria intermèdia** (***buffer overflow***), fet que podria arribar a permetre a un **atacant** modificar l'adreça de retorn d'una funció i **executar codi maliciós**.
 
@@ -2050,7 +2050,7 @@ void main() {
 }
 ```
 
-Suposant que `suma` i `i` ocupen els registres `t0` i `t1`:
+Suposem que `suma` i `i` ocupen els registres `t0` i `t1`:
 
 ```{.s filename="RV32I"}
         .eqv    N, 4                # define N 4
@@ -2100,7 +2100,7 @@ void main() {
 }
 ```
 
-Suposant que `suma`, `i` i `p` ocupen `t0`, `t1` i `t3`:
+Suposem que `suma`, `i` i `p` ocupen `t0`, `t1` i `t3`:
 
 ```{.s filename="RV32I"}
         .eqv    N, 4                # define N 4
