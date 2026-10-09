@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**22 entrades vives** (recompte del 2026-10-09, en retirar «Renumeració de lliuraments», «Calendari del laboratori…» i «Gestió d'errades post-commit»; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**21 entrades vives** (recompte del 2026-10-09, en retirar «PDF: comportament de `layout=` en callouts encastats», que no es reprodueix; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 5 · `§Tasques transversals` 6 · `§Tasques per tema` 3 · `§Tasques globals` 8 (suma 22, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 5 · `§Tasques transversals` 6 · `§Tasques per tema` 3 · `§Tasques globals` 7 (suma 21, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -174,8 +174,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### Contingut global
 
 - **Equacions a MathML**: **decisió presa — mantenir MathJax 3**; el pendent és reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa). Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`): funciona (`underbrace`, `cases`, taules amb math correctes a Chrome) i elimina el JS de MathJax (render instantani, offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), numeració d'equacions inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. El desbordament mòbil ja està resolt via CSS.
-
-- **PDF: comportament de `layout=` en callouts encastats**: es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben (falta l'exemple concret). ⚠️ **No se sap de quin format és**: fins al 2026-10-07, `13_contrib.qmd §Imbricacions` en tenia la mateixa observació amb el títol «HTML: comportament en callouts encastats», i aquesta entrada diu PDF; cap de les dues no porta cap exemple. Aquella subsecció s'ha tret de la guia en partir-la (fase 7e), perquè era una observació sense verificar i no una regla, i aquesta entrada n'és ara l'única còpia (`git show a125e3f:13_contrib.qmd`, línies 843–845). *(Fins al 2026-10-06 aquesta entrada començava amb «figures dins callouts no queden centrades → investigar via `preamble.tex`», que és a l'arxiu, `24_specs/arxiu_todo.md` §Entrades retirades → Executades.)*
 
 - **HTML: un índex de continguts de tot el llibre, com el del PDF** (petició de l'usuari, 2026-10-09: «Té sentit a la versió HTML afegir un índex de continguts per poder tenir una visió general? (com en el PDF)»). Avui l'HTML en té dos de parcials: la barra lateral, amb els capítols (les parts, plegades: `sidebar: collapse-level: 1`), i la «Taula de continguts» de cada pàgina (`toc: true`, a l'esquerra), amb les seccions del capítol obert i prou. Cap vista no mostra les seccions de tot el llibre alhora, que és el que dona l'índex del PDF. **Valoració de Claude Code**: té sentit, per a la visió general (també per als revisors), i és barat. Un script de `pre-render`, com el de les taules de `auto_riscv/`, llegeix les capçaleres `#` i `##` dels `chapters:` de `_quarto.yml`, en l'ordre del llibre, i en genera una llista d'enllaços (`[1.4 Codificació…](01_apunts/A1.qmd#sec-…)`) que es mostra només a l'HTML (`::: {.content-visible when-format="html"}`), plegada per parts. Els títols i els enllaços surten del text: no s'han de mantenir a mà. No toca A1–A8. ✅ **Decidit per l'usuari** (2026-10-09): profunditat fins a `###`; i una pàgina pròpia entre «👋 Presentació» i «Apunts», no dins de la Presentació, perquè «és massa llarga per formar part de 👋 Presentació». El punt delicat és el PDF: la pàgina ha de ser un capítol per sortir al menú de l'HTML, però no ha de deixar res al PDF. Sessió nova: Opus, effort alt; un commit, amb `make render-complet` per comprovar que el PDF no canvia.
 
