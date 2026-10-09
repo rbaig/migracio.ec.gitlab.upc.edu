@@ -8,7 +8,8 @@
 #      (13_contrib.qmd §Verificació de l'entorn), i un render HTML no ho exercita.
 #   4. Si el canvi toca el calendari del laboratori, verifica_calendari.py i l'avís
 #      de passar l'agent verificador-calendari (13_contrib.qmd §IA).
-# Els punts 2, 3 i 4 no bloquegen ni pregunten: els avisos arriben a Claude
+#   5. Si queda algun fitxer orfe (25_scripts/orfes.py), l'avís de moure'l o esborrar-lo.
+# Els punts 2–5 no bloquegen ni pregunten: els avisos arriben a Claude
 # (additionalContext) i a l'usuari, a la pantalla (systemMessage). Fins al
 # 2026-10-03 demanaven confirmació («ask»); decisió de l'usuari: el flux ja fa
 # `make render-complet` abans de cada push (CLAUDE.md §Flux de treball).
@@ -74,6 +75,11 @@ fi
 if grep -qx '04_laboratori/Lcalendari.qmd' <<<"$fitxers"; then
   calendari=$(python3 25_scripts/verifica_calendari.py 2>&1)
   avisos+=$'\n'"Aquest commit toca 04_laboratori/Lcalendari.qmd: abans del commit cal passar l'agent verificador-calendari (13_contrib.qmd §IA). Resultat de 25_scripts/verifica_calendari.py:"$'\n'"$calendari"$'\n'
+fi
+
+# 5. Fitxers orfes: cap altre fitxer no els cita (25_scripts/orfes.py, D-98).
+if orfes=$(python3 25_scripts/orfes.py 2>&1); then :; else
+  avisos+=$'\n'"Fitxers orfes (cap altre fitxer no els cita; 25_scripts/orfes.py). Pregunta a l'usuari si cal moure'ls a 22_figs_originals/conservats/ (si es conserven, D-68) o esborrar-los:"$'\n'"$orfes"$'\n'
 fi
 
 if [ -n "$avisos" ]; then

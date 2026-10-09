@@ -1,6 +1,6 @@
 # Inventari de figures
 
-Generat per `25_scripts/inventari_figures.py` sobre `b71fa6b` (2026-10-09), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
+Generat per `25_scripts/inventari_figures.py` sobre `b30d355` (2026-10-09), amb canvis no confirmats a l'arbre de treball. **No l'editeu a mà**: `make inventari` el regenera. Les comprovacions, i què vol dir cada columna, són a la capçalera de l'script.
 
 - **87** etiquetes `#fig-`: 84 amb imatge, 6 d'elles subfigures de 3 figures, i 0 taules Markdown; i **25** imatges sense etiqueta (les del compendi i la de la llicència).
 - **76** fitxers a `22_figs_originals/` i `23_figs_externes/`: 61 consumits i 15 sense consumir.
@@ -10,7 +10,7 @@ Generat per `25_scripts/inventari_figures.py` sobre `b71fa6b` (2026-10-09), amb 
 
 | Etiqueta | Lloc | Font | Origen | Callout | @ | Peu | `<desc>` |
 | :--- | :--- | :--- | :--- | :--- | ---: | :--- | :--- |
-| `fig-flux-compilacio` | `A1.qmd:59` | `22_figs_originals/A1_flux_compilacio.svg` | Inkscape |  | 1 | El flux de generació del programari: les quatre etapes del *toolchain* GCC. | Diagrama que mostra el flux de generació d'un programa exec… |
+| `fig-flux-compilacio` | `A1.qmd:59` | `22_figs_originals/A1_flux_compilacio.svg` | Inkscape |  | 1 | El flux de generació del programari: les quatre etapes del *toolchain* de la ***GNU Compi… | Diagrama que mostra el flux de generació d'un programa exec… |
 | `fig-picopi-fases` | `A1.qmd:228` | `22_figs_originals/A1_picopi_fases.svg` | Inkscape | `wrn-picopi` | 0 | Configuració física i fases d'ús del conjunt Amfitrió + Sonda (*Pi Debug Probe*) + Target… | Quatre diagrames en una sola figura: fase de creació (l'amf… |
 | `fig-von-neumann` | `A1.qmd:364` | `22_figs_originals/A1_von_neumann.svg` | Inkscape |  | 1 | Arquitectura de Von Neumann: CPU (ALU, CU i registres), memòria principal i sistema d'E/S… | CPU, Memòria Principal i Sistema d'E/S en disposició horitz… |
 | `fig-memoria-creix-avall` | `A2.qmd:987` | `memoria.toml:A2_memoria_creix_avall` | gen_memoria.py | `imp-adrecament-a-nivell-byte` | 0 | Representació gràfica de la memòria. | Una columna de cel·les d'un byte cadascuna, amb l'adreça a … |
@@ -132,17 +132,10 @@ Generat per `25_scripts/inventari_figures.py` sobre `b71fa6b` (2026-10-09), amb 
 | `22_figs_originals/A1_von_neumann.svg` | A1.qmd:367, A1.qmd:374 | Inkscape | 700 | sí | sí | 26 |  |  |
 | `22_figs_originals/A2_acces_vector.svg` | A2.qmd:1918, A2.qmd:1925 | SVG natiu | 260 | sí | sí | 13 |  |  |
 | `22_figs_originals/A2_endianness_regla_pi.svg` | A2.qmd:1070, A2.qmd:1077 | Inkscape | 285 | sí | sí | 15 |  |  |
-| `22_figs_originals/A3_ba_exemple.svg` | **orfe** | Inkscape | 316 | no | no | 20 |  |  |
-| `22_figs_originals/A3_ba_func.svg` | **orfe** | Inkscape | 326 | sí | sí | 11 |  |  |
-| `22_figs_originals/A3_ba_general.svg` | **orfe** | Inkscape | 326 | sí | sí | 12 |  |  |
-| `22_figs_originals/A3_ba_multi.svg` | **orfe** | Inkscape | 326 | no | no | 7 |  |  |
 | `22_figs_originals/A3_compilacio_separada.svg` | A3.qmd:1878, A3.qmd:1885 | Inkscape | 610 | sí | sí | 13 |  |  |
 | `22_figs_originals/A3_deps_exemple.svg` | A3.qmd:1731, A3.qmd:1738 | Inkscape | 340 | sí | sí | 5 |  |  |
 | `22_figs_originals/A3_deps_multi.svg` | A3.qmd:1623, A3.qmd:1630 | Inkscape | 290 | sí | sí | 3 |  |  |
 | `22_figs_originals/A3_flux_gcc_complet.svg` | A3.qmd:2072, A3.qmd:2079 | SVG natiu | 490 | sí | sí | 21 |  |  |
-| `22_figs_originals/A3_mapa_memoria.svg` | **orfe** | Inkscape | 326 | sí | sí | 19 |  |  |
-| `22_figs_originals/A3_pila_multinivell.svg` | **orfe** | Inkscape | 510 | sí | sí | 30 |  |  |
-| `22_figs_originals/A3_pila_uninivell.svg` | **orfe** | Inkscape | 310 | sí | sí | 18 |  |  |
 | `22_figs_originals/A4_divisor_sequencial.svg` | A4.qmd:394, A4.qmd:401 | SVG natiu | 440 | sí | sí | 16 |  |  |
 | `22_figs_originals/A4_matriu_emmagatzematge.svg` | A4.qmd:521, A4.qmd:528 | SVG natiu | 680 | sí | sí | 50 |  |  |
 | `22_figs_originals/A4_matriu_offset_ij.svg` | A4.qmd:562, A4.qmd:569 | SVG natiu | 680 | sí | sí | 12 |  |  |
@@ -161,17 +154,9 @@ Generat per `25_scripts/inventari_figures.py` sobre `b71fa6b` (2026-10-09), amb 
 | `22_figs_originals/A6_not_1_0.svg` | A6.qmd:307, A6.qmd:314 | Inkscape | 386 | sí | sí | 14 |  |  |
 | `22_figs_originals/A6_not_cmos.svg` | A6.qmd:288, A6.qmd:295 | Inkscape | 360 | sí | sí | 8 |  |  |
 | `22_figs_originals/A6_tc_tc_prima.svg` | A6.qmd:147, A6.qmd:154 | Inkscape | 284 | sí | sí | 10 |  |  |
-| `22_figs_originals/A7_capacitat_exemple_bucle_primera_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 235 |  |  |
-| `22_figs_originals/A7_capacitat_exemple_bucle_segona_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 266 |  |  |
 | `22_figs_originals/A7_cd_descomposicio_bits.svg` | A7.qmd:278, A7.qmd:285 | Inkscape | 545 | sí | sí | 21 |  |  |
-| `22_figs_originals/A7_conflicte_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 120 | #000000 |  |
-| `22_figs_originals/A7_escriptura_estat_inicial.svg` | **orfe** | Inkscape | 800 | sí | sí | 167 | #000000 |  |
-| `22_figs_originals/A7_escriptura_immediata_amb_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 101 | #000000 |  |
-| `22_figs_originals/A7_escriptura_immediata_sense_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 100 | #000000 |  |
-| `22_figs_originals/A7_escriptura_retardada.svg` | **orfe** | Inkscape | 800 | sí | sí | 163 | #000000 |  |
 | `22_figs_originals/A7_gap_processador_memoria.svg` | A7.qmd:34, A7.qmd:41 | SVG natiu | 620 | sí | sí | 17 |  |  |
 | `22_figs_originals/A7_jerarquia_piramide.svg` | A7.qmd:106, A7.qmd:99 | SVG natiu | 580 | sí | sí | 7 |  |  |
-| `22_figs_originals/A7_lru_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 237 | #000000 |  |
 | `22_figs_originals/A7_mc_descomposicio_bits.svg` | A7.qmd:180, A7.qmd:187 | Inkscape | 590 | sí | sí | 18 |  |  |
 | `22_figs_originals/A7_mc_encert.svg` | A7.qmd:219, A7.qmd:226 | Inkscape | 575 | sí | sí | 30 |  |  |
 | `22_figs_originals/A7_mc_fallada.svg` | A7.qmd:241, A7.qmd:248 | Inkscape | 575 | sí | sí | 48 |  |  |
@@ -201,6 +186,21 @@ Generat per `25_scripts/inventari_figures.py` sobre `b71fa6b` (2026-10-09), amb 
 | `22_figs_originals/A8_mv_traduccio_exemple.svg` | A8.qmd:188, A8.qmd:195 | SVG natiu | 680 | sí | sí | 91 |  |  |
 | `22_figs_originals/A8_mv_vipt.svg` | A8.qmd:494, A8.qmd:501 | SVG natiu | 680 | sí | sí | 22 |  |  |
 | `22_figs_originals/A9_cicle_interrupcio.svg` | A9.qmd:721, A9.qmd:728 | Inkscape | 680 | sí | sí | 17 |  |  |
+| `22_figs_originals/conservats/A3_ba_exemple.svg` | **orfe** | Inkscape | 316 | no | no | 20 |  |  |
+| `22_figs_originals/conservats/A3_ba_func.svg` | **orfe** | Inkscape | 326 | sí | sí | 11 |  |  |
+| `22_figs_originals/conservats/A3_ba_general.svg` | **orfe** | Inkscape | 326 | sí | sí | 12 |  |  |
+| `22_figs_originals/conservats/A3_ba_multi.svg` | **orfe** | Inkscape | 326 | no | no | 7 |  |  |
+| `22_figs_originals/conservats/A3_mapa_memoria.svg` | **orfe** | Inkscape | 326 | sí | sí | 19 |  |  |
+| `22_figs_originals/conservats/A3_pila_multinivell.svg` | **orfe** | Inkscape | 510 | sí | sí | 30 |  |  |
+| `22_figs_originals/conservats/A3_pila_uninivell.svg` | **orfe** | Inkscape | 310 | sí | sí | 18 |  |  |
+| `22_figs_originals/conservats/A7_capacitat_exemple_bucle_primera_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 235 |  |  |
+| `22_figs_originals/conservats/A7_capacitat_exemple_bucle_segona_passada.svg` | **orfe** | Inkscape | 800 | sí | sí | 266 |  |  |
+| `22_figs_originals/conservats/A7_conflicte_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 120 | #000000 |  |
+| `22_figs_originals/conservats/A7_escriptura_estat_inicial.svg` | **orfe** | Inkscape | 800 | sí | sí | 167 | #000000 |  |
+| `22_figs_originals/conservats/A7_escriptura_immediata_amb_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 101 | #000000 |  |
+| `22_figs_originals/conservats/A7_escriptura_immediata_sense_assignacio.svg` | **orfe** | Inkscape | 800 | sí | sí | 100 | #000000 |  |
+| `22_figs_originals/conservats/A7_escriptura_retardada.svg` | **orfe** | Inkscape | 800 | sí | sí | 163 | #000000 |  |
+| `22_figs_originals/conservats/A7_lru_exemple.svg` | **orfe** | Inkscape | 800 | sí | sí | 237 | #000000 |  |
 | `23_figs_externes/A7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg` | A7.qmd:1078 | ràster |  | no | no | 0 |  |  |
 | `23_figs_externes/by-nc-sa.eu.png` | 14_LICENSE.qmd:5 | ràster |  | no | no | 0 |  |  |
 | `registres.toml:A2_instruccio_tipus_R` | A2.qmd:1216, A2.qmd:1223 | gen_regs.py |  | sí | sí | 0 |  |  |
@@ -253,20 +253,20 @@ Generat per `25_scripts/inventari_figures.py` sobre `b71fa6b` (2026-10-09), amb 
 
 ## Avisos
 
-### Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives) (15)
+### Originals conservats (`22_figs_originals/conservats/`: el llibre no els consumeix; p. ex., per a les diapositives) (15)
 
-- `22_figs_originals/A3_ba_exemple.svg`
-- `22_figs_originals/A3_ba_func.svg`
-- `22_figs_originals/A3_ba_general.svg`
-- `22_figs_originals/A3_ba_multi.svg`
-- `22_figs_originals/A3_mapa_memoria.svg`
-- `22_figs_originals/A3_pila_multinivell.svg`
-- `22_figs_originals/A3_pila_uninivell.svg`
-- `22_figs_originals/A7_capacitat_exemple_bucle_primera_passada.svg`
-- `22_figs_originals/A7_capacitat_exemple_bucle_segona_passada.svg`
-- `22_figs_originals/A7_conflicte_exemple.svg`
-- `22_figs_originals/A7_escriptura_estat_inicial.svg`
-- `22_figs_originals/A7_escriptura_immediata_amb_assignacio.svg`
-- `22_figs_originals/A7_escriptura_immediata_sense_assignacio.svg`
-- `22_figs_originals/A7_escriptura_retardada.svg`
-- `22_figs_originals/A7_lru_exemple.svg`
+- `22_figs_originals/conservats/A3_ba_exemple.svg`
+- `22_figs_originals/conservats/A3_ba_func.svg`
+- `22_figs_originals/conservats/A3_ba_general.svg`
+- `22_figs_originals/conservats/A3_ba_multi.svg`
+- `22_figs_originals/conservats/A3_mapa_memoria.svg`
+- `22_figs_originals/conservats/A3_pila_multinivell.svg`
+- `22_figs_originals/conservats/A3_pila_uninivell.svg`
+- `22_figs_originals/conservats/A7_capacitat_exemple_bucle_primera_passada.svg`
+- `22_figs_originals/conservats/A7_capacitat_exemple_bucle_segona_passada.svg`
+- `22_figs_originals/conservats/A7_conflicte_exemple.svg`
+- `22_figs_originals/conservats/A7_escriptura_estat_inicial.svg`
+- `22_figs_originals/conservats/A7_escriptura_immediata_amb_assignacio.svg`
+- `22_figs_originals/conservats/A7_escriptura_immediata_sense_assignacio.svg`
+- `22_figs_originals/conservats/A7_escriptura_retardada.svg`
+- `22_figs_originals/conservats/A7_lru_exemple.svg`

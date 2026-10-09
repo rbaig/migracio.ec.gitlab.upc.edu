@@ -9,6 +9,7 @@ render-complet: taules  # HTML + PDF (~5 min aquí, ~7 al CI)
 
 inventari:              # inventari de figures (24_specs/figures.md)
 	python3 25_scripts/inventari_figures.py
+	python3 25_scripts/orfes.py || echo "[orfes] Fitxers orfes: moveu-los a 22_figs_originals/conservats/ o esborreu-los (D-98)"
 
 glossari:               # secció «Termes» de 12_sigles_simbols.qmd, des del corpus (--comprova per verificar-la)
 	python3 25_scripts/gen_glossari.py

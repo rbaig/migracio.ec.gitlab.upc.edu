@@ -342,16 +342,16 @@ def main():
         us = consumides.get(f, [])
         if not us:
             if ':' not in f:
-                tija = Path(f).stem
                 if estatica(f):
                     continue
-                # una figura generada amb la mateixa arrel, o amb una arrel que n'és el començament
-                # (A7_capacitat_exemple aplega les dues passades de A7_capacitat_exemple_bucle_*)
-                if any(':' in k and tija.startswith(k.split(':', 1)[1]) and consumides.get(k) for k in fonts):
-                    avisos['Originals amb una versió generada al llibre (es conserven, p. ex. per a les diapositives)'].append(f'`{f}`')
+                # el directori és el criteri (D-68): els de conservats/ es conserven a posta
+                if f.startswith('22_figs_originals/conservats/'):
+                    avisos['Originals conservats (`22_figs_originals/conservats/`: el llibre no els consumeix; p. ex., per a les diapositives)'].append(f'`{f}`')
                 else:
-                    avisos['Fitxers font orfes (cap `.qmd` no els consumeix)'].append(f'`{f}`')
+                    avisos['Fitxers font orfes (cap `.qmd` no els consumeix): cal moure\'ls a `22_figs_originals/conservats/` o esborrar-los'].append(f'`{f}`')
             continue
+        if f.startswith('22_figs_originals/conservats/'):
+            avisos['Originals de `conservats/` que el llibre consumeix (no hi haurien de ser)'].append(f'`{f}`')
         if i['sha'] == placeholder:
             avisos['Figures que consumeixen el placeholder (`TODO.svg`)'].append(f'`{f}`')
         if f.startswith('23_figs_externes/') and f.endswith('.svg'):
@@ -414,7 +414,7 @@ def main():
         o += [f'- {x}' for x in avisos[k]]
         o.append('')
     (ROOT / args.sortida).write_text('\n'.join(o).rstrip() + '\n', encoding='utf-8')
-    print(f'[inventari] {args.sortida}: {len(figs)} etiquetes, {n_fit} fitxers ({n_fit - n_cons} orfes), '
+    print(f'[inventari] {args.sortida}: {len(figs)} etiquetes, {n_fit} fitxers ({n_fit - n_cons} sense consumir), '
           f'{sum(len(v) for v in avisos.values())} avisos en {len(avisos)} categories.')
 
 

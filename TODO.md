@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**21 entrades vives** (recompte del 2026-10-09, en retirar «PDF: comportament de `layout=` en callouts encastats», que no es reprodueix; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**20 entrades vives** (recompte del 2026-10-09, en retirar «Fitxers orfes…», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 5 · `§Tasques transversals` 6 · `§Tasques per tema` 3 · `§Tasques globals` 7 (suma 21, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 6 · `§Tasques per tema` 3 · `§Tasques globals` 7 (suma 20, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -40,15 +40,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ```bash
   git grep -n "productivitat major" -- 01_apunts/A6.qmd   # :39 i :48 (2026-10-09; fins a 5e55cc8, «major productivitat»)
-  ```
-
-- **Fitxers orfes: un directori per als que es conserven, i un detector per a la resta** (petició de l'usuari, 2026-10-08, fase 7g: «Valora si té sentit crear un directori a on posar els fitxers orfes que es volen guardar; d'aquesta manera, es pot crear un agent (o el mecanisme que pertoqui) per buscar orfes fora d'aquest directori i presentar-los demanant si cal moure'ls al directori de fitxers orfes o esborrar»). **Llista del 2026-10-08** (`6a17af1`; les figures, per l'inventari, que mira si algun `.qmd` les consumeix, i la resta, per si algun fitxer les cita): els 15 originals de `22_figs_originals/` amb una versió generada al llibre, que es conserven per a les diapositives (D-68) i que `make inventari` ja llista a part (`24_specs/figures.md`, «Originals amb una versió generada al llibre»): set de T3 (`A3_ba_exemple`, `A3_ba_func`, `A3_ba_general`, `A3_ba_multi`, `A3_mapa_memoria`, `A3_pila_uninivell`, `A3_pila_multinivell`) i vuit de T7 (`A7_capacitat_exemple_bucle_primera_passada`, `…_segona_passada`, `A7_conflicte_exemple`, `A7_escriptura_estat_inicial`, `A7_escriptura_immediata_amb_assignacio`, `…_sense_assignacio`, `A7_escriptura_retardada`, `A7_lru_exemple`); i `05_diapositives/placeholder.txt`, que reserva el directori (`README.md`), afegit a mà: «placeholder» surt en altres contextos i la comprovació no el marca. Cap `.qmd`, script ni `.toml` orfe: `A7_mc_politiques_resum__graphviz.gv` és la font de `#fig-mc-politiques-resum` (A7). **Proposta de Claude Code**: (1) moure els 15 a `22_figs_originals/conservats/`, amb la regla a D-68, i que l'inventari prengui el directori com a criteri en lloc de deduir-ho; (2) un `25_scripts/orfes.py` (la comprovació de dalt, que deixa fora la configuració de les eines, `.github/`, `.vscode/` i `.claude/`, i els PDF de referència, `PDF_*/`) a `make inventari`; i (3) un avís al hook d'abans del commit quan un commit deixa un orfe nou fora de `conservats/`, amb la pregunta de moure'l o esborrar-lo. Un agent no cal: és una comprovació mecànica. §T3 d'aquest fitxer en cita quatre dels set de T3 pel nom (`A3_ba_exemple`, `A3_ba_func` i les dues piles; recompte del 2026-10-09, en retallar-la), i s'hauria d'actualitzar alhora. Decisió de l'usuari.
-
-  ```bash
-  git ls-files | grep -v -E '^(\.github|\.vscode|\.claude/|PDF_)' | while read f; do b=$(basename "$f"); s=${b%.*}
-    git grep -q -F -e "$b" -e "$s" -- ":(exclude)$f" ':!TODO.md' ':!24_specs/arxiu_todo.md' ':!24_specs/registre_de_decisions.md' ':!24_specs/figures.md' || echo "$f"
-  done   # 8 (6a17af1): A7_capacitat_exemple_bucle_* (2) i els fotogrames A8_mv_exemple_tlb_pas* (6, el nom el compon gen_T8.py)
-  # Els altres 13 conservats no hi surten perquè la versió generada en comparteix l'arrel (A3_ba_exemple__BA): per a les figures, el criteri és l'inventari, que mira el consum.
   ```
 
 - **Exemples i solucions plegables a l'HTML** (petició de l'usuari, 2026-10-08, fase 7g: «Fer els exemples dinàmics? És a dir, que per veure la solució calgui prémer un botó. […] I segurament també les solucions dels problemes. A l'HTML es podrien encastar dins mateix dels enunciats»; la valoració inicial de Claude Code, amb les opcions i la recomanació, és a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). ✅ **Pilot de T1 fet** (2026-10-09; decisió de l'usuari: «Fes T1 com a pilot»; [D-90](24_specs/registre_de_decisions.md#d-90)): el filtre `25_scripts/plegables.lua` plega a l'HTML el div `.resposta` dels cinc exemples d'A1 amb el format **Pregunta** → **Solució** → **Resposta**, i afegeix a cadascun dels 15 enunciats de P1 la remissió a la seva solució («Solució 19.1»), a l'HTML i al PDF. **Queda, per decidir en valorar el pilot**: (b) a la resta de temes, que és afegir-los a la taula `PILOT` del filtre, sense tocar cap `.qmd` (P2–P9 i S2–S9 són fora de la revisió externa); (a) a la resta d'exemples amb el format **Pregunta** (A3 2, A6 5 i A7 4; A9 no en té cap), que demana marcar el div a mà, i A2–A8 són als fitxers que revisen els equips (D-65); i l'encastat de la solució dins de l'enunciat, que amb `{{< include >}}` duplicaria els identificadors `#sol-`: caldria un filtre que en copiés el contingut sense l'identificador, o carregar-la des de la pàgina de solucions amb JS. ⚠️ **Trobat en verificar el pilot** (2026-10-09): el títol de les 108 solucions diu «Exemple 19.1: Solució: …» a l'HTML i «Exemple 1: Solució: …» al PDF, perquè són `.callout-tip` i Quarto hi posa el prefix dels exemples; la remissió diu «Solució 19.1» (HTML) o «Solució 1» (PDF), de manera que l'enllaç porta a un bloc que es diu «Exemple». Ja passava abans del pilot amb les remissions `@sol-` entre solucions, però el pilot el fa visible a cada enunciat. Proposta de Claude Code, per decidir amb l'extensió: que el títol digui «Solució 19.1: …» (un filtre o una clau de `language:`, per investigar) i treure el «Solució:» que repeteix cada `## Solució: …`. **La part de les solucions** (estendre la remissió, encastar-les i el títol) es decideix a la reunió de coordinació del 2 de novembre: entrada següent.
@@ -115,7 +106,7 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Decisió de contingut a `#cau-boolea-c`** (`A3.qmd:249`, mesurat a `ab48732`, pendent d'Adrià, obert des de la revisió de T3): el text diu que «unes expressions no nul·les s'interpreten com a certes» sense dir **quines**. Cal indicar com s'identifiquen les que sí i les que no. Afecta el rigor tècnic. El marcador segueix al corpus perquè la decisió és viva i no la pot prendre Claude Code.
 
-- **Retocs manuals pendents (Roger) a cinc originals de T3** (des del 2026-10-04; retallada el 2026-10-09: els estats del 2026-10-04 i del 2026-10-07, amb les decisions de l'usuari que hi van portar, són a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Els esmena l'usuari, a `22_figs_originals/`, perquè també els fa servir per a les diapositives. Quatre es conserven sense que el llibre els consumeixi, perquè A3 en fa servir la versió generada, que ja no té l'error ([D-68](24_specs/registre_de_decisions.md#d-68)); el cinquè, `A3_deps_exemple.svg`, és la subfigura (a) de `#fig-deps-exemple`, i l'error surt al llibre fins que s'esmeni.
+- **Retocs manuals pendents (Roger) a cinc originals de T3** (des del 2026-10-04; retallada el 2026-10-09: els estats del 2026-10-04 i del 2026-10-07, amb les decisions de l'usuari que hi van portar, són a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Els esmena l'usuari, perquè també els fa servir per a les diapositives. Quatre es conserven a `22_figs_originals/conservats/` sense que el llibre els consumeixi, perquè A3 en fa servir la versió generada, que ja no té l'error ([D-68](24_specs/registre_de_decisions.md#d-68)); el cinquè, `22_figs_originals/A3_deps_exemple.svg`, és la subfigura (a) de `#fig-deps-exemple`, i l'error surt al llibre fins que s'esmeni.
 
   - `A3_deps_exemple.svg`: posa fletxes a `a` i `b`, que no travessen cap crida, i hi diu `e = res_g + res_f`, quan el text diu `res_f + res_g`.
   - `A3_ba_exemple.svg`: dibuixa `w` com a `int` de 80 bytes, quan el codi diu `char w[20]` (20 bytes), i rotula `v[0]` la subfranja de `v[17]`.
@@ -123,8 +114,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   - `A3_pila_uninivell.svg` i `A3_pila_multinivell.svg`: marquen `sp` amb `#cc0000` (6 i 10 ocurrències), el vermell que la paleta reserva a les dependències de dades. Les generades el marquen del color de la zona del cim (`svg.md §9`).
 
   ```bash
-  grep -o -i "d1e7dd" 22_figs_originals/A3_ba_func.svg | wc -l                                            # 3 (2026-10-07)
-  for f in uninivell multinivell; do grep -o "cc0000" 22_figs_originals/A3_pila_$f.svg | wc -l; done    # 6 i 10 (2026-10-07)
+  grep -o -i "d1e7dd" 22_figs_originals/conservats/A3_ba_func.svg | wc -l                                            # 3 (2026-10-07)
+  for f in uninivell multinivell; do grep -o "cc0000" 22_figs_originals/conservats/A3_pila_$f.svg | wc -l; done    # 6 i 10 (2026-10-07)
   ```
 
 ### T5

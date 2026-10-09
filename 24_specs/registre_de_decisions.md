@@ -593,9 +593,11 @@ Amb el generador, les figures de BA i el mapa passen a la classe `estreta` de `2
 
 ### D-68
 
-**Els originals substituïts per una figura generada es conserven** · `13_contrib.qmd §Convencions SVG` · 2026-10-04 · 2026-10-07
+**Els originals substituïts per una figura generada es conserven, a `22_figs_originals/conservats/`** · `13_contrib.qmd §Convencions SVG` · 2026-10-04 · 2026-10-07 · 2026-10-09
 
 Decisió de l'usuari del 2026-10-04 (fase 7c), quan A3 va passar a consumir els BA de `multi` i d'`exemple` generats per `gen_BA.py`: els originals es conserven, perquè l'usuari també els fa servir per a les diapositives, i les esmenes que necessitin les fa ell mateix (`TODO.md §Tasques per tema → T3`, «Retocs manuals pendents»). Fins al 2026-10-07 només constava a `24_specs/svg.md §17` i a l'inventari, que els llista a part dels orfes. Es va escriure com a regla el 2026-10-07 (fase 7f), en conservar també, per decisió de l'usuari, els originals de `T3_ba_func`, `T3_ba_general`, `T3_mapa_memoria`, `T3_pila_uninivell` i `T3_pila_multinivell`.
+
+**El directori, des del 2026-10-09** (petició de l'usuari, 2026-10-08, fase 7g, literal: «Valora si té sentit crear un directori a on posar els fitxers orfes que es volen guardar; d'aquesta manera, es pot crear un agent (o el mecanisme que pertoqui) per buscar orfes fora d'aquest directori i presentar-los demanant si cal moure'ls al directori de fitxers orfes o esborrar»; proposta de Claude Code, acceptada el 2026-10-09). Els 15 originals conservats —set de T3 i vuit de T7— van passar a `22_figs_originals/conservats/`. Fins llavors l'inventari els deduïa: un original sense consumir era «conservat» si hi havia una figura generada amb la mateixa arrel (o amb una arrel que en fos el començament, com `A7_capacitat_exemple`), i «orfe» si no. Ara el criteri és el directori, i un original de `conservats/` que el llibre consumís seria un avís. De pas, el pre-render ja no els converteix: l'expressió de `norm_font.py` a `_quarto.yml` no entra als subdirectoris, i des del mateix dia va ancorada a l'inici del camí (`^22_figs_originals/`), perquè `norm_font.py` recorre tot l'arbre i també convertia els SVG dels *worktrees* de `.claude/worktrees/`.
 
 ### D-76
 
@@ -676,6 +678,12 @@ Decisió de l'usuari (2026-10-08, fase 7g): «Com que canviarà a cada quadrimes
 **Errades del material publicat: una *issue* amb l'etiqueta `errada`, i el commit que la tanca** · `13_contrib.qmd §Errades del material publicat` · 2026-10-09
 
 Fins al 2026-10-07, `13_contrib.qmd` tenia una capçalera buida, «Gestió d'errades», i el `TODO.md` en tenia l'entrada «Gestió d'errades post-commit: definir protocol». Decisió de l'usuari (2026-10-09): «Si tens una proposta clara, aplica-la. Si no, elimina l'entrada». La proposta de Claude Code és la mínima que encaixa amb el que ja hi havia: les *issues* de GitLab per informar-ne, perquè no cal ser membre del grup per veure-les i deixen rastre; la correcció pel camí de qualsevol canvi (la branca `fix/` de §Convenció de noms de branques, o el push directe de l'editor, [D-59](#d-59)); i `Closes #n`, perquè GitLab tanqui la *issue* quan el commit arribi a `main`. Queden fora, perquè són decisions de política i no de procediment: si es publica una llista d'errades per als alumnes i com s'avisa d'una correcció un cop començades les classes. El 2026-10-09 el projecte no tenia cap etiqueta ni cap *issue* oberta (`glab api projects/7916/labels`): l'etiqueta `errada` s'ha de crear.
+
+### D-98
+
+**Fitxers orfes: `25_scripts/orfes.py`, a `make inventari` i al hook** · `13_contrib.qmd §Figures i material gràfic`, `§IA` · 2026-10-09
+
+La mateixa petició de l'usuari que [D-68](#d-68) (2026-10-08). Proposta de Claude Code, acceptada el 2026-10-09: un script i no un agent, perquè és una comprovació mecànica. Un fitxer versionat és orfe si cap altre no en cita el nom o l'arrel; per a les figures, el criteri és el nom de la sortida del pre-render (`<arrel>__original`, `<arrel>__extern`), perquè el `.qmd` cita `auto_figs/…` i no el font; i un fotograma `_pas<k>` d'una figura dinàmica es consumeix si es consumeix la figura. No compten com a cites les del `TODO.md`, el seu arxiu, el registre i l'inventari, que citen fitxers retirats pel nom (regla 12 de les escombrades). Queden fora `conservats/`, la configuració de les eines (`.github/`, `.vscode/`, `.claude/`) i els PDF de referència. El 2026-10-09, abans de moure els conservats, en donava 15, exactament els conservats; després, cap. Limitació coneguda: una arrel que és un mot comú (`placeholder`, `orfes`) surt citada per altres textos i no es marca. Triga menys d'un segon, i per això el hook el passa a cada commit: si n'hi ha cap, avisa (no bloqueja) amb la pregunta de moure'l o esborrar-lo.
 
 ## Operació de les sessions
 
