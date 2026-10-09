@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # PreToolUse (Bash): les comprovacions de 13_contrib.qmd §Commits abans de cada
 # `git commit`.
-#   1. `make render` ha d'acabar net; si no, el commit no passa (sortida 2).
+#   1. `make render` ha d'acabar net; si no, el commit no passa (sortida 2). Se'l
+#      salta si el render no llegeix cap dels fitxers canviats (D-61).
 #   2. Revisió de prosa de les línies afegides (25_scripts/lint_prosa.py).
 #   3. Si el canvi toca el PDF, `make render-complet` és obligatori
 #      (13_contrib.qmd §Verificació de l'entorn), i un render HTML no ho exercita.
@@ -28,8 +29,14 @@ arrel=$(git -C "${dir:-.}" rev-parse --show-toplevel 2>/dev/null) || exit 0
 [ -f "$arrel/_quarto.yml" ] || exit 0
 cd "$arrel" || exit 0
 
+# 0. Si el render no llegeix cap dels fitxers canviats, no cal `make render` (D-61).
+fora_render='^(TODO\.md|CLAUDE\.md|README\.md|24_specs/(registre_de_decisions|arxiu_todo|figures)\.md|\.claude/.*)$'
+canviats=$( { git diff HEAD --name-only; git ls-files --others --exclude-standard; } | sort -u)
+render=1
+[ -n "$canviats" ] && ! grep -qvE "$fora_render" <<<"$canviats" && render=0
+
 # 1. Render HTML.
-if ! sortida=$(make render 2>&1); then
+if [ $render -eq 1 ] && ! sortida=$(make render 2>&1); then
   {
     echo "make render ha fallat i el commit no es fa (13_contrib.qmd §Commits). Darreres línies:"
     printf '%s\n' "$sortida" | tail -n 30

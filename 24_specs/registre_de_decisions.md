@@ -651,9 +651,11 @@ Des del 2026-10-06. Amb DejaVu Sans Mono el registre de LaTeX ja no hi dona cap 
 
 ### D-61
 
-**El hook d'abans del commit avisa, però no pregunta** · `13_contrib.qmd §IAs` · 2026-10-03 · `722c522`, `980434b`
+**El hook d'abans del commit avisa, però no pregunta; i no renderitza si el render no llegeix cap fitxer canviat** · `13_contrib.qmd §IA` · 2026-10-03, 2026-10-09 · `722c522`, `980434b`
 
 Fins al 2026-10-03 la revisió de prosa i l'avís de `make render-complet` demanaven confirmació; decisió de l'usuari: no cal, perquè el flux ja fa `make render-complet` abans de cada push. El `make render` del hook va trigar **2 min 38 s** el 2026-09-25.
+
+Des del 2026-10-09 el hook se salta el `make render` quan el commit només toca fitxers que el render no llegeix: `TODO.md`, `CLAUDE.md`, `README.md`, el registre de decisions, l'arxiu del `TODO.md`, l'inventari de figures (`24_specs/figures.md`, que l'escriu `make inventari`) i `.claude/`. Ho va demanar l'usuari (2026-10-09: «hi ha testos innecessaris (per exemple, no cal renderitzar quan només hi ha canvis a `TODO.md`)»), i la llista és la proposta de Claude Code que va acceptar. Es mira, com la resta del hook, l'arbre de treball sencer respecte d'`HEAD`: si qualsevol altre fitxer ha canviat, encara que sigui d'una altra sessió, renderitza. `LICENSE.md` no hi és perquè `14_LICENSE.qmd` l'inclou. Els nivells de comprovació de cada mena de canvi són una tasca pendent del `TODO.md`.
 
 ### D-74
 
@@ -684,6 +686,8 @@ El cas: `980434b` (2026-09-25) va afegir un conflicte a `.gitignore` amb `temes4
 Amb altres professors ja dins de la revisió, qualsevol canvi transversal té un cost de coordinació molt més alt. Per a T3, T4, T5, T6 i T8 això ja havia passat el 2026-10-01 (la revisió externa hi era en curs), i des del 2026-10-06 l'abast declarat és A1–A8 sencer.
 
 **Suspesa fins al 2026-10-09 a la tarda** (declaració de l'usuari, 2026-10-08, literal: «fins demà a la tarda pots fer canvis a tots els fitxers. Els revisors externs ja s'adaptaran a aquests canvis.»). Ho va dir en respondre la proposta de Claude Code de revisar A1–A8 només amb informes, sense canvis. Durant la finestra s'apliquen a A1–A8 els canvis transversals pendents, sense coordinar-los abans; la comprovació de les branques (`git ls-remote`, fusió de prova) continua.
+
+**Allargada fins al diumenge 2026-10-11** (declaració de l'usuari, 2026-10-09, literal: «La finestra s'allarga fins a diumenge 11 d'octubre»). La comprovació de les branques continua igual.
 
 ### D-91
 
