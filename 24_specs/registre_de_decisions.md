@@ -303,7 +303,7 @@ Decisió de l'usuari (2026-10-09, després de la fase 8a): «Recomanació accept
 
 ### D-88
 
-**Terme català o anglès: l'Optimot i Softcatalà, i les excepcions documentades** · `13_contrib.qmd §Anglicismes i terminologia obligatòria` · 2026-10-09
+**Terme català o anglès: l'Optimot i Softcatalà, i les excepcions documentades** · `13_contrib.qmd §Anglicismes i terminologia obligatòria`; les excepcions, a la segona taula de `12_sigles_simbols.qmd §Termes` (des del 2026-10-09, D-100) · 2026-10-09
 
 Decisió de l'usuari (2026-10-09, en respondre els dubtes de la lectura lingüística d'A1–A8), literal: «Si un terme no és a l'Optimot ni al diccionari Anglès-Català de Softcatalà, es fa servir el terme anglès. S'admeten accepcions quan el terme català és poc usat, per exemple "heap-monticle", aquests casos s'han de documentar explícitament.» Primers casos, del mateix dia: *host* → «amfitrió» (A1, A3 i la figura de la Pico 2); *target*, en anglès (no és a l'Optimot); *heap*, en anglès (l'Optimot dona *monticle*, que l'usuari troba massa lluny de l'ús, i Claude Code hi coincideix: el terme del Termcat és de l'estructura de dades); i *caller*/*callee*, «la funció que crida» i «la funció cridada» al text, i en anglès a les figures, per l'espai. L'usuari va demanar que se'n faci una revisió completa (`TODO.md`).
 
@@ -345,31 +345,31 @@ Fins al 2026-10-07 la veu dels enunciats era a §Problemari i solucionari, i la 
 
 ### D-34
 
-**«Imbricat», no «aniuat»** · `13_contrib.qmd §Substitucions obligatòries` · 2026-10-04 · `552ff1a`
+**«Imbricat», no «aniuat»** · `13_contrib.qmd §Formes que no s'han de fer servir` (fins al 2026-10-09, §Substitucions obligatòries) · 2026-10-04 · `552ff1a`
 
 Decisió de l'usuari (2026-10-04). «Aniuat», que la taula donava fins llavors com a substitució d'«anidat», no és el terme informàtic en català.
 
 ### D-35
 
-**«Lectura/escriptura» per *load/store*** · `13_contrib.qmd §Substitucions obligatòries` · 2026-10-07 · `9f8e746`
+**«Lectura/escriptura» per *load/store*** · `12_sigles_simbols.qmd §Termes` (el glossari, des del 2026-10-09; D-100) · 2026-10-07 · `9f8e746`
 
 Aplicat a tot el corpus el 2026-10-07 (decisió de l'usuari): fins llavors A2 presentava *load* i *store* com a «càrrega» i «emmagatzematge»/«emmagatzemament».
 
 ### D-36
 
-**«Ròssec», «semisumador» i «sumador complet»** · `13_contrib.qmd §Substitucions obligatòries` · 2026-10-03 · `e49c014`
+**«Ròssec», «semisumador» i «sumador complet»** · `12_sigles_simbols.qmd §Termes` (el glossari, des del 2026-10-09; D-100) · 2026-10-03 · `e49c014`
 
 «Ròssec» és el terme del Termcat (decisió de l'usuari, 2026-10-03), i substitueix «arrossegament», que el corpus usava fins aleshores. «Semisumador» i «sumador complet» són de la mateixa sessió (fase 5); l'usuari no els va poder trobar a la interfície nova del Termcat, i els va confirmar el 2026-10-09 (literal: «Confirmat»).
 
 ### D-37
 
-**«Coma flotant», no «punt flotant»** · `13_contrib.qmd §Substitucions obligatòries` · 2026-10-01 · `c1bac38`
+**«Coma flotant», no «punt flotant»** · `13_contrib.qmd §Formes que no s'han de fer servir` (fins al 2026-10-09, §Substitucions obligatòries) · 2026-10-01 · `c1bac38`
 
 És el terme del corpus: 113 ocurrències contra 4, totes a `A2.qmd`, unificades el 2026-10-01.
 
 ### D-38
 
-**«Farciment» i «multinucli»** · `13_contrib.qmd §Substitucions obligatòries` · 2026-10-07 · `ca6c01a`, `4625835`
+**«Farciment» i «multinucli»** · `12_sigles_simbols.qmd §Termes` (el glossari, des del 2026-10-09; D-100) · 2026-10-07 · `ca6c01a`, `4625835`
 
 *Padding* → «farciment» és a la taula des del 2026-07-21. *Multicore* → «multinucli» és decisió de l'usuari (2026-10-07), amb el Termcat com a referència.
 
@@ -424,6 +424,12 @@ Totes dues són decisions de l'usuari (2026-10-03, fase 7 de `CLAUDE.md §Pla de
 **Operacions lògiques (AND, OR, XOR, NOT)** · `13_contrib.qmd §Codi, matemàtiques i cursiva` · 2026-10-01 · `c4c247a`
 
 Decisió de l'usuari (2026-10-01), que escriu l'ús que el corpus ja feia majoritàriament i n'hi alinea les desviacions.
+
+### D-100
+
+**El glossari de termes és l'única font del lèxic anglès–català** · `13_contrib.qmd §Anglicismes i terminologia obligatòria`, `12_sigles_simbols.qmd §Termes`, `24_specs/glossari.toml` · 2026-10-09
+
+Decisió de l'usuari (2026-10-09), literal: «Decsisió ferma, la del glosari. Substitueix la llista de `13_contib.qmp` per una remissió al glossari i l'obligació d'emprar el lèxic del glosssari o ampliar-lo»; i sobre els termes que es mantenen en anglès: «Com que l'entrada és per l'anglès, penso que és el lloc adequat per llistar els termes anglesos que hem fet servir en anglès perquè el terme català no existeix o és molt poc usat. Si es fa, caldrà afegir l'explicació al text d'introducció de la taula de del glossari. Si ho creus convenient, fes-ho.» Fins llavors, el lèxic anglès–català era a dos llocs: la taula de §Substitucions obligatòries de la guia (34 formes, de les quals 13 també eren al glossari, sense contradiccions) i el glossari, que surt del text. La guia diu ara que el lèxic és el del glossari, i que un terme nou s'hi afegeix presentant-lo al text. Les decisions de detall, propostes de Claude Code que l'usuari va acceptar totes («Endavant i opció (a)»): (1) els termes de la taula de la guia que el text feia servir però no presentava en negreta, i que per això el glossari no tenia, s'hi presenten a la primera aparició (*cache*, *branches*, *jumps*, *floating point*, *carry-in*, *carry-out*, *ripple carry*, *bandwidth*, *event* i *embedded systems*: de 108 a 117 termes); (2) les observacions d'ús de la taula (l'abast de lectura/escriptura, «biaix» i no «excés», *multinucli* invariable, el símbol `PAD`…) passen a una columna del glossari, i les genèriques («Terme preferent», «Primera aparició en un fitxer…») se'n van; (3) les formes que no són angleses (*fallo*, *aniuat*, *tamany*, «punt flotant»…) es queden a la guia, a §Formes que no s'han de fer servir, perquè no poden anar a un glossari anglès–català; (4) els termes que es mantenen en anglès (D-88) passen a una segona taula del glossari; (5) *target* es manté en anglès, com deia D-88: A1 el presentava com «**Màquina destí** (***target***)», i el glossari en deia «màquina destí», en contradicció amb la regla; (6) la negreta d'*underflow* cobreix només «subdesbordament». El que no surt del text (les observacions i la segona taula) és a `24_specs/glossari.toml`, i `gen_glossari.py` ho escriu entre els marcadors; `--comprova` avisa d'una observació d'un terme que el glossari ja no té. La regla de mantenir els identificadors quan canvia un terme ([D-35](#d-35)) passa a ser general. L'agent `revisor-linguistic` revisa contra el glossari.
 
 ## Format
 

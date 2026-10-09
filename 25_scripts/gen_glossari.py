@@ -23,16 +23,21 @@ contingut dels blocs de codi, dels comentaris HTML i de la capçalera YAML.
     python3 25_scripts/gen_glossari.py --divergencies   # només la llista d'avisos
 
 La secció és entre els marcadors <!-- glossari:inici … --> i <!-- glossari:fi -->
-de 12_sigles_simbols.qmd. Com els generadors de model (a) de les figures, la
+de 12_sigles_simbols.qmd. El que no surt del text és a 24_specs/glossari.toml (D-100):
+les observacions de cada terme (la quarta columna) i la taula dels termes que el
+llibre manté en anglès; --comprova també avisa d'una observació d'un terme que el
+glossari ja no té. Com els generadors de model (a) de les figures, la
 sortida és versionada: cal tornar-lo a executar quan una presentació canvia.
 """
 
 import re
 import sys
+import tomllib
 from pathlib import Path
 
 ARREL = Path(__file__).resolve().parent.parent
 DESTI = ARREL / "12_sigles_simbols.qmd"
+DADES = ARREL / "24_specs" / "glossari.toml"
 INICI = "<!-- glossari:inici"
 FI = "<!-- glossari:fi -->"
 
@@ -86,20 +91,34 @@ def divergencies(termes):
             if len({c.lower() for _, c, _, _ in v}) > 1}
 
 
-def taula(termes):
-    files = ["| Anglès | Català | Tema |", "| :--- | :--- | :---: |"]
+def dades():
+    return tomllib.loads(DADES.read_text(encoding="utf-8"))
+
+
+def taula(termes, obs):
+    files = ["| Anglès | Català | Tema | Observacions |", "| :--- | :--- | :---: | :--- |"]
     for clau in sorted(termes, key=lambda k: k.lower()):
         angles, catala, f, _ = termes[clau][0]
         if catala[:1].isupper() and catala[1:] == catala[1:].lower():
             catala = catala[0].lower() + catala[1:]   # majúscula d'inici de frase, no d'un nom («NaN»)
-        files.append(f"| *{angles}* | {catala} | {tema(f)} |")
-    files.append(': {tbl-colwidths="[40,45,15]" .striped}')
+        files.append(f"| *{angles}* | {catala} | {tema(f)} | {obs.get(clau, '')} |")
+    files.append(': {tbl-colwidths="[24,24,8,44]" .striped}')
     return "\n".join(files)
 
 
-def seccio(termes):
-    return (f"{INICI} (generat per 25_scripts/gen_glossari.py a partir del corpus; no l'editeu a mà) -->\n"
-            f"{taula(termes)}\n\n{FI}")   # la línia en blanc: si no, Pandoc ajunta el comentari al peu i n'escriu els atributs
+def taula_angles(en_angles):
+    files = ["| Anglès | Terme català | Motiu |", "| :--- | :--- | :--- |"]
+    for clau in sorted(en_angles, key=str.lower):
+        angles = ", ".join(f"*{a.strip()}*" for a in clau.split(","))
+        files.append(f"| {angles} | {en_angles[clau]['catala']} | {en_angles[clau]['motiu']} |")
+    files.append(': {tbl-colwidths="[24,30,46]" .striped}')
+    return "\n".join(files)
+
+
+def seccio(termes, d):
+    return (f"{INICI} (generat per 25_scripts/gen_glossari.py a partir del corpus i de 24_specs/glossari.toml; no l'editeu a mà) -->\n"
+            f"{taula(termes, d.get('observacions', {}))}\n\n"
+            f"Termes que el llibre manté en anglès:\n\n{taula_angles(d.get('en_angles', {}))}\n\n{FI}")   # la línia en blanc: si no, Pandoc ajunta el comentari al peu i n'escriu els atributs
 
 
 def informe(div):
@@ -125,9 +144,13 @@ def main():
     if i < 0 or j < 0:
         print(f"ERROR: falten els marcadors {INICI} … {FI} a {DESTI.name}", file=sys.stderr)
         return 2
-    nou = text[:i] + seccio(termes) + text[j + len(FI):]
+    d = dades()
+    sobreres = sorted(set(d.get("observacions", {})) - set(termes))
+    for s in sobreres:
+        print(f"[gen-glossari] {DADES.name}: «{s}» té observació i el glossari no té aquest terme", file=sys.stderr)
+    nou = text[:i] + seccio(termes, d) + text[j + len(FI):]
     if "--comprova" in sys.argv:
-        if nou != text:
+        if nou != text or sobreres:
             print(f"[gen-glossari] {DESTI.name}: la secció «Termes» no és al dia", file=sys.stderr)
             return 1
         print(f"[gen-glossari] al dia: {len(termes)} termes, {n} presentacions")

@@ -10,7 +10,8 @@ Ets el revisor lingüístic dels apunts d'EC. No edites cap fitxer: proposes.
 
 Abans de començar, llegeix:
 
-- `13_contrib.qmd §Llenguatge`, sencer: referència normativa, criteris generals, puntuació, ressaltat, anglicismes i substitucions obligatòries, sigles i notació, codi i cursiva;
+- `13_contrib.qmd §Llenguatge`, sencer: referència normativa, criteris generals, puntuació, ressaltat, anglicismes, les formes que no s'han de fer servir, sigles i notació, codi i cursiva;
+- el glossari de termes, `12_sigles_simbols.qmd §Termes`, que és el lèxic anglès–català del llibre (D-100): un terme anglès es diu com hi consta, amb les observacions de la seva fila, i els de la segona taula es mantenen en anglès;
 - `13_contrib.qmd §Decisions per tema`, la part del tema del fitxer;
 - `12_sigles_simbols.qmd`, per a les sigles.
 
