@@ -61,7 +61,7 @@ Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ s�
 | 7i | **Suggeriments de la 7g** (`TODO.md §Tasques transversals`): els 86 suggeriments sense proposta d'A9, Px, Sx, Ly i `index.qmd` (els tres desajustos de la guia i del glossari, fets el 2026-10-09). Acceptada per l'usuari el 2026-10-08, a proposta de Claude Code. Fora de la revisió externa. | Pendent | — | Opus, High |
 | 8 | **Preparar el material per als equips de revisió d'A1–A8** (l'abast i les branques, a §Estat del projecte). La feina d'aquesta fase és el material, no les branques: una nota per als revisors i l'estat de cada fitxer d'A1–A8. Els equips i el calendari els decideix l'usuari; cada equip crea la seva branca, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). T8 ja és en revisió: `!8`, fusionada el 2026-10-06 fins a §8.7 exclosa. | Pendent | — | — |
 
-Sense fase pròpia, quan hi hagi ocasió i sense bloquejar res: `#cau-boolea-c` (pendent d'un col·lega), el protocol de gestió d'errades i la taula de referències d'`index.qmd` (`TODO.md`). Les eines de les sessions són a `13_contrib.qmd §IA` (skills, subagents i hooks).
+Sense fase pròpia, quan hi hagi ocasió i sense bloquejar res: `#cau-boolea-c` (pendent d'un col·lega) i la taula de referències d'`index.qmd` (`TODO.md`). Les eines de les sessions són a `13_contrib.qmd §IA` (skills, subagents i hooks).
 
 ## Flux de treball
 

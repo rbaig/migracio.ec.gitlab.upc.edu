@@ -659,9 +659,17 @@ Des del 2026-10-09 el hook se salta el `make render` quan el commit només toca 
 
 ### D-74
 
-**Calendari del laboratori: `verifica_calendari.py`, l'agent `verificador-calendari` i el hook** · `13_contrib.qmd §IAs` · 2026-10-08
+**Calendari del laboratori: `verifica_calendari.py`, l'agent `verificador-calendari` i el hook** · `13_contrib.qmd §IA` · 2026-10-08
 
 Decisió de l'usuari (2026-10-08, fase 7g): «Com que canviarà a cada quadrimestre, escriu un agent per fer-ne la comprovació i afegeix-lo al protocol de comprovació de commits que afectin a `Lcalendari.qmd`». L'auditoria de la fase hi va trobar una data que no cau en el dia de la seva fila (el 07/05/2026, dijous, a la fila dels divendres). La part mecànica (dates, dies, ordre i sessions) la fa un script, perquè no depengui del model; el que demana judici (quadrimestre vigent, festius, una data amb l'horari d'un altre dia), l'agent, que només informa. El hook d'abans del commit hi afegeix el pas 4, que no bloqueja, com els altres avisos (D-61). Al mateix temps, el calendari passa a ser només de l'HTML: al PDF, un capítol «Calendari» amb la remissió al web (abans hi sortia un capítol buit amb el títol del quadrimestre, perquè Quarto en treia el títol fora del bloc HTML).
+
+**El calendari és una demo** (declaració de l'usuari, 2026-10-09, literal: «demo del quadrimestre natural (quan hi ha més grups)»): mostra el quadrimestre de primavera, el que té més grups, i no s'ha de mantenir al dia per a cada quadrimestre. La data que l'auditoria hi va trobar, el 07/05/2026 (dijous) a la fila dels divendres, es queda com a error conegut de la demo: `verifica_calendari.py` la continuarà marcant (✗) cada vegada que un commit toqui el fitxer. És la recomanació de Claude Code; l'usuari no s'hi ha pronunciat, i corregir-la és una línia.
+
+### D-96
+
+**Errades del material publicat: una *issue* amb l'etiqueta `errada`, i el commit que la tanca** · `13_contrib.qmd §Errades del material publicat` · 2026-10-09
+
+Fins al 2026-10-07, `13_contrib.qmd` tenia una capçalera buida, «Gestió d'errades», i el `TODO.md` en tenia l'entrada «Gestió d'errades post-commit: definir protocol». Decisió de l'usuari (2026-10-09): «Si tens una proposta clara, aplica-la. Si no, elimina l'entrada». La proposta de Claude Code és la mínima que encaixa amb el que ja hi havia: les *issues* de GitLab per informar-ne, perquè no cal ser membre del grup per veure-les i deixen rastre; la correcció pel camí de qualsevol canvi (la branca `fix/` de §Convenció de noms de branques, o el push directe de l'editor, [D-59](#d-59)); i `Closes #n`, perquè GitLab tanqui la *issue* quan el commit arribi a `main`. Queden fora, perquè són decisions de política i no de procediment: si es publica una llista d'errades per als alumnes i com s'avisa d'una correcció un cop començades les classes. El 2026-10-09 el projecte no tenia cap etiqueta ni cap *issue* oberta (`glab api projects/7916/labels`): l'etiqueta `errada` s'ha de crear.
 
 ## Operació de les sessions
 

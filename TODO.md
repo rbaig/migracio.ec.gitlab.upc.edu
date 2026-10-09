@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**25 entrades vives** (recompte del 2026-10-09, en retirar «Confirmar al Termcat…» i «Guia i glossari: tres desajustos…», executades; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**22 entrades vives** (recompte del 2026-10-09, en retirar «Renumeració de lliuraments», «Calendari del laboratori…» i «Gestió d'errades post-commit»; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 5 · `§Tasques transversals` 6 · `§Tasques per tema` 5 · `§Tasques globals` 9 (suma 25, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 5 · `§Tasques transversals` 6 · `§Tasques per tema` 3 · `§Tasques globals` 8 (suma 22, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -135,29 +135,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   grep -c "^\[crops" 24_specs/retalls.toml   # 0 a 7ac2fc9
   ```
 
-### Laboratori
-
-- **Renumeració de lliuraments (2026-07-05)**: els fitxers de lliurament de L2–L6 s'han renumerat al número de sessió (`s2_*`–`s6_*`; abans anaven una sessió endarrerits i col·lidien amb L1). Cal revisar-ne els noms quan es decideixi el mecanisme de descàrrega.
-
-  El que quedava d'això al `TODO/` eren sis marcadors **de zero bytes** (comprovat amb `git cat-file -s`: 0 tots sis), les rutes dels quals eren tota la informació que contenien. S'han esborrat el 2026-09-22 i les rutes es preserven aquí, que és el que s'ha de revisar:
-
-  ```
-  TODO/laboratori/L0/TODO.s
-  TODO/laboratori/L1/TODO.s
-  TODO/laboratori/L2/TODO.s
-  TODO/laboratori/L3/TODO.s
-  TODO/laboratori/L4/TODO.s
-  TODO/laboratori/L5/TODO.s
-  ```
-
-  Noteu el desfasament que la renumeració havia de resoldre, i que aquests noms encara reflecteixen: numerats `L0`–`L5` per a sessions que ara són `L1`–`L6`. Es recuperen (buits) amb `git show 3a3aea6:<ruta>`.
-
-- **Calendari del laboratori: el 07/05/2026 i el quadrimestre, per confirmar** (registrada el 2026-10-08, fase 7g, en la primera passada de `25_scripts/verifica_calendari.py`). (1) La fila dels divendres (subgrups 31, 32 i 33) diu 07/05 a la sessió 5, i el 07/05/2026 és dijous. La setmana té l'1 de maig, divendres i festiu: si la universitat va fer el dijous 7 amb horari de divendres, és correcte; si no, és una errada. (2) El quadrimestre, «primavera 2025-26», ja és passat: el calendari s'ha de refer per a la primavera 2026-27, quan la FIB en publiqui les dates. Des de la fase 7g la taula només surt a l'HTML (el PDF hi remet), i el hook d'abans del commit hi passa l'script quan un commit toca `04_laboratori/Lcalendari.qmd`, amb l'avís de passar l'agent `verificador-calendari` (D-74). Confirmació de l'usuari.
-
-  ```bash
-  python3 25_scripts/verifica_calendari.py   # ✗ fila «31, 32, 33»: 07/05/2026 és dijous, no divendres (2026-10-08)
-  ```
-
 ---
 
 ## Tasques globals
@@ -200,8 +177,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **PDF: comportament de `layout=` en callouts encastats**: es respecta la separació (`-1` del `layout=`), però no el repartiment si hi ha línies de text que no hi caben (falta l'exemple concret). ⚠️ **No se sap de quin format és**: fins al 2026-10-07, `13_contrib.qmd §Imbricacions` en tenia la mateixa observació amb el títol «HTML: comportament en callouts encastats», i aquesta entrada diu PDF; cap de les dues no porta cap exemple. Aquella subsecció s'ha tret de la guia en partir-la (fase 7e), perquè era una observació sense verificar i no una regla, i aquesta entrada n'és ara l'única còpia (`git show a125e3f:13_contrib.qmd`, línies 843–845). *(Fins al 2026-10-06 aquesta entrada començava amb «figures dins callouts no queden centrades → investigar via `preamble.tex`», que és a l'arxiu, `24_specs/arxiu_todo.md` §Entrades retirades → Executades.)*
 
-- **Gestió d'errades post-commit**: definir protocol. La capçalera buida `### Gestió d'errades` de `13_contrib.qmd` (a `ebdf055`, `:779`, seguida directament de `## Eines`) se'n va treure el 2026-10-07, en partir la guia (fase 7e): la tasca queda només aquí. Quan es defineixi el protocol, tindrà secció pròpia a `13_contrib.qmd §Eines`.
-
 - **HTML: un índex de continguts de tot el llibre, com el del PDF** (petició de l'usuari, 2026-10-09: «Té sentit a la versió HTML afegir un índex de continguts per poder tenir una visió general? (com en el PDF)»). Avui l'HTML en té dos de parcials: la barra lateral, amb els capítols (les parts, plegades: `sidebar: collapse-level: 1`), i la «Taula de continguts» de cada pàgina (`toc: true`, a l'esquerra), amb les seccions del capítol obert i prou. Cap vista no mostra les seccions de tot el llibre alhora, que és el que dona l'índex del PDF. **Valoració de Claude Code**: té sentit, per a la visió general (també per als revisors), i és barat. Un script de `pre-render`, com el de les taules de `auto_riscv/`, llegeix les capçaleres `#` i `##` dels `chapters:` de `_quarto.yml`, en l'ordre del llibre, i en genera una llista d'enllaços (`[1.4 Codificació…](01_apunts/A1.qmd#sec-…)`) que es mostra només a l'HTML (`::: {.content-visible when-format="html"}`), plegada per parts. Els títols i els enllaços surten del text: no s'han de mantenir a mà. No toca A1–A8. ✅ **Decidit per l'usuari** (2026-10-09): profunditat fins a `###`; i una pàgina pròpia entre «👋 Presentació» i «Apunts», no dins de la Presentació, perquè «és massa llarga per formar part de 👋 Presentació». El punt delicat és el PDF: la pàgina ha de ser un capítol per sortir al menú de l'HTML, però no ha de deixar res al PDF. Sessió nova: Opus, effort alt; un commit, amb `make render-complet` per comprovar que el PDF no canvia.
 
 ### Eines
@@ -219,6 +194,4 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   | `:195`, `:196` | Versió de la norma **ISO de C** (i si és tancada). La taula ja cita `[@iso9899_2024]`: el pendent és **verificar i tancar**, no decidir de zero |
   | `:197`, `:198` | Versió de **GCC** (`[@gcc16]`), i consolidar noms i versions de totes les files |
   | `:199` | **Versió numèrica o de data per a CSR** (fila de RISC-V, `[@riscv_csrs]`): decidir si la referència s'identifica per número de versió o per data. ✅ **No constava en cap registre anterior** |
-
-  La fila duplicada de *Toolchain* ja no hi és (verificat 2026-07-13: la taula té una sola fila per ítem).
 
