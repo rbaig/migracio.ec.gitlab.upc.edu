@@ -643,7 +643,7 @@ def taula_guia(marca):
              'comprovació i generadors amb la sortida versionada (' + patrons('eina') + ')', 'Les comprovacions que diuen '
              '«Sempre» a la taula següent'),
             ('1', 'Menor', 'Només canvien `.qmd`, i cap línia canviada (afegida o treta) no porta marcatge: ni `@`, `{`, '
-             '`}`, `$`, `|`, `\\`, `<` o `![`, ni comença amb `:::`, `---`, `#`, una tanca de codi o `[^`, ni és buida. '
+             '`}`, `$`, `\\`, `<`, `![` o la barra vertical, ni comença amb `:::`, `---`, `#`, una tanca de codi o `[^`, ni és buida. '
              'Hi entra el codi d\'un bloc sense marcatge, que el render no interpreta',
              'Les de la prosa'),
             ('2', 'Contingut', 'Qualsevol altre canvi del text del llibre (' + patrons('contingut') + '), o un fitxer '
