@@ -603,6 +603,12 @@ Només la vinyeta; les ordres que la segueixen continuen al `TODO.md`.
 
   Queda viva per a les esmenes de l'usuari als originals: `A3_deps_exemple.svg`, `A3_ba_exemple.svg`, `A3_ba_func.svg`, `A3_pila_uninivell.svg` i `A3_pila_multinivell.svg`.
 
+### «Suggeriments de la fase 7g sense proposta concreta, per decidir» (§Tasques transversals)
+
+Retallada el 2026-10-10: la fase 12 (correccions ortogràfiques i gramaticals amb hunspell i LanguageTool) va corregir P2:84 i :158 com a part de l'error 30 de la seva entrada, perquè l'Optimot no admet «a nivell de» en sentit figurat en registres formals. Se'n treu el fragment «P2:84 i :158 «a nivell de paraula/byte» → «per paraules», «byte a byte»;» de la vinyeta «Problemes», i la resta de l'entrada no canvia. La vinyeta d'abans, sencera:
+
+  - **Problemes**: P1:136 «emprant» (la resta del fitxer diu «usant»); P2:95 i :167, `.dword` sense dir la regla d'alineació (RARS alinea a 4, l'ABI a 8), i la resposta canvia; P2:80, la nota dona la resposta de b); P2:261, les dades no posen a prova `.align 0`; P2:84 i :158 «a nivell de paraula/byte» → «per paraules», «byte a byte»; P3:43 «la suma amb si mateix» → «el doble»; P3:52 «emmagatzemat» → «guardat»; P4:260–261, :407 i :438, tres verbs per al mateix («utilitzant», «fent servir», «usant»); P4:18, «complement a 2 (Ca2)» a la primera aparició; P5:93 i :101, «Suposant…:» sense verb principal; P5:113 i :212 *sticky* sense terme català (com A5); P5:72–219 *half* en cursiva a cada aparició; P6:149–150 «inst»; P7:180 «L word = lectura de 2 bytes» (a EC, la paraula és de 32 bits: cal mirar-ho a l'original); P7:261–262, sagnat de 3 espais; P8:269, l'enunciat no diu que la MC és VIPT, i S8 ho suposa.
+
 ### «Protocols d'execució dels generadors i de les comprovacions, per nivells» (§Tasques globals → Eines)
 
 Retallada el 2026-10-10, en fer-ne la part principal (D-103, D-104 i D-105 del registre de decisions). El text d'abans:

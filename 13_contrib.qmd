@@ -104,7 +104,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### T5
 
 - **`quartet`** (no `nibble`): terme preferit per als grups de 4 bits.
-- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions al calcular rangs i errors de representació. La **precisió** $p$ compta els bits significatius de la mantissa, bit ocult inclòs: la fracció en té $p-1$ ($b_{-1} \ldots b_{-(p-1)}$), i l'exponent és $e$ tant en base 2 com en la notació científica decimal ($v = m \times 10^e$) ([D-12]({{< var decisions >}}#d-12)).
+- **Fracció** vs. **mantissa**: en el context IEEE 754, `F` designa la fracció (els 23/10 bits emmagatzemats); la **mantissa** és `1.F` (inclou el bit ocult). Usar-los amb precisió evita confusions en calcular rangs i errors de representació. La **precisió** $p$ compta els bits significatius de la mantissa, bit ocult inclòs: la fracció en té $p-1$ ($b_{-1} \ldots b_{-(p-1)}$), i l'exponent és $e$ tant en base 2 com en la notació científica decimal ($v = m \times 10^e$) ([D-12]({{< var decisions >}}#d-12)).
 - **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des de l'LSB.
 - **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`). És una regla dels problemes i les solucions: la teoria (A5) presenta aquests càlculs amb fórmules ([D-81]({{< var decisions >}}#d-81)).
 - **Solucions**: estructura de cada solució: `**Enunciat**: @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
@@ -178,7 +178,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Sortida del programa**: `li a7, 93` + `ecall` (syscall `exit2`). No es fa servir `startup.s`.
 - **Expressions aritmètiques als operands**: a la **teoria, els problemes i els exàmens** s'admeten (`.space NF*NC*4`, `li t0, NC*4`, `la t0, vec+8`), perquè fan visible l'estructura del càlcul. Al **laboratori** cal el **literal ja calculat**, amb l'expressió al comentari; i `la rd, etiqueta+desplaçament` se substitueix per la parella `la` + `addi`. Font única: `@imp-ec-operands-expressions` (el cas de `la`, a `@imp-ec-la-offset`).
 - **Directives de segment**: vegeu §T2 i T3, `.section`. Al laboratori la regla és obligatòria per motiu tècnic, no d'estil.
-- **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes fan copy-paste.
+- **Codi dels exercicis**: integrat al `.qmd` (no hi ha fitxers `.s` separats). Els alumnes el copien i l'enganxen.
 - **Estructura de cada exercici**: enunciat en `{#exr-...}` + solució en `{#sol-...}`.
 - **Lliuraments** i **Lectura prèvia**: dues seccions fixes al principi de cada sessió, en aquest ordre (§Ordre i atribut de seccions no numerades). «Lliuraments» porta una taula amb els exercicis i el nom del fitxer de lliurament; «Lectura prèvia» porta una taula amb columnes «Concepte» i «On trobar-ho».
 - **Oracle i tècnica: on va cada cosa**. Una verificació a RARS té dues parts, i tenen destinataris diferents ([D-27]({{< var decisions >}}#d-27)):
@@ -236,7 +236,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
     - Les quantitats petites (una instrucció, dos bytes) o genèriques (mil, deu mil) al cos del text preferiblement amb lletres.
     - La resta en nombres: "5 V", "8 bits", "12 bits", "16 bits", "32 bits", "RV32I", `x0-x31`.
     - **Separador de milers**: espai («65 535»), no coma anglesa («65,535», ambigua amb la coma decimal catalana) ni punt.
-    - **Unitats de mesura i percentatges**: entre el nombre i la unitat o el símbol %, un espai («80 %», «32 bits», «4 KiB», «2 GHz»), com demana l'Optimot. Al font s'escriu un espai normal, i el filtre `25_scripts/espai_unitats.lua` el converteix en un espai que no es parteix a final de línia; a les fórmules, `\ ` («$39{,}2\ \%$») ([D-87]({{< var decisions >}}#d-87)).
+    - **Unitats de mesura i percentatges**: entre el nombre i la unitat o el símbol %, un espai («80 %», «32 bits», «4 KiB», «2 GHz»), com demana l'Optimot. Al codi font s'escriu un espai normal, i el filtre `25_scripts/espai_unitats.lua` el converteix en un espai que no es parteix a final de línia; a les fórmules, `\ ` («$39{,}2\ \%$») ([D-87]({{< var decisions >}}#d-87)).
 - **Prefixos de mida binaris vs. decimals**: `KiB`, `MiB`, `GiB`, `TiB` (IEC, base 2) per a qualsevol mida que sigui una potència de 2 —mida de cau, de memòria, de pàgina, de bloc, rangs d'adreçament, etc.—, que és la immensa majoria de casos a EC: registres, memòries cau i memòria principal. `KB`, `MB`, `GB`, `TB` (base 10) es reserven per a les mides genuïnament decimals: l'emmagatzematge secundari (p. ex. la capacitat comercial anunciada d'un disc), els costos ($/GB) i les amplades de banda (GB/s, TB/s) ([D-86]({{< var decisions >}}#d-86)). Explicat a `A2.qmd` (@cau-prefixos-binaris), primera aparició al llibre; en cas de dubte, per defecte `KiB`/`MiB`/`GiB`/`TiB`.
 - **Hexadecimals**: tres regles.
     - **Majúscules o minúscules**: la preferència és per majúscules (p. ex. `0xE6666666`), però s'admeten minúscules perquè és el criteri de RARS. No cal, doncs, unificar-ho sistemàticament allà on ja apareguin totes dues grafies.
@@ -245,7 +245,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 - **Ordre substantiu–adjectiu**: els adjectius **classificadors** van darrere del nom: «precisió simple», «precisió doble», «la instrucció següent», «l'element següent». Anteposar-los («simple precisió», «la següent instrucció») és un calc de l'anglès. Excepcions, que sí que van davant: ordinals, quantificadors i indefinits, «mateix», «propi», «altre», adjectius valoratius idiomàtics i «simple» en el sentit de «mer» («un simple error tipogràfic») ([D-31]({{< var decisions >}}#d-31)). Els **qualificatius** també van preferentment darrere: «una importància creixent», «les latències llargues», «dues modificacions possibles», «el format mínim» (no «una creixent importància») ([D-72]({{< var decisions >}}#d-72)).
 - **«No» davant d'un nom**: amb guionet, com fixa l'IEC per a aquest ús de *no* («no-violència», «no-intervenció»): «no-associativitat», «no-distributivitat». Davant d'un adjectiu, sense guionet: «no és distributiva» ([D-32]({{< var decisions >}}#d-32)).
 - **Veu impersonal**: Sempre: «Cal verificar que no hi ha errors» (no «hem de verificar»). Excepcions ([D-33]({{< var decisions >}}#d-33)):
-    - **`{.callout-tip}`**: segona persona del singular per a instruccions directes a l'estudiant (*calcula*, *determina*, *suposa que...*). També hi van les solucions dels problemes. **Excepció dins la pròpia excepció**: als exemples *narrats* (una traça o un escenari que es va desenvolupant pas a pas, no una instrucció puntual), s'admet el «nosaltres» expositiu (*Considerem un sistema amb...*, *Suposem que...*, *Sabem que...*). El criteri per triar entre tots dos: si la frase estableix el marc o l'estat d'un exemple, «nosaltres»; si demana una acció puntual a l'estudiant («calcula», «indica»), 2a persona del singular.
+    - **`{.callout-tip}`**: segona persona del singular per a instruccions directes a l'estudiant (*calcula*, *determina*, *suposa que...*). També hi van les solucions dels problemes. **Excepció dins de l'excepció mateixa**: als exemples *narrats* (una traça o un escenari que es va desenvolupant pas a pas, no una instrucció puntual), s'admet el «nosaltres» expositiu (*Considerem un sistema amb...*, *Suposem que...*, *Sabem que...*). El criteri per triar entre tots dos: si la frase estableix el marc o l'estat d'un exemple, «nosaltres»; si demana una acció puntual a l'estudiant («calcula», «indica»), 2a persona del singular.
     - **Enunciats dels problemes (`#exr-` de `P1.qmd`–`P9.qmd`)**: segona persona del **plural** («Traduïu», «Calculeu», «Contesteu»; no «Tradueix», «Calcula», «Contesta»).
     - **Instruccions operatives pas a pas**: imperatiu en segona persona del plural (*descarregueu*, *obriu*, *executeu*).
 
@@ -336,7 +336,7 @@ Les entrades s'ordenen **alfabèticament** i segueixen el format:
 
 **Regla general**: el format el determina la **naturalesa de l'element**, no el context on apareix.
 
-- **Backtick** (`` ` ``) — **codi**: tot allò que existeix literalment en un programa, en una ISA o en un fitxer: registres (`t0`; també els CSR: `mepc`, `mstatus`…, fins i tot en títols de secció, com fa T9), instruccions (`addi`), directives (`.data`), variables i expressions C (`i`, `p++`), camps de bits (`opcode`), adreces concretes (`0x10010000`), fitxers, comandes i etiquetes.
+- **Backtick** (`` ` ``) — **codi**: tot allò que existeix literalment en un programa, en una ISA o en un fitxer: registres (`t0`; també els CSR: `mepc`, `mstatus`…, fins i tot en títols de secció, com fa T9), instruccions (`addi`), directives (`.data`), variables i expressions C (`i`, `p++`), camps de bits (`opcode`), adreces concretes (`0x10010000`), fitxers, ordres i etiquetes.
 - **LaTeX math** (`$…$`) — **matemàtiques**: quantitats, variables i expressions matemàtiques: mides genèriques ($n$ bits, $B = 2^b$), índexs de fórmules i algorismes ($q_i$), rangs ($[-2^{11}, 2^{11}-1]$), operacions ($rd \leftarrow M_w[rs1 + SignExt(offset)]$). Els superíndexs numèrics s'escriuen sempre en math (`$2^{8}$`), també dins de cel·les de taula; no s'usa la sintaxi Pandoc `2^8^`.
 - **Cursiva** — **llengua**: anglicismes en primera aparició (vegeu §Anglicismes) i èmfasi lleu. Mai per a codi ni per a variables matemàtiques.
 - **Text pla** — la resta: nombres amb unitats («8 bits», «4 bytes»), noms d'arquitectures i extensions (RISC-V, RV32I, extensió M), tipus de format d'instrucció (S, B).
@@ -393,7 +393,7 @@ Els símbols són els de la taula `## Notació` de `12_sigles_simbols.qmd`. Quan
     - Codi `addi    t0, s1, 100`, `int main() { return 0; }`.
     - Camps de bits `opcode`, `funct3`.
     - Variables `i` i altres elements de codi `>>`, `i++`.
-    - Comandes `quarto render --to html`.
+    - Ordres `quarto render --to html`.
     - Noms de fitxers `A1.qmd`, `15_bibliografia.bib`.
     - Noms de branques `contingut/t5-vectors`.
     - Noms d'etiquetes `#nte-TODO`, `@sec-callouts`.
@@ -548,18 +548,18 @@ Els diagrames d'arbre i grafs senzills es generen amb **Graphviz** (`dot -Tsvg`)
 **Fitxers:**
 
 - Font: `24_specs/<F><N>_nom_figura__graphviz.gv`, amb la mateixa arrel que l'SVG.
-- Sortida: `22_figs_originals/<F><N>_nom_figura__graphviz.svg`, generat a mà amb `dot` i el post-procés de més avall, i versionat; el pre-render en fa les variants `__original_light` i `__original_dark` com amb qualsevol altra figura de `22_figs_originals/`.
+- Sortida: `22_figs_originals/<F><N>_nom_figura__graphviz.svg`, generat a mà amb `dot` i el postprocés de més avall, i versionat; el pre-render en fa les variants `__original_light` i `__original_dark` com amb qualsevol altra figura de `22_figs_originals/`.
 
-**Comanda de generació:**
+**Ordre de generació:**
 
 ```bash
 dot -Tsvg 24_specs/<F><N>_nom_figura__graphviz.gv -o /tmp/raw.svg
 ```
 
-Després del `dot`, cal aplicar el post-procés següent (vegeu el fitxer font `.gv` per a un exemple complet):
+Després del `dot`, cal aplicar el postprocés següent (vegeu el fitxer font `.gv` per a un exemple complet):
 
 1. `width="100%"` i `height` eliminat; `viewBox` en enters.
-2. `font-family` amb el stack complet: `'Liberation Sans', Arial, Helvetica, sans-serif`.
+2. `font-family` amb l'stack complet: `'Liberation Sans', Arial, Helvetica, sans-serif`.
 3. Fons blanc del canvas (`<polygon fill="white">`) → `fill="none" stroke="none"`.
 4. `fill="#343a40"` explícit a cada element `<text>`.
 5. Color de les arestes: `#adb5bd` (stroke neutre del sistema de disseny).
@@ -669,7 +669,7 @@ Totes les capçaleres `##`, `###` i `####` dels fitxers `Ax.qmd` han de tenir un
 4. Substitueix ` — ` i `—` per ` ` o `-`.
 5. Tota seqüència de caràcters no alfanumèrics → un sol guió `-`.
 6. Elimina guions inicials i finals.
-7. Si el slug resultant ja existeix al fitxer, afegeix `-1`, `-2`… per unicitat. **Millor solució:** fer el títol de la capçalera prou descriptiu perquè el slug sigui únic sense sufix numèric (p. ex. `### Algorisme {#sec-algorisme-multiplicacio}` en lloc de `{#sec-algorisme}`).
+7. Si l'slug resultant ja existeix al fitxer, afegeix `-1`, `-2`… per unicitat. **Millor solució:** fer el títol de la capçalera prou descriptiu perquè l'slug sigui únic sense sufix numèric (p. ex. `### Algorisme {#sec-algorisme-multiplicacio}` en lloc de `{#sec-algorisme}`).
 
 **Excepcions:**
 - Les capçaleres dins callouts (`## Títol del callout`) **no** reben `{#sec-}` (són títols visuals, no seccions del document).
@@ -779,7 +779,7 @@ h1, h2, h3, h4,
 ### Quarto: notes generals
 
 - Ni les etiquetes (*labels*) ni els ID poden incloure guions baixos (`_`).
-- Una bona font per aprendre és la [pròpia documentació de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/).
+- Una bona font per aprendre és la [documentació mateixa de Quarto](https://github.com/quarto-dev/quarto-web/blob/main/docs/).
 - `::: {` (amb espai, Quarto) però ```{` (sense espai, Markdown).
 
 ## Eines
@@ -795,7 +795,7 @@ Abans de contribuir cal tenir instal·lat:
     - [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker), amb el diccionari [català](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker-catalan)
         - Els mots del projecte (els mnemònics, els noms propis, els termes que els diccionaris no tenen) són a `24_specs/diccionari.txt`, un per línia, el mateix diccionari que fa servir `make comprova` (§Comprovacions per nivells). Un mot legítim nou s'hi afegeix en el mateix commit que el fa servir.
 - **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
-- **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que s'instal·la des de la pròpia CLI de Quarto:
+- **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que s'instal·la des de la CLI de Quarto mateixa:
 
 ```bash
 quarto install tinytex
@@ -952,7 +952,7 @@ Durant la **fase de revisió externa**, cada grup de treball manté una sola bra
 
 **Assumpte**: una línia curta, en imperatiu, que digui **què** canvia i **on**. Sense prefixos fixos (`fix:`, `docs:`, `[T5]`…): la línia d'assumpte és el que es veu a `git log --oneline` i al `git blame`, i el text repetit la fa menys llegible.
 
-**Cos**: explica el **perquè**. El diff ja diu el què. Quan és pertinent, hi ha d'aparèixer també per què el problema no es va detectar abans, o per què s'ha triat aquesta via i no una altra. Si el canvi repara feina pròpia, s'hi diu obertament: el valor del missatge és que la propera persona —o la propera sessió— no repeteixi l'error.
+**Cos**: explica el **perquè**. El diff ja diu el què. Quan és pertinent, hi ha d'aparèixer també per què el problema no es va detectar abans, o per què s'ha triat aquesta via i no una altra. Si el canvi repara feina pròpia, s'hi diu obertament: el valor del missatge és que la persona següent —o la sessió següent— no repeteixi l'error.
 
 **Autoria**: la feina assistida per IA porta una línia `Co-Authored-By:` al final. L'autoria del contingut és de qui revisa i aprova cada canvi, no del model.
 

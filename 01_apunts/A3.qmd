@@ -12,7 +12,7 @@ A **EC**, les traduccions de C a assemblador han de ser **el més literals possi
 
 ### Desplaçaments lògics {#sec-desplacaments-logics}
 
-Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions especificat als **5 bits** de menys pes del **registre** `rs2`, omplint les posicions vacants amb **`0`s**. Les variants `slli` i `srli` fan la mateixa operació però el nombre de posicions es codifica directament com un **immediat** de **5 bits** (`shamt`, *shift amount*)[^shamt]. En tots els casos, el nombre de posicions s'interpreta com un natural.
+Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions especificat als **5 bits** de menys pes del **registre** `rs2`, omplint les posicions vacants amb **zeros**. Les variants `slli` i `srli` fan la mateixa operació però el nombre de posicions es codifica directament com un **immediat** de **5 bits** (`shamt`, *shift amount*)[^shamt]. En tots els casos, el nombre de posicions s'interpreta com un natural.
 
 [^shamt]: Els 7 bits de més pes de l'immediat de 12 bits (`imm[11:5]`) no formen part del nombre de posicions: fan de `funct7` i distingeixen `srli` (`0000000`) de `srai` (`0100000`).
 
@@ -108,7 +108,7 @@ Les posicions vacants s'omplen amb una còpia del bit de signe.
         srai    t0, t0, 2       # t0 = 0xE6666666
 ```
 
-El bit de signe de `0x99999999` és `1`, de manera que les dues posicions que queden vacants a l'esquerra s'omplen amb `1`s.
+El bit de signe de `0x99999999` és `1`, de manera que les dues posicions que queden vacants a l'esquerra s'omplen amb uns.
 :::
 
 ::: {#cau-instruccions-no-sla .callout-caution}
@@ -707,7 +707,7 @@ Si el primer operand de `||` és cert (`a >= b`), el salt a `llavors` evita aval
 
 ### Sentència `switch` {#sec-switch}
 
-La sentència `switch` selecciona una d'entre múltiples clàusules `case` comparant el resultat d'una expressió entera amb constants. Si cap coincideix, s'executa la clàusula `default` si existeix.
+La sentència `switch` selecciona una d'entre múltiples clàusules `case` comparant el resultat d'una expressió entera amb constants. Si no en coincideix cap, s'executa la clàusula `default` si existeix.
 
 ```{.c filename="C"}
 switch (expressio) {
@@ -2047,7 +2047,7 @@ El **carregador** (*loader*) és un programa del sistema operatiu que llegeix el
 
 1. Llegeix la capçalera del fitxer executable per determinar la mida de les seccions de codi i dades, i reserva memòria principal suficient.
 2. Copia les instruccions i les dades del fitxer executable a la memòria.
-3. Copia a la pila els paràmetres del programa principal expressats a la línia de comandes (si n'hi ha).
+3. Copia a la pila els paràmetres del programa principal expressats a la línia d'ordres (si n'hi ha).
 4. Inicialitza els registres del processador, de manera que `sp` apunta al cim de la pila.
 5. Salta a una rutina d'arrencada (*startup*) dins l'executable, la qual copia els paràmetres `argc` i `argv` de la pila als registres `a0` i `a1` i fa una crida a `main`.
 

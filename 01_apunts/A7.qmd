@@ -77,7 +77,7 @@ La latència, però, segueix sent el problema de sempre: la GDDR6 augmenta l'**a
 
 Els acceleradors d'IA porten aquesta lògica a l'extrem. En entrenar una xarxa neuronal, s'han de moure quantitats ingents de dades (pesos del model, activacions, gradients) entre la memòria i els nuclis de càlcul milers de vegades per segon. El coll d'ampolla no sol ser la velocitat de càlcul sinó precisament l'**amplada de banda de memòria**: és el que determina quants paràmetres del model es poden processar per segon. Això ha portat a dissenyar xips com l'H100 d'NVIDIA amb fins a 80 GiB d'HBM3 i una amplada de banda de 3,35 TB/s, un valor que hauria semblat de ciència-ficció fa una dècada.
 
-En definitiva: el gap entre càlcul i memòria no és un problema exclusiu dels processadors convencionals, sinó un repte fonamental de tota l'arquitectura de computadors moderna, especialment visible en les aplicacions d'IA que definiran la computació dels propers anys.
+En definitiva: el gap entre càlcul i memòria no és un problema exclusiu dels processadors convencionals, sinó un repte fonamental de tota l'arquitectura de computadors moderna, especialment visible en les aplicacions d'IA que definiran la computació dels anys vinents.
 :::
 
 ### Localitat dels programes {#sec-localitat}
@@ -165,7 +165,7 @@ Com que $B = 2^b$, aquestes operacions es redueixen a una simple descomposició 
 :::: {#tip-mc-numbloc .callout-tip}
 **Pregunta**: Suposem blocs de mida $B = 16$ bytes ($b = 4$) i una adreça $A$ = `0x100100F8`. Determina el número de bloc i el desplaçament.
 
-**Solució**: Descomposem l'adreça en binari separant els 4 bits de menys pes:
+**Solució**: Descomponem l'adreça en binari separant els 4 bits de menys pes:
 
 $$A = \underbrace{0001\,0000\,0000\,0001\,0000\,0000\,1111}_{\text{num\_bloc}
 = \texttt{0x100100F}}\;\underbrace{1000}_{\text{desplaçament} = 8}$$
@@ -200,7 +200,7 @@ En accedir a una dada, l'MC comprova si el bloc que la conté és present:
 $$t_{acc} = \begin{cases} t_h & \text{(encert)} \\ t_h + t_p & \text{(fallada)}
 \end{cases}$$
 
-S'anomenen **taxa d'encerts** ($h$) i **taxa de fallades** ($m$) les fraccions d'accessos que resulten en encert i en fallada respectivament:
+S'anomenen **taxa d'encerts** ($h$) i **taxa de fallades** ($m$) les fraccions d'accessos que acaben en encert i en fallada respectivament:
 
 $$h = \frac{\text{núm. encerts}}{\text{núm. referències}} \qquad m = \frac{\text{núm. fallades}}{\text{núm. referències}} = 1 - h$$
 
@@ -411,7 +411,7 @@ El diagrama de blocs de la @fig-ca-diagrama mostra que ara tots els comparadors 
 Diagrama de blocs d'una lectura en una memòria cau completament associativa: cal comparar l'etiqueta amb totes les línies en paral·lel.
 :::
 
-La memòria cau completament associativa és el cas límit $N_C = 1$: un sol conjunt que conté totes les línies. Des d'aquest punt de vista, les tres polítiques d'emplaçament no són categories separades sinó els extrems i el punt mig d'un mateix espectre, parametritzat pel nombre de conjunts $N_C$ i el grau d'associativitat $N$:
+La memòria cau completament associativa és el cas límit $N_C = 1$: un sol conjunt que conté totes les línies. Des d'aquest punt de vista, les tres polítiques d'emplaçament no són categories separades sinó els extrems i el punt mitjà d'un mateix espectre, parametritzat pel nombre de conjunts $N_C$ i el grau d'associativitat $N$:
 
 | Política | Conjunts $N_C$ | Vies $N$ |
 | :--- | :---: | :---: |
@@ -524,7 +524,7 @@ Quan una escriptura produeix una fallada (el bloc no és a l'MC), hi ha dues alt
 
 ### Combinacions habituals {#sec-escriptura-combinacions}
 
-Combinant una política d'encert amb una política de fallada s'obté la **política d'escriptura** completa. A la pràctica, no totes les combinacions són iguals de comunes:
+Combinant una política d'encert amb una política de fallada s'obté la **política d'escriptura** completa. A la pràctica, no totes les combinacions són igual de comunes:
 
 | | Amb assignació | Sense assignació |
 | :--- | :---: | :---: |
@@ -1044,7 +1044,7 @@ Tenir dos nivells permet orientar el disseny de cadascun a un objectiu diferent:
 Als processadors actuals, el nivell L1 es divideix habitualment en dues memòries cau independents:
 
 - **L1i** (memòria cau d'instruccions): de sols lectura, s'usa durant la captura (*fetch*) de cada instrucció.
-- **L1d** (memòria cau de dades): s'usa per les instruccions de lectura i escriptura (`lw`, `sw`, `lb`, `sb`…).
+- **L1d** (memòria cau de dades): s'usa per a les instruccions de lectura i escriptura (`lw`, `sw`, `lb`, `sb`…).
 
 Aquesta separació permet que ambdues memòries cau operin en paral·lel (la captura de la instrucció següent i l'accés a dades de la instrucció actual), cosa especialment rellevant en els processadors que comencen a buscar una instrucció abans d'acabar l'anterior (processadors segmentats, que no s'estudien a EC). A més, cadascuna es pot dissenyar de forma específica: L1i no necessita admetre escriptures i pot optimitzar-se per a accessos seqüencials.
 
@@ -1077,5 +1077,5 @@ La incorporació de L3 respon a la mateixa lògica que va motivar L2: a mesura q
 <!-- https://commons.wikimedia.org/wiki/File:Intel_Core_i9-13900K_Labelled_Die_Shot.jpg -->
 ![](/23_figs_externes/A7_Intel_Core_i9-13900K_Labelled_Die_Shot_800x368.jpg)
 
-Fotografia del dau (bloc de sil·lici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 2022), amb els principals components etiquetats. S'hi distingeixen els nuclis de rendiment (*P-cores*) amb les seves memòries cau L2 privades, els nuclis d'eficiència (*E-cores*), agrupats en clústers de quatre que comparteixen una L2, i la memòria cau L3 compartida que ocupa una fracció significativa de la superfície del xip (Font: [@intel_i9_die_shot]).
+Fotografia del dau (bloc de silici, *die*) de l'Intel Core i9-13900K (*Raptor Lake*, 2022), amb els principals components etiquetats. S'hi distingeixen els nuclis de rendiment (*P-cores*) amb les seves memòries cau L2 privades, els nuclis d'eficiència (*E-cores*), agrupats en clústers de quatre que comparteixen una L2, i la memòria cau L3 compartida que ocupa una fracció significativa de la superfície del xip (Font: [@intel_i9_die_shot]).
 :::

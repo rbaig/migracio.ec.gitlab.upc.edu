@@ -306,7 +306,7 @@ void descompon(int cf, int *s, int *e, int *m) {
 }
 ```
 
-Aquest codi és descriptiu de l'algorisme a nivell de bits: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, per això en assemblador es fa servir `srli`, el desplaçament lògic, que és el que descriu l'algorisme. (Aquí `srai` donaria el mateix resultat: la màscara `0x7FFFFF` esborra els 8 bits que entren per l'esquerra.)
+Aquest codi descriu l'algorisme bit a bit: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, per això en assemblador es fa servir `srli`, el desplaçament lògic, que és el que descriu l'algorisme. (Aquí `srai` donaria el mateix resultat: la màscara `0x7FFFFF` esborra els 8 bits que entren per l'esquerra.)
 
 L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 12 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menys pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
 
@@ -467,7 +467,7 @@ Comproveu que, en acabar, `cflotant` = `0xC6FA3140`, i que, amb els valors inici
 
 **Pas 2. El programa principal: registres segurs.**
 
-El programa principal és **multinivell**: crida `descompon` i després `compon`. Els valors generats abans de la primera crida que s'usen després són les adreces de `signe`, `exponent` i `mantissa`, necessàries per llegir els resultats de `descompon` abans de cridar `compon`: cal registres segurs per a elles. `ra`, en canvi, no necessita preservar-se: és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), de manera que el valor que hi deixa cada `jal ra, ...` es pot sobreescriure lliurement en la crida següent.
+El programa principal és **multinivell**: crida `descompon` i després `compon`. Els valors generats abans de la primera crida que s'usen després són les adreces de `signe`, `exponent` i `mantissa`, necessàries per llegir els resultats de `descompon` abans de cridar `compon`: calen registres segurs per a elles. `ra`, en canvi, no necessita preservar-se: és el punt d'entrada i mai no torna a cap invocant (acaba amb `ecall`), de manera que el valor que hi deixa cada `jal ra, ...` es pot sobreescriure lliurement en la crida següent.
 
 | Dada | Registre |
 | :--- | :--- |
@@ -550,7 +550,7 @@ Responeu les preguntes següents sobre el programa de conversió de coma fixa a 
 
 4. Quin dels modes d'arrodoniment (@sec-arrodoniment) aplica aquest programa de conversió? Justifiqueu-ho.
 
-5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE 754 de precisió simple però fora del rang del format de coma fixa. Indiqueu també quin és la potència de 2 més petita que compleix aquesta condició.
+5. El format de coma fixa d'aquesta sessió té un rang limitat. Indiqueu un nombre positiu que estigui dins del rang del format IEEE 754 de precisió simple però fora del rang del format de coma fixa. Indiqueu també quina és la potència de 2 més petita que compleix aquesta condició.
 :::
 
 ---
