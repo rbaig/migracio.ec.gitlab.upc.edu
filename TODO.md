@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**17 entrades vives** (recompte del 2026-10-10, en retirar «Glossari: presentacions dubtoses, per decidir», resolta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**18 entrades vives** (recompte del 2026-10-10, en afegir a §Tasques globals → Contingut global «PDF: la numeració de les taules i de les figures als capítols sense número…»; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 3 · `§Tasques globals` 6 (suma 17, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 3 · `§Tasques globals` 7 (suma 18, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -157,6 +157,12 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ```
 
 ### Contingut global
+
+- **PDF: la numeració de les taules i de les figures als capítols sense número, i el punt després del número** (petició de l'usuari, 2026-10-10: «Sí, apunta-ho a `TODO.md`. Una observació: a `# Presentació` Surt "Taula 1. ", "Taula 2. ", etc.»). Mesurat al PDF de `ccedc54` (574 pàgines, `pdftotext`): (1) Als capítols sense número, la numeració no és la del capítol: la Presentació diu «Taula 1.», «Taula 2.»… (4 taules), sense prefix; i el glossari (`12_sigles_simbols.qmd`), «Taula 6.4.» a «6.8.», com si fossin taules d'un capítol 6 (probablement el comptador del capítol numerat anterior, el laboratori 6, per comprovar). A l'HTML, «Taula 1», «Taula 2»…, sense prefix. (2) A tot el PDF, el número de taula i de figura acaba amb un punt abans dels dos punts: «Taula 2.1.: Prefixos», «Figura 2.2.: Big-endian.» (a la sortida de l'ordre de sota, «Figura N.N.:» 81 vegades, «Taula N.N.:» 21 i «Taula N.:» 4, i només 2 «Figura N.N:» sense el punt; a l'HTML, «Taula 2.1:»). Probablement és l'opció de numeració de KOMA-Script (`scrbook`, `numbers=autoendperiod`: hi posa el punt quan algun número porta lletres, com els d'un apèndix), per comprovar. Cal decidir com han de sortir les taules i les figures dels capítols sense número (sense número, amb un prefix propi, o numerades a part) i treure el punt sobrer. No toca A1–A8: és de `_quarto.yml` o de `preamble.tex`. Sessió: Opus, effort mitjà; `make render-complet` i el PDF mirat.
+
+  ```bash
+  pdftotext -layout _book/Estructura-de-computadors.pdf - | grep -o -E "(Taula|Figura) [0-9]+(\.[0-9]+)?\.?:" | sed -E 's/[0-9]+/N/g' | sort | uniq -c   # 81 Figura N.N.:, 2 Figura N.N:, 4 Taula N.:, 21 Taula N.N.: (ccedc54)
+  ```
 
 - **Equacions a MathML**: **decisió presa — mantenir MathJax 3**; el pendent és reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa). Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`): funciona (`underbrace`, `cases`, taules amb math correctes a Chrome) i elimina el JS de MathJax (render instantani, offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), numeració d'equacions inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. El desbordament mòbil ja està resolt via CSS.
 
