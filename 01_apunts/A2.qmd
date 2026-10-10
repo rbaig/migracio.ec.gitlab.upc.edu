@@ -419,7 +419,7 @@ A RARS, tant `.rodata` com `.bss` es substitueixen per `.data`: les constants no
 
 ### Etiquetes {#sec-etiquetes-assemblador}
 
-Una **etiqueta** (***label***) és un nom simbòlic que representa una adreça de memòria. Es declara escrivint el nom seguit de dos punts (`:`), sense indentació. L'assemblador la substitueix per l'adreça definitiva durant l'assemblatge o, si és d'un altre mòdul, durant l'enllaçat (@sec-compilacio).
+Una **etiqueta** (***label***) és un nom simbòlic que representa una adreça de memòria. Es declara escrivint el nom seguit de dos punts (`:`), sense sagnat. L'assemblador la substitueix per l'adreça definitiva durant l'assemblatge o, si és d'un altre mòdul, durant l'enllaçat (@sec-compilacio).
 
 ::: {#nte-rars-noms-reservats .callout-note}
 ## RARS — Noms reservats
@@ -748,20 +748,20 @@ A **EC**, es recomana:
 - Seguir sempre els mateixos criteris.
 - En C, escriure els comentaris línia per línia amb `//`, també quan n'ocupen més d'una, i no amb `/* … */`. Així es pot desactivar un bloc sencer de codi envoltant-lo amb `/* … */` (per exemple, per provar-ne una alternativa), cosa que no és possible si ja conté comentaris `/* … */`, perquè C no els admet imbricats.
 - Afegir els comentaris necessaris per facilitar la lectura del codi. Dos criteris informals: afegir els comentaris que al programador li agradaria trobar si el codi fos d'un altre programador, o si ell mateix hi hagués de fer modificacions al cap d'un cert temps.
-- En assemblador, seguir els criteris d'indentació següents:
-    - **Sense indentació** (marge esquerre):
+- En assemblador, seguir els criteris de sagnat següents:
+    - **Sense sagnat** (marge esquerre):
         * Directives de segment: `.text`, `.data`.
         * Directives de visibilitat: `.globl`, `.extern`.
         * Etiquetes: `vec:`, `main:`, `bucle:`.
-    - **Amb indentació** (8 espais):
+    - **Amb sagnat** (8 espais):
         * Directives de dades: `.word`, `.byte`, `.asciz`, `.space`.
         * Instruccions: `add`, `lw`, `li`.
     - **Indistint**:
         * Directiva `.eqv`.
-        * Directiva `.align` (sovint s'indenta per indicar que afecta la dada o instrucció següent).
+        * Directiva `.align` (sovint es sagna per indicar que afecta la dada o instrucció següent).
 - En assemblador, alinear els operands en columna: el mnemònic o la directiva ocupen un camp de 8 caràcters, de manera que els operands comencen 16 caràcters després del marge, com amb dos tabuladors de 8. Si el mnemònic en té 8 o més (`fcvt.w.s`), n'hi ha prou amb un espai. Els operands se separen amb una coma i un espai.
 
-Aquests criteris no s'avaluen per si mateixos (@imp-convencions-ec): als exàmens el codi s'escriu a mà, i a les pràctiques es valora que el codi sigui llegible, indentat i comentat.
+Aquests criteris no s'avaluen per si mateixos (@imp-convencions-ec): als exàmens el codi s'escriu a mà, i a les pràctiques es valora que el codi sigui llegible, sagnat i comentat.
 
 ::: {#tip-codi-bones-practiques .callout-tip}
 ## Fragment de codi d'assemblador RV32I
@@ -1198,7 +1198,7 @@ La manera com s'especifica un operand en una instrucció rep el nom de **mode d'
 ::: {#imp-modes-adrecament-llista .callout-important}
 A **EC**, es distingeixen **quatre modes d'adreçament**:
 
-1. **Mode registre** (***register mode***): Els operands es troben en els registres de propòsit general (`x0`–`x31`). La majoria d'instruccions aritmètico-lògiques operen d'aquesta manera.
+1. **Mode registre** (***register mode***): Els operands es troben en els registres de propòsit general (`x0`–`x31`). La majoria d'instruccions aritmeticològiques operen d'aquesta manera.
 2. **Mode immediat** (***immediate mode***): S'utilitza un valor constant inclòs directament en la instrucció. Per exemple, `addi` suma un valor immediat de 12 bits amb signe a un registre; `lui` carrega un immediat de 20 bits als bits superiors del registre destinació.
 3. **Mode base + desplaçament** (***base + offset mode***): L'adreça efectiva es calcula sumant un valor immediat, el **desplaçament** (*offset*), a un registre base. S'usa en instruccions de tipus *load*/*store* (`lw`, `sw`, etc.) i també en salts incondicionals indirectes (`jalr`), on el resultat és una adreça de salt en lloc d'una adreça de memòria.
 4. **Mode relatiu al PC** (***PC-relative mode***): L'adreça efectiva es calcula sumant un desplaçament al valor actual del **PC**. S'usa en les instruccions de salt condicional (`beq`, `bne`, etc.) i la de salt incondicional relatiu al PC `jal`, a més d'`auipc`, que suma un immediat al PC.

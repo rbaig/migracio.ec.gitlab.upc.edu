@@ -435,11 +435,11 @@ Decisió de l'usuari (2026-10-09), literal: «Decsisió ferma, la del glosari. S
 
 ### D-106
 
-**Cinc formes més a la taula de formes que no s'han de fer servir: «comanda», «solapar», «encuar», «descomposar» i «rotar»** · `13_contrib.qmd §Formes que no s'han de fer servir` · 2026-10-10
+**Sis formes més a la taula de formes que no s'han de fer servir: «comanda», «solapar», «encuar», «descomposar», «rotar» i «indentar»** · `13_contrib.qmd §Formes que no s'han de fer servir` · 2026-10-10
 
 Decisió de l'usuari (2026-10-10, fase 12), literal: «Sí», a la proposta de Claude Code d'afegir-hi indentar → sagnar, solapar → superposar, encuar → posar a la cua, comanda → ordre, descomposar → descompondre i rotar → girar, amb la seva entrada al registre; i «Valora com s'haurà de mantenir aquesta taula (manualment?, amb un script?)». Les va trobar la passada de `hunspell` i LanguageTool sobre la prosa (l'entrada «Fase 12» del `TODO.md`, `0ddb36a`). Cap no és al DIEC amb el sentit del text: «comanda» hi és un encàrrec comercial, i «rotar», fer rots; «descomposar», «encuar» i «solapar» no hi són (consultat el 2026-10-10, també a l'Optimot, que només té «solapar» com a entrada castellana). Les formes bones són les del Termcat («ordre» i «línia d'ordres»; «posar a la cua») o les del DIEC («superposar», «descompondre», «girar»).
 
-- **«indentar» no hi entra encara**: espera la tria entre «sagnat» i «sagnia» per a *indentation*. El DIEC defineix «sagnia» remetent a «sagnat», i el Termcat diu «sagnat».
+- **«indentar» hi entra el mateix dia, al vespre, amb «sagnat»** per a *indentation* (decisió de l'usuari, literal: «Recomanació acceptada. "sagnat"», a la proposta de Claude Code): el DIEC defineix «sagnia» remetent a «sagnat», i el Termcat diu «sagnat». Fins llavors esperava la tria entre «sagnat» i «sagnia», que és la que deia el missatge de `2a3d595`, en què l'usuari va treure «indenta» i «indentació» del diccionari de VS Code.
 - **Les files entren amb el corpus ja corregit**: des de [D-105](#d-105), `lint_prosa.py` llegeix la taula i atura el commit amb les formes que hi són.
 - **De «descomposar» i de «rotar» hi van les formes conjugades, no l'infinitiu**: `lint_prosa.py` llegeix un verb en *-ar* com l'arrel seguida de qualsevol terminació, i «descomposició» i «rotació», que són correctes, també hi entrarien.
 - **«solapar»** es diu de dues maneres segons el sentit: «superposar-se» a l'espai (dues meitats d'un registre, dos camps de bits) i «fer-se alhora» o «coincidir» en el temps (dos renders, dues operacions).

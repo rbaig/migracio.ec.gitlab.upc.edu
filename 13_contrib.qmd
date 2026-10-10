@@ -87,7 +87,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Retorn de resultats**: les subrutines retornen com a màxim dos resultats escalars, per `a0` i `a1`. El segon (`a1`) s'usa habitualment per a un codi d'error o un segon valor de retorn. Documentat a `{#nte-abi-pas-parametres}` de T3.
 - **Retorn de subrutines — `ret`**: als exemples s'usa sempre `ret` (pseudoinstrucció estàndard, més llegible), no `jalr zero, 0(ra)`.
 - **Notació del mode base + desplaçament**: l'operand s'escriu sempre `desplaçament(base)`, també a `jalr` (`jalr zero, 0(ra)`, no `jalr zero, ra, 0`), al text, a les taules ISA i a les expansions de les pseudoinstruccions. A2 ho diu a `#imp-notacio-base-desplacament` ([D-84]({{< var decisions >}}#d-84)).
-- **`.section`**: no s'utilitza. Només `.data` i `.text`, sense indentar, a columna 0, també al laboratori (§Convencions globals del laboratori). **No és una preferència d'estil: RARS 1.6 no admet la forma llarga.** `.section .data` i `.section .text` no assemblen (error `.section must be followed by a section name`), i les formes que sí que assemblen són pitjors, perquè fallen en silenci: no commuten de segment i, amb un nom reconegut (`.rodata`, `.sdata`), descarten tot el codi que les segueix ([D-8]({{< var decisions >}}#d-8)).
+- **`.section`**: no s'utilitza. Només `.data` i `.text`, sense sagnar, a columna 0, també al laboratori (§Convencions globals del laboratori). **No és una preferència d'estil: RARS 1.6 no admet la forma llarga.** `.section .data` i `.section .text` no assemblen (error `.section must be followed by a section name`), i les formes que sí que assemblen són pitjors, perquè fallen en silenci: no commuten de segment i, amb un nom reconegut (`.rodata`, `.sdata`), descarten tot el codi que les segueix ([D-8]({{< var decisions >}}#d-8)).
     - Excepció legítima: la forma amb sufix i *flags* (`.section .text.trap, "ax"`) sí que assembla, i és la de l'exemple d'RSE mínima d'A9 (`#sec-ei-rse-exemple`), declarat il·lustratiu i no executable. **No s'ha de tocar.**
 
 #### T4
@@ -297,6 +297,7 @@ No són termes anglesos, i per això no són al glossari: són formes que no só
 | punt flotant | coma flotant | Calc de *floating point* ([D-37]({{< var decisions >}}#d-37)). |
 | comanda | ordre | En informàtica, *command* és «ordre» («línia d'ordres», Termcat); al DIEC, «comanda» és un encàrrec comercial ([D-106]({{< var decisions >}}#d-106)). |
 | solapar, solapament | superposar, superposició; fer alhora | No és al DIEC. A l'espai, «superposar-se» («els camps no se superposen»); en el temps, «fer-se alhora» o «coincidir» ([D-106]({{< var decisions >}}#d-106)). |
+| indentar, indentació | sagnar, sagnat | *Indentation* és «sagnat» (Termcat; el DIEC defineix «sagnia» remetent a «sagnat»). «Indentar» i «indentació» només són al Termcat en ciències de la salut ([D-106]({{< var decisions >}}#d-106)). |
 | encuar | posar a la cua | No és al DIEC; «posar a la cua» és el terme del Termcat ([D-106]({{< var decisions >}}#d-106)). |
 | descomposa / descomposem / descomposen / descomposat | descompondre (descompon, descomponem…) | «Descomposar» no és al DIEC. La taula en dona les formes conjugades i no l'infinitiu, perquè la comprovació (§Comprovacions per nivells) també trobaria «descomposició», que és correcte ([D-106]({{< var decisions >}}#d-106)). |
 | rota / roten / rotat | girar, fer una rotació | Al DIEC, «rotar» és fer rots. «Rotació» és correcte, i per això hi van les formes conjugades, com a «descomposar» ([D-106]({{< var decisions >}}#d-106)). |
@@ -462,7 +463,7 @@ El camp `filename` indica el llenguatge o el context del bloc:
 
 #### Estil de codi C
 
-- Indentats: múltiples de 4.
+- Sagnat: múltiples de 4 espais.
 - Comentaris: sempre amb `//`, línia per línia, també els que n'ocupen més d'una; no `/* */`. Així es pot desactivar un bloc sencer envoltant-lo amb `/* … */`, perquè C no admet comentaris `/* */` imbricats. A2 ho diu a `#imp-codi-format-criteris` ([D-83]({{< var decisions >}}#d-83)).
 - Punt d'entrada: **`void main()` quan el C és notació per traduir a mà a assemblador; `int main` quan el C es compila de debò o quan la cadena de compilació és el tema.** Fora d'EC, en un programa de C normal compilat per a un SO, cal `int main` ([D-49]({{< var decisions >}}#d-49)).
 - Porten `int main` el bloc d'`A2.qmd` @tip-forcar-error-tipus, que es compila de debò i del qual se cita la sortida del compilador, i el de `P3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio, que tracta del flux de compilació i enllaçat. No són excepcions: són l'altra meitat de la regla.
@@ -471,7 +472,7 @@ El camp `filename` indica el llenguatge o el context del bloc:
 
 @imp-codi-format-criteris
 
-La part mecànica dels criteris (F1–F4: columna 0 per a les directives de segment i de visibilitat i per a les etiquetes, 8 espais d'indentació, cap tabulador; F5: el mnemònic o la directiva en un camp de 8 caràcters, i els operands a la columna 16) es comprova amb `python3 25_scripts/verifica_format_codi.py` sobre tots els blocs `.s` del corpus, tret dels `codi_erroni`; `--detall` en llista les línies. Els operands se separen amb una coma i un espai. La columna dels comentaris no es regula. El format no s'avalua per si mateix (el callout ho diu) ([D-50]({{< var decisions >}}#d-50)).
+La part mecànica dels criteris (F1–F4: columna 0 per a les directives de segment i de visibilitat i per a les etiquetes, 8 espais de sagnat, cap tabulador; F5: el mnemònic o la directiva en un camp de 8 caràcters, i els operands a la columna 16) es comprova amb `python3 25_scripts/verifica_format_codi.py` sobre tots els blocs `.s` del corpus, tret dels `codi_erroni`; `--detall` en llista les línies. Els operands se separen amb una coma i un espai. La columna dels comentaris no es regula. El format no s'avalua per si mateix (el callout ho diu) ([D-50]({{< var decisions >}}#d-50)).
 
 ### Figures i material gràfic
 
@@ -690,7 +691,7 @@ Sintaxi: `$$expressió$$ {#eq-NOM}`. La referència és `@eq-NOM`.
 - les equacions **referenciades** amb `@eq-` des d'algun punt del llibre (mateix tema, problemes, solucions o laboratori), i
 - les **fórmules canòniques** del tema susceptibles de ser referenciades (p. ex. la definició del TAM, la Llei d'Amdahl).
 
-La resta d'equacions display queden sense etiqueta ni número. Si més endavant cal referenciar una equació no etiquetada, s'etiqueta en aquell moment.
+La resta d'equacions destacades queden sense etiqueta ni número. Si més endavant cal referenciar una equació no etiquetada, s'etiqueta en aquell moment.
 
 Per al criteri d'ús de LaTeX math vs. backticks per context, vegeu §Codi, matemàtiques i cursiva.
 
@@ -1047,7 +1048,7 @@ quarto render             # les dues sortides
 
 Fitxers obligatoris a passar a les IA: vegeu `CLAUDE.md §Fitxers de referència obligatòria`.
 
-Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa. El model i l'effortness recomanats per a cada tipus de tasca consten a `CLAUDE.md §Model i effortness`.
+Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer una **revisió tècnica i lingüística** completa. El model i l'effort recomanats per a cada tipus de tasca consten a `CLAUDE.md §Model i effortness`.
 
 #### Claude Code: el directori `.claude/`
 
