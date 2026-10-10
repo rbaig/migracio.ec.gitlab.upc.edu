@@ -14,8 +14,10 @@ Avisa de les TRADUCCIONS DIVERGENTS (un mateix terme anglès presentat amb més
 d'una forma catalana) i no en corregeix cap: decidir-les és de l'usuari. El
 glossari en mostra la forma de la primera presentació.
 
-S'exclouen les sigles (terme «català» tot en majúscules: van a §Sigles) i el
-contingut dels blocs de codi, dels comentaris HTML i de la capçalera YAML.
+S'exclouen les sigles (terme «català» tot en majúscules: van a §Sigles), les
+expansions de sigla que ja són a §Sigles (l'anglès és l'expansió d'una sigla, com
+«**NaN** (*Not a Number*)»: no és una traducció) i el contingut dels blocs de codi,
+dels comentaris HTML i de la capçalera YAML.
 
 Ús:
     python3 25_scripts/gen_glossari.py               # reescriu la secció
@@ -77,9 +79,23 @@ def presentacions():
             yield angles, catala, f, linia
 
 
+def normalitza(s):
+    return re.sub(r"\s+", " ", re.sub(r"[*_]", "", s)).strip().lower()
+
+
+def expansions_de_sigles():
+    """Les expansions de la taula de §Sigles de 12_sigles_simbols.qmd, normalitzades."""
+    text = DESTI.read_text(encoding="utf-8")
+    seccio = text.split("\n## Sigles", 1)[1].split("\n## ", 1)[0]
+    return {normalitza(m.group(1)) for m in re.finditer(r"^\| \*\*[^|]+\*\* \| ([^|]+) \|", seccio, re.M)}
+
+
 def recull():
     termes = {}
+    sigles = expansions_de_sigles()
     for angles, catala, f, linia in presentacions():
+        if normalitza(angles) in sigles:     # expansió d'una sigla: ja és a §Sigles
+            continue
         clau = re.sub(r"\s+", " ", angles.lower())
         termes.setdefault(clau, []).append((angles, catala, f, linia))
     return termes
@@ -102,7 +118,7 @@ def taula(termes, obs):
         if catala[:1].isupper() and catala[1:] == catala[1:].lower():
             catala = catala[0].lower() + catala[1:]   # majúscula d'inici de frase, no d'un nom («NaN»)
         files.append(f"| *{angles}* | {catala} | {tema(f)} | {obs.get(clau, '')} |")
-    files.append(': {tbl-colwidths="[24,24,8,44]" .striped}')
+    files.append(': Termes anglesos i la forma catalana que fa servir el llibre. {#tbl-termes tbl-colwidths="[24,24,8,44]" .striped}')
     return "\n".join(files)
 
 
@@ -111,14 +127,14 @@ def taula_angles(en_angles):
     for clau in sorted(en_angles, key=str.lower):
         angles = ", ".join(f"*{a.strip()}*" for a in clau.split(","))
         files.append(f"| {angles} | {en_angles[clau]['catala']} | {en_angles[clau]['motiu']} |")
-    files.append(': {tbl-colwidths="[24,30,46]" .striped}')
+    files.append(': Termes mantinguts en anglès. {#tbl-termes-angles tbl-colwidths="[18,28,54]" .striped}')
     return "\n".join(files)
 
 
 def seccio(termes, d):
     return (f"{INICI} (generat per 25_scripts/gen_glossari.py a partir del corpus i de 24_specs/glossari.toml; no l'editeu a mà) -->\n"
             f"{taula(termes, d.get('observacions', {}))}\n\n"
-            f"Termes que el llibre manté en anglès:\n\n{taula_angles(d.get('en_angles', {}))}\n\n{FI}")   # la línia en blanc: si no, Pandoc ajunta el comentari al peu i n'escriu els atributs
+            f"{taula_angles(d.get('en_angles', {}))}\n\n{FI}")   # la línia en blanc: si no, Pandoc ajunta el comentari al peu i n'escriu els atributs
 
 
 def informe(div):
