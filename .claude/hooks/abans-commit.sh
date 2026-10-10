@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
-# PreToolUse (Bash): les comprovacions de 13_contrib.qmd §Commits abans de cada
-# `git commit`.
-#   1. `make render` ha d'acabar net; si no, el commit no passa (sortida 2). Se'l
-#      salta si el render no llegeix cap dels fitxers canviats (D-61).
-#   2. Revisió de prosa de les línies afegides (25_scripts/lint_prosa.py).
-#   3. Si el canvi toca el PDF, `make render-complet` és obligatori
-#      (13_contrib.qmd §Verificació de l'entorn), i un render HTML no ho exercita.
-#   4. Si el canvi toca el calendari del laboratori, verifica_calendari.py i l'avís
-#      de passar l'agent verificador-calendari (13_contrib.qmd §IA).
-#   5. Si queda algun fitxer orfe (25_scripts/orfes.py), l'avís de moure'l o esborrar-lo.
-# Els punts 2–5 no bloquegen ni pregunten: els avisos arriben a Claude
-# (additionalContext) i a l'usuari, a la pantalla (systemMessage). Fins al
-# 2026-10-03 demanaven confirmació («ask»); decisió de l'usuari: el flux ja fa
-# `make render-complet` abans de cada push (CLAUDE.md §Flux de treball).
+# PreToolUse (Bash): abans de cada `git commit`, les comprovacions del nivell del
+# canvi (25_scripts/comprova.py; 13_contrib.qmd §Comprovacions per nivells, D-103).
+# El nivell es dedueix dels fitxers canviats: als nivells 0 i 1 no hi ha render;
+# al 2, `make render`; als 3 i 4, `make render-complet`.
+#   - Si alguna comprovació atura el commit (comprova.py surt amb 2: el render
+#     falla o dona cap WARNING, un registre desactualitzat, una forma no admesa…),
+#     el hook surt amb 2 i el commit no es fa.
+#   - Els avisos i els recordatoris (sortida 1) no l'aturen ni pregunten: arriben
+#     a Claude (additionalContext) i a l'usuari, a la pantalla (systemMessage) (D-61).
+# Les persones que no fan servir Claude Code tenen el mateix amb els hooks de git
+# de `.githooks/` (`make instal·la-hooks`).
 #
 # Es mira l'arbre de treball sencer respecte d'HEAD (més els fitxers nous no
 # versionats), no només el que ja és a l'índex: el hook s'executa abans de
@@ -27,63 +24,21 @@ printf '%s\n' "$cmd" | sed -E 's/(&&|\|\||;|\|)/\n/g' \
 
 dir=$(jq -r '.cwd // empty' <<<"$entrada")
 arrel=$(git -C "${dir:-.}" rev-parse --show-toplevel 2>/dev/null) || exit 0
-[ -f "$arrel/_quarto.yml" ] || exit 0
+[ -f "$arrel/_quarto.yml" ] && [ -f "$arrel/25_scripts/comprova.py" ] || exit 0
 cd "$arrel" || exit 0
 
-# 0. Si el render no llegeix cap dels fitxers canviats, no cal `make render` (D-61).
-fora_render='^(TODO\.md|CLAUDE\.md|README\.md|24_specs/(registre_de_decisions|arxiu_todo|figures)\.md|\.claude/.*)$'
-canviats=$( { git diff HEAD --name-only; git ls-files --others --exclude-standard; } | sort -u)
-render=1
-[ -n "$canviats" ] && ! grep -qvE "$fora_render" <<<"$canviats" && render=0
+sortida=$(python3 25_scripts/comprova.py 2>&1); rc=$?
 
-# 1. Render HTML.
-if [ $render -eq 1 ] && ! sortida=$(make render 2>&1); then
+if [ $rc -eq 2 ]; then
   {
-    echo "make render ha fallat i el commit no es fa (13_contrib.qmd §Commits). Darreres línies:"
-    printf '%s\n' "$sortida" | tail -n 30
+    echo "Les comprovacions aturen el commit (25_scripts/comprova.py; 13_contrib.qmd §Comprovacions per nivells):"
+    printf '%s\n' "$sortida" | tail -n 80
   } >&2
   exit 2
 fi
 
-avisos=""
-
-# 2. Prosa de les línies afegides.
-if ! prosa=$(python3 25_scripts/lint_prosa.py 2>&1); then
-  avisos+="Revisió de prosa (25_scripts/lint_prosa.py), només línies afegides:"$'\n'"$prosa"$'\n\n'
-fi
-
-# 3. Canvis que depenen del PDF.
-fitxers=$( { git diff HEAD --name-only; git ls-files --others --exclude-standard; } | sort -u)
-pdf=""
-# El registre de decisions i l'arxiu del TODO.md són a 24_specs/, però no els llegeix cap pas del render.
-rutes=$(grep -E '^(preamble\.tex|_quarto\.yml|22_figs_originals/|23_figs_externes/|24_specs/)' <<<"$fitxers" | grep -v -E '^24_specs/(registre_de_decisions|arxiu_todo)\.md$')
-[ -n "$rutes" ] && pdf+="- fitxers: $(tr '\n' ' ' <<<"$rutes")"$'\n'
-qmd=$(grep -E '\.qmd$' <<<"$fitxers")
-if [ -n "$qmd" ]; then
-  linies=$( { git diff HEAD -U0 --no-color -- '*.qmd' | grep -E '^[+-][^+-]';
-              git ls-files --others --exclude-standard -- '*.qmd' | xargs -r cat; } )
-  for forma in 'when-format' 'tbl-colwidths' '#fig-' '!\[' '\$'; do
-    grep -qE -- "$forma" <<<"$linies" && pdf+="- forma «${forma//\\/}» a les línies canviades"$'\n'
-  done
-fi
-if [ -n "$pdf" ]; then
-  avisos+="Aquest canvi pot afectar el PDF, i «make render» no l'exercita. Abans del commit cal «make render-complet» (13_contrib.qmd §Verificació de l'entorn). Motius:"$'\n'"$pdf"
-fi
-
-# 4. Calendari del laboratori: canvia cada quadrimestre i s'escriu a mà
-#    (13_contrib.qmd §IA; decisió de l'usuari, 2026-10-08).
-if grep -qx '04_laboratori/Lcalendari.qmd' <<<"$fitxers"; then
-  calendari=$(python3 25_scripts/verifica_calendari.py 2>&1)
-  avisos+=$'\n'"Aquest commit toca 04_laboratori/Lcalendari.qmd: abans del commit cal passar l'agent verificador-calendari (13_contrib.qmd §IA). Resultat de 25_scripts/verifica_calendari.py:"$'\n'"$calendari"$'\n'
-fi
-
-# 5. Fitxers orfes: cap altre fitxer no els cita (25_scripts/orfes.py, D-98).
-if orfes=$(python3 25_scripts/orfes.py 2>&1); then :; else
-  avisos+=$'\n'"Fitxers orfes (cap altre fitxer no els cita; 25_scripts/orfes.py). Pregunta a l'usuari si cal moure'ls a 22_figs_originals/conservats/ (si es conserven, D-68) o esborrar-los:"$'\n'"$orfes"$'\n'
-fi
-
-if [ -n "$avisos" ]; then
-  jq -n --arg r "$avisos" \
+if [ $rc -ne 0 ]; then
+  jq -n --arg r "$sortida" \
     '{systemMessage: ("Avisos d'"'"'abans del commit:\n" + $r), hookSpecificOutput: {hookEventName: "PreToolUse", additionalContext: $r}}'
 fi
 exit 0

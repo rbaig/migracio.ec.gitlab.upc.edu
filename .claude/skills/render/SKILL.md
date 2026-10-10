@@ -5,19 +5,21 @@ description: Verificació del render d'EC (HTML i PDF) des d'una sessió de Clau
 
 # Verificació del render
 
-Quan és obligatori `make render-complet` ho diu `13_contrib.qmd §Verificació de l'entorn`, i què fa cada peça del render, `13_contrib.qmd §Renderitzar el projecte`. Aquí hi ha com ho comproves.
+Quin render demana cada canvi ho diuen `13_contrib.qmd §Comprovacions per nivells` i §Verificació de l'entorn, i què fa cada peça del render, `13_contrib.qmd §Renderitzar el projecte`. Aquí hi ha com ho comproves.
 
 ## Esperar un render en segon pla
 
 `make render-complet` dura uns quants minuts, i per això se sol llançar en segon pla. Per saber quan acaba, escriu un marcador al registre (`make render-complet > log 2>&1; echo "exit=$?" >> log`) i espera el marcador (`until grep -q '^exit=' log; do sleep 15; done`). No esperis amb `pgrep -f "quarto render"`: el patró també és a la línia d'ordres del bucle mateix, que es troba a si mateix i no acaba mai. Un bucle així va quedar 34 hores en segon pla i bloquejava el `/exit` de Claude Code (detectat el 2026-10-06). Si de debò cal `pgrep`, el patró `"[q]uarto render"` no es troba a si mateix. Abans d'acabar la sessió, comprova que no queda cap bucle en segon pla (`ps --ppid <pid de claude>`).
 
-El `make render` del hook d'abans del commit esborra el PDF de `_book/` (`13_contrib.qmd §IA`): per mirar el PDF, cal un `make render-complet` posterior.
+Dos renders del mateix *worktree* no se solapen: el `Makefile` fa esperar el segon (`flock`), i ho diu a la sortida. El hook d'abans del commit renderitza segons el nivell del canvi: al nivell 2, `make render`, que esborra el PDF de `_book/` (`13_contrib.qmd §IA`); per mirar el PDF, cal un `make render-complet` posterior, o `make comprova-tot`.
 
 ## Referències trencades
 
 Una escombrada de referències creuades trencades sobre el resultat del render
-és la xarxa secundària; la primària és que `make render` acabi net. Si la fas,
-té tres trampes (xifres mesurades el 2026-10-07). **Ha de ser recursiva sobre `_book/`**: `_book/*.html` són 5
+és la xarxa secundària; la primària és que el render acabi net, sense cap
+WARNING, que és el que exigeix `make comprova`. `make comprova-tot` la fa (la
+comprovació «Sortida» de `25_scripts/comprova.py`), i hi té en compte les
+trampes d'aquí. Si la fas a mà, en té tres (xifres mesurades el 2026-10-07). **Ha de ser recursiva sobre `_book/`**: `_book/*.html` són 5
 fitxers de 39 i no inclouen cap capítol de teoria, problemes, solucions ni
 laboratori, que viuen en subdirectoris. **Al PDF es busca `?@`, no `??`**: els
 13 `??` del PDF són els bytes de farciment indeterminat del bolcat de memòria

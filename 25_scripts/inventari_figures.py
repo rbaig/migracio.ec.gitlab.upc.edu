@@ -2,13 +2,18 @@
 """
 inventari_figures.py — Inventari de les figures del llibre, mesurat pel contingut.
 
-    python3 25_scripts/inventari_figures.py [--sortida 24_specs/figures.md]
-    make inventari
+    python3 25_scripts/inventari_figures.py [--sortida FITXER]   # make inventari
+    python3 25_scripts/inventari_figures.py --comprova           # només els avisos; surt amb 1 si n'hi ha
 
 Escriu una taula per figura (cada `#fig-` i cada imatge sense etiqueta) i una
 per fitxer font (`22_figs_originals/`, `23_figs_externes/` i les entrades de
 `24_specs/registres.toml`), i una llista d'avisos. Tot es mesura sobre els
 fitxers versionats de l'arbre de treball, i la capçalera del resultat diu el
+commit. El resultat va per defecte a `25_scripts/out_inventari_figures/figures.md`,
+que git ignora: l'inventari no es versiona, es genera quan es demana, perquè un
+registre versionat amb números de línia quedava desactualitzat a cada edició
+(D-104). Amb `--comprova` no escriu res: dona els avisos, tret dels originals
+conservats, que són informatius, i és el que passa 25_scripts/comprova.py a cada
 commit.
 
 Mesura pel contingut, no pel nom (regla 2 de les escombrades,
@@ -32,8 +37,7 @@ Comprovacions que fa (secció «Avisos»):
 - `textLength` (rsvg-convert, el del PDF, no l'implementa), text en gris de
   traç (`#adb5bd`) i colors fora de la paleta de `svg.md §10` i `§16`.
 
-Només fa servir la biblioteca estàndard. No forma part del pre-render: el
-resultat es versiona i es regenera amb `make inventari`.
+Només fa servir la biblioteca estàndard. No forma part del pre-render.
 """
 import argparse
 import collections
@@ -77,9 +81,11 @@ def origens_declarats(md):
     """Noms de figura de les taules de svg.md §15 (extretes de PDF) i de les dels generadors (§16, §17)."""
     dec = {}
     s15 = md.split('## 15.')[1].split('## 16.')[0] if '## 15.' in md else ''
-    for m in re.finditer(r'^\| `(T\w+)` \|', s15, re.M):
+    # Les arrels porten el prefix del fitxer que les consumeix (`A6_`, `L3_`…; D-76); fins al
+    # 2026-10-10 el patró només acceptava `T…`, el d'abans del canvi, i no en reconeixia cap.
+    for m in re.finditer(r'^\| `([A-Z]\w+)` \|', s15, re.M):
         dec[m.group(1)] = 'extreta de PDF'
-    for m in re.finditer(r'^\| `(T\w+)` \| `25_scripts/([\w.]+)`', md, re.M):
+    for m in re.finditer(r'^\| `([A-Z]\w+)` \| `25_scripts/([\w.]+)`', md, re.M):
         dec[m.group(1)] = f'script ({m.group(2)})'
     return dec
 
@@ -245,7 +251,8 @@ def cel(s, n=None):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[1])
-    ap.add_argument('--sortida', default='24_specs/figures.md')
+    ap.add_argument('--sortida', default='25_scripts/out_inventari_figures/figures.md')
+    ap.add_argument('--comprova', action='store_true')
     args = ap.parse_args()
 
     pal, md = paleta()
@@ -376,6 +383,12 @@ def main():
         if len(fs) > 1:
             avisos['Duplicats byte a byte'].append(' = '.join(f'`{x}`' for x in fs))
 
+    if args.comprova:
+        problemes = {k: v for k, v in avisos.items() if not k.startswith('Originals conservats')}
+        for k in sorted(problemes):
+            print(f'{k} ({len(problemes[k])}): ' + ', '.join(problemes[k]))
+        sys.exit(1 if problemes else 0)
+
     # ---- sortida
     o = ['# Inventari de figures', '',
          f'Generat per `25_scripts/inventari_figures.py` sobre `{commit}` ({data})'
@@ -413,6 +426,7 @@ def main():
         o.append('')
         o += [f'- {x}' for x in avisos[k]]
         o.append('')
+    (ROOT / args.sortida).parent.mkdir(parents=True, exist_ok=True)
     (ROOT / args.sortida).write_text('\n'.join(o).rstrip() + '\n', encoding='utf-8')
     print(f'[inventari] {args.sortida}: {len(figs)} etiquetes, {n_fit} fitxers ({n_fit - n_cons} sense consumir), '
           f'{sum(len(v) for v in avisos.values())} avisos en {len(avisos)} categories.')

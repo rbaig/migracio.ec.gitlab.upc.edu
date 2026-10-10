@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
-"""Revisió de la prosa dels .qmd: dobles espais i cometes rectes o tipogràfiques.
+"""Revisió de la prosa dels .qmd: dobles espais, cometes i formes que no s'han de fer servir.
 
-Aplica la regla de 13_contrib.qmd §Commits: «abans de fer commit, apliqueu
-linting a la prosa dels fitxers .qmd modificats: elimineu dobles espais
+Aplica dues regles de 13_contrib.qmd. La de §Commits: «elimineu dobles espais
 (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu
-que no hi ha cometes rectes "..." que haurien de ser guillemets «...»».
+que no hi ha cometes rectes "..." que haurien de ser guillemets «...»». I la
+taula de §Anglicismes i terminologia obligatòria → «Formes que no s'han de fer
+servir», que es llegeix de la guia mateixa (no se'n fa cap còpia aquí): cada
+forma de la primera columna, també en plural, en femení o conjugada, és una
+troballa. comprova.py tracta les formes com a error (són les formes exactes de la taula)
+i la resta com a avís.
 
 Salta el que no és prosa: la capçalera YAML, els blocs de codi, les
 matemàtiques, les taules, les línies de div (`:::`), els comentaris HTML i,
@@ -17,8 +21,8 @@ de línia (salt de línia forçat de Markdown) no compten.
                                                    # més els .qmd nous encara no versionats
     python3 25_scripts/lint_prosa.py FITXER.qmd…   # fitxers sencers
 
-Surt amb 1 si troba res i amb 0 si no. És el que crida el hook
-`.claude/hooks/abans-commit.sh`, però es pot fer servir a mà.
+Surt amb 1 si troba res i amb 0 si no. El fa servir 25_scripts/comprova.py
+(13_contrib.qmd §Comprovacions per nivells), però es pot fer servir a mà.
 """
 
 import os
@@ -42,6 +46,7 @@ SPANS = [
     re.compile(r'<[^<>]*>'),                       # etiquetes HTML
     re.compile(r'\]\([^)]*\)'),                    # URL d'enllaç
 ]
+FORMES_SECCIO = "#### Formes que no s'han de fer servir"
 LIST_MARKER_RE = re.compile(r'^(?:>\s*)*(?:[-*+]|\d+[.)]|\(?[a-z]\))\s+')
 DOUBLE_SPACE_RE = re.compile(r'\S {2,}(?=\S)')
 
@@ -98,12 +103,49 @@ def prose_lines(text):
     return result
 
 
-def check(path, only_lines=None):
+def patro_forma(terme):
+    """L'expressió d'una forma de la taula, amb el plural, el femení o la conjugació."""
+    mots = terme.split()
+    if len(mots) > 1:                       # «ample de banda», «punt flotant»
+        return r'\s+'.join(re.escape(m) + ('s?' if len(m) > 2 else '') for m in mots)
+    m = mots[0]
+    if m.endswith('ar'):                    # mapejar: mapeja, mapejos, mapejat…
+        return re.escape(m[:-2]) + r'\w*'
+    if m.endswith('at'):                    # aniuat: aniuats, aniuada, aniuades
+        return re.escape(m[:-1]) + r'(?:t|ts|da|des)'
+    return re.escape(m) + r'(?:s|os|es)?'
+
+
+def formes_no_admeses(root):
+    """[(expressió, forma, substitut)] de la taula de 13_contrib.qmd §Formes que no s'han de fer servir."""
+    text = (Path(root) / '13_contrib.qmd').read_text(encoding='utf-8')
+    if FORMES_SECCIO not in text:
+        raise SystemExit(f'lint_prosa: no trobo «{FORMES_SECCIO}» a 13_contrib.qmd')
+    files = []
+    for line in text.split(FORMES_SECCIO, 1)[1].split('\n'):
+        if line.startswith('|'):
+            files.append([c.strip() for c in line.strip('|').split('|')])
+        elif files:
+            break
+    formes = []
+    for cel in files[2:]:                   # sense la capçalera ni la separació
+        for terme in re.split(r'\s*[,/]\s*', cel[0]):
+            if terme:
+                rx = re.compile(r'(?<![\w·])(' + patro_forma(terme) + r')(?![\w·])', re.I)
+                formes.append((rx, terme, cel[1]))
+    return formes
+
+
+def check(path, only_lines=None, formes=None):
+    """Troballes d'un .qmd. formes, la llista de formes_no_admeses() (None: no les mira)."""
     text = Path(path).read_text(encoding='utf-8')
     findings = []
     for n, line in sorted(prose_lines(text).items()):
         if only_lines is not None and n not in only_lines:
             continue
+        for rx, terme, substitut in formes or []:
+            for m in rx.finditer(line):
+                findings.append((path, n, f'forma no admesa: «{m.group(1)}» (s\'escriu «{substitut}»)'))
         if DOUBLE_SPACE_RE.search(line):
             findings.append((path, n, 'doble espai'))
         if '"' in line:
@@ -147,10 +189,11 @@ def main(argv):
         os.chdir(root)
         targets = added_lines()
     findings = []
+    formes = formes_no_admeses(root)
     for path, only in sorted(targets.items()):
         if only is not None and not only:
             continue
-        findings.extend(check(path, only))
+        findings.extend(check(path, only, formes))
     for path, n, kind in findings:
         print(f'{path}:{n}: {kind}')
     return 1 if findings else 0

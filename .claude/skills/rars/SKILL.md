@@ -9,10 +9,10 @@ La regla és a `13_contrib.qmd §Verificació empírica a RARS`: una afirmació 
 
 ## Obtenir el simulador
 
-El `.jar` no és al repositori i no s'hi ha de posar. Es baixa de la *release* que cita `README.md §RARS`, **fora de l'arbre del projecte** —un directori temporal—, i no es versiona ni es deixa a cap carpeta del projecte:
+El `.jar` no és al repositori i no s'hi ha de posar. Es baixa de la *release* que cita `README.md §RARS`, **fora de l'arbre del projecte**, i no es versiona ni es deixa a cap carpeta del projecte. `25_scripts/verifica_laboratoris.py` ja ho fa: el busca a la variable d'entorn `RARS_JAR` o a `~/.cache/ec/rars1_6.jar` i, si no hi és, l'hi baixa i en comprova el sha256 (D-103 del registre de decisions). Per a les proves a mà, fes servir aquest mateix `.jar`; si encara no hi és:
 
 ```bash
-cd "$(mktemp -d)"
+mkdir -p ~/.cache/ec && cd ~/.cache/ec
 curl -sSLO https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar
 sha256sum rars1_6.jar   # 780f730eb457b1ba609e968accc2c8b77d8f92c3d9dbf30cc7fdb3cfb14e8c24
 ```
@@ -89,4 +89,4 @@ D'aquí, quatre hàbits:
 
 ## Els programes del laboratori
 
-`python3 25_scripts/verifica_laboratoris.py --rars <ruta a rars1_6.jar>` extreu els blocs `.s` de `L1.qmd`–`L6.qmd`, els assembla i els executa amb RARS 1.6, i escriu l'informe a `25_scripts/out_verifica_laboratoris/informe.md` (ignorat per git): resultat, comprovacions estàtiques, i el bolcat de `.data` i dels registres finals dels que s'executen. Sense `--rars`, busca el `.jar` en una ruta local de l'editor. Per comprovar que un canvi no altera res, compara l'informe d'abans i el de després.
+`python3 25_scripts/verifica_laboratoris.py --rars <ruta a rars1_6.jar>` extreu els blocs `.s` de `L1.qmd`–`L6.qmd`, els assembla i els executa amb RARS 1.6, i escriu l'informe a `25_scripts/out_verifica_laboratoris/informe.md` (ignorat per git): resultat, comprovacions estàtiques, i el bolcat de `.data` i dels registres finals dels que s'executen. Sense `--rars`, el busca a `RARS_JAR` o a `~/.cache/ec/`, i si no hi és l'hi baixa. Surt amb 1 si un bloc que s'ha d'assemblar o d'executar no ho fa, o si una comprovació estàtica dona un ERROR, i amb 3 si no hi ha Java: `make comprova` el passa quan es toca L1–L6. Per comprovar que un canvi no altera res, compara l'informe d'abans i el de després.

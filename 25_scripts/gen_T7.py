@@ -4,7 +4,7 @@ gen_T7.py — Genera les figures soltes de T7 (A7): temps d'execució, memòries
 
     python3 25_scripts/gen_T7.py [--output-dir 22_figs_originals] [--comprova]
 
-Escriu tres SVG natius a `22_figs_originals/`:
+Escriu aquests SVG natius a `22_figs_originals/`:
 
 - `A7_texe_diagrama.svg` (`#fig-texe-diagrama`): tres instruccions (`lw`,
   `add`, `lw`) etapa per etapa, amb una MC ideal i amb una fallada al segon

@@ -1,10 +1,10 @@
 """
 columna_memoria.py — Primitives compartides de les figures de memòria (`24_specs/svg.md §2–§11`).
 
-No és cap generador: en fan servir les peces `gen_BA.py` (blocs d'activació) i
-`gen_mapa.py` (mapa de memòria i piles en fila), perquè les dues famílies
-dibuixin les zones, les ratlles indicadores, les etiquetes de la columna
-esquerra i les fletxes de creixement de la mateixa manera.
+No és cap generador: en fan servir les peces els generadors de les figures de
+memòria, perquè totes dibuixin les zones, les ratlles indicadores, les
+etiquetes de la columna esquerra i les fletxes de creixement de la mateixa
+manera. Quins: `git grep -n 'columna_memoria' -- 25_scripts/` (D-104).
 
 Geometria de la columna (classe `estreta`, svg.md §2 i §5): columna d'etiquetes
 de 76 px, rectangles a x = 86 i de 244 px d'amplada, i marges de 10 px; W = 340.

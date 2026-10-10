@@ -1,0 +1,9 @@
+#!/bin/sh
+# Hook de git opcional, per a qui no fa servir Claude Code: s'activa amb
+# `make instal·la-hooks` (13_contrib.qmd §Comprovacions per nivells).
+# Abans de cada push, les comprovacions de la branca sencera respecte
+# d'origin/main, amb el render que demana el seu nivell (com `make comprova-branca`).
+# Només atura el push el que la guia diu que l'atura (comprova.py surt amb 2).
+python3 25_scripts/comprova.py --base origin/main
+[ $? -eq 2 ] && exit 1
+exit 0

@@ -29,10 +29,9 @@ jobs:
 
       - name: Instal·la Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-        # Els scripts de pre-render (25_scripts/*.py) només usen la llibreria
-        # estàndard de Python (ast, re, sys, pathlib, colorsys, tomllib);
-        # el runner ubuntu-latest ja porta Python 3.12+ preinstal·lat,
-        # per tant no cal cap pas addicional d'instal·lació de dependències.
+        # Els scripts del pre-render (25_scripts/) només fan servir la biblioteca
+        # estàndard de Python (≥ 3.11, per tomllib), i el runner ubuntu-latest ja
+        # en porta una de recent: no cal cap pas d'instal·lació de dependències.
 
       # El motor de PDF només s'instal·la si es llança manualment (workflow_dispatch)
       - name: Instal·la TinyTeX (per a PDF)
@@ -49,8 +48,8 @@ jobs:
       - name: Genera les taules fusionades (auto_riscv/)
         run: python3 25_scripts/gen_taules_auto.py 24_specs/taules_fusio.toml 21_riscv --output-dir="auto_riscv/"
 
-      # Si és un push automàtic, només renderitza l'HTML per estalviar temps (segons).
-      # Si és un llançament manual, renderitza tots els formats (HTML i PDF, ~7 minuts).
+      # Si és un push automàtic, només renderitza l'HTML per estalviar temps (1–3 min).
+      # Si és un llançament manual, renderitza tots els formats (HTML i PDF, 5–10 min).
       - name: Renderitza el llibre
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -59,7 +58,7 @@ jobs:
             quarto render --to html
           fi
 
-      # El PDF només es renderitza en els dispatch manuals (~7 min). En els pushos
+      # El PDF només es renderitza en els dispatch manuals (5–10 min). En els pushos
       # automàtics (HTML-only) el `_book/` es genera net i sense PDF; com que el
       # desplegament substitueix el lloc sencer, el PDF publicat es perdria. Per
       # evitar-ho, es recupera el PDF ja publicat del lloc en viu i es diposita a

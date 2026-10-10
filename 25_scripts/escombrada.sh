@@ -32,7 +32,14 @@ patro=$1; shift
 [ "${1:-}" = "--" ] && shift
 pathspec=("$@")
 [ ${#pathspec[@]} -eq 0 ] && pathspec=(.)
-[ $exclou -eq 1 ] && pathspec+=(':!TODO.md' ':!24_specs/arxiu_todo.md' ':!13_contrib.qmd' ':!24_specs/registre_de_decisions.md' ':!.claude/')
+# Els fitxers que documenten els casos (regla 12) són els de l'etiqueta `documenta` de la
+# classificació de 25_scripts/comprova.py, l'única del projecte.
+documenten=()
+if [ $exclou -eq 1 ]; then
+  mapfile -t documenten < <(python3 25_scripts/comprova.py --llista documenta) \
+    && [ ${#documenten[@]} -gt 0 ] || { echo "No puc llegir la classificació de 25_scripts/comprova.py" >&2; exit 1; }
+  for d in "${documenten[@]}"; do pathspec+=(":!$d"); done
+fi
 
 ordre=(git grep -o -I "$mode")
 [ -n "$cas" ] && ordre+=("$cas")
@@ -64,7 +71,7 @@ else
   [ -n "$(git status --porcelain --untracked-files=no)" ] && mesura+=", amb canvis no confirmats"
 fi
 echo "# Mesura: $mesura"
-[ $exclou -eq 1 ] && echo "# Exclou TODO.md i 24_specs/arxiu_todo.md (hi registren la tasca), 13_contrib.qmd i 24_specs/registre_de_decisions.md (la regla i el perquè) i .claude/ (la lliçó): regla 12. Per incloure'ls, --tot."
+[ $exclou -eq 1 ] && echo "# Exclou els fitxers que documenten els casos (regla 12: hi consten la tasca, la regla, el perquè o la lliçó): ${documenten[*]}. Per incloure'ls, --tot."
 
 total=0
 [ -n "$sortida" ] && total=$(printf '%s\n' "$sortida" | wc -l)

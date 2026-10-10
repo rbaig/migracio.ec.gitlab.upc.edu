@@ -6,13 +6,10 @@ distintiva ANSI/IEEE 91, traç de 1,5 px, unions amb un punt ple i terminals
 amb un cercle buit). Cada funció retorna el fragment SVG com a cadena: qui la
 crida decideix on l'afegeix.
 
-La fan servir `gen_T4_sumador.py` (les figures del sumador de T4) i
-`gen_MC.py` (els diagrames de blocs de la lectura de la memòria cau, T7).
-El text, les caixes i les fletxes, del final, són de `gen_T7.py` i
-`gen_T8.py` (les figures soltes de T7 i T8). Les vores compartides
-(`vores_compartides`, `24_specs/svg.md §7`) les fan servir `gen_regs.py`,
-`gen_MC.py`, `gen_T7.py` i `gen_T8.py`.
-Només fa servir la biblioteca estàndard.
+Al final hi ha el text, les caixes i les fletxes de les figures soltes, i les
+vores compartides (`vores_compartides`, `24_specs/svg.md §7`). Qui la fa servir:
+`git grep -n 'figlib' -- 25_scripts/` (no se'n porta la llista aquí, que es
+quedaria enrere; D-104). Només fa servir la biblioteca estàndard.
 """
 import math
 import re

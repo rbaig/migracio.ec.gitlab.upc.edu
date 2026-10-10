@@ -11,19 +11,36 @@ assemblar ni executar) i, per als programes que executen, el bolcat de
 Ús:
     python3 25_scripts/verifica_laboratoris.py [--rars /ruta/a/rars1_6.jar]
 
-No forma part del pre-render de Quarto: és una eina d'auditoria a demanda.
+El .jar no és al repositori ni s'hi ha de posar (D-62). Es busca, per ordre, a
+--rars, a la variable d'entorn RARS_JAR i a la memòria cau de l'usuari
+(~/.cache/ec/rars1_6.jar, o $XDG_CACHE_HOME/ec/); si no hi és, es baixa de la
+release que cita README.md §RARS a aquesta memòria cau, fora de l'arbre del
+projecte, i se'n comprova el sha256. Demana Java 8 o posterior.
+
+Surt amb 1 si un bloc que s'ha d'assemblar o d'executar no ho fa, o si una
+comprovació estàtica dona un ERROR; amb 3 si no es pot fer (sense Java, o sense
+el .jar i sense poder-lo baixar); i amb 0 si tot és correcte. No forma part del
+pre-render: el passa 25_scripts/comprova.py quan es toca L1–L6, i
+`make comprova-tot`.
 """
 
 import argparse
+import hashlib
+import os
 import re
+import shutil
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 LAB_DIR = REPO_ROOT / "04_laboratori"
 OUT_DIR = REPO_ROOT / "25_scripts" / "out_verifica_laboratoris"
-DEFAULT_RARS = Path("/home/roger/backup/uni/UPC/EC/RISC_V/RARS/rars1_6.jar")
+RARS_URL = "https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar"
+RARS_SHA256 = "780f730eb457b1ba609e968accc2c8b77d8f92c3d9dbf30cc7fdb3cfb14e8c24"
+CACHE = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "ec"
+OMESA = 3
 
 MAX_STEPS = 200000
 
@@ -417,14 +434,55 @@ def trim_data_dump(dump_path):
     return words[: last_nonzero + 1]
 
 
+def sha256(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def troba_rars(explicit):
+    """El .jar de RARS: --rars, RARS_JAR o la memòria cau; si no hi és, el baixa a la memòria cau."""
+    for candidat in (explicit, os.environ.get("RARS_JAR")):
+        if candidat:
+            if Path(candidat).is_file():
+                return Path(candidat)
+            sys.exit(f"ERROR: no hi ha cap fitxer a {candidat}")
+    jar = CACHE / "rars1_6.jar"
+    if jar.is_file() and sha256(jar) == RARS_SHA256:
+        return jar
+    print(f"Baixant RARS 1.6 a {jar} …", file=sys.stderr)
+    try:
+        CACHE.mkdir(parents=True, exist_ok=True)
+        provisional = jar.with_suffix(".baixant")
+        with urllib.request.urlopen(RARS_URL, timeout=60) as resposta:
+            provisional.write_bytes(resposta.read())
+    except OSError as e:
+        print(f"AVÍS: no s'ha pogut baixar RARS ({e}): la verificació s'omet.", file=sys.stderr)
+        sys.exit(OMESA)
+    if sha256(provisional) != RARS_SHA256:
+        provisional.unlink()
+        sys.exit(f"ERROR: el sha256 del RARS baixat no és {RARS_SHA256}")
+    provisional.replace(jar)
+    return jar
+
+
+def comprova_java():
+    """Java 8 o posterior; si no hi és, la verificació s'omet (no és un error del llibre)."""
+    if not shutil.which("java"):
+        print("AVÍS: no hi ha Java (RARS 1.6 demana Java 8 o posterior): la verificació s'omet.", file=sys.stderr)
+        sys.exit(OMESA)
+    versio = subprocess.run(["java", "-version"], capture_output=True, text=True).stderr
+    m = re.search(r'version "(?:1\.)?(\d+)', versio)
+    if m and int(m.group(1)) < 8:
+        print(f"AVÍS: Java {m.group(1)} és anterior a la 8, que demana RARS 1.6: la verificació s'omet.",
+              file=sys.stderr)
+        sys.exit(OMESA)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--rars", type=Path, default=DEFAULT_RARS)
+    ap.add_argument("--rars", help="el .jar de RARS 1.6 (per defecte, RARS_JAR o la memòria cau)")
     args = ap.parse_args()
-
-    if not args.rars.exists():
-        print(f"ERROR: no s'ha trobat rars1_6.jar a {args.rars}", file=sys.stderr)
-        sys.exit(1)
+    comprova_java()
+    args.rars = troba_rars(args.rars)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     src_dir = OUT_DIR / "fitxers_extrets"
@@ -528,6 +586,13 @@ def main():
         handled.add(rowkey)
 
     write_report(rows, details, static_findings)
+    errors = [f"{lab} {label} (línia {line}): {estat}" for lab, label, _, line, assembla, estat, _, _ in rows
+              if assembla == "NO ASSEMBLA" or estat.startswith("EXCEPCIÓ")]
+    errors += [f"{lab} {label} (línia {line}): {regla} {msg}" for lab, label, line, nivell, regla, msg in static_findings
+               if nivell == "ERROR"]
+    for e in errors:
+        print(e)
+    sys.exit(1 if errors else 0)
 
 
 def write_report(rows, details, static_findings):

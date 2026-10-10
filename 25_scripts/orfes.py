@@ -10,29 +10,27 @@ pre-render: un SVG de `22_figs_originals/` es consumeix si algun fitxer cita
 `<arrel>__original` (o `<arrel>__extern`, als de `23_figs_externes/`), i un
 fotograma d'una figura dinàmica (`<arrel>_pas<k>.svg`) si es consumeix la figura.
 
-Queden fora de la comprovació:
-- `22_figs_originals/conservats/`: els originals que el llibre ja no consumeix i que
-  es conserven a posta, per a les diapositives (D-68);
-- la configuració de les eines (`.github/`, `.vscode/`, `.claude/`) i els PDF de
-  referència (`PDF_*/`).
-
-I no compten com a cites les dels fitxers que documenten els casos (el `TODO.md` i
-el seu arxiu, el registre de decisions i l'inventari de figures), que citen fitxers
-retirats i orfes pel nom (regla 12 de la skill `escombrada`).
+Quins fitxers queden fora i quins no compten com a cites ho diuen les etiquetes de
+la classificació de 25_scripts/comprova.py (CLASSES), que és l'única del projecte:
+- `fora_orfes`: no són mai orfes. Els originals de `22_figs_originals/conservats/`,
+  que el llibre ja no consumeix i es conserven a posta, per a les diapositives
+  (D-68), i la configuració de les eines (`.github/`, `.githooks/`, `.vscode/`,
+  `.claude/`);
+- `no_cita`: hi consten fitxers pel nom sense fer-los servir. El `TODO.md`, el seu
+  arxiu i el registre de decisions citen fitxers retirats i orfes (regla 12 de la
+  skill `escombrada`), i l'arbre del `README.md` els llista tots.
 
 Petició de l'usuari (2026-10-08) i proposta de Claude Code acceptada el 2026-10-09
-(D-98). El fan servir `make inventari` i el hook d'abans del commit, que avisa si un
-commit deixa un orfe.
+(D-98). El passa 25_scripts/comprova.py a cada commit, i avisa si n'hi ha cap.
 """
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+from comprova import classifica
+
 ROOT = Path(__file__).resolve().parent.parent
-FORA = ('22_figs_originals/conservats/', '.github/', '.vscode/', '.claude/', 'PDF_')
-DOCUMENTEN = {'TODO.md', '24_specs/arxiu_todo.md', '24_specs/registre_de_decisions.md',
-              '24_specs/figures.md'}
 
 
 def fitxers():
@@ -55,13 +53,13 @@ def main():
     tots = fitxers()
     textos = {}
     for f in tots:
-        if f in DOCUMENTEN:
+        if 'no_cita' in classifica(f)[1]:
             continue
         try:
             textos[f] = (ROOT / f).read_text(encoding='utf-8')
         except (UnicodeDecodeError, OSError):
             pass
-    orfes = [f for f in tots if not f.startswith(FORA)
+    orfes = [f for f in tots if 'fora_orfes' not in classifica(f)[1]
              and not any(k in text for g, text in textos.items() if g != f for k in claus(f))]
     for f in orfes:
         print(f)

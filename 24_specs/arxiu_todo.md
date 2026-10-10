@@ -603,6 +603,12 @@ Només la vinyeta; les ordres que la segueixen continuen al `TODO.md`.
 
   Queda viva per a les esmenes de l'usuari als originals: `A3_deps_exemple.svg`, `A3_ba_exemple.svg`, `A3_ba_func.svg`, `A3_pila_uninivell.svg` i `A3_pila_multinivell.svg`.
 
+### «Protocols d'execució dels generadors i de les comprovacions, per nivells» (§Tasques globals → Eines)
+
+Retallada el 2026-10-10, en fer-ne la part principal (D-103, D-104 i D-105 del registre de decisions). El text d'abans:
+
+- **Protocols d'execució dels generadors i de les comprovacions, per nivells** (petició de l'usuari, 2026-10-09, literal: «En algun moment caldrà explicitar els protocols d'execució dels scripts generadors i de testeig. Penso que cal definir nivells (per exemple "commit menor", "commit major", "revisió estètica", "revisió de continguts", "refer llista de continguts") perquè tal com està ara em sembla que hi ha testos innecessaris (per exemple, no cal renderitzar quan només hi ha canvis a `TODO.md`)»). ✅ Ja fet, el 2026-10-09: el hook d'abans del commit se salta el `make render` quan el render no llegeix cap fitxer canviat ([D-61](24_specs/registre_de_decisions.md#d-61)). Queda la resta: l'inventari de les comprovacions (el hook, el `Makefile`, els verificadors i els `--comprova` de `25_scripts/`, les skills, els subagents), què les dispara, quant triguen i què detecten, i una taula de nivells (quina mena de canvi demana quines comprovacions) que el hook pugui deduir dels fitxers canviats. Sessió nova: Opus, effort alt; la proposta, abans de canviar res.
+
 ### Seccions de §Tasques per tema sense cap entrada viva
 
 El 2026-10-09 se'n van treure les subseccions buides; aquesta era la nota de cadascuna.
