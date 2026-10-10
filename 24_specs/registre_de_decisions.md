@@ -527,6 +527,21 @@ La remissió la genera el filtre a partir de l'slug compartit ([D-22](#d-22)), e
 
 **Estendre-ho** és una decisió de l'usuari, en valorar el pilot (`TODO.md`). Per a les solucions, n'hi ha prou d'afegir el tema a la taula `PILOT` del filtre, sense tocar cap `.qmd`. Per als exemples, cal marcar a mà el div `.resposta` a cada exemple amb pregunta (a A1–A8, 16 amb el format **Pregunta**: A1 5, A3 2, A6 5 i A7 4), i A2–A8 són als fitxers que revisen els equips (D-65).
 
+### D-101
+
+**«📑 Continguts»: l'índex dels apunts a l'HTML, generat des dels `.qmd`** · `13_contrib.qmd §Renderitzar el projecte`, `10_continguts.qmd`, `25_scripts/continguts.lua` · 2026-10-10
+
+Petició de l'usuari (2026-10-09), literal: «Té sentit a la versió HTML afegir un índex de continguts per poder tenir una visió general? (com en el PDF)». A l'HTML, la barra lateral mostrava els capítols, i la «Taula de continguts» de cada pàgina, les seccions del capítol obert: cap vista no mostrava les seccions de tots els temes alhora. Decisions de l'usuari, literals: el 2026-10-09, «Abast: Només A1--A9», «Profunditat: fins a nivell `###`» i «Posició: entre `👋 Presentació` i `Apunts`. Justificació: és massa llarga per formar part de `👋 Presentació`»; el 2026-10-10, el nom, «"Fitxer": 10_continguts.qmd» i «"títol i menú": «📑 Continguts»», i «Acceptades la resta de propostes» de Claude Code:
+
+- **El títol de cada tema, com a l'índex del PDF** i al títol de la seva pàgina: «1 Tema 1: Introducció», encara que repeteixi el número. L'alternativa era «A1 Introducció», la del menú.
+- **Sense plegar**: la «Taula de continguts» de la pàgina mateixa, amb els nou temes, fa de salt d'un tema a l'altre. La valoració inicial deia «plegada per parts», quan l'abast era tot el llibre.
+- **Fora de la cerca** (`search: false`): la pàgina té tots els títols de secció dels apunts, i cada cerca d'un títol la retornaria també.
+- **Cap enllaç des de la Presentació**: sortiria també al PDF, i el menú ja hi porta.
+
+**Un filtre, i no un script de pre-render** (la valoració inicial): no genera cap fitxer ni afegeix cap pas al `Makefile` o al CI, i llegeix les fonts amb el lector de Pandoc, que ja separa els callouts i els blocs de codi. Hi surten les mateixes capçaleres que a la «Taula de continguts» de cada pàgina, amb el mateix número: les 269 `##` i `###` d'A1–A9 coincideixen una per una, en número, àncora i text, amb les de les pàgines renderitzades a `b4bd57c`. Les de dins d'un div que no sigui un callout no hi surten, com tampoc no surten a la de la pàgina, perquè Pandoc només hi posa les del primer nivell del document.
+
+**Al PDF, la pàgina no hi deixa res**: el PDF ja té el seu índex. Embolcallar-la amb `.content-visible when-format="html"` no n'hi ha prou, perquè Quarto en treu el títol del capítol i el PDF rebia igualment `\chapter*{…}`, la línia de l'índex i el marcador; per això és el filtre el que en treu la capçalera i el div. Amb la pàgina, el PDF del `make render-complet` és el mateix que a `b4bd57c` (comprovat el 2026-10-10): 574 pàgines, i el text, línia a línia, igual llevat de la data i el hash de la portada (`versio.lua`). El `.tex` només hi canvia, a més, l'ordre de les definicions `\newtheorem` d'«Algorisme» i de «⁂», independents: Quarto les escriu recorrent una taula amb `pairs` (`tkeys`), sense ordenar-la, i l'ordre pot variar d'un render a l'altre.
+
 ## Figures
 
 ### D-51

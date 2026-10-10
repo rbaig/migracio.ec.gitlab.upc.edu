@@ -54,6 +54,7 @@ Directori `04_laboratori/`:
 | `custom.scss` | Estils CSS comuns a tots dos modes (HTML) |
 | `ieee.csl` | Estil de citació IEEE (CSL) |
 | `index.qmd` | Pàgina de presentació (avaluació, eines, bibliografia) |
+| `10_continguts.qmd` | Pàgina «📑 Continguts»: l'índex dels apunts (A1–A9), només a l'HTML; l'escriu `25_scripts/continguts.lua` |
 | `preamble.tex` | Preàmbul LaTeX addicional (PDF) |
 | `11_riscv.qmd` | Compendi de referència RISC-V (inclòs via `include`) |
 | `12_sigles_simbols.qmd` | Glossari de sigles i símbols |
@@ -82,6 +83,7 @@ Directori `04_laboratori/`:
 ├── auto_figs/                  # Generat · Figures per script (s'elimina a cada render)
 ├── auto_riscv/                 # Generat · Taules per script (s'elimina a cada render)
 ├── .gitignore
+├── 10_continguts.qmd
 ├── 11_riscv.qmd
 ├── 12_sigles_simbols.qmd
 ├── 13_contrib.qmd
