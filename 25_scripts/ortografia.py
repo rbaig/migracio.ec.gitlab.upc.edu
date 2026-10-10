@@ -6,9 +6,12 @@ bo si és a qualsevol dels dos: els termes anglesos van en cursiva, però en
 català i en anglès s'escriuen igual molts mots) i amb el diccionari del
 projecte, `24_specs/diccionari.txt` (un mot per línia), que és el mateix que fa
 servir el corrector de VS Code (`.vscode/settings.json`). La prosa és la de
-`lint_prosa.py`: sense la capçalera YAML, els blocs de codi, les matemàtiques,
-les taules ni el codi en línia. No es miren les sigles (dues o més majúscules,
-també apostrofades: «l'MC») ni els mots amb xifres.
+`lint_prosa.prose_lines`, l'única neteja del projecte: sense la capçalera YAML,
+els blocs de codi, les matemàtiques, les taules, el codi en línia, les imatges,
+les citacions, les notes al peu, les referències @ ni les URL, i dels enllaços,
+només el text. Aquí s'hi afegeix el que és de l'ortografia: no es miren les
+rutes, els dominis, les sigles (dues o més majúscules, també apostrofades:
+«l'MC») ni els mots amb xifres.
 
 Només avisa: un mot desconegut pot ser un error o un mot legítim que cal afegir
 al diccionari del projecte, en el mateix commit que el fa servir. Les regles de
@@ -40,11 +43,8 @@ DICCIONARI = ARREL / '24_specs' / 'diccionari.txt'
 DICCIONARIS = 'ca_ES,en_US'
 
 NETEJA = [
-    (re.compile(r'https?://\S+'), ' '),            # URL soltes
     (re.compile(r'\S*/\S*\.[A-Za-z]{2,4}\b\S*'), ' '),   # rutes amb extensió (X04_laboratori/Lcalendari.html)
     (re.compile(r'\bX-\w+'), ' X '),               # un sufix enganxat a una fórmula: «$i$-èsima»
-    (re.compile(r'@[\w:-]+'), ' X '),              # referències creuades
-    (re.compile(r'\[([^\[\]]*?)X'), r' \1 '),       # text d'un enllaç: lint_prosa en canvia «](URL)» per X
     (re.compile(r'\b[\w-]+(?:\.[\w-]+)*\.(?:com|org|net|io|cat|edu|es|eu)\b'), ' '),   # dominis
     (re.compile(r"\b[ldsmtnLDSMTN]['’](?=\*|X\b)"), ''),   # l'*stride*, d'`addi` (ja X): l'article fora
     (re.compile(r'[*_#>\[\]\ufe0f]'), ' '),        # marcatge, i el selector de variant dels emojis

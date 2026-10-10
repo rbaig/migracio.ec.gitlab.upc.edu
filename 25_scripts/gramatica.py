@@ -8,12 +8,13 @@ correctes d'una regla que es manté activa (les excepcions) i les coincidències
 que només toquen el marcador. L'ortografia no és aquí: la fa `ortografia.py`
 amb hunspell i el diccionari del projecte.
 
-La prosa és la de `lint_prosa.py` (sense la capçalera YAML, els blocs de codi,
-les matemàtiques, les taules ni el codi en línia), amb el que no és català
-substituït per un marcador, «X»: les cursives (els termes anglesos), les
-sigles, les referències @, les citacions, les notes al peu i les imatges. Un
-paràgraf del font és un paràgraf del text, perquè LanguageTool en vegi les
-frases senceres.
+La prosa és la de `lint_prosa.prose_lines`, l'única neteja del projecte: sense
+la capçalera YAML, els blocs de codi, les matemàtiques, les taules, el codi en
+línia, les imatges, les citacions, les notes al peu, les referències @ ni les
+URL, i dels enllaços, només el text. Aquí s'hi afegeix el que és de
+LanguageTool: el que no és català, substituït pel mateix marcador, «X» (les
+cursives, que són els termes anglesos, i les sigles). Un paràgraf del font és
+un paràgraf del text, perquè LanguageTool en vegi les frases senceres.
 
 LanguageTool no es versiona, com RARS (D-62). Es busca, per ordre, a --lt, a
 la variable d'entorn LANGUAGETOOL_DIR (una còpia que ja és al sistema) i al
@@ -66,18 +67,11 @@ CACHE = eines_externes.directori()
 JAR = 'languagetool-commandline.jar'
 OMESA = 3
 
-M = 'X'                                                              # el marcador
-IMG_RE = re.compile(r'!\[(?:[^\[\]]|\[[^\[\]]*\])*\]\((?:[^()]|\([^()]*\))*\)(?:\{[^{}]*\})?')
-LINK_RE = re.compile(r'(?<!!)\[((?:[^\[\]]|\[[^\[\]]*\])*)\]\((?:[^()]|\([^()]*\))*\)')
-SPAN_RE = re.compile(r'\[((?:[^\[\]]|\[[^\[\]]*\])*)\]\{[^{}]*\}')
-CITA_RE = re.compile(r'\[-?@[^\[\]]*\]')
-NOTA_RE = re.compile(r'\[\^[^\]]*\]')
-URL_RE = re.compile(r'https?://\S+')
+M = 'X'                                                              # el marcador, el mateix de lint_prosa
 NEGRETA_CURSIVA = re.compile(r'\*\*\*(.+?)\*\*\*')
 CURSIVA = re.compile(r'(?<![*\w])\*(?![*\s])(.+?)(?<![*\s])\*(?![*\w])')
 CURSIVA_ = re.compile(r'(?<![\w_])_(?![_\s])(.+?)(?<![_\s])_(?![\w_])')
 NEGRETA = re.compile(r'\*\*(.+?)\*\*')
-REFERENCIA = re.compile(r'-?@[A-Za-z][\w:.-]*\w')
 MOT = re.compile(r'[A-Za-z0-9ÀÁÈÉÍÏÒÓÚÜÇàáèéíïòóúüç][\wÀ-ÿ-]*')
 CAPCALERA = re.compile(r'^#{1,6}\s+')
 ENTITATS = {'&nbsp;': ' ', '&lt;': '<', '&gt;': '>', '&amp;': '&', '&thinsp;': ' '}
@@ -92,18 +86,6 @@ def sigla(mot):
     return majuscules >= 2 or (majuscules >= 1 and any(c.isdigit() for c in mot))
 
 
-def abans(linia):
-    """El que s'ha de treure abans de lint_prosa: les imatges i les citacions senceres, i el
-    text dels enllaços i dels spans sense el destí ni els atributs."""
-    linia = IMG_RE.sub(M, linia)
-    linia = CITA_RE.sub(M, linia)
-    linia = NOTA_RE.sub('', linia)
-    for _ in range(2):                                               # un enllaç dins d'un span
-        linia = SPAN_RE.sub(r'\1', linia)
-        linia = LINK_RE.sub(r'\1', linia)
-    return linia
-
-
 def despres(t):
     """La prosa de lint_prosa, amb el que no és català substituït pel marcador."""
     t = CAPCALERA.sub('', t)
@@ -111,13 +93,11 @@ def despres(t):
     t = re.sub(r'^>\s*', '', t)
     for entitat, text in ENTITATS.items():
         t = t.replace(entitat, text)
-    t = URL_RE.sub(M, t)
     t = NEGRETA_CURSIVA.sub(M, t)
     t = CURSIVA.sub(M, t)
     t = CURSIVA_.sub(M, t)
     t = NEGRETA.sub(r'\1', t).replace('**', '')
     t = re.sub(r'\\([*_$#\[\]`\\|<>~^-])', r'\1', t)
-    t = REFERENCIA.sub(M, t)
     t = MOT.sub(lambda m: M if sigla(m.group(0)) else m.group(0), t)
     return re.sub(r'\\$', '', t).strip()
 
@@ -144,7 +124,7 @@ def tanca_codi_partit(linies):
 def paragrafs(path):
     """[[(línia, text)]]: els paràgrafs de prosa d'un .qmd, una llista de línies cadascun."""
     crues = (ARREL / path).read_text(encoding='utf-8').split('\n')
-    prosa = lint_prosa.prose_lines('\n'.join(abans(l) for l in crues))
+    prosa = lint_prosa.prose_lines('\n'.join(crues))
     resultat, actual, anterior = [], [], None
     for n in sorted(prosa):
         cru = re.sub(r'^(?:>\s*)*', '', crues[n - 1].lstrip())

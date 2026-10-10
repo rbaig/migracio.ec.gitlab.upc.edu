@@ -671,6 +671,16 @@ Retallada de nou el 2026-10-10, a la nit: la fase 12 va fer `make gramatica` (D-
 I, el mateix vespre, la vinyeta de l'extracció de la prosa per a l'ortografia, que va fer la fase 12 (`2d427e9`: `lint_prosa.prose_lines` treu les notes al peu i deixa el text dels enllaços, i `ortografia.py`, les rutes i els sufixos enganxats a una fórmula), a petició de l'usuari («Si cal que facis alguna acció per solucionar-ho, fes-ho»):
 
   - **L'extracció de la prosa per a l'ortografia**: `ortografia.py` dona per mots desconeguts els identificadors de les notes al peu (`[^-ecmips]`, A2) i el text dels enllaços que és una URL (`Lcalendari.qmd`). `gramatica.py` treu totes dues coses abans de passar la prosa (`NOTA_RE`, `URL_RE`): es pot fer el mateix a `lint_prosa.prose_lines`, perquè en surti bé tothom.
+### «Protocols d'execució dels generadors i de les comprovacions, per nivells», segona retallada (§Tasques globals → Eines)
+
+Retallada el 2026-10-10, a la nit, en fer la revisió de la integració de LanguageTool, la neteja única de la prosa i el subagent `revisor-linguistic` (el seguiment de D-105 del registre de decisions). El text d'abans:
+
+- **Protocols d'execució dels generadors i de les comprovacions, per nivells: el que queda** (petició de l'usuari, 2026-10-09; retallada el 2026-10-10: la part feta —els nivells, `25_scripts/comprova.py`, els registres i l'ortografia— és a [D-103](24_specs/registre_de_decisions.md#d-103), [D-104](24_specs/registre_de_decisions.md#d-104) i [D-105](24_specs/registre_de_decisions.md#d-105), i el text d'abans, a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Dos blocs més, acceptats per l'usuari el 2026-10-10:
+  - **CI de les branques al mirall de GitHub**: un *workflow* que passi `make comprova-branca` a cada push d'una branca que no sigui `main` ni `build`. El mirall les rep totes, i el GitLab de la UPC no té *runners*. S'ha de provar empenyent una branca; l'editor en mira el resultat a GitHub abans de fusionar una MR.
+  - **El subagent `revisor-linguistic` (`.claude/agents/`), que passi `make gramatica` abans de començar**, i en parteixi de les troballes. `make gramatica` ja hi és (fase 12, 2026-10-10; [D-105](24_specs/registre_de_decisions.md#d-105)): `25_scripts/gramatica.py`, que baixa LanguageTool 6.6 al `.cache/` del clon com `verifica_laboratoris.py` hi baixa RARS (`d545c51`, D-62), és a `make comprova-tot`, i el soroll és a `24_specs/gramatica.toml`. Abans de fer-ho, la fase 11 n'ha de revisar el que la fase 12 ha fet a les seves eines: la integració a `comprova.py` (una comprovació «Gramàtica», només a `--tot`), al `Makefile` i a la guia; `eines_externes.py` (el `.cache/` del clon); i, a `lint_prosa.prose_lines` i `ortografia.py`, les notes al peu, els enllaços i les rutes (`2d427e9`). Sobre el corpus de `94468b4`, `make comprova-tot` acaba sense cap avís, tampoc de la gramàtica ni de l'ortografia.
+
+  Sessió: Opus, effort alt.
+
 ### Seccions de §Tasques per tema sense cap entrada viva
 
 El 2026-10-09 se'n van treure les subseccions buides; aquesta era la nota de cadascuna.

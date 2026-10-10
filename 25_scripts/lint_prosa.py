@@ -13,8 +13,11 @@ i la resta com a avís.
 Salta el que no és prosa: la capçalera YAML, els blocs de codi, les
 matemàtiques, les taules, les línies de div (`:::`), els comentaris HTML i,
 dins de cada línia, el codi en línia, els atributs {…}, els shortcodes
-{{< … >}}, les etiquetes HTML i les URL dels enllaços. Els dos espais a final
-de línia (salt de línia forçat de Markdown) no compten.
+{{< … >}}, les etiquetes HTML, les imatges, les citacions, les notes al peu,
+les referències @ i les URL; dels enllaços i dels spans ([…]{…}) en deixa el
+text. És l'única neteja de la prosa del projecte: prose_lines() la fan servir
+també ortografia.py i gramatica.py, que només hi afegeixen el que és seu (D-105).
+Els dos espais a final de línia (salt de línia forçat de Markdown) no compten.
 
 Ús:
     python3 25_scripts/lint_prosa.py               # només les línies afegides respecte d'HEAD,
@@ -39,20 +42,39 @@ HUNK_RE = re.compile(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@')
 # codi en línia, que pot contenir qualsevol dels altres.
 SPANS = [
     re.compile(r'(`+).+?\1'),                      # codi en línia
-    re.compile(r'\[\^[^\]\s]+\]:?'),                  # crida i definició d'una nota al peu, [^id]
     re.compile(r'(?<!\\)\$[^$]+?(?<!\\)\$'),       # matemàtiques en línia
     re.compile(r'\{\{<.*?>\}\}'),                  # shortcodes
     re.compile(r'\{[^{}]*\}'),                     # atributs {#id .classe clau="valor"}
     re.compile(r'<!--.*?-->'),                     # comentari HTML d'una línia
     re.compile(r'<[^<>]*>'),                       # etiquetes HTML
-    re.compile(r'\]\([^)]*\)'),                    # URL d'enllaç
+    re.compile(r'\]\([^)]*\)'),                    # el destí d'un enllaç que NETEJA no hagi llegit
 ]
 FORMES_SECCIO = "#### Formes que no s'han de fer servir"
 LIST_MARKER_RE = re.compile(r'^(?:>\s*)*(?:[-*+]|\d+[.)]|\(?[a-z]\))\s+')
-# Un enllaç es queda amb el text, i sense el destí: abans de SPANS, que en canviaria el destí per X
-# enganxat al text («[LaTeX](…)» → «[LaTeXX»). Les imatges (![…](…)) no hi entren.
-LINK_RE = re.compile(r'(?<!!)\[([^\[\]]*)\]\([^)]*\)')
+# El que s'ha de treure abans de SPANS, que en deixaria restes enganxades al text
+# («[LaTeX](…)» → «[LaTeXX»). Els enllaços i els spans admeten un nivell de claudàtors o de
+# parèntesis a dins.
+IMG_RE = re.compile(r'!\[(?:[^\[\]]|\[[^\[\]]*\])*\]\((?:[^()]|\([^()]*\))*\)(?:\{[^{}]*\})?')
+LINK_RE = re.compile(r'(?<!!)\[((?:[^\[\]]|\[[^\[\]]*\])*)\]\((?:[^()]|\([^()]*\))*\)')
+SPAN_RE = re.compile(r'\[((?:[^\[\]]|\[[^\[\]]*\])*)\]\{[^{}]*\}')
+CITA_RE = re.compile(r'\[-?@[^\[\]]*\]')
+NOTA_RE = re.compile(r'\[\^[^\]]*\]:?')                # la crida i la definició d'una nota al peu
+URL_RE = re.compile(r'https?://\S+')
+REFERENCIA_RE = re.compile(r'(?<![\w.])-?@[A-Za-z][\w:.-]*\w')   # no una adreça de correu
 DOUBLE_SPACE_RE = re.compile(r'\S {2,}(?=\S)')
+
+
+def neteja(line):
+    """Una línia sense el que no és prosa: les imatges, les citacions, les referències i les URL,
+    canviades per X; les notes al peu, fora; i dels enllaços i els spans, només el text."""
+    line = IMG_RE.sub('X', line)
+    line = CITA_RE.sub('X', line)
+    line = NOTA_RE.sub('', line)
+    for _ in range(2):                                    # un enllaç dins d'un span
+        line = SPAN_RE.sub(r'\1', line)
+        line = LINK_RE.sub(r'\1', line)
+    line = URL_RE.sub('X', line)
+    return REFERENCIA_RE.sub('X', line)
 
 
 def prose_lines(text):
@@ -101,7 +123,7 @@ def prose_lines(text):
             line = line.split('<!--', 1)[0]
         line = line.rstrip()
         line = LIST_MARKER_RE.sub('', line.lstrip())
-        line = LINK_RE.sub(r'\1', line)
+        line = neteja(line)
         for span in SPANS:
             line = span.sub('X', line)
         result[idx + 1] = line
