@@ -630,6 +630,16 @@ La vinyeta «Per decidir (usuari)», feta a `d2c7096` amb les decisions de l'usu
 
   - **Per decidir (usuari)**: a) *indentation*, «sagnat» o «sagnia» (la pregunta va quedar sense resposta): A2:422, :751, :752, :756, :761, :764; 13_contrib:90, :465, :474; quan es decideixi, la fila «indentar» de la taula entra amb les ocurrències corregides (D-106). e) Les 12 regles de LanguageTool que només són preferències d'estil, com a soroll o no (l'usuari en va demanar més informació). I les propostes sense decisió: D2 A2:1201 «aritmètico-lògiques» → «aritmeticològiques» (Termcat, «unitat aritmeticològica»); D7 A5:279 «equiespaiades» → «equidistants» (DIEC); D11 13_contrib:1050 «effortness», que no és un mot anglès («effort»); D12 13_contrib:693 «equacions display» → «equacions destacades»; D13 A1:594 i :602 «diferent al», opcional (l'Optimot hi prefereix «de»).
 
+Retirada el 2026-10-10, a la nit, feta: `gramatica.toml` va entrar al repositori amb la integració de LanguageTool (`25_scripts/gramatica.py`, D-105) i les decisions de l'usuari sobre la pregunta e) («Aplica COMMA_ADVERB»; la resta de preferències d'estil, desactivades). La resta de pendents, a la fase 11 (l'entrada «Protocols d'execució… : el que queda») i als suggeriments de la 7g (A9:730). L'entrada, sencera (`1b37d00`):
+
+- **Fase 12: correccions ortogràfiques i gramaticals del corpus amb hunspell i LanguageTool: el que queda** (petició de l'usuari, 2026-10-10; retallada el mateix dia, en aplicar-ne els blocs decidits: els 34 errors, `fd21f65`; les comes, `fd5e58b`; i «von Neumann», la regla dels noms de persona i cinc formes més a la taula de formes que no s'han de fer servir, `6e80e28`, amb [D-106](24_specs/registre_de_decisions.md#d-106) i [D-107](24_specs/registre_de_decisions.md#d-107). L'entrada sencera d'abans, amb la llista de troballes i les decisions literals de l'usuari, és a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Línies a `6e80e28`.
+
+  - **`24_specs/gramatica.toml`**: l'esborrany és al *worktree* `fase12`, sense versionar, fins a la decisió e).
+
+  ```bash
+  python3 25_scripts/lint_prosa.py $(git ls-files '*.qmd') | grep -c 'forma no admesa'    # 0 a 6e80e28
+  ```
+
 ### «Suggeriments de la fase 7g sense proposta concreta, per decidir» (§Tasques transversals)
 
 Retallada el 2026-10-10: la fase 12 (correccions ortogràfiques i gramaticals amb hunspell i LanguageTool) va corregir P2:84 i :158 com a part de l'error 30 de la seva entrada, perquè l'Optimot no admet «a nivell de» en sentit figurat en registres formals. Se'n treu el fragment «P2:84 i :158 «a nivell de paraula/byte» → «per paraules», «byte a byte»;» de la vinyeta «Problemes», i la resta de l'entrada no canvia. La vinyeta d'abans, sencera:
@@ -642,6 +652,10 @@ Retallada el 2026-10-10, en fer-ne la part principal (D-103, D-104 i D-105 del r
 
 - **Protocols d'execució dels generadors i de les comprovacions, per nivells** (petició de l'usuari, 2026-10-09, literal: «En algun moment caldrà explicitar els protocols d'execució dels scripts generadors i de testeig. Penso que cal definir nivells (per exemple "commit menor", "commit major", "revisió estètica", "revisió de continguts", "refer llista de continguts") perquè tal com està ara em sembla que hi ha testos innecessaris (per exemple, no cal renderitzar quan només hi ha canvis a `TODO.md`)»). ✅ Ja fet, el 2026-10-09: el hook d'abans del commit se salta el `make render` quan el render no llegeix cap fitxer canviat ([D-61](24_specs/registre_de_decisions.md#d-61)). Queda la resta: l'inventari de les comprovacions (el hook, el `Makefile`, els verificadors i els `--comprova` de `25_scripts/`, les skills, els subagents), què les dispara, quant triguen i què detecten, i una taula de nivells (quina mena de canvi demana quines comprovacions) que el hook pugui deduir dels fitxers canviats. Sessió nova: Opus, effort alt; la proposta, abans de canviar res.
 
+
+Retallada de nou el 2026-10-10, a la nit: la fase 12 va fer `make gramatica` (D-105). La vinyeta d'abans, sencera:
+
+  - **`make gramatica` amb LanguageTool**, opcional i a demanda (D-105): la baixada a `~/.cache/ec/`, la configuració de les regles que hi fan soroll (`24_specs/gramatica.toml`, que prepara la sessió de les correccions ortogràfiques del corpus) i que el subagent `revisor-linguistic` la passi abans de començar.
 ### Seccions de §Tasques per tema sense cap entrada viva
 
 El 2026-10-09 se'n van treure les subseccions buides; aquesta era la nota de cadascuna.

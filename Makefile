@@ -41,6 +41,9 @@ registres:              ## regenera els registres versionats: glossari, SVG de m
 	python3 25_scripts/gen_T8.py
 	python3 25_scripts/comprova.py --taula
 
+gramatica:              ## LanguageTool sobre la prosa del corpus, sense el soroll (24_specs/gramatica.toml); el baixa la primera vegada
+	@python3 25_scripts/gramatica.py --tot || [ $$? -eq 1 ]
+
 glossari:               ## només la secció «Termes» de 12_sigles_simbols.qmd, des del corpus
 	python3 25_scripts/gen_glossari.py
 
@@ -58,4 +61,4 @@ clean:                  ## esborra els artefactes del render, sense tocar cap fo
 	rm -rf _book *_files
 	rm -f $(filter-out $(shell git ls-files '*.html'),$(wildcard *.html)) *.log Estructura-de-computadors.tex
 
-.PHONY: help render render-complet comprova comprova-branca comprova-tot registres glossari inventari taules instal·la-hooks clean
+.PHONY: help render render-complet comprova comprova-branca comprova-tot gramatica registres glossari inventari taules instal·la-hooks clean

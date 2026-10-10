@@ -1,0 +1,482 @@
+# LanguageTool: el que és soroll per al llibre
+#
+# Configuració de 25_scripts/gramatica.py (make gramatica i make comprova-tot;
+# 13_contrib.qmd §Comprovacions per nivells). Es manté a mà: una regla nova que
+# només fa soroll s'hi desactiva amb el seu perquè, i una forma correcta que una
+# regla activa marca hi va com a excepció. Les xifres no s'hi escriuen:
+# `python3 25_scripts/gramatica.py --tot --resum` dona el compte per regla. D'on
+# surt la primera versió (la passada de la fase 12 sobre 2a3d595), a D-105.
+#
+# Tres seccions:
+#   [marcador]       com es reconeix una coincidència que només toca el marcador «X»
+#                    (el que gramatica.py posa en lloc de les cursives, les sigles,
+#                    les referències, les citacions, les imatges i el codi).
+#   [[desactivada]]  regla de LanguageTool que al llibre només dona soroll: no es
+#                    passa mai (--disable), i tampoc no en surten els casos bons.
+#   [[excepcio]]     regla que es manté activa perquè també troba errors reals, amb
+#                    formes que al llibre són correctes: s'ignora la coincidència si
+#                    hi coincideixen tots els camps que porta l'excepció —`textos`
+#                    (el text marcat, un de la llista), `fitxer` i `context` (un tros
+#                    del text del voltant, o una llista de trossos)—. Amb `context`,
+#                    l'excepció no amaga cap altre cas de la mateixa regla.
+#
+# Les paraules que hunspell no coneix no són aquí: van a 24_specs/diccionari.txt.
+
+# ─── Marcador ──────────────────────────────────────────────────────────────
+# El marcador «X» genera coincidències que no diuen res del text: 681 de les
+# 1 829, sobretot «l'X» i «d'X» (L_NO_APOSTROFA, 373), «X X»
+# (CATALAN_WORD_REPEAT_RULE, 266) i «X.» (MISSING_POINT, 20).
+# No es desactiven les regles, que també troben errors reals: es descarta la
+# coincidència quan el text marcat és només marcador, puntuació i xifres, o
+# «l'X», «d'X», «s'X».
+[marcador]
+text = "X"
+descarta = '''^(?:[\WX\d_]*|[lLdDsS]['’]X\w*|(?:\w+ )?X(?: X)+)$'''
+
+# ─── Regles desactivades ───────────────────────────────────────────────────
+
+[[desactivada]]
+id = "MORFOLOGIK_RULE_CA_ES"
+perque = "L'ortografia la fa ortografia.py, amb hunspell i el diccionari del projecte (24_specs/diccionari.txt), que LanguageTool no llegeix: a la prosa del llibre, quasi tot el que marca són termes anglesos en rodona, noms propis i mots tècnics."
+
+[[desactivada]]
+id = "UPPERCASE_SENTENCE_START"
+perque = "Totes són la continuació d'una frase després d'una equació display o d'un bloc de codi («on $s$ és la mida…», «falla perquè…»), que l'extracció posa a l'inici de paràgraf, o una etiqueta de codi a l'inici d'un ítem."
+
+[[desactivada]]
+id = "EXIGEIX_VERBS_CENTRAL"
+perque = "Pren per formes verbals balears noms i termes anglesos: «registre destinació», «la distància entre», bare-metal, «Execute»."
+
+[[desactivada]]
+id = "CA_SIMPLE_REPLACE_ANGLICISM_TARGET"
+perque = "*target* es manté en anglès (D-88; taula de termes mantinguts en anglès del glossari)."
+
+[[desactivada]]
+id = "PRONOM_FEBLE_EN_NUMERALS"
+perque = "«val 1», «retorna 0», «ha de sumar 100»: el numeral és un valor, no una quantitat que es pugui representar amb «en»."
+
+[[desactivada]]
+id = "PUNTUACIO_INCORRECTA"
+perque = "Llistes de parelles «(VPN 1, PPN 13), (VPN 7, PPN 4)», seqüències «…, bloc 15 a la línia 15, …» i «V = 0, —» de les taules de TLB."
+
+[[desactivada]]
+id = "CA_COMPOUNDS_NO_ALINEADA"
+perque = "«no» davant d'un adjectiu, sense guionet (D-32): «adreça no alineada»."
+
+[[desactivada]]
+id = "CA_COMPOUNDS_NO_ALINEAT"
+perque = "Com CA_COMPOUNDS_NO_ALINEADA (D-32): «accés no alineat»."
+
+[[desactivada]]
+id = "AGREEMENT_POSTPONED_ADJ"
+perque = "Tots falsos: l'adjectiu concorda amb un nom que el marcador amaga o amb una coordinació («conversió binari↔hexadecimal», «naturals amb X o enters amb Y»)."
+
+[[desactivada]]
+id = "SE_DAVANT_SC"
+perque = "«es» davant de so de [s] és una forma admesa; «se» hi és opcional (LanguageTool la classifica STYLE_OPTIONAL), i el llibre fa servir «es»."
+
+[[desactivada]]
+id = "ASSEMBLA"
+perque = "«assembla» és del verb «assemblar» (*assemble*), no «assemblea»."
+
+[[desactivada]]
+id = "SI_AMB_ACCENT"
+perque = "Condicionals amb la condició en fórmula («$1$ si cert, $0$ si fals», «Si $x \\ge 0$:»), que el marcador fa semblar afirmacions."
+
+[[desactivada]]
+id = "SI_AMBACCENT"
+perque = "Com SI_AMB_ACCENT."
+
+[[desactivada]]
+id = "COMA_PUNTSSUSPENSIUS"
+perque = "Enumeracions de notació amb els punts suspensius com a element de la llista: «el bit 31 és $a$, …, el bit 0 és $z$», «bloc 1 a la línia 1, …»."
+
+[[desactivada]]
+id = "L"
+perque = "Notació L/E de lectura i escriptura a les traces (D-16): «L encert», «L/E fallada»."
+
+[[desactivada]]
+id = "DIMMEDIAT"
+perque = "«d'immediat» és «de l'operand immediat» («bits d'immediat», «càrrega d'immediat a registre»), no la locució adverbial."
+
+[[desactivada]]
+id = "COM_COM_A"
+perque = "«es defineix com $h = …$», «conegudes com CISC»: el marcador amaga la fórmula o la sigla, i la regla demana «com a»."
+
+[[desactivada]]
+id = "DESPRES_DE_RERE"
+perque = "El marcador converteix «`j` després de `bge`» en «X després de X», que la regla pren per un calc de traductor automàtic."
+
+[[desactivada]]
+id = "QUAN_PREPOSICIO"
+perque = "«Quan $s_x \\to \\infty$:», amb la condició en fórmula."
+
+# Preferències d'estil que el llibre no adopta: cap no és un error normatiu
+# (decisió de l'usuari, 2026-10-10). COMMA_ADVERB, en canvi, es manté activa: s'aplica.
+
+[[desactivada]]
+id = "ON_EN_QUE"
+perque = "«el context on apareix»: l'Optimot (fitxa «Relatiu locatiu: on, en què, en el qual») admet «on» quan s'indica una localització, i el llibre l'usa amb antecedents locatius figurats."
+
+
+[[desactivada]]
+id = "SUFICIENT_PROU"
+perque = "«suficient» és normatiu; «prou» n'és una alternativa."
+
+[[desactivada]]
+id = "SUFICIENTMENT"
+perque = "Com SUFICIENT_PROU."
+
+[[desactivada]]
+id = "REALITZAR"
+perque = "Avís d'ús abusiu de «realitzar», no d'error."
+
+[[desactivada]]
+id = "TIPUS_MENA"
+perque = "«cap tipus d'extensió»: preferència per «mena»."
+
+[[desactivada]]
+id = "MAJOR_MES_GRAN"
+perque = "«el major cost»: «major» és normatiu."
+
+[[desactivada]]
+id = "EN_MAJOR_MENOR_MESURA"
+perque = "Preferència d'estil."
+
+[[desactivada]]
+id = "TOT_I_AIXI"
+perque = "Preferència d'estil («així i tot»)."
+
+[[desactivada]]
+id = "COSES_QUE_FER"
+perque = "«no hi ha context que preservar»: preferència d'estil."
+
+[[desactivada]]
+id = "ES_NECESSITA_CAL_INF"
+perque = "Suggeriment de redacció («calia» per «es necessitava»)."
+
+[[desactivada]]
+id = "CA_CHECKCASE_SISTEMA_INTERNACIONAL_D_Q_UNITATS"
+perque = "Majúscules del nom del Sistema Internacional d'Unitats: el mateix missatge diu que els llibres d'estil no coincideixen."
+
+# ─── Excepcions: regla activa, forma correcta al llibre ─────────────────────
+
+[[excepcio]]
+regla = "CONCORDANCES_DET_NOM"
+textos = ["la cau", "La cau", "de la cau", "a la cau", "una cau", "tot zeros", "tot encerts"]
+perque = "«la cau» és la forma curta de «la memòria cau» (convenció del llibre; 36); «tot zeros», «tot encerts» és la construcció «tot + nom en plural» («és tot nervis»; 2). La coincidència que queda, «Al font» (13_contrib.qmd), és un error real."
+
+[[excepcio]]
+regla = "CONCORDANCES_TOT_UN"
+textos = ["tot uns"]
+perque = "Com «tot zeros», a la mateixa frase d'A5."
+
+[[excepcio]]
+regla = "CONCORDANCES_DET_NOM"
+textos = ["del Data"]
+perque = "«del Data Cache Simulator», nom d'una eina de RARS."
+
+[[excepcio]]
+regla = "CATALAN_WORD_REPEAT_RULE"
+textos = ["a A", "A a"]
+perque = "«de l'A a la Z», «per a A i 32 per a B»: lletra i preposició."
+
+[[excepcio]]
+regla = "HAVER_SENSE_HAC"
+textos = ["E"]
+perque = "Notació E d'escriptura a les traces («E fallada»)."
+
+[[excepcio]]
+regla = "PREFIXOS_SENSE_GUIONET_NOMSADJECTIUS"
+textos = ["pre-render"]
+perque = "Nom de l'etapa de Quarto (clau `pre-render` de _quarto.yml)."
+
+[[excepcio]]
+regla = "PREFIXOS_SENSE_GUIONET_EN_DICCIONARI"
+textos = ["Mnemò-nic"]
+perque = "Exemple de partició mal feta, citat a 13_contrib.qmd §Taules."
+
+[[excepcio]]
+regla = "SENSE_GUIONET"
+textos = ["Mnemò-nic"]
+perque = "Com l'anterior."
+
+[[excepcio]]
+regla = "VERBS_NOMSPROPIS"
+textos = ["Request"]
+perque = "«Merge Request», terme de GitLab."
+
+[[excepcio]]
+regla = "CA_SIMPLE_REPLACE_ANGLICISM_SKILL"
+textos = ["skill"]
+perque = "Nom d'una funcionalitat de Claude Code (13_contrib.qmd §IA)."
+
+[[excepcio]]
+regla = "CA_SIMPLE_REPLACE_ANGLICISM_SKILLS"
+textos = ["skills"]
+perque = "Com l'anterior."
+
+[[excepcio]]
+regla = "CA_SIMPLE_REPLACE_SIMPLE_Q"
+textos = ["Q"]
+perque = "Registre Q del quocient (D-9)."
+
+[[excepcio]]
+regla = "PREP_VERB_CONJUGAT"
+textos = ["té"]
+perque = "«Quin té més rendiment?»: «quin» és el subjecte."
+
+[[excepcio]]
+regla = "SEGLE"
+textos = ["S X"]
+perque = "«mode S» de RISC-V seguit d'un marcador."
+
+[[excepcio]]
+regla = "METAL_METALL"
+textos = ["metal"]
+perque = "*bare-metal*."
+
+[[excepcio]]
+regla = "MONO"
+textos = ["Mono"]
+perque = "Noms de fonts: DejaVu Sans Mono, Latin Modern Mono, Liberation Mono."
+
+[[excepcio]]
+regla = "RARE_WORDS"
+textos = ["Git", "git"]
+perque = "L'eina Git."
+
+[[excepcio]]
+regla = "CONFUSIONS_B_V"
+textos = ["Probe"]
+perque = "Raspberry Pi Debug Probe."
+
+[[excepcio]]
+regla = "ESPAI_DARRERE_DOSPUNTS"
+textos = [":1", ":»"]
+perque = "Multiplexor $N$:1 i la cita «Nota:»."
+
+[[excepcio]]
+regla = "ESPAIS_QUE_FALTEN_PUNTUACIO"
+textos = ["imm[11", "imm[4"]
+perque = "Camps de bits `imm[11:5]`, `imm[4:0]` fora de backticks (S2)."
+
+[[excepcio]]
+regla = "DOUBLE_PUNCTUATION"
+textos = [".."]
+perque = "Rangs d'adreces «0..1023»."
+
+[[excepcio]]
+regla = "CANVI_PREPOSICIONS"
+textos = ["en"]
+perque = "«l'última en entrar, la primera en sortir»: l'Optimot admet en, a i de davant de l'infinitiu darrere de primer, últim, únic (fitxa «el primer en arribar, el primer a arribar o el primer d'arribar?»). La regla es manté per «consisteix en + infinitiu»."
+
+[[excepcio]]
+regla = "A_NIVELL"
+textos = ["a nivell addicional"]
+perque = "«com a nivell addicional de la jerarquia»: és el nom «nivell», no la locució."
+
+[[excepcio]]
+regla = "LA_NA_NOM_FEMENI"
+textos = ["l'invariant"]
+perque = "«invariant» és masculí (DIEC)."
+
+
+[[excepcio]]
+regla = "ACCENT_SOLT"
+textos = ["`"]
+perque = "Codi en línia partit entre dues línies del font (13_contrib.qmd), que l'extracció línia a línia no reconeix. Millor arreglar-ho a l'extracció: ajuntar el paràgraf abans de treure el codi en línia."
+
+# Falsos positius d'una o dues coincidències: la regla es manté activa.
+
+[[excepcio]]
+regla = "COMMA_ADVERB"
+fitxer = "01_apunts/A2.qmd"
+textos = ["Simplement"]
+context = ["Simplement indica a un compilador", "Simplement copien els bits", "Simplement suma l'índex"]
+perque = "«Simplement» hi vol dir «només» i modifica el verb: la regla només demana la coma si l'adverbi es refereix a tota la frase (decisió de l'usuari, 2026-10-10: «Aplica COMMA_ADVERB»)."
+
+[[excepcio]]
+regla = "COMMA_PERO"
+context = ["el mateix nom però diferent", "alimentat però inactiu", "queda pendent però no", "vàlida però no present", "precisió simple però fora"]
+perque = "«però» entre sintagmes curts, sense coma (decisió de l'usuari, 2026-10-10: la coma, quan uneix oracions)."
+
+[[excepcio]]
+regla = "COMMA_LOCUTION"
+textos = [" en primer lloc"]
+context = "pensats en primer lloc"
+perque = "Locució adverbial dins del predicat, no marcador discursiu."
+
+[[excepcio]]
+regla = "DIFERENT_A"
+context = ["diferents als quals accedeix", "signe diferent al resultat"]
+perque = "A7: «als quals» és el relatiu d'«accedir a». S4: «al resultat» és un locatiu, paral·lel a «als operands»."
+
+[[excepcio]]
+regla = "LA_MES_COMU"
+context = "el més literals possible"
+perque = "Es manté (fase 12, D9)."
+
+[[excepcio]]
+regla = "EL_MES_SENZILLA_POSSIBLE"
+context = "el més literals possible"
+perque = "Es manté (fase 12, D9)."
+
+[[excepcio]]
+regla = "CONCORDANCES_ADJ_NOM"
+textos = ["Total variables", "immediata s", "tercer recorreguts"]
+perque = "«Total variables: 42 bytes» és una etiqueta; «s/a» és l'abreviatura de «sense assignació»; «Segon i tercer recorreguts» porta el nom en plural perquè en són dos."
+
+[[excepcio]]
+regla = "HI_REDUNDANT"
+context = ["amb què hi arribareu", "en què s'hi encadenen"]
+perque = "«hi» representa un lloc que la frase no repeteix (l'error, el fitxer combinat)."
+
+[[excepcio]]
+regla = "QUAN_QUANT"
+fitxer = "02_problemes/P9.qmd"
+context = "es produeix una excepció"
+perque = "«Quan» temporal."
+
+[[excepcio]]
+regla = "QUANT_QUAN"
+context = "Quant ocuparan"
+perque = "«Quant» de quantitat."
+
+[[excepcio]]
+regla = "PUNT_EN_ABREVIATURES"
+textos = ["int"]
+perque = "El tipus `int` de C, fora de backticks."
+
+[[excepcio]]
+regla = "CONCORDANCES_CALDRE"
+context = "en calen dos"
+perque = "«calen» concorda amb «dos»."
+
+[[excepcio]]
+regla = "PERQUE_PER_QUE"
+context = "sap què vol dir perquè"
+perque = "«perquè» causal."
+
+[[excepcio]]
+regla = "A_L_ENTORN_DE"
+context = "a l'entorn d'execució"
+perque = "«l'entorn d'execució» és un nom, no la locució «a l'entorn de»."
+
+[[excepcio]]
+regla = "CA_MULTITOKEN_SPELLING_TWO"
+textos = ["target real"]
+perque = "*target* (D-88)."
+
+[[excepcio]]
+regla = "SG_PL_NOMBRE_DE"
+context = "nombres de mida gran"
+perque = "«de mida gran», en singular."
+
+[[excepcio]]
+regla = "ASSENTAR_ASSEURE"
+context = "assentats els conceptes"
+perque = "«assentar» els conceptes (DIEC)."
+
+[[excepcio]]
+regla = "MAJUSCULA_IMPROBABLE"
+textos = ["format I"]
+perque = "El format I de les instruccions."
+
+[[excepcio]]
+regla = "FRASE_INFINITIU"
+context = "Afegir els comentaris necessaris"
+perque = "Una llista de criteris en infinitiu."
+
+[[excepcio]]
+regla = "DIACRITICS_02"
+textos = ["especifica"]
+perque = "El verb «especificar»."
+
+[[excepcio]]
+regla = "CONFUSIONS_ACCENT"
+textos = ["referencia"]
+perque = "El verb «referenciar»."
+
+[[excepcio]]
+regla = "PASSAR_PER"
+context = "es passen pels registres"
+perque = "Passiva pronominal de «passar» (els paràmetres es passen)."
+
+[[excepcio]]
+regla = "FALTA_ELEMENT_ENTRE_VERBS"
+context = "programa continua sense"
+perque = "El verb «continuar»."
+
+[[excepcio]]
+regla = "MISSING_POINT"
+context = "té 200"
+perque = "«B té 200 instruccions…»: «B» és el nom del computador."
+
+[[excepcio]]
+regla = "RELATIUS"
+context = "l'estat del que deixa"
+perque = "«el del [procés] que deixa d'executar-se»: el nom és el·lidit."
+
+[[excepcio]]
+regla = "PRONOMS_FEBLES_SOLTS1"
+context = "s'X"
+perque = "El pronom davant d'un verb que el marcador amaga."
+
+[[excepcio]]
+regla = "NOMBRE_NUMERO"
+context = "és el número real de la crida"
+perque = "«número» d'identificació (el de la crida al sistema), no una quantitat."
+
+[[excepcio]]
+regla = "CONCORDANCES_ATRIBUT"
+context = "és convenient guardar"
+perque = "«és convenient» impersonal, amb infinitiu."
+
+[[excepcio]]
+regla = "CONCORDANCES_NUMERALS"
+context = "dels dos seguit d'un salt"
+perque = "«seguit» concorda amb «el màxim»."
+
+[[excepcio]]
+regla = "ALMENYS"
+context = "al menys significatiu"
+perque = "«del més significatiu al menys significatiu»."
+
+[[excepcio]]
+regla = "NOUN_PLURAL"
+context = "resta de prova"
+perque = "«la resta de prova» de l'algorisme de divisió."
+
+[[excepcio]]
+regla = "SET_SE_T"
+context = "working set"
+perque = "*working set*."
+
+[[excepcio]]
+regla = "CONCORDANCES_QUIN"
+context = "determinar quin ha generat"
+perque = "«quin [dispositiu]»."
+
+[[excepcio]]
+regla = "SI_CAP"
+context = "si cap altre bloc no"
+perque = "«si cap … no» és la negació correcta (A3, «Si cap coincideix», en canvi, era un error: fase 12)."
+
+[[excepcio]]
+regla = "L_NO_APOSTROFA"
+fitxer = "index.qmd"
+textos = [" La"]
+perque = "El marcador d'una sigla seguit de punt i d'«La»."
+
+[[excepcio]]
+regla = "DE_EL_S_APOSTROFEN"
+fitxer = "index.qmd"
+context = "arquitectura abierta"
+perque = "El títol de la traducció castellana del llibre de Patterson i Waterman."
+
+[[excepcio]]
+regla = "Y_CONJUNCIO"
+fitxer = "index.qmd"
+context = "Patterson y Andrew"
+perque = "Com l'anterior."

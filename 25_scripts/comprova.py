@@ -79,6 +79,7 @@ CLASSES = [
     ('25_scripts/escombrada.sh', 'eina', set()),
     ('25_scripts/lint_prosa.py', 'eina', set()),
     ('25_scripts/ortografia.py', 'eina', set()),
+    ('25_scripts/gramatica.py', 'eina', set()),
     ('25_scripts/orfes.py', 'eina', set()),
     ('25_scripts/inventari_figures.py', 'eina', set()),
     ('25_scripts/verifica_*.py', 'eina', set()),
@@ -389,6 +390,13 @@ def c_ortografia(ctx):
     return [(AVIS, f'{f}:{n}: «{m}» (si és legítim, a 24_specs/diccionari.txt)') for (f, n), m in trobats]
 
 
+def c_gramatica(ctx):
+    rc, sortida = executa(PY, '25_scripts/gramatica.py', '--tot', timeout=1800)
+    if rc == 3:
+        raise Omesa(sortida.split('\n')[-1].removeprefix('[gramatica] omesa: '))
+    return [(AVIS, retalla(sortida))] if rc else []
+
+
 def c_marques(ctx):
     r = []
     for f in ctx.canvis.qmd():
@@ -586,6 +594,10 @@ COMPROVACIONS = [
     Comprovacio('ortografia', 'Ortografia', 'Mots que no són als diccionaris de `hunspell` (català i anglès) ni al '
                 'del projecte, `24_specs/diccionari.txt` (`ortografia.py`)', QMD,
                 'En tocar un `.qmd`: les línies afegides', 'Avisa', c_ortografia),
+    Comprovacio('gramatica', 'Gramàtica', 'Concordances, preposicions, puntuació i la resta de regles de LanguageTool, '
+                'sense les que al llibre fan soroll ni les formes correctes que marquen (`gramatica.py`, amb '
+                '`24_specs/gramatica.toml`; demana Java 17, i baixa LanguageTool la primera vegada)',
+                lambda ctx: ctx.tot, 'Només `comprova-tot` (i `make gramatica`)', 'Avisa', c_gramatica),
     Comprovacio('marques', 'Marques TODO', '`TODO` a les línies afegides dels `.qmd` (§Commits)',
                 lambda ctx: not ctx.tot and bool(ctx.canvis.qmd()), 'En tocar un `.qmd`', 'Avisa', c_marques),
     Comprovacio('format_codi', 'Format del codi', 'Els criteris mecànics del format dels blocs d\'assemblador '

@@ -56,7 +56,7 @@ Un fitxer o directori de l'arrel per línia. `make comprova` comprova que la lli
 ├── 21_riscv/                   # Fragments de taula del compendi RISC-V i dels callouts
 ├── 22_figs_originals/          # Figures natives (SVG); `conservats/`, les que el llibre ja no consumeix
 ├── 23_figs_externes/           # Figures d'una font externa
-├── 24_specs/                   # Especificacions: figures (`svg.md` i els `.toml`), registre de decisions, arxiu del TODO, glossari, diccionari
+├── 24_specs/                   # Especificacions: figures (`svg.md` i els `.toml`), registre de decisions, arxiu del TODO, glossari, diccionari, gramàtica
 ├── 25_scripts/                 # Generadors del pre-render, filtres Lua i eines de comprovació
 ├── _book/                      # Generat · Quarto: directori de sortida
 ├── auto_figs/                  # Generat · Figures per script (el pre-render l'esborra i el refà)
@@ -102,6 +102,7 @@ cd ~/git/EC
 | `make render` | Genera les taules fusionades (`auto_riscv/`) i renderitza **només l'HTML** (1–3 min): el bucle diari |
 | `make comprova` | Les comprovacions del nivell dels canvis, abans de cada commit (de segons a 8 min) |
 | `make comprova-tot` | Totes les comprovacions, amb l'HTML, el PDF i RARS (5–10 min): abans d'obrir una MR o de publicar |
+| `make gramatica` | LanguageTool sobre la prosa del corpus, sense el que al llibre és soroll (`24_specs/gramatica.toml`); també és a `make comprova-tot` |
 | `make help` | Totes les ordres de `make`, amb el que fa cadascuna |
 
 Els nivells i les comprovacions, a `13_contrib.qmd §Comprovacions per nivells`; quan cal el PDF i com es generen les taules fusionades de `11_riscv.qmd`, a §Verificació de l'entorn, §Renderitzar el projecte i §Fitxer de referència tècnica. `quarto render` també funciona, però sense les taules fusionades i sense el bloqueig que impedeix dos renders alhora al mateix directori.
@@ -153,6 +154,16 @@ Hooks de git opcionals, que passen les comprovacions abans del commit i del push
 
 ```bash
 make instal·la-hooks
+```
+
+### LanguageTool (gramàtica, opcional)
+
+`make gramatica` passa [LanguageTool](https://languagetool.org/) 6.6 sobre la prosa dels `.qmd`. No cal instal·lar-lo: `25_scripts/gramatica.py` el baixa a `~/.cache/ec/` la primera vegada (uns 250 MB; uns 400 un cop descomprimit) i en comprova el sha256, o fa servir el de la variable d'entorn `LANGUAGETOOL_DIR`. Demana Java 17 o posterior; sense Java, la comprovació surt com a omesa. El que al llibre hi és soroll és a `24_specs/gramatica.toml`, que es manté a mà: una regla que només en fa s'hi desactiva amb el seu perquè, i una forma correcta que marca una regla activa hi va com a excepció.
+
+```bash
+make gramatica                                     # el corpus sencer
+python3 25_scripts/gramatica.py 01_apunts/A7.qmd   # un fitxer
+python3 25_scripts/gramatica.py --tot --resum      # el compte per regla
 ```
 
 ### RARS (simulador RISC-V)

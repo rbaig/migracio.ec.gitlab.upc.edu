@@ -281,7 +281,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
 
 #### Formes que no s'han de fer servir
 
-No són termes anglesos, i per això no són al glossari: són formes que no són normatives o que no són el terme informàtic en català.
+No són termes anglesos, i per això no són al glossari: són formes que no són normatives o que no són el terme informàtic en català. La taula es manté a mà, i és la que llegeix la comprovació de la prosa (§Comprovacions per nivells), que atura el commit amb les formes de la primera columna: una fila nova hi entra en el mateix commit que les treu del corpus ([D-105]({{< var decisions >}}#d-105)).
 
 <!--- cSpell:disable --->
 | No s'escriu | S'escriu | Observacions |
@@ -811,7 +811,7 @@ quarto install tinytex
 - **Python** (versió ≥ 3.11), per a les comprovacions de `25_scripts/`, i el paquet **fontTools** (`pip install fonttools`), que només fa servir la de les taules.
 - Opcionals: sense ells, la comprovació que els fa servir surt com a «omesa», i no com a neta.
     - **hunspell** amb els diccionaris català i anglès (a Debian i Ubuntu, els paquets `hunspell`, `hunspell-ca` i `hunspell-en-us`), per a l'ortografia.
-    - **Java** (versió ≥ 8), per a RARS (§Verificació empírica a RARS).
+    - **Java**: la versió 8 o posterior per a RARS (§Verificació empírica a RARS), i la 17 o posterior per a LanguageTool (la gramàtica, `make gramatica`). Ni RARS ni LanguageTool no s'instal·len a mà: els scripts que els fan servir els baixen la primera vegada a `~/.cache/ec/`, fora del clon, i en comproven el sha256 ([D-62]({{< var decisions >}}#d-62), [D-105]({{< var decisions >}}#d-105)).
 - **RARS** (simulador RISC-V), per treballar el laboratori: [RARS](https://github.com/TheThirdOne/rars/releases).
 
 ### Comprovacions per nivells
@@ -824,14 +824,14 @@ make comprova       # abans de cada commit: les comprovacions del nivell del can
 make comprova-tot   # abans d'obrir una MR o de publicar: totes, amb el PDF i RARS (5–10 min)
 ```
 
-`make comprova-branca` passa les de tota la branca respecte d'`origin/main`, i `python3 25_scripts/comprova.py --explica` diu el nivell i què faria, sense executar res. Una comprovació que **atura** el commit ha trobat un error; una que **avisa** no l'atura, però l'avís s'ha de llegir.
+`make comprova-branca` passa les de tota la branca respecte d'`origin/main`, i `python3 25_scripts/comprova.py --explica` diu el nivell i què faria, sense executar res. `make gramatica` passa LanguageTool sobre la prosa del corpus (també ho fa `make comprova-tot`); el que al llibre hi és soroll —les regles desactivades i les formes correctes que marca alguna regla activa— és a `24_specs/gramatica.toml`, que es manté a mà, amb el perquè de cada entrada. Una comprovació que **atura** el commit ha trobat un error; una que **avisa** no l'atura, però l'avís s'ha de llegir.
 
 #### Nivells
 
 <!-- comprova:nivells:inici — la genera 25_scripts/comprova.py --taula; no l'editeu a mà -->
 | Nivell | Quan | Què s'hi afegeix | Temps |
 | :--- | :--- | :--- | :--- |
-| **0 Operatiu** | Només canvien fitxers que el render no llegeix (`TODO.md`, `24_specs/arxiu_todo.md`, `24_specs/registre_de_decisions.md`, `README.md`, `CLAUDE.md`, `.claude/`, `.github/`, `.githooks/`, `.vscode/`, `.gitignore`, `05_diapositives/`, `22_figs_originals/conservats/`, `24_specs/glossari.toml`, `24_specs/diccionari.txt`, `24_specs/gramatica.toml`), o eines de comprovació i generadors amb la sortida versionada (`25_scripts/comprova.py`, `25_scripts/escombrada.sh`, `25_scripts/lint_prosa.py`, `25_scripts/ortografia.py`, `25_scripts/orfes.py`, `25_scripts/inventari_figures.py`, `25_scripts/verifica_*.py`, `25_scripts/gen_glossari.py`, `25_scripts/gen_T4_sumador.py`, `25_scripts/gen_T7.py`, `25_scripts/gen_T8.py`) | Les comprovacions que diuen «Sempre» a la taula següent | Uns segons |
+| **0 Operatiu** | Només canvien fitxers que el render no llegeix (`TODO.md`, `24_specs/arxiu_todo.md`, `24_specs/registre_de_decisions.md`, `README.md`, `CLAUDE.md`, `.claude/`, `.github/`, `.githooks/`, `.vscode/`, `.gitignore`, `05_diapositives/`, `22_figs_originals/conservats/`, `24_specs/glossari.toml`, `24_specs/diccionari.txt`, `24_specs/gramatica.toml`), o eines de comprovació i generadors amb la sortida versionada (`25_scripts/comprova.py`, `25_scripts/escombrada.sh`, `25_scripts/lint_prosa.py`, `25_scripts/ortografia.py`, `25_scripts/gramatica.py`, `25_scripts/orfes.py`, `25_scripts/inventari_figures.py`, `25_scripts/verifica_*.py`, `25_scripts/gen_glossari.py`, `25_scripts/gen_T4_sumador.py`, `25_scripts/gen_T7.py`, `25_scripts/gen_T8.py`) | Les comprovacions que diuen «Sempre» a la taula següent | Uns segons |
 | **1 Menor** | Només canvien `.qmd`, i cap línia canviada (afegida o treta) no porta marcatge: ni `@`, `{`, `}`, `$`, `\`, `<`, `![` o la barra vertical, ni comença amb `:::`, `---`, `#`, una tanca de codi o `[^`, ni és buida. Hi entra el codi d'un bloc sense marcatge, que el render no interpreta | Les de la prosa | Uns segons |
 | **2 Contingut** | Qualsevol altre canvi del text del llibre (`*.qmd`, `LICENSE.md`, `15_bibliografia.bib`, `_variables.yml`), o un fitxer que no té classe | `make render` | 1–3 min |
 | **3 Figures** | `22_figs_originals/`, `23_figs_externes/`, `24_specs/svg.md`, `24_specs/*.gv`, `24_specs/registres.toml`, `24_specs/BA.toml`, `24_specs/mapa.toml`, `24_specs/subrutines.toml`, `24_specs/MC.toml`, `24_specs/memoria.toml`, `24_specs/retalls.toml`, `25_scripts/figlib.py`, `25_scripts/columna_memoria.py`, `25_scripts/norm_font.py`, `25_scripts/gen_*.py` | `make render-complet`, i el recordatori de la revisió estètica | 4–8 min |
@@ -850,6 +850,7 @@ make comprova-tot   # abans d'obrir una MR o de publicar: totes, amb el PDF i RA
 | Eines | La sintaxi dels `.py` (`compile`) i dels `.sh` (`bash -n`) canviats; si canvia `comprova.py`, l'autoprova de la classificació | En tocar un `.py` o un `.sh` | Atura |
 | Prosa | Les formes que no s'han de fer servir (§Anglicismes i terminologia obligatòria), que aturen; i els dobles espais i les cometes, que avisen (`lint_prosa.py`) | En tocar un `.qmd`: les línies afegides | Atura (formes) o avisa |
 | Ortografia | Mots que no són als diccionaris de `hunspell` (català i anglès) ni al del projecte, `24_specs/diccionari.txt` (`ortografia.py`) | En tocar un `.qmd`: les línies afegides | Avisa |
+| Gramàtica | Concordances, preposicions, puntuació i la resta de regles de LanguageTool, sense les que al llibre fan soroll ni les formes correctes que marquen (`gramatica.py`, amb `24_specs/gramatica.toml`; demana Java 17, i baixa LanguageTool la primera vegada) | Només `comprova-tot` (i `make gramatica`) | Avisa |
 | Marques TODO | `TODO` a les línies afegides dels `.qmd` (§Commits) | En tocar un `.qmd` | Avisa |
 | Format del codi | Els criteris mecànics del format dels blocs d'assemblador (`verifica_format_codi.py`) | Sempre | Avisa |
 | Taules al PDF | Desbordaments i amplades de les taules del PDF, mesurats sobre el font (`verifica_taules.py`, amb fontTools) | Sempre | Avisa |
