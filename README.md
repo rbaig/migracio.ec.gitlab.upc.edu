@@ -46,7 +46,7 @@ Un fitxer o directori de l'arrel per línia. `make comprova` comprova que la lli
 .
 ├── .cache/                     # Generat · RARS i LanguageTool, baixats pels scripts que els fan servir (no versionat, `.gitignore`)
 ├── .claude/                    # Claude Code: hooks, skills i subagents (`13_contrib.qmd §IA`)
-├── .github/                    # Workflow de publicació a GitHub Pages
+├── .github/                    # Workflows de GitHub: la publicació a GitHub Pages i les comprovacions de les branques
 ├── .githooks/                  # Hooks de git opcionals: `make instal·la-hooks`
 ├── .vscode/                    # VS Code: corrector ortogràfic i extensions recomanades
 ├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
@@ -144,11 +144,11 @@ quarto check
 
 ### Python (≥ 3.11) i les comprovacions
 
-Les comprovacions de `25_scripts/` fan servir Python 3.11 o posterior i, la de les taules, el paquet fontTools. L'ortografia, opcional, fa servir hunspell amb els diccionaris català i anglès:
+Les comprovacions de `25_scripts/` fan servir Python 3.11 o posterior i, la de les taules, el paquet fontTools i les fonts del PDF (Latin Modern i DejaVu Sans Mono). L'ortografia, opcional, fa servir hunspell amb els diccionaris català i anglès:
 
 ```bash
 pip install fonttools
-sudo apt install hunspell hunspell-ca hunspell-en-us   # Debian i Ubuntu
+sudo apt install hunspell hunspell-ca hunspell-en-us fonts-lmodern fonts-dejavu-core   # Debian i Ubuntu
 ```
 
 Hooks de git opcionals, que passen les comprovacions abans del commit i del push (`13_contrib.qmd §Comprovacions per nivells`):

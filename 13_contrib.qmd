@@ -808,7 +808,7 @@ Abans de contribuir cal tenir instal·lat:
 quarto install tinytex
 ```
 
-- **Python** (versió ≥ 3.11), per a les comprovacions de `25_scripts/`, i el paquet **fontTools** (`pip install fonttools`), que només fa servir la de les taules.
+- **Python** (versió ≥ 3.11), per a les comprovacions de `25_scripts/`. La de les taules fa servir, a més, el paquet **fontTools** (`pip install fonttools`) i les fonts del PDF, Latin Modern i DejaVu Sans Mono (a Debian i Ubuntu, els paquets `fonts-lmodern` i `fonts-dejavu-core`); sense, surt com a «omesa».
 - Opcionals: sense ells, la comprovació que els fa servir surt com a «omesa», i no com a neta.
     - **hunspell** amb els diccionaris català i anglès (a Debian i Ubuntu, els paquets `hunspell`, `hunspell-ca` i `hunspell-en-us`), per a l'ortografia.
     - **Java**: la versió 8 o posterior per a RARS (§Verificació empírica a RARS), i la 17 o posterior per a LanguageTool (la gramàtica, `make gramatica`). Ni RARS ni LanguageTool no s'instal·len a mà: si no són al sistema (les variables d'entorn `RARS_JAR` i `LANGUAGETOOL_DIR`), els scripts que els fan servir els baixen la primera vegada al directori `.cache/` del clon, que git ignora i que comparteixen tots els *worktrees*, i en comproven el sha256 ([D-62]({{< var decisions >}}#d-62), [D-105]({{< var decisions >}}#d-105)).
@@ -853,7 +853,7 @@ make comprova-tot   # abans d'obrir una MR o de publicar: totes, amb el PDF i RA
 | Gramàtica | Concordances, preposicions, puntuació i la resta de regles de LanguageTool, sense les que al llibre fan soroll ni les formes correctes que marquen (`gramatica.py`, amb `24_specs/gramatica.toml`; demana Java 17, i baixa LanguageTool la primera vegada) | Només `comprova-tot` (i `make gramatica`) | Avisa |
 | Marques TODO | `TODO` a les línies afegides dels `.qmd` (§Commits) | En tocar un `.qmd` | Avisa |
 | Format del codi | Els criteris mecànics del format dels blocs d'assemblador (`verifica_format_codi.py`) | Sempre | Avisa |
-| Taules al PDF | Desbordaments i amplades de les taules del PDF, mesurats sobre el font (`verifica_taules.py`, amb fontTools) | Sempre | Avisa |
+| Taules al PDF | Desbordaments i amplades de les taules del PDF, mesurats sobre el font (`verifica_taules.py`, amb fontTools i les fonts del PDF) | Sempre | Avisa |
 | Figures | Els avisos de l'inventari de figures: peus, remissions, `<title>` i `<desc>`, colors, duplicats (`inventari_figures.py --comprova`) | Sempre | Avisa |
 | Fitxers orfes | Fitxers versionats que cap altre no cita (`orfes.py`, D-98) | Sempre | Avisa |
 | Classificació | Cada fitxer té classe a la taula de `comprova.py`; si no, el canvi es tracta com a nivell 2 | Sempre | Avisa |
@@ -882,6 +882,10 @@ Les sessions de Claude Code passen `comprova.py` soles abans de cada commit (el 
 - `pre-push`: les de la branca sencera, amb el render que demana el seu nivell (`make comprova-branca`).
 
 Només aturen el que la guia diu que atura; els avisos es mostren i el commit o el push continua. En un clon on treballa Claude Code no cal activar-los: el render es faria dues vegades.
+
+#### Les branques, al mirall de GitHub
+
+El GitLab de la UPC no té *runners*, i el mirall de GitHub rep totes les branques. Per això cada push d'una branca que no sigui `main` passa `make comprova-branca` als de GitHub (`.github/workflows/comprova.yml`), sense que el revisor hagi d'instal·lar res. El resultat és a la pestanya *Actions* del [mirall](https://github.com/rbaig/migracio.ec.gitlab.upc.edu/actions): una execució que falla vol dir que alguna comprovació atura, i els avisos hi surten com a anotacions i al resum. L'editor el mira abans de fusionar una MR ([D-103]({{< var decisions >}}#d-103)).
 
 #### Què es pot fer en local i què depèn de Claude Code
 
