@@ -243,7 +243,7 @@ Per a sistemes de 64 bits, RISC-V defineix els esquemes **Sv39**, **Sv48** i **S
 
 ## Fallada de pàgina {#sec-mv-fallada-pagina}
 
-Quan la CPU accedeix a una adreça lògica i el bit V de la PTE corresponent val 0, es produeix una **fallada de pàgina** (*page fault*). Això pot succeir per dos motius: la pàgina pertany a l'espai vàlid del procés però no és a la memòria física (és al disc), o bé l'adreça és invàlida (no pertany a cap regió reservada del procés). En el segon cas, el sistema operatiu avorta l'execució del programa (a Unix i derivats, amb un error de tipus *segmentation fault*).
+Quan la CPU accedeix a una adreça lògica i el bit V de la PTE corresponent val 0, es produeix una **fallada de pàgina** (*page fault*). Això pot succeir per dos motius: la pàgina pertany a l'espai vàlid del procés, però no és a la memòria física (és al disc), o bé l'adreça és invàlida (no pertany a cap regió reservada del procés). En el segon cas, el sistema operatiu avorta l'execució del programa (a Unix i derivats, amb un error de tipus *segmentation fault*).
 
 La fallada de pàgina és una **excepció**: la instrucció que l'ha provocat s'interromp i el processador passa el control a una rutina del sistema operatiu, que en el primer cas resol la fallada carregant la pàgina des del disc:
 
@@ -252,7 +252,7 @@ La fallada de pàgina és una **excepció**: la instrucció que l'ha provocat s'
 3. S'actualitza la PTE de la pàgina nova: es posa V = 1, D = 0 i s'escriu el PPN del marc assignat.
 4. Es reexecuta la instrucció que ha causat la fallada, que ara troba la pàgina a la memòria.
 
-Com que un accés al disc és centenars o milers de vegades més lent que un accés a la memòria principal (desenes de milers, o més, en el cas d'un disc magnètic), la fallada de pàgina és, amb diferència, l'incident més costós de tot el sistema de memòria. Per aquest motiu, les dades no es llegeixen ni s'escriuen mai al disc individualment, sinó sempre per pàgines senceres: primer es carrega la pàgina a la memòria física i després s'hi accedeix. Les fallades de pàgina que requereixen un accés al disc s'anomenen **fallades majors** (*major page faults*); els sistemes reals tenen també **fallades menors** (*minor page faults*), que el sistema operatiu resol sense accedir al disc (per exemple, quan la pàgina ja era a la memòria física però encara no tenia PTE, com en una pàgina nova de la pila), i que no es consideren en aquest tema.
+Com que un accés al disc és centenars o milers de vegades més lent que un accés a la memòria principal (desenes de milers, o més, en el cas d'un disc magnètic), la fallada de pàgina és, amb diferència, l'incident més costós de tot el sistema de memòria. Per aquest motiu, les dades no es llegeixen ni s'escriuen mai al disc individualment, sinó sempre per pàgines senceres: primer es carrega la pàgina a la memòria física i després s'hi accedeix. Les fallades de pàgina que requereixen un accés al disc s'anomenen **fallades majors** (*major page faults*); els sistemes reals tenen també **fallades menors** (*minor page faults*), que el sistema operatiu resol sense accedir al disc (per exemple, quan la pàgina ja era a la memòria física, però encara no tenia PTE, com en una pàgina nova de la pila), i que no es consideren en aquest tema.
 
 ::: {#cau-mv-fallada-pagina .callout-caution}
 ## Mecanisme de la fallada de pàgina

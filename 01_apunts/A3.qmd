@@ -12,7 +12,7 @@ A **EC**, les traduccions de C a assemblador han de ser **el més literals possi
 
 ### Desplaçaments lògics {#sec-desplacaments-logics}
 
-Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions especificat als **5 bits** de menys pes del **registre** `rs2`, omplint les posicions vacants amb **zeros**. Les variants `slli` i `srli` fan la mateixa operació però el nombre de posicions es codifica directament com un **immediat** de **5 bits** (`shamt`, *shift amount*)[^shamt]. En tots els casos, el nombre de posicions s'interpreta com un natural.
+Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions especificat als **5 bits** de menys pes del **registre** `rs2`, omplint les posicions vacants amb **zeros**. Les variants `slli` i `srli` fan la mateixa operació, però el nombre de posicions es codifica directament com un **immediat** de **5 bits** (`shamt`, *shift amount*)[^shamt]. En tots els casos, el nombre de posicions s'interpreta com un natural.
 
 [^shamt]: Els 7 bits de més pes de l'immediat de 12 bits (`imm[11:5]`) no formen part del nombre de posicions: fan de `funct7` i distingeixen `srli` (`0000000`) de `srai` (`0100000`).
 
@@ -250,7 +250,7 @@ En C, unes expressions no nul·les s'interpreten com a certes **sense ser iguals
 
 ### Instruccions de comparació: `slt` i `sltu` {#sec-instruccions-comparacio-slt}
 
-La instrucció `slt` compara dos enters i **posa a** `1` al registre destinació (LSb a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
+La instrucció `slt` compara dos enters i **posa a** `1` al registre destinació (LSb a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació, però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
 
 ::: {#nte-instruccions-comparacio .callout-note}
 ## RV32I ISA — Instruccions de comparació
@@ -1533,7 +1533,7 @@ sub:
 
 #### Preservació del context {#sec-preservacio-context}
 
-El **context** d'execució d'una subrutina és el conjunt de totes les seves dades locals (incloent-hi paràmetres, adreça de retorn, punter de pila i càlculs intermedis), tant les que es guarden a la pila com en registres. En general, el context d'una subrutina no és visible, ni per tant accessible, a cap altra part del programa, excepte en el cas que la subrutina passi com a paràmetre a una altra subrutina un punter que apunta a una d'aquestes dades.
+El **context** d'execució d'una subrutina és el conjunt de totes les seves dades locals (incloent-hi paràmetres, adreça de retorn, punter de pila i càlculs intermedis), tant les que es guarden a la pila com en registres. En general, el context d'una subrutina no és visible, ni, per tant, accessible, a cap altra part del programa, excepte en el cas que la subrutina passi com a paràmetre a una altra subrutina un punter que apunta a una d'aquestes dades.
 
 Els registres, però, són compartits per totes les subrutines. Per tant, hi ha d'haver algun mecanisme per garantir que el valor d'un registre que s'usa després d'una crida a una subrutina filla no es perdi per sobreescriptura. Aquest és el problema de preservar el context.
 
@@ -1614,7 +1614,7 @@ int multi(int a, int b, int c) {
 }
 ```
 
-**Pas 1. Registres segurs.** Identificació de les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). S'assignen els registres segurs `s0` i `s1`, respectivament. La variable `e` s'assigna al registre temporal `t0` ja que s'escriu DESPRÉS de la crida.
+**Pas 1. Registres segurs.** Identificació de les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). S'assignen els registres segurs `s0` i `s1`, respectivament. La variable `e` s'assigna al registre temporal `t0`, ja que s'escriu DESPRÉS de la crida.
 
 :::::: {#fig-deps-multi layout-ncol=1}
 ::::: {#fig-deps-multi-fletxes}
@@ -2064,7 +2064,7 @@ El `void main()` dels programes en C d'aquests apunts no contradiu res del que s
 ::: {#wrn-flux-gcc-complet .callout-warning collapse=true}
 ## Flux de generació detallat amb GCC/Clang
 
-El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa a l'amfitrió (*host*, x86-64 o ARM) però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
+El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa a l'amfitrió (*host*, x86-64 o ARM), però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
 
 ::: {#fig-flux-gcc-complet}
 ::: {.content-visible when-format="html"}

@@ -557,7 +557,7 @@ El programa conté tres errors, tots dins de `codifica`: el pròleg i l'epíleg 
 
 `codifica` és multinivell (crida `g`). La instrucció `jal ra, g` sobreescriu `ra` amb l'adreça de retorn cap a `codifica`, destruint l'adreça de retorn cap al programa principal. Quan `codifica` executa `ret`, no torna al programa principal sinó a la instrucció següent a `jal ra, g` (l'adreça de retorn de l'última crida a `g`), de manera que l'execució reprèn dins del cos del bucle de `codifica`.
 
-El símptoma observable és immediat: l'epíleg ja ha restaurat `s0` amb el valor que tenia en entrar a `codifica` —el del programa principal, que no l'inicialitza mai i per tant val 0—, de manera que la primera instrucció reexecutada, `sb a0, 0(s0)`, intenta escriure a l'adreça `0x00000000`. RARS avorta amb «`address out of range 0x00000000`».
+El símptoma observable és immediat: l'epíleg ja ha restaurat `s0` amb el valor que tenia en entrar a `codifica` —el del programa principal, que no l'inicialitza mai i, per tant, val 0—, de manera que la primera instrucció reexecutada, `sb a0, 0(s0)`, intenta escriure a l'adreça `0x00000000`. RARS avorta amb «`address out of range 0x00000000`».
 
 Correcció: desar `ra` al pròleg i restaurar-lo a l'epíleg.
 

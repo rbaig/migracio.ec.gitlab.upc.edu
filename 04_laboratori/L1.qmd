@@ -151,7 +151,7 @@ Algunes pseudoinstruccions s'expandeixen en més d'una instrucció real. Treball
 
 a) Localitzeu la pseudoinstrucció `la t3, V` al panell de codi desassemblat. Quines instruccions reals ha generat? Copieu-les exactament tal com apareixen al panell.
 b) Per quina raó `la` necessita dues instruccions reals en lloc d'una?
-c) La pseudoinstrucció `li t2, 10` en canvi genera una sola instrucció. Per quina raó en aquest cas n'hi ha prou amb una? Hauria passat el mateix amb `li t2, 100000`?
+c) La pseudoinstrucció `li t2, 10`, en canvi, genera una sola instrucció. Per quina raó en aquest cas n'hi ha prou amb una? Hauria passat el mateix amb `li t2, 100000`?
 
 **Indicació**: els immediats de les instruccions tipus I tenen 12 bits amb signe (rang −2048..2047).
 :::
@@ -159,7 +159,7 @@ c) La pseudoinstrucció `li t2, 10` en canvi genera una sola instrucció. Per qu
 ::: {#sol-rars-pseudoinstruccio}
 a) El panell mostra `auipc x28,0x0000fc10` seguida d'`addi x28,x28,0xfffffff4`, és a dir, `auipc t3, 0xfc10` i `addi t3, t3, -12` amb els noms ABI (els valors exactes depenen de l'adreça de `V` i de la posició de `la` al programa; l'estructura auipc+addi és sempre la mateixa).
 b) Perquè una adreça de memòria ocupa 32 bits, i cap instrucció tipus I té un immediat de 32 bits: `auipc` aporta els 20 bits alts (relatius al PC) i `addi` hi suma els 12 bits baixos amb signe.
-c) `10` cap dins el rang [−2048, 2047] d'un immediat de 12 bits amb signe, per tant una sola `addi` n'hi ha prou. Amb `li t2, 100000` **no** passaria el mateix: 100000 no cap en 12 bits, de manera que RARS generaria `lui t2, 0x18` seguida d'`addi t2, t2, 1696` (dues instruccions), igual que amb `la`.
+c) `10` cap dins el rang [−2048, 2047] d'un immediat de 12 bits amb signe, per tant, una sola `addi` n'hi ha prou. Amb `li t2, 100000` **no** passaria el mateix: 100000 no cap en 12 bits, de manera que RARS generaria `lui t2, 0x18` seguida d'`addi t2, t2, 1696` (dues instruccions), igual que amb `la`.
 :::
 
 ---
@@ -244,7 +244,7 @@ c) `t0 = -55`. És el resultat esperat: −1−2−3−4−5−6−7−8−9−1
 
 ## Depuració {#sec-rars-depuracio}
 
-Quan un programa assembla sense errors però produeix un resultat incorrecte, cal **depurar-lo**: executar-lo pas a pas o amb punts d'aturada per identificar en quina instrucció el comportament no és l'esperat.
+Quan un programa assembla sense errors, però produeix un resultat incorrecte, cal **depurar-lo**: executar-lo pas a pas o amb punts d'aturada per identificar en quina instrucció el comportament no és l'esperat.
 
 El procediment general és:
 
@@ -292,7 +292,7 @@ d) Al fitxer `s1_5_1.md`, descriviu: quina és la instrucció errònia, quin val
 :::
 
 ::: {#sol-depuracio-pas-a-pas}
-a) L'error és `li t1, 9` (hauria de ser `li t1, 0`): l'índex `i` comença a 9 en lloc de 0, per tant el bucle només suma `V[9] = -10`. El resultat incorrecte previst és `t0 = -10`.
+a) L'error és `li t1, 9` (hauria de ser `li t1, 0`): l'índex `i` comença a 9 en lloc de 0, per tant, el bucle només suma `V[9] = -10`. El resultat incorrecte previst és `t0 = -10`.
 b) El comportament incorrecte s'observa ja a la **primera** iteració: `t1` val 9 des de l'inici i a `t4` es llegeix `V[9] = -10` en lloc de `V[0] = -1`.
 c) Cal canviar `li t1, 9` per `li t1, 0`. Amb la correcció, `t0` acaba valent `-55`.
 d) La instrucció errònia és `li t1, 9`; produïa `t0 = -10` perquè només s'acumulava l'últim element del vector; es detecta comparant l'índex inicial esperat (0) amb el valor carregat a `t1` a l'inici de l'execució pas a pas.

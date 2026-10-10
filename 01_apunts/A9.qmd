@@ -374,7 +374,7 @@ La instrucció **`mret`** (*machine return*) finalitza l'execució de l'RSE i re
 
 En acabar el tractament, l'RSE ha de decidir on reprèn el programa. La regla és:
 
-- **Reexecutar la instrucció causant** (`mepc` sense modificar): quan l'excepció s'ha produït perquè la instrucció no ha pogut completar-se però la situació ja s'ha resolt (fallada de pàgina). En acabar `mret`, el PC apuntarà a la mateixa instrucció, que ara s'executarà correctament.
+- **Reexecutar la instrucció causant** (`mepc` sense modificar): quan l'excepció s'ha produït perquè la instrucció no ha pogut completar-se, però la situació ja s'ha resolt (fallada de pàgina). En acabar `mret`, el PC apuntarà a la mateixa instrucció, que ara s'executarà correctament.
 - **Continuar a la instrucció següent** (`mepc += 4`): quan la instrucció causant ja ha complert la seva funció i no s'ha de tornar a executar. Els casos principals són:
     - `ecall`: la crida al sistema ja ha estat atesa.
     - `ebreak`: el punt de parada ja ha estat processat pel depurador.
@@ -685,7 +685,7 @@ A RV32, algunes d'aquestes crides corresponen a la variant específica per a mid
 
 La comunicació amb els dispositius d'E/S està dominada per la necessitat de tolerar les seves latències llargues. Quan un programa inicia una operació en un dispositiu (per exemple, una lectura de disc), l'operació pot trigar milions de cicles en completar-se. Hi ha dues estratègies per gestionar aquesta espera:
 
-- **Sincronització per enquesta** (*polling*): el processador consulta repetidament l'estat del dispositiu fins que l'operació acaba. És simple d'implementar però desaprofita completament el processador durant l'espera.
+- **Sincronització per enquesta** (*polling*): el processador consulta repetidament l'estat del dispositiu fins que l'operació acaba. És simple d'implementar, però desaprofita completament el processador durant l'espera.
 
 ```{.s filename="RV32I"}
 bucle:
