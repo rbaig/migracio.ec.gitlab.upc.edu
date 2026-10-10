@@ -421,7 +421,10 @@ def script(nom, *args, gravetat=AVIS):
 def c_taules(ctx):
     if importlib.util.find_spec('fontTools') is None:
         raise Omesa('falta fontTools (pip install fonttools)')
-    return script('verifica_taules.py')(ctx)
+    rc, sortida = executa(PY, '25_scripts/verifica_taules.py')
+    if rc == 3:
+        raise Omesa(sortida.split('\n')[-1].removeprefix('[taules] omesa: '))
+    return [(AVIS, retalla(sortida))] if rc else []
 
 
 def c_coherencia(ctx):
@@ -604,7 +607,7 @@ COMPROVACIONS = [
     Comprovacio('format_codi', 'Format del codi', 'Els criteris mecànics del format dels blocs d\'assemblador '
                 '(`verifica_format_codi.py`)', SEMPRE, 'Sempre', 'Avisa', script('verifica_format_codi.py')),
     Comprovacio('taules', 'Taules al PDF', 'Desbordaments i amplades de les taules del PDF, mesurats sobre el font '
-                '(`verifica_taules.py`, amb fontTools)', SEMPRE, 'Sempre', 'Avisa', c_taules),
+                '(`verifica_taules.py`, amb fontTools i les fonts del PDF)', SEMPRE, 'Sempre', 'Avisa', c_taules),
     Comprovacio('figures', 'Figures', 'Els avisos de l\'inventari de figures: peus, remissions, `<title>` i `<desc>`, '
                 'colors, duplicats (`inventari_figures.py --comprova`)', SEMPRE, 'Sempre', 'Avisa',
                 script('inventari_figures.py', '--comprova')),

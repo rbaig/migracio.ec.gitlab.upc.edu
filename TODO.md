@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**18 entrades vives** (recompte del 2026-10-10, en retirar de §Tasques transversals «Fase 12: correccions ortogràfiques i gramaticals del corpus…», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**17 entrades vives** (recompte del 2026-10-10, en retirar de §Tasques globals → Eines «Protocols d'execució dels generadors i de les comprovacions, per nivells», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 3 · `§Tasques globals` 7 (suma 18, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 3 · `§Tasques globals` 6 (suma 17, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -169,11 +169,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### Eines
 
 - **Valorar si les taules de `21_riscv/` haurien de passar a `.json` o `.toml`** (petició de l'usuari, 2026-10-02, per al futur). Avui són 44 fragments `.qmd` (`git ls-files 21_riscv | grep -c "\.qmd$"`, a `4658e90`) amb files de taula *pipe*, inclosos amb `{{< include >}}` als callouts dels temes i a `11_riscv.qmd`; les taules que combinen fragments es fusionen amb `25_scripts/gen_taules_auto.py` i `24_specs/taules_fusio.toml`, que s'han d'executar a mà abans del render. Una font estructurada permetria generar les taules (i les fusions) per script i validar-ne el contingut; el cost és un generador nou i una dependència més del render. Cal valorar-ho abans de decidir res.
-
-- **Protocols d'execució dels generadors i de les comprovacions, per nivells: el que queda** (petició de l'usuari, 2026-10-09; retallada el 2026-10-10, dues vegades: la part feta —els nivells, `25_scripts/comprova.py`, els registres, l'ortografia, LanguageTool i el revisor lingüístic— és a [D-103](24_specs/registre_de_decisions.md#d-103), [D-104](24_specs/registre_de_decisions.md#d-104) i [D-105](24_specs/registre_de_decisions.md#d-105), i el text d'abans, a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Hi queda un bloc, acceptat per l'usuari el 2026-10-10:
-  - **CI de les branques al mirall de GitHub**: un *workflow* que passi `make comprova-branca` a cada push d'una branca que no sigui `main` ni `build`. El mirall les rep totes, i el GitLab de la UPC no té *runners*. S'ha de provar empenyent una branca; l'editor en mira el resultat a GitHub abans de fusionar una MR.
-
-  Sessió: la de la fase 11, Opus, effort alt.
 
 ### `index.qmd`
 

@@ -1,0 +1,65 @@
+name: Comprovacions de les branques
+
+# `make comprova-branca` a cada push d'una branca que no sigui main ni build
+# (13_contrib.qmd §Comprovacions per nivells; D-103). El GitLab de la UPC no té
+# runners, i el mirall rep totes les branques: l'editor en mira el resultat a la
+# pestanya Actions abans de fusionar una MR. Només atura (✗) el que la guia diu
+# que atura; els avisos (⚠) surten com a anotacions i al resum de l'execució.
+
+on:
+  push:
+    branches-ignore: [main, build]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: comprova-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  comprova:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Clona el repositori, amb l'historial (el merge-base amb origin/main)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Nivell de la branca
+        id: nivell
+        run: |
+          python3 25_scripts/comprova.py --base origin/main --explica | tee "$RUNNER_TEMP/explica.txt"
+          n=$(sed -n '1s/.*nivell \([0-9]\).*/\1/p' "$RUNNER_TEMP/explica.txt")
+          echo "n=${n:-4}" >> "$GITHUB_OUTPUT"
+
+      - name: Instal·la Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Instal·la les dependències de les comprovacions
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hunspell hunspell-ca hunspell-en-us fonts-lmodern fonts-dejavu-core
+          pip install fonttools
+
+      # El render complet (nivells 3 i 4) demana el motor de PDF i les llibreries
+      # d'imatges (com publish.yml); les fonts del PDF ja hi són, per a verifica_taules.py.
+      - name: Instal·la TinyTeX i el que demana el PDF (nivells 3 i 4)
+        if: steps.nivell.outputs.n >= 3
+        run: |
+          quarto install tool tinytex
+          sudo apt-get install -y librsvg2-bin
+
+      - name: Comprovacions de la branca (make comprova-branca)
+        shell: bash
+        run: |
+          set +e
+          # La sortida, fora del clon: un fitxer nou a l'arrel el veuria la comprovació de l'arbre del README.
+          sortida="$RUNNER_TEMP/comprova.txt"
+          python3 25_scripts/comprova.py --base origin/main | tee "$sortida"
+          rc=${PIPESTATUS[0]}
+          { echo '## make comprova-branca'; echo; echo '```'; cat "$sortida"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^(⚠|–|ℹ)' "$sortida" | sed 's/^/::warning::/'
+          grep -E '^✗' "$sortida" | sed 's/^/::error::/'
+          [ "$rc" -ne 2 ]
