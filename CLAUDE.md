@@ -68,7 +68,7 @@ En començar un xat:
 
 1. Explora el repositori. Si hi ha fitxers als quals no tens accés, demana'ls.
 2. Llegeix els fitxers de referència obligatòria (vegeu §Fitxers de referència obligatòria) i la resta de fitxers necessaris per a la tasca.
-3. Presenta'm la llista exhaustiva de tasques o problemes que proposes **abans de fer cap canvi**, i digues si cal que canviï el model o l'effortness.
+3. Presenta'm la llista exhaustiva de tasques o problemes que proposes **abans de fer cap canvi**, i digues si cal que canviï el model o l'effort.
 4. Espera confirmació per procedir.
 5. En cas de dubte, atura't, exposa el dubte i, si pots, proposa solucions. **Una parada sense el motiu escrit és tan dolenta com no aturar-se**: qui la llegeixi ha de poder decidir sense tornar a fer la feina.
 
@@ -84,7 +84,7 @@ Regles operatives:
 - **Sessions en paral·lel al mateix clon: cadascuna al seu *worktree*** (`git worktree add`). Cada *worktree* té el seu `_book/` i el seu `auto_figs/`, i el hook d'abans del commit no hi veu els canvis no confirmats de l'altra sessió. Dins d'un mateix *worktree*, el `Makefile` no deixa fer dos renders alhora: el segon espera ([D-103](24_specs/registre_de_decisions.md#d-103)).
 - El mirall de GitHub s'actualitza **automàticament** des de GitLab, amb un parell de minuts de retard. **No s'hi ha d'empènyer a mà** pel remot `mirror`: competiria amb la sincronització. Verificat el 2026-09-21.
 
-## Model i effortness
+## Model i effort
 
 | Tasca | Model | Effort |
 | :--- | :--- | :--- |
