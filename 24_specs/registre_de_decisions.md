@@ -701,6 +701,8 @@ Ja ha passat dues vegades: la comprovació que RARS alinea `.dword` a 4 bytes i 
 
 El `.jar` va ser al repositori fins a `fbf7c3d` (2026-07-11), que el va eliminar deliberadament. El procediment de les sessions de Claude Code, que eren a la mateixa secció de la guia fins al 2026-10-07, és a la skill `rars`.
 
+**Seguiment del 2026-10-10, a la nit: les eines, al `.cache/` del clon.** Decisió de l'usuari (fase 12), literal: «El meu plantejament era que `.cache/' estigués dins del repositori per a ús local (per això afegir-lo a `.gitignore`) i per haver de baixar només un cop el programari necessari sempre que no estigui disponible al sistema. Si ho veus raonable, implementa-ho. Valora si cal fer `mv ~/.cache/ec/* .cache/` o similar abans per no haver de tornar a baixar el programari.» Fins llavors, RARS (des de [D-103](#d-103)) i LanguageTool ([D-105](#d-105)) es baixaven a `~/.cache/ec/`, fora del clon, perquè aquesta entrada deia «fora de l'arbre del projecte»; el que la regla vol, però, és que el `.jar` no es versioni, i `.cache/` és al `.gitignore`. `25_scripts/eines_externes.py` en dona el directori: el `.cache/` del clon principal, el pare del directori de git comú, de manera que els *worktrees* el comparteixen i cada eina es baixa un sol cop. Les variables d'entorn (`RARS_JAR`, `LANGUAGETOOL_DIR`) hi passen al davant, per a una còpia que ja és al sistema. El que hi havia a `~/.cache/ec/` (RARS i LanguageTool) es va moure al `.cache/` del clon de l'editor, i no es va haver de tornar a baixar res. Quarto no hi entra, perquè no renderitza els directoris que comencen per punt.
+
 ### D-59
 
 **Push directe a `main`: la restricció és per als revisors, no per a l'editor** · `13_contrib.qmd §Push directe a main` · 2026-04-29, 2026-10-07 · `1d4308d`

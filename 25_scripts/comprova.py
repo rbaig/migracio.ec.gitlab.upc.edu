@@ -80,6 +80,7 @@ CLASSES = [
     ('25_scripts/lint_prosa.py', 'eina', set()),
     ('25_scripts/ortografia.py', 'eina', set()),
     ('25_scripts/gramatica.py', 'eina', set()),
+    ('25_scripts/eines_externes.py', 'eina', set()),
     ('25_scripts/orfes.py', 'eina', set()),
     ('25_scripts/inventari_figures.py', 'eina', set()),
     ('25_scripts/verifica_*.py', 'eina', set()),

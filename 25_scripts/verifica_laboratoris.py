@@ -12,10 +12,10 @@ assemblar ni executar) i, per als programes que executen, el bolcat de
     python3 25_scripts/verifica_laboratoris.py [--rars /ruta/a/rars1_6.jar]
 
 El .jar no és al repositori ni s'hi ha de posar (D-62). Es busca, per ordre, a
---rars, a la variable d'entorn RARS_JAR i a la memòria cau de l'usuari
-(~/.cache/ec/rars1_6.jar, o $XDG_CACHE_HOME/ec/); si no hi és, es baixa de la
-release que cita README.md §RARS a aquesta memòria cau, fora de l'arbre del
-projecte, i se'n comprova el sha256. Demana Java 8 o posterior.
+--rars, a la variable d'entorn RARS_JAR (una còpia que ja és al sistema) i al
+directori `.cache/` del clon, que git ignora (`eines_externes.py`); si no hi
+és, s'hi baixa de la release que cita README.md §RARS i se'n comprova el
+sha256. Demana Java 8 o posterior.
 
 Surt amb 1 si un bloc que s'ha d'assemblar o d'executar no ho fa, o si una
 comprovació estàtica dona un ERROR; amb 3 si no es pot fer (sense Java, o sense
@@ -34,12 +34,14 @@ import sys
 import urllib.request
 from pathlib import Path
 
+import eines_externes
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 LAB_DIR = REPO_ROOT / "04_laboratori"
 OUT_DIR = REPO_ROOT / "25_scripts" / "out_verifica_laboratoris"
 RARS_URL = "https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar"
 RARS_SHA256 = "780f730eb457b1ba609e968accc2c8b77d8f92c3d9dbf30cc7fdb3cfb14e8c24"
-CACHE = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "ec"
+CACHE = eines_externes.directori()
 OMESA = 3
 
 MAX_STEPS = 200000
@@ -439,7 +441,7 @@ def sha256(path):
 
 
 def troba_rars(explicit):
-    """El .jar de RARS: --rars, RARS_JAR o la memòria cau; si no hi és, el baixa a la memòria cau."""
+    """El .jar de RARS: --rars, RARS_JAR o el .cache/ del clon; si no hi és, el baixa al .cache/."""
     for candidat in (explicit, os.environ.get("RARS_JAR")):
         if candidat:
             if Path(candidat).is_file():
@@ -479,7 +481,7 @@ def comprova_java():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--rars", help="el .jar de RARS 1.6 (per defecte, RARS_JAR o la memòria cau)")
+    ap.add_argument("--rars", help="el .jar de RARS 1.6 (per defecte, RARS_JAR o el .cache/ del clon)")
     args = ap.parse_args()
     comprova_java()
     args.rars = troba_rars(args.rars)

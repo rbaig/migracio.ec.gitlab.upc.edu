@@ -9,10 +9,10 @@ La regla és a `13_contrib.qmd §Verificació empírica a RARS`: una afirmació 
 
 ## Obtenir el simulador
 
-El `.jar` no és al repositori i no s'hi ha de posar. Es baixa de la *release* que cita `README.md §RARS`, **fora de l'arbre del projecte**, i no es versiona ni es deixa a cap carpeta del projecte. `25_scripts/verifica_laboratoris.py` ja ho fa: el busca a la variable d'entorn `RARS_JAR` o a `~/.cache/ec/rars1_6.jar` i, si no hi és, l'hi baixa i en comprova el sha256 (D-103 del registre de decisions). Per a les proves a mà, fes servir aquest mateix `.jar`; si encara no hi és:
+El `.jar` no es versiona. Es baixa de la *release* que cita `README.md §RARS` al directori `.cache/` de l'arrel del clon, que git ignora i que comparteixen tots els *worktrees* (`25_scripts/eines_externes.py`; D-62 del registre de decisions). `25_scripts/verifica_laboratoris.py` ja ho fa: el busca a la variable d'entorn `RARS_JAR` o a `.cache/rars1_6.jar` i, si no hi és, l'hi baixa i en comprova el sha256 (D-103). Per a les proves a mà, fes servir aquest mateix `.jar`; si encara no hi és, `python3 25_scripts/verifica_laboratoris.py` el baixa, o bé:
 
 ```bash
-mkdir -p ~/.cache/ec && cd ~/.cache/ec
+cd "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")" && mkdir -p .cache && cd .cache
 curl -sSLO https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar
 sha256sum rars1_6.jar   # 780f730eb457b1ba609e968accc2c8b77d8f92c3d9dbf30cc7fdb3cfb14e8c24
 ```

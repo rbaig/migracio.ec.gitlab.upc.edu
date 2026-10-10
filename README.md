@@ -44,6 +44,7 @@ Un fitxer o directori de l'arrel per línia. `make comprova` comprova que la lli
 
 ```
 .
+├── .cache/                     # Generat · RARS i LanguageTool, baixats pels scripts que els fan servir (no versionat, `.gitignore`)
 ├── .claude/                    # Claude Code: hooks, skills i subagents (`13_contrib.qmd §IA`)
 ├── .github/                    # Workflow de publicació a GitHub Pages
 ├── .githooks/                  # Hooks de git opcionals: `make instal·la-hooks`
@@ -158,7 +159,7 @@ make instal·la-hooks
 
 ### LanguageTool (gramàtica, opcional)
 
-`make gramatica` passa [LanguageTool](https://languagetool.org/) 6.6 sobre la prosa dels `.qmd`. No cal instal·lar-lo: `25_scripts/gramatica.py` el baixa a `~/.cache/ec/` la primera vegada (uns 250 MB; uns 400 un cop descomprimit) i en comprova el sha256, o fa servir el de la variable d'entorn `LANGUAGETOOL_DIR`. Demana Java 17 o posterior; sense Java, la comprovació surt com a omesa. El que al llibre hi és soroll és a `24_specs/gramatica.toml`, que es manté a mà: una regla que només en fa s'hi desactiva amb el seu perquè, i una forma correcta que marca una regla activa hi va com a excepció.
+`make gramatica` passa [LanguageTool](https://languagetool.org/) 6.6 sobre la prosa dels `.qmd`. No cal instal·lar-lo: `25_scripts/gramatica.py` fa servir el de la variable d'entorn `LANGUAGETOOL_DIR`, si n'hi ha cap al sistema, i si no, el baixa la primera vegada al directori `.cache/` del clon (uns 250 MB; uns 400 un cop descomprimit), que git ignora i que comparteixen tots els *worktrees*, i en comprova el sha256. Demana Java 17 o posterior; sense Java, la comprovació surt com a omesa. El que al llibre hi és soroll és a `24_specs/gramatica.toml`, que es manté a mà: una regla que només en fa s'hi desactiva amb el seu perquè, i una forma correcta que marca una regla activa hi va com a excepció.
 
 ```bash
 make gramatica                                     # el corpus sencer
@@ -168,7 +169,7 @@ python3 25_scripts/gramatica.py --tot --resum      # el compte per regla
 
 ### RARS (simulador RISC-V)
 
-Descarregueu [`rars1_6.jar`](https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar) i assegureu-vos de tenir el [Java Runtime Environment (JRE)](https://www.java.com/en/download/help/download_options.html) versió 8.0 o superior. Per a les comprovacions no cal baixar-lo: `25_scripts/verifica_laboratoris.py` el baixa a `~/.cache/ec/` la primera vegada (o fa servir el de la variable d'entorn `RARS_JAR`).
+Descarregueu [`rars1_6.jar`](https://github.com/TheThirdOne/rars/releases/download/v1.6/rars1_6.jar) i assegureu-vos de tenir el [Java Runtime Environment (JRE)](https://www.java.com/en/download/help/download_options.html) versió 8.0 o superior. Per a les comprovacions no cal baixar-lo: `25_scripts/verifica_laboratoris.py` fa servir el de la variable d'entorn `RARS_JAR`, si n'hi ha cap, i si no, el baixa la primera vegada a `.cache/`, com LanguageTool.
 
 ## Contribució
 

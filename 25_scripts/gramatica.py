@@ -15,12 +15,12 @@ sigles, les referències @, les citacions, les notes al peu i les imatges. Un
 paràgraf del font és un paràgraf del text, perquè LanguageTool en vegi les
 frases senceres.
 
-LanguageTool no és al repositori ni s'hi ha de posar, com RARS (D-62). Es
-busca, per ordre, a --lt, a la variable d'entorn LANGUAGETOOL_DIR i a la
-memòria cau de l'usuari (~/.cache/ec/LanguageTool-6.6, o $XDG_CACHE_HOME/ec/);
-si no hi és, s'hi baixa el zip de languagetool.org (uns 250 MB, uns 400 un cop
-descomprimit), se'n comprova el sha256 i es descomprimeix, fora de l'arbre del
-projecte. Demana Java 17 o posterior.
+LanguageTool no es versiona, com RARS (D-62). Es busca, per ordre, a --lt, a
+la variable d'entorn LANGUAGETOOL_DIR (una còpia que ja és al sistema) i al
+directori `.cache/` del clon, que git ignora (`eines_externes.py`); si no hi
+és, s'hi baixa el zip de languagetool.org (uns 250 MB, uns 400 un cop
+descomprimit), se'n comprova el sha256 i es descomprimeix. Demana Java 17 o
+posterior.
 
 Ús:
     python3 25_scripts/gramatica.py                # els paràgrafs amb línies afegides respecte d'HEAD,
@@ -53,6 +53,7 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import eines_externes                                                # noqa: E402
 import lint_prosa                                                    # noqa: E402
 
 ARREL = Path(__file__).resolve().parent.parent
@@ -61,7 +62,7 @@ VERSIO = '6.6'
 LT_URL = f'https://languagetool.org/download/LanguageTool-{VERSIO}.zip'
 # El de la baixada del 2026-10-10: languagetool.org no en publica cap.
 LT_SHA256 = '53600506b399bb5ffe1e4c8dec794fd378212f14aaf38ccef9b6f89314d11631'
-CACHE = Path(os.environ.get('XDG_CACHE_HOME') or Path.home() / '.cache') / 'ec'
+CACHE = eines_externes.directori()
 JAR = 'languagetool-commandline.jar'
 OMESA = 3
 
@@ -206,7 +207,7 @@ def comprova_java():
 
 
 def installa():
-    """El directori de LanguageTool a la memòria cau; si no hi és, el baixa i el descomprimeix."""
+    """El directori de LanguageTool al .cache/ del clon; si no hi és, el baixa i el descomprimeix."""
     desti = CACHE / f'LanguageTool-{VERSIO}'
     if (desti / JAR).is_file():
         return desti
@@ -237,7 +238,7 @@ def installa():
 
 
 def troba_lt(explicit=None):
-    """El directori de LanguageTool: --lt, LANGUAGETOOL_DIR o la memòria cau (on el baixa)."""
+    """El directori de LanguageTool: --lt, LANGUAGETOOL_DIR o el .cache/ del clon (on el baixa)."""
     for candidat in (explicit, os.environ.get('LANGUAGETOOL_DIR')):
         if candidat:
             if (Path(candidat) / JAR).is_file():
@@ -327,7 +328,7 @@ def main(argv):
     ap.add_argument('--tot', action='store_true')
     ap.add_argument('--resum', action='store_true')
     ap.add_argument('--instal·la', dest='installa', action='store_true')
-    ap.add_argument('--lt', help='el directori de LanguageTool (per defecte, LANGUAGETOOL_DIR o la memòria cau)')
+    ap.add_argument('--lt', help='el directori de LanguageTool (per defecte, LANGUAGETOOL_DIR o el .cache/ del clon)')
     args = ap.parse_args(argv)
     motiu = comprova_java()
     if motiu:
