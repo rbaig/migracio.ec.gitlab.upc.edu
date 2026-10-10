@@ -49,6 +49,7 @@ són del projecte i arribaran al PDF quan es descomentin.
 """
 
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -62,12 +63,29 @@ L_CALLOUT = 468.0               # dins d'un tcolorbox (mesurat)
 TABCOLSEP = 6.0
 MARGE = 1.03                    # tolerància de l'estimació
 
+# Les fonts del PDF: on les posen Debian i Ubuntu (paquets fonts-lmodern i fonts-dejavu-core) i,
+# si no hi són, on les trobin TeX (kpsewhich) o fontconfig (fc-list). Si en falta alguna, la
+# comprovació s'omet (sortida 3), com les altres que depenen d'una eina que pot no ser-hi.
 FONTS = {
-    "roman": "/usr/share/texmf/fonts/opentype/public/lm/lmroman10-regular.otf",
-    "italic": "/usr/share/texmf/fonts/opentype/public/lm/lmroman10-italic.otf",
-    "bold": "/usr/share/texmf/fonts/opentype/public/lm/lmroman10-bold.otf",
-    "mono": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+    "roman": ("lmroman10-regular.otf", "/usr/share/texmf/fonts/opentype/public/lm"),
+    "italic": ("lmroman10-italic.otf", "/usr/share/texmf/fonts/opentype/public/lm"),
+    "bold": ("lmroman10-bold.otf", "/usr/share/texmf/fonts/opentype/public/lm"),
+    "mono": ("DejaVuSansMono.ttf", "/usr/share/fonts/truetype/dejavu"),
 }
+OMESA = 3
+
+
+def troba_font(nom, directori):
+    """La ruta d'una font, o None."""
+    if (Path(directori) / nom).is_file():
+        return Path(directori) / nom
+    candidats = []
+    if shutil.which("kpsewhich"):
+        candidats.append(subprocess.run(["kpsewhich", nom], capture_output=True, text=True).stdout.strip())
+    if shutil.which("fc-list"):
+        candidats += subprocess.run(["fc-list", "--format", "%{file}\\n"], capture_output=True,
+                                    text=True).stdout.split("\n")
+    return next((Path(c) for c in candidats if c and Path(c).name == nom and Path(c).is_file()), None)
 
 
 class Font:
@@ -91,8 +109,11 @@ class Font:
         return u / self.upm * PT * self.escala
 
 
-F = {k: Font(v) for k, v in FONTS.items()}
-F["mono"].escala = F["roman"].xh / F["mono"].xh      # Scale=MatchLowercase
+RUTES = {k: troba_font(*v) for k, v in FONTS.items()}
+FALTEN = sorted({FONTS[k][0] for k, r in RUTES.items() if r is None})
+F = {} if FALTEN else {k: Font(r) for k, r in RUTES.items()}
+if F:
+    F["mono"].escala = F["roman"].xh / F["mono"].xh  # Scale=MatchLowercase
 
 # ---------------------------------------------------------------------------
 # Amplada natural d'una cel·la
@@ -241,7 +262,7 @@ def unitats(cel):
     return res
 
 
-ESPAI = F["roman"].amplada(" ")
+ESPAI = F["roman"].amplada(" ") if F else 0.0
 
 
 def natural(cel):
@@ -512,6 +533,10 @@ def aplica(canvis):
 
 
 def main():
+    if FALTEN:
+        print(f"[taules] omesa: falten les fonts del PDF {', '.join(FALTEN)} "
+              "(a Debian i Ubuntu, els paquets fonts-lmodern i fonts-dejavu-core)")
+        return OMESA
     detall = "--detall" in sys.argv
     amb_proposta = "--proposa" in sys.argv or "--aplica" in sys.argv
     canvis = {}

@@ -23,15 +23,15 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Clona el repositori, amb l'historial (el merge-base amb origin/main)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Nivell de la branca
         id: nivell
         run: |
-          python3 25_scripts/comprova.py --base origin/main --explica | tee explica.txt
-          n=$(sed -n '1s/.*nivell \([0-9]\).*/\1/p' explica.txt)
+          python3 25_scripts/comprova.py --base origin/main --explica | tee "$RUNNER_TEMP/explica.txt"
+          n=$(sed -n '1s/.*nivell \([0-9]\).*/\1/p' "$RUNNER_TEMP/explica.txt")
           echo "n=${n:-4}" >> "$GITHUB_OUTPUT"
 
       - name: Instal·la Quarto
@@ -40,24 +40,26 @@ jobs:
       - name: Instal·la les dependències de les comprovacions
         run: |
           sudo apt-get update
-          sudo apt-get install -y hunspell hunspell-ca hunspell-en-us
+          sudo apt-get install -y hunspell hunspell-ca hunspell-en-us fonts-lmodern fonts-dejavu-core
           pip install fonttools
 
-      # El render complet (nivells 3 i 4) demana el motor de PDF, les llibreries
-      # d'imatges i la font monoespaiada del PDF (com publish.yml).
+      # El render complet (nivells 3 i 4) demana el motor de PDF i les llibreries
+      # d'imatges (com publish.yml); les fonts del PDF ja hi són, per a verifica_taules.py.
       - name: Instal·la TinyTeX i el que demana el PDF (nivells 3 i 4)
         if: steps.nivell.outputs.n >= 3
         run: |
           quarto install tool tinytex
-          sudo apt-get install -y librsvg2-bin fonts-dejavu-core
+          sudo apt-get install -y librsvg2-bin
 
       - name: Comprovacions de la branca (make comprova-branca)
         shell: bash
         run: |
           set +e
-          python3 25_scripts/comprova.py --base origin/main | tee comprova.txt
+          # La sortida, fora del clon: un fitxer nou a l'arrel el veuria la comprovació de l'arbre del README.
+          sortida="$RUNNER_TEMP/comprova.txt"
+          python3 25_scripts/comprova.py --base origin/main | tee "$sortida"
           rc=${PIPESTATUS[0]}
-          { echo '## make comprova-branca'; echo; echo '```'; cat comprova.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-          grep -E '^(⚠|–|ℹ)' comprova.txt | sed 's/^/::warning::/'
-          grep -E '^✗' comprova.txt | sed 's/^/::error::/'
+          { echo '## make comprova-branca'; echo; echo '```'; cat "$sortida"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^(⚠|–|ℹ)' "$sortida" | sed 's/^/::warning::/'
+          grep -E '^✗' "$sortida" | sed 's/^/::error::/'
           [ "$rc" -ne 2 ]
