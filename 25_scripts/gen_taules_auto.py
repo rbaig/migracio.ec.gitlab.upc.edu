@@ -82,7 +82,7 @@ def _validate(manifest: list[dict], fonts_dir: Path) -> list[str]:
             errors.append(f'  "sortida" duplicada: {sortida}')
         noms.add(sortida)
         if len(fonts) < 2:
-            errors.append(f'  {sortida}: cal almenys 2 fonts, en té {len(fonts)}')
+            errors.append(f'  {sortida}: calen almenys 2 fonts, en té {len(fonts)}')
         for fname in fonts:
             if not (fonts_dir / fname).exists():
                 errors.append(f'  {sortida}: font no trobada: {fonts_dir / fname}')

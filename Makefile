@@ -3,7 +3,7 @@
 # `make comprova-tot` (abans d'obrir una MR o de publicar), i es descriuen a
 # 13_contrib.qmd §Comprovacions per nivells.
 #
-# Dos renders del mateix worktree no es poden solapar (el pre-render esborra
+# Dos renders del mateix worktree no es poden fer alhora (el pre-render esborra
 # auto_figs/): el segon espera que acabi el primer, fins a 15 min (flock, amb
 # el fitxer de bloqueig al directori de git del worktree; D-103). On no hi ha
 # flock (macOS), no hi ha bloqueig.

@@ -11,7 +11,7 @@ Quin render demana cada canvi ho diuen `13_contrib.qmd §Comprovacions per nivel
 
 `make render-complet` dura uns quants minuts, i per això se sol llançar en segon pla. Per saber quan acaba, escriu un marcador al registre (`make render-complet > log 2>&1; echo "exit=$?" >> log`) i espera el marcador (`until grep -q '^exit=' log; do sleep 15; done`). No esperis amb `pgrep -f "quarto render"`: el patró també és a la línia d'ordres del bucle mateix, que es troba a si mateix i no acaba mai. Un bucle així va quedar 34 hores en segon pla i bloquejava el `/exit` de Claude Code (detectat el 2026-10-06). Si de debò cal `pgrep`, el patró `"[q]uarto render"` no es troba a si mateix. Abans d'acabar la sessió, comprova que no queda cap bucle en segon pla (`ps --ppid <pid de claude>`).
 
-Dos renders del mateix *worktree* no se solapen: el `Makefile` fa esperar el segon (`flock`), i ho diu a la sortida. El hook d'abans del commit renderitza segons el nivell del canvi: al nivell 2, `make render`, que esborra el PDF de `_book/` (`13_contrib.qmd §IA`); per mirar el PDF, cal un `make render-complet` posterior, o `make comprova-tot`.
+Dos renders del mateix *worktree* no es fan alhora: el `Makefile` fa esperar el segon (`flock`), i ho diu a la sortida. El hook d'abans del commit renderitza segons el nivell del canvi: al nivell 2, `make render`, que esborra el PDF de `_book/` (`13_contrib.qmd §IA`); per mirar el PDF, cal un `make render-complet` posterior, o `make comprova-tot`.
 
 ## Referències trencades
 

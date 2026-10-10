@@ -10,7 +10,7 @@ Regles:
   F1  Directives de segment (.text, .data; també .section, vegeu 13_contrib.qmd)
       i de visibilitat (.globl, .extern), a la columna 0.
   F2  Etiquetes, a la columna 0.
-  F3  Instruccions i directives de dades, indentades amb 8 espais (o, a la
+  F3  Instruccions i directives de dades, sagnades amb 8 espais (o, a la
       mateixa línia, darrere d'una etiqueta). Són indistints `.eqv` i `.align`,
       com diu el callout, i també `.set`, que fa el mateix paper que `.eqv`, i
       `.macro`/`.end_macro`, que el callout no regula.
@@ -42,9 +42,9 @@ ETIQUETA = re.compile(r'^(\s*)([A-Za-z_][\w.]*:)(\s*)(.*)$')
 SEGMENT = re.compile(r'^\s*\.(text|data|section|globl|global|extern)\b')
 INDISTINTES = ('.eqv', '.set', '.align', '.macro', '.end_macro')
 REGLES = {
-    'F1': 'directiva de segment o de visibilitat indentada',
-    'F2': 'etiqueta indentada',
-    'F3': 'instrucció o dada sense els 8 espais d\'indentació',
+    'F1': 'directiva de segment o de visibilitat sagnada',
+    'F2': 'etiqueta sagnada',
+    'F3': 'instrucció o dada sense els 8 espais de sagnat',
     'F4': 'tabulador',
     'F5': 'operands o mnemònic fora de columna',
 }
@@ -98,9 +98,9 @@ def comprova_linia(linia):
             errors.append('F1')
         return errors
     paraula = s.split()[0]
-    indentacio = len(s) - len(s.lstrip(' '))
+    sagnat = len(s) - len(s.lstrip(' '))
     if not paraula.startswith(INDISTINTES):
-        if indentacio != 8:
+        if sagnat != 8:
             errors.append('F3')
         elif not columna_operands(8, s[8:]):
             errors.append('F5')

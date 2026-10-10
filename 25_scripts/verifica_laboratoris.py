@@ -3,7 +3,7 @@
 
 Extreu els blocs ```{.s ...} (amb o sense filename="*.s") de
 04_laboratori/L1.qmd-L6.qmd, els escriu a fitxers i els assembla/executa amb
-RARS 1.6 en mode línia de comandes. Genera un informe amb el resultat
+RARS 1.6 en mode línia d'ordres. Genera un informe amb el resultat
 (assembla/executa), una passada de comprovacions ESTÀTIQUES (text, sense
 assemblar ni executar) i, per als programes que executen, el bolcat de
 .data i dels registres finals.
@@ -72,7 +72,7 @@ JOINT_COMPILATION = {
     # s5_3_1.s (versió final, #sol-compon) crida descompon, definida a
     # s5_2_1.s: no és el cas de compilació separada explícit de l'enunciat
     # (§3), però estructuralment en depèn igual per assemblar. s5_3_1.s ha
-    # d'anar primer a la línia de comandes: conté el programa principal i RARS
+    # d'anar primer a la línia d'ordres: conté el programa principal i RARS
     # arrenca a la primera instrucció del primer fitxer assemblat (vegeu
     # nte-rars-ordre-assemblatge).
     ("L5", "s5_2_1.s#1"): ["s5_3_1.s#2", "s5_2_1.s#1"],
