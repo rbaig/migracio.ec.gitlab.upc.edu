@@ -39,6 +39,7 @@ HUNK_RE = re.compile(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@')
 # codi en línia, que pot contenir qualsevol dels altres.
 SPANS = [
     re.compile(r'(`+).+?\1'),                      # codi en línia
+    re.compile(r'\[\^[^\]\s]+\]:?'),                  # crida i definició d'una nota al peu, [^id]
     re.compile(r'(?<!\\)\$[^$]+?(?<!\\)\$'),       # matemàtiques en línia
     re.compile(r'\{\{<.*?>\}\}'),                  # shortcodes
     re.compile(r'\{[^{}]*\}'),                     # atributs {#id .classe clau="valor"}
@@ -48,6 +49,9 @@ SPANS = [
 ]
 FORMES_SECCIO = "#### Formes que no s'han de fer servir"
 LIST_MARKER_RE = re.compile(r'^(?:>\s*)*(?:[-*+]|\d+[.)]|\(?[a-z]\))\s+')
+# Un enllaç es queda amb el text, i sense el destí: abans de SPANS, que en canviaria el destí per X
+# enganxat al text («[LaTeX](…)» → «[LaTeXX»). Les imatges (![…](…)) no hi entren.
+LINK_RE = re.compile(r'(?<!!)\[([^\[\]]*)\]\([^)]*\)')
 DOUBLE_SPACE_RE = re.compile(r'\S {2,}(?=\S)')
 
 
@@ -97,6 +101,7 @@ def prose_lines(text):
             line = line.split('<!--', 1)[0]
         line = line.rstrip()
         line = LIST_MARKER_RE.sub('', line.lstrip())
+        line = LINK_RE.sub(r'\1', line)
         for span in SPANS:
             line = span.sub('X', line)
         result[idx + 1] = line

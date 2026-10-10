@@ -41,6 +41,8 @@ DICCIONARIS = 'ca_ES,en_US'
 
 NETEJA = [
     (re.compile(r'https?://\S+'), ' '),            # URL soltes
+    (re.compile(r'\S*/\S*\.[A-Za-z]{2,4}\b\S*'), ' '),   # rutes amb extensió (X04_laboratori/Lcalendari.html)
+    (re.compile(r'\bX-\w+'), ' X '),               # un sufix enganxat a una fórmula: «$i$-èsima»
     (re.compile(r'@[\w:-]+'), ' X '),              # referències creuades
     (re.compile(r'\[([^\[\]]*?)X'), r' \1 '),       # text d'un enllaç: lint_prosa en canvia «](URL)» per X
     (re.compile(r'\b[\w-]+(?:\.[\w-]+)*\.(?:com|org|net|io|cat|edu|es|eu)\b'), ' '),   # dominis
