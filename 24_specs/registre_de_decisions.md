@@ -544,6 +544,12 @@ Petició de l'usuari (2026-10-09), literal: «Té sentit a la versió HTML afegi
 
 **Al PDF, la pàgina no hi deixa res**: el PDF ja té el seu índex. Embolcallar-la amb `.content-visible when-format="html"` no n'hi ha prou, perquè Quarto en treu el títol del capítol i el PDF rebia igualment `\chapter*{…}`, la línia de l'índex i el marcador; per això és el filtre el que en treu la capçalera i el div. Amb la pàgina, el PDF del `make render-complet` és el mateix que a `b4bd57c` (comprovat el 2026-10-10): 574 pàgines, i el text, línia a línia, igual llevat de la data i el hash de la portada (`versio.lua`). El `.tex` només hi canvia, a més, l'ordre de les definicions `\newtheorem` d'«Algorisme» i de «⁂», independents: Quarto les escriu recorrent una taula amb `pairs` (`tkeys`), sense ordenar-la, i l'ordre pot variar d'un render a l'altre.
 
+### D-102
+
+**Una taula amb etiqueta `#tbl-` porta peu** · `13_contrib.qmd §Taules` · 2026-10-10
+
+L'usuari va veure que `#tbl-exemple-comparacio-versions-progs` (A6) no tenia peu, i va preguntar si era un fals positiu de `verifica_taules.py`. No ho era: l'script no mirava els peus. Una taula amb etiqueta i sense peu Quarto la numera igualment i en deixa el peu buit: «Taula 6.1» sola a l'HTML (classe `quarto-uncaptioned`) i «Taula 6.1.» al PDF. N'hi havia quatre, cap amb cap remissió: `#tbl-exemple-comparacio-versions-progs` (A6), `#tbl-tres-c` i `#tbl-disseny-l1-l2` (A7) i `#tbl-syscalls` (A9). Proposta de Claude Code, acceptada per l'usuari («Endavant»): posar-los peu, d'acord amb el seu criteri de «totes les taules amb `#tbl-`», en lloc de treure'ls l'etiqueta; i que `verifica_taules.py` ho avisi, al peu de la taula o al div que la porta. Fins llavors la guia només deia que el peu era obligatori al cos del text.
+
 ## Figures
 
 ### D-51

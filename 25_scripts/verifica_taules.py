@@ -20,6 +20,10 @@ I un quart, trobat en fer-lo servir: un PEU seguit d'una línia no buida (un
 comentari HTML, per exemple) surt literal, «{tbl-colwidths=…}», perquè Pandoc
 ajunta les dues línies i els atributs ja no són al final.
 
+I un cinquè (2026-10-10, petició de l'usuari): una taula amb etiqueta `#tbl-` i SENSE
+PEU, al peu de la taula («: {#tbl-…}») o dins del div que la porta («::: {#tbl-…}»).
+Quarto la numera igualment, i en deixa el peu buit: «Taula 6.1» sola a l'HTML i al PDF.
+
 L'amplada natural de cada cel·la es calcula amb les mètriques reals de les fonts
 del PDF (Latin Modern Roman a 11 pt, i DejaVu Sans Mono amb
 Scale=MatchLowercase per al codi; _quarto.yml), amb fontTools. Les fórmules
@@ -374,11 +378,18 @@ def taules(fitxer):
                         n_colw = na
                         break
             llarga = any(len(lin[k][1]) > 72 for k in range(i, j))
+            # etiqueta sense peu: al peu («: {#tbl-x …}», sense text davant) o al div que porta la taula
+            sense_peu = bool(re.match(r"^:\s*\{[^}]*#tbl-", peu))
+            if not peu and pila and "#tbl-" in pila[-1][0]:
+                k = j
+                while k < len(lin) and not lin[k][1].strip():
+                    k += 1
+                sense_peu = k >= len(lin) or bool(DIV_TANCA.match(lin[k][1]))
             yield {
                 "fitxer": fitxer, "linia": n, "cap": cap, "sep": sep, "files": files,
                 "colw": [float(x) for x in colw.group(1).split(",")] if colw else None,
                 "n_colw": n_colw, "n_peu": n_peu, "n_fi": lin[j - 1][0], "peu_enganxat": peu_enganxat,
-                "callout": callout, "html": html, "llarga": llarga, "peu": peu,
+                "callout": callout, "html": html, "llarga": llarga, "peu": peu, "sense_peu": sense_peu,
             }
             i = j
             continue
@@ -394,6 +405,8 @@ def comprova(t):
     L = L_CALLOUT if t["callout"] else L_PAGINA
     avisos = []
     files = [t["cap"]] + t["files"]
+    if t["sense_peu"]:
+        avisos.append(("peu", "té etiqueta #tbl- i no té peu: Quarto la numera i en deixa el peu buit"))
     if t["peu_enganxat"]:
         avisos.append(("peu", "la línia de després del peu no és buida: Pandoc les ajunta i els atributs surten literals"))
     if t["colw"] is not None:
