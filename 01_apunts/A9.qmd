@@ -61,7 +61,7 @@ RISC-V defineix tres **modes de privilegi**, que determinen quines **instruccion
 
 | Mode | Privilegi | Nom | Ús habitual | Obligatori |
 | :---: | :--- | :--- | :--- | :--- |
-| M | Màxim | *Machine* (màquina) | Firmware, arrencada, gestió d'excepcions de baix nivell | Sí |
+| M | Màxim | *Machine* (màquina) | **Microprogramari** (*firmware*), arrencada, gestió d'excepcions de baix nivell | Sí |
 | S | Mitjà | *Supervisor* | Sistema operatiu (Linux, etc.) | No |
 | U | Mínim | *User* (usuari) | Programes d'usuari | No |
 : {tbl-colwidths="[8,12,19,48,13]" .striped}
@@ -283,7 +283,7 @@ Per al mode S, RISC-V defineix un conjunt de registres CSR paral·lel al de mode
 : {.striped}
 :::
 
-Quan el processador opera en mode S (per exemple, executant el nucli de Linux), les excepcions i interrupcions delegades pel mode M es gestionen amb els registres `s*`. La delegació s'especifica als registres `medeleg` (excepcions) i `mideleg` (interrupcions), que el firmware configura durant l'arrencada. L'equivalent de `mret` en mode S és la instrucció **`sret`**, amb la mateixa semàntica sobre els camps `S*` de `sstatus` i sobre `sepc`.
+Quan el processador opera en mode S (per exemple, executant el nucli de Linux), les excepcions i interrupcions delegades pel mode M es gestionen amb els registres `s*`. La delegació s'especifica als registres `medeleg` (excepcions) i `mideleg` (interrupcions), que el microprogramari configura durant l'arrencada. L'equivalent de `mret` en mode S és la instrucció **`sret`**, amb la mateixa semàntica sobre els camps `S*` de `sstatus` i sobre `sepc`.
 
 ## Flux de maquinari en detectar una excepció o interrupció {#sec-ei-flux-hardware}
 
@@ -386,7 +386,7 @@ Si l'RSE retornés sense ajustar `mepc` en el cas d'una `ecall`, el processador 
 
 ### Exemple: RSE mínima en RISC-V {#sec-ei-rse-exemple}
 
-El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un *dispatcher*. Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
+El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un distribuïdor (*dispatcher*). Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
 
 ```{.s filename="RV32IZicsr"}
 .section .text.trap, "ax"
@@ -478,12 +478,12 @@ rse:
         mret
 ```
 
-El dispatcher (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar l'RSE. El dispatcher consulta `mcause` per cridar el handler específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
+El distribuïdor (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar l'RSE. El dispatcher consulta `mcause` per cridar el handler específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
 ::: {#wrn-rse-pila .callout-warning collapse=true}
 ## La pila de l'RSE
 
-L'exemple usa la pila del programa interromput (`sp`). En un sistema real això és problemàtic: si el programa tenia `sp` corromput o apuntant a una adreça invàlida, l'RSE fallaria immediatament. Els sistemes operatius reals usen una pila separada per al nucli, i el canvi de pila forma part de les accions inicials de l'RSE, sovint amb l'ajut del registre `mscratch`, que el firmware inicialitza amb l'adreça de la pila del nucli.
+L'exemple usa la pila del programa interromput (`sp`). En un sistema real això és problemàtic: si el programa tenia `sp` corromput o apuntant a una adreça invàlida, l'RSE fallaria immediatament. Els sistemes operatius reals usen una pila separada per al nucli, i el canvi de pila forma part de les accions inicials de l'RSE, sovint amb l'ajut del registre `mscratch`, que el microprogramari inicialitza amb l'adreça de la pila del nucli.
 :::
 
 ## Crida al sistema (`ecall`) {#sec-ei-ecall}
@@ -536,7 +536,7 @@ Els dos números tenen orígens diferents, i això explica la duplicitat. El cat
 Els exemples següents mostren les crides al sistema més habituals a RARS:
 
 ::: {#tip-ecall-exemples-rars .callout-tip}
-## Exemples de crides al sistema a RARS
+## Crides al sistema a RARS
 
 **Imprimir un enter (codi 1)**:
 
@@ -727,7 +727,7 @@ El flux complet d'una interrupció, des de la petició fins al retorn, segueix l
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A9_cicle_interrupcio__original_light.svg)
 :::
-Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucció $i+1$; en acabar-la, el processador detecta la interrupció, guarda `mepc` apuntant a la instrucció $i+2$ i salta a l'RSE; en retornar amb `mret`, el programa es reprèn a partir d'i+2.
+Cicle de vida d'una interrupció: el dispositiu fa la petició mentre s'executa la instrucció $i+1$; en acabar-la, el processador detecta la interrupció, guarda `mepc` apuntant a la instrucció $i+2$ i salta a l'RSE; en retornar amb `mret`, el programa es reprèn a partir de $i+2$.
 :::
 
 ### Permisos: `MIE` global i màscares `mie` {#sec-ei-interrupcions-permisos}
