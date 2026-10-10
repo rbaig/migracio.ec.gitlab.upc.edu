@@ -433,6 +433,23 @@ Decisió de l'usuari (2026-10-09), literal: «Decsisió ferma, la del glosari. S
 
 **Seguiment del 2026-10-10** (decisions de l'usuari sobre les presentacions dubtoses del glossari, `e1a0f67`, i les recomanacions de Claude Code que va acceptar, «endavant»). (1) El generador deixa fora les presentacions en què l'anglès és l'expansió d'una sigla que ja és a §Sigles: «**NaN** (*Not a Number*)» i «**codi ASCII** (*American Standard Code for Information Interchange*)» tenen la forma d'una presentació de terme, però no són traduccions, i sortien a §Sigles i a §Termes. (2) *pipeline* es manté en anglès, a la taula de termes mantinguts en anglès, pel segon supòsit de [D-88](#d-88): el Termcat (Neoloteca, termes normalitzats pel Consell Supervisor, Informàtica > Estructura de les dades) dona *pipeline* → «canal» i *pipelining* → «canalització», amb l'anglès com a sinònim complementari, i «canonada» només en àrees que no són d'informàtica; «canal» és molt poc usat en arquitectura de computadors i es confon amb un canal de comunicació. Només surt a l'aprofundiment `#wrn-flux-pipeline` d'A9, que ara explica què és un *pipeline*. (3) Les cinc taules del capítol (Sigles, Símbols, Notació, Termes i Termes mantinguts en anglès) porten peu curt, etiqueta `#tbl-` i la classe `.striped`, i la de Sigles, capçalera i un paràgraf d'introducció (petició de l'usuari: «Aquestes taules també s'han de normalitzar (caption, label, colswidth, etc.) i optimitzar l'amplada de les columnes»). El paràgraf de presentació de cada subsecció es queda com a text i no passa al peu: a l'HTML el peu surt en lletra petita i grisa, i al PDF, darrere de «Taula N.:», i els paràgrafs fixen convencions de lectura de la taula.
 
+### D-106
+
+**Cinc formes més a la taula de formes que no s'han de fer servir: «comanda», «solapar», «encuar», «descomposar» i «rotar»** · `13_contrib.qmd §Formes que no s'han de fer servir` · 2026-10-10
+
+Decisió de l'usuari (2026-10-10, fase 12), literal: «Sí», a la proposta de Claude Code d'afegir-hi indentar → sagnar, solapar → superposar, encuar → posar a la cua, comanda → ordre, descomposar → descompondre i rotar → girar, amb la seva entrada al registre; i «Valora com s'haurà de mantenir aquesta taula (manualment?, amb un script?)». Les va trobar la passada de `hunspell` i LanguageTool sobre la prosa (l'entrada «Fase 12» del `TODO.md`, `0ddb36a`). Cap no és al DIEC amb el sentit del text: «comanda» hi és un encàrrec comercial, i «rotar», fer rots; «descomposar», «encuar» i «solapar» no hi són (consultat el 2026-10-10, també a l'Optimot, que només té «solapar» com a entrada castellana). Les formes bones són les del Termcat («ordre» i «línia d'ordres»; «posar a la cua») o les del DIEC («superposar», «descompondre», «girar»).
+
+- **«indentar» no hi entra encara**: espera la tria entre «sagnat» i «sagnia» per a *indentation*. El DIEC defineix «sagnia» remetent a «sagnat», i el Termcat diu «sagnat».
+- **Les files entren amb el corpus ja corregit**: des de [D-105](#d-105), `lint_prosa.py` llegeix la taula i atura el commit amb les formes que hi són.
+- **De «descomposar» i de «rotar» hi van les formes conjugades, no l'infinitiu**: `lint_prosa.py` llegeix un verb en *-ar* com l'arrel seguida de qualsevol terminació, i «descomposició» i «rotació», que són correctes, també hi entrarien.
+- **«solapar»** es diu de dues maneres segons el sentit: «superposar-se» a l'espai (dues meitats d'un registre, dos camps de bits) i «fer-se alhora» o «coincidir» en el temps (dos renders, dues operacions).
+
+### D-107
+
+**Noms de persona: com els escriu la Viquipèdia, i si no, la Wikipedia en anglès** · `13_contrib.qmd §Referència normativa` · 2026-10-10
+
+Decisió de l'usuari (2026-10-10, fase 12), literal: «von Neumann», i «Regla general (afegeix-la o toqui): Per a noms de persones la font de veritat, per ordre de preferència, és la Wikipedia catalana i la Wikipedia anglesa.» El cas: el corpus deia «Von Neumann» vuit vegades (A1, A2 i P5, i el títol de la figura `A1_von_neumann.svg`) i «John von Neumann» una (A1). La Viquipèdia en diu «John von Neumann» i «Arquitectura de von Neumann» (consultat el 2026-10-10). Les fonts de correcció lèxica de [D-29](#d-29) (el DIEC2, el Termcat i l'Optimot) no cobreixen els noms de persona.
+
 ## Format
 
 ### D-70
@@ -738,7 +755,7 @@ El nivell es dedueix dels fitxers canviats, amb una sola classificació, la de `
 
 **Hooks de git opcionals** (`.githooks/`, `make instal·la-hooks`), per a qui no fa servir Claude Code: el `pre-commit` passa les comprovacions sense el render, i el `pre-push`, les de la branca amb el render. L'usuari ho va acceptar amb una observació, literal: «Recomanació acceptada, però atenció pq l'upc no té runners. Hauria de comprovar si els puc aportar jo des del meu server si l'esforç d'aprender a fer-ho i de manteniment queden justificats (em sembla que amb github queda cobert)». La CI de les branques al mirall de GitHub és una tasca pendent (`TODO.md`).
 
-**Bloqueig dels renders**: dos renders del mateix *worktree* no es poden solapar, perquè el pre-render esborra `auto_figs/`. `flock` als objectius de render del `Makefile`, amb el fitxer al directori de git del *worktree*: el segon espera fins a 15 min. No cobreix `quarto render` cridat directament ni la previsualització de VS Code. Les sessions de Claude Code que treballen alhora, cadascuna al seu *worktree* (`CLAUDE.md`).
+**Bloqueig dels renders**: dos renders del mateix *worktree* no es poden fer alhora, perquè el pre-render esborra `auto_figs/`. `flock` als objectius de render del `Makefile`, amb el fitxer al directori de git del *worktree*: el segon espera fins a 15 min. No cobreix `quarto render` cridat directament ni la previsualització de VS Code. Les sessions de Claude Code que treballen alhora, cadascuna al seu *worktree* (`CLAUDE.md`).
 
 **RARS**: proposta de l'usuari (2026-10-10, literal): «l'script comprova si RARS està a la màquina o al directori del repo i, si no hi és, el baixa d'internet i hi fa els canvis necessaris perquè es pugui executar. Si Java Runtime Environment (JRE) version 1.6 o superior no està instal·lat es genera un WARNING.» Amb dos ajustos: el `.jar` va a la memòria cau de l'usuari (`~/.cache/ec/`), fora de l'arbre, perquè [D-62](#d-62) no el vol al directori del repositori; i el Java que demana RARS 1.6 és el 8 o posterior (1.6 és la versió de RARS). Fins llavors, `verifica_laboratoris.py` buscava el `.jar` en una ruta fixa de la màquina de l'editor i, si el trobava, sortia amb 0 fos quin fos el resultat.
 

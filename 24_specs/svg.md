@@ -221,7 +221,7 @@ L'apliquen `gen_BA.py` i `gen_mapa.py`. El perquè i l'alternativa descartada, a
 
 ### Vores compartides a la resta de figures
 
-La mateixa regla val per a qualsevol figura on dues zones (dos `<rect>` plens) es toquen, en horitzontal o en vertical: camps d'un registre, cel·les d'una taula o d'una graella, trams d'una línia de temps. Si les dues zones tenen traç del mateix color i gruix, la vora és una de sola, centrada a la frontera. Si no, cada zona amb traç dibuixa les seves vores per dins de la seva àrea, desplaçades mig gruix, també les de fora: entre dues zones de color diferent es veuen dues línies, una de cada color, i al costat d'una zona sense traç, la de la zona amb traç, sencera. Una zona amb les cantonades arrodonides (`rx`) dibuixa sempre totes les vores per dins, també al costat d'una del mateix color. Dues zones no se solapen: la frontera és on acaba l'una i comença l'altra.
+La mateixa regla val per a qualsevol figura on dues zones (dos `<rect>` plens) es toquen, en horitzontal o en vertical: camps d'un registre, cel·les d'una taula o d'una graella, trams d'una línia de temps. Si les dues zones tenen traç del mateix color i gruix, la vora és una de sola, centrada a la frontera. Si no, cada zona amb traç dibuixa les seves vores per dins de la seva àrea, desplaçades mig gruix, també les de fora: entre dues zones de color diferent es veuen dues línies, una de cada color, i al costat d'una zona sense traç, la de la zona amb traç, sencera. Una zona amb les cantonades arrodonides (`rx`) dibuixa sempre totes les vores per dins, també al costat d'una del mateix color. Dues zones no se superposen: la frontera és on acaba l'una i comença l'altra.
 
 Ho fa `vores_compartides()`, de `25_scripts/figlib.py`, sobre l'SVG acabat: redibuixa els grups de zones que es toquen on hi ha almenys una vora en conflicte (el farciment, sense traç, i les vores, a part), i deixa com són els grups sense conflicte i les zones soltes. La fan servir `gen_regs.py`, `gen_MC.py`, `gen_T7.py` i `gen_T8.py`; les figures natives (`22_figs_originals/`) ja la porten aplicada, i una de nova l'ha de seguir. Un ressalt sense farciment (una vora gruixuda sobre una fila o una cel·la) no és una zona: es dibuixa després de totes les zones que toca, perquè cap farciment no en tapi la meitat. Els originals conservats (`conservats/`, [D-68](registre_de_decisions.md#d-68)) no la porten ([D-99](registre_de_decisions.md#d-99)).
 
@@ -333,7 +333,7 @@ y_fi     = y_pila - 35             (la punta, a l'espai lliure)
 stroke   = #664d03   stroke-width="1.5"
 ```
 
-### Text «creix» rotat
+### Text «creix» girat
 
 A 8 px de la fletxa, cap enfora de la columna (a la dreta de la del heap, a l'esquerra de la de la pila), centrat a la meitat de la fletxa i **desplaçat 6 px cap a la punta**: centrat a la meitat, la «c» tocava la vora entre la zona i l'espai lliure ([D-67](registre_de_decisions.md#d-67)). Fórmula per a un text centrat al costat d'una línia vertical en `(x_L, y_centre)`:
 
