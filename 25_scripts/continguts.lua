@@ -10,7 +10,8 @@ apunts (A1–A9), fins a `###`, i en una pàgina pròpia entre «👋 Presentaci
 
 A l'HTML, el filtre substitueix el div `#continguts-llista` de `10_continguts.qmd` per
 l'índex. Per a cada capítol de `01_apunts/` dels `chapters:` de `_quarto.yml`, en l'ordre del
-llibre: una capçalera `##` amb el número i el títol del capítol, i la llista de les seves
+llibre: una capçalera `##` amb el títol del capítol, sense el número («Tema 1: Introducció»,
+que ja el diu; decisió de l'usuari, 2026-10-10), i la llista de les seves
 seccions `##` i `###`, amb el número que els dona l'HTML i l'enllaç a la seva àncora. Els
 títols i els enllaços surten dels `.qmd`: no hi ha cap llista que mantenir a mà. Les
 capçaleres dels capítols queden al primer nivell del document, perquè Pandoc només posa a la
@@ -82,7 +83,7 @@ local function capitol(fitxer, font, numero)
       local num
       if b.level == 1 then
         local id = 'continguts-' .. b.identifier:gsub('^sec%-', '')
-        blocs:insert(pandoc.Header(2, { enllac(tostring(numero), b.content, fitxer) },
+        blocs:insert(pandoc.Header(2, { enllac(nil, b.content, fitxer) },
           pandoc.Attr(id, { 'continguts' })))
       elseif b.level == 2 then
         if numerada then n2, n3 = n2 + 1, 0; num = numero .. '.' .. n2 end
