@@ -667,6 +667,10 @@ Retallada el 2026-10-10, en fer-ne la part principal (D-103, D-104 i D-105 del r
 Retallada de nou el 2026-10-10, a la nit: la fase 12 va fer `make gramatica` (D-105). La vinyeta d'abans, sencera:
 
   - **`make gramatica` amb LanguageTool**, opcional i a demanda (D-105): la baixada a `~/.cache/ec/`, la configuració de les regles que hi fan soroll (`24_specs/gramatica.toml`, que prepara la sessió de les correccions ortogràfiques del corpus) i que el subagent `revisor-linguistic` la passi abans de començar.
+
+I, el mateix vespre, la vinyeta de l'extracció de la prosa per a l'ortografia, que va fer la fase 12 (`2d427e9`: `lint_prosa.prose_lines` treu les notes al peu i deixa el text dels enllaços, i `ortografia.py`, les rutes i els sufixos enganxats a una fórmula), a petició de l'usuari («Si cal que facis alguna acció per solucionar-ho, fes-ho»):
+
+  - **L'extracció de la prosa per a l'ortografia**: `ortografia.py` dona per mots desconeguts els identificadors de les notes al peu (`[^-ecmips]`, A2) i el text dels enllaços que és una URL (`Lcalendari.qmd`). `gramatica.py` treu totes dues coses abans de passar la prosa (`NOTA_RE`, `URL_RE`): es pot fer el mateix a `lint_prosa.prose_lines`, perquè en surti bé tothom.
 ### Seccions de §Tasques per tema sense cap entrada viva
 
 El 2026-10-09 se'n van treure les subseccions buides; aquesta era la nota de cadascuna.
