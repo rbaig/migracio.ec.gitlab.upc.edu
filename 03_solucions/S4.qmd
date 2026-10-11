@@ -65,7 +65,7 @@ El resultat truncat a 8 bits és `1100 0101` = $-59_{10}$ en Ca2. Els dos operan
 
 **b) $(-25) - (-34) = (-25) + 34$**
 
-Codificació: $-25 =$ `1110 0111`, $+34 =$ `0010 0010`.
+Codificació: $-25 =$ `1110 0111`. El subtrahend, $-34 =$ `1101 1110`, es nega complementant-lo i sumant-hi 1 (@sec-inversio-signe): `0010 0001` + 1 = `0010 0010` ($+34$).
 
 ```{.default filename="Càlcul"}
   1110 0111   (-25)
@@ -78,7 +78,7 @@ Resultat: `0000 1001` = $+9_{10}$. Els operands tenen signes oposats: **no hi ha
 
 **c) $(+127) - (-20) = (+127) + 20$**
 
-Codificació: $+127 =$ `0111 1111`, $+20 =$ `0001 0100`.
+Codificació: $+127 =$ `0111 1111`. El subtrahend, $-20 =$ `1110 1100`, es nega: `0001 0011` + 1 = `0001 0100` ($+20$).
 
 ```{.default filename="Càlcul"}
   0111 1111   (+127)
@@ -91,7 +91,7 @@ Resultat: `1001 0011` = $-109_{10}$ en Ca2. Tots dos operands eren positius, per
 
 **d) $(-128) - (-20) = (-128) + 20$**
 
-Codificació: $-128 =$ `1000 0000`, $+20 =$ `0001 0100`.
+Codificació: $-128 =$ `1000 0000`. El subtrahend negat és, com a c), $+20 =$ `0001 0100`.
 
 ```{.default filename="Càlcul"}
   1000 0000   (-128)
@@ -626,26 +626,26 @@ fibucle:
 
 **a) Cost de la versió inicial**
 
-Instruccions per iteració (model de costos: `lw` = 4, salt pres = 2, salt no pres = 1, resta = 1):
+**10 instruccions** per iteració: les pseudoinstruccions es compten per les instruccions reals, i `la` en són dues, `auipc` i `addi` (@nte-la-auipc). Cost per iteració (model de costos: `lw` = 4, salt pres = 2, salt no pres = 1, resta = 1):
 
 | Instrucció | Cost |
 | :--- | :---: |
 | `li t1, N` | 1 |
 | `bge` (no pres, $N$ vegades) | 1 |
-| `la t2, v` | 1 |
+| `la t2, v` (`auipc` + `addi`) | 2 |
 | `slli t3` | 1 |
 | `add t2` | 1 |
 | `lw t3` | 4 |
 | `add t4` | 1 |
 | `addi t0` | 1 |
 | `j bucle` (pres) | 2 |
-| **Total per iteració** | **13** |
+| **Total per iteració** | **14** |
 
 Inicialització: `li t0, 0` = 1 cicle.
 
 Última comprovació ($i = N$): `li t1, N` (1) + `bge` pres (2) = 3 cicles.
 
-**Total**: $1 + 13N + 3 = 13N + 4$ cicles.
+**Total**: $1 + 14N + 3 = 14N + 4$ cicles.
 
 **b) Versió optimitzada (condició al final)**
 
@@ -680,19 +680,19 @@ Instruccions per iteració:
 | `blt` pres ($N-1$ vegades) / no pres (última) | 2 / 1 |
 | **Total per iteració (menys la darrera)** | **10** |
 
-Inicialització: `li t0` + `li t1` + `la t2` + `bge` no pres = 4 cicles.
+Inicialització: `li t0` (1) + `li t1` (1) + `la t2` (2) + `bge` no pres (1) = 5 cicles.
 
 Última iteració: `blt` no pres (1) → cost = $10 - 2 + 1 = 9$ cicles.
 
-**Total**: $4 + 10(N-1) + 9 = 10N + 3$ cicles.
+**Total**: $5 + 10(N-1) + 9 = 10N + 4$ cicles.
 
 **c) Reducció percentual per a $N = 100$**
 
-Versió inicial: $13 \times 100 + 4 = 1304$ cicles.
+Versió inicial: $14 \times 100 + 4 = 1404$ cicles.
 
-Versió optimitzada: $10 \times 100 + 3 = 1003$ cicles.
+Versió optimitzada: $10 \times 100 + 4 = 1004$ cicles.
 
-$$\text{Reducció} = \frac{1304 - 1003}{1304} \times 100 \approx \mathbf{23{,}1\ \%}$$
+$$\text{Reducció} = \frac{1404 - 1004}{1404} \times 100 \approx \mathbf{28{,}5\ \%}$$
 :::
 
 ::: {#sol-t4-opt-variable-induccio .callout-tip}
@@ -725,7 +725,7 @@ bucle:
 fibucle:
 ```
 
-Instruccions per iteració: `bge`(1) + `slli` + `add` + `lw`(4) + `slli` + `add` + `sw`(4) + `addi` + `j`(2) = **16 cicles**.
+**9 instruccions** per iteració: `bge`, `slli`, `add`, `lw`, `slli`, `add`, `sw`, `addi` i `j`. Amb el model de costos de @exr-t4-opt-condicio-final (memòria = 4 cicles, salt pres = 2, salt no pres = 1, resta = 1), 16 cicles.
 
 **b) Eliminació de la variable d'inducció (punters directes), mantenint la condició a l'inici**
 
@@ -747,7 +747,7 @@ bucle:
 fibucle:
 ```
 
-Instruccions per iteració: `bgeu`(1) + `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `j`(2) = **14 cicles**.
+**7 instruccions** per iteració: `bgeu`, `lw`, `slli`, `sw`, dues `addi` i `j`. Amb el mateix model de costos, 14 cicles.
 
 **c) Combinació amb l'avaluació de la condició al final**
 
@@ -781,7 +781,7 @@ El cos del bucle conté:
 | `bltu` (control) | 1 |
 | **Total** | **6** |
 
-Instruccions per iteració: `lw`(4) + `slli` + `sw`(4) + `addi` + `addi` + `bltu`(2) = **13 cicles** (llevat de la darrera, on `bltu` no és pres: 12 cicles).
+Amb el mateix model de costos, 13 cicles per iteració (12 a la darrera, on `bltu` no és pres).
 :::
 
 ## Divisió

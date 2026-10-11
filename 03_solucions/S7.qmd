@@ -110,20 +110,20 @@ Comportament per tipus d'accés:
 - **L/E fallada, $D=0$**: es llegeix el bloc d'MP (16 B) i es carrega a l'MC.
 - **L/E fallada, $D=1$**: es llegeix el bloc antic de l'MC i es copia a MP (16 B), i després es llegeix el nou bloc d'MP (16 B) i es carrega a l'MC.
 
-A les columnes **Lect. MC** i **Escr. MC**, tota fallada escriu l'MC (càrrega del bloc i, si és E, la dada); l'MC es llegeix quan la dada es lliura a la CPU (L) o quan cal copiar un bloc modificat cap a MP (*write-back*).
+A les columnes **Lect. MC** i **Escr. MC**, tota fallada escriu l'MC (càrrega del bloc i, si és E, la dada); l'MC es llegeix quan la dada es lliura a la CPU (L) o quan cal copiar un bloc modificat cap a MP. La columna **D** dona el bit de modificació de la línia abans de l'accés i, si canvia, també el de després (abans→després).
 
 | # | Tipus | Adr. | Etiq. | Índ. | En/F | D | Llegits MP | Escrits MP | Lect. MC | Escr. MC |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1 | L | `4534` | `45` | `3` | **F** | 0 | 16 | 0 | S | S |
 | 2 | L | `4568` | `45` | `6` | **F** | 0 | 16 | 0 | S | S |
-| 3 | E | `13A4` | `13` | `A` | **F** | 0 | 16 | 0 | N | S |
+| 3 | E | `13A4` | `13` | `A` | **F** | 0→1 | 16 | 0 | N | S |
 | 4 | E | `13A8` | `13` | `A` | **En** | 1 | 0 | 0 | N | S |
 | 5 | L | `3560` | `35` | `6` | **F** | 0 | 16 | 0 | S | S |
 | 6 | E | `453C` | `45` | `3` | **En** | 0→1 | 0 | 0 | N | S |
 | 7 | E | `60A0` | `60` | `A` | **F** | 1 | 16 | 16 | S | S |
 | 8 | L | `453C` | `45` | `3` | **En** | 1 | 0 | 0 | S | N |
-| 9 | E | `3900` | `39` | `0` | **F** | 0 | 16 | 0 | N | S |
-| 10 | L | `A238` | `A2` | `3` | **F** | 1 | 16 | 16 | S | S |
+| 9 | E | `3900` | `39` | `0` | **F** | 0→1 | 16 | 0 | N | S |
+| 10 | L | `A238` | `A2` | `3` | **F** | 1→0 | 16 | 16 | S | S |
 : {tbl-colwidths="[5,9,9,8,7,8,7,12,12,11,12]" .striped}
 
 Justificació dels casos clau:
@@ -131,7 +131,7 @@ Justificació dels casos clau:
 - \#3 (`E 13A4`): amb assignació, es carrega el bloc d'MP (16 B) a la línia `A` i s'escriu la dada a l'MC ($D \leftarrow 1$).
 - \#4 (`E 13A8`): encert (el bloc és a la línia `A` des del pas 3). S'escriu a MC, $D$ ja és 1.
 - \#7 (`E 60A0`): la línia `A` conté l'etiqueta `13` amb $D=1$. Fallada: cal copiar primer el bloc antic a MP (16 B *escrits*), després carregar el nou bloc d'MP (16 B *llegits*), i finalment escriure la dada ($D \leftarrow 1$).
-- \#10 (`L A238`): la línia 3 conté l'etiqueta `45` amb $D=1$ (des del pas 6). Fallada amb write-back: 16 B escrits + 16 B llegits.
+- \#10 (`L A238`): la línia 3 conté l'etiqueta `45` amb $D=1$ (des del pas 6). Fallada amb còpia del bloc modificat a MP: 16 B escrits + 16 B llegits.
 
 **c)** Resum comparatiu:
 
@@ -155,19 +155,19 @@ L'escriptura retardada amb assignació té una taxa de fallades inferior (l'acc�
 
 Dades: $p_e = 20\ \%$, $p_m = 1/3$, $t_h = 10$ ns, $t_{bloc} = 100$ ns, $h_1 = 0{,}9$ (immediata s/a), $h_2 = 0{,}85$ (retardada a/a).
 
-**a)** Aplicant @eq-tam, amb el temps de penalització mitjà per fallada de cada política (@cau-model-temps). Se suposa que la taxa de fallades és independent del tipus d'accés: així, la fracció de fallades que corresponen a escriptures coincideix amb el percentatge d'escriptures $p_e$.
+**a)** Aplicant @eq-tam, amb el temps de penalització mitjà per fallada de cada política (@cau-model-temps; per a l'escriptura retardada, @cau-tam-retardada). Se suposa que la taxa de fallades és independent del tipus d'accés: així, la fracció de fallades que corresponen a escriptures coincideix amb el percentatge d'escriptures $p_e$.
 
 *Escriptura immediata sense assignació* ($m_1 = 0{,}10$): les fallades de lectura paguen $t_{bloc} + t_h$ i les d'escriptura paguen 0 (el buffer absorbeix l'escriptura):
 
-$$\bar{t}_{p_1} = (1 - p_e)(t_{bloc} + t_h) = 0{,}80 \cdot 110 = 88 \text{ ns}$$
+$$t_{p_1} = (1 - p_e)(t_{bloc} + t_h) = 0{,}80 \cdot 110 = 88 \text{ ns}$$
 
-$$\text{TAM}_1 = t_h + m_1 \cdot \bar{t}_{p_1} = 10 + 0{,}10 \cdot 88 = \mathbf{18{,}8} \text{ ns}$$
+$$\text{TAM}_1 = t_h + m_1 \cdot t_{p_1} = 10 + 0{,}10 \cdot 88 = \mathbf{18{,}8} \text{ ns}$$
 
 *Escriptura retardada amb assignació* ($m_2 = 0{,}15$): la penalització depèn de si el bloc expulsat està modificat:
 
-$$\bar{t}_{p_2} = (1 + p_m) \cdot t_{bloc} + t_h = \frac{4}{3} \cdot 100 + 10 = 133{,}3 + 10 \approx 143{,}3 \text{ ns}$$
+$$t_{p_2} = (1 + p_m) \cdot t_{bloc} + t_h = \frac{4}{3} \cdot 100 + 10 = 133{,}3 + 10 \approx 143{,}3 \text{ ns}$$
 
-$$\text{TAM}_2 = t_h + m_2 \cdot \bar{t}_{p_2} = 10 + 0{,}15 \cdot 143{,}3 \approx 10 + 21{,}5 = \mathbf{31{,}5} \text{ ns}$$
+$$\text{TAM}_2 = t_h + m_2 \cdot t_{p_2} = 10 + 0{,}15 \cdot 143{,}3 \approx 10 + 21{,}5 = \mathbf{31{,}5} \text{ ns}$$
 
 L'escriptura immediata sense assignació és més ràpida ($18{,}8$ vs. $31{,}5$ ns). Té una taxa de fallades inferior ($10\ \%$ vs. $15\ \%$) i, sobretot, una penalització mitjana per fallada molt menor: les fallades d'escriptura no paguen penalització i les de lectura no generen write-backs. La penalització mitjana de l'escriptura retardada és un 63 % més gran ($143{,}3$ vs. $88$ ns).
 
@@ -192,13 +192,13 @@ Dades: $\text{CPI}_{ideal} = 1{,}5$, $t_c = 10$ ns, $n_r = 1{,}6$ referències/i
 
 **a)** Penalització per fallada a l'MC de dades (escriptura retardada):
 
-$$\bar{t}_{pd} = (1 - p_m) \cdot 15 + p_m \cdot 20 = 0{,}80 \cdot 15 + 0{,}20 \cdot 20 = 12 + 4 = 16 \text{ cicles}$$
+$$t_{pd} = (1 - p_m) \cdot 15 + p_m \cdot 20 = 0{,}80 \cdot 15 + 0{,}20 \cdot 20 = 12 + 4 = 16 \text{ cicles}$$
 
 El percentatge d'escriptures ($p_e = 40\ \%$) no és necessari per resoldre el problema: la penalització de l'MC de dades ja es dona directament en funció de si el bloc reemplaçat és modificat o no.
 
 TAM ponderat per la fracció d'accessos de cada MC:
 
-$$\text{TAM} = t_h + \frac{1}{n_r} \cdot m_i \cdot t_{pi} + \frac{0{,}6}{n_r} \cdot m_d \cdot \bar{t}_{pd}$$
+$$\text{TAM} = t_h + \frac{1}{n_r} \cdot m_i \cdot t_{pi} + \frac{0{,}6}{n_r} \cdot m_d \cdot t_{pd}$$
 
 $$= 1 + \frac{1}{1{,}6} \cdot 0{,}04 \cdot 10 + \frac{0{,}6}{1{,}6} \cdot 0{,}10 \cdot 16$$
 
@@ -208,7 +208,7 @@ $$= 1 + 0{,}625 \cdot 0{,}4 + 0{,}375 \cdot 1{,}6 = 1 + 0{,}25 + 0{,}6 = \mathbf
 
 $$\text{CPI}_{penal,i} = m_i \cdot 1 \cdot t_{pi} = 0{,}04 \cdot 10 = 0{,}4 \text{ cicles/instr.}$$
 
-$$\text{CPI}_{penal,d} = m_d \cdot 0{,}6 \cdot \bar{t}_{pd} = 0{,}10 \cdot 0{,}6 \cdot 16 = 0{,}96 \text{ cicles/instr.}$$
+$$\text{CPI}_{penal,d} = m_d \cdot 0{,}6 \cdot t_{pd} = 0{,}10 \cdot 0{,}6 \cdot 16 = 0{,}96 \text{ cicles/instr.}$$
 
 $$\text{CPI} = \text{CPI}_{ideal} + \text{CPI}_{penal,i} + \text{CPI}_{penal,d} = 1{,}5 + 0{,}4 + 0{,}96 = 2{,}86$$
 
@@ -289,15 +289,15 @@ Taula resum:
 | # | Tipus | Adr. | Bloc | Conj. | En/F | Lectura MP | Escriptura MP |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1 | L byte | `A930` | `A93` | 19 | **F** | S, `A930`, 16 B | N |
-| 2 | L word | `B930` | `B93` | 19 | **F** | S, `B930`, 16 B | N |
+| 2 | L paraula | `B930` | `B93` | 19 | **F** | S, `B930`, 16 B | N |
 | 3 | E byte | `A972` | `A97` | 23 | **F** | N | S, `A972`, 1 B |
-| 4 | E word | `A932` | `A93` | 19 | **En** | N | S, `A932`, 2 B |
+| 4 | E paraula | `A932` | `A93` | 19 | **En** | N | S, `A932`, 2 B |
 | 5 | E byte | `C935` | `C93` | 19 | **F** | N | S, `C935`, 1 B |
-| 6 | L word | `C934` | `C93` | 19 | **F** | S, `C930`, 16 B | N |
+| 6 | L paraula | `C934` | `C93` | 19 | **F** | S, `C930`, 16 B | N |
 | 7 | E byte | `B976` | `B97` | 23 | **F** | N | S, `B976`, 1 B |
-| 8 | E word | `B936` | `B93` | 19 | **F** | N | S, `B936`, 2 B |
+| 8 | E paraula | `B936` | `B93` | 19 | **F** | N | S, `B936`, 2 B |
 | 9 | L byte | `B938` | `B93` | 19 | **F** | S, `B930`, 16 B | N |
-| 10 | L word | `A978` | `A97` | 23 | **F** | S, `A970`, 16 B | N |
+| 10 | L paraula | `A978` | `A97` | 23 | **F** | S, `A970`, 16 B | N |
 : {tbl-colwidths="[6,10,9,9,8,7,25,26]" .striped}
 
 Encerts: 1 (pas 4). Fallades: 9. Taxa de fallades: 90 %.
@@ -401,7 +401,7 @@ Total: **8 fallades** (2 obligatòries, 6 de conflicte), **0 encerts**. El worki
 
 **Enunciat**: @exr-t7-fallades-programa.
 
-`A[256]` d'enters de 4 bytes, des de l'adreça `0x000` (1024 bytes, fins a `0x3FF`). `B[256]` des de `0x400` (fins a `0x7FF`). MC de correspondència directa, 16 línies, blocs de 32 bytes. Variables `i` i `suma` en registres.
+`A[256]` d'enters de 4 bytes, des de l'adreça `0x000` (1 KiB, fins a `0x3FF`). `B[256]` des de `0x400` (fins a `0x7FF`). MC de correspondència directa, 16 línies, blocs de 32 bytes. Variables `i` i `suma` en registres.
 
 Paràmetres: bloc = 32 bytes = 8 enters per bloc. A i B ocupen cadascun $256/8 = 32$ blocs.
 
@@ -412,7 +412,7 @@ Paràmetres: bloc = 32 bytes = 8 enters per bloc. A i B ocupen cadascun $256/8 =
 - Bloc $k$ d'A ($k = 0\ldots31$): adreça base $= 32k$. Número de bloc $= k$. Línia $= k \bmod 16$.
 - Bloc $k$ de B ($k = 0\ldots31$): adreça base $= \texttt{0x400} + 32k$. Número de bloc $= 1024/32 + k = 32 + k$. Línia $= (32 + k) \bmod 16 = k \bmod 16$.
 
-El bloc $k$ d'A i el bloc $k$ de B es mapen a la **mateixa línia** ($k \bmod 16$). Això és perquè la distància entre A i B ($\texttt{0x400} - \texttt{0x000} = 1024$ bytes $= 32$ blocs) és un múltiple exacte del nombre de línies de l'MC (16).
+El bloc $k$ d'A i el bloc $k$ de B es mapen a la **mateixa línia** ($k \bmod 16$). Això és perquè la distància entre A i B ($\texttt{0x400} - \texttt{0x000} = 1024$ bytes, 1 KiB, que són 32 blocs) és un múltiple exacte del nombre de línies de l'MC (16).
 
 En el bucle, els accessos s'intercalen: $A[i], B[i], A[i+1], B[i+1], \ldots$ Dins de cada grup de 8 iteracions (que correspon a un bloc), l'accés a $A[i]$ carrega el bloc d'A a la línia $k$, i l'accés a $B[i]$ el reemplaça pel bloc de B; i viceversa.
 

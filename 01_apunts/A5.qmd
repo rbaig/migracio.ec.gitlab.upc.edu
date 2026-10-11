@@ -443,7 +443,7 @@ Quan el resultat exacte d'una operació té més bits que la mantissa, els bits 
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A5_grs_esquema__original_light.svg)
 :::
-Esquema dels bits de guarda ($G$), arrodoniment ($R$) i *sticky* ($S$) respecte de la mantissa retinguda, amb la regla RNE.
+Esquema dels bits de guarda ($G$), arrodoniment ($R$) i sticky ($S$) respecte de la mantissa retinguda, amb la regla RNE.
 :::
 
 La regla RNE en funció de $G$, $R$ i $S$ és:
@@ -766,7 +766,7 @@ A més dels registres `f0`–`f31`, l'extensió F afegeix el registre de control
 | :---: | :---: | :--- |
 | `31:8` | — | Reservats (llegeixen com a 0) |
 | `7:5` | `frm` | Mode d'arrodoniment |
-| `4:0` | `fflags` | Indicadors d'excepció (*sticky*) |
+| `4:0` | `fflags` | Indicadors d'excepció (sticky) |
 : {tbl-colwidths="[15,15,70]" .striped}
 
 **Modes d'arrodoniment** (`frm`):
@@ -791,7 +791,7 @@ A més dels registres `f0`–`f31`, l'extensió F afegeix el registre de control
 | `0` | `NX` | Resultat inexacte (arrodoniment) |
 : {tbl-colwidths="[15,15,70]" .striped}
 
-Els indicadors són *sticky*: un cop activats pel maquinari, romanen actius
+Els indicadors són sticky: un cop activats pel maquinari, romanen actius
 fins que el programari els esborra explícitament. A RISC-V, aquestes excepcions no interrompen l'execució: només activen l'indicador corresponent, i és el programari qui l'ha de consultar.
 :::
 
@@ -943,7 +943,7 @@ Si algun operand és NaN, totes les comparacions retornen 0.
 ::: {#tip-conversio-int-float .callout-tip}
 ## Conversió entre `float` i `int`: `rtz` vs. arrodoniment
 
-Tradueix la funció C següent, que converteix un `float` a `int` fent un *cast* explícit:
+Tradueix la funció C següent, que converteix un `float` a `int` fent una conversió de tipus explícita:
 
 ```{.c filename="C"}
 int truncar(float x) {
@@ -951,7 +951,7 @@ int truncar(float x) {
 }
 ```
 
-El *cast* `(int)` de C sempre trunca cap a zero (per als valors que caben en un `int`). Per traduir-ho cal indicar explícitament el mode d'arrodoniment `rtz` a `fcvt.w.s`:
+La conversió `(int)` de C sempre trunca cap a zero (per als valors que caben en un `int`). Per traduir-ho cal indicar explícitament el mode d'arrodoniment `rtz` a `fcvt.w.s`:
 
 ```{.s filename="RV32IF"}
 truncar:
@@ -963,7 +963,7 @@ Si s'escriu `fcvt.w.s a0, fa0` (sense operand de mode) l'assemblador hi assigna 
 
 | Instrucció | Mode | Resultat |
 | :--- | :--- | :---: |
-| `fcvt.w.s a0, fa0, rtz` | Truncament (cast de C) | $2$ |
+| `fcvt.w.s a0, fa0, rtz` | Truncament (conversió `(int)` de C) | $2$ |
 | `fcvt.w.s a0, fa0` | `dyn` → RNE per defecte | $2$ (empat, al parell) |
 
 Per a $x = 3{,}5$, en canvi, la diferència és evident: `rtz` dona $3$; `dyn`/RNE dona $4$ (empat, al parell). La instrucció `fcvt.w.s` trunca només quan se n'indica el mode `rtz`.

@@ -92,6 +92,8 @@ Les pseudoinstruccions `csrr` i `csrw` (@nte-pseudoinstruccions-csr) són les fo
 | Pseudoinstrucció | Operació | Expansió |
 | :--- | :--- | :--- |
 {{< include ../21_riscv/Zicsr_pseudo.qmd >}}
+
+RARS 1.6 espera l'ordre invers dels operands de `csrw`, `csrw rs, csr` (`csrw t1, fcsr`), i no té els CSR de mode M, com `mepc`.
 :::
 
 L'accés als CSR està **protegit pel nivell de privilegi**: cada CSR té un nivell mínim, codificat als bits 9:8 de la seva adreça de 12 bits, i accedir des de mode U a un CSR de mode M o S genera una excepció d'instrucció il·legal. Alguns CSR són de mode U, com `fcsr` (T5) o els comptadors `cycle` i `instret`.
@@ -223,7 +225,7 @@ A **EC** s'usa sempre el **mode directe** (`MODE=0`): totes les excepcions i int
 El registre **`mtval`** (*Machine Trap Value*) conté informació addicional sobre la causa de l'excepció, per ajudar l'RSE en el tractament. El valor que hi escriu el maquinari depèn del tipus d'excepció:
 
 - **Accés no alineat o fallada de pàgina**: `mtval` conté l'adreça virtual que ha causat l'excepció.
-- **Instrucció il·legal**: `mtval` conté la instrucció que ha causat l'excepció.
+- **Instrucció il·legal**: `mtval` pot contenir la instrucció que ha causat l'excepció, o zero (l'especificació ho deixa a la implementació).
 - **Interrupció o altres excepcions**: `mtval` s'escriu a zero.
 
 ### `mip` / `mie` — Peticions i màscares d'interrupció {#sec-ei-csr-mip-mie}
@@ -291,7 +293,7 @@ Quan el processador opera en mode S (per exemple, executant el nucli de Linux), 
 
 Quan el processador detecta una excepció o una petició d'interrupció, executa automàticament, per maquinari, la seqüència d'accions següent:
 
-1. **Guardar el PC a `mepc`**: el processador escriu el valor actual del PC al registre `mepc`, per poder reprendre el programa interromput en acabar l'RSE.
+1. **Desar el PC a `mepc`**: el processador escriu el valor actual del PC al registre `mepc`, per poder reprendre el programa interromput en acabar l'RSE.
 
 2. **Escriure la causa a `mcause`**: s'escriu el codi de la causa (bit 31 + codi) al registre `mcause`, per tal que l'RSE pugui identificar l'origen de l'excepció o interrupció.
 
@@ -334,7 +336,7 @@ Les interrupcions, en canvi, es comproven sempre entre instruccions (mai a mig d
 
 Un cop el maquinari ha completat les accions de @sec-ei-flux-hardware-accions, el processador comença a executar l'RSE. Aquesta rutina, que forma part de l'SO, té les responsabilitats següents, en ordre:
 
-1. **Salvar l'estat del programa interromput**: l'RSE ha de guardar en memòria tots els registres generals (`x1`–`x31`), per poder-los restaurar en acabar. A diferència d'una subrutina normal, aquí no s'apliquen les regles de l'ABI sobre registres salvats i temporals: com que l'RSE no ha estat invocada voluntàriament pel programa, cal salvar-los tots sense excepció.
+1. **Desar l'estat del programa interromput**: l'RSE ha de desar a memòria tots els registres generals (`x1`–`x31`), per poder-los restaurar en acabar. A diferència d'una subrutina normal, aquí no s'apliquen les regles de l'ABI sobre registres salvats i temporals: com que l'RSE no ha estat invocada voluntàriament pel programa, cal salvar-los tots sense excepció.
 
 2. **Identificar la causa**: l'RSE llegeix el registre `mcause` per determinar el tipus d'excepció o interrupció i saltar a la rutina específica (*exception handler*) corresponent.
 
@@ -345,12 +347,12 @@ Un cop el maquinari ha completat les accions de @sec-ei-flux-hardware-accions, e
 
 4. **Ajustar `mepc` si cal**: en els casos en què el programa ha de continuar a la instrucció *següent* a la causant (per exemple, `ecall`), l'RSE incrementa `mepc` en 4. En la resta de casos no cal cap ajust (vegeu @sec-ei-rse-ajust-mepc).
 
-5. **Restaurar l'estat**: l'RSE restaura tots els registres salvats al pas 1.
+5. **Restaurar l'estat**: l'RSE restaura tots els registres desats al pas 1.
 
 6. **Retornar al programa**: l'RSE executa la instrucció `mret` per retornar al programa interromput (vegeu @sec-ei-rse-mret).
 
 ::: {#cau-rse-registres .callout-caution}
-A l'RSE cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI. El programa interromput no ha cedit el control voluntàriament i no pot saber quins registres ha modificat l'RSE.
+A l'RSE cal desar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI. El programa interromput no ha cedit el control voluntàriament i no pot saber quins registres ha modificat l'RSE.
 :::
 
 ### La instrucció `mret` {#sec-ei-rse-mret}
@@ -377,7 +379,7 @@ En acabar el tractament, l'RSE ha de decidir on reprèn el programa. La regla é
 - **Reexecutar la instrucció causant** (`mepc` sense modificar): quan l'excepció s'ha produït perquè la instrucció no ha pogut completar-se, però la situació ja s'ha resolt (fallada de pàgina). En acabar `mret`, el PC apuntarà a la mateixa instrucció, que ara s'executarà correctament.
 - **Continuar a la instrucció següent** (`mepc += 4`): quan la instrucció causant ja ha complert la seva funció i no s'ha de tornar a executar. Els casos principals són:
     - `ecall`: la crida al sistema ja ha estat atesa.
-    - `ebreak`: el punt de parada ja ha estat processat pel depurador.
+    - `ebreak`, quan el programa l'hi ha posat com una crida explícita al depurador. En un punt de parada de programari, en canvi, el depurador havia substituït una instrucció del programa per `ebreak`: la restaura i hi torna, amb `mepc` sense modificar.
     - En les **interrupcions**, `mepc` ja apunta a la instrucció següent (vegeu @sec-ei-flux-hardware-diferencies), de manera que no cal cap ajust.
 
 ::: {#cau-ajust-mepc .callout-caution}
@@ -386,7 +388,7 @@ Si l'RSE retornés sense ajustar `mepc` en el cas d'una `ecall`, el processador 
 
 ### Exemple: RSE mínima en RISC-V {#sec-ei-rse-exemple}
 
-El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que salva tots els registres, identifica la causa i en delega el tractament a un distribuïdor (*dispatcher*). Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
+El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que desa tots els registres, identifica la causa i en delega el tractament a un distribuïdor (*dispatcher*). Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
 
 ```{.s filename="RV32IZicsr"}
 .section .text.trap, "ax"
@@ -395,7 +397,7 @@ rse:
         # Reservar espai a la pila per a 30 registres (30 × 4 = 120 bytes; s'ometen x0 i sp)
         addi    sp, sp, -120
 
-        # Salvar tots els registres generals (excepte x0, que és sempre 0)
+        # Desar tots els registres generals (excepte x0, que és sempre 0)
         sw      ra,   0(sp)
         sw      t0,   4(sp)
         sw      t1,   8(sp)
@@ -424,14 +426,14 @@ rse:
         sw      t4, 100(sp)
         sw      t5, 104(sp)
         sw      t6, 108(sp)
-        # Salvar també gp i tp per completesa
+        # Desar també gp i tp per completesa
         sw      gp, 112(sp)
         sw      tp, 116(sp)
 
         # Llegir mcause i mepc i passar-los com a paràmetres al dispatcher
         csrr    a0, mcause          # a0 = mcause (causa de l'excepció/interrupció)
         csrr    a1, mepc            # a1 = mepc (adreça de retorn)
-        mv      a2, sp              # a2 = punter als registres salvats
+        mv      a2, sp              # a2 = punter als registres desats
 
         # Cridar el dispatcher, que identificarà la causa i cridarà el handler
         call    handler_dispatcher  # retorna a a0 l'adreça de retorn ajustada
@@ -478,7 +480,7 @@ rse:
         mret
 ```
 
-El distribuïdor (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres salvats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar l'RSE. El dispatcher consulta `mcause` per cridar el handler específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
+El distribuïdor (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres desats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar l'RSE. El dispatcher consulta `mcause` per cridar el handler específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
 ::: {#wrn-rse-pila .callout-warning collapse=true}
 ## La pila de l'RSE
@@ -516,7 +518,7 @@ Això garanteix que hi ha un únic punt d'entrada a l'SO (l'adreça de l'RSE a `
 
 Els SO estableixen una convenció de crides al sistema per passar el codi de servei, els paràmetres de les crides i els registres que cal emprar. Per exemple, RARS estableix el codi de servei al registre **`a7`** i l'argument principal i el valor de retorn al registre **`a0`**. També estableix dos codis de servei per sortir del programa, `exit` (codi de servei 10) i `exit2` (codi de servei 93). La diferència és que `exit2` permet especificar el codi de sortida (normalment 0 per a una terminació correcta), que es retorna al procés pare (normalment l'SO).
 
-Els dos números tenen orígens diferents, i això explica la duplicitat. El catàleg de RARS [@rars_v16] combina dues famílies de serveis: els heretats de **MARS** (***MIPS Assembler and Runtime Simulator***), el simulador de MIPS del qual RARS descendeix, i els compatibles amb les eines de Linux. El **10** prové de la primera. El **93**, en canvi, és el número real de la crida `exit` a **Linux/RISC-V** (`asm-generic/unistd.h`), el mateix origen que el `63` (`read`), el `64` (`write`) o el `214` (`brk`) de @sec-ei-ecall-abi-linux. RARS conserva els dos noms heretats de MARS i adopta per a `exit2` el número de Linux; per això el mateix servei apareix com a `exit2` a la taula de RARS i com a `exit` a la de Linux.
+Els dos números tenen orígens diferents, i això explica la duplicitat. El catàleg de RARS [@rars_v16] combina dues famílies de serveis: els heretats de **MARS** (***MIPS Assembler and Runtime Simulator***), el simulador de MIPS del qual RARS descendeix, i els compatibles amb les eines de Linux. El **10** prové de la primera. El **93**, en canvi, és el número real de la crida `exit` a **Linux/RISC-V** (`asm-generic/unistd.h`), el mateix origen que el `63` (`read`), el `64` (`write`) o el `214` (`brk`, que RARS no té: hi fa servir `sbrk`, el 9) de @sec-ei-ecall-abi-linux. RARS conserva els dos noms heretats de MARS i adopta per a `exit2` el número de Linux; per això el mateix servei apareix com a `exit2` a la taula de RARS i com a `exit` a la de Linux.
 
 ::: {#nte-ecall-convencio-rars .callout-note}
 ## RARS — Registres de crida al sistema
@@ -711,7 +713,7 @@ El flux complet d'una interrupció, des de la petició fins al retorn, segueix l
 
 3. **Acceptació**: el maquinari executa les accions de @sec-ei-flux-hardware-accions: guarda el PC a `mepc`, escriu `mcause` amb bit 31=1 i el codi de causa, desactiva `MIE` i salta a `mtvec`.
 
-4. **Servei**: l'RSE identifica el dispositiu (llegint `mcause` i `mip`), executa el tractament corresponent (per exemple, llegir les dades del dispositiu) i crida l'exception handler específic.
+4. **Servei**: l'RSE identifica el dispositiu (llegint `mcause` i `mip`) i crida el tractament específic d'aquell dispositiu (l'*exception handler*), que en fa el servei (per exemple, llegir-ne les dades).
 
 5. **Retorn**: l'RSE executa `mret`, que restaura `MIE` i retorna al programa interromput, que reprèn l'execució a la instrucció que hauria executat a continuació (ja guardada a `mepc`).
 
@@ -773,7 +775,7 @@ La **fallada de pàgina** és l'exemple més complet del mecanisme d'excepcions 
 
 Com s'ha vist a @sec-mv-tlb, el **TLB** (*Translation Lookaside Buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan la traducció d'una adreça no és al TLB, es produeix una **fallada de TLB** (*TLB miss*).
 
-A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el recorregut de la taula de pàgines (*page-table walker*), un circuit de l'MMU que hi llegeix la PTE, la copia al TLB i deixa continuar l'accés sense interrompre el programa (@sec-mv-tlb-fallada). L'excepció apareix només quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari.
+A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el recorregut de la taula de pàgines (*page-table walker*), un circuit de l'MMU que hi llegeix la PTE, la copia al TLB i deixa continuar l'accés sense interrompre el programa (@sec-mv-tlb-fallada). L'excepció apareix quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari. Amb la PTE ja al TLB, una escriptura en una pàgina amb E = 0 també genera una excepció, la de protecció (@sec-mv-proteccio-escriptura).
 
 ::: {#cau-tlb-miss-excepcio .callout-caution}
 A RISC-V, la **fallada de TLB** la resol el maquinari (el recorregut de la taula de pàgines) de forma transparent. Només la **fallada de pàgina** (V = 0) és una excepció: la instrucció causant s'avorta, `sepc` (o `mepc`) hi apunta, i l'RSE l'ha de **reexecutar** en acabar (sense incrementar `sepc`). En la reexecució, el walker troba la PTE vàlida i l'accés continua normalment.

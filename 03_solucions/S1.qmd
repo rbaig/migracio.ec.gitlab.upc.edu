@@ -32,11 +32,10 @@ Tots els passos s'executen en la **màquina x86-64**, ja que el traductor (eleme
 **a)**
 
 1. **Traduir l'intèrpret de Python a x86-64**: S'aplica el traductor RISC-V→x86-64 (element 3, escrit en x86-64) a l'intèrpret de Python (element 1, escrit en RISC-V). S'obté un intèrpret de Python **executable en x86-64**.
-2. **Interpretar el compilador de C**: El compilador de C (element 2) és un programa escrit en Python. S'usa l'intèrpret del pas 1 per executar-lo. Ara ja és possible compilar C a x86-64 des de la màquina x86-64.
-3. **Compilar el programa en C**: S'usa el compilador del pas 2 (via l'intèrpret) per compilar el programa en C. S'obté un binari x86-64 del programa.
-4. **Executar el binari**: S'executa directament el binari resultant a la màquina x86-64.
+2. **Compilar el programa en C**: El compilador de C (element 2) és un programa escrit en Python, que s'executa amb l'intèrpret del pas 1 i compila el programa en C. S'obté un binari x86-64 del programa.
+3. **Executar el binari**: S'executa directament el binari resultant a la màquina x86-64.
 
-**b)** Per tornar a executar **el mateix programa**: si el binari del pas 3 s'ha conservat, s'executa directament (pas 4) sense repetir cap pas anterior. Si s'ha esborrat, cal repetir únicament el pas 3 (l'intèrpret del pas 1 i el compilador del pas 2 es poden conservar entre execucions).
+**b)** Per tornar a executar **el mateix programa**: si el binari del pas 2 s'ha conservat, s'executa directament (pas 3) sense repetir cap pas anterior. Si s'ha esborrat, cal repetir únicament el pas 2 (l'intèrpret del pas 1 es pot conservar entre execucions).
 :::
 
 ## Codificació de nombres naturals i enters
@@ -138,7 +137,7 @@ Observacions:
 :::
 
 ::: {#sol-t1-enters-conversio8 .callout-tip}
-## Solució: conversió a Ca1, Ca2, S&M i excés a 127 (8 bits)
+## Solució: conversió a Ca1, Ca2, signe i magnitud i excés a 127 (8 bits)
 
 **Enunciat**: @exr-t1-enters-conversio8.
 
@@ -258,7 +257,7 @@ Extensió de signe a 16 bits: es repliquen vuit $1$:
 
 $$1100\,1101_2 \rightarrow 1111\,1111\,1100\,1101_2 = \texttt{0xFFCD}$$
 
-Comprovació: $\texttt{0xFFCD} = 65\,485 - 65\,536 = -51$ ✓
+Comprovació: $\texttt{0xFFCD}$ representa $65\,485 - 65\,536 = -51$ ✓
 :::
 
 ::: {#sol-t1-enters-ca2-16bits .callout-tip}
@@ -288,7 +287,7 @@ $$x_s = 65\,059 - 2^{16} = 65\,059 - 65\,536 = -477$$
 
 **Enunciat**: @exr-t1-enters-codificacio.
 
-El rang de Ca2 amb 8 bits és $[-128, +127]$; amb 16 bits, $[-32\,768, +32\,767]$. S'usa 8 bits si el valor hi cap; altrament, 16 bits.
+El rang de Ca2 amb 8 bits és $[-128, +127]$; amb 16 bits, $[-32\,768, +32\,767]$. S'usa 8 bits si el valor hi cap; altrament, 16 bits. Un negatiu $x$ de $n$ bits es codifica com el natural $2^n + x$: per exemple, $-127 \rightarrow 256 - 127 = 129 = 1000\,0001_2$.
 
 | Valor | Format | Ca2 | Hex |
 | :---: | :---: | :---: | :---: |
@@ -330,7 +329,7 @@ $1011\,0100_2$ s'interpreta com a $-76$ en Ca2. Tots dos operands positius i res
 
 **c) $(-45) + (-30) = -75$**
 
-Ca2: $-45 \rightarrow 1101\,0011$; $-30 \rightarrow 1110\,0010$.
+Ca2 (@sec-inversio-signe): $-45 \rightarrow 1101\,0011$; $-30 \rightarrow 1110\,0010$.
 
 $$\underbrace{1101\,0011}_{-45} + \underbrace{1110\,0010}_{-30} = \underbrace{1011\,0101}_{-75}$$
 
@@ -338,7 +337,7 @@ $$\underbrace{1101\,0011}_{-45} + \underbrace{1110\,0010}_{-30} = \underbrace{10
 
 **d) $(-100) + (-80)$**
 
-Ca2: $-100 \rightarrow 1001\,1100$; $-80 \rightarrow 1011\,0000$.
+Ca2 (@sec-inversio-signe): $-100 \rightarrow 1001\,1100$; $-80 \rightarrow 1011\,0000$.
 
 $$\underbrace{1001\,1100}_{-100} + \underbrace{1011\,0000}_{-80} = \underbrace{0100\,1100}_{?}$$
 
@@ -396,7 +395,7 @@ Mètode: (1) signe del resultat (positiu si els signes coincideixen, negatiu si 
 
 Magnituds: $6 \times 5 = 30$. Signe: $(+) \times (+) \rightarrow (+)$.
 
-$30 = 0001\,1110_2 = \texttt{0x1E}$. Rang $[-128, +127]$: $30 \in$ rang. **Sense sobreeiximent** ✓
+$30 = 0001\,1110_2 = \texttt{0x1E}$. $30 \in [-128, +127]$: **sense sobreeiximent** ✓
 
 **b) $(-6) \times 5 = -30$**
 
