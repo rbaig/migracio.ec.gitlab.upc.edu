@@ -379,7 +379,7 @@ En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**: la imposa la sem
 Les instruccions de salt modifiquen el flux d'execució **desviant-lo** a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen dos eixos de classificació:
 
 - **Condicional vs. incondicional**: els **salts condicionals** (*branches*), com `beq` o `bne`, salten només si es compleix una condició; els **salts incondicionals** (*jumps*), com `jal` i `jalr`, salten sempre.
-- **Relatiu al PC vs. indirecte**: els salts relatius al PC calculen l'adreça de destinació sumant un desplaçament al valor actual del PC; els salts indirectes la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
+- **Relatiu al PC vs. indirecte**: els **salts relatius al PC** calculen l'adreça de destinació sumant un desplaçament al valor actual del PC; els **salts indirectes** la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
 
 La combinació d'aquests dos eixos dona lloc a tres categories:
 
@@ -504,7 +504,7 @@ Les instruccions de salt condicional són la base per implementar les sentèncie
 
 ### Salts incondicionals relatius al PC {#sec-salts-incondicionals-relatius}
 
-La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
+La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (vegeu la presentació del concepte de subrutina a @sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
 
 La instrucció `jal` és de format **Tipus-J** (@nte-format-j), variant del format **Tipus-U**, presentat a [Tema 2](#sec-format-instruccions) amb `lui` (@nte-format-u). Com en el format B (@nte-format-b), el bit 0 de l'immediat és implícit (val `0`), de manera que la instrucció codifica 20 bits i obté un rang efectiu de **±1 MiB** respecte al PC.
 
@@ -553,7 +553,7 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
 {{< include ../21_riscv/RV32I_instruccions_salt_incondicional_indirecte.qmd >}}
-: {tbl-colwidths="[13,19,33,28,7]"}
+: {tbl-colwidths="[13,19,33,28,7]"}`
 :::
 
 ::: {#nte-pseudoinstruccions-salt-indirecte .callout-note}
@@ -567,8 +567,6 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 ::: {#tip-salt-llunya .callout-tip}
 ## Salt a adreça llunyana amb `jr`
 
-La pseudoinstrucció `la` carrega l'adreça de 32 bits d'una etiqueta en un registre (@nte-pseudoinstruccio-la; l'expansió, a @nte-la-auipc).
-
 ```{.s filename="RV32I"}
         la      t0, etiqueta_llunyana
         jalr    zero, 0(t0)             # equivalent a: jr t0
@@ -576,7 +574,7 @@ La pseudoinstrucció `la` carrega l'adreça de 32 bits d'una etiqueta en un regi
 :::
 
 ::: {#imp-ec-rol-salts .callout-important}
-A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'usen per implementar el control de flux local (`if-then-else`, bucles); `jal` (amb `rd = ra`), per cridar subrutines; i els salts **indirectes** (`jalr`, `jr`, `ret`), quan la destinació està en un registre, com en retorns de subrutina, vectors de salts o salts a adreces carregades explícitament.
+A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'usen per implementar el control de flux local (`if-then-else`, bucles); `jal` (amb `rd = ra`), per cridar subrutines; i els salts **indirectes** (`jalr`, `jr`, `ret`), quan la destinació està en un registre, com en retorns de subrutina o en els vectors de salts (@sec-switch).
 :::
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
@@ -1062,31 +1060,9 @@ En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que car
         sw      t1, 0(t0)       # variable <- t1
 ```
 
-Si s'accedeix diverses vegades a la mateixa variable dins una mateixa funció, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
+Si s'accedeix diverses vegades a la mateixa variable, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
 
 La primera de les dues instruccions en què s'expandeix `la`, `auipc` (@nte-instruccio-auipc), és de format **Tipus-U**, com `lui`, presentat a [Tema 2](#sec-format-instruccions) (@nte-format-u); la segona, `addi`, és de format Tipus-I.
-
-::: {#nte-la-auipc .callout-note}
-## RARS — Expansió de `la`
-
-`la` s'expandeix en dues instruccions amb adreces **relatives al PC**: `auipc` (@nte-instruccio-auipc), que suma al PC la part alta del desplaçament fins a l'etiqueta, i `addi`, que hi suma la part baixa:
-
-```{.s filename="RV32I"}
-        auipc   rd, hi_20(offset)     # rd ← PC + (hi_20(offset) << 12)
-        addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
-```
-
-on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `auipc`, i `hi_20` i `lo_12` en són la part alta i baixa respectivament (amb l'ajust de signe habitual si `lo_12[11] == 1`).
-
-**Exemple**: `la t0, AA` amb `@AA = 0x10010000` i `auipc` al PC `0x00400000`:
-
-- `offset = 0x10010000 - 0x00400000 = 0x0fc10000`
-- `hi_20 = 0x0fc10`, `lo_12 = 0x000`
-- `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
-- `addi x5, x5, 0` → `x5 = 0x10010000` ✓
-
-La raó d'usar `auipc` en lloc de `lui` és que, amb adreces relatives al PC, el codi enllaçat és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada no canvia, es carregui on es carregui el programa en memòria. L'enllaçador l'ha de calcular igualment, com ho fa amb l'adreça absoluta de `lui` (vegeu @sec-compilacio).
-:::
 
 ## Subrutines {#sec-subrutines}
 
@@ -1130,25 +1106,25 @@ sub:
 ::: {#cau-caller-callee .callout-caution}
 Un codi és:
 
-- **Funció que crida** (***caller***), si fa una crida a una subrutina.
-- **Funció cridada** (***callee***), si és la subrutina cridada.
+- ***caller***, si fa una crida a una funció o subrutina.
+- ***callee***, si és la funció o subrutina cridada.
 
-Per analogia, és comú emprar els termes mare/pare i fill/filla per referir-se a la funció que crida i a la funció cridada, respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
+Per analogia, és comú emprar els termes mare/pare i fill/filla per referir-se a la funció o subrutina que crida i a la funció o subrutina cridada, respectivament. Quan hi ha tres nivells de crida, l'analogia s'expandeix a tres generacions, avi-pare-fill.
 :::
 
 ::: {#nte-caller-saved-vs-callee-saved .callout-note}
 ## RV32I ABI — Gestió dels registres de propòsit general: *caller-saved* vs. *callee-saved*
-La columna «Qui el guarda (*Saver*)» de les taules de registres de l'ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
+La columna «*Saver*» de les taules de registres de l'ISA i l'ABI (@nte-registres-proposit-general) estableix si un registre és *caller-saved* o *callee-saved*.
 
-- **Caller-saved**: És la funció que crida qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
-- **Callee-saved**: És la funció cridada qui ha de preservar-lo si vol usar-lo i, per tant, ha de restaurar-lo abans de retornar.
+- **Caller-saved**: És la subrutina que crida qui ha de preservar-lo si vol recuperar el seu valor després de la crida.
+- **Callee-saved**: És la subrutina cridada qui ha de preservar-lo si vol usar-lo i, per tant, ha de restaurar-lo abans de retornar.
 :::
 
 El registre `ra` és **caller-saved**, ja que la instrucció que el pare empra per fer la crida (`jal`, @nte-instruccions-salt-incondicional-relatiu-jal) escriu a `ra` l'adreça de retorn que el fill utilitzarà per retornar-li el control de flux. Aquesta escriptura implica la **pèrdua per sobreescriptura** de l'adreça de retorn que ell, el pare, ha d'utilitzar per tornar el control de flux a l'avi.
 
 ### Pas de paràmetres i retorn de resultats (els registres `a0`–`a7`) {#sec-pas-parametres-retorn}
 
-El pas de paràmetres i el retorn de resultats implica una comunicació entre el codi que invoca la subrutina i la subrutina cridada. En assemblador aquesta comunicació es fa dipositant paràmetres i resultats en llocs determinats per l'ABI.
+El pas de paràmetres i el retorn de resultats implica una comunicació entre el la subrutina que crida i la subrutina cridada. En assemblador aquesta comunicació es fa dipositant paràmetres i resultats en llocs determinats per l'ABI.
 
 ::: {#nte-abi-pas-parametres .callout-note}
 ## RV32I ABI — Pas de paràmetres i retorn de resultats
@@ -1353,7 +1329,7 @@ Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen visibil
 ::: {#nte-bloc-activacio .callout-note}
 ## RV32I ABI — El bloc d'activació — Registre de pila `sp`
 
-Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux a la funció que crida. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
+Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux a la subrutina que crida. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
 La reserva i l'alliberament d'espai de memòria per al BA es fan mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
 
@@ -1377,7 +1353,7 @@ Amb aquesta relaxació, `sp` només garanteix l'alineació a 4 bytes (el fons de
 :::
 
 :::: {#tip-func-uninivell-bloc-activacio .callout-tip}
-## Evolució del bloc d'activació durant la crida i retorn d'una funció uninivell
+## Evolució del bloc d'activació durant la crida i retorn d'una subrutina uninivell
 
 ```{.c filename="C"}
 void funcB() { sentB; }
@@ -1394,7 +1370,7 @@ void funcB() { sentB; }
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A3_pila_uninivell__mapa_light.svg)
 :::
-Evolució del registre `sp` durant la crida i el retorn de la funció fulla `funcB`: decreix en reservar el bloc d'activació de la funció i recupera el valor anterior en alliberar-lo.
+Evolució del registre `sp` durant la crida i el retorn de la subrutina fulla `funcB`: decreix en reservar el bloc d'activació de la subrutina i recupera el valor anterior en alliberar-lo.
 :::
 ::::
 
@@ -1439,7 +1415,7 @@ Estructura general del bloc d'activació: variables locals al cim de la pila i r
 :::
 
 ::: {#tip-exemple-variables-pila .callout-tip}
-## Funció uninivell amb variables locals a la pila
+## Subrutina uninivell amb variables locals a la pila
 
 ```{.c filename="C"}
 char func(int i) {          // i en a0
@@ -1464,7 +1440,7 @@ El bloc d'activació conté `v` (10 bytes) i `w` (40 bytes), en ordre textual, a
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A3_ba_func__BA_light.svg)
 :::
-Bloc d'activació de la funció `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocupa els bytes 10–11, i el vector `w` ocupa els bytes 12–51. El registre `sp` apunta al byte 0.
+Bloc d'activació de la subrutina `func`: el vector `v` ocupa els bytes 0–9, l'alineació ocupa els bytes 10–11, i el vector `w` ocupa els bytes 12–51. El registre `sp` apunta al byte 0.
 :::
 
 ```{.s filename="RV32I"}
@@ -1496,7 +1472,7 @@ A RARS, la regió de pila arriba fins a `0x7FFFFFFC`, però l'entorn reserva els
 :::
 
 ::: {#tip-exemple-pila-multinivell .callout-tip}
-## Evolució del registre `sp` durant la crida i retorn d'una funció multinivell
+## Evolució dels blocs d'activació durant la crida i retorn d'una subrutina multinivell la qual en crida una uninivell
 
 ```{.c filename="C"}
 void funcA() { sentA1; funcB(); sentA2; }
@@ -1515,11 +1491,11 @@ void funcB() { sentB; }
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A3_pila_multinivell__mapa_light.svg)
 :::
-Evolució del registre `sp` durant la crida i el retorn de la funció multinivell `funcA` i de la funció fulla `funcB`: decreix en reservar el bloc d'activació de cada funció i recupera el valor anterior en alliberar-lo.
+Evolució del registre `sp` durant la crida i el retorn de la subrutina multinivell `funcA` i de la subrutina fulla `funcB`: decreix en reservar el bloc d'activació de cada subrutina i recupera el valor anterior en alliberar-lo.
 :::
 :::
 
-Una subrutina multinivell ha de preservar, com a mínim, el valor de `ra` abans de la crida a la funció cridada i restaurar-lo després:
+Una subrutina multinivell ha de preservar, com a mínim, el valor de `ra` abans de la crida a la subrutina cridada i restaurar-lo després:
 ```{.s filename="RV32I"}
 sub:
         ...
@@ -1539,7 +1515,7 @@ Els registres, però, són compartits per totes les subrutines. Per tant, hi ha 
 
 L'**ABI** d'RV32I resol aquest problema mitjançant una solució elegant i eficient, però que pot semblar contraintuïtiva a primera vista.
 
-Aquesta solució es basa en la classificació dels registres en **temporals** (*caller-saved* en terminologia ABI) i **segurs** (*callee-saved* en terminologia ABI) i en el repartiment de responsabilitats entre la funció que crida i la funció cridada per preservar-los (@nte-caller-saved-vs-callee-saved). Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat de la funció que crida, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és de la funció cridada.
+Aquesta solució es basa en la classificació dels registres en **temporals** (*caller-saved* en terminologia ABI) i **segurs** (*callee-saved* en terminologia ABI) i en el repartiment de responsabilitats entre la subrutina que crida i la subrutina cridada per preservar-los (@nte-caller-saved-vs-callee-saved). Mentre que els registres temporals poden ser modificats lliurement per qualsevol subrutina i, per tant, preservar-ne el valor és responsabilitat de la subrutina o subrutina que crida, els registres segurs han de ser restaurats al seu valor original per la subrutina que els modifica, abans de retornar i, per tant, la responsabilitat de preservar-los és de la subrutina cridada.
 
 Que el pare hagi de prendre mesures per preservar el seu context sembla raonable, ja que és qui té la necessitat de recuperar-lo després de la crida. El que pot semblar contraintuïtiu és que el fill hagi d'ajudar el pare a preservar el context d'aquest últim preservant-ne els valors dels registres segurs, tot i no tenir-ne cap dependència. No obstant això, aquesta solució és molt eficient perquè permet a **les subrutines** modificar lliurement els registres temporals sense haver de preocupar-se de preservar-los: només han de preservar **els registres segurs**, de manera que, per economia, només fan servir els registres que realment necessiten.
 
@@ -1576,7 +1552,7 @@ La secció de codi d'una subrutina multinivell es divideix en tres parts:
 
 - **Pròleg**: és el codi que s'executa a l'inici de la subrutina per generar el bloc d'activació.
 - **Cos**: és el codi que implementa la funcionalitat de la subrutina. 
-- **Epíleg**: és el codi que s'executa al final de la subrutina, just abans de retornar el control de flux a la funció que crida, per restituir el context.
+- **Epíleg**: és el codi que s'executa al final de la subrutina, just abans de retornar el control de flux a la subrutina que crida, per restituir el context.
 
 ```{.s filename="RV32I"}
 sub:
@@ -1869,7 +1845,7 @@ Hi ha moltes situacions en què resulta convenient separar el codi i les dades e
 Els mòduls es compilen i assemblen **per separat**, generant fitxers objecte independents que més tard s'**enllaçaran** per crear l'executable (@fig-compilacio-separada).
 
 ::: {#cau-abus-llenguatge-compilació .callout-caution}
-De vegades, per abús de llenguatge, s'anomena «compilar» tot el procés de traducció de codi font a executable, incloent-hi l'assemblatge i l'enllaçat. Cal, però, tenir present que, en realitat, cada un d'aquests passos és una fase diferent del procés de traducció, amb funcions i sortides diferents.
+De vegades, per abús de llenguatge, s'anomena «compilar» tot el procés de traducció de codi font a executable, incloent-hi l'assemblatge i l'enllaçat. Cal, però, tenir present que, en realitat, cada un d'aquests passos és una fase diferent del procés de traducció, amb funcionalitats i sortides diferents.
 :::
 
 ::: {#fig-compilacio-separada}
@@ -2051,7 +2027,7 @@ El **carregador** (*loader*) és un programa del sistema operatiu que llegeix el
 4. Inicialitza els registres del processador, de manera que `sp` apunta al cim de la pila.
 5. Salta a una rutina d'arrencada (*startup*) dins l'executable, la qual copia els paràmetres `argc` i `argv` de la pila als registres `a0` i `a1` i fa una crida a `main`.
 
-Quan la funció `main` retorna, la rutina d'arrencada invoca la crida al sistema `exit`, que allibera tots els recursos assignats al programa (memòria, fitxers oberts, etc.).
+Quan la subrutina `main` retorna, la rutina d'arrencada invoca la crida al sistema `exit`, que allibera tots els recursos assignats al programa (memòria, fitxers oberts, etc.).
 
 ::: {#cau-carrega-ec .callout-caution}
 El mecanisme descrit en aquesta secció és el d'un **sistema real amb SO**. A **EC** no hi ha ni SO ni carregador (@imp-directe-sobre-processador): els programes no reben `argc` ni `argv` i no tornen enlloc en acabar. El punt d'entrada és la **primera instrucció del segment `.text`**, sense cap etiqueta que l'anomeni (@nte-punt-entrada-etiqueta), i la sortida es fa amb `li a7, 93` + `ecall` (@nte-programa-esquelet).

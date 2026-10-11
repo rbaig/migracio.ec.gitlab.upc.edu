@@ -386,7 +386,7 @@ Un programa en assemblador es compon de:
 
 Els principals segments d'un programa són: `.text` (instruccions) i `.data` (variables globals). Es declaren amb una **directiva de segment** i tot el contingut que els segueix fins al segment següent hi pertany.
 
-::::: {#nte-segments-memoria .callout-note}
+::: {#nte-segments-memoria .callout-note}
 ## Directives — Segments de memòria: `.text` i `.data`
 
 Les directives `.text` i `.data` són **estàndard** de l'assemblador RISC-V (GNU Assembler, ***Executable and Linkable Format***, **ELF**); no són específiques de RARS. El que sí que depèn de la configuració de **RARS** són les **adreces inicials** de cada segment:
@@ -400,6 +400,7 @@ Les directives `.text` i `.data` són **estàndard** de l'assemblador RISC-V (GN
 **L'execució comença a la primera instrucció del segment `.text`**, és a dir, a l'adreça `0x00400000` de la taula: RARS hi posa el comptador de programa (*program counter*, **PC**) en començar i, amb la configuració per defecte, no cerca cap etiqueta d'entrada. Per això, als programes d'aquests apunts, el punt d'entrada **no porta etiqueta** i el `.text` del programa principal va **abans** de qualsevol subrutina. El motiu de fons —que a EC es programa sense sistema operatiu— és a @nte-punt-entrada-etiqueta.
 
 **Forma llarga de la directiva.** L'assemblador de GNU admet també `.section .data` i `.section .text`, que és la forma que genera `gcc` i la que trobareu en codi real. **A EC s'usa sempre la forma curta** (`.data`, `.text`): RARS no accepta la forma llarga per a aquests dos segments —dona l'error `.section must be followed by a section name`— i, en les variants que sí que assembla, la directiva **no commuta de segment**, de manera que les dades o el codi que la segueixen no van on sembla. És una limitació del simulador, no una diferència de l'arquitectura.
+:::
 
 :::: {#wrn-segments-elf .callout-warning collapse=true}
 ## Seccions addicionals a l'ABI ELF
@@ -415,7 +416,6 @@ En sistemes Linux reals, l'ABI ELF defineix seccions addicionals que RARS no sup
 
 A RARS, tant `.rodata` com `.bss` es substitueixen per `.data`: les constants no estan protegides d'escriptura i les variables no inicialitzades es declaren amb `.space` (@nte-directives-align-space).
 ::::
-:::::
 
 ### Etiquetes {#sec-etiquetes-assemblador}
 
@@ -582,7 +582,7 @@ Suposem que `f`, `g`, `h`, `i` són variables locals enteres emmagatzemades als 
 {{< include ../21_riscv/RV32I_instruccions_auipc.qmd >}}
 : {tbl-colwidths="[13,15,30,34,8]" .striped}
 
-`auipc` col·loca l'immediat de 20 bits als **20 bits superiors**, com `lui`, però en lloc d'escriure'l directament al registre destinació **hi suma el valor del PC**, que és l'adreça de la mateixa instrucció `auipc`. El desplaçament codificat és **relatiu al PC**: la mateixa instrucció dona l'adreça correcta, es carregui on es carregui el programa en memòria. És la primera instrucció de l'expansió de la pseudoinstrucció `la` (@nte-pseudoinstruccio-la); per què `la` la fa servir en lloc de `lui` es tracta a [Tema 3](#sec-tema-traduccio) (@nte-la-auipc).
+`auipc` col·loca l'immediat de 20 bits als **20 bits superiors**, com `lui`, però en lloc d'escriure'l directament al registre destinació **hi suma el valor del PC**, que és l'adreça de la mateixa instrucció `auipc`. El desplaçament codificat és **relatiu al PC**: la mateixa instrucció dona l'adreça correcta, es carregui on es carregui el programa en memòria.
 :::
 
 #### Pseudoinstruccions {#sec-pseudoinstruccions}
@@ -628,10 +628,10 @@ On $hi_{20}(imm32)$ són els 20 bits superiors i $lo_{12}(imm32)$ els 12 bits in
     2. `addi t1, t1, -2048` — el valor immediat de 12 bits és -2048 (0x800 en Ca2 de 12 bits); l'extensió de signe produeix el resultat correcte.
 :::
 
-:::: {#nte-pseudoinstruccio-la .callout-note}
+::: {#nte-pseudoinstruccio-la .callout-note}
 ## Pseudoinstruccions — Càrrega d'adreça de memòria: `la`
 
-La pseudoinstrucció **`la`** (***load address***) inicialitza un registre amb una adreça de memòria constant, expressada com una etiqueta.
+La pseudoinstrucció **`la`** (***load address***) inicialitza un registre amb una adreça de memòria constant, expressada com una etiqueta:
 
 | Pseudoinstrucció | Operació | Expansió |
 | :--- | :--- | :--- |
@@ -648,12 +648,24 @@ y:      .word   14, -1 # Es suposa que y està a l'adreça 0x10010024
         addi    t1, t0, 4       # t1 <- @y + 4    (0x10010028)
 ```
 
-::: {#wrn-rars-expansio-la .callout-warning collapse=true}
-## RARS — Expansió de `la`
+`la` s'expandeix en dues instruccions amb adreces **relatives al PC**: `auipc`, que suma al PC la part alta del desplaçament fins a l'etiqueta, i `addi`, que hi suma la part baixa:
 
-La instrucció `auipc` de l'expansió és a @nte-instruccio-auipc, i per què s'hi fa servir en lloc de `lui` (adreces relatives al PC), a @nte-la-auipc.
+```{.s filename="RV32I"}
+        auipc   rd, hi_20(offset)     # rd ← PC + (hi_20(offset) << 12)
+        addi    rd, rd, lo_12(offset) # rd ← rd + lo_12(offset)
+```
+
+on `offset = @label - PC` és la distància entre l'etiqueta i la instrucció `auipc`, i `hi_20` i `lo_12` en són la part alta i baixa respectivament (amb l'ajust de signe habitual si `lo_12[11] == 1`).
+
+**Exemple**: `la t0, AA` amb `@AA = 0x10010000` i `auipc` al PC `0x00400000`:
+
+- `offset = 0x10010000 - 0x00400000 = 0x0fc10000`
+- `hi_20 = 0x0fc10`, `lo_12 = 0x000`
+- `auipc x5, 0x0fc10` → `x5 = 0x00400000 + 0x0fc10000 = 0x10010000`
+- `addi x5, x5, 0` → `x5 = 0x10010000` 
+
+La raó d'usar `auipc` (@nte-instruccio-auipc) en lloc de `lui` (@nte-instruccio-lui) és que, amb adreces relatives al PC, el codi enllaçat és **independent de la posició** (*position-independent*): el desplaçament entre la instrucció i la dada no canvia, es carregui on es carregui el programa en memòria. L'enllaçador l'ha de calcular igualment, com ho fa amb l'adreça absoluta de `lui` (vegeu @sec-compilacio).
 :::
-::::
 
 ::: {#imp-ec-la-offset .callout-important}
 Cas particular d'@imp-ec-operands-expressions. A **EC**, a la teoria, als problemes i als exàmens, si no s'indica explícitament el contrari, s'admet la sintaxi més llegible següent:
@@ -740,13 +752,13 @@ En l'assemblador de RISC-V (RARS i GNU `as`), els comentaris s'introdueixen amb 
 Un **format acurat** facilita la comprensió i la gestió del codi.
 :::
 
-:::: {#imp-codi-format-criteris .callout-important}
+::: {#imp-codi-format-criteris .callout-important}
 ## Format del codi
 
 A **EC**, es recomana:
 
 - Seguir sempre els mateixos criteris.
-- En C, escriure els comentaris línia per línia amb `//`, també quan n'ocupen més d'una, i no amb `/* … */`. Així es pot desactivar un bloc sencer de codi envoltant-lo amb `/* … */` (per exemple, per provar-ne una alternativa), cosa que no és possible si ja conté comentaris `/* … */`, perquè C no els admet imbricats.
+- En C, escriure els comentaris línia per línia amb `//`, també quan n'ocupen més d'una (Atenció: el binomi `/*` `*/`, que desactivar un bloc sencer de codi, no admet imbricats(*nesting*); per tant `/* … /* … */ … */` no complia).
 - Afegir els comentaris necessaris per facilitar la lectura del codi. Dos criteris informals: afegir els comentaris que al programador li agradaria trobar si el codi fos d'un altre programador, o si ell mateix hi hagués de fer modificacions al cap d'un cert temps.
 - En assemblador, seguir els criteris de sagnat següents:
     - **Sense sagnat** (marge esquerre):
@@ -762,6 +774,7 @@ A **EC**, es recomana:
 - En assemblador, alinear els operands en columna: el mnemònic o la directiva ocupen un camp de 8 caràcters, de manera que els operands comencen 16 caràcters després del marge, com amb dos tabuladors de 8. Si el mnemònic en té 8 o més (`fcvt.w.s`), n'hi ha prou amb un espai. Els operands se separen amb una coma i un espai.
 
 Aquests criteris no s'avaluen per si mateixos (@imp-convencions-ec): als exàmens el codi s'escriu a mà, i a les pràctiques es valora que el codi sigui llegible, sagnat i comentat.
+:::
 
 ::: {#tip-codi-bones-practiques .callout-tip}
 ## Fragment de codi d'assemblador RV32I
@@ -780,7 +793,7 @@ suma:
         ret
 ```
 :::
-::::
+
 
 ### Esquelet d'un programa {#sec-esquelet-programa}
 
@@ -1245,12 +1258,12 @@ L'**ISA** d'**RV32I** és **ortogonal** pel que fa als registres: tret de `x0` (
 
 ::: {#nte-registres-proposit-general .callout-note}
 ## RV32I Registres — Propòsit general
-| ISA | ABI | Propòsit | Qui el guarda (*Saver*) |
+| ISA | ABI | Propòsit | *Saver* |
 | :---: | :---: | :--- | :--- |
 {{< include ../21_riscv/RV32I_registres_proposit_general.qmd >}}
 : {tbl-colwidths="[15,15,55,15]" .striped}
 
-La columna «Qui el guarda (*Saver*)» estableix qui és responsable de preservar el valor d'un registre a través d'una crida a subrutina: la subrutina que fa la crida (*caller*) o la subrutina cridada (*callee*). Aquesta distinció es formalitza al [Tema 3](#sec-tema-traduccio) amb la terminologia *caller-saved*/*callee-saved* (@nte-caller-saved-vs-callee-saved), en el context de les subrutines.
+La columna «*Saver*» estableix qui és responsable de preservar el valor d'un registre a través d'una crida a subrutina: la subrutina que fa la crida (*caller*) o la subrutina cridada (*callee*). Aquesta distinció es formalitza al [Tema 3](#sec-tema-traduccio) amb la terminologia *caller-saved*/*callee-saved* (@nte-caller-saved-vs-callee-saved), en el context de les subrutines.
 :::
 
 ::: {#imp-registres-isa-abi .callout-important}
