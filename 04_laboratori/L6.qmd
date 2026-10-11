@@ -45,7 +45,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 | Model de temps simplificat | @sec-model-temps, @cau-model-temps |
 | Impacte de les fallades en el temps d'execució | @sec-texe-mc, @eq-texe |
 | Recorregut d'un vector per accés seqüencial | @tip-optimitzacio-acces-sequencial |
-| L'*stride* i l'eficiència de la memòria cau | @sec-opt-acces-sequencial |
+| L'*stride* i l'eficiència de la memòria cau | @sec-localitat |
 : {.striped .hover}
 
 ## Descomposició d'adreces {#sec-l6-descomposicio}
@@ -134,7 +134,6 @@ void main() {
 La traducció a RV32I segueix el patró d'accés seqüencial (@tip-optimitzacio-acces-sequencial), mantenint un punter `t2` que avança 4 bytes a cada iteració:
 
 ```{.s filename="suma_vector.s"}
-
 .eqv N, 100
 
 .data
@@ -262,7 +261,7 @@ Modifiqueu el programa `suma_vector.s` per invertir l'ordre del recorregut i ver
 ::: {#sol-recorregut-invers}
 La taxa d'encerts és **la mateixa**: $0{,}75$.
 
-El patró de fallades no depèn de la direcció del recorregut, sinó de la relació entre la mida del bloc i l'*stride* d'accés (@sec-opt-acces-sequencial). En ambdós casos, cada bloc d'MC conté 4 elements consecutius del vector: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres restants són encerts, independentment de si el recorregut és creixent o decreixent.
+El patró de fallades no depèn de la direcció del recorregut, sinó de la relació entre la mida del bloc i l'*stride* d'accés (@sec-localitat). En ambdós casos, cada bloc d'MC conté 4 elements consecutius del vector: la primera referència a cada bloc és una fallada d'arrencada en fred i les tres restants són encerts, independentment de si el recorregut és creixent o decreixent.
 :::
 
 ---
@@ -284,7 +283,7 @@ Useu el programa `suma_vector.s` de @sec-l6-recorregut-vector. Per obtenir el no
 
 3. Calculeu el temps d'execució suposant $\text{CPI}_{ideal} = 2$ (@eq-texe).
 
-4. Calculeu el temps d'execució si el sistema **no tingués cau de dades**, sabent que el temps d'accés a la memòria principal és $t_{MP} = 6\ \text{cicles}$ (@sec-texe-mc). Calculeu també el guany de rendiment respecte al cas sense cau.
+4. Calculeu el temps d'execució si el sistema **no tingués cau de dades**, sabent que el temps d'accés a la memòria principal és $t_{MP} = 6\ \text{cicles}$ (@sec-gap-memoria). Calculeu també el guany de rendiment respecte al cas sense cau.
 :::
 
 ---
@@ -348,7 +347,6 @@ void main() {
 La traducció a RV32I que es fa servir en aquesta secció és la següent:
 
 ```{.s filename="ordenacio.s"}
-
 .eqv N, 5
 
 .data
@@ -556,7 +554,6 @@ void main() {
 La traducció a RV32I fa servir tres punters que avancen en paral·lel:
 
 ```{.s filename="suma_vectors.s"}
-
 .eqv N, 128
 
 .data
@@ -662,7 +659,6 @@ $$\text{taxa d'encerts} = \frac{384 - 96}{384} = \frac{288}{384} = 0{,}75$$
 Per separar els vectors cal que `A`, `B` i `C` es mapin a línies diferents. Com que `A` comença en una adreça alineada a bloc, un farciment de `PAD` bytes (múltiple de 16) desplaça la línia base de `B` en `PAD/16` línies i la de `C` en `2·PAD/16` línies (el doble, perquè `C` acumula els dos farciments). Cal, doncs, que `0`, `PAD/16` i `2·PAD/16` siguin **tres línies diferents mòdul 16**. Compte: no serveix qualsevol valor —per exemple, `PAD = 128` desplaçaria `C` en $2 \times 128 / 16 = 16 \equiv 0$ línies, fent-la coincidir de nou amb `A`. Un farciment d'un sol bloc (`PAD = 16`) porta `A`, `B` i `C` a les línies base 0, 1 i 2, que són diferents, i és suficient:
 
 ```{.s filename="s6_4_2.s"}
-
 .eqv N, 128
 .eqv PAD, 16                    # 1 bloc de farciment entre vectors
 
@@ -832,7 +828,6 @@ void main() {
 La traducció a RV32IM de la versió original és:
 
 ```{.s filename="matvec.s"}
-
 .eqv NI, 16
 .eqv NJ, 16
 
@@ -964,7 +959,6 @@ El programa és **pla**: no fa cap crida, de manera que tot el codi és al bloc 
 Al bucle interior (`j` de 0 a 3), `j` varia més ràpidament. L'element accedit és `M[i][k*4 + j]`: per a `i` i `k` fixos, en incrementar `j` en 1 l'adreça avança `4 bytes` (*stride* = 4, elements contigus a la mateixa fila). Es pot usar un punter `t2` que s'inicialitza a `@M[i][k*4]` i s'incrementa 4 bytes a cada iteració del bucle `j`. Anàlogament, `V2[k*4 + j]` avança 4 bytes per iteració de `j`.
 
 ```{.s filename="s6_5_1.s"}
-
 .eqv NI, 16
 .eqv NJ, 16
 .eqv BLK, 4                    # mida del bloc de tiling

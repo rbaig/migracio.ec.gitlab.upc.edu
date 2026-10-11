@@ -108,7 +108,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 - **Posició menys significativa** (no `posició 0`): per referir-se al darrer bit de la fracció, a fi d'evitar l'ambigüitat entre indexació des de 0 o des de l'LSB.
 - **Blocs de codi `.default`**: per als càlculs pas a pas IEEE 754 (descomposició S/Eu/F, sumes binàries, alineació), es fa servir `{.default filename="..."}` amb el nom del pas com a etiqueta (`filename="ft2 = 0x417AC000"`). És una regla dels problemes i les solucions: la teoria (A5) presenta aquests càlculs amb fórmules ([D-81]({{< var decisions >}}#d-81)).
 - **Solucions**: estructura de cada solució: `**Enunciat**: @exr-...` → explicació → blocs de càlcul → resultat en `$$\boxed{...}$$`. Els resultats intermedis van en blocs `.default`; el codi RISC-V en blocs `.s filename="RV32IF"`.
-- **`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el camp `rm`** de la instrucció, no trunquen sempre. Sense operand de mode (`fcvt.w.s rd, rs1`), l'assemblador RISC-V hi assigna `dyn` (mode dinàmic: el del registre `frm`, RNE per defecte a RARS). Per traduir el *cast* `(int)` de C (que trunca cap a zero) cal escriure explícitament `fcvt.w.s rd, rs1, rtz`.
+- **`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el camp `rm`** de la instrucció, no trunquen sempre. Sense operand de mode (`fcvt.w.s rd, rs1`), l'assemblador RISC-V hi assigna `dyn` (mode dinàmic: el del registre `frm`, RNE per defecte a RARS). Per traduir la conversió de tipus `(int)` de C (que trunca cap a zero) cal escriure explícitament `fcvt.w.s rd, rs1, rtz`.
 - **`flt.s rd, rs1, rs2`** avalua $rs1 < rs2$. Per implementar `a > b` cal invertir els operands (`flt.s rd, b, a`), no negar el resultat.
 - **No-associativitat** (*half*): exemple canònic: $A = \texttt{0xF3FD}$, $B = \texttt{0x73FD}$, $C = \texttt{0x3C00}$ → $(A+B)+C = 1 \neq 0 = A+(B+C)$. És l'exemple dels problemes i les solucions; A5 en fa servir un de precisió simple, la del tema ([D-81]({{< var decisions >}}#d-81)).
 
@@ -149,7 +149,7 @@ El camp `filename` dels blocs de codi reflecteix les extensions actives: `RV32I`
 #### T9
 
 - **`ecall`**: la convenció de crides al sistema Linux/RISC-V usa `a7` per al codi de servei (no `a0`) i admet fins a sis arguments (`a0`–`a5`).
-- **RSE**: cal salvar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
+- **RSE**: cal desar **tots** els registres generals sense excepció, independentment de les convencions de l'ABI.
 - **`mepc`**: en excepcions, apunta a la instrucció causant; en interrupcions, a la instrucció següent. L'ajust (`mepc + 4`) és responsabilitat de l'RSE, no del maquinari.
 - **Zicsr**: les instruccions CSR (`csrrw`, `csrrs`, `csrrc` i variants immediates) pertanyen a l'extensió Zicsr, no a RV32I base. Els callouts d'ISA s'etiqueten `## Zicsr ISA — ...`.
 - **Mode S**: el mecanisme d'excepcions s'estudia en mode M; el mode S s'introdueix a `#sec-ei-csr-modes` i s'aplica, al cos del text, al tractament de la fallada de pàgina (`satp`, `stval`, `sfence.vma`; `#sec-ei-tlb-modes`). La fallada de TLB no és una excepció: la resol el maquinari (§T8, «Model del TLB») ([D-21]({{< var decisions >}}#d-21)).

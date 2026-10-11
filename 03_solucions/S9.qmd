@@ -26,7 +26,7 @@ language:
 4. Guarda el mode de privilegi actual a `MPP` i passa a mode M.
 5. Salta a l'adreça de la rutina de servei d'excepcions (RSE) continguda a `mtvec`.
 
-**d)** L'RSE ha de salvar **tots** els registres generals (`x1`–`x31`) sense excepció. A diferència d'una subrutina normal, el programa interromput no ha cedit el control voluntàriament i no pot saber quins registres modificarà l'RSE. Les convencions ABI (registres salvats vs. temporals) no s'apliquen.
+**d)** L'RSE ha de desar **tots** els registres generals (`x1`–`x31`) sense excepció. A diferència d'una subrutina normal, el programa interromput no ha cedit el control voluntàriament i no pot saber quins registres modificarà l'RSE. Les convencions ABI (registres salvats vs. temporals) no s'apliquen.
 :::
 
 ::: {#sol-t9-exc-rse .callout-tip}
@@ -36,7 +36,7 @@ language:
 
 ```{.s filename="RV32IZicsr"}
 rse:
-        # a) Reservar espai i salvar tots els registres (x1-x31, excepte sp=x2)
+        # a) Reservar espai i desar tots els registres (x1-x31, excepte sp=x2)
         addi    sp, sp, -120
 
         sw      ra,   0(sp)
@@ -261,7 +261,7 @@ car:    .word   0
 
 .text
 rse_teclat:
-        # Salvar tots els registres generals (x1-x31, excepte sp=x2)
+        # Desar tots els registres generals (x1-x31, excepte sp=x2)
         addi    sp, sp, -120
 
         sw      ra,   0(sp)
@@ -372,7 +372,7 @@ rse_ret_teclat:
 
 En tots dos casos, `mtval` conté l'**adreça virtual** que ha causat la fallada (@sec-ei-tlb-mecanisme).
 
-Cal recordar que, a RISC-V, l'excepció només es produeix quan la pàgina no és a la memòria física (bit V = 0 a la PTE): la fallada de TLB amb la pàgina present la resol el recorregut de la taula de pàgines (*page-table walker*) sense interrompre el programa (@cau-tlb-miss-excepcio).
+Cal recordar que, a RISC-V, la fallada de pàgina només es produeix quan la pàgina no és a la memòria física (bit V = 0 a la PTE): la fallada de TLB amb la pàgina present la resol el recorregut de la taula de pàgines (*page-table walker*) sense interrompre el programa (@cau-tlb-miss-excepcio).
 
 **b)** El flux que ha de seguir l'RSE (la rutina completa és a @sec-ei-tlb-modes-rutina):
 

@@ -450,7 +450,7 @@ Comprovació: $15{,}671875 + 0{,}578125 = 16{,}25$ ✓
 
 **Enunciat**: @exr-t5-ops-half-suma.
 
-Format *half*: 1 bit de signe, 5 bits d'exponent esbiaixat (biaix 15), 10 bits de fracció (amb bit ocult). El sumador manté els bits $G$, $R$ i $S$ (@sec-bits-de-guarda) i arrodoneix amb RNE.
+Format *half* (@exr-t5-ieee-half-a): 1 bit de signe, 5 bits d'exponent esbiaixat (biaix 15), 10 bits de fracció (amb bit ocult). El sumador manté els bits $G$, $R$ i $S$ (@sec-bits-de-guarda) i arrodoneix amb RNE.
 
 **a) `A = 0xE4FE`, `B = 0xB640`**
 
@@ -746,7 +746,7 @@ Només `vec` i `q` han de **sobreviure a alguna crida** i, per tant, necessiten 
 - `m` → `fs0` (flotant, preservat — no era imprescindible; un temporal `ft` hauria bastat)
 - `vquadrats` → BA (400 bytes)
 
-**Registres a preservar a la pila**: `ra` (adreça de retorn), `s0`, `s1`, `fs0`, `fs1`.
+**Registres a preservar a la pila**: `ra` (adreça de retorn), `s0`, `s1`, `fs0`, `fs1`. Abans de cada crida no cal desar cap registre temporal: tots els valors que la travessen són en registres segurs.
 
 **b) Traducció a RISC-V**
 
@@ -878,7 +878,7 @@ Per a `v[0] = 1.5` i `v[2] = 3.25`, $1{,}5 \not> 3{,}25$, per tant, `t0 = 0`.
 
 **a) `int i = (int) f;`**
 
-El *cast* `(int)` de C trunca cap a zero: cal indicar-ho explícitament amb el mode `rtz`.
+La conversió de tipus `(int)` de C trunca cap a zero: cal indicar-ho explícitament amb el mode `rtz`.
 
 ```{.s filename="RV32IF"}
         fcvt.w.s a0, fa0, rtz   # a0 ← (int) fa0  [rtz: trunca cap a zero, com el cast de C]
@@ -898,13 +898,13 @@ El *cast* `(int)` de C trunca cap a zero: cal indicar-ho explícitament amb el m
 
 **d) Càlcul manual per a `f = 3.9`**
 
-`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el mode indicat: **no trunquen per si mateixes**. Sense operand de mode, l'assemblador hi assigna `dyn` (el mode vigent al `frm`, RNE per defecte). Per traduir el *cast* `(int)` de C —que trunca sempre cap a zero— cal l'operand explícit `rtz`, com a l'apartat a).
+`fcvt.w.s`/`fcvt.wu.s` s'arrodoneixen segons el mode indicat: **no trunquen per si mateixes**. Sense operand de mode, l'assemblador hi assigna `dyn` (el mode vigent al `frm`, RNE per defecte). Per traduir la conversió `(int)` de C —que trunca sempre cap a zero— cal l'operand explícit `rtz`, com a l'apartat a).
 
 $3{,}9$ en IEEE 754 de precisió simple no és exactament representable. El valor emmagatzemat és:
 
 $$3{,}9 \approx 1{,}1111001100110011001101_2 \times 2^1 = 3{,}9000000953\ldots$$
 
-Aplicant `fcvt.w.s a0, fa0, rtz` (truncament cap a zero, com el *cast* de C):
+Aplicant `fcvt.w.s a0, fa0, rtz` (truncament cap a zero, com la conversió `(int)` de C):
 
 $$\lfloor 3{,}9000\ldots \rfloor = 3$$
 
@@ -921,7 +921,7 @@ Es tracta d'un truncament, no d'un arrodoniment: el valor emmagatzemat ($3{,}900
 
 **Enunciat**: @exr-t5-assoc-suma.
 
-`A = 0xF3FD`, `B = 0x73FD`, `C = 0x3C00` en format *half* (1 bit signe, 5 bits exponent esbiaixat (biaix 15), 10 bits fracció).
+**a)** `A = 0xF3FD`, `B = 0x73FD`, `C = 0x3C00` en format *half* (1 bit signe, 5 bits exponent esbiaixat (biaix 15), 10 bits fracció).
 
 **Descodificació**
 
@@ -967,7 +967,7 @@ $e_B = 13$, $e_C = 0$, diferència = 13. Cal desplaçar la mantissa de $C$ 13 po
 B:          1,1111111101  × 2¹³   (10 bits de fracció)
 C original: 1,0000000000  × 2⁰
 C alineat:  0,0000000000001...  × 2¹³
-            ←  10 bits  →↑ posició −11 (Guard)
+              ← 10 bits→↑ posició −11 (Guard)
 ```
 
 Els 10 bits de fracció de $B$ cobreixen les posicions $2^{-1}$ fins a $2^{-10}$. El bit ocult de $C$ desplaçat arriba a la posició $2^{-13}$, tres posicions més enllà del darrer bit de fracció. Per tant:
@@ -991,6 +991,68 @@ $$\boxed{A + (B + C) = 0}$$
 $$(A + B) + C = 1 \neq 0 = A + (B + C)$$
 
 La suma en coma flotant **no és associativa**. La pèrdua de precisió es produeix en calcular $B + C$: els exponents de $C = 1$ i de $B = 16360$ difereixen en 13, més que els 10 bits de fracció del format *half*, i $C$ queda completament absorbit per l'arrodoniment. En canvi, quan es calcula $(A+B)$ primer, la cancel·lació exacta de $A$ i $B$ deixa zero, i llavors $C$ és prou gran per ser representat.
+
+**b)** `A = 0x4F2A`, `B = 0x36A0`, `C = 0x4A12`.
+
+```{.default filename="Descodificació"}
+A = 0x4F2A = 0 10011 1100101010   e = 19−15 = 4    mantissa 1,1100101010   valor 28,65625
+B = 0x36A0 = 0 01101 1010100000   e = 13−15 = −2   mantissa 1,1010100000   valor 0,4140625
+C = 0x4A12 = 0 10010 1000010010   e = 18−15 = 3    mantissa 1,1000010010   valor 12,140625
+```
+
+**Càlcul de $(A + B) + C$**
+
+*Pas 1: $A + B$*. Els exponents difereixen en 6: la mantissa de $B$ es desplaça 6 posicions a la dreta. El bit que cau a la posició $2^{-11}$ és un 1 ($G$), i tots els de després, zeros ($R = S = 0$):
+
+```{.default filename="A + B"}
+A:          1,1100101010           × 2⁴
+B alineat:  0,0000011010 | 1 0 0   × 2⁴   (G R S)
+Suma:       1,1101000100 | 1 0 0   × 2⁴
+```
+
+$G R S = 100$ és un empat: RNE arrodoneix al parell, i el bit de menys pes ja és 0. El resultat, $1{,}1101000100_2 	imes 2^4 = 29{,}0625$ (`0x4F44`), ha perdut el $2^{-7}$ de $B$ (la suma exacta és $29{,}0703125$).
+
+*Pas 2: $(A + B) + C$*. Diferència d'exponents 1:
+
+```{.default filename="(A + B) + C"}
+A+B:         1,1101000100           × 2⁴
+C alineat:   0,1100001001 | 0 0 0   × 2⁴
+Suma:       10,1001001101 | 0 0 0   × 2⁴
+Normalitzat: 1,0100100110 | 1 0 0   × 2⁵
+```
+
+En normalitzar, el bit de menys pes surt cap a $G$: torna a ser un empat, i el bit de menys pes és 0.
+
+$$\boxed{(A + B) + C = 1{,}0100100110_2 \times 2^5 = 41{,}1875 \quad (\texttt{0x5126})}$$
+
+**Càlcul de $A + (B + C)$**
+
+*Pas 1: $B + C$*. Diferència d'exponents 5: els cinc primers bits de la fracció de $B$ queden dins dels 10 de $C$, i la resta són zeros. La suma és exacta:
+
+```{.default filename="B + C"}
+C:          1,1000010010           × 2³
+B alineat:  0,0000110101 | 0 0 0   × 2³
+Suma:       1,1001000111 | 0 0 0   × 2³   = 12,5546875 (0x4A47)
+```
+
+*Pas 2: $A + (B + C)$*. Diferència d'exponents 1:
+
+```{.default filename="A + (B + C)"}
+A:           1,1100101010           × 2⁴
+B+C alineat: 0,1100100011 | 1 0 0   × 2⁴
+Suma:       10,1001001101 | 1 0 0   × 2⁴
+Normalitzat: 1,0100100110 | 1 1 0   × 2⁵
+```
+
+En normalitzar, el bit de menys pes passa a $G$ i l'antic $G$, a $R$: $G R S = 110$, més de la meitat, i RNE arrodoneix cap amunt.
+
+$$\boxed{A + (B + C) = 1{,}0100100111_2 \times 2^5 = 41{,}21875 \quad (\texttt{0x5127})}$$
+
+**Conclusió**
+
+$$(A + B) + C = 41{,}1875 \neq 41{,}21875 = A + (B + C)$$
+
+Els dos resultats difereixen en una unitat de l'última posició ($2^{5-10} = 0{,}03125$). La suma exacta és $41{,}2109375$: $A + (B + C)$ n'és més a prop, perquè $B + C$ és exacta, mentre que $A + B$ perd els bits de menys pes de $B$ en un empat arrodonit cap avall.
 
 :::
 
@@ -1115,7 +1177,7 @@ $$(A \times B) + (A \times C) = 0\ |\ 10010\ |\ 1110011100 = \texttt{0x4B9C} = \
 
 $$\boxed{A \times (B + C) = \texttt{0x4B9C} = 15{,}21875 = (A \times B) + (A \times C)}$$
 
-En aquest cas els dos camins **coincideixen**, tot i haver acumulat cinc arrodoniments (dos truncaments, dos «al següent» i un empat «al parell»). Els valors exactes dels dos camins, però, són diferents ($15{,}21533\ldots$ i $15{,}21905\ldots$): tots dos s'arrodoneixen casualment al mateix representable. La igualtat és **fortuïta**, no una propietat.
+En aquest cas els dos camins **coincideixen**, tot i haver acumulat cinc arrodoniments (dos truncaments, dos «al següent» i un empat «al parell»). Els resultats exactes de l'última operació de cada camí, calculats amb els intermedis ja arrodonits, són diferents ($15{,}21533\ldots$ i $15{,}21905\ldots$), i el valor exacte d'$A \times (B + C)$ és $15{,}2183\ldots$: tots dos s'arrodoneixen casualment al mateix representable. La igualtat és **fortuïta**, no una propietat.
 
 **b) `A = 0xCEF9`, `B = 0xEFE6`, `C = 0x70FD`**
 
@@ -1180,7 +1242,7 @@ $$A \times C:\ e = 4 + 13 = 17 > 15 \to (-)(+) = -\infty = \texttt{0xFC00} \qqua
 
 $$(+\infty) + (-\infty) = \infty - \infty \to \textbf{NaN}$$
 
-L'operació no té cap valor definit (@sec-codificacio-nan): el resultat és qualsevol patró amb $E_u = 31$ i $F \neq 0$ (per exemple `0x7E00`; l'estàndard no en fixa la fracció).
+L'operació no té cap valor definit (@sec-codificacio-nan): el resultat és un NaN silenciós, amb $E_u = 31$ i el bit de més pes de la fracció a 1 (per exemple, `0x7E00`; l'estàndard no en fixa la resta de la fracció).
 
 **Comparació de l'apartat b)**
 

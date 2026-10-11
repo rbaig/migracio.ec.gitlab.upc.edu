@@ -61,7 +61,6 @@ Recordeu que en C els elements d'una matriu es guarden per files, i que en RV32I
 
 ::: {#sol-declaracio-matrius}
 ```{.s filename="s4_1_1.s"}
-
 .eqv NF1, 5
 .eqv NC1, 6
 .eqv NF2, 3
@@ -163,6 +162,8 @@ Abans d'escriure cap instrucció:
 3. Per a cada funció, identifiqueu quines dades es generen **abans** d'una crida i s'usen **després** (@sec-multinivell-pila). Assigneu-les a registres segurs.
 4. Dibuixeu el bloc d'activació de cada funció amb els desplaçaments de cada element.
 
+Un cop escrit, poseu un punt d'aturada a l'inici de `subr`, executeu fins a aquest punt i anoteu els valors (en hexadecimal) dels registres `a0`, `a1`, `a2` i `ra` en cadascuna de les dues crides.
+
 Comproveu que, en acabar, `mat1[0][0]` = 1, `mat1[1][5]` = 4, `mat1[2][5]` = 3 i `mat1[4][3]` = 1.
 :::
 
@@ -192,7 +193,6 @@ Entre la primera crida a `subr` i la segona, el programa principal necessita les
 Cap de les dues rutines no necessita bloc d'activació: `subr` és uninivell i sense variables locals, i el programa principal no ha de preservar cap registre. Tots dos BA són buits.
 
 ```{.s filename="s4_2_2.s"}
-
 .eqv NF1, 5
 .eqv NC1, 6
 .eqv NF4, 2
@@ -262,8 +262,6 @@ subr:
 
 ::: {.callout-tip title="Comprovació pràctica"}
 Els quatre elements de l'enunciat són a `@mat1 + 0`, `@mat1 + 44`, `@mat1 + 68` i `@mat1 + 108`. Per localitzar-los a la vista de dades de RARS, calculeu l'adreça absoluta sumant el desplaçament a l'adreça base de `mat1` (visible al panell *Labels*).
-
-A continuació poseu un punt d'aturada a l'inici de `subr` i executeu fins a aquest punt. Anoteu els valors (en hexadecimal) dels registres `a0`, `a1`, `a2` i `ra` en cadascuna de les dues crides.
 :::
 :::
 
@@ -319,7 +317,7 @@ Abans d'escriure cap instrucció, responeu al fitxer `s4_3_1.md`:
 4. Determineu si `suma_col` és uninivell o multinivell i assigneu cada variable a un registre.
 5. Determineu si el programa principal fa alguna crida i quines conseqüències té per a la gestió del context. Recordeu que és el punt d'entrada del programa —el primer bloc de `.text`— i que acaba amb `ecall`.
 
-A continuació, traduïu el programa a RV32IM usant la tècnica d'accés seqüencial per recórrer la columna.
+A continuació, traduïu el programa a RV32IM usant la tècnica d'accés seqüencial per recórrer la columna i eliminant la variable d'inducció (@sec-opt-eliminacio-induccio).
 
 Comproveu que, en acabar, la variable global `resultat` conté `20` (la suma dels elements de la columna 2: $2 + 4 + 6 + 8$).
 :::
@@ -361,7 +359,6 @@ Com que el recorregut elimina la variable d'inducció `i` i controla el bucle co
 El programa principal crida `suma_col`, però és el **punt d'entrada**: com que és el primer bloc del segment `.text`, no és la funció cridada per cap altra subrutina, i acaba amb `ecall`. Per tant, no ha de preservar `ra` ni cap registre segur, i no li cal bloc d'activació. A més, no hi ha cap valor propi que hagi de travessar la crida (el resultat es desa directament a `resultat` en retornar), de manera que no necessita cap registre segur.
 
 ```{.s filename="s4_3_1.s"}
-
 .eqv NF, 4
 .eqv NC, 6
 

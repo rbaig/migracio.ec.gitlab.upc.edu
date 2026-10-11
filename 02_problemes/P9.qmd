@@ -126,7 +126,7 @@ c) Per distingir entre una interrupció de teclat i una altra interrupció exter
 *Vegeu @sec-ei-tlb.*
 
 ::: {#exr-t9-exc-tlb-miss}
-A RISC-V, la fallada de TLB (*TLB miss*) la resol el maquinari, amb el recorregut de la taula de pàgines (*page-table walker*), de manera transparent i sense generar cap excepció; només quan el recorregut troba que la pàgina no és a la memòria física (bit V = 0 a la PTE) es genera una excepció de **fallada de pàgina** (@cau-tlb-miss-excepcio). En canvi, en arquitectures amb TLB gestionat per **programari** (com MIPS), la mateixa fallada de TLB genera una excepció, i és una rutina de l'SO qui llegeix la taula de pàgines i actualitza el TLB (@wrn-mv-tlb-hw-walker).
+A RISC-V, la fallada de TLB (*TLB miss*) la resol el maquinari, amb el recorregut de la taula de pàgines (*page-table walker*), de manera transparent i sense generar cap excepció; quan el recorregut troba que la pàgina no és a la memòria física (bit V = 0 a la PTE), es genera una excepció de **fallada de pàgina** (@cau-tlb-miss-excepcio), i, si l'accés no té permís (una escriptura amb E = 0), una de protecció. En canvi, en arquitectures amb TLB gestionat per **programari** (com MIPS), la mateixa fallada de TLB genera una excepció, i és una rutina de l'SO qui llegeix la taula de pàgines i actualitza el TLB (@wrn-mv-tlb-hw-walker).
 
 a) En RISC-V, quin codi de causa (`mcause`) s'assigna a una fallada de pàgina en una lectura de dada? I en una escriptura? Quin valor pren `mtval` en tots dos casos?
 b) Descriviu els passos que ha de seguir l'RSE de RISC-V per gestionar una fallada de pàgina: com localitza la PTE a partir de `mtval`, què fa segons el bit V, quin paper hi té `sfence.vma` i com es prepara la reexecució de la instrucció causant.
