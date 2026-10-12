@@ -612,6 +612,9 @@ COMPROVACIONS = [
                 lambda ctx: not ctx.tot and bool(ctx.canvis.qmd()), 'En tocar un `.qmd`', 'Avisa', c_marques),
     Comprovacio('format_codi', 'Format del codi', 'Els criteris mecànics del format dels blocs d\'assemblador '
                 '(`verifica_format_codi.py`)', SEMPRE, 'Sempre', 'Avisa', script('verifica_format_codi.py')),
+    Comprovacio('etiquetes', 'Etiquetes `b`/`B`', 'Cap etiqueta ni constant `b` o `B` als blocs d\'assemblador (la regla F6 '
+                'de `verifica_format_codi.py`, que atura; D-111)', SEMPRE, 'Sempre', 'Atura',
+                script('verifica_format_codi.py', '--regles', 'F6', gravetat=ERROR)),
     Comprovacio('taules', 'Taules al PDF', 'Desbordaments i amplades de les taules del PDF, mesurats sobre el font '
                 '(`verifica_taules.py`, amb fontTools i les fonts del PDF)', SEMPRE, 'Sempre', 'Avisa', c_taules),
     Comprovacio('figures', 'Figures', 'Els avisos de l\'inventari de figures: peus, remissions, `<title>` i `<desc>`, '
