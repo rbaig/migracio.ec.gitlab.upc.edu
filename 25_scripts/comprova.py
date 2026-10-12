@@ -63,6 +63,7 @@ CLASSES = [
     ('TODO.md', 'operatiu', {'documenta', 'no_cita'}),
     ('24_specs/arxiu_todo.md', 'operatiu', {'documenta', 'no_cita'}),
     ('24_specs/registre_de_decisions.md', 'operatiu', {'documenta', 'no_cita'}),
+    ('24_specs/revisio_externa.md', 'operatiu', {'documenta', 'no_cita'}),
     ('README.md', 'operatiu', {'no_cita'}),
     ('CLAUDE.md', 'operatiu', set()),
     ('.claude/*', 'operatiu', {'documenta', 'fora_orfes'}),
