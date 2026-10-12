@@ -19,6 +19,8 @@ Regles:
       de 8 caràcters, i els operands comencen a la columna 16; si el mnemònic
       en té 8 o més, n'hi ha prou amb un espai. Darrere d'una etiqueta, el
       mnemònic comença a la columna 8 (o a un espai de l'etiqueta, si no hi cap).
+  F6  Cap etiqueta ni constant (`.eqv`) que es digui `b` o `B`: és el nom del
+      salt incondicional `b` (13_contrib.qmd §Codi, D-111).
 
 No mira els comentaris (ni la seva columna) ni les línies que només contenen
 una el·lipsi (`...`), que marquen codi omès.
@@ -47,7 +49,9 @@ REGLES = {
     'F3': 'instrucció o dada sense els 8 espais de sagnat',
     'F4': 'tabulador',
     'F5': 'operands o mnemònic fora de columna',
+    'F6': 'etiqueta o constant `b`/`B` (el salt incondicional `b`)',
 }
+RESERVADES = {'b'}                        # F6: es comparen en minúscules
 
 
 def fitxers_per_defecte():
@@ -81,8 +85,13 @@ def comprova_linia(linia):
     s = sense_comentari(linia)
     if not s.strip() or s.strip() in ('...', '…'):
         return errors
+    eqv = re.match(r'\s*\.(eqv|set)\s+([A-Za-z_]\w*)', s)
+    if eqv and eqv.group(2).lower() in RESERVADES:
+        errors.append('F6')
     e = ETIQUETA.match(s)
     if e:
+        if e.group(2)[:-1].lower() in RESERVADES:
+            errors.append('F6')
         if e.group(1):
             errors.append('F2')
         resta = e.group(4)

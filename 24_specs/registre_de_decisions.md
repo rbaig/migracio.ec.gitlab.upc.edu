@@ -581,6 +581,12 @@ Peticions de l'usuari (2026-10-12), totes tres «si és fàcil de fer». **«Con
 
 L'usuari va veure que `#tbl-exemple-comparacio-versions-progs` (A6) no tenia peu, i va preguntar si era un fals positiu de `verifica_taules.py`. No ho era: l'script no mirava els peus. Una taula amb etiqueta i sense peu Quarto la numera igualment i en deixa el peu buit: «Taula 6.1» sola a l'HTML (classe `quarto-uncaptioned`) i «Taula 6.1.» al PDF. N'hi havia quatre, cap amb cap remissió: `#tbl-exemple-comparacio-versions-progs` (A6), `#tbl-tres-c` i `#tbl-disseny-l1-l2` (A7) i `#tbl-syscalls` (A9). Proposta de Claude Code, acceptada per l'usuari («Endavant»): posar-los peu, d'acord amb el seu criteri de «totes les taules amb `#tbl-`», en lloc de treure'ls l'etiqueta; i que `verifica_taules.py` ho avisi, al peu de la taula o al div que la porta. Fins llavors la guia només deia que el peu era obligatori al cos del text.
 
+### D-111
+
+**Cap etiqueta ni constant `b` o `B` als blocs d'assemblador** · `13_contrib.qmd §T2 i T3` · 2026-10-12
+
+Regla de l'usuari (2026-10-12), literal: «Codi assemblador `.s` no es permet l'ús de l'etiqueta `B:` perquè el símbol `b` correspon a la pseudoinstrucció de branch». L'abast i els noms, decisions de l'usuari sobre les propostes de Claude Code: també la minúscula (`b:`), i les sèries de tres o menys passen a `X`, `Y`, `Z` (`x`, `y`, `z`), i les més llargues, a lletres consecutives a partir de `P`, amb el nom C i el text que les citen. A RARS 1.6, una etiqueta `B:` assembla (els blocs de L6 s'executaven), però una constant `.eqv B` no (@nte-rars-noms-reservats, i la lliçó de la skill `rars`). Aquell dia n'hi havia 9: A2 (`#tip-traduccio-declaracions-globals`, `a`–`f` → `p`–`u`), cinc problemes de P2 (`A`–`D` → `P`–`S`, `A`–`G` → `P`–`V`, `A`–`H` → `P`–`W`, `a`–`f` → `p`–`u`, `B`–`E` → `Q`–`T`, i `A`, `B` → `X`, `Y` al problema de `char` i `int`, que no té etiqueta però sí variables), la solució de S2 corresponent, i L6 (els vectors `A`, `B`, `C` → `X`, `Y`, `Z`, amb l'article davant de cada lletra segons com es llegeix, D-80: «d'`Y`», «de `Z`»). `verifica_format_codi.py` ho comprova (F6).
+
 ### D-110
 
 **Cap callout dins d'un altre** · `13_contrib.qmd §Imbricacions` · 2026-10-12
