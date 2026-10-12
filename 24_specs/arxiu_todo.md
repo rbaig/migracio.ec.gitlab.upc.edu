@@ -717,6 +717,21 @@ Retallada el 2026-10-12, en treure el punt sobrer (`numbers=noendperiod`, D-109 
   pdftotext -layout _book/Estructura-de-computadors.pdf - | grep -o -E "(Taula|Figura) [0-9]+(\.[0-9]+)?\.?:" | sed -E 's/[0-9]+/N/g' | sort | uniq -c   # 81 Figura N.N.:, 2 Figura N.N:, 4 Taula N.:, 21 Taula N.N.: (ccedc54)
   ```
 
+### «A2, `#sec-punters` i `#sec-vectors`: el que la revisió del 2026-10-12 no va aplicar, per decidir» (§Tasques per tema → T2)
+
+Retallada el 2026-10-12, en aplicar-ne les remissions cap endavant i la regla perduda (recomanació de Claude Code, acceptada per l'usuari: «Les teves recomanacions»). El text d'abans:
+
+- **A2, `#sec-punters` i `#sec-vectors`: el que la revisió del 2026-10-12 no va aplicar, per decidir** (registrada el 2026-10-12). L'usuari va reescriure les dues seccions a mà (`5aa5bc9`) i en va demanar la revisió tècnica i la lingüística; dos subagents la van fer (el tècnic, amb RARS 1.6), i les errades i les harmonitzacions que diu la guia es van aplicar (`2da1542`, `132edbf`). Queda el que demana una decisió de l'editor, perquè toca l'estructura o l'estil d'un text seu, i A2 ja és dels revisors externs (`CLAUDE.md §Estat del projecte`). Treballeu per àncora:
+  - **Ordre**: el paràgraf que presenta el **declarador** (el que comença «En una declaració») va després del que ja en parla (sota `#tip-punters-c-declaracio`), i les definicions no lliguen («el declarador `*`» o el `*` com a part del declarador `*<nom>`); `#cau-void-main` diu «A partir d'aquí», però el primer `void main()` d'A2 és abans, a `#tip-inicialitzacio-punters-1`; `#wrn-index-aritmetica-punters` fa servir `3[vec]` ≡ `*(3 + vec)` abans que el text defineixi `vec[i]` ≡ `*(vec + i)`; i `#wrn-punters-funcions` és dins de §Absència de control en l'accés a memòria, amb què no té relació.
+  - **Remissions cap endavant**: el primer paràgraf de `#sec-aritmetica-punters` ja no remet a @sec-vectors ni a @sec-punters-vectors, i `#tip-aritmetica-punters` fa servir `int *p = v` (el decaïment) abans que es presentin (§Criteri general).
+  - **Una regla que s'ha perdut**: una variable global només es pot inicialitzar amb una expressió constant (`int *p2 = p1;` global no és vàlid en C); i «declaració seguida d'assignació» barreja inicialització i assignació, que `#wrn-c-declarador-i-inicialitzador` distingeix.
+  - **Títols**: el criteri que es dedueix de `5aa5bc9` («C — » quan la secció no té part en RV32I) donaria «C — » a §Relació entre punters i vectors; el títol de §C — Tipus `<tipus> nom_vector[…]` no lliga amb el cos (`<tipus_elements>`, `<quantitat_elements>`); `#tip-desreferencia-punters-c` es diu «C — …» i conté RV32I; i `#tip-optimitzacio-acces-sequencial` i el seu germà d'accés aleatori no tenen el mateix patró de títol.
+  - **Estil**: una sola forma de «punter a tipus enter» (hi ha també «punter de tipus enter» i «punter al tipus»); «**punter nul** (*null pointer*)», en negreta, perquè el glossari l'agafi; l'abast de `&` («davant del nom d'una variable», però més avall `&vec[0]`); el cas `int *p4, p5;`, dues vegades; la nota `[^decau]`, que remet a la seva pròpia secció; el títol de `#tip-c-tipus-vector-matriu-decaiment`, gairebé igual que el de §Relació entre punters i vectors; i la mateixa `n` per a `.space` i `.align` a `#nte-directives-align-space`.
+
+  ```bash
+  git grep -n -E "A partir d'aquí|punter de tipus enter|punter nul \(" -- 01_apunts/A2.qmd
+  ```
+
 ## Capçalera del `TODO.md` fins al 2026-10-09
 
 Sense l'historial dels recomptes (línia 9, `git show c29b58d:TODO.md`).
