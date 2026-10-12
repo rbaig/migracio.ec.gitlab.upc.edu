@@ -1493,6 +1493,7 @@ Els **punters** representen adreces de memòria i, per tant, **només** poden se
 :::
 
 ::: {#wrn-punters-x86 .callout-warning collapse=true}
+## Mida dels punters en arquitectures de 64 bits
 A **x86-64** i a **RV64I**, els punters tenen 8 bytes.
 :::
 
@@ -1516,7 +1517,6 @@ En C, la sintaxi de declaració d'un punter és:
 Així doncs, per exemple, la declaració `int *p;` declara `p` com a «variable de tipus punter a tipus enter». Tècnicament, `p` és de tipus `int *`, això és, «punter a tipus enter» o, més habitualment, per abús de llenguatge, «punter a enter».
 
 A l'@tip-punters-c-declaracio, `p1` i `p4` són del tipus `int *`, és a dir, són punters a variables de tipus `int`. Anàlogament, `p2` és un punter del tipus `char *`, és a dir, un punter a una variable de tipus `char`, mentre que `p3` és un punter del tipus `short *`, per tant, un punter a una variable de tipus `short`. Finalment, `p5` no és un punter, sinó un enter, ja que el declarador `*` només afecta `p4`.
-símbol; en C només té sentit parlar d'operadors en expressions, no en declaracions. 
 
 ::: {#tip-punters-c-declaracio .callout-tip}
 ## Declaració de punters en C
@@ -1536,7 +1536,7 @@ No s'ha de confondre l'ús de `*` en les **declaracions**, on denota «punter a�
 
 En **RV32I** **no hi ha una distinció explícita entre diferents tipus de punters**; tots són sempre adreces de 32 bits.
 
-A l'@tip-punters-rv32i-declaracio es tradueixen a RV32I les declaracions en C dels punters `*p1`, `*p2` i `*p3` de l'@tip-punters-c-declaracio suposant que les variables `p1`, `p2` i `p3` són variables globals. S'hi inicialitzen a zero, el punter nul (*null pointer*) de C, per explicitar que no apunten a cap adreça vàlida, per exemple, perquè encara no es coneix l'adreça de les variables a les quals apuntaran.
+A l'@tip-punters-rv32i-declaracio es tradueixen a RV32I les declaracions en C dels punters `p1`, `p2` i `p3` de l'@tip-punters-c-declaracio suposant que les variables `p1`, `p2` i `p3` són variables globals. S'hi inicialitzen a zero, el punter nul (*null pointer*) de C, per explicitar que no apunten a cap adreça vàlida, per exemple, perquè encara no es coneix l'adreça de les variables a les quals apuntaran.
 
 ::: {#tip-punters-rv32i-declaracio .callout-tip}
 ## Declaració de punters en RV32I
@@ -1548,7 +1548,7 @@ p3:     .word   0     # Punter a short (inicialitzat a null)
 ```
 :::
 
-### C — `&`: l'operador *adreça de la variable* {#sec-punters-ampersand}
+### C — `&`: l'operador «adreça de» {#sec-punters-ampersand}
 
 En **C**, l'**operador** `&` («*ampersand*»), davant del nom d'una variable, és l'**operador** «**adreça de la variable**» que precedeix. Així doncs, `&x` representa l'«adreça de la variable» `x`.
 
@@ -1566,14 +1566,14 @@ En **C**, a un **punter** se li pot **assignar un valor** (una adreça) principa
       ```
 - Assignant-li un altre punter del mateix tipus.
     - ```{.c filename="C"}
-      p1 = p2;                    // p2 ha està inicialitzat
+      p1 = p2;                    // p2 ja està inicialitzat
      ```
 - Explícitament, mitjançant una **conversió de tipus** (*type cast*) a partir d'una adreça numèrica (ús avançat):
     - ```{.c filename="C"}
       ptr = (int *) <adreça>;    // per exemple, 0x10010000
     ```
 
-En **C**, un **punter** es pot **inicialitzar en la declaració** seguint la sintaxi estàndard de declaració seguida d'assignació (part `[= adreça_d_inicialització]` de `<tipus_apuntat> *<nom_del_punter> [= adreça_d_inicialització];` a @sec-punters-c-tipus).
+En **C**, un **punter** es pot **inicialitzar en la declaració** seguint la sintaxi estàndard de declaració seguida d'assignació (part `[= adreça_d_inicialització]` de `<tipus_apuntat> *<nom_del_punter> [= adreça_d_inicialització];` a @sec-punters-c-declaracio).
 
 ::: {#wrn-c-declarador-i-inicialitzador .callout-warning collapse=true}
 ## C — Declarador, inicialitzador i delimitador d'inicialització
@@ -1594,7 +1594,7 @@ En **RV32I**, l'**assignació** d'un punter es pot fer:
 - Assignant-li l'adreça d'una variable (per exemple, mitjançant la pseudoinstrucció `la` en cas d'una variable global).
 - Explícitament (per exemple mitjançant la pseudoinstrucció `li`).
 
- L **inicialització en la declaració de variables globals** es pot fer mitjançant etiquetes de dades, com es mostra a l'@tip-inicialitzacio-punters-1. En aquest exemple, `p1` s'inicialitza amb l'adreça de la variable global `x`, mentre que `p2` s'inicialitza a zero (punter nul). A la funció `main`, `p2` s'assigna a `p1`, fent que també apunti a `x`. 
+L'**inicialització en la declaració de variables globals** es pot fer mitjançant etiquetes de dades, com es mostra a l'@tip-inicialitzacio-punters-1. En aquest exemple, `p1` s'inicialitza amb l'adreça de la variable global `x`, mentre que `p2` s'inicialitza a zero (punter nul). A la funció `main`, s'assigna `p1` a `p2`, de manera que `p2` també apunta a `x`.
 
 ::: {#tip-inicialitzacio-punters-1 .callout-tip}
 ## Inicialització de punters a variables globals
@@ -1620,17 +1620,11 @@ p2:     .word   0               # Punter a enter (inicialitzat a null)
         la      t2, p2          # t2 <- adreça de p2
         sw      t1, 0(t2)       # p2 = p1;
 ```
-
-L'assignació `p2 = p1` també es pot traduir directament com:
-```{.s filename="RV32I"}
-        la      t3, p2          # t3 <- adreça de p2
-        sw      t0, 0(t3)       # p2 = p1  (t0 encara té &x, que és igual que p1)
-```
 :::
 
 ### Desreferència o indirecció {#sec-punters-desreferencia}
 
-L'operació «**desreferència** o **indirecció** de punter» és l'operació d'accés (lectura o escriptura) a la posició de memòria apuntada pel punter, sigui per lectura o escriptura.
+L'operació «**desreferència** o **indirecció** de punter» és l'operació d'accés (lectura o escriptura) a la posició de memòria apuntada pel punter.
 
 En **C**, s'expressa precedint el nom del punter amb el caràcter `*` en les **sentències**.
 
@@ -1680,7 +1674,7 @@ La primera sentència llegeix el contingut de la posició de memòria apuntada p
 En **C**, quan es suma un enter `i` a un punter `p` que apunta a un tipus de mida $T$ bytes en resulta un punter que apunta $i \cdot T$ bytes més endavant de l'adreça apuntada per `p`. De manera simètrica, restar `i` desplaça el punter $i \cdot T$ bytes enrere d'aquesta adreça. Aquesta regla d'escalat permet navegar per elements d'un vector independentment del tipus de dades que contingui.
 
 ::: {#cau-punters-aritmetica .callout-caution}
-En C, es pot aplicar operacions aritmètiques als punters, però el resultat sempre ha de ser una adreça de memòria vàlida, cosa que comporta limitacions de les operacions aritmètiques permeses. Per exemple, multiplicar punters (@wrn-punters-aritmetica-possible).
+En C, es poden aplicar operacions aritmètiques als punters, però el resultat sempre ha de ser una adreça de memòria vàlida, cosa que limita les operacions permeses: per exemple, no es poden multiplicar punters (@wrn-punters-aritmetica-possible).
 :::
 
 ::: {#wrn-punters-aritmetica-possible .callout-warning collapse=true}
@@ -1697,7 +1691,7 @@ L'estàndard de C és molt restrictiu per evitar accessos a memòria sense senti
 La multiplicació, per exemple, no és permesa.
 :::
 
-En **RV32I**, l'aritmètica de punters l'ha de gestionar el programador. Per exemple, si `p` és un punter a `short`, la instrucció `p = p + 1;` es tradueix a `addi p, p, 2`, ja que un enter ocupa 4 bytes. De manera simètrica, `p = p - 2;` es tradueix a `addi p, p, -4`.
+En **RV32I**, l'aritmètica de punters l'ha de gestionar el programador. Per exemple, si `p` és un punter a `short` i és a `t0`, la sentència `p = p + 1;` es tradueix a `addi t0, t0, 2`, ja que un `short` ocupa 2 bytes. De manera simètrica, `p = p - 2;` es tradueix a `addi t0, t0, -4`.
 
 ::: {#tip-aritmetica-punters .callout-tip}
 ## Aritmètica de punters
@@ -1748,7 +1742,7 @@ En **C** es declara indicant el tipus de retorn i els tipus dels paràmetres; pe
 En **RV32I**, invocar un punter a funció és una **crida a subrutina indirecta**: es carrega l'adreça en un registre i s'hi salta amb `jalr` (@sec-subrutines). A **EC** no es treballen explícitament.
 :::
 
-En **RV32I**, l'absència de control en l'accés a memòria és total: el programador és responsable de garantir que els punters apunten a adreces vàlides de segment de memòria vàlids. L'accés a una adreça no vàlida no necessàriament ha produir una excepció i aturar l'execució, però no necessàriament.
+En **RV32I** tampoc no es comproven els límits: el programador és responsable que els punters apuntin a adreces vàlides. Un accés fora d'un vector però dins d'un segment accessible s'executa sense cap avís; només es produeix una excepció si l'adreça no és alineada (@sec-restriccio-alineacio-carrega) o, a **RARS**, si cau fora de la memòria del programa (per exemple, en desreferenciar el punter nul).
 
 ## Vectors {#sec-vectors}
 
@@ -1866,7 +1860,7 @@ En **C**, una matriu `int mat[2][3]` és un **vector de 2 elements**, on cada el
 ```{.c filename="C"}
 int mat[2][3] = {{1, 2, 3}, {4, 5, 60}}; 
 
-int  x = mat[1][2]; // equivalent a *(*(mat + 1) + 2) => x <- 60
+int x = mat[1][2];  // equivalent a *(*(mat + 1) + 2) => x <- 60
 ```
 
 L'emmagatzemament a memòria és **per files**, de dalt a baix (primer tots els elements de la fila 0, després els de la fila 1, etc.) (@sec-matrius-declaracio).
@@ -1881,7 +1875,7 @@ En **C**, `sizeof(element)` és un operador unari que retorna la mida d'`element
 | :--- | :--- |
 | `sizeof(int)` | La mida d'un enter (4 bytes a RV32I) |
 | `sizeof(int[10])` | La mida d'un vector de 10 enters (40 bytes a RV32I) |
-| `sizeof(int[2][3])` | La mida d'una matriu de 2x3 enters (24 bytes a RV32I) |
+| `sizeof(int[2][3])` | La mida d'una matriu de 2 × 3 enters (24 bytes a RV32I) |
 : Exemples de retorn de `sizeof()` a RV32I {#tbl-sizeof-c}
 
 :::
@@ -2022,7 +2016,7 @@ Hi ha dues maneres bàsiques de recórrer els elements d'un vector amb un bucle:
 Un **invariant de bucle** és qualsevol valor que no canvia d'una iteració a una altra (no depèn de cap variable que el bucle modifiqui) i que, per tant, es pot calcular una sola vegada abans d'entrar al bucle. Calcular-lo dins el bucle és un error de rendiment perquè el processador el recalcularia innecessàriament a cada iteració.
 
 ::: {#imp-extraccio-invariants .callout-important}
-A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevol bucle, llevat que s'indiqui explícitament el contrari. És un prerequisit implícit de totes les optimitzacions de bucle que es veuran al @sec-optimitzacions-bucle.
+A **EC**, cal fer sempre l'**extracció d'invariants** abans d'entrar a qualsevol bucle, llevat que s'indiqui explícitament el contrari. És un prerequisit implícit de totes les optimitzacions de bucle que es veuran a la @sec-optimitzacions-bucle.
 :::
 
 #### Accés aleatori {#sec-vectors-acces-aleatori}
