@@ -32,9 +32,9 @@ for n in 1 2 3 4 5 6 7 8; do echo "A$n $(git log --since=2026-10-06 --oneline --
 | :--- | :--- | :--- | :--- |
 | A1 | — | 17 commits; +151 −133 | Exemples plegables a l'HTML: A1 n'és el pilot (D-90) |
 | A2 | — | 35 commits; +456 −433 | §T2: `#sec-punters` i `#sec-vectors`, el que la revisió del 2026-10-12 no va aplicar (decisió de l'editor); remissions `@lst-` (3) |
-| A3 | `!5` (T3), a `main` el 2026-10-01 | 20 commits; +272 −308 | la figura `A3_deps_exemple.svg` (retoc de l'editor); remissions `@lst-` (3) |
+| A3 | `!5` (T3), a `main` el 2026-10-01 | 20 commits; +272 −308 | La figura `A3_deps_exemple.svg` (retoc pendent); remissions `@lst-` (3) |
 | A4 | `!7` (T4–T6), a `main` el 2026-10-01 | 13 commits; +68 −68 | — |
-| A5 | `!7` | 20 commits; +102 −97 | Rectes de T5 en una sola figura (prioritat baixa) |
+| A5 | `!7` | 20 commits; +102 −97 | — |
 | A6 | `!7` | 17 commits; +57 −57 | La pregunta de productivitat de dos exemples (reunió del 2 de novembre) |
 | A7 | — | 17 commits; +234 −238 | — |
 | A8 | `!8` (T8), a `main` el 2026-10-06, fins a §8.7 exclosa | 9 commits; +113 −109 | Per al revisor de T8: la condició VIPT de `#sec-mv-vipt`; la branca `tema8` es conserva perquè hi pugui continuar, i li convé incorporar-hi `main` abans |
