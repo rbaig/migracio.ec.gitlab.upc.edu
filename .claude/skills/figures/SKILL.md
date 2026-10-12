@@ -11,7 +11,8 @@ Les regles són a `13_contrib.qmd §Figures i material gràfic` i a `24_specs/sv
 2. **Tria com es fa** (`svg.md §17`): una família, amb el seu TOML i un generador del pre-render (model (b), amb el sufix de la taula de `13_contrib.qmd §Convencions SVG`); una figura solta, amb l'SVG versionat i un script que el regenera (model (a), amb `--comprova`); un SVG natiu a `22_figs_originals/`; o, només si l'editor hi està d'acord, una extracció de PDF a `23_figs_externes/`.
 3. **`<title>` i `<desc>`** a l'arrel de l'SVG. El `<desc>` és el text alternatiu i descriu el que es veu, sense repetir el peu.
 4. **Colors** només de la paleta (`svg.md §10` i `§16`). La variant fosca la fa `gen_dark.py`: no s'edita a mà.
-5. **Al `.qmd`**, el marcatge de `13_contrib.qmd §Integració al .qmd` (o de §Figures dinàmiques), i una remissió `@fig-…` des del text si és al cos del text.
-6. **Els avisos de l'inventari** te'ls dona `make comprova` (i el hook) a cada commit. La taula sencera, `make inventari` (`25_scripts/out_inventari_figures/figures.md`, no versionat).
-7. **`make registres`**, si has tocat un generador de model (a): en regenera els SVG, i `make comprova` comprova que coincideixen amb el que generen.
-8. **Mira-la renderitzada**, en clar i en fosc a l'HTML i al PDF (skill `render`).
+5. **Vores entre zones** (`svg.md §7`): si la figura té zones (rectangles plens) que es toquen, les vores han de ser per dins. Els generadors ja passen per `vores_compartides()` (`figlib.py`); un SVG natiu nou, també, un cop: `python3 -c "import sys; sys.path.insert(0, '25_scripts'); from figlib import vores_compartides as v; p = sys.argv[1]; t = v(open(p).read()); open(p, 'w').write(t)" 22_figs_originals/X.svg`. Després, `python3 25_scripts/comprova_vores.py`.
+6. **Al `.qmd`**, el marcatge de `13_contrib.qmd §Integració al .qmd` (o de §Figures dinàmiques), i una remissió `@fig-…` des del text si és al cos del text.
+7. **Els avisos de l'inventari** te'ls dona `make comprova` (i el hook) a cada commit. La taula sencera, `make inventari` (`25_scripts/out_inventari_figures/figures.md`, no versionat).
+8. **`make registres`**, si has tocat un generador de model (a): en regenera els SVG, i `make comprova` comprova que coincideixen amb el que generen.
+9. **Mira-la renderitzada**, en clar i en fosc a l'HTML i al PDF (skill `render`).

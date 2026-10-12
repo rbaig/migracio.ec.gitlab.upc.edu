@@ -685,6 +685,8 @@ La generalització, a proposta de Claude Code, acceptada per l'usuari amb el pla
 
 Els 12 originals conservats no s'hi van tocar, per decisió de l'usuari (2026-10-09, opció (a)): són per a les diapositives i les esmenes les fa l'usuari ([D-68](#d-68)). De pas: el tram blau d'`A9_cicle_interrupcio` entrava 10 px dins del verd (de x = 200 a 210), i el ressalt dels marcs d'`A8_mv_exemple_tlb` i la vora del marc compartit d'`A8_mv_comparticio` es dibuixaven abans del marc següent, que en tapava la meitat. Després del canvi, la mesura de l'entrada sobre les figures consumides en dona 3, i són ressalts sense farciment dibuixats després de les cel·les que toquen (la columna d'`A7_escriptura_dirty_bit` i les files d'`A8_mv_comparticio` i d'`A8_mv_exemple_tlb`): la mesura només mira la geometria, no l'ordre de dibuix.
 
+**La comprovació, des del 2026-10-12** (proposta de Claude Code, acceptada per l'usuari): `25_scripts/comprova_vores.py`, a `comprova.py`, mira l'ordre de dibuix i no només la geometria. Avisa d'un traç que un `<rect>` posterior tapa en part, amb el farciment o amb un traç d'un altre color; no compten el contingut dibuixat a sobre d'un contenidor (les pàgines dins de la columna d'`A8_mv_espais`), un rect que en tapa un altre sencer, ni un solapament de menys de 0,1 px. Sobre els SVG de `22_figs_originals/` i les sortides de `gen_regs.py` i `gen_MC.py`, el primer dia en va trobar un: les cinc cel·les blaves de la columna de la MP d'`A7_mc_fallada`, de 6 px d'alt, amb traç d'1 px centrat, que s'estenia sobre les grises del costat (a 0,09 px). Com a cel·les arrodonides, ara dibuixen el traç per dins.
+
 ## Eines
 
 ### D-58

@@ -83,6 +83,7 @@ CLASSES = [
     ('25_scripts/eines_externes.py', 'eina', set()),
     ('25_scripts/orfes.py', 'eina', set()),
     ('25_scripts/inventari_figures.py', 'eina', set()),
+    ('25_scripts/comprova_vores.py', 'eina', set()),
     ('25_scripts/verifica_*.py', 'eina', set()),
     ('25_scripts/gen_glossari.py', 'eina', set()),
     ('25_scripts/gen_T4_sumador.py', 'eina', set()),
@@ -611,6 +612,12 @@ COMPROVACIONS = [
     Comprovacio('figures', 'Figures', 'Els avisos de l\'inventari de figures: peus, remissions, `<title>` i `<desc>`, '
                 'colors, duplicats (`inventari_figures.py --comprova`)', SEMPRE, 'Sempre', 'Avisa',
                 script('inventari_figures.py', '--comprova')),
+    Comprovacio('vores', 'Vores de les figures', 'Traços que un `<rect>` posterior tapa en part: les vores '
+                'que depenen de l\'ordre de dibuix (`comprova_vores.py`; `svg.md §7`, D-99)',
+                lambda ctx: ctx.tot or toca('22_figs_originals/*.svg', '25_scripts/figlib.py', '25_scripts/gen_regs.py',
+                                            '25_scripts/gen_MC.py', '24_specs/registres.toml', '24_specs/MC.toml')(ctx),
+                'En tocar un SVG natiu, `figlib.py`, `gen_regs.py`, `gen_MC.py` o els seus TOML', 'Avisa',
+                script('comprova_vores.py')),
     Comprovacio('orfes', 'Fitxers orfes', 'Fitxers versionats que cap altre no cita (`orfes.py`, D-98)',
                 SEMPRE, 'Sempre', 'Avisa', script('orfes.py')),
     Comprovacio('classificacio', 'Classificació', 'Cada fitxer té classe a la taula de `comprova.py`; si no, el canvi '
