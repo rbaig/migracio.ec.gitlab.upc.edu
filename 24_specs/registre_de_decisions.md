@@ -58,11 +58,13 @@ Motiu: GCC genera `.globl` (verificat amb GCC 14.2, `gcc -S`), i RARS 1.6 assemb
 
 ### D-5
 
-**Quatre formats nuclears d'instrucció, i on es presenta cada un** · `13_contrib.qmd §T2 i T3` · 2026-10-01 · `b2530c7`, `5f2f1eb`
+**Quatre formats nuclears d'instrucció, i on es presenta cada un** · `13_contrib.qmd §T2 i T3` · 2026-10-01 · 2026-10-12 · `b2530c7`, `5f2f1eb`
 
 El criteri dels quatre formats nuclears es va adoptar a la revisió interna de T2 (2026-07) i es va escriure a `A2.qmd`; fins al 2026-10-01 no era a la guia, només a una entrada del `TODO.md` (`git show 4a33a74:TODO.md`). L'escombrada del 2026-10-01 no en va trobar cap altre recompte al corpus.
 
 On es presenta cada format és decisió de l'usuari (2026-10-01, opció b): fins llavors, `A2.qmd` ajornava el format U a T3, i a A3 el J es presentava com a «variant del format Tipus-U, presentat més avall en aquest mateix tema», abans del U. El callout `#nte-format-u` va passar a T2, al costat de `lui` (`git show f066a8e:TODO.md`). `#nte-instruccio-auipc` hi és des del 2026-10-06 (`fb634e4`).
+
+**La figura d'A2, tots els formats, des del 2026-10-12.** L'usuari va canviar a mà la figura de `#nte-instruccions-tipus`, que mostrava R, I i S (`compendi_registres_RIS`, de la fase 4), pel compendi complet (`363385e`), i va demanar de treure el compendi de R, I i S del generador. La regla de la guia, que A2 només ensenyés R, I i S, hi xocava; decisió de l'usuari (2026-10-12), a proposta de Claude Code: la figura d'A2 mostra tots els formats com a visió de conjunt, i és el text el que presenta R, I, S i U a T2, i B i J a T3, i diu on es presenta cadascun. La remissió al compendi de referència es manté.
 
 ### D-6
 

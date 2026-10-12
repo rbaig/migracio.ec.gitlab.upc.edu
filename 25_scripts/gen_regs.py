@@ -78,20 +78,15 @@ CHAR_H_PER_FS       = 1.20
 INSTRUCCIO_PREFIX = 'instruccio_tipus_'
 
 # Compendis de formats d'instrucció: nom del fitxer de sortida (sense sufix ni
-# extensió) → (formats en ordre canònic, títol, descripció). El complet és el
-# del compendi de referència (11_riscv.qmd); el de R, I i S és el d'A2
-# (#nte-instruccions-tipus), perquè cap format no es presenta abans del seu
-# lloc (13_contrib.qmd §T2 i T3, «Formats d'instrucció d'RV32I»).
+# extensió) → (formats en ordre canònic, títol, descripció). N'hi ha un, el del
+# compendi de referència (11_riscv.qmd), que A2 també mostra com a visió de
+# conjunt (#nte-instruccions-tipus; 13_contrib.qmd §T2 i T3, D-5). El de R, I
+# i S d'A2 es va retirar el 2026-10-12.
 COMPENDIS = {
     'compendi_registres': (
         ['R', 'I', 'S', 'B', 'U', 'J', 'R4'],
         "Compendi dels formats d'instrucció RV32I/M/F",
         "Formats d'instrucció R, I, S, B, U, J i R4 de RISC-V RV32 en un sol diagrama.",
-    ),
-    'compendi_registres_RIS': (
-        ['R', 'I', 'S'],
-        "Formats d'instrucció RV32I R, I i S",
-        "Formats d'instrucció R, I i S de RISC-V RV32I en un sol diagrama.",
     ),
 }
 
