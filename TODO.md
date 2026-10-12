@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**15 entrades vives** (recompte del 2026-10-12, en retirar de §Tasques globals → SVG «Vores compartides als originals conservats (Roger)», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**14 entrades vives** (recompte del 2026-10-12, en retirar de §Tasques per tema → T3 «Decisió de contingut a `#cau-boolea-c`», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 4 · `§Tasques globals` 4 (suma 15, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 3 · `§Tasques globals` 4 (suma 14, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -99,8 +99,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ```
 
 ### T3
-
-- **Decisió de contingut a `#cau-boolea-c`** (`A3.qmd:249`, mesurat a `ab48732`, pendent d'Adrià, obert des de la revisió de T3): el text diu que «unes expressions no nul·les s'interpreten com a certes» sense dir **quines**. Cal indicar com s'identifiquen les que sí i les que no. Afecta el rigor tècnic. El marcador segueix al corpus perquè la decisió és viva i no la pot prendre Claude Code.
 
 - **Retocs manuals pendents (Roger) a cinc originals de T3** (des del 2026-10-04; retallada el 2026-10-09: els estats del 2026-10-04 i del 2026-10-07, amb les decisions de l'usuari que hi van portar, són a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Els esmena l'usuari, perquè també els fa servir per a les diapositives. Quatre es conserven a `22_figs_originals/conservats/` sense que el llibre els consumeixi, perquè A3 en fa servir la versió generada, que ja no té l'error ([D-68](24_specs/registre_de_decisions.md#d-68)); el cinquè, `22_figs_originals/A3_deps_exemple.svg`, és la subfigura (a) de `#fig-deps-exemple`, i l'error surt al llibre fins que s'esmeni.
 
