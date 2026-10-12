@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**16 entrades vives** (recompte del 2026-10-12, en retirar de §Tasques globals → `index.qmd` «Consolidar les versions de la taula de referències tècniques», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**15 entrades vives** (recompte del 2026-10-12, en retirar de §Tasques globals → SVG «Vores compartides als originals conservats (Roger)», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 4 · `§Tasques globals` 5 (suma 16, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 4 · `§Tasques globals` 4 (suma 15, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -131,28 +131,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ## Tasques globals
 
 ### SVG
-
-- **Vores compartides als originals conservats (Roger)** (registrada el 2026-10-09, en tancar la fase 7h de `CLAUDE.md §Pla de treball`; l'entrada de la fase és a l'arxiu, `24_specs/arxiu_todo.md` §Entrades retirades → Executades). Les figures que el llibre consumeix ja segueixen `24_specs/svg.md §7` ([D-99](24_specs/registre_de_decisions.md#d-99)); els originals de `22_figs_originals/conservats/`, no, per decisió de l'usuari (2026-10-09, opció (a)): les esmenes que necessitin les fa l'usuari, perquè els fa servir per a les diapositives ([D-68](24_specs/registre_de_decisions.md#d-68)). En són 7, amb almenys una vora compartida per dos `<rect>` amb traç de color diferent, o mig tapada per un farciment: set de T7 (`A7_capacitat_exemple_bucle_primera_passada`, `A7_capacitat_exemple_bucle_segona_passada`, `A7_conflicte_exemple`, `A7_escriptura_estat_inicial`, `A7_escriptura_immediata_amb_assignacio`, `A7_escriptura_immediata_sense_assignacio` i `A7_escriptura_retardada`). Si l'usuari els vol corregir amb la mateixa funció que els natius del llibre, `vores_compartides()` de `25_scripts/figlib.py` ho fa en un pas.
-
-  ```bash
-  python3 - <<'PY'   # 12 (2026-10-09)
-  import re, glob
-  n = 0
-  for f in sorted(glob.glob('22_figs_originals/conservats/*.svg')):
-      R = [(float(a['x']), float(a['y']), float(a['width']), float(a['height']), a.get('stroke', 'none').lower(), a.get('fill', '').lower())
-           for a in (dict(re.findall(r'([\w-]+)="([^"]*)"', m)) for m in re.findall(r'<rect\b([^>]*)>', open(f).read()))
-           if 'transform' not in a and all(k in a for k in ('x', 'y', 'width', 'height'))]
-      def xoc(p, q):
-          (x1, y1, w1, h1, s1, f1), (x2, y2, w2, h2, s2, f2) = p, q
-          toca = ((abs(y1 + h1 - y2) < .01 or abs(y2 + h2 - y1) < .01) and min(x1 + w1, x2 + w2) - max(x1, x2) > 1) or \
-                 ((abs(x1 + w1 - x2) < .01 or abs(x2 + w2 - x1) < .01) and min(y1 + h1, y2 + h2) - max(y1, y2) > 1)
-          if not toca: return False
-          if 'none' not in (s1, s2): return s1 != s2
-          return (s1 == 'none') != (s2 == 'none') and (f1 if s1 == 'none' else f2) not in ('none', '')
-      n += any(xoc(p, q) for i, p in enumerate(R) for q in R[i + 1:])
-  print(n)
-  PY
-  ```
 
 - **Revisió de la paleta de colors per reduir-ne la quantitat** (petició de l'usuari, 2026-10-06, en migrar els colors llegats a la paleta). Després de la migració, la paleta de `24_specs/svg.md §10` i `§16` té 20 colors, i alguns papers es repeteixen amb tons gairebé iguals: dos vermells de traç (`#cc0000`, dependències de dades; `#dc3545`, fallada), dos fons rosats (`#f8d7da`, `.text`; `#f8d0d3`, fallada), dos fons verds (`#d1e7dd`, heap; `#c8ebd8`, encert), dos fons blaus (`#cfe2ff`, `.data`; `#e6f1fb`, zona o contenidor) i cinc grisos (`#f8f9fa`, `#dee2e6`, `#adb5bd`, `#6c757d` i `#343a40`). Cal decidir quins es fusionen i amb quin paper; cada fusió vol dir regenerar o editar les figures que el fan servir (`25_scripts/inventari_figures.py` les llista per color) i retirar-ne l'entrada de §13.
 
