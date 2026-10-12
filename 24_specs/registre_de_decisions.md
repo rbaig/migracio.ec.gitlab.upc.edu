@@ -855,7 +855,7 @@ Amb altres professors ja dins de la revisió, qualsevol canvi transversal té un
 
 **Allargada fins al diumenge 2026-10-11** (declaració de l'usuari, 2026-10-09, literal: «La finestra s'allarga fins a diumenge 11 d'octubre»). La comprovació de les branques continua igual.
 
-**Tancada el 2026-10-12.** Petició de l'usuari, literal: «Quan hagis acabat, elimina les referències a el límit de fins ahir diumnege per fer canvis abans que en facin els revisors externs. Un cop hagis acabat, ja passo el control als revisors externs.» Els canvis d'aquell dia, que l'usuari va demanar dins del mateix encàrrec, són els últims de la finestra (D-108 a D-111, i la revisió de `#sec-punters` i `#sec-vectors` d'A2). La regla de `CLAUDE.md` que la descrivia en surt; la de coordinar els canvis transversals amb els revisors torna a valer.
+**Tancada el 2026-10-12.** Petició de l'usuari, literal: «Quan hagis acabat, elimina les referències a el límit de fins ahir diumnege per fer canvis abans que en facin els revisors externs. Un cop hagis acabat, ja passo el control als revisors externs.» Els canvis d'aquell dia, que l'usuari va demanar dins del mateix encàrrec, són els últims de la finestra (D-108 a D-111, i la revisió de `#sec-punters` i `#sec-vectors` d'A2). La regla de `CLAUDE.md` que la descrivia en surt; la de coordinar els canvis transversals amb els revisors torna a valer quan l'usuari els comuniqui que hi poden tornar a treballar. El mateix vespre, literal: «De moment encara no els he comunicat que ja hi poden tornar a treballar. Per tant, fes canvis tranquil·lament.»: fins a la comunicació, A1–A8 es pot continuar canviant sense coordinar-ho.
 
 ### D-91
 
