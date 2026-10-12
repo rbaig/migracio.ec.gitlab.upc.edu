@@ -705,6 +705,16 @@ El 2026-10-09 se'n van treure les subseccions buides; aquesta era la nota de cad
 - **T8**: Cap entrada viva des del 2026-10-06 (les nou figures de §T8 «Figures pendents de creació», fetes al bloc 10 de la fase 7c i revisades a `!8`, són a §Entrades retirades → Executades). La revisió externa de T8 és en curs: §Decisions obertes → Branques del remot.
 - **T9**: Cap entrada viva des del 2026-10-09 (l'última, «Zifencei: la guia la situa a T9, i T9 no en parla», és a §Entrades retirades → Executades).
 
+### «PDF: la numeració de les taules i de les figures als capítols sense número, i el punt després del número» (§Tasques globals → Contingut global)
+
+Retallada el 2026-10-12, en treure el punt sobrer (`numbers=noendperiod`, D-109 del registre de decisions). El text d'abans:
+
+- **PDF: la numeració de les taules i de les figures als capítols sense número, i el punt després del número** (petició de l'usuari, 2026-10-10: «Sí, apunta-ho a `TODO.md`. Una observació: a `# Presentació` Surt "Taula 1. ", "Taula 2. ", etc.»). Mesurat al PDF de `ccedc54` (574 pàgines, `pdftotext`): (1) Als capítols sense número, la numeració no és la del capítol: la Presentació diu «Taula 1.», «Taula 2.»… (4 taules), sense prefix; i el glossari (`12_sigles_simbols.qmd`), «Taula 6.4.» a «6.8.», com si fossin taules d'un capítol 6 (probablement el comptador del capítol numerat anterior, el laboratori 6, per comprovar). A l'HTML, «Taula 1», «Taula 2»…, sense prefix. (2) A tot el PDF, el número de taula i de figura acaba amb un punt abans dels dos punts: «Taula 2.1.: Prefixos», «Figura 2.2.: Big-endian.» (a la sortida de l'ordre de sota, «Figura N.N.:» 81 vegades, «Taula N.N.:» 21 i «Taula N.:» 4, i només 2 «Figura N.N:» sense el punt; a l'HTML, «Taula 2.1:»). Probablement és l'opció de numeració de KOMA-Script (`scrbook`, `numbers=autoendperiod`: hi posa el punt quan algun número porta lletres, com els d'un apèndix), per comprovar. Cal decidir com han de sortir les taules i les figures dels capítols sense número (sense número, amb un prefix propi, o numerades a part) i treure el punt sobrer. No toca A1–A8: és de `_quarto.yml` o de `preamble.tex`. Sessió: Opus, effort mitjà; `make render-complet` i el PDF mirat.
+
+  ```bash
+  pdftotext -layout _book/Estructura-de-computadors.pdf - | grep -o -E "(Taula|Figura) [0-9]+(\.[0-9]+)?\.?:" | sed -E 's/[0-9]+/N/g' | sort | uniq -c   # 81 Figura N.N.:, 2 Figura N.N:, 4 Taula N.:, 21 Taula N.N.: (ccedc54)
+  ```
+
 ## Capçalera del `TODO.md` fins al 2026-10-09
 
 Sense l'historial dels recomptes (línia 9, `git show c29b58d:TODO.md`).
