@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**17 entrades vives** (recompte del 2026-10-12, en registrar a §Tasques per tema → T2 el que la revisió d'A2 del mateix dia no va aplicar; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**16 entrades vives** (recompte del 2026-10-12, en retirar de §Tasques globals → `index.qmd` «Consolidar les versions de la taula de referències tècniques», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 4 · `§Tasques globals` 6 (suma 17, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 4 · `§Tasques globals` 5 (suma 16, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -173,14 +173,3 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ### Eines
 
 - **Valorar si les taules de `21_riscv/` haurien de passar a `.json` o `.toml`** (petició de l'usuari, 2026-10-02, per al futur). Avui són 44 fragments `.qmd` (`git ls-files 21_riscv | grep -c "\.qmd$"`, a `4658e90`) amb files de taula *pipe*, inclosos amb `{{< include >}}` als callouts dels temes i a `11_riscv.qmd`; les taules que combinen fragments es fusionen amb `25_scripts/gen_taules_auto.py` i `24_specs/taules_fusio.toml`, que s'han d'executar a mà abans del render. Una font estructurada permetria generar les taules (i les fusions) per script i validar-ne el contingut; el cost és un generador nou i una dependència més del render. Cal valorar-ho abans de decidir res.
-
-### `index.qmd`
-
-- **Consolidar les versions de la taula de referències tècniques** (`#imp-llenguatges-de-referencia`). Cinc marcadors vius, `index.qmd:195-199`, que són **tres pendents distints**:
-
-  | Marcadors | Pendent |
-  | :--- | :--- |
-  | `:195`, `:196` | Versió de la norma **ISO de C** (i si és tancada). La taula ja cita `[@iso9899_2024]`: el pendent és **verificar i tancar**, no decidir de zero |
-  | `:197`, `:198` | Versió de **GCC** (`[@gcc16]`), i consolidar noms i versions de totes les files |
-  | `:199` | **Versió numèrica o de data per a CSR** (fila de RISC-V, `[@riscv_csrs]`): decidir si la referència s'identifica per número de versió o per data. ✅ **No constava en cap registre anterior** |
-
