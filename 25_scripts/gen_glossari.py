@@ -26,8 +26,8 @@ dels comentaris HTML i de la capçalera YAML.
 
 La secció és entre els marcadors <!-- glossari:inici … --> i <!-- glossari:fi -->
 de 12_sigles_simbols.qmd. El que no surt del text és a 24_specs/glossari.toml (D-100):
-les observacions de cada terme (la quarta columna) i la taula dels termes que el
-llibre manté en anglès; --comprova també avisa d'una observació d'un terme que el
+les observacions de cada terme (la quarta columna), la taula dels termes que el
+llibre manté en anglès i la forma en singular dels termes presentats en plural (D-108); --comprova també avisa d'una observació d'un terme que el
 glossari ja no té. Com els generadors de model (a) de les figures, la
 sortida és versionada: cal tornar-lo a executar quan una presentació canvia.
 """
@@ -111,13 +111,46 @@ def dades():
     return tomllib.loads(DADES.read_text(encoding="utf-8"))
 
 
-def taula(termes, obs):
+def majuscula(s):
+    """La primera lletra de la cel·la, en majúscula, encara que vagi darrere de `*`, `«` o `(` (D-108)."""
+    m = re.search(r"[^\W\d_]", s)
+    return s if not m else s[:m.start()] + s[m.start()].upper() + s[m.start() + 1:]
+
+
+def en_angles_claus(d):
+    return {c.strip().lower() for clau in d.get("en_angles", {}) for c in clau.split(",")}
+
+
+def files_termes(termes, d):
+    """(anglès, català, tema, observació) de cada terme de la taula, amb la forma de [formes] si n'hi ha."""
+    formes, obs, fora = d.get("formes", {}), d.get("observacions", {}), en_angles_claus(d)
+    files = []
+    for clau, presentacions in termes.items():
+        if clau in fora:                      # el llibre el manté en anglès: és a la taula de sota
+            continue
+        angles, catala, f, _ = presentacions[0]
+        forma = formes.get(clau, {})
+        files.append((forma.get("angles", angles), forma.get("catala", catala), tema(f), obs.get(clau, ""), clau))
+    return sorted(files, key=lambda r: r[0].lower())
+
+
+def plurals(termes, d):
+    """Termes de la taula que semblen en plural i no són a [formes] ni a les llistes de [nombre] (D-108)."""
+    nombre, formes = d.get("nombre", {}), d.get("formes", {})
+    exempts = {k.lower() for k in nombre.get("plural", []) + nombre.get("no_plural", [])}
+    sospitosos = []
+    for angles, catala, _, _, clau in files_termes(termes, d):
+        if clau in formes or clau in exempts:
+            continue
+        if angles.lower().endswith("s") or catala.split()[0].lower().endswith("s"):
+            sospitosos.append(f"*{angles}* | {catala}")
+    return sospitosos
+
+
+def taula(termes, d):
     files = ["| Anglès | Català | Tema | Observacions |", "| :--- | :--- | :---: | :--- |"]
-    for clau in sorted(termes, key=lambda k: k.lower()):
-        angles, catala, f, _ = termes[clau][0]
-        if catala[:1].isupper() and catala[1:] == catala[1:].lower():
-            catala = catala[0].lower() + catala[1:]   # majúscula d'inici de frase, no d'un nom («NaN»)
-        files.append(f"| *{angles}* | {catala} | {tema(f)} | {obs.get(clau, '')} |")
+    for angles, catala, tema_, obs, _ in files_termes(termes, d):
+        files.append(f"| *{majuscula(angles)}* | {majuscula(catala)} | {tema_} | {majuscula(obs)} |")
     files.append(': Termes anglesos i la forma catalana que fa servir el llibre. {#tbl-termes tbl-colwidths="[24,24,8,44]" .striped}')
     return "\n".join(files)
 
@@ -125,15 +158,15 @@ def taula(termes, obs):
 def taula_angles(en_angles):
     files = ["| Anglès | Terme català | Motiu |", "| :--- | :--- | :--- |"]
     for clau in sorted(en_angles, key=str.lower):
-        angles = ", ".join(f"*{a.strip()}*" for a in clau.split(","))
-        files.append(f"| {angles} | {en_angles[clau]['catala']} | {en_angles[clau]['motiu']} |")
+        angles = majuscula(", ".join(f"*{a.strip()}*" for a in clau.split(",")))
+        files.append(f"| {angles} | {majuscula(en_angles[clau]['catala'])} | {majuscula(en_angles[clau]['motiu'])} |")
     files.append(': Termes mantinguts en anglès. {#tbl-termes-angles tbl-colwidths="[18,28,54]" .striped}')
     return "\n".join(files)
 
 
 def seccio(termes, d):
     return (f"{INICI} (generat per 25_scripts/gen_glossari.py a partir del corpus i de 24_specs/glossari.toml; no l'editeu a mà) -->\n"
-            f"{taula(termes, d.get('observacions', {}))}\n\n"
+            f"{taula(termes, d)}\n\n"
             f"{taula_angles(d.get('en_angles', {}))}\n\n{FI}")   # la línia en blanc: si no, Pandoc ajunta el comentari al peu i n'escriu els atributs
 
 
@@ -149,6 +182,9 @@ def informe(div):
 
 
 def main():
+    if set(sys.argv[1:]) - {"--comprova", "--divergencies"}:
+        print(__doc__.split("Ús:")[1].split("La secció")[0].rstrip(), file=sys.stderr)
+        return 2
     termes = recull()
     div = divergencies(termes)
     n = sum(len(v) for v in termes.values())
@@ -164,9 +200,16 @@ def main():
     sobreres = sorted(set(d.get("observacions", {})) - set(termes))
     for s in sobreres:
         print(f"[gen-glossari] {DADES.name}: «{s}» té observació i el glossari no té aquest terme", file=sys.stderr)
+    for clau in sorted(set(d.get("formes", {})) - set(termes)):
+        sobreres.append(clau)
+        print(f"[gen-glossari] {DADES.name}: «{clau}» té forma a [formes] i el glossari no té aquest terme", file=sys.stderr)
+    sospitosos = plurals(termes, d)
+    for t in sospitosos:
+        print(f"[gen-glossari] sembla un plural (13_contrib.qmd §Glossari, D-108): {t}; "
+              f"poseu-ne el singular a [formes] de {DADES.name}, o el terme a [nombre]", file=sys.stderr)
     nou = text[:i] + seccio(termes, d) + text[j + len(FI):]
     if "--comprova" in sys.argv:
-        if nou != text or sobreres:
+        if nou != text or sobreres or sospitosos:
             print(f"[gen-glossari] {DESTI.name}: la secció «Termes» no és al dia", file=sys.stderr)
             return 1
         print(f"[gen-glossari] al dia: {len(termes)} termes, {n} presentacions")

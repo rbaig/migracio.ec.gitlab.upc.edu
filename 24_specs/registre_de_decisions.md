@@ -450,6 +450,12 @@ Decisió de l'usuari (2026-10-10, fase 12), literal: «Sí», a la proposta de C
 
 Decisió de l'usuari (2026-10-10, fase 12), literal: «von Neumann», i «Regla general (afegeix-la o toqui): Per a noms de persones la font de veritat, per ordre de preferència, és la Wikipedia catalana i la Wikipedia anglesa.» El cas: el corpus deia «Von Neumann» vuit vegades (A1, A2 i P5, i el títol de la figura `A1_von_neumann.svg`) i «John von Neumann» una (A1). La Viquipèdia en diu «John von Neumann» i «Arquitectura de von Neumann» (consultat el 2026-10-10). Les fonts de correcció lèxica de [D-29](#d-29) (el DIEC2, el Termcat i l'Optimot) no cobreixen els noms de persona.
 
+### D-108
+
+**Glossari de termes: majúscula inicial a cada cel·la, i els termes en singular** · `13_contrib.qmd §Sigles, símbols i notació` (`## Termes`), `24_specs/glossari.toml` · 2026-10-12
+
+Decisions de l'usuari (2026-10-12), literals: «Passar primer caràcter de cada cel·la en majúscula» i «Passar a singular els termes en plural. Només es mantenen els plurals en els termes que rarament es fan servir en singular»; i, sobre la llista de Claude Code, «Només excepcions»: es manté «Excepcions precises» (*precise exceptions*). Fins llavors el generador posava en minúscula la majúscula d'inici de frase, i la taula duia la forma de la primera presentació, en el nombre que tingués. L'usuari havia fet els canvis a mà a la taula (`60f61d0`, 2026-10-11): les majúscules, el singular de catorze termes, «Arrencada en fred» per *cold-start* i «Lectura/escriptura» per *load/store*, i *caller* i *callee* fora de la primera taula, perquè el llibre els manté en anglès. Com que la secció és generada, el pròxim `make glossari` ho hauria desfet; el 2026-10-12 tot passa al generador i a `glossari.toml`: `[formes]` (el singular, o la forma decidida per l'usuari), `[nombre]` (els plurals que es mantenen i els falsos plurals en -s), i els termes de `[en_angles]`, fora de la primera taula. `--comprova` avisa d'un terme que sembli plural i no sigui a `[formes]` ni a `[nombre]`. *Nested* → «Imbricat», que l'usuari havia afegit a mà sense presentació al text, surt ara de la presentació d'A2 («**imbricació** (*nesting*)», a la frase dels comentaris del C, que de pas es corregeix). De pas, `gen_glossari.py -h` ja no reescriu la secció: un argument desconegut en mostra l'ús.
+
 ## Format
 
 ### D-70
