@@ -732,6 +732,16 @@ Retallada el 2026-10-12, en aplicar-ne les remissions cap endavant i la regla pe
   git grep -n -E "A partir d'aquí|punter de tipus enter|punter nul \(" -- 01_apunts/A2.qmd
   ```
 
+### «Fase 8a: el que queda de la revisió d'A1–A8», segona retallada (§Tasques transversals)
+
+Retallada el 2026-10-12, en decidir-ne la resta amb les recomanacions de Claude Code (l'usuari: «Les teves recomanacions»). El text d'abans:
+
+- **Fase 8a: el que queda de la revisió d'A1–A8** (registrada el 2026-10-09, en tancar la fase 8a de `CLAUDE.md §Pla de treball`; l'entrada de les troballes i el que s'hi ha resolt després —la revisió del 2026-10-09 al matí, el %, l'article davant del codi i els dubtes tècnics de les lectures— són a l'arxiu, `24_specs/arxiu_todo.md`, §Entrades retirades → Executades i §Historial retallat de les entrades vives). Hi queda el que demana una decisió de l'usuari o el revisor de T8. Línies del tancament d'aquesta revisió.
+
+  - **Per al revisor de T8** (decisió de l'usuari 10): A8 `#sec-mv-vipt`, «És una condició suficient per evitar l'aliàsing en una memòria cau VIPT, no una equivalència amb la PIPT en tots els aspectes» (`9db74b7`). Amb $N_C \cdot B \le T$, una VIPT tria el mateix conjunt i compara la mateixa etiqueta física que una PIPT de la mateixa geometria: fan els mateixos encerts i les mateixes fallades. Si es volia dir «suficient, però no necessària», ho ha de decidir el revisor. És també al missatge d'obertura de la fase 8.
+  - **Majúscula després de dos punts a les definicions** (lectura lingüística d'A7 i A8): «**LRU** (…): Reemplaça…», «**Escriptura immediata** (…): S'escriu…». La guia demana minúscula en explicacions breus i majúscula en frases independents; aquestes són frases completes, i s'han deixat. S'han passat a minúscula els casos clarament breus («**Cas d'encert**: el bloc…», «**Accés 1**: escriptura…»).
+  - **No aplicat, de les lectures, per ser preferència o canvi de matís**: A3 «El seu valor ha estat generat per **última vegada ABANS** d'una crida» (`#sec-determinacio-registres-segurs`); A6 «On $t_{exe}$ és…» després d'una fórmula (també A6 «On:», que caldria decidir sistemàticament); A8 «A petició del procés P1» (redundant amb la frase anterior) i «el camp PPN no té validesa».
+
 ## Capçalera del `TODO.md` fins al 2026-10-09
 
 Sense l'historial dels recomptes (línia 9, `git show c29b58d:TODO.md`).

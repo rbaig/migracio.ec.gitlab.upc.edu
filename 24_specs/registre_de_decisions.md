@@ -581,6 +581,12 @@ Peticions de l'usuari (2026-10-12), totes tres «si és fàcil de fer». **«Con
 
 L'usuari va veure que `#tbl-exemple-comparacio-versions-progs` (A6) no tenia peu, i va preguntar si era un fals positiu de `verifica_taules.py`. No ho era: l'script no mirava els peus. Una taula amb etiqueta i sense peu Quarto la numera igualment i en deixa el peu buit: «Taula 6.1» sola a l'HTML (classe `quarto-uncaptioned`) i «Taula 6.1.» al PDF. N'hi havia quatre, cap amb cap remissió: `#tbl-exemple-comparacio-versions-progs` (A6), `#tbl-tres-c` i `#tbl-disseny-l1-l2` (A7) i `#tbl-syscalls` (A9). Proposta de Claude Code, acceptada per l'usuari («Endavant»): posar-los peu, d'acord amb el seu criteri de «totes les taules amb `#tbl-`», en lloc de treure'ls l'etiqueta; i que `verifica_taules.py` ho avisi, al peu de la taula o al div que la porta. Fins llavors la guia només deia que el peu era obligatori al cos del text.
 
+### D-112
+
+**Després d'una fórmula destacada, «on» en minúscula** · `13_contrib.qmd §Codi, matemàtiques i cursiva` · 2026-10-12
+
+Era un dels matisos de les lectures lingüístiques de la fase 8a que quedaven per decidir (A6, «On $t_{exe}$ és…» i «On:»). Recomanació de Claude Code, acceptada per l'usuari (2026-10-12, «Les teves recomanacions»): la fórmula destacada forma part de la frase, i el que la segueix la continua, en minúscula. És el que ja feia el corpus: de les 21 línies de teoria, problemes, solucions i laboratori que començaven per «on», 17 anaven en minúscula (A2, A3, A5, A7, A8, S3, S6, S8, L2 i L3). Les tres d'A6 es van passar a minúscula; la quarta en majúscula, a A2, va després de la taula de `li` i no d'una fórmula, i no hi entra (`git grep -n -E '^(On|on)( |:)' -- '0*/*.qmd'`, 2026-10-12).
+
 ### D-111
 
 **Cap etiqueta ni constant `b` o `B` als blocs d'assemblador** · `13_contrib.qmd §T2 i T3` · 2026-10-12
