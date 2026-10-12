@@ -18,7 +18,7 @@ from pathlib import Path
 
 ARREL = Path(__file__).resolve().parent.parent
 FENCE = re.compile(r'^\s*(:{3,})\s*(.*)$')
-CODI = re.compile(r'^\s*(```|~~~)')
+CODI = re.compile(r'^\s*(?:(?:[-*+]|\d+\.)\s+)?(```|~~~)')   # també «- ```», dins d'una llista
 INCLUDE = re.compile(r'\{\{<\s*include\s+(\S+)\s*>\}\}')
 
 

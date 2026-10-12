@@ -189,7 +189,7 @@ def consumidors():
         textos[q] = '\n'.join(linies)
         pila, codi = [], False
         for i, l in enumerate(linies, 1):
-            if re.match(r'\s*(```|~~~)', l):
+            if re.match(r'\s*(?:(?:[-*+]|\d+\.)\s+)?(```|~~~)', l):   # també la tanca que obre un element de llista («- ```»)
                 codi = not codi
                 continue
             if codi:
@@ -327,7 +327,7 @@ def main():
     for q, t in textos.items():
         pila, codi = [], False
         for i, l in enumerate(t.split('\n'), 1):
-            if re.match(r'\s*(```|~~~)', l):
+            if re.match(r'\s*(?:(?:[-*+]|\d+\.)\s+)?(```|~~~)', l):   # també la tanca que obre un element de llista («- ```»)
                 codi = not codi
                 continue
             if codi:
