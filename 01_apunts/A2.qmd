@@ -847,15 +847,14 @@ En **C**, el **tipus** d'una variable determina:
 
 Els tipus bàsics d'**EC** es presenten a les taules @imp-variables-mida-naturals i @imp-variables-mida-enters.
 
-:::: {#wrn-c-typeof-dirty-hack .callout-warning collapse=true}
+::: {#wrn-c-typeof-dirty-hack .callout-warning collapse=true}
 ## *Dirty hack* per esbrinar el tipus d'una variable
 
 En **C**, **no existeix** un mecanisme en temps d'execució (com el `typeof` de JavaScript o el `type()` de Python) per imprimir el nom d'un tipus, ja que C és un llenguatge de tipus estàtics on la informació de tipus desapareix després de la compilació.
 
 Un *dirty hack* és cometre errades al codi deliberadament (conflicte de tipus en aquest cas) perquè el compilador (que sí que sap el tipus) emeti avisos (*warnings*) o errors durant la compilació.
 
-::: {#tip-forcar-error-tipus .callout-tip}
-## C — ⚠️forçar un error per esbrinar un tipus⚠️
+**Exemple — ⚠️forçar un error per esbrinar un tipus⚠️**
 
 ```{.c filename="⚠️codi_erroni__gcc_tipus.c⚠️"}
 #include <stdio.h>
@@ -884,8 +883,6 @@ codi_erroni__gcc_tipus.c:5:14: warning: format ‘%f’ expects argument of type
       |             %d
 ```
 :::
-
-::::
 
 ### Visibilitat i durada {#sec-visibilitat-i-durada}
 
@@ -954,7 +951,7 @@ En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (
 
 ## La memòria {#sec-memoria-t2}
 
-:::: {#nte-rv32i-model-memoria .callout-note}
+::: {#nte-rv32i-model-memoria .callout-note}
 ## RV32I ISA — Model de memòria — Característiques bàsiques
 
 - És **unificat**: Instruccions i dades comparteixen el mateix espai d'adreces (model de von Neumann, @sec-von-neumann).
@@ -964,13 +961,14 @@ En **C**, no tots els tipus de dades tenen una mida potència de 2. Les tuples (
 - És **little-endian**: El byte de menys pes ocupa l'adreça més baixa.
 - Les adreces del programa **poden ser virtuals**: en un sistema amb sistema operatiu, l'**MMU** (***Memory Management Unit***) les tradueix a adreces físiques (@sec-mv-espais, [Tema 8](#sec-tema-mv)). A **RARS** no hi ha traducció: les adreces del programa **són** directament les adreces físiques.
 
+:::
+
 ::: {#wrn-model-memoria-relaxat .callout-warning collapse=true}
 ## Model de memòria relaxat i instruccions `FENCE`
 RISC-V defineix un **model de memòria relaxat** (*RISC-V Weak Memory Ordering*, RVWMO) que regula l'ordre en què esdevenen visibles els accessos a memòria entre múltiples nuclis o **fils d'execució de maquinari** (***harts***). Les instruccions `fence` i `fence.tso` permeten imposar restriccions d'ordenació en aquests contextos concurrents, i `fence.i` (extensió **Zifencei**) sincronitza la lectura d'instruccions després de modificar el codi en temps d'execució.
 
 A **EC** s'estudia un **únic processador**, sense concurrència, sense dispositius que accedeixin a la memòria pel seu compte i sense codi que es modifiqui a si mateix: en aquest context, aquestes instruccions no tenen cap efecte observable. Per aquest motiu queden fora de l'abast de l'assignatura.
 :::
-::::
 
 ::: {#cau-carrega-abans-operar .callout-caution}
 Per operar amb una dada emmagatzemada en memòria, cal **sempre** llegir-ne primer el valor, abans de qualsevol instrucció de l'operació, i deixar-lo en un registre mitjançant la **instrucció de lectura** adient.

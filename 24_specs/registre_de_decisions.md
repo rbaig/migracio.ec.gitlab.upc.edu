@@ -581,6 +581,12 @@ Peticions de l'usuari (2026-10-12), totes tres «si és fàcil de fer». **«Con
 
 L'usuari va veure que `#tbl-exemple-comparacio-versions-progs` (A6) no tenia peu, i va preguntar si era un fals positiu de `verifica_taules.py`. No ho era: l'script no mirava els peus. Una taula amb etiqueta i sense peu Quarto la numera igualment i en deixa el peu buit: «Taula 6.1» sola a l'HTML (classe `quarto-uncaptioned`) i «Taula 6.1.» al PDF. N'hi havia quatre, cap amb cap remissió: `#tbl-exemple-comparacio-versions-progs` (A6), `#tbl-tres-c` i `#tbl-disseny-l1-l2` (A7) i `#tbl-syscalls` (A9). Proposta de Claude Code, acceptada per l'usuari («Endavant»): posar-los peu, d'acord amb el seu criteri de «totes les taules amb `#tbl-`», en lloc de treure'ls l'etiqueta; i que `verifica_taules.py` ho avisi, al peu de la taula o al div que la porta. Fins llavors la guia només deia que el peu era obligatori al cos del text.
 
+### D-110
+
+**Cap callout dins d'un altre** · `13_contrib.qmd §Imbricacions` · 2026-10-12
+
+Regla de l'usuari (2026-10-12), literal: «Callouts: No es permet la imbricació». Fins llavors la guia només deia quants `:` porta un div imbricat. Aquell dia n'hi havia 8 al corpus: dos a A2 (un exemple dins d'un aprofundiment, `#tip-forcar-error-tipus` dins de `#wrn-c-typeof-dirty-hack`; i un aprofundiment dins d'un callout RISC-V, `#wrn-model-memoria-relaxat` dins de `#nte-rv32i-model-memoria`), un a A9 (`#nte-zicsr-immediats`, una taula RISC-V dins d'un aprofundiment), un a S1 (`#cau-minim13-extensio-signe`) i quatre a S5 (`.callout-caution` sense etiqueta), tots dins d'una solució. Criteri de Claude Code, cas a cas: l'aprofundiment d'un callout RISC-V surt a continuació, perquè té sentit sol; l'exemple i la taula, que només tenen sentit dins de l'aprofundiment, s'hi fonen amb el títol en negreta, perquè fora haurien passat a ser matèria avaluable; i els cinc `#cau-` de les solucions, a un paràgraf que comença amb «**Atenció**:». La remissió de la guia a `@tip-forcar-error-tipus` passa a l'aprofundiment. `verifica_callouts.py`, a `comprova.py`, atura el commit si en troba cap, també per un `include`.
+
 ## Figures
 
 ### D-51

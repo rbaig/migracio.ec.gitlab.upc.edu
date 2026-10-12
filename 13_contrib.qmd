@@ -466,7 +466,7 @@ El camp `filename` indica el llenguatge o el context del bloc:
 - Sagnat: múltiples de 4 espais.
 - Comentaris: sempre amb `//`, línia per línia, també els que n'ocupen més d'una; no `/* */`. Així es pot desactivar un bloc sencer envoltant-lo amb `/* … */`, perquè C no admet comentaris `/* */` imbricats. A2 ho diu a `#imp-codi-format-criteris` ([D-83]({{< var decisions >}}#d-83)).
 - Punt d'entrada: **`void main()` quan el C és notació per traduir a mà a assemblador; `int main` quan el C es compila de debò o quan la cadena de compilació és el tema.** Fora d'EC, en un programa de C normal compilat per a un SO, cal `int main` ([D-49]({{< var decisions >}}#d-49)).
-- Porten `int main` el bloc d'`A2.qmd` @tip-forcar-error-tipus, que es compila de debò i del qual se cita la sortida del compilador, i el de `P3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio, que tracta del flux de compilació i enllaçat. No són excepcions: són l'altra meitat de la regla.
+- Porten `int main` el bloc d'`A2.qmd` de @wrn-c-typeof-dirty-hack, que es compila de debò i del qual se cita la sortida del compilador, i el de `P3.qmd`/`S3.qmd` @exr-t3-compilacio-relocacio, que tracta del flux de compilació i enllaçat. No són excepcions: són l'altra meitat de la regla.
 
 #### Estil de codi RISC-V
 
@@ -748,6 +748,8 @@ A més, com a criteri d'estil de redacció:
 
 ### Imbricacions
 
+**Un callout no en pot contenir cap altre**, tampoc per un `{{< include >}}`. Si el contingut d'un callout en necessita un altre, o bé el de dins surt a continuació del de fora (un aprofundiment d'un callout RISC-V), o bé es fon amb el de fora: el títol passa a un paràgraf en negreta i el contingut hi queda (un exemple dins d'un aprofundiment), i un `#cau-` dins d'una solució passa a un paràgraf que comença amb «**Atenció**:». Els divs que no són callouts (`.content-visible`, `.light-content`, `.resposta`…) sí que s'hi poden imbricar. `verifica_callouts.py` ho comprova (§Comprovacions per nivells) ([D-110]({{< var decisions >}}#d-110)).
+
 Regla dels `:` addicionals:
 
 - Estrictament, Quarto només imposa pujar un nivell (p. ex. `:::` → `::::`) quan s'imbriquen `divs` del mateix tipus.
@@ -851,6 +853,7 @@ make comprova-tot   # abans d'obrir una MR o de publicar: totes, amb el PDF i RA
 | Prosa | Les formes que no s'han de fer servir (§Anglicismes i terminologia obligatòria), que aturen; i els dobles espais i les cometes, que avisen (`lint_prosa.py`) | En tocar un `.qmd`: les línies afegides | Atura (formes) o avisa |
 | Ortografia | Mots que no són als diccionaris de `hunspell` (català i anglès) ni al del projecte, `24_specs/diccionari.txt` (`ortografia.py`) | En tocar un `.qmd`: les línies afegides | Avisa |
 | Gramàtica | Concordances, preposicions, puntuació i la resta de regles de LanguageTool, sense les que al llibre fan soroll ni les formes correctes que marquen (`gramatica.py`, amb `24_specs/gramatica.toml`; demana Java 17, i baixa LanguageTool la primera vegada) | Només `comprova-tot` (i `make gramatica`) | Avisa |
+| Callouts imbricats | Cap callout dins d'un altre, tampoc per un `include` (`verifica_callouts.py`; §Imbricacions, D-110) | En tocar un `.qmd` | Atura |
 | Marques TODO | `TODO` a les línies afegides dels `.qmd` (§Commits) | En tocar un `.qmd` | Avisa |
 | Format del codi | Els criteris mecànics del format dels blocs d'assemblador (`verifica_format_codi.py`) | Sempre | Avisa |
 | Taules al PDF | Desbordaments i amplades de les taules del PDF, mesurats sobre el font (`verifica_taules.py`, amb fontTools i les fonts del PDF) | Sempre | Avisa |

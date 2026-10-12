@@ -603,6 +603,9 @@ COMPROVACIONS = [
                 'sense les que al llibre fan soroll ni les formes correctes que marquen (`gramatica.py`, amb '
                 '`24_specs/gramatica.toml`; demana Java 17, i baixa LanguageTool la primera vegada)',
                 lambda ctx: ctx.tot, 'Només `comprova-tot` (i `make gramatica`)', 'Avisa', c_gramatica),
+    Comprovacio('callouts', 'Callouts imbricats', 'Cap callout dins d\'un altre, tampoc per un `include` '
+                '(`verifica_callouts.py`; §Imbricacions, D-110)', QMD, 'En tocar un `.qmd`', 'Atura',
+                script('verifica_callouts.py', gravetat=ERROR)),
     Comprovacio('marques', 'Marques TODO', '`TODO` a les línies afegides dels `.qmd` (§Commits)',
                 lambda ctx: not ctx.tot and bool(ctx.canvis.qmd()), 'En tocar un `.qmd`', 'Avisa', c_marques),
     Comprovacio('format_codi', 'Format del codi', 'Els criteris mecànics del format dels blocs d\'assemblador '
