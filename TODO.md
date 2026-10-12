@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**17 entrades vives** (recompte del 2026-10-10, en retirar de §Tasques globals → Eines «Protocols d'execució dels generadors i de les comprovacions, per nivells», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**16 entrades vives** (recompte del 2026-10-12, en retirar de §Tasques transversals «Suggeriments de la fase 7g (fase 7i): el que queda», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 3 · `§Tasques globals` 6 (suma 17, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 3 · `§Tasques globals` 6 (suma 16, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -69,14 +69,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ---
 
 ## Tasques transversals
-
-- **Suggeriments de la fase 7g (fase 7i): el que queda** (registrats el 2026-10-08; fets el 2026-10-10 i el 2026-10-11 a la fase 12, `94468b4` i `ada62c7`, amb les decisions de l'usuari sobre la llista de 33 punts amb opcions i recomanació de Claude Code: «Totes les recomanacions acceptades». L'entrada d'abans, sencera, és a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Hi queda l'únic punt sense recomanació:
-
-  - **Exemples (`#tip-`) avaluables: «Sí» o «Marg.»**. La taula de requadres d'`index.qmd` (`#tbl-requadres-tipus`, a l'HTML i al PDF) diu que els exemples són matèria avaluable («**Sí**»), i la taula de callouts de `13_contrib.qmd §Callouts`, «Marg.» (marginalment). Cal decidir quin és el criteri de l'assignatura i fer que les dues taules diguin el mateix.
-
-  ```bash
-  git grep -n -E 'Exemple +\| \*\*Sí\*\*|Groc \| Marg\.' -- index.qmd 13_contrib.qmd
-  ```
 
 - **Remissions `@lst-` en lloc de «el codi següent»** (decisió de l'usuari, 2026-10-09: «Decisió, remissions»; abans, decisió oberta: «“El codi següent”: remissions `@lst-`?», petició de l'usuari del 2026-10-08). **Delegada a una sessió nova** (Opus, effort alt), perquè demana investigar el render: al PDF, els blocs amb `filename` ja surten com a flotants numerats («Codi 4.7», pel `codelisting` de LaTeX i `preamble.tex`, D-69), i a l'HTML no, de manera que afegir `#lst-` i `lst-cap` pot donar una numeració diferent als dos formats. Abast, a `6a17af1`: 23 remissions per posició a un bloc de codi (19 «següent(s)» i 4 «anterior»): A2 3, A3 3, A9 1, P2 6, P3 2, P4 1, P7 1, P8 1, L1 1, L2 1, L3 1 i L6 2; cap `#lst-` al corpus. A2 i A3 són a l'abast de la revisió externa: si es fa després de la finestra de canvis, cal avisar-ne els equips. La regla, a `13_contrib.qmd §Referències creuades` amb la seva entrada al registre.
 
