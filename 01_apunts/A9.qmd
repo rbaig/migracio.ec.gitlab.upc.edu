@@ -10,11 +10,11 @@ number-sections: true
 
 Durant l'execució normal d'un programa, el processador segueix un flux d'instruccions determinat per les instruccions de salt explícites (`beq`, `jal`, etc.). Les **excepcions** i les **interrupcions** són un mecanisme que permet alterar aquest flux de manera imprevista, quan es produeix un **esdeveniment** (*event*), sense que cap instrucció de salt ho hagi causat. La necessitat d'aquest mecanisme sorgeix de dues fonts ben diferenciades.
 
-D'una banda, durant l'execució d'una instrucció poden aparèixer condicions errònies o especials que el processador no pot resoldre per si sol: un accés a una adreça de memòria no alineada o una instrucció amb un codi d'operació inexistent. En tots dos casos, cal interrompre el programa i transferir el control a un codi del sistema operatiu (**SO**) que en faci el tractament adequat.
+D'una banda, durant l'execució d'una instrucció poden aparèixer condicions errònies o especials que el processador no pot resoldre per si sol: un accés a una adreça de memòria no alineada o una instrucció amb un codi d'operació inexistent. En tots dos casos, cal interrompre el programa i transferir el control a un codi del sistema operatiu (SO) que en faci el tractament adequat.
 
-De l'altra, els dispositius d'**entrada/sortida** (**E/S**) necessiten notificar al processador que han completat una operació o que requereixen atenció, perquè esperar activament que el dispositiu acabi (consultant-ne l'estat repetidament) desaprofita el processador. La solució és que el dispositiu, quan estigui llest, avisi el processador, i que el processador pugui interrompre temporalment el programa en execució per atendre'l.
+De l'altra, els dispositius d'**entrada/sortida** (E/S) necessiten notificar al processador que han completat una operació o que requereixen atenció, perquè esperar activament que el dispositiu acabi (consultant-ne l'estat repetidament) desaprofita el processador. La solució és que el dispositiu, quan estigui llest, avisi el processador, i que el processador pugui interrompre temporalment el programa en execució per atendre'l.
 
-En tots dos casos, el mecanisme és el mateix: el processador interromp l'execució del programa, transfereix el control a una **rutina de servei d'excepcions** (**RSE**) de l'SO, i un cop feta la gestió, pot reprendre el programa interromput.
+En tots dos casos, el mecanisme és el mateix: el processador interromp l'execució del programa, transfereix el control a una **rutina de servei d'excepcions** (RSE) de l'SO, i un cop feta la gestió, pot reprendre el programa interromput.
 
 ::: {#cau-terminologia .callout-caution}
 - **Excepció**: esdeveniment causat per l'execució d'una instrucció (intern al processador).
@@ -71,7 +71,7 @@ RISC-V defineix tres **modes de privilegi**, que determinen quines **instruccion
 A **EC** s'estudia el mecanisme d'excepcions en **mode M**, que és el més directe i el que implementen tots els processadors RISC-V. El mode S s'introdueix a @sec-ei-csr-modes i s'aplica al tractament de fallades de pàgina a @sec-ei-tlb-modes.
 :::
 
-El mode en què opera el processador en cada moment es controla mitjançant uns registres especials anomenats **registres de control i estat** (***Control and Status Registers***, **CSR**). A aquests registres només s'hi pot accedir amb instruccions específiques.
+El mode en què opera el processador en cada moment es controla mitjançant uns registres especials anomenats **registres de control i estat** (*control and status registers*, CSR). A aquests registres només s'hi pot accedir amb instruccions específiques.
 
 L'extensió **Zicsr** de RISC-V defineix les instruccions d'accés als CSR. Encara que en versions antigues de l'especificació aquestes instruccions formaven part de l'ISA base, a partir de la versió ratificada del 2019 (document 20190608, amb RV32I 2.1) es van segregar en una extensió independent per permetre implementacions minimalistes sense suport CSR. En la pràctica, qualsevol processador RISC-V que implementi el mecanisme d'excepcions i interrupcions requereix Zicsr.
 
@@ -516,7 +516,7 @@ Això garanteix que hi ha un únic punt d'entrada a l'SO (l'adreça de l'RSE a `
 
 Els SO estableixen una convenció de crides al sistema per passar el codi de servei, els paràmetres de les crides i els registres que cal emprar. Per exemple, RARS estableix el codi de servei al registre **`a7`** i l'argument principal i el valor de retorn al registre **`a0`**. També estableix dos codis de servei per sortir del programa, `exit` (codi de servei 10) i `exit2` (codi de servei 93). La diferència és que `exit2` permet especificar el codi de sortida (normalment 0 per a una terminació correcta), que es retorna al procés pare (normalment l'SO).
 
-Els dos números tenen orígens diferents, i això explica la duplicitat. El catàleg de RARS [@rars_v16] combina dues famílies de serveis: els heretats de **MARS** (***MIPS Assembler and Runtime Simulator***), el simulador de MIPS del qual RARS descendeix, i els compatibles amb les eines de Linux. El **10** prové de la primera. El **93**, en canvi, és el número real de la crida `exit` a **Linux/RISC-V** (`asm-generic/unistd.h`), el mateix origen que el `63` (`read`), el `64` (`write`) o el `214` (`brk`, que RARS no té: hi fa servir `sbrk`, el 9) de @sec-ei-ecall-abi-linux. RARS conserva els dos noms heretats de MARS i adopta per a `exit2` el número de Linux; per això el mateix servei apareix com a `exit2` a la taula de RARS i com a `exit` a la de Linux.
+Els dos números tenen orígens diferents, i això explica la duplicitat. El catàleg de RARS [@rars_v16] combina dues famílies de serveis: els heretats del *MIPS Assembler and Runtime Simulator* (MARS), el simulador de MIPS del qual RARS descendeix, i els compatibles amb les eines de Linux. El **10** prové de la primera. El **93**, en canvi, és el número real de la crida `exit` a **Linux/RISC-V** (`asm-generic/unistd.h`), el mateix origen que el `63` (`read`), el `64` (`write`) o el `214` (`brk`, que RARS no té: hi fa servir `sbrk`, el 9) de @sec-ei-ecall-abi-linux. RARS conserva els dos noms heretats de MARS i adopta per a `exit2` el número de Linux; per això el mateix servei apareix com a `exit2` a la taula de RARS i com a `exit` a la de Linux.
 
 ::: {#nte-ecall-convencio-rars .callout-note}
 ## RARS — Registres de crida al sistema
@@ -771,7 +771,7 @@ La **fallada de pàgina** és l'exemple més complet del mecanisme d'excepcions 
 
 ### Del TLB a la fallada de pàgina {#sec-ei-tlb-recordatori}
 
-Com s'ha vist a @sec-mv-tlb, el **TLB** (*Translation Lookaside Buffer*) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan la traducció d'una adreça no és al TLB, es produeix una **fallada de TLB** (*TLB miss*).
+Com s'ha vist a @sec-mv-tlb, el *translation lookaside buffer* (TLB) és una memòria cau de la taula de pàgines que guarda les traduccions d'adreces virtuals a físiques més recents. Quan la traducció d'una adreça no és al TLB, es produeix una **fallada de TLB** (*TLB miss*).
 
 A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el recorregut de la taula de pàgines (*page-table walker*), un circuit de l'MMU que hi llegeix la PTE, la copia al TLB i deixa continuar l'accés sense interrompre el programa (@sec-mv-tlb-fallada). L'excepció apareix quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari. Amb la PTE ja al TLB, una escriptura en una pàgina amb E = 0 també genera una excepció, la de protecció (@sec-mv-proteccio-escriptura).
 

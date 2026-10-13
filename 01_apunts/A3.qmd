@@ -1328,7 +1328,7 @@ Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen visibil
 ::: {#nte-bloc-activacio .callout-note}
 ## RV32I ABI — El bloc d'activació — Punter de pila `sp`
 
-Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux a la subrutina que crida. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
+Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux a la subrutina que crida. Aquest espai de memòria s'anomena **bloc d'activació** (*stack frame*, BA).
 
 La reserva i l'alliberament d'espai de memòria per al BA es fan mitjançant el punter de pila `sp` (***stack pointer***, `x2`).
 
@@ -1463,7 +1463,7 @@ func:
 
 Una subrutina multinivell en pot cridar una altra, que al seu torn en pot cridar una altra, i així successivament. En aquest cas, el bloc d'activació de cada subrutina s'apila sobre el de la subrutina que l'ha cridada.
 
-La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política d'«última en entrar, primera en sortir» (***last in, first out***, **LIFO**), la qual s'implementa mitjançant el punter de pila `sp`.
+La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política d'«última en entrar, primera en sortir» (*last in, first out*, LIFO), la qual s'implementa mitjançant el punter de pila `sp`.
 
 ::: {#nte-rars-fons-pila .callout-note}
 ## RARS — Fons de pila
@@ -1540,8 +1540,8 @@ Resumint:
 
 Per determinar quins registres cal fer segurs, cal analitzar el codi i identificar les dades que compleixen **les dues condicions simultàniament**:
 
-1. El seu valor ha estat generat per **última vegada ABANS** d'una crida.
-2. El seu valor s'usa **DESPRÉS** d'aquesta mateixa crida.
+1. El seu valor ha estat generat per **última vegada abans** d'una crida.
+2. El seu valor s'usa **després** d'aquesta mateixa crida.
 
 A cada una d'aquestes dades se li assigna un registre segur (`s0`–`s11`), de manera que la subrutina filla els preservarà automàticament.
 
@@ -1589,7 +1589,7 @@ int multi(int a, int b, int c) {
 }
 ```
 
-**Pas 1. Registres segurs.** Identificació de les dades que es fan servir DESPRÉS de la crida a `mcm` i el valor de les quals ha estat generat per ÚLTIMA vegada ABANS d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). S'assignen els registres segurs `s0` i `s1`, respectivament. La variable `e` s'assigna al registre temporal `t0`, ja que s'escriu DESPRÉS de la crida.
+**Pas 1. Registres segurs.** Identificació de les dades que es fan servir **després** de la crida a `mcm` i el valor de les quals ha estat generat per **última** vegada **abans** d'aquesta crida: són `c` (paràmetre) i `d` (assignat a `a+b`). S'assignen els registres segurs `s0` i `s1`, respectivament. La variable `e` s'assigna al registre temporal `t0`, ja que s'escriu DESPRÉS de la crida.
 
 :::::: {#fig-deps-multi layout-ncol=1}
 ::::: {#fig-deps-multi-fletxes}
@@ -1697,7 +1697,7 @@ res_g = g(v, w);
 e = res_f + res_g;
 ```
 
-Les dades que travessen fronteres de crides (escrites ABANS, usades DESPRÉS) són: `c`, `d` i `res_f`. S'assignen a `s0`, `s1` i `s2` respectivament. La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0` i `a1`.
+Les dades que travessen fronteres de crides (escrites **abans**, usades **després**) són: `c`, `d` i `res_f`. S'assignen a `s0`, `s1` i `s2` respectivament. La variable `e` s'assigna a `t0`. Els paràmetres `a` i `b` resten a `a0` i `a1`.
 
 :::::: {#fig-deps-exemple layout-ncol=1}
 ::::: {#fig-deps-exemple-fletxes}

@@ -12,24 +12,24 @@ Un **computador** és un sistema d'una complexitat extraordinària, però que, e
 Per gestionar aquesta distància conceptual tan gran i fer viable el disseny de sistemes computacionals, s'aplica el mecanisme de l'**abstracció**. Aquesta estratègia permet estructurar el conjunt del computador, entès com la unió de **maquinari** (***hardware***) i **programari** (***software***), en una **jerarquia de nivells** clarament diferenciats. En aquest model, cada nivell ofereix una descripció simplificada del nivell immediatament inferior, ocultant-ne la complexitat interna i definint interfícies precises que permeten la comunicació entre els diferents components del sistema.
 
 - **Nivell de components físics**: Constitueix el fonament material del computador. Inclou els elements de l'electrònica de base com transistors, resistències, condensadors, díodes, interconnexions físiques, etc.
-- **Nivell d'unitats funcionals i lògica digital**: En aquest estadi s'agrupen els components per formar portes lògiques, descodificadors, sumadors, comparadors, busos, etc. Aquest nivell d'abstracció és l'objecte d'estudi de l'assignatura **Introducció als computadors** (**IC**).
+- **Nivell d'unitats funcionals i lògica digital**: En aquest estadi s'agrupen els components per formar portes lògiques, descodificadors, sumadors, comparadors, busos, etc. Aquest nivell d'abstracció és l'objecte d'estudi de l'assignatura **Introducció als computadors** (IC).
 - **Nivell de microarquitectura**: És la implementació específica de l'arquitectura del repertori d'instruccions, que és el nivell següent. Defineix com s'organitzen i s'interconnecten les unitats funcionals (com la unitat aritmeticològica, els busos o les memòries cau) i com es dissenya el camí de dades (*datapath*) per executar les instruccions. Dos processadors poden implementar el mateix repertori d'instruccions i comportar-se de manera idèntica per al programador, però tenir microarquitectures completament diferents (per exemple, Intel i AMD amb x86).
-- **Nivell de l'arquitectura del repertori d'instruccions** (**ISA**): És la **frontera** crítica entre el **maquinari** i el **programari**. Estableix, entre d'altres, el conjunt d'instruccions que la unitat central de processament (***Central Processing Unit***, **CPU**) és capaç d'executar, el model de memòria i els registres visibles per al programador. A **Estructura de computadors** (**EC**), l'**ISA** de referència és **RISC-V** (vegeu @imp-llenguatges-de-referencia).
+- **Nivell de l'arquitectura del repertori d'instruccions** (*instruction set architecture*, ISA): És la **frontera** crítica entre el **maquinari** i el **programari**. Estableix, entre d'altres, el conjunt d'instruccions que la unitat central de processament (*central processing unit*, CPU) és capaç d'executar, el model de memòria i els registres visibles per al programador. A **Estructura de computadors** (EC), l'**ISA** de referència és **RISC-V** (vegeu @imp-llenguatges-de-referencia).
 - **Nivell de sistema (baix nivell)**: És l'àmbit d'estudi principal d'**EC**. Aquí el programari té un control directe sobre els recursos definits per l'ISA. Aquest nivell inclou:
     - **Llenguatge màquina**: Instruccions codificades en binari que la unitat de control del processador interpreta i executa.
     - **Llenguatge d'assemblador**: Una representació simbòlica del llenguatge màquina que utilitza **mnemònics**. Un programa anomenat **assemblador** s'encarrega de fer la **traducció directa** a codi **binari**.
 - **Nivell d'aplicació (alt nivell)**: Nivell on es desenvolupa el programari d'usuari utilitzant llenguatges d'alt nivell com el **C** (**el de referència a EC**), C++ o Rust. Un programa anomenat **compilador** tradueix el codi d'alt nivell (codi font) a instruccions d'assemblador. L'abstracció d'aquest nivell permet al programador gestionar dades i algorismes sense haver de conèixer els detalls de la microarquitectura o el mapa de registres específic.
-- **Nivell d'usuari**: Representa el punt de contacte amb l'usuari final, que interacciona amb el sistema mitjançant aplicacions i la **interfície d'usuari (UI)**, ja sigui a través de línies d'ordres o d'entorns gràfics.
+- **Nivell d'usuari**: Representa el punt de contacte amb l'usuari final, que interacciona amb el sistema mitjançant aplicacions i la **interfície d'usuari** (*user interface*, UI), ja sigui a través de línies d'ordres o d'entorns gràfics.
 
 ### Interfícies: els contractes del sistema {#sec-interficies}
 
 L'abstracció només és efectiva si les interfícies (fronteres) actuen com a contractes rígids que cap de les parts pot violar sense trencar la funcionalitat del sistema. En un entorn **allotjat** (***hosted***) amb **SO** —el cas més habitual, per exemple el de Programació I (PRO1)—, n'hi ha tres:
 
-- ***Application Programming Interface*** (**API**): Contracte en l'àmbit del codi font. Garanteix la portabilitat del programari entre diferents sistemes si es respecten els estàndards, com **ISO C** o ***Portable Operating System Interface*** (**POSIX**). **Defineix *com* s'ha d'escriure el codi**.
+- *Application programming interface* (API): Contracte en l'àmbit del codi font. Garanteix la portabilitat del programari entre diferents sistemes si es respecten els estàndards, com l'**ISO C**, el C de la *International Organization for Standardization* (ISO), o la *Portable Operating System Interface* (POSIX). **Defineix *com* s'ha d'escriure el codi**.
 
-- ***Application Binary Interface*** (**ABI**): Contracte en l'àmbit del binari. És el protocol que defineix com interactuen les peces ja compilades. Estableix les convencions de crida (pas de paràmetres per registres), la gestió de la pila (*stack*) i el format dels fitxers executables. L'ABI depèn del binomi **processador-SO** (p. ex. GNU/Linux sobre RISC-V). **Defineix com parlen els binaris**.
+- *Application binary interface* (ABI): Contracte en l'àmbit del binari. És el protocol que defineix com interactuen les peces ja compilades. Estableix les convencions de crida (pas de paràmetres per registres), la gestió de la pila (*stack*) i el format dels fitxers executables. L'ABI depèn del binomi **processador-SO** (p. ex. GNU/Linux sobre RISC-V). **Defineix com parlen els binaris**.
 
-- ***Instruction Set Architecture*** (**ISA**): Contracte en l'àmbit del maquinari. Defineix el vocabulari d'instruccions, els registres visibles per al programador i el model de memòria. **Defineix què sap fer el processador**.
+- **Arquitectura del repertori d'instruccions** (*instruction set architecture*, ISA): Contracte en l'àmbit del maquinari. Defineix el vocabulari d'instruccions, els registres visibles per al programador i el model de memòria. **Defineix què sap fer el processador**.
 
 ::: {#imp-convencions-ec .callout-important}
 Els callouts **EC**, com aquest, recullen els **criteris i les convencions de l'assignatura**: la notació, el format del codi i els termes. **No seguir una convenció no penalitza l'avaluació**, tret que l'enunciat ho indiqui explícitament.
@@ -53,7 +53,7 @@ El procés de transformació d'una idea abstracta en un fitxer executable no és
 0. **Desenvolupament**: El programador escriu el codi font (`.c`, `.h`) d'acord amb l'**API**.
 1. **Preprocessament** (`cpp`): El preprocessador és el primer a actuar. Neteja el text i resol directives (com `#include` o `#define`) per generar el codi expandit (`.i`), una versió completa però encara en llenguatge d'alt nivell.
 2. **Compilació** (`cc1`): El compilador tradueix la lògica de l'alt nivell a un llenguatge de baix nivell anomenat assemblador (`.s`). En aquest punt, el compilador actua com a pont: ha d'entendre l'**API** escrita pel programador i, alhora, començar a aplicar les regles de l'**ABI** per determinar com s'estructuraran les dades en memòria.
-3. **Assemblatge** (`as`): L'assemblador agafa el fitxer de text (`.s`) i el converteix en codi objecte (`.o`). Aquí és on l'**ISA** pren protagonisme, ja que el programari s'ha de traduir a les instruccions específiques del processador diana, com x86 o ***Advanced RISC Machines*** (**ARM**), mantenint l'estructura binària que dicta l'**ABI**.
+3. **Assemblatge** (`as`): L'assemblador agafa el fitxer de text (`.s`) i el converteix en codi objecte (`.o`). Aquí és on l'**ISA** pren protagonisme, ja que el programari s'ha de traduir a les instruccions específiques del processador diana, com x86 o *Advanced RISC Machines* (ARM), mantenint l'estructura binària que dicta l'**ABI**.
 4. **Enllaçament** (`ld`, *linking*): L'enllaçador és el pas final i crític de síntesi. La seva funció és combinar el codi objecte generat pel programador amb les biblioteques del sistema, tant estàtiques (`.a`) com dinàmiques (`.so`). Per fer-ho, l'enllaçador ha de tenir un coneixement profund de l'**ISA** (per resoldre salts i adreces de memòria) i de l'**ABI** (per assegurar que totes les peces «parlen» el mateix llenguatge binari), i produeix l'**executable final** llest per ser carregat a la memòria.
 
 ::: {#fig-flux-compilacio}
@@ -68,7 +68,7 @@ El procés de transformació d'una idea abstracta en un fitxer executable no és
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A1_flux_compilacio__original_light.svg)
 :::
-El flux de generació del programari: les quatre etapes de la cadena d'eines de la ***GNU Compiler Collection*** (**GCC**).
+El flux de generació del programari: les quatre etapes de la cadena d'eines de la *GNU Compiler Collection* (GCC).
 :::
 
 ::: {#tip-gcc-vs-clang .callout-tip}
@@ -159,7 +159,7 @@ La depuració s'ha de fer en l'entorn del *target*, el qual pot ser:
 
 - **Amb simulador**: Un programa (el simulador) en un ordinador personal recrea per programari el comportament dels registres i la memòria de la CPU de destí i fa visibles els efectes sobre els components del maquinari simulat a través d'interfícies gràfiques. És el cas del **RARS**, el **simulador d'EC**.
 
-- **Amb *target* real**: El binari s'envia des de l'amfitrió al xip real (el *target*) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics (LED, sensors, motors).
+- **Amb *target* real**: El binari s'envia des de l'amfitrió al xip real (el *target*) a través d'una sonda de depuració (*debug probe*). D'aquesta manera, el codi s'executa en l'entorn real, amb els seus temps de resposta i perifèrics físics: díodes emissors de llum (*light-emitting diodes*, LED), sensors i motors.
 
 ### El llenguatge C: el pont de l'abstracció {#sec-el-llenguatge-c}
 
@@ -217,9 +217,9 @@ En aquest exemple, el compilador ha seguit les regles de l'**ABI** per decidir q
 :::: {#wrn-picopi .callout-warning collapse=true}
 ## Treballant amb maquinari real: [Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) + [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/)
 
-Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un ordinador personal), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria (***Random Access Memory***, **RAM**, i, sovint, memòria flaix, *flash*), els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (**E/S**), com ***General-Purpose Input/Output*** (**GPIO**), ***Universal Asynchronous Receiver-Transmitter*** (**UART**) o ***Analog-to-Digital Converter*** (**ADC**).
+Un **microcontrolador** és un sistema informàtic complet integrat en un sol xip de silici, dissenyat específicament per controlar tasques concretes en sistemes encastats. A diferència d'un **microprocessador** convencional (com el d'un ordinador personal), que només conté la CPU i necessita components externs per funcionar, el microcontrolador incorpora dins del mateix encapsulat la memòria —una *random access memory* (RAM) i, sovint, memòria flaix (*flash*)—, els circuits de rellotge i una gran varietat de perifèrics d'entrada/sortida (E/S), com *general-purpose input/output* (GPIO), *universal asynchronous receiver-transmitter* (UART) o *analog-to-digital converter* (ADC).
 
-El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en l'**ISA RISC-V**. El programador tria l'arquitectura en compilar el programa, i la memòria d'arrencada (***Read-Only Memory***, **ROM**) activa els nuclis que corresponen a la imatge que hi troba.
+El **RP2350** és un microcontrolador de **Raspberry Pi** (RP) de tipus *System-on-chip* (SoC) que inclou dos nuclis ARM Cortex-M33 i dos nuclis **Hazard3** basats en l'**ISA RISC-V**. El programador tria l'arquitectura en compilar el programa, i la memòria d'arrencada, una *read-only memory* (ROM), activa els nuclis que corresponen a la imatge que hi troba.
 
 La **[Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)** és una placa de desenvolupament basada en el xip **RP2350**. Com a plataforma d'experimentació exposa els pins del microcontrolador per connectar-hi sensors, actuadors i depuradors.
 
@@ -281,8 +281,8 @@ La majoria d'estudiants arriben a EC havent après **C++**, el llenguatge de ref
 El pas de C++ a C és un exercici de **simplificació**. En C no existeixen les capes d'abstracció d'alt nivell que faciliten el desenvolupament de programari complex:
 
 - **Sense classes ni objectes**: El C és un llenguatge **procedimental**. No hi ha `class`, `public`, `private` ni herència. Les dades s'agrupen en `struct` (estructures de dades) i les funcions operen sobre elles de manera externa.
-- **Sense la biblioteca estàndard de plantilles** (***Standard Template Library***, **STL**): No hi ha `std::vector`, `std::stack` o `std::map`. En C, si, per exemple, es vol una llista enllaçada, cal programar-la gestionant els punters manualment.
-- **Gestió manual de l'E/S**: No hi ha els **fluxos** (*streams*) de C++ (`cin >>`, `cout <<`), sinó funcions de biblioteca com `scanf` i `printf`. Això obliga a especificar el **format de les dades** (`%d` per a enters, @tip-abstraccio-transparencia), el qual està íntimament lligat a la manera com es representen en bits.
+- **Sense la biblioteca estàndard de plantilles** (*Standard Template Library*, STL): No hi ha `std::vector`, `std::stack` o `std::map`. En C, si, per exemple, es vol una llista enllaçada, cal programar-la gestionant els punters manualment.
+- **Gestió manual de l'entrada/sortida** (E/S): No hi ha els **fluxos** (*streams*) de C++ (`cin >>`, `cout <<`), sinó funcions de biblioteca com `scanf` i `printf`. Això obliga a especificar el **format de les dades** (`%d` per a enters, @tip-abstraccio-transparencia), el qual està íntimament lligat a la manera com es representen en bits.
 - **Gestió explícita de la memòria**: En C++ sovint la memòria s'allibera automàticament (destructors). En C, cada `malloc()` (reserva) requereix un `free()` (alliberament) manual.
 
 #### Per què C i no C++ a Estructura de computadors? {#sec-per-que-c}
@@ -304,7 +304,7 @@ En C++, l'èmfasi en l'abstracció del flux:
 int n = 42;
 std::cout << n;
 ```
-- **Què passa aquí?** El programador no diu *com* és el nombre. L'objecte `cout` «endevina» que `n` és un enter (gràcies a la sobrecàrrega d'operadors) i decideix internament com transformar els bits de `n` en caràcters ***American Standard Code for Information Interchange*** (**ASCII**).
+- **Què passa aquí?** El programador no diu *com* és el nombre. L'objecte `cout` «endevina» que `n` és un enter (gràcies a la sobrecàrrega d'operadors) i decideix internament com transformar els bits de `n` en caràcters de l'*American Standard Code for Information Interchange* (ASCII).
 - **Problema per a EC**: Hi ha molta «màgia» oculta. Per exemple, tant el pas de paràmetres com la gestió dels tipus de dades als registres resten ocults.
 
 En C, l'èmfasi en la transparència del format:
@@ -353,12 +353,12 @@ Abans de von Neumann, per «reprogramar» una màquina calia canviar cables i in
 
 L'arquitectura es divideix en quatre blocs funcionals connectats entre si (@fig-von-neumann):
 
-1. **Unitat central de processament** (**CPU**): El «cervell» que es divideix en:
-    - **Unitat aritmeticològica** (**ALU**): On es fan les operacions matemàtiques i lògiques.
-    - **Unitat de control** (**CU**): L'orquestra que llegeix la memòria i diu a la resta de components què han de fer.
+1. **Unitat central de processament** (*central processing unit*, CPU): El «cervell» que es divideix en:
+    - **Unitat aritmeticològica** (*arithmetic logic unit*, ALU): On es fan les operacions matemàtiques i lògiques.
+    - **Unitat de control** (*control unit*, CU): L'orquestra que llegeix la memòria i diu a la resta de components què han de fer.
     - **Registres**: L'emmagatzematge intern de la CPU, el més ràpid (entre els quals, el comptador de programa).
-2. **Memòria principal** (**MP**): Un vector gegant de cel·les on cada posició té una **adreça** única.
-3. **Sistema d'entrada/sortida** (**E/S**): Permet la comunicació amb el món exterior (teclat, pantalla, disc dur).
+2. **Memòria principal** (MP): Un vector gegant de cel·les on cada posició té una **adreça** única.
+3. **Sistema d'entrada/sortida** (E/S): Permet la comunicació amb el món exterior (teclat, pantalla, disc dur).
 4. **Busos**: Les «autopistes» de dades que connecten tots els components.
 
 ::: {#fig-von-neumann}
@@ -380,7 +380,7 @@ Arquitectura de von Neumann: CPU (ALU, CU i registres), memòria principal i sis
 
 La unitat de control repeteix indefinidament tres passos:
 
-1. **Captura** (***fetch***): Es llegeix la instrucció següent de la memòria (l'adreça està guardada en un registre especial anomenat ***Program Counter*** (**PC**)).
+1. **Captura** (***fetch***): Es llegeix de la memòria la instrucció següent, la de l'adreça que guarda un registre especial, el comptador de programa (*program counter*, PC).
 2. **Descodificació** (***decode***): La unitat de control analitza els bits de la instrucció per saber què cal fer (és una suma? És un salt? Cal llegir dades de la memòria?).
 3. **Execució** (***execute***): S'activen els circuits de l'ALU o es mouen dades entre registres i memòria.
 
@@ -487,7 +487,7 @@ La notació hexadecimal és només una manera d'**escriure** un patró de bits d
 
 ## Codificació de nombres enters en base 2 {#sec-codificacio-enters}
 
-Un nombre enter $x_s$ de $n$ bits es representa com una cadena de bits $X = X_{n-1} \ldots X_1 X_0$, on, en complement a 2 (**Ca2**), en complement a 1 (**Ca1**) i en signe i magnitud, el bit de més pes $X_{n-1}$ indica el signe: $0$ si no és negatiu i $1$ si ho és.
+Un nombre enter $x_s$ de $n$ bits es representa com una cadena de bits $X = X_{n-1} \ldots X_1 X_0$, on, en complement a 2 (Ca2), en complement a 1 (Ca1) i en signe i magnitud, el bit de més pes $X_{n-1}$ indica el signe: $0$ si no és negatiu i $1$ si ho és.
 
 En aquestes tres codificacions, els enters no negatius es codifiquen igual que els naturals equivalents. La codificació en excés (@sec-enters-en-exces) segueix una altra regla.
 

@@ -45,13 +45,13 @@ Com que la condició de normalització garanteix que el bit a l'esquerra de la c
 
 Cal tenir-lo en compte en tots els càlculs: si el camp de fracció $F$ té $p-1$ bits emmagatzemats, la mantissa completa té $p$ bits significatius: els $p-1$ bits de $F$ més el bit ocult.
 
-Els únics casos en què el bit ocult no s'aplica són els nombres subnormals i el zero, a més de les codificacions especials $\pm\infty$ i NaN (***Not a Number***), que no representen cap mantissa (@sec-codificacions-especials).
+Els únics casos en què el bit ocult no s'aplica són els nombres subnormals i el zero, a més de les codificacions especials $\pm\infty$ i *not a number* (NaN), que no representen cap mantissa (@sec-codificacions-especials).
 
 :::
 
 ### L'estàndard IEEE 754 {#sec-ieee754}
 
-Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de coma flotant, amb decisions diverses sobre el nombre de bits de mantissa i exponent, i fins i tot sobre la base de la potència. La incompatibilitat entre sistemes dificultava l'intercanvi de dades i la portabilitat del programari. El 1985, l'Institut d'Enginyers Elèctrics i Electrònics (***Institute of Electrical and Electronics Engineers***, **IEEE**) va publicar l'**estàndard IEEE 754**, que no sols defineix el format de representació sinó també les operacions aritmètiques, l'arrodoniment i el tractament de les excepcions. L'estàndard s'ha revisat i ampliat posteriorment (la darrera revisió és de 2019).
+Fins als anys 80, cada fabricant de processadors adoptava el seu propi format de coma flotant, amb decisions diverses sobre el nombre de bits de mantissa i exponent, i fins i tot sobre la base de la potència. La incompatibilitat entre sistemes dificultava l'intercanvi de dades i la portabilitat del programari. El 1985, l'*Institute of Electrical and Electronics Engineers* (IEEE) va publicar l'**estàndard IEEE 754**, que no sols defineix el format de representació sinó també les operacions aritmètiques, l'arrodoniment i el tractament de les excepcions. L'estàndard s'ha revisat i ampliat posteriorment (la darrera revisió és de 2019).
 
 ::: {#nte-ieee754-formats .callout-note}
 ## RV32F ISA — Formats IEEE 754 de precisió simple i doble
@@ -291,7 +291,7 @@ Dividint per $v_0$ i tenint en compte que $m \geq 1{,}0$, l'error relatiu queda 
 
 $$\eta_{max} < 2^{-23} = 1\ \text{ULP}$$
 
-La quantitat $1\ \text{ULP}$ (***Unit in the Last Place***) és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menys pes de la mantissa. La fita $\eta_{max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
+La quantitat $1\ \text{ULP}$, una *unit in the last place* (ULP), és el valor $0{,}0\ldots001_2$ amb un sol bit a 1 a la posició de menys pes de la mantissa. La fita $\eta_{max} < 2^{-23}$ és independent del valor de $v$ i depèn exclusivament de la precisió de la mantissa.
 
 ::: {#cau-underflow .callout-caution}
 ## Subdesbordament
@@ -404,7 +404,7 @@ L'infinit es codifica amb tots els bits d'exponent a 1 i tots els de fracció a 
 
 #### NaN {#sec-codificacio-nan}
 
-Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN** (***Not a Number***), i l'execució continua. Qualsevol operació aritmètica posterior amb un operand NaN produeix un altre NaN (les comparacions, en canvi, retornen 0: @nte-instruccions-comparacio-f), de manera que l'error es propaga fins al resultat final, on el programa pot fer una única comprovació.
+Algunes operacions no produeixen cap valor real vàlid: $\sqrt{-1}$, $\log(-1)$, $0/0$, $\infty - \infty$, $0 \times \infty$. En lloc d'avortar l'execució, el resultat pren la codificació especial **NaN**, i l'execució continua. Qualsevol operació aritmètica posterior amb un operand NaN produeix un altre NaN (les comparacions, en canvi, retornen 0: @nte-instruccions-comparacio-f), de manera que l'error es propaga fins al resultat final, on el programa pot fer una única comprovació.
 
 Un NaN es codifica amb tots els bits d'exponent a 1 i almenys un bit de fracció no nul (per distingir-lo de l'infinit). El bit de més pes de la fracció distingeix el NaN **silenciós** (1), que es propaga sense activar cap indicador, del **senyalitzador** (0), que activa NV. A RISC-V, les operacions que generen un NaN donen el NaN canònic `0x7FC00000`.
 
@@ -419,9 +419,9 @@ Quan el resultat exacte $v$ d'una operació no és representable, cal triar entr
 | A $+\infty$ | El valor representable major |
 | A $-\infty$ | El valor representable menor |
 
-El mode per defecte és l'**arrodoniment al més pròxim** (***Round to Nearest Even***, **RNE**). Proporciona l'error mínim possible i, en el cas equidistant, tria el valor parell (el que té el bit de menys pes a 0) per evitar biaixos sistemàtics en cadenes llargues de càlculs.
+El mode per defecte és l'**arrodoniment al més pròxim** (*round to nearest, ties to even*, RNE). Proporciona l'error mínim possible i, en el cas equidistant, tria el valor parell (el que té el bit de menys pes a 0) per evitar biaixos sistemàtics en cadenes llargues de càlculs.
 
-Els modes d'arrodoniment a $+\infty$ i a $-\infty$ s'usen conjuntament en aritmètica d'intervals, una tècnica que acota els errors d'arrodoniment per garantir la fiabilitat dels resultats numèrics. L'estàndard inclou encara un cinquè mode poc emprat: «al més pròxim amb empat cap a la magnitud major» (RMM). RISC-V implementa els cinc modes al registre `fcsr` (@nte-fcsr).
+Els modes d'arrodoniment a $+\infty$ i a $-\infty$ s'usen conjuntament en aritmètica d'intervals, una tècnica que acota els errors d'arrodoniment per garantir la fiabilitat dels resultats numèrics. L'estàndard inclou encara un cinquè mode poc emprat: «al més pròxim amb empat cap a la magnitud major» (*round to nearest, ties to max magnitude*, RMM). RISC-V implementa els cinc modes al registre `fcsr` (@nte-fcsr).
 
 #### Bits de guarda {#sec-bits-de-guarda}
 

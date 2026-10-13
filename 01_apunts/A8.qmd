@@ -21,7 +21,7 @@ La memòria virtual es fonamenta en la distinció entre dos espais d'adreçament
 
 - L'**espai d'adreçament lògic** (o virtual) és el conjunt d'adreces que utilitza un programa: tant en temps de compilació com en temps d'execució, la CPU treballa exclusivament amb adreces lògiques. Cada procés té el seu propi espai d'adreçament lògic, independent del dels altres, amb una mida màxima determinada pel nombre de bits d'adreça del processador (per exemple, $2^{32}$ bytes = 4 GiB en un sistema de 32 bits; vegeu @cau-prefixos-binaris per a la notació). Això proporciona a cada procés la il·lusió de disposar de tota la memòria per a ell sol.
 - L'**espai d'adreçament físic** és el conjunt d'adreces de la memòria física real. La seva mida depèn de la quantitat de RAM instal·lada al sistema, i és totalment independent de l'espai d'adreçament lògic.
-- La **unitat de gestió de memòria** (*memory management unit* o **MMU**) és el component de maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.
+- La **unitat de gestió de memòria** (*memory management unit*, MMU) és el component de maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.
 
 La @fig-mv-espais il·lustra aquests tres elements amb dos processos.
 
@@ -67,7 +67,7 @@ Jerarquia de memòria en un computador amb memòria virtual. Els temps d'accés 
 
 Els fonaments de la memòria virtual són els mateixos que els de les memòries cau del @sec-tema-mc: un nivell de la jerarquia conté una part de les dades del nivell inferior, organitzades en blocs de mida fixa, i quan la dada no hi és cal anar-la a buscar. Com que els dos mecanismes tenen orígens històrics diferents, però, la terminologia canvia: els blocs s'anomenen **pàgines**, i les fallades, **fallades de pàgina**.
 
-La memòria virtual gestiona la traducció d'adreces, doncs, en blocs de mida fixa anomenats **pàgines**. L'espai d'adreçament lògic de cada procés es divideix en pàgines de $T$ bytes (habitualment $T = 4\text{ KiB} = 2^{12}$ bytes), i cada pàgina rep un **número de pàgina virtual** (*virtual page number* o **VPN**), que indica la seva posició dins l'espai lògic, començant per 0. En aquest tema es tracta només la memòria virtual **paginada**; també existeix la memòria virtual **segmentada**, que divideix l'espai lògic en segments de mida variable, i que avui és residual.
+La memòria virtual gestiona la traducció d'adreces, doncs, en blocs de mida fixa anomenats **pàgines**. L'espai d'adreçament lògic de cada procés es divideix en pàgines de $T$ bytes (habitualment $T = 4\text{ KiB} = 2^{12}$ bytes), i cada pàgina rep un **número de pàgina virtual** (*virtual page number*, VPN), que indica la seva posició dins l'espai lògic, començant per 0. En aquest tema es tracta només la memòria virtual **paginada**; també existeix la memòria virtual **segmentada**, que divideix l'espai lògic en segments de mida variable, i que avui és residual.
 
 Donada una adreça lògica $A$ d'un programa, per exemple la d'una dada, es pot determinar a quin número de pàgina virtual correspon fent la divisió entera entre l'adreça i la mida de pàgina, $\text{VPN} = \lfloor A / T \rfloor$. Si, per exemple, $A$ = `0x10010004` i $T = 4\text{ KiB} = 2^{12}$ bytes, $A$ és a la pàgina virtual amb VPN = `0x10010`. Com que es treballa amb valors de $T$ que són potències de dos ($T = 2^t$), determinar el VPN consisteix simplement a agafar l'adreça i descartar-ne els $t$ bits de menys pes. Aquests $t$ bits de menys pes indiquen quina és la ubicació de la dada dins la pàgina, i s'anomenen **desplaçament** (*page offset*).
 
@@ -83,7 +83,7 @@ Donada una adreça lògica $A$ d'un programa, per exemple la d'una dada, es pot 
 ![](/auto_figs/A8_mv_adreca_exemple__original_light.svg)
 :::
 
-Cada computador disposa d'una determinada capacitat de memòria física, que ocupa un rang d'adreces anomenat espai d'adreçament físic, totalment independent del rang d'adreces lògiques (pot ser més petit, igual o més gran). L'espai d'adreçament físic se subdivideix en blocs de mida $T$, la mateixa que les pàgines lògiques, anomenats **marcs de pàgina** (*page frames*), que es poden imaginar com a «contenidors» on es pot allotjar una pàgina lògica. Cada marc de pàgina té associat un **número de pàgina física** (*physical page number* o **PPN**), que indica la posició que ocupa dins l'espai d'adreçament físic, començant pel 0.
+Cada computador disposa d'una determinada capacitat de memòria física, que ocupa un rang d'adreces anomenat espai d'adreçament físic, totalment independent del rang d'adreces lògiques (pot ser més petit, igual o més gran). L'espai d'adreçament físic se subdivideix en blocs de mida $T$, la mateixa que les pàgines lògiques, anomenats **marcs de pàgina** (*page frames*), que es poden imaginar com a «contenidors» on es pot allotjar una pàgina lògica. Cada marc de pàgina té associat un **número de pàgina física** (*physical page number*, PPN), que indica la posició que ocupa dins l'espai d'adreçament físic, començant pel 0.
 
 Cada procés consta d'un cert nombre de pàgines virtuals, no totes necessàriament contigües, que ocupen unes adreces determinades en temps de compilació. Les adreces d'aquestes pàgines virtuals són totalment independents de les adreces físiques que ocuparan després, en temps d'execució. Inicialment, un procés resideix a l'emmagatzematge secundari (el disc), i durant l'execució el sistema operatiu haurà d'anar carregant del disc a la memòria física les pàgines que es vagin necessitant. Si no hi queden marcs de pàgina lliures, el sistema n'haurà de reemplaçar un d'ocupat, i possiblement haurà d'escriure'n la pàgina al disc abans de carregar-hi la nova. En un moment donat, les pàgines d'un procés que no són a la memòria física són al disc. Es deixen per a més endavant els detalls de com es llegeixen i s'escriuen les pàgines al disc. Per simplificar, se suposa que **la memòria física conté un subconjunt de les pàgines d'un procés, la totalitat de les quals es troba al disc**: el disc fa, respecte de la memòria física, el mateix paper que la memòria física feia respecte de la memòria cau al @sec-tema-mc. (En un sistema real, les pàgines que un procés crea durant l'execució, com les de la pila, no tenen còpia al disc fins que el sistema operatiu no les hi ha d'escriure per fer lloc.)
 
@@ -101,7 +101,7 @@ La @fig-mv-pagines-marcs mostra una disposició possible de les pàgines de dos 
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A8_mv_pagines_marcs__original_light.svg)
 :::
-Números de pàgina lògica (VPN) de dos processos, a l'esquerra, i números de pàgina física (PPN) d'una memòria de 16 KiB, a la dreta. Les pàgines lògiques s'assignen als marcs de pàgina de manera completament associativa; al disc només es dibuixen les que no són a la memòria física.
+Els VPN de dos processos, a l'esquerra, i els PPN d'una memòria de 16 KiB, a la dreta. Les pàgines lògiques s'assignen als marcs de pàgina de manera completament associativa; al disc només es dibuixen les que no són a la memòria física.
 :::
 
 ### Traducció d'adreces: VPN, PPN i desplaçament {#sec-mv-traduccio}
@@ -132,7 +132,7 @@ Traducció d'una adreça lògica a una adreça física: el VPN (20 bits) es trad
 
 Per poder traduir una adreça lògica cal saber en quin marc de pàgina (PPN) es troba cada pàgina virtual (VPN). Aquesta informació la manté una estructura de dades anomenada **taula de pàgines**. Cada procés té la seva pròpia taula de pàgines, emmagatzemada a la memòria principal.
 
-La taula de pàgines s'indexa pel VPN (@fig-mv-taula-pagines): cada fila correspon a una pàgina virtual i s'anomena **entrada de la taula de pàgines** (*page table entry* o **PTE**). El nombre d'entrades és igual al nombre de pàgines virtuals de l'espai d'adreçament ($2^{20}$ entrades en l'exemple de 32 bits amb pàgines de 4 KiB).
+La taula de pàgines s'indexa pel VPN (@fig-mv-taula-pagines): cada fila correspon a una pàgina virtual i s'anomena **entrada de la taula de pàgines** (*page table entry*, PTE). El nombre d'entrades és igual al nombre de pàgines virtuals de l'espai d'adreçament ($2^{20}$ entrades en l'exemple de 32 bits amb pàgines de 4 KiB).
 
 ::: {#fig-mv-taula-pagines}
 ::: {.content-visible when-format="html"}
@@ -153,13 +153,13 @@ Donat un VPN, la taula de pàgines indica si la pàgina és a la memòria físic
 
 Cada PTE conté els camps següents:
 
-- **PPN** (*physical page number*): el número de marc de pàgina on es troba la pàgina, si és a la memòria física.
+- **PPN**: el número de marc de pàgina on es troba la pàgina, si és a la memòria física.
 - **Bit V** (*valid*, validesa): val 1 si la PTE conté una traducció utilitzable, és a dir, si la pàgina és a la memòria física; val 0 si no hi és (perquè és al disc o perquè l'adreça no pertany a l'espai vàlid del procés).
 - **Bit de modificació** (***dirty bit***), D: val 1 si la pàgina ha estat modificada des que es va carregar. Quan cal reemplaçar-la, només s'escriu al disc si D = 1.
 - **Bit E** (escriptura): indica si el procés té permís d'escriptura sobre aquesta pàgina. Si una instrucció intenta escriure en una pàgina amb E = 0, es produeix una excepció de protecció (@sec-mv-proteccio-escriptura).
 
 ::: {#cau-mv-pte .callout-caution}
-## Estructura d'una entrada de la taula de pàgines (PTE)
+## Estructura d'una PTE
 
 | Camp | Mida | Significat |
 | :--- | :---: | :--- |
@@ -260,7 +260,7 @@ Com que un accés al disc és centenars o milers de vegades més lent que un acc
 Una fallada de pàgina es produeix quan V = 0 en la PTE del VPN sol·licitat. És una excepció: si la pàgina és vàlida, el sistema operatiu la carrega des del disc (reemplaçant-ne una altra si no hi ha cap marc lliure), actualitza les PTE afectades i reexecuta la instrucció causant. Si l'adreça és invàlida, el procés s'avorta.
 :::
 
-Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament. A l'assignatura es fa servir l'algorisme **LRU** (*least recently used*), com a les memòries cau (@sec-politica-reemplacament): es reemplaça la pàgina que fa més temps que no s'utilitza. Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions). Si el processador guarda traduccions en un TLB (@sec-mv-tlb), el sistema operatiu també n'ha d'invalidar l'entrada de la pàgina víctima, com s'explica a la @sec-mv-tlb-invalidacio.
+Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament. A l'assignatura es fa servir l'algorisme *least recently used* (LRU), com a les memòries cau (@sec-politica-reemplacament): es reemplaça la pàgina que fa més temps que no s'utilitza. Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions). Si el processador guarda traduccions en un TLB (@sec-mv-tlb), el sistema operatiu també n'ha d'invalidar l'entrada de la pàgina víctima, com s'explica a la @sec-mv-tlb-invalidacio.
 
 La zona del disc on s'emmagatzemen les pàgines reemplaçades s'anomena **espai d'intercanvi** (*swap space*).
 
@@ -277,7 +277,7 @@ El mecanisme descrit és el mínim que cal per fer funcionar la memòria virtual
 
 ## Traducció ràpida: el TLB {#sec-mv-tlb}
 
-La taula de pàgines és a la memòria principal. Això implica que cada accés a memòria requereix, en realitat, dos accessos: un per llegir la PTE i traduir l'adreça, i un per llegir o escriure la dada (amb una taula de pàgines multinivell, encara més). Per evitar aquest cost, els processadors incorporen a l'MMU una memòria cau de traduccions anomenada **TLB** (*translation-lookaside buffer*), que emmagatzema les PTE utilitzades més recentment. El TLB és una memòria cau com les del @sec-tema-mc, però de traduccions en lloc de dades: en guarda poques (de l'ordre de desenes o centenars), s'hi accedeix en una fracció del temps d'un accés a memòria, i té els seus propis encerts i fallades.
+La taula de pàgines és a la memòria principal. Això implica que cada accés a memòria requereix, en realitat, dos accessos: un per llegir la PTE i traduir l'adreça, i un per llegir o escriure la dada (amb una taula de pàgines multinivell, encara més). Per evitar aquest cost, els processadors incorporen a l'MMU una memòria cau de traduccions anomenada *translation lookaside buffer* (TLB), que emmagatzema les PTE utilitzades més recentment. El TLB és una memòria cau com les del @sec-tema-mc, però de traduccions en lloc de dades: en guarda poques (de l'ordre de desenes o centenars), s'hi accedeix en una fracció del temps d'un accés a memòria, i té els seus propis encerts i fallades.
 
 ::: {#imp-mv-model-tlb .callout-important}
 ## El model de TLB d'EC: canvi respecte del temari anterior (MIPS)
@@ -453,7 +453,7 @@ En un sistema amb memòria virtual, cada accés a memòria implica dos passos: t
 
 ### Memòria cau indexada físicament {#sec-mv-cache-fisica}
 
-L'esquema més senzill és la **memòria cau indexada i etiquetada físicament** (*physically indexed physically tagged* o **PIPT**): primer es tradueix l'adreça lògica amb el TLB i, un cop obtinguda l'adreça física, s'accedeix a la memòria cau amb aquesta adreça (@fig-mv-pipt).
+L'esquema més senzill és la **memòria cau indexada i etiquetada físicament** (*physically indexed physically tagged*, PIPT): primer es tradueix l'adreça lògica amb el TLB i, un cop obtinguda l'adreça física, s'accedeix a la memòria cau amb aquesta adreça (@fig-mv-pipt).
 
 ::: {#fig-mv-pipt}
 ::: {.content-visible when-format="html"}
@@ -474,7 +474,7 @@ L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adre�
 
 ### Memòria cau indexada i etiquetada virtualment {#sec-mv-cache-virtual}
 
-Una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtually tagged* o **VIVT**) redueix la latència perquè usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense necessitat de la traducció; només cal el TLB en cas de fallada, per anar a buscar el bloc a la memòria principal amb l'adreça física.
+Una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtually tagged*, VIVT) redueix la latència perquè usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense necessitat de la traducció; només cal el TLB en cas de fallada, per anar a buscar el bloc a la memòria principal amb l'adreça física.
 
 El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física (@sec-mv-comparticio), el mateix bloc pot ocupar dues línies diferents de la memòria cau, una per a cada adreça lògica. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, cosa que trenca la coherència.
 
@@ -482,7 +482,7 @@ L'altre problema són els **homònims**: la mateixa adreça lògica de dos proce
 
 ### VIPT: la solució habitual {#sec-mv-vipt}
 
-La solució més habitual als processadors actuals, per a la memòria cau de primer nivell, és la **memòria cau indexada virtualment i etiquetada físicament** (*virtually indexed physically tagged* o **VIPT**). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel** (@fig-mv-vipt):
+La solució més habitual als processadors actuals, per a la memòria cau de primer nivell, és la **memòria cau indexada virtualment i etiquetada físicament** (*virtually indexed physically tagged*, VIPT). La idea clau és que l'índex per accedir a la memòria cau i la traducció del TLB es poden fer en **paral·lel** (@fig-mv-vipt):
 
 - L'**índex** de la memòria cau s'extreu de l'adreça lògica. Si només fa servir bits del desplaçament de pàgina (els $t$ bits de menys pes; és la condició de més avall), coincideix exactament amb el de l'adreça física, perquè el desplaçament no es tradueix.
 - Mentre la memòria cau llegeix les etiquetes i els blocs de dades corresponents a aquest índex, el TLB tradueix el VPN i obté el PPN.
@@ -601,5 +601,5 @@ En acabar, la memòria física conté VPN 4 (`0x00`), VPN 3 (`0x01`), VPN 5 (`0x
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A8_mv_exemple_tlb__original_light.svg)
 :::
-Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el TLB i la memòria física després de resoldre'l, amb les entrades i els marcs que han canviat amb vora gruixuda. A l'HTML, el navegador de passos mostra també la taula de pàgines després de cada accés.
+Traça dels cinc accessos de @tip-mv-tlb-exemple: l'estat inicial i, per a cada accés, el TLB i la memòria física després de resoldre'l, amb les entrades i els marcs que han canviat amb vora gruixuda. A la versió en *HyperText Markup Language* (HTML), el navegador de passos mostra també la taula de pàgines després de cada accés.
 :::::

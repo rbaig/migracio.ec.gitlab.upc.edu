@@ -10,10 +10,10 @@ number-sections: true
 
 Tot computador necessita emmagatzemar les instruccions i les dades dels programes que executa. Aquesta funció la cobreixen diverses tecnologies, cadascuna amb característiques pròpies de velocitat, capacitat i cost:
 
-- La **memòria secundària**, feta de discs durs magnètics o d'unitats d'estat sòlid (***Solid-State Drive***, **SSD**), és la memòria **persistent**: conserva les dades quan el computador s'apaga. Té un cost per bit molt baix i una capacitat molt gran, però un temps d'accés extremadament lent: típicament més de 5 ms en un disc dur i entre 0,05 i 0,1 ms en un SSD. Per a un període de rellotge de CPU típic de 0,25 ns, un accés a SSD tardaria centenars de milers de cicles; un accés a disc dur, desenes de milions.
-- La **memòria principal** (**MP**) o **RAM** (***random access memory***) és de tipus **volàtil**: perd el contingut quan s'apaga el computador. Quan s'executa un programa, les seves instruccions i dades es carreguen des de la memòria secundària a la memòria principal, on resideixen durant l'execució. La RAM té un temps d'accés molt més curt que la memòria secundària (entre 50 i 100 ns), però el seu cost per bit és considerablement més alt.
+- La **memòria secundària**, feta de discs durs magnètics o d'unitats d'estat sòlid (*solid-state drives*, SSD), és la memòria **persistent**: conserva les dades quan el computador s'apaga. Té un cost per bit molt baix i una capacitat molt gran, però un temps d'accés extremadament lent: típicament més de 5 ms en un disc dur i entre 0,05 i 0,1 ms en un SSD. Per a un període de rellotge de CPU típic de 0,25 ns, un accés a SSD tardaria centenars de milers de cicles; un accés a disc dur, desenes de milions.
+- La **memòria principal** (MP), una *random access memory* (RAM), és de tipus **volàtil**: perd el contingut quan s'apaga el computador. Quan s'executa un programa, les seves instruccions i dades es carreguen des de la memòria secundària a la memòria principal, on resideixen durant l'execució. La RAM té un temps d'accés molt més curt que la memòria secundària (entre 50 i 100 ns), però el seu cost per bit és considerablement més alt.
 
-La RAM es pot implementar com a memòria estàtica (**SRAM**) o dinàmica (**DRAM**). Cada bit d'SRAM requereix almenys sis transistors, mentre que un bit de DRAM n'ocupa un de sol més un condensador. Això fa que la DRAM tingui molta més capacitat per unitat de superfície i un cost per bit molt menor, i per aquest motiu s'usa habitualment per a la memòria principal. L'SRAM, en canvi, és molt més ràpida i s'usa en contextos on la velocitat és prioritària, com ara les memòries cau.
+La RAM es pot implementar com a RAM estàtica (*static random access memory*, SRAM) o com a RAM dinàmica (*dynamic random access memory*, DRAM). Cada bit d'SRAM requereix almenys sis transistors, mentre que un bit de DRAM n'ocupa un de sol més un condensador. Això fa que la DRAM tingui molta més capacitat per unitat de superfície i un cost per bit molt menor, i per aquest motiu s'usa habitualment per a la memòria principal. L'SRAM, en canvi, és molt més ràpida i s'usa en contextos on la velocitat és prioritària, com ara les memòries cau.
 
 | Tecnologia | Capacitat típica | Temps d'accés | Cost per GB |
 | :--- | :---: | :---: | :---: |
@@ -73,7 +73,7 @@ Qui tingui una targeta gràfica per a jocs —o hagi llegit sobre els accelerado
 
 Una GPU moderna per a jocs (per exemple, una NVIDIA RTX 4090) integra milers de nuclis de càlcul dissenyats per executar moltíssimes operacions en paral·lel. Per alimentar tots aquests nuclis, necessita una amplada de banda de memòria enorme: mentre que un processador convencional accedeix a la DRAM amb una amplada de banda de l'ordre de desenes de GB/s, una GPU d'alt rendiment en necessita centenars de GB/s, o fins i tot més d'un TB/s. Per aconseguir-ho s'usa memòria **GDDR6** o **GDDR6X** o, en els acceleradors d'IA professionals, **HBM** (*High Bandwidth Memory*), una tecnologia que apila diverses capes de DRAM l'una sobre l'altra, en una pila que es col·loca al costat del xip de càlcul, dins del mateix encapsulat, i s'hi connecta amb un bus de milers de fils.
 
-La latència, però, segueix sent el problema de sempre: la GDDR6 augmenta l'**amplada de banda** amb una velocitat molt alta per fil, i l'HBM, encara més, amb la proximitat física i un bus molt ample; però la latència d'accés roman comparable a la de la DRAM convencional. Per això les GPU modernes també incorporen **jerarquies de memòria cau** pròpies: cada grup de nuclis (*streaming multiprocessor* a NVIDIA, *compute unit* a AMD) té la seva pròpia memòria cau de primer nivell (**L1**), i tots comparteixen una de segon nivell (**L2**) de desenes de MiB.
+La latència, però, segueix sent el problema de sempre: la GDDR6 augmenta l'**amplada de banda** amb una velocitat molt alta per fil, i l'HBM, encara més, amb la proximitat física i un bus molt ample; però la latència d'accés roman comparable a la de la DRAM convencional. Per això les GPU modernes també incorporen **jerarquies de memòria cau** pròpies: cada grup de nuclis (*streaming multiprocessor* a NVIDIA, *compute unit* a AMD) té la seva pròpia memòria cau de primer nivell (L1), i tots comparteixen una de segon nivell (L2) de desenes de MiB.
 
 Els acceleradors d'IA porten aquesta lògica a l'extrem. En entrenar una xarxa neuronal, s'han de moure quantitats ingents de dades (pesos del model, activacions, gradients) entre la memòria i els nuclis de càlcul milers de vegades per segon. El coll d'ampolla no sol ser la velocitat de càlcul sinó precisament l'**amplada de banda de memòria**: és el que determina quants paràmetres del model es poden processar per segon. Això ha portat a dissenyar xips com l'H100 d'NVIDIA amb fins a 80 GiB d'HBM3 i una amplada de banda de 3,35 TB/s, un valor que hauria semblat de ciència-ficció fa una dècada.
 
@@ -108,7 +108,7 @@ Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un
 La jerarquia de memòria: cada nivell conserva les dades del nivell inferior que tinguin més probabilitat de ser accedides.
 :::
 
-Cada nivell emmagatzema un subconjunt del contingut del nivell immediatament inferior (és una jerarquia inclusiva, la que s'estudia a EC). Quan el processador necessita una dada, la cerca primer al nivell més ràpid (la memòria cau); si no hi és, baixa al nivell següent, i així successivament. La **memòria cau** (**MC**) és el nom que rep el nivell que s'interposa entre el processador i la memòria principal; és la peça central d'aquest tema.
+Cada nivell emmagatzema un subconjunt del contingut del nivell immediatament inferior (és una jerarquia inclusiva, la que s'estudia a EC). Quan el processador necessita una dada, la cerca primer al nivell més ràpid (la memòria cau); si no hi és, baixa al nivell següent, i així successivament. La **memòria cau** (MC) és el nom que rep el nivell que s'interposa entre el processador i la memòria principal; és la peça central d'aquest tema.
 
 A banda del rendiment, la memòria cau té també un impacte positiu en el **consum energètic**: com que la majoria dels accessos es resolen a l'MC sense necessitat d'accedir a la memòria principal, el nombre total d'operacions que activen els circuits de la DRAM disminueix, i amb ell el factor d'activitat $\alpha$ de la fórmula de potència dinàmica $P_d = \alpha \cdot C \cdot V_{CC}^{2} \cdot f_{clock}$ (@eq-potencia-dinamica).
 
@@ -442,15 +442,15 @@ Quan l'MC ha d'emmagatzemar un nou bloc i totes les vies del conjunt corresponen
 
 L'objectiu de qualsevol política de reemplaçament és minimitzar la taxa de fallades, és a dir, expulsar el bloc que tingui menys probabilitat de ser accedit en el futur. Com que el futur no és conegut, els algorismes reals intenten predir-lo a partir del comportament passat. Hi ha quatre algorismes principals:
 
-**LRU** (***Least Recently Used***): Reemplaça el bloc que fa més temps que no s'ha accedit. Es basa en la localitat temporal: si un bloc no s'ha usat recentment, és poc probable que es necessiti aviat. Entre els algorismes implementables, és dels que donen la taxa de fallades més baixa en la majoria de casos pràctics, i és el que s'usarà en els problemes d'aquest curs.
+*Least recently used* (LRU): Reemplaça el bloc que fa més temps que no s'ha accedit. Es basa en la localitat temporal: si un bloc no s'ha usat recentment, és poc probable que es necessiti aviat. Entre els algorismes implementables, és dels que donen la taxa de fallades més baixa en la majoria de casos pràctics, i és el que s'usarà en els problemes d'aquest curs.
 
 La implementació d'LRU és senzilla per a 2 vies (un sol bit per conjunt n'és suficient), però es complica per a 4 o més vies. En la pràctica, per a 4 vies s'usa un **pseudo-LRU**: les vies s'agrupen en dues parelles, i tres bits per conjunt aproximen l'ordre d'ús (un bit indica quina parella s'ha usat menys recentment, i un bit per parella, quina via dins de cadascuna).
 
 **Aleatori** (***Random***): Selecciona la via víctima a l'atzar, normalment mitjançant un mecanisme de maquinari senzill. No és tan eficient com LRU, però la seva implementació és molt simple i la seva taxa de fallades s'aproxima a la d'LRU quan la memòria cau és gran. És una alternativa atractiva en aquests casos.
 
-**FIFO** (***First In, First Out***): Reemplaça el bloc que va entrar al conjunt fa més temps. No s'ha de confondre amb LRU: FIFO considera quan va entrar el bloc, independentment de si s'ha accedit des d'aleshores. És menys eficient que LRU perquè un bloc al qual s'ha accedit recentment pot ser expulsat si va entrar fa molt de temps.
+*First in, first out* (FIFO): Reemplaça el bloc que va entrar al conjunt fa més temps. No s'ha de confondre amb LRU: FIFO considera quan va entrar el bloc, independentment de si s'ha accedit des d'aleshores. És menys eficient que LRU perquè un bloc al qual s'ha accedit recentment pot ser expulsat si va entrar fa molt de temps.
 
-**OPT** (***Optimal***): Reemplaça el bloc que no s'usarà fins més tard. S'ha demostrat teòricament que OPT obté la taxa de fallades mínima possible. Malauradament, no és implementable en maquinari real perquè
+**Òptim** (*optimal*, OPT): Reemplaça el bloc que no s'usarà fins més tard. S'ha demostrat teòricament que OPT obté la taxa de fallades mínima possible. Malauradament, no és implementable en maquinari real perquè
 requereix conèixer els accessos futurs. La seva utilitat pràctica és establir una **cota inferior** de la taxa de fallades: en entorns de simulació, permet avaluar quant de marge de millora queda per a nous algorismes. Val la pena observar que LRU és, de fet, un intent intuïtiu d'aproximar OPT: «el bloc que fa més temps que no s'usa» és una bona predicció del bloc que s'usarà més tard.
 
 ::: {#tip-lru-exemple .callout-tip}
@@ -690,7 +690,7 @@ Resum de les polítiques de memòria cau.
 
 ## Rendiment {#sec-rendiment-mc}
 
-Les decisions de disseny estudiades fins ara —política d'emplaçament, d'escriptura i de reemplaçament— afecten el rendiment del sistema. Cal disposar d'eines per quantificar aquest impacte i comparar alternatives. En aquesta secció es defineixen les dues mètriques principals: el **temps d'accés mitjà a memòria** (TAM) i el **temps d'execució** ($t_{exe}$).
+Les decisions de disseny estudiades fins ara —política d'emplaçament, d'escriptura i de reemplaçament— afecten el rendiment del sistema. Cal disposar d'eines per quantificar aquest impacte i comparar alternatives. En aquesta secció es defineixen les dues mètriques principals: el **temps d'accés mitjà** (TAM) a la memòria i el **temps d'execució** ($t_{exe}$).
 
 ### Model de temps simplificat {#sec-model-temps}
 
@@ -746,7 +746,7 @@ $$t_p = 2 \cdot t_{bloc} + t_h$$
 
 ### Temps d'accés mitjà (TAM) {#sec-tam}
 
-Com que el temps d'accés varia en cada referència (encert o fallada, lectura o escriptura, bloc modificat o no), s'usa el **temps d'accés mitjà** (TAM), també anomenat ***average memory access time*** (**AMAT**), que en dona la mitjana ponderada:
+Com que el temps d'accés varia en cada referència (encert o fallada, lectura o escriptura, bloc modificat o no), s'usa el **temps d'accés mitjà** (TAM), també anomenat *average memory access time* (AMAT), que en dona la mitjana ponderada:
 
 $$\text{TAM} = t_h + m \cdot t_p$$ {#eq-tam}
 
