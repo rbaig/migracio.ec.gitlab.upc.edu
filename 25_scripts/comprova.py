@@ -367,22 +367,29 @@ def objectius_prosa(ctx):
     return {f: ctx.canvis.diff(f)[0] for f in ctx.canvis.qmd() if ctx.canvis.diff(f)[0]}
 
 
+def atura_prosa(tipus):
+    """Les troballes de lint_prosa.py que aturen: les formes no admeses i els termes anglesos (D-116)."""
+    return tipus.startswith('forma no admesa') or ': terme anglès ' in tipus
+
+
 def c_prosa(ctx):
     import lint_prosa
     formes = lint_prosa.formes_no_admeses(ARREL)
+    angles = lint_prosa.termes_anglesos(ARREL)
     r = []
     objectius = objectius_prosa(ctx)
     for f, linies in objectius.items():
-        for path, n, tipus in lint_prosa.check(ARREL / f, linies,
-                                                None if 'documenta' in classifica(f)[1] else formes):
-            r.append((ERROR if tipus.startswith('forma no admesa') else AVIS, f'{f}:{n}: {tipus}'))
+        documenta = 'documenta' in classifica(f)[1]
+        for path, n, tipus in lint_prosa.check(ARREL / f, linies, None if documenta else formes,
+                                                None if documenta else angles):
+            r.append((ERROR if atura_prosa(tipus) else AVIS, f'{f}:{n}: {tipus}'))
     # Una forma nova a termes.toml s'ha de treure de tot el corpus en el mateix commit (D-105, D-115):
     # si el fitxer canvia, les formes es miren a tots els .qmd, no només a les línies afegides.
     if not ctx.tot and TERMES in ctx.canvis.fitxers:
         for f in versionats():
             if f.endswith('.qmd') and objectius.get(f, 0) is not None and 'documenta' not in classifica(f)[1]:
-                for path, n, tipus in lint_prosa.check(ARREL / f, None, formes):
-                    if tipus.startswith('forma no admesa') and (objectius.get(f) is None or n not in objectius[f]):
+                for path, n, tipus in lint_prosa.check(ARREL / f, None, formes, angles):
+                    if atura_prosa(tipus) and (objectius.get(f) is None or n not in objectius[f]):
                         r.append((ERROR, f'{f}:{n}: {tipus}'))
     return r
 
@@ -622,11 +629,11 @@ COMPROVACIONS = [
                 'l\'autoprova de la classificació', lambda ctx: ctx.tot or any(
                     f.endswith(('.py', '.sh')) or f.startswith('.githooks/') for f in ctx.canvis.fitxers),
                 'En tocar un `.py` o un `.sh`', 'Atura', c_eines),
-    Comprovacio('prosa', 'Prosa', 'Les formes que no s\'han de fer servir (§Anglicismes i terminologia obligatòria), que '
-                'aturen; i els dobles espais i les cometes, que avisen (`lint_prosa.py`)',
+    Comprovacio('prosa', 'Prosa', 'Les formes que no s\'han de fer servir i els termes anglesos fora de la cursiva '
+                '(§Anglicismes i terminologia obligatòria), que aturen; i els dobles espais i les cometes, que avisen (`lint_prosa.py`)',
                 lambda ctx: QMD(ctx) or TERMES in ctx.canvis.fitxers,
-                'En tocar un `.qmd`: les línies afegides; en tocar `24_specs/termes.toml`, les formes a tot el corpus',
-                'Atura (formes) o avisa', c_prosa),
+                'En tocar un `.qmd`: les línies afegides; en tocar `24_specs/termes.toml`, les formes i els termes a tot el corpus',
+                'Atura (formes i termes) o avisa', c_prosa),
     Comprovacio('ortografia', 'Ortografia', 'Mots que no són als diccionaris de `hunspell` (català i anglès) ni al '
                 'del projecte, `24_specs/diccionari.txt` i el de termes, generat de `24_specs/termes.toml` (`ortografia.py`)', QMD,
                 'En tocar un `.qmd`: les línies afegides', 'Avisa', c_ortografia),

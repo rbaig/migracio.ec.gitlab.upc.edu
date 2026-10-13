@@ -7,8 +7,11 @@ que no hi ha cometes rectes "..." que haurien de ser guillemets «...»». I la
 llista de formes que no s'han de fer servir, `[no_admeses]` de
 24_specs/termes.toml (D-115), de la qual es genera la taula de §Anglicismes i
 terminologia obligatòria → «Formes que no s'han de fer servir»: cada forma, també
-en plural, en femení o conjugada, és una troballa. comprova.py tracta les formes com a error (són les formes exactes de la taula)
-i la resta com a avís.
+en plural, en femení o conjugada, és una troballa. I els termes anglesos del
+mateix fitxer fora de la cursiva (D-116): un de [termes], que s'escriu en
+català, o un de [en_angles], que va sempre en cursiva; [angles_en_pla] en recull
+les excepcions, amb el motiu (noms propis). comprova.py tracta les formes i els
+termes anglesos com a error i la resta com a avís.
 
 Salta el que no és prosa: la capçalera YAML, els blocs de codi, les
 matemàtiques, les taules, les línies de div (`:::`), els comentaris HTML i,
@@ -155,8 +158,31 @@ def formes_no_admeses(root):
     return formes
 
 
-def check(path, only_lines=None, formes=None):
-    """Troballes d'un .qmd. formes, la llista de formes_no_admeses() (None: no les mira)."""
+CURSIVA_RE = re.compile(r'(?<![\w*])(\*{1,3})(?!\s)[^*]+?(?<!\s)\1(?![\w*])|(?<!\w)_(?!\s)[^_]+?(?<!\s)_(?!\w)')
+
+
+def termes_anglesos(root):
+    """(expressió, {clau en minúscula: missatge}, [textos exclosos]) dels termes anglesos de
+    24_specs/termes.toml (D-116): els de [termes] no es fan servir en pla, sinó en català, i els
+    de [en_angles] van sempre en cursiva. [angles_en_pla] en recull les excepcions, amb el motiu."""
+    dades = tomllib.loads((Path(root) / '24_specs' / 'termes.toml').read_text(encoding='utf-8'))
+    missatges = {}
+    for clau, e in dades.get('termes', {}).items():
+        missatges[clau.lower()] = f'terme anglès en pla: s\'escriu «{e["ca"]}» (o *{clau}*, en cursiva, com a glossa)'
+    for clau in dades.get('en_angles', {}):
+        for part in clau.split(','):
+            missatges[part.strip().lower()] = f'terme anglès sense cursiva: *{part.strip()}* (13_contrib.qmd §Anglicismes)'
+    # Els més llargs primer: *working set* abans que *set*, *TLB hit* abans que *hit*.
+    alternatives = '|'.join(re.escape(k) for k in sorted(missatges, key=len, reverse=True))
+    # El plural anglès: -s, i -es només darrere de s, x, ch o sh («conflictes» és català).
+    rx = re.compile(r'(?<![\w·-])(' + alternatives + r')(?:s|(?<=[sx])es|(?<=ch)es|(?<=sh)es)?(?![\w·-])', re.I)
+    excepcions = list(dades.get('angles_en_pla', {}))
+    return rx, missatges, excepcions
+
+
+def check(path, only_lines=None, formes=None, angles=None):
+    """Troballes d'un .qmd. formes, la llista de formes_no_admeses() (None: no les mira); angles,
+    la de termes_anglesos() (None: no els mira)."""
     text = Path(path).read_text(encoding='utf-8')
     findings = []
     for n, line in sorted(prose_lines(text).items()):
@@ -165,6 +191,13 @@ def check(path, only_lines=None, formes=None):
         for rx, terme, substitut in formes or []:
             for m in rx.finditer(line):
                 findings.append((path, n, f'forma no admesa: «{m.group(1)}» (s\'escriu «{substitut}»)'))
+        if angles:
+            rx, missatges, excepcions = angles
+            pla = CURSIVA_RE.sub(lambda m: 'X' * len(m.group(0)), line)
+            for text_exclos in excepcions:
+                pla = pla.replace(text_exclos, 'X' * len(text_exclos))
+            for m in rx.finditer(pla):
+                findings.append((path, n, f'«{m.group(0)}»: {missatges[m.group(1).lower()]}'))
         if DOUBLE_SPACE_RE.search(line):
             findings.append((path, n, 'doble espai'))
         if '"' in line:
@@ -209,10 +242,11 @@ def main(argv):
         targets = added_lines()
     findings = []
     formes = formes_no_admeses(root)
+    angles = termes_anglesos(root)
     for path, only in sorted(targets.items()):
         if only is not None and not only:
             continue
-        findings.extend(check(path, only, formes))
+        findings.extend(check(path, only, formes, angles))
     for path, n, kind in findings:
         print(f'{path}:{n}: {kind}')
     return 1 if findings else 0

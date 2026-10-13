@@ -29,7 +29,7 @@ Abans de fer la sessió, cal haver llegit i entès els continguts següents:
 | Instrucció de multiplicació entera (`mul`) | @nte-rv32im-instruccions-multiplicacio |
 | Pas de matrius per referència com a paràmetre | @tip-matriu-pas-referencia |
 | Subrutines multinivell: registres segurs i bloc d'activació | @sec-multinivell-pila, @nte-abi-variables-locals |
-| Accés seqüencial i stride | @sec-opt-acces-sequencial, @eq-stride |
+| Accés seqüencial i *stride* | @sec-opt-acces-sequencial, @eq-stride |
 : {.striped .hover}
 
 ## Declaració de matrius
@@ -271,9 +271,9 @@ Quan un bucle recorre els elements d'una matriu i la distància en bytes entre d
 
 $$\text{stride} = @X_{i+1} - @X_i = \text{constant}$$
 
-L'stride depèn del patró de recorregut. Per a una matriu d'elements de mida $T$ bytes i `NC` columnes (@sec-matrius-recorreguts):
+L'*stride* depèn del patró de recorregut. Per a una matriu d'elements de mida $T$ bytes i `NC` columnes (@sec-matrius-recorreguts):
 
-| Recorregut | Stride |
+| Recorregut | *Stride* |
 | :--- | :--- |
 | Una fila (elements consecutius) | $T$ |
 | Una columna (salt entre files) | $\texttt{NC} \cdot T$ |
@@ -312,8 +312,8 @@ int suma_col(int m[][6]) {
 Abans d'escriure cap instrucció, responeu al fitxer `s4_3_1.md`:
 
 1. Calculeu l'adreça de `m[i][2]` en funció de `@m` i `i`.
-2. Calculeu l'stride per recórrer la columna 2 (distància en bytes entre `m[i][2]` i `m[i+1][2]`).
-3. Expliqueu per què `p += 6` al codi C correspon, en assemblador, a sumar l'stride calculat a l'apartat anterior (aritmètica de punters).
+2. Calculeu l'*stride* per recórrer la columna 2 (distància en bytes entre `m[i][2]` i `m[i+1][2]`).
+3. Expliqueu per què `p += 6` al codi C correspon, en assemblador, a sumar l'*stride* calculat a l'apartat anterior (aritmètica de punters).
 4. Determineu si `suma_col` és uninivell o multinivell i assigneu cada variable a un registre.
 5. Determineu si el programa principal fa alguna crida i quines conseqüències té per a la gestió del context. Recordeu que és el punt d'entrada del programa —el primer bloc de `.text`— i que acaba amb `ecall`.
 
@@ -335,7 +335,7 @@ $$\text{stride} = @\texttt{m[i+1][2]} - @\texttt{m[i][2]} = 24 \text{ bytes}$$
 
 **Pas 3. Aritmètica de punters.**
 
-En C, `p` és de tipus `int *`. Un increment d'una unitat (`p += 1`) equival a sumar la mida de l'element apuntat en bytes (4 bytes per a `int`). Per tant, `p += 6` equival a sumar $6 \cdot 4 = 24$ bytes en assemblador, que coincideix exactament amb l'stride calculat.
+En C, `p` és de tipus `int *`. Un increment d'una unitat (`p += 1`) equival a sumar la mida de l'element apuntat en bytes (4 bytes per a `int`). Per tant, `p += 6` equival a sumar $6 \cdot 4 = 24$ bytes en assemblador, que coincideix exactament amb l'*stride* calculat.
 
 **Pas 4. Assignació de registres de `suma_col`.**
 
@@ -346,7 +346,7 @@ En C, `p` és de tipus `int *`. Un increment d'una unitat (`p += 1`) equival a s
 | `p` (punter, inicialitzat a `@m[0][2]`) | `t0` |
 | `suma` | `t1` |
 | sentinella (`@m[NF][2]`) | `t2` |
-| stride (24) | `t3` |
+| *stride* (24) | `t3` |
 | `*p` (valor llegit a cada iteració) | `t4` |
 : {.striped .hover}
 
@@ -409,9 +409,9 @@ Per verificar l'accés seqüencial, poseu un punt de ruptura a la instrucció `l
 :::
 
 ::: {#wrn-stride-memoria-cau .callout-warning collapse="true"}
-## L'stride i la memòria cau
+## L'*stride* i la memòria cau
 
-L'stride determina l'eficiència d'ús de la memòria cau. Recórrer una **fila** (stride = 4 bytes) és eficient: elements consecutius comparteixen el mateix bloc. Recórrer una **columna** (stride = 24 bytes en aquest cas) salta entre files i pot provocar moltes més fallades de memòria cau (*cache misses*), especialment si `NC` és gran.
+L'*stride* determina l'eficiència d'ús de la memòria cau. Recórrer una **fila** (amb un *stride* de 4 bytes) és eficient: elements consecutius comparteixen el mateix bloc. Recórrer una **columna** (amb un *stride* de 24 bytes, en aquest cas) salta entre files i pot provocar moltes més fallades de memòria cau (*cache misses*), especialment si `NC` és gran.
 
 A @sec-sessio-mc s'analitza quantitativament aquest efecte.
 :::

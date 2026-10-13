@@ -683,7 +683,7 @@ Els bucles que recorren vectors i matrius sovint admeten optimitzacions que redu
 
 Les tres optimitzacions que es presenten a continuació s'apliquen de manera progressiva sobre el mateix bucle: cada una parteix del resultat de l'anterior.
 
-Els blocs d'aquesta secció mantenen les expressions aritmètiques als operands (`li t0, NC*4`, `li t2, NC*2`) per fer visible l'stride de cada recorregut (@imp-ec-operands-expressions).
+Els blocs d'aquesta secció mantenen les expressions aritmètiques als operands (`li t0, NC*4`, `li t2, NC*2`) per fer visible l'*stride* de cada recorregut (@imp-ec-operands-expressions).
 
 ### Optimització #1 — Accés seqüencial {#sec-opt-acces-sequencial}
 
@@ -691,7 +691,7 @@ Quan un bucle recorre els elements d'un vector o matriu i la **distància en byt
 
 $$\text{stride} = @X_{i+1} - @X_i = \text{constant}$$ {#eq-stride}
 
-En lloc de calcular l'adreça de cada element a partir de l'adreça base i l'índex, es manté un **punter** que s'actualitza sumant-li l'stride a cada iteració:
+En lloc de calcular l'adreça de cada element a partir de l'adreça base i l'índex, es manté un **punter** que s'actualitza sumant-li l'*stride* a cada iteració:
 
 $$@X_{i+1} = @X_i + \text{stride}$$ {#eq-acces-sequencial}
 
@@ -700,8 +700,8 @@ Això elimina el producte `i*T` del càlcul d'adreça i el substitueix per una s
 Passos per aplicar l'accés seqüencial:
 
 1. Calcular l'adreça del primer element del recorregut i inicialitzar un punter `p` amb aquesta adreça.
-2. Calcular l'stride restant les adreces de dos elements consecutius.
-3. A cada iteració, accedir a l'element desreferenciant `p`, i sumar-li l'stride per avançar al següent.
+2. Calcular l'*stride* restant les adreces de dos elements consecutius.
+3. A cada iteració, accedir a l'element desreferenciant `p`, i sumar-li l'*stride* per avançar al següent.
 
 ::: {#tip-opt1-sequencial .callout-tip}
 ## Optimització #1 — Accés seqüencial aplicat a una fila de matriu
@@ -740,7 +740,7 @@ La infraestructura de control ocupa **5 instruccions per iteració**.
 
 Versió d'accés seqüencial optimitzada:
 
-L'stride és: $@\texttt{mat[fila][j+1]} - @\texttt{mat[fila][j]} = 4$
+L'*stride* és: $@\texttt{mat[fila][j+1]} - @\texttt{mat[fila][j]} = 4$
 
 ```{.s filename="RV32IM"}
         # a0 = @mat, a1 = fila
@@ -832,9 +832,9 @@ La infraestructura de control queda en **2 instruccions per iteració**. La vari
 
 ### Recorreguts de matrius amb accés seqüencial {#sec-matrius-recorreguts}
 
-L'stride depèn del patró de recorregut, no de l'estructura de la matriu. Per a una matriu d'elements de mida $T$ i `NC` columnes (@fig-matriu-recorreguts-strides):
+L'*stride* depèn del patró de recorregut, no de l'estructura de la matriu. Per a una matriu d'elements de mida $T$ i `NC` columnes (@fig-matriu-recorreguts-strides):
 
-| Recorregut | Stride |
+| Recorregut | *Stride* |
 | :--- | :--- |
 | Una fila | $T$ |
 | Una columna | $\texttt{NC} \cdot T$ |
@@ -853,7 +853,7 @@ L'stride depèn del patró de recorregut, no de l'estructura de la matriu. Per a
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A4_matriu_recorreguts_strides__original_light.svg)
 :::
-Recorreguts de matrius, `mat[4][5]` a dalt i `mat[4][4]` a baix, i els strides corresponents.
+Recorreguts de matrius, `mat[4][5]` a dalt i `mat[4][4]` a baix, i els *strides* corresponents.
 :::
 
 ::: {#tip-sumacolumna-aleatori .callout-tip}
@@ -898,9 +898,9 @@ fifor:
 ::: {#tip-sumacolumna-sequencial .callout-tip}
 ## `sumacolumna` — accés seqüencial (optimitzacions #1, #2 i #3)
 
-L'stride per recórrer una columna és $\texttt{NC} \cdot T = \texttt{NC} \cdot 2$.
+L'*stride* per recórrer una columna és $\texttt{NC} \cdot T = \texttt{NC} \cdot 2$.
 
-Com que, en general, `NC` no té per què ser potència de 2, l'stride `NC*2` tampoc ho és: el desplaçament fins a la sentinella (`nfiles*NC*2`) s'ha de calcular amb `mul`, ja que no es pot obtenir amb `slli`.
+Com que, en general, `NC` no té per què ser potència de 2, l'*stride* `NC*2` tampoc ho és: el desplaçament fins a la sentinella (`nfiles*NC*2`) s'ha de calcular amb `mul`, ja que no es pot obtenir amb `slli`.
 
 ```{.s filename="RV32IM"}
         # a0 = @mat, a1 = col, a2 = nfiles

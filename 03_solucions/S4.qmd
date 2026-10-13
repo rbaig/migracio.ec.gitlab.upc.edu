@@ -415,7 +415,7 @@ fibucle2:
 
 ## Accés seqüencial
 
-**Nota**: com a la secció anterior, les solucions deixen les expressions aritmètiques als operands (`N*4`, `(N+1)*4`, `3*(N-1)*4`, i també les directives `.eqv`) per fer visible l'stride de cada recorregut, tal com s'admet a la teoria i als exàmens (@imp-ec-operands-expressions).
+**Nota**: com a la secció anterior, les solucions deixen les expressions aritmètiques als operands (`N*4`, `(N+1)*4`, `3*(N-1)*4`, i també les directives `.eqv`) per fer visible l'*stride* de cada recorregut, tal com s'admet a la teoria i als exàmens (@imp-ec-operands-expressions).
 
 ::: {#sol-t4-seq-bucles .callout-tip}
 ## Solució: recorreguts per fila, columna i diagonal
@@ -433,7 +433,7 @@ void func(int A[N][N]) {
 
 **a) Suma de la fila 3: `for (i = 0; i < N; i++) suma += A[3][i]`**
 
-L'stride del recorregut per fila és 4 bytes.
+L'*stride* del recorregut per fila és 4 bytes.
 
 L'adreça del primer element és `@A[3][0] = @A + 3*N*4`.
 
@@ -454,7 +454,7 @@ fibucle:
 
 **b) Suma de la columna 4: `for (i = 0; i < N; i++) suma += A[i][4]`**
 
-L'stride del recorregut per columna és `N*4` bytes.
+L'*stride* del recorregut per columna és `N*4` bytes.
 
 L'adreça del primer element és `@A[0][4] = @A + 4*4`.
 
@@ -477,7 +477,7 @@ fibucle:
 
 **c) Suma de la diagonal principal: `for (i = 0; i < N; i++) suma += A[i][i]`**
 
-D'un element `A[i][i]` al següent `A[i+1][i+1]` hi ha $N + 1$ elements de distància: l'stride és `(N+1)*4` bytes (fila «diagonal principal» de la taula de strides de @sec-matrius-recorreguts).
+D'un element `A[i][i]` al següent `A[i+1][i+1]` hi ha $N + 1$ elements de distància: l'*stride* és `(N+1)*4` bytes (fila «diagonal principal» de la taula de *strides* de @sec-matrius-recorreguts).
 
 El primer element és `@A[0][0] = @A`, i la sentinella, `@A + N*((N+1)*4)`: com a l'apartat b, el desplaçament és constant i va a l'operand de `li`.
 
@@ -498,7 +498,7 @@ fibucle:
 
 **d) Diagonal secundària saltant de 3 en 3: `for (i = 0; i < N; i += 3) suma += A[i][N-1-i]`**
 
-Entre dos elements accedits consecutivament, `A[i][N-1-i]` i `A[i+3][N-1-(i+3)]`, la distància en elements és $3N - 3 = 3(N-1)$: l'stride és constant, `3*(N-1)*4` bytes, i l'accés seqüencial és aplicable al càlcul d'adreces.
+Entre dos elements accedits consecutivament, `A[i][N-1-i]` i `A[i+3][N-1-(i+3)]`, la distància en elements és $3N - 3 = 3(N-1)$: l'*stride* és constant, `3*(N-1)*4` bytes, i l'accés seqüencial és aplicable al càlcul d'adreces.
 
 Ara bé, el nombre d'iteracions és $\lceil N/3 \rceil$ i l'adreça de la sentinella no té una expressió senzilla. En aquest cas és més net **conservar `i` com a comptador** del bucle (la variable d'inducció sobreviu per al control) i avançar el punter només per a l'accés a `A`:
 
@@ -519,7 +519,7 @@ bucle:
 fibucle:
 ```
 
-**Contrast entre els recorreguts per fila i per columna (apartats a i b)**: el recorregut per fila (apartat a) té stride 4, el recorregut per columna (apartat b) té stride `N*4`. Per a valors grans de `N`, el recorregut per columna genera moltes fallades de memòria cau, ja que cada accés aterra en una línia de memòria cau diferent. El recorregut per fila aprofita molt millor la localitat espacial (aquests conceptes s'estudien a @sec-tema-mc).
+**Contrast entre els recorreguts per fila i per columna (apartats a i b)**: el recorregut per fila (apartat a) té *stride* 4, el recorregut per columna (apartat b) té *stride* `N*4`. Per a valors grans de `N`, el recorregut per columna genera moltes fallades de memòria cau, ja que cada accés aterra en una línia de memòria cau diferent. El recorregut per fila aprofita molt millor la localitat espacial (aquests conceptes s'estudien a @sec-tema-mc).
 :::
 
 ::: {#sol-t4-seq-mixed .callout-tip}
@@ -549,7 +549,7 @@ El bucle accedeix sempre a `vector[2]` (posició fixa) i recorre la columna 2 de
 - `offset_vector`: distància de `@vector` a `@vector[2]` → `2*4` = 8.
 - `offset_z`: distància de `@z` al primer element del recorregut, `z[0][2]` → `2*4` = 8.
 - `stride`: d'un element `z[k][2]` al següent, `z[k+1][2]`, hi ha una fila sencera (3 `int`) → `3*4` = 12.
-- `max_dist`: la sentinella `t6` s'assoleix (`beq`) després de les 5 iteracions → 5 vegades l'stride → `5*3*4` = 60.
+- `max_dist`: la sentinella `t6` s'assoleix (`beq`) després de les 5 iteracions → 5 vegades l'*stride* → `5*3*4` = 60.
 
 ```{.s filename="RV32I"}
 .eqv    offset_vector, 2*4     # 8
@@ -584,7 +584,7 @@ for (i = 0; i < 100; i++) {
 }
 ```
 
-Al fragment d'assemblador, els dos buits del cos del bucle són l'escriptura i l'avanç del punter. L'stride és $T = 2$ bytes (mida d'un `short`): `p++` es tradueix per `addi t1, t1, 2`, i l'escriptura de 16 bits, per `sh`:
+Al fragment d'assemblador, els dos buits del cos del bucle són l'escriptura i l'avanç del punter. L'*stride* és $T = 2$ bytes (mida d'un `short`): `p++` es tradueix per `addi t1, t1, 2`, i l'escriptura de 16 bits, per `sh`:
 
 ```{.s filename="RV32I"}
         mv      t1, a0              # p = p1  (prèvia al fragment mostrat)
@@ -729,7 +729,7 @@ fibucle:
 
 **b) Eliminació de la variable d'inducció (punters directes), mantenint la condició a l'inici**
 
-Es mantenen dos punters `pv` i `pw` que avancen en paral·lel amb stride 4, controlats amb la sentinella de `pv`. La condició es continua avaluant a l'inici de cada iteració (amb el salt incondicional `j` corresponent), sense aplicar encara l'optimització #2.
+Es mantenen dos punters `pv` i `pw` que avancen en paral·lel amb *stride* 4, controlats amb la sentinella de `pv`. La condició es continua avaluant a l'inici de cada iteració (amb el salt incondicional `j` corresponent), sense aplicar encara l'optimització #2.
 
 ```{.s filename="RV32I"}
         la      t0, v               # t0 = pv = @v[0]
