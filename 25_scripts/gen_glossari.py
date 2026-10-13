@@ -56,6 +56,7 @@ import re
 import sys
 import tomllib
 from pathlib import Path
+from urllib.parse import quote
 
 from taula_md import majuscula, taula
 
@@ -247,7 +248,7 @@ def comprova(pres, d):
     """(errors, avisos, {clau: tema}) de les presentacions del text contra termes.toml."""
     termes, index = d.get("termes", {}), index_termes(d)
     excloses = {clau_angles(k) for k in d.get("no_presentacions", {})}
-    errors, avisos, temes = [], [], {}
+    errors, avisos, temes = comprova_fonts(termes), [], {}
     for angles, catala, f, linia, t in pres:
         lloc = f"{f}:{linia}"
         if clau_angles(angles) in excloses:     # té la forma d'una presentació, però no és un terme
@@ -278,13 +279,62 @@ def comprova(pres, d):
     return errors, avisos, temes
 
 
+# Les fonts lèxiques, per ordre de precedència (13_contrib.qmd §Referència normativa, D-116), i els
+# dos valors que no són fonts: el sintagma transparent i la decisió del llibre, que van sols.
+FONTS = ["DIEC", "Termcat", "Optimot", "Softcatalà", "Viquipèdia", "sintagma", "llibre"]
+SOLES = {"sintagma", "llibre"}
+
+
+def enllac(font, clau, e):
+    """L'enllaç a la consulta de la font, fet amb una plantilla: les fitxes no tenen
+    identificadors estables, i el que es desa és el terme (D-116)."""
+    ca = quote(e["ca"])
+    return {
+        "DIEC": f"https://dlc.iec.cat/Results?DecEntradaText={ca}",
+        "Termcat": f"https://www.termcat.cat/ca/cercaterm/{ca}",
+        "Optimot": ("https://aplicacions.llengua.gencat.cat/llc/AppJava/index.html?action=Principal"
+                    f"&method=cerca_generica&tipusCerca=cerca.queSignifica&input_cercar={ca}"),
+        "Softcatalà": f"https://www.softcatala.org/diccionari-angles-catala/eng/paraula/{quote(clau.lower())}/",
+        "Viquipèdia": "https://ca.wikipedia.org/wiki/" + quote(e.get("viquipedia", majuscula(e["ca"])).replace(" ", "_")),
+    }.get(font)
+
+
+def cella_fonts(clau, e):
+    parts = []
+    for font in e.get("fonts", []):
+        url = enllac(font, clau, e)
+        parts.append(f"[{font}]({url})" if url else majuscula(font))
+    return ", ".join(parts)
+
+
+def comprova_fonts(termes):
+    """Errors del camp `fonts` de [termes]: hi ha de ser, amb valors de FONTS, en l'ordre de
+    precedència, i «sintagma» i «llibre», sols."""
+    errors = []
+    for clau, e in termes.items():
+        fonts = e.get("fonts")
+        if not fonts:
+            errors.append(f"{DADES.name}: «{clau}» no té `fonts` (13_contrib.qmd §Referència normativa)")
+            continue
+        fora = [f for f in fonts if f not in FONTS]
+        if fora:
+            errors.append(f"{DADES.name}: «{clau}»: `fonts` no admet {', '.join(fora)} (sí: {', '.join(FONTS)})")
+        elif [FONTS.index(f) for f in fonts] != sorted(FONTS.index(f) for f in fonts) or len(set(fonts)) != len(fonts):
+            errors.append(f"{DADES.name}: «{clau}»: `fonts` no és en l'ordre de precedència ({', '.join(FONTS)})")
+        elif SOLES & set(fonts) and len(fonts) > 1:
+            errors.append(f"{DADES.name}: «{clau}»: «sintagma» i «llibre» van sols a `fonts`")
+    return errors
+
+
 def taula_termes(d, temes):
     files = []
     for clau in sorted(d.get("termes", {}), key=str.lower):
         e = d["termes"][clau]
-        files.append([f"*{majuscula(clau)}*", majuscula(e["ca"]), temes.get(clau, ""), majuscula(e.get("obs", ""))])
-    return taula([("Anglès", ":---"), ("Català", ":---"), ("Tema", ":---:"), ("Observacions", ":---")], files,
-                 'Termes anglesos i la forma catalana que fa servir el llibre. {#tbl-termes tbl-colwidths="[24,24,8,44]" .striped}')
+        files.append([f"*{majuscula(clau)}*", majuscula(e["ca"]), temes.get(clau, ""), cella_fonts(clau, e),
+                      majuscula(e.get("obs", ""))])
+    return taula([("Anglès", ":---"), ("Català", ":---"), ("Tema", ":---:"), ("Fonts", ":---"), ("Observacions", ":---")],
+                 files, 'Termes anglesos i la forma catalana que fa servir el llibre. '
+                 '{#tbl-termes tbl-colwidths="[25,22,7,15,31]" .striped}')
 
 
 def taula_angles(en_angles):
