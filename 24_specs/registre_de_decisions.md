@@ -189,6 +189,12 @@ Decisió de l'usuari (2026-10-09, fase 8a, decisió 10), a proposta de Claude Co
 
 Decisió de l'usuari (2026-10-06): a la secció final, com la secció 7 del PDF original.
 
+### D-119
+
+**Excepció i interrupció: els termes anglesos, junts a T9** · `13_contrib.qmd §T9` i `§Anglicismes i terminologia obligatòria` · 2026-10-14
+
+Proposta de l'usuari (2026-10-14), en revisar les remissions `@lst-` d'A2: la presentació d'*exception* era a A2 (T2), dins d'una frase sobre una excepció d'alineació de RARS, «**excepció **(*exception*)** d'alineació**», amb una negreta mal tancada que deixava els asteriscs a la vista. L'usuari, literal: «introduir aquí els termes anglesos, exception i interruption conjuntament. Això trenca la regla de la primera aparició, però penso que està justificat». A A2 queda «**excepció d'alineació**», sense l'anglès, i els dos termes es presenten a `#cau-terminologia` (A9), on es defineixen l'un al costat de l'altre. Claude Code hi va posar *interrupt* i no *interruption*: és el terme de l'especificació de RISC-V i de Harris & Harris, i el que A9 ja fa servir als noms dels CSR i dels bits (*Machine Interrupt Enable*, el bit *Interrupt* de `mcause`). *Interrupt* va entrar a `24_specs/termes.toml`, que no el tenia, i el glossari situa tots dos termes a T9.
+
 ### D-21
 
 **Mode S a T9: la fallada de pàgina, no la de TLB** · `13_contrib.qmd §T9` · 2026-10-07 · `402ef7a`
@@ -586,7 +592,9 @@ Opcions de Claude Code: que el PDF numeri només els llistats `#lst-`, com l'HTM
 
 `preamble.tex` només fa avançar el comptador quan el peu porta `\label`, que és el cas dels `#lst-`, i hi escriu «Codi 2.3: …» amb el nom del fitxer a sota; els altres blocs porten només el nom del fitxer. `25_scripts/llistats.lua` passa al peu el `filename` del bloc, al PDF, i Quarto ja no imbrica els dos `codelisting`. Els blocs que el PDF numerava sense que cap text hi remetés van perdre el número.
 
-L'abast, a `0e5431d`. El patró del `TODO.md` donava 23 línies: 18 remissions a un bloc, una sèrie amb lletra (P2) i 4 que no ho eren (el peu de dues figures d'A3, «el codi anterior i el posterior a la crida»; un bloc de memòria cau a L6; i fragments en línia a P2). Per la forma, mirant el paràgraf de davant i el de darrere de cada bloc, n'hi havia 62: A2 6, A3 3, A5 2, A7 2, A9 1, P2 14, P3 7, P4 9, P7 1, P8 1, L1 1, L2 5, L3 2, L4 2, L5 1 i L6 5.
+L'abast, a `0e5431d`. El patró del `TODO.md` donava 23 línies: 18 remissions a un bloc, una sèrie amb lletra (P2) i 4 que no ho eren (el peu de dues figures d'A3, «el codi anterior i el posterior a la crida»; un bloc de memòria cau a L6; i fragments en línia a P2). Per la forma, mirant el paràgraf de davant i el de darrere de cada bloc i amb el veredicte cas a cas, n'hi havia 85: A2 7, A3 5, A5 2, A7 2, A9 1, P2 15, P3 14, P4 13, P7 2, P8 3, S3 1, L1 1, L2 7, L3 3, L4 3, L5 2 i L6 4. El commit del bloc 1 en deia 62, d'un primer recompte amb un patró que no reconeixia «programa» ni «codi … RISC-V» i que llegia com a remissions enrere dues amb «aquest» que apunten al bloc de després; el veredicte cas a cas, en preparar el bloc 2, ho va corregir. No en porten les presentacions d'una sèrie d'apartats amb lletra (P2, i dues a P4).
+
+Les presentacions amb dos punts tampoc no són remissions: «es poden declarar … de la manera següent:» (A2), «el programa definitiu queda:» (A3), «es declara així:» (A4) i «s'ha declarat així:» (P3) presenten el codi que les segueix, com uns dos punts una fórmula, i fer-ne remissió donaria «es declara com al Codi 4.1:». Les va trobar el veredicte cas a cas, que l'especificació no cobria; decisió de l'usuari (2026-10-14), a recomanació de Claude Code, literal: «fora, com recomanes».
 
 ### D-45
 

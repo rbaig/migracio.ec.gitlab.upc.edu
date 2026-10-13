@@ -940,16 +940,19 @@ Si algun operand és NaN, totes les comparacions retornen 0.
 `fmv.w.x` i `fmv.x.w` copien el patró de 32 bits sense cap conversió: el valor numèric en coma flotant del resultat és en general diferent del valor enter de l'operand.
 :::
 
-::: {#tip-conversio-int-float .callout-tip}
+:::: {#tip-conversio-int-float .callout-tip}
 ## Conversió entre `float` i `int`: `rtz` vs. arrodoniment
 
-Tradueix la funció C següent, que converteix un `float` a `int` fent una conversió de tipus explícita:
+Tradueix la funció C del @lst-truncar-float, que converteix un `float` a `int` fent una conversió de tipus explícita:
 
+::: {#lst-truncar-float}
 ```{.c filename="C"}
 int truncar(float x) {
     return (int) x;
 }
 ```
+Conversió explícita d'un `float` a `int`.
+:::
 
 La conversió `(int)` de C sempre trunca cap a zero (per als valors que caben en un `int`). Per traduir-ho cal indicar explícitament el mode d'arrodoniment `rtz` a `fcvt.w.s`:
 
@@ -969,7 +972,7 @@ Si s'escriu `fcvt.w.s a0, fa0` (sense operand de mode) l'assemblador hi assigna 
 Per a $x = 3{,}5$, en canvi, la diferència és evident: `rtz` dona $3$; `dyn`/RNE dona $4$ (empat, al parell). La instrucció `fcvt.w.s` trunca només quan se n'indica el mode `rtz`.
 
 RARS 1.6 no segueix l'especificació en el primer cas: amb RNE (el mode per defecte, o `rne` explícit), `fcvt.w.s` hi dona $3$ per a $2{,}5$ (i $-3$ per a $-2{,}5$), tot i que $0{,}5$ i $1{,}5$ sí que els desempata al parell ($0$ i $2$).
-:::
+::::
 
 ::: {#imp-no-immediats-flotants .callout-important}
 ## No hi ha immediats flotants
@@ -988,11 +991,12 @@ const_u: .float 1.0
 
 ### Exemple de traducció {#sec-exemple-traduccio-f}
 
-::: {#tip-traduccio-float .callout-tip}
+:::: {#tip-traduccio-float .callout-tip}
 ## Traducció d'una funció amb `float`
 
-Tradueix la funció C següent a RV32F:
+Tradueix a RV32F la funció C del @lst-func-float:
 
+::: {#lst-func-float}
 ```{.c filename="C"}
 float func(float x) {
     if (x < 1.0f)
@@ -1001,6 +1005,8 @@ float func(float x) {
         return 2.0f - x;
 }
 ```
+Funció amb una condició i operacions de coma flotant.
+:::
 
 El paràmetre `x` arriba per `fa0` i el resultat es retorna per `fa0`.
 
@@ -1032,4 +1038,4 @@ sino:
         fsub.s  fa0, ft1, fa0   # return 2.0 - x
         ret
 ```
-:::
+::::

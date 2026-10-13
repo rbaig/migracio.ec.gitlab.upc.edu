@@ -17,8 +17,8 @@ De l'altra, els dispositius d'**entrada/sortida** (E/S) necessiten notificar al 
 En tots dos casos, el mecanisme és el mateix: el processador interromp l'execució del programa, transfereix el control a una **rutina de servei d'excepcions** (RSE) de l'SO, i un cop feta la gestió, pot reprendre el programa interromput.
 
 ::: {#cau-terminologia .callout-caution}
-- **Excepció**: esdeveniment causat per l'execució d'una instrucció (intern al processador).
-- **Interrupció**: esdeveniment causat per un dispositiu extern.
+- **Excepció** (***exception***): esdeveniment causat per l'execució d'una instrucció (intern al processador).
+- **Interrupció** (***interrupt***): esdeveniment causat per un dispositiu extern.
 
 Tots dos usen el mateix mecanisme de maquinari, però difereixen en l'origen, el moment de detecció i, sovint, en el tractament.
 :::
@@ -386,8 +386,9 @@ Si l'RSE retornés sense ajustar `mepc` en el cas d'una `ecall`, el processador 
 
 ### Exemple: RSE mínima en RISC-V {#sec-ei-rse-exemple}
 
-El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que desa tots els registres, identifica la causa i en delega el tractament a un **distribuïdor** (*dispatcher*). Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
+El @lst-rse-minima és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que desa tots els registres, identifica la causa i en delega el tractament a un **distribuïdor** (*dispatcher*). Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
 
+::: {#lst-rse-minima}
 ```{.s filename="RV32IZicsr"}
 .section .text.trap, "ax"
 .align 2
@@ -477,6 +478,8 @@ rse:
         # Retornar al programa: MIE←MPIE, mode←MPP, PC←mepc
         mret
 ```
+RSE mínima: desa els registres i delega el tractament en el distribuïdor.
+:::
 
 El distribuïdor (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres desats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar l'RSE. El distribuïdor consulta `mcause` per cridar la rutina específica i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
