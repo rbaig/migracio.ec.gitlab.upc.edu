@@ -541,6 +541,20 @@ Decisió de l'usuari 8 de la fase 7c (2026-10-03), aplicada el 2026-10-06 a les 
 
 Fins al 2026-10-07, §Referències creuades deia també «Figures i Taules: no han d'estar necessàriament referenciades al text», que la contradeia per a les figures des del 2026-10-03. Decisió de l'usuari (2026-10-07, fase 7e): «Figures sempre, taules opcional».
 
+### D-117
+
+**Als blocs de codi s'hi remet amb `@lst-`, i només es numeren els llistats** · `13_contrib.qmd §Referències creuades` i `§Presentació visual` · 2026-10-13
+
+Petició de l'usuari (2026-10-08, fase 7g), literal: «"el codi següent", a tot arreu: Valorar si és millor posar-hi la remissió introduint l'ús de `#lst-`». La va motivar l'RSE d'A9, que al PDF havia flotat deu pàgines enllà ([D-69](#d-69)). Claude Code va recomanar llavors mantenir «el codi següent» quan el bloc ve just a continuació, i fer servir `@lst-` només per a les remissions llunyanes o enrere; l'usuari va decidir el 2026-10-09, literal: «Decisió, remissions».
+
+Investigació de Claude Code (2026-10-13, Quarto 1.9.36, en un llibre de prova amb el `preamble.tex` del projecte). Al PDF, Quarto escriu cada bloc amb `filename` com un `codelisting`, i D-69 en conservava el comptador: el `.tex` de `0e5431d` en tenia 560. L'HTML no en numera cap. Amb `#lst-`, cada format n'hauria donat un número diferent: a l'HTML, la posició entre els llistats `#lst-` del capítol; al PDF, entre tots els blocs amb `filename` (el bloc d'A2 que era «Codi 2.26» hauria estat el segon o el tercer llistat a l'HTML). I dins d'un callout, Quarto imbrica el `codelisting` del `#lst-` en el del `filename`, i el bloc surt amb dos números («Codi 1.6 …» i «Codi 1.7 RV32I»), tant amb l'atribut `lst-cap` com amb la forma de div; dins d'un `#exr-`, no.
+
+Opcions de Claude Code: que el PDF numeri només els llistats `#lst-`, com l'HTML; deixar els números diferents en cada format; o que l'HTML numeri tots els blocs. Decisions de l'usuari (2026-10-13, «Confirmat»), totes a recomanació de Claude Code: la primera; la forma de div, com les figures, perquè el peu és prosa que les comprovacions de l'ortografia i la gramàtica llegeixen, i el filtre només l'ha de tractar a ella; substituir la remissió per posició, no afegir-hi la `@lst-`; el peu, una frase curta que diu què fa el codi; i l'abast per la forma, no pel nom: «la funció C següent» és la mateixa remissió que «el codi següent». Les sèries d'apartats amb lletra en queden fora, perquè la lletra ja identifica cada bloc.
+
+`preamble.tex` només fa avançar el comptador quan el peu porta `\label`, que és el cas dels `#lst-`, i hi escriu «Codi 2.3: …» amb el nom del fitxer a sota; els altres blocs porten només el nom del fitxer. `25_scripts/llistats.lua` passa al peu el `filename` del bloc, al PDF, i Quarto ja no imbrica els dos `codelisting`. Els blocs que el PDF numerava sense que cap text hi remetés van perdre el número.
+
+L'abast, a `0e5431d`. El patró del `TODO.md` donava 23 línies: 18 remissions a un bloc, una sèrie amb lletra (P2) i 4 que no ho eren (el peu de dues figures d'A3, «el codi anterior i el posterior a la crida»; un bloc de memòria cau a L6; i fragments en línia a P2). Per la forma, mirant el paràgraf de davant i el de darrere de cada bloc, n'hi havia 62: A2 6, A3 3, A5 2, A7 2, A9 1, P2 14, P3 7, P4 9, P7 1, P8 1, L1 1, L2 5, L3 2, L4 2, L5 1 i L6 5.
+
 ### D-45
 
 **El títol dels blocs de pseudocodi** · `13_contrib.qmd §Blocs de codi` · 2026-10-01 · `f066a8e`
@@ -707,6 +721,8 @@ Fins al 2026-10-06 sortien alineades a l'esquerra. Quan es va escriure, totes le
 Detectat a la fase 7g, a partir d'una observació de l'usuari: la secció «Exemple: RSE mínima en RISC-V» d'A9 (§9.4.4) diu «El codi següent…» i, al PDF, no hi havia cap codi. Quarto escriu cada bloc amb `filename` com a flotant `codelisting` (paquet `float`, estil `ruled`). Dels 559 llistats del llibre (2026-10-08), els 349 de dins dels callouts porten `[H]`, que en fa una caixa que no es parteix, i els 210 de fora, la posició per defecte `h`: LaTeX els posa on li caben. Conseqüències mesurades sobre el PDF: l'RSE d'A9 (96 línies) sortia deu pàgines més enllà, al final del capítol, i els llistats de laboratori de més d'una pàgina (`s3_4_2.s`, `s4_2_2.s`, `s6_5_1.s`) també anaven a parar al final de la sessió; i la solució de l'RSE de S9 (106 línies, dins d'un callout) es tallava al peu de la pàgina, i la resta no sortia enlloc.
 
 `preamble.tex` redefineix `codelisting` com un bloc normal que conserva el peu, el comptador, la llista de llistats i les ratlles de l'estil `ruled`. Dins d'un callout, el bloc va sense el fons gris (`Shaded`, de `framed`), que `tcolorbox` no sap partir. El PDF passa de 588 a 569 pàgines: eren els buits que deixaven els flotants. Alternatives descartades: `\floatplacement{codelisting}{H}` per a tots, que hauria fet caixes sense salt de pàgina (els llistats de més d'una pàgina haurien desbordat el peu, com el de S9); i treure el `filename` dels blocs, que és la convenció de §Blocs de codi.
+
+Des del 2026-10-13, el comptador i el peu només són dels llistats `#lst-`, als quals s'hi remet amb `@lst-`; la resta de blocs porten només el nom del fitxer ([D-117](#d-117)).
 
 ### D-57
 

@@ -783,6 +783,17 @@ Retallada el 2026-10-12: quatre dels cinc originals ja no hi eren (`e79ff2c`), i
   for f in uninivell multinivell; do grep -o "cc0000" 22_figs_originals/conservats/A3_pila_$f.svg | wc -l; done    # 6 i 10 (2026-10-07)
   ```
 
+### «Remissions `@lst-` en lloc de «el codi següent»» (§Tasques transversals)
+
+Retallada el 2026-10-13, en fer-ne el bloc 1 (la regla, `preamble.tex` i `25_scripts/llistats.lua`), amb les decisions de l'usuari sobre les opcions de la investigació del render, totes a recomanació de Claude Code («Confirmat»; [D-117](registre_de_decisions.md#d-117)). El text d'abans:
+
+- **Remissions `@lst-` en lloc de «el codi següent»** (decisió de l'usuari, 2026-10-09: «Decisió, remissions»; abans, decisió oberta: «“El codi següent”: remissions `@lst-`?», petició de l'usuari del 2026-10-08). **Delegada a una sessió nova** (Opus, effort alt), perquè demana investigar el render: al PDF, els blocs amb `filename` ja surten com a flotants numerats («Codi 4.7», pel `codelisting` de LaTeX i `preamble.tex`, D-69), i a l'HTML no, de manera que afegir `#lst-` i `lst-cap` pot donar una numeració diferent als dos formats. Abast, a `6a17af1`: 23 remissions per posició a un bloc de codi (19 «següent(s)» i 4 «anterior»): A2 3, A3 3, A9 1, P2 6, P3 2, P4 1, P7 1, P8 1, L1 1, L2 1, L3 1 i L6 2; cap `#lst-` al corpus. A2 i A3 són a l'abast de la revisió externa: si es fa després de la finestra de canvis, cal avisar-ne els equips. La regla, a `13_contrib.qmd §Referències creuades` amb la seva entrada al registre.
+
+  ```bash
+  git grep -c -i -E "(codi|programa|fragment|bloc) (de codi )?(següent|anterior)|(codis|programes|fragments|blocs) (següents|anteriors)" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'   # 23 (6a17af1)
+  git grep -c -E '\{#lst-|@lst-' -- '*.qmd'                                                                                                                           # cap
+  ```
+
 ## Capçalera del `TODO.md` fins al 2026-10-09
 
 Sense l'historial dels recomptes (línia 9, `git show c29b58d:TODO.md`).

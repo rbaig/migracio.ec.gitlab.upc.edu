@@ -120,15 +120,29 @@
 % la solució de l'RSE de S9 (106 línies) es tallava al peu i la resta no sortia enlloc.
 % Aquí el llistat és un bloc normal, amb les ratlles i el peu del flotant (comptador,
 % \label i llista de llistats), que es parteix entre pàgines com qualsevol paràgraf.
+% Només es numeren els llistats #lst-, els que porten \label al peu, com a l'HTML, que
+% no numera la resta (2026-10-13): el peu és «Codi 2.3: …», i a sota, el nom del fitxer,
+% que 25_scripts/llistats.lua hi ha posat dins de \ecfitxer{}. Un bloc amb filename i
+% sense #lst- porta només el nom del fitxer. El \centering que Quarto escriu dins dels
+% #lst- no fa res: dins dels callouts, sense el fons gris, centrava les línies del codi.
 \makeatletter
+\newcommand\ecfitxer[1]{}
 \newcommand\ec@peullistat[2][]{%
-  \refstepcounter{codelisting}%
-  \addcontentsline{lop}{codelisting}{\protect\numberline{\thecodelisting}#2}%
-  \noindent{\bfseries\fname@codelisting~\thecodelisting}\enskip#2\par\nopagebreak
+  \in@{\label}{#2}%
+  \ifin@
+    \refstepcounter{codelisting}%
+    \addcontentsline{lop}{codelisting}{\protect\numberline{\thecodelisting}#2}%
+    \begingroup\gdef\ec@fitxer{}\def\ecfitxer##1{\gdef\ec@fitxer{##1}}%
+    \noindent{\bfseries\fname@codelisting~\thecodelisting:}\enskip#2\par\nopagebreak
+    \ifx\ec@fitxer\@empty\else\noindent\ec@fitxer\par\nopagebreak\fi
+    \endgroup
+  \else
+    \noindent#2\par\nopagebreak
+  \fi
   \kern2pt\hrule\kern2pt\nopagebreak}
 \newenvironment{ec@codelisting}[1][]{%
   \par\addvspace{\medskipamount}%
-  \def\@captype{codelisting}\let\caption\ec@peullistat
+  \def\@captype{codelisting}\let\caption\ec@peullistat\let\centering\relax
   \hrule\kern2pt\nopagebreak}{%
   \par\kern2pt\hrule\par\addvspace{\medskipamount}}
 \AtBeginDocument{%

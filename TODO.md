@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**10 entrades vives** (recompte del 2026-10-13, en afegir a §Tasques transversals «Registres que es mantenen a mà»; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**12 entrades vives** (recompte del 2026-10-13, en afegir «Remissions per posició a exemples i taules» a §Tasques transversals i «Número de capítol dels problemes, les solucions i el laboratori…» a §Tasques globals; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 2 (suma 10, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 1 · `§Tasques globals` 3 (suma 12, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -70,11 +70,11 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 ## Tasques transversals
 
-- **Remissions `@lst-` en lloc de «el codi següent»** (decisió de l'usuari, 2026-10-09: «Decisió, remissions»; abans, decisió oberta: «“El codi següent”: remissions `@lst-`?», petició de l'usuari del 2026-10-08). **Delegada a una sessió nova** (Opus, effort alt), perquè demana investigar el render: al PDF, els blocs amb `filename` ja surten com a flotants numerats («Codi 4.7», pel `codelisting` de LaTeX i `preamble.tex`, D-69), i a l'HTML no, de manera que afegir `#lst-` i `lst-cap` pot donar una numeració diferent als dos formats. Abast, a `6a17af1`: 23 remissions per posició a un bloc de codi (19 «següent(s)» i 4 «anterior»): A2 3, A3 3, A9 1, P2 6, P3 2, P4 1, P7 1, P8 1, L1 1, L2 1, L3 1 i L6 2; cap `#lst-` al corpus. A2 i A3 són a l'abast de la revisió externa: si es fa després de la finestra de canvis, cal avisar-ne els equips. La regla, a `13_contrib.qmd §Referències creuades` amb la seva entrada al registre.
+- **Remissions `@lst-` en lloc de «el codi següent»** (decisió de l'usuari, 2026-10-09: «Decisió, remissions»; la investigació del render i les decisions del 2026-10-13, a [D-117](24_specs/registre_de_decisions.md#d-117); el text d'abans, a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). ✅ **Bloc 1, la regla i el render**: `13_contrib.qmd §Referències creuades`, `preamble.tex` i `25_scripts/llistats.lua`; només es numeren els llistats `#lst-`, en forma de div, als dos formats. **Queda el bloc 2**: les remissions per posició dels 62 blocs mesurats per la forma a `0e5431d` (A2 6, A3 3, A5 2, A7 2, A9 1, P2 14, P3 7, P4 9, P7 1, P8 1, L1 1, L2 5, L3 2, L4 2, L5 1 i L6 5), en dos commits: els apunts (A2, A3, A5 i A7 són a l'abast de la revisió externa: abans d'avisar-ne els equips) i, després, els problemes i el laboratori. Del patró d'abans n'han de quedar 5 línies, que no són remissions a un bloc: dues a A3 (el peu de dues figures, «el codi anterior i el posterior a la crida»), una a L6 (un bloc de memòria cau) i dues a P2 (fragments en línia, i una sèrie d'apartats amb lletra, que no porta `#lst-`).
 
   ```bash
-  git grep -c -i -E "(codi|programa|fragment|bloc) (de codi )?(següent|anterior)|(codis|programes|fragments|blocs) (següents|anteriors)" -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd'   # 23 (6a17af1)
-  git grep -c -E '\{#lst-|@lst-' -- '*.qmd'                                                                                                                           # cap
+  git grep -o -I -E -i -e '(codi|programa|fragment|bloc) (de codi )?(següent|anterior)|(codis|programes|fragments|blocs) (següents|anteriors)' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' | wc -l   # 23 (0e5431d); 5 en acabar
+  git grep -o -E '^:{3,} *\{#lst-' -- '*.qmd' | wc -l                                                                                                              # cap (0e5431d); 62 en acabar
   ```
 
 - **Revisió completa de la norma de lèxic anglès/català** (petició de l'usuari, 2026-10-09: «apunta que cal fer una revisió completa d'aquesta norma»). D-88 (`13_contrib.qmd §Anglicismes i terminologia obligatòria`): si un terme no és a l'Optimot ni al diccionari anglès-català de Softcatalà, es fa servir l'anglès; s'admet l'anglès quan el català és molt poc usat, documentat a la taula de la guia. Cal passar tots els anglicismes del corpus per la regla: els del lèxic del llibre, que des del 2026-10-13 és a `24_specs/termes.toml` ([D-115](24_specs/registre_de_decisions.md#d-115), que inverteix [D-100](24_specs/registre_de_decisions.md#d-100); el glossari de `12_sigles_simbols.qmd §Termes` se'n genera, amb la taula dels que es mantenen en anglès) i els que el corpus fa servir sense traduir (*toolchain*, *stride*, *fetch*, *buffer*, *gap*, *working set*…). Sessió pròpia, amb una llista per terme (Optimot, Softcatalà, ús al corpus, proposta). Afecta A1–A9 i la resta: si es fa després de la finestra de canvis, coordinar-ho amb els equips. ✅ **Anàlisi feta el 2026-10-12** (subagent, Opus; l'usuari: «Endavant»), sense tocar cap fitxer del llibre: `24_specs/lexic/revisio_2026-10-12.md`, amb els scripts a `24_specs/lexic/scripts/`. 193 entrades (els 114 termes del glossari, les 6 de la taula dels mantinguts en anglès i 73 anglicismes del corpus que no hi són), consultades al Cercaterm, a l'Optimot i a Softcatalà: se'n mantenen 152, hi ha 29 propostes de canvi (A1, A2, A3, A6, A7, A9, P3, P9, S3, S7, S9, L1, L2, L3, L6 i `glossari.toml`) i 15 dubtes. **Decisions per a l'usuari** (el detall i la recomanació de cadascuna, al fitxer): (1) com es llegeix D-88 amb els sintagmes transparents: literalment, 47 termes del glossari passarien a l'anglès (*page fault*, *write-through*…), i el fitxer proposa una redacció que admeti el sintagma català fet amb mots que hi són; (2) si tots els termes que es mantenen en anglès van a la segona taula del glossari (7 candidats: *stride*, *working set*, *tiling*, *TLB shootdown*, *fall-through*, *round-robin*, *half*); (3) les formes del llibre que no són les del Termcat (*overflow* «sobreeiximent» / «desbordament», 110 ocurrències; *pseudoinstruction*, *branch*, *breakpoint*, *throughput*, *speedup*, *lazy*, *fetch*, *escape sequence*); (4) *little-endian* i *big-endian*, en anglès com a excepció documentada (recomanació); (5) *toolchain*: tres glosses diferents al text; (6) menors (*dirty hack*, «enllaçat», *ampersand*). **Altres troballes**: `gen_glossari.py` no recull les presentacions amb més d'una cosa dins del parèntesi ni llegeix `21_riscv/`, i se n'escapen *conflict*, *coherence*, *write-back*, *valid bit*, *stack frame*, *data type*, *return address*, *stack pointer*…; i, segons la consulta, el Termcat no té *half-adder* ni *full-adder* ni *multicore*, que el glossari anota «Termcat.» (l'usuari els havia confirmat el 2026-10-09, literal: «Confirmat»; cal que ho miri). Les xifres de la segona passada són aproximades: les que es publiquin, amb `escombrada.sh`.
@@ -103,6 +103,12 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   grep -n 'gen_' _quarto.yml 24_specs/svg.md                              # el pre-render i la taula de svg.md §17
   ```
 
+- **Remissions per posició a exemples i taules** (observació de Claude Code, 2026-10-13, en mesurar les remissions `@lst-`; l'usuari, sobre apuntar-la: «Confirmat»). `13_contrib.qmd §Callouts` demana referenciar els callouts amb `@prefix-etiqueta`, i el corpus hi remet per posició 7 vegades: «l'exemple anterior» (A2, a `#tip-load-half-byte-unsigned`; A3, a §Resultat de l'enllaçament dels mòduls A i B; A8, abans de `@fig-mv-traduccio`), «els exemples següents» (A7, A9 dues vegades) i «les taules següents» (A2, les mides dels tipus de C). Escombrada amb veredicte cas a cas, com la de les `@lst-`, que ho decideixi: un exemple sense etiqueta, o una sèrie d'exemples presentada per un paràgraf, potser no en necessita. A2, A3, A7 i A8 són a l'abast de la revisió externa: abans d'avisar-ne els equips, o coordinat amb ells.
+
+  ```bash
+  git grep -o -I -E -i -e '\b(exemples?|figures?|taules?|callouts?) (següents?|anteriors?)\b' -- '*.qmd' ':!TODO.md' ':!24_specs/arxiu_todo.md' ':!24_specs/registre_de_decisions.md' ':!24_specs/revisio_externa.md' ':!24_specs/lexic/' ':!.claude/' ':!13_contrib.qmd' | wc -l   # 7 (0e5431d): A2 2, A3 1, A7 1, A8 1, A9 2
+  ```
+
 ---
 
 ## Tasques per tema
@@ -121,6 +127,14 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ```bash
   pdftotext -layout _book/Estructura-de-computadors.pdf - | grep -o -E "(Taula|Figura) [0-9]+(\.[0-9]+)?\.?:" | sed -E 's/[0-9]+/N/g' | sort | uniq -c
+  ```
+
+- **Número de capítol dels problemes, les solucions i el laboratori: un a l'HTML i un altre al PDF** (observació de Claude Code, 2026-10-13, en investigar les remissions `@lst-`; l'usuari, sobre apuntar-la: «Confirmat»). `preamble.tex` fa `\counterwithin{chapter}{part}`, i el PDF reinicia el número de capítol a cada part; l'HTML els numera seguits, del 1 (A1) al 33 (L6). Totes les remissions numerades de P, S i L surten diferents als dos formats: el primer problema de P2 és «Problema 11.1» a l'HTML i «Problema 2.1» al PDF, i el primer exercici de L2, «Exercici 29.1» i «Exercici 2.1» (mesurat a `0e5431d`). A A1–A9 coincideixen. Fins a l'inici de les classes (febrer del 2027) cap material de fora del llibre no depèn dels números (`CLAUDE.md §Flux de treball`): cal decidir abans quina numeració es vol, o deixar-ho com a no coincidència acceptada i documentar-ho. No toca A1–A8: és de `preamble.tex` o de l'HTML.
+
+  ```bash
+  grep -n 'counterwithin{chapter}{part}' preamble.tex
+  grep -o -m1 -E 'theorem-title"><strong>Problema [0-9]+\.1\b' _book/02_problemes/P2.html   # …Problema 11.1 (0e5431d)
+  pdftotext _book/Estructura-de-computadors.pdf - | grep -c -E '^Problema 2\.1\b'           # 1: el de P2 (després de make render-complet)
   ```
 
 - **Equacions a MathML**: **decisió presa — mantenir MathJax 3**; el pendent és reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa). Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`): funciona (`underbrace`, `cases`, taules amb math correctes a Chrome) i elimina el JS de MathJax (render instantani, offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), numeració d'equacions inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. El desbordament mòbil ja està resolt via CSS.
