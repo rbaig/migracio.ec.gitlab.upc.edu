@@ -209,50 +209,50 @@ Observació: els casos a) i e) accedeixen a la **mateixa pàgina** (VPN 0, nomé
 
 **Enunciat**: @exr-t8-mv-tlb-cau.
 
-Pàgines de 4 KiB, cau de dades de correspondència directa amb 64 línies amb blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces lògiques de 32 bits.
+Pàgines de 4 KiB, memòria cau de dades de correspondència directa amb 64 línies amb blocs de 32 B, TLB completament associatiu de 16 entrades. Adreces lògiques de 32 bits.
 
 **a)** Descomposició de l'adreça lògica:
 
 - Desplaçament dins la pàgina: $\log_2(4\text{ KiB}) = 12$ bits.
 - VPN: $32 - 12 = 20$ bits.
 - Desplaçament dins el bloc: $\log_2(32) = 5$ bits.
-- Índex de la cau: $\log_2(64) = 6$ bits.
+- Índex de la memòria cau: $\log_2(64) = 6$ bits.
 
 $$\underbrace{b_{31} \cdots b_{12}}_{\text{VPN (20)}} \; \underbrace{b_{11} \cdots b_0}_{\text{desplaçament pàgina (12)}}, \qquad \underbrace{b_{31} \cdots b_{11}}_{\text{etiqueta (21)}} \; \underbrace{b_{10} \cdots b_5}_{\text{índex cau (6)}} \; \underbrace{b_4 \cdots b_0}_{\text{despl. bloc (5)}}$$
 
 Cal notar que índex + desplaçament de bloc $= 6 + 5 = 11$ bits, tots dins dels 12 bits del desplaçament de pàgina.
 
-**b) Lectura amb encert de TLB i encert de cau** (esquema VIPT):
+**b) Lectura amb encert de TLB i encert de memòria cau** (esquema VIPT):
 
-1. La CPU genera l'adreça lògica. **En paral·lel**: els bits d'índex (b10–b5, part del desplaçament) seleccionen la línia de la cau, i el VPN (b31–b12) s'envia al TLB.
+1. La CPU genera l'adreça lògica. **En paral·lel**: els bits d'índex (b10–b5, part del desplaçament) seleccionen la línia de la memòria cau, i el VPN (b31–b12) s'envia al TLB.
 2. El TLB troba el VPN (encert) i retorna el PPN.
-3. La cau llegeix l'etiqueta i les dades de la línia indexada.
-4. Es compara l'etiqueta física —el PPN i el bit b11, que és del desplaçament de pàgina i no canvia en traduir l'adreça— amb l'etiqueta llegida de la cau → coincideixen → **encert de cau**.
+3. La memòria cau llegeix l'etiqueta i les dades de la línia indexada.
+4. Es compara l'etiqueta física —el PPN i el bit b11, que és del desplaçament de pàgina i no canvia en traduir l'adreça— amb l'etiqueta llegida de la memòria cau → coincideixen → **encert de memòria cau**.
 5. Es lliura la dada (el desplaçament de bloc, b4–b0, selecciona el byte/paraula).
 
-Com que la traducció i la indexació es fan alhora, el temps d'accés és pràcticament el d'accedir a la cau.
+Com que la traducció i la indexació es fan alhora, el temps d'accés és pràcticament el d'accedir a la memòria cau.
 
 **c) Fallada de TLB però pàgina present a memòria**:
 
 1. El VPN no és al TLB → **fallada de TLB**. Es llegeix la PTE de la taula de pàgines a memòria (adreça del registre de taula de pàgines + VPN × 4, la mida d'una PTE).
 2. La PTE té $V = 1$ (pàgina present) → **no hi ha fallada de pàgina**. L'MMU copia la PTE al TLB (entrada lliure o reemplaçament LRU), sense interrompre el programa.
-3. La traducció continua amb el PPN de la PTE: l'etiqueta física (el PPN i b11) es compara amb la de la cau → encert de cau → dada.
+3. La traducció continua amb el PPN de la PTE: l'etiqueta física (el PPN i b11) es compara amb la de la memòria cau → encert de memòria cau → dada.
 
 El cost addicional respecte de b) és **un accés a memòria** per llegir la PTE (amb la taula de pàgines plana del tema; amb una taula multinivell, un per nivell).
 
-**d)** Com s'explica a @sec-mv-vipt, perquè una cau **VIPT** no pateixi **aliàsing** (*aliasing*) (i es comporti, pel que fa a la selecció de la línia, com una **PIPT**), l'índex de la cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:
+**d)** Com s'explica a @sec-mv-vipt, perquè una memòria cau **VIPT** no pateixi **aliàsing** (*aliasing*) (i es comporti, pel que fa a la selecció de la línia, com una **PIPT**), l'índex de la memòria cau ha d'usar **només bits del desplaçament de pàgina** (bits que no canvien en la traducció). Això equival a:
 
 $$N_C \cdot B \leq T$$
 
-on $N_C$ és el nombre de conjunts, $B$ la mida del bloc (el producte és la mida d'una via) i $T$ la mida de pàgina. Aquí, la cau és de correspondència directa, amb $N_C = 64$ conjunts d'una línia, $B = 32$ bytes i $T = 4 \text{ KiB}$:
+on $N_C$ és el nombre de conjunts, $B$ la mida del bloc (el producte és la mida d'una via) i $T$ la mida de pàgina. Aquí, la memòria cau és de correspondència directa, amb $N_C = 64$ conjunts d'una línia, $B = 32$ bytes i $T = 4 \text{ KiB}$:
 
 $$64 \times 32 = 2 \text{ KiB} \leq 4 \text{ KiB} \quad \checkmark$$
 
-es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaçament de pàgina), de manera que la cau no pateix aliàsing: l'índex selecciona la mateixa línia amb l'adreça lògica que amb la física.
+es compleix (índex + desplaçament de bloc = 11 bits $\leq$ 12 bits de desplaçament de pàgina), de manera que la memòria cau no pateix aliàsing: l'índex selecciona la mateixa línia amb l'adreça lògica que amb la física.
 :::
 
 ::: {#sol-t8-mv-cache-tlb .callout-tip}
-## Solució: fallades de cau i TLB per files vs. columnes
+## Solució: fallades de memòria cau i TLB per files vs. columnes
 
 **Enunciat**: @exr-t8-mv-cache-tlb.
 
