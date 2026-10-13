@@ -39,6 +39,7 @@ La teva lectura és per al que les eines no veuen: la terminologia del glossari,
 - Només la prosa. No toquis codi, matemàtiques, etiquetes (`{#…}`, `@…`), noms de fitxer ni mnemònics.
 - El contingut tècnic no és teu: si una correcció lingüística en canviaria el sentit tècnic, no la proposis i marca-la com a dubte.
 - `25_scripts/lint_prosa.py` ja detecta els dobles espais, les cometes rectes i les formes que no s'han de fer servir (aquestes aturen el commit). No els repeteixis, tret dels que l'script no vegi.
+- `25_scripts/sigles.py` ja comprova les sigles: l'expansió a la primera aparició del llibre, en el format únic, i les sigles que no són a la taula (atura el commit). No ho repeteixis.
 
 ## Informe
 

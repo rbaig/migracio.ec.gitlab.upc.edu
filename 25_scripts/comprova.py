@@ -80,6 +80,7 @@ CLASSES = [
     ('25_scripts/comprova.py', 'eina', set()),
     ('25_scripts/escombrada.sh', 'eina', set()),
     ('25_scripts/lint_prosa.py', 'eina', set()),
+    ('25_scripts/sigles.py', 'eina', set()),
     ('25_scripts/ortografia.py', 'eina', set()),
     ('25_scripts/gramatica.py', 'eina', set()),
     ('25_scripts/eines_externes.py', 'eina', set()),
@@ -264,6 +265,11 @@ def retalla(text, n=40):
 def c_lexic(ctx):
     rc, sortida = executa(PY, '25_scripts/gen_glossari.py', '--comprova')
     return [(ERROR, f'el text no coincideix amb 24_specs/termes.toml:\n{retalla(sortida, 15)}')] if rc else []
+
+
+def c_sigles(ctx):
+    rc, sortida = executa(PY, '25_scripts/sigles.py', '--comprova')
+    return [(ERROR, f'les sigles del text no coincideixen amb [sigles] de 24_specs/termes.toml:\n{retalla(sortida, 15)}')] if rc else []
 
 
 def c_registres(ctx):
@@ -621,6 +627,10 @@ COMPROVACIONS = [
     Comprovacio('lexic', 'Lèxic', 'Les presentacions «**terme català** (*english*)» del text coincideixen amb '
                 '`24_specs/termes.toml`: cap terme sense entrada, cap forma catalana diferent, cap terme del fitxer '
                 'sense presentació (`gen_glossari.py --comprova`; D-115)', SEMPRE, 'Sempre', 'Atura', c_lexic),
+    Comprovacio('sigles', 'Sigles', 'Les sigles del text, contra `[sigles]` de `24_specs/termes.toml`: l\'expansió a la primera '
+                'aparició del llibre, en el format únic; cap expansió en un altre format; cap sigla del text que no sigui a la '
+                'taula ni a `[no_sigles]`, ni cap en plural; cap sigla de la taula sense aparició (`sigles.py --comprova`; '
+                'D-89, D-118)', SEMPRE, 'Sempre', 'Atura', c_sigles),
     Comprovacio('decisions', 'Decisions citades', 'Cada `D-n` citat en un fitxer versionat existeix al registre de decisions',
                 SEMPRE, 'Sempre', 'Atura', c_decisions),
     Comprovacio('exr_sol', 'Enunciats i solucions', 'Cada `#sol-` té el seu `#exr-` amb el mateix slug (D-22)',

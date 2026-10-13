@@ -542,6 +542,16 @@ Petició de l'usuari (2026-10-13), literal: «EC: les sigles a 24_specs/termes.t
     - La guia exclou ara les sigles institucionals que el lector coneix (UPC, DAC), però no les dels estudis i les assignatures.
 - **Detector de presentacions de termes**: compta l'expansió d'una sigla com a presentació d'un terme quan l'anglès és l'`en` de la sigla i un terme de `[termes]` (BA, *stack frame*). La resta d'expansions de sigla continuen fora del glossari, també la d'una sigla que no és a la taula («**fusionades** (*fused multiply-add*, FMA)», A5).
 
+**Seguiment del 2026-10-14: el text, al format únic, i la comprovació** (blocs S3b i S3c). Decisions de l'usuari sobre la llista de Claude Code, literal: «Recomanacions acceptades» (B1–B9, C1–C7, E1–E8).
+
+- **La comprovació**, `25_scripts/sigles.py --comprova`, és una fila nova de `make comprova`, «Sigles», que s'executa sempre i atura el commit. Llegeix el llibre en l'ordre de `chapters:`, amb la Presentació (`index.qmd`) al principi, perquè hi ha sigles que només s'expandeixen allà (EC, GEI, FIB, les notes i els exàmens). No llegeix `10_continguts.qmd`, la taula mateixa, la guia ni la llicència.
+- **La primera aparició** és la primera fora dels aprofundiments, perquè el cos s'ha de poder llegir sense. Si és en un títol, en una taula o en una fórmula, l'expansió pot anar al paràgraf següent. D-89 ja ho admetia per als títols, i l'escombrada d'aquell dia, per a una taula; la fórmula és el cas d'ULP (A5), i d'EF a la Presentació.
+- **Les cursives no compten com a aparició**: una sigla dins d'una expansió anglesa («*Advanced RISC Machines*») no és una aparició de RISC. És el cas «el nom d'una altra expansió» de D-89.
+- **Què és una expansió**: la sigla dins d'un parèntesi que va darrere de la forma catalana o de l'expansió anglesa de la sigla, o que les conté; o la sigla seguida d'un parèntesi que les conté. Cal que segueixi el format únic a tot arreu, també als aprofundiments.
+- **Una sigla del text que no és a la taula** és un mot de dues majúscules o més i sense minúscules, fora del codi, de les fórmules i de les cursives. En queden fora per regla les unitats, els noms de les variants de RISC-V i les operacions lògiques, i per llista, `[no_sigles]` de `termes.toml`, amb el motiu de cada entrada: 19 en aquest commit (noms propis, camps i registres, les notacions de P1 i de P5 i el nom de l'estàndard de C).
+- **El text** (S3b, `461fc87`): 114 edicions i dues frases noves en 17 fitxers. Les expansions que no seguien el format, les primeres aparicions sense expansió i les reexpansions dins del mateix capítol que només eren una glossa, que se'n treuen (D-89). Les majúscules d'èmfasi d'A3 i les constants `NF` i `NC` d'A4 en prosa (C7).
+- La comprovació en va treure un parell de casos que l'inventari no havia vist. Un era una expansió en plural (CISC, a A2). L'altre, el peu d'una figura d'A8 que reexpandia VPN i PPN dins del mateix capítol, i amb «pàgina lògica» en lloc de «pàgina virtual»: ara diu les sigles soles.
+
 ## Format
 
 ### D-70
