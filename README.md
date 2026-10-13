@@ -62,7 +62,7 @@ Un fitxer o directori de l'arrel per línia. `make comprova` comprova que la lli
 ├── _book/                      # Generat · Quarto: directori de sortida
 ├── auto_figs/                  # Generat · Figures per script (el pre-render l'esborra i el refà)
 ├── auto_riscv/                 # Generat · Taules fusionades de `11_riscv.qmd` (`make taules`; `make render` ja el crida)
-├── auto_termes/                # Generat · Glossari de termes de `12_sigles_simbols.qmd`, de `24_specs/termes.toml` (`make taules`; `make render` ja el crida)
+├── auto_termes/                # Generat · Glossari de termes i taula de formes, de `24_specs/termes.toml` (`make taules`; `make render` ja el crida)
 ├── .gitignore
 ├── 10_continguts.qmd           # Pàgina «📑 Continguts»: l'índex dels apunts, només a l'HTML; l'escriu `25_scripts/continguts.lua`
 ├── 11_riscv.qmd                # Compendi de referència RISC-V

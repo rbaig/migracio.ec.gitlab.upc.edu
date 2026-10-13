@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Glossari anglès → català (secció «Termes» de 12_sigles_simbols.qmd), generat a
-partir de 24_specs/termes.toml, i comprovació de les presentacions del text.
+"""Glossari anglès → català (secció «Termes» de 12_sigles_simbols.qmd) i taula de
+formes que no s'han de fer servir (13_contrib.qmd), generats a partir de
+24_specs/termes.toml, i comprovació de les presentacions del text.
 
 Petició de l'usuari (2026-10-05; TODO.md, «Glossari de termes català–anglès»).
 La font de veritat del lèxic és 24_specs/termes.toml (D-115, que inverteix D-100):
@@ -26,13 +27,13 @@ expansions de sigla que ja són a §Sigles (l'anglès és l'expansió d'una sigl
 dels comentaris HTML i de la capçalera YAML.
 
 Ús:
-    python3 25_scripts/gen_glossari.py               # escriu auto_termes/glossari.qmd i glossari_angles.qmd
+    python3 25_scripts/gen_glossari.py               # escriu les taules a auto_termes/
     python3 25_scripts/gen_glossari.py --comprova    # 1 si el text no coincideix amb termes.toml
 
-La secció la inclou 12_sigles_simbols.qmd amb dos {{< include auto_termes/… >}}, un per taula.
-Com auto_riscv/ (D-3), el fitxer ha d'existir abans d'invocar `quarto`, perquè Quarto
-resol els include abans del pre-render: `make render` i `make taules` el generen. No
-es versiona (D-104).
+La secció la inclou 12_sigles_simbols.qmd amb dos {{< include auto_termes/… >}}, un per taula,
+i la taula de formes, 13_contrib.qmd §Formes que no s'han de fer servir. Com auto_riscv/
+(D-3), els fitxers han d'existir abans d'invocar `quarto`, perquè Quarto resol els include
+abans del pre-render: `make render` i `make taules` els generen. No es versionen (D-104).
 """
 
 import re
@@ -47,6 +48,7 @@ SIGLES = ARREL / "12_sigles_simbols.qmd"
 DADES = ARREL / "24_specs" / "termes.toml"
 SORTIDA = ARREL / "auto_termes" / "glossari.qmd"
 SORTIDA_ANGLES = ARREL / "auto_termes" / "glossari_angles.qmd"
+SORTIDA_FORMES = ARREL / "auto_termes" / "formes.qmd"
 
 PRESENTACIO = re.compile(
     r"\*\*([^*\n]{2,60}?)\*\*\s*\((?:\*\*\*|\*)([^*()\n]{2,60}?)(?:\*\*\*|\*)\)")
@@ -200,12 +202,19 @@ def taula_angles(en_angles):
                  'Termes mantinguts en anglès. {#tbl-termes-angles tbl-colwidths="[18,28,54]" .striped}')
 
 
+def taula_formes(no_admeses):
+    files = [[no, e["si"], e.get("obs", "")] for no, e in no_admeses.items()]
+    return taula([("No s'escriu", ":---"), ("S'escriu", ":---"), ("Observacions", ":---")], files,
+                 '{tbl-colwidths="[30,26,44]"}')
+
+
 def sortides(d, temes):
     """{fitxer: contingut}: una taula per fitxer, perquè verifica_taules.py, que llegeix un include
     sense les línies en blanc, no ajunti el peu de la primera amb la segona."""
     marca = "<!-- generat per 25_scripts/gen_glossari.py a partir de 24_specs/termes.toml; no l'editeu a mà -->\n"
     return {SORTIDA: f"{marca}{taula_termes(d, temes)}\n",
-            SORTIDA_ANGLES: f"{marca}{taula_angles(d.get('en_angles', {}))}\n"}
+            SORTIDA_ANGLES: f"{marca}{taula_angles(d.get('en_angles', {}))}\n",
+            SORTIDA_FORMES: f"{marca}{taula_formes(d.get('no_admeses', {}))}\n"}
 
 
 def main():

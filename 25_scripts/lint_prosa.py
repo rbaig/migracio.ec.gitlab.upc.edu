@@ -4,10 +4,10 @@
 Aplica dues regles de 13_contrib.qmd. La de §Commits: «elimineu dobles espais
 (excepte als blocs de codi, fórmules LaTeX i cel·les de taula), i verifiqueu
 que no hi ha cometes rectes "..." que haurien de ser guillemets «...»». I la
-taula de §Anglicismes i terminologia obligatòria → «Formes que no s'han de fer
-servir», que es llegeix de la guia mateixa (no se'n fa cap còpia aquí): cada
-forma de la primera columna, també en plural, en femení o conjugada, és una
-troballa. comprova.py tracta les formes com a error (són les formes exactes de la taula)
+llista de formes que no s'han de fer servir, `[no_admeses]` de
+24_specs/termes.toml (D-115), de la qual es genera la taula de §Anglicismes i
+terminologia obligatòria → «Formes que no s'han de fer servir»: cada forma, també
+en plural, en femení o conjugada, és una troballa. comprova.py tracta les formes com a error (són les formes exactes de la taula)
 i la resta com a avís.
 
 Salta el que no és prosa: la capçalera YAML, els blocs de codi, les
@@ -32,6 +32,7 @@ import os
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 # Una tanca de codi pot obrir dins d'un element de llista (`- ```{.c}`).
@@ -49,7 +50,6 @@ SPANS = [
     re.compile(r'<[^<>]*>'),                       # etiquetes HTML
     re.compile(r'\]\([^)]*\)'),                    # el destí d'un enllaç que NETEJA no hagi llegit
 ]
-FORMES_SECCIO = "#### Formes que no s'han de fer servir"
 LIST_MARKER_RE = re.compile(r'^(?:>\s*)*(?:[-*+]|\d+[.)]|\(?[a-z]\))\s+')
 # El que s'ha de treure abans de SPANS, que en deixaria restes enganxades al text
 # («[LaTeX](…)» → «[LaTeXX»). Els enllaços i els spans admeten un nivell de claudàtors o de
@@ -144,22 +144,14 @@ def patro_forma(terme):
 
 
 def formes_no_admeses(root):
-    """[(expressió, forma, substitut)] de la taula de 13_contrib.qmd §Formes que no s'han de fer servir."""
-    text = (Path(root) / '13_contrib.qmd').read_text(encoding='utf-8')
-    if FORMES_SECCIO not in text:
-        raise SystemExit(f'lint_prosa: no trobo «{FORMES_SECCIO}» a 13_contrib.qmd')
-    files = []
-    for line in text.split(FORMES_SECCIO, 1)[1].split('\n'):
-        if line.startswith('|'):
-            files.append([c.strip() for c in line.strip('|').split('|')])
-        elif files:
-            break
+    """[(expressió, forma, substitut)] de `[no_admeses]` de 24_specs/termes.toml."""
+    dades = tomllib.loads((Path(root) / '24_specs' / 'termes.toml').read_text(encoding='utf-8'))
     formes = []
-    for cel in files[2:]:                   # sense la capçalera ni la separació
-        for terme in re.split(r'\s*[,/]\s*', cel[0]):
+    for clau, entrada in dades.get('no_admeses', {}).items():
+        for terme in re.split(r'\s*[,/]\s*', clau):
             if terme:
                 rx = re.compile(r'(?<![\w·])(' + patro_forma(terme) + r')(?![\w·])', re.I)
-                formes.append((rx, terme, cel[1]))
+                formes.append((rx, terme, entrada['si']))
     return formes
 
 
