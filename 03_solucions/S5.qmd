@@ -560,7 +560,7 @@ inferior a ½ ULP ($= 2^{-11} \times 2^4 = 2^{-7} = 0{,}0078125$).
 
 **Enunciat**: @exr-t5-ops-half-multiplicacio.
 
-Se segueix l'algorisme de multiplicació (@sec-multiplicacio-divisio-cf): sumar exponents, calcular el signe ($S_A \oplus S_B$), multiplicar les mantisses (11 bits × 11 bits → fins a 22 bits), normalitzar comprovant el sobreeiximent, arrodonir amb RNE i codificar.
+Se segueix l'algorisme de multiplicació (@sec-multiplicacio-divisio-cf): sumar exponents, calcular el signe ($S_A \oplus S_B$), multiplicar les mantisses (11 bits × 11 bits → fins a 22 bits), normalitzar comprovant el desbordament, arrodonir amb RNE i codificar.
 
 **a) `A = 0x45A9`, `B = 0x484C`**
 
@@ -638,7 +638,7 @@ Valor = 1,1100111110b × 2⁵ = 11 1001,11110b = 57,9375
 Producte  = 10,0010 1111 0111 0101 1000            (≥ 2: cal renormalitzar)
 ```
 
-**Pas 3. Normalitzar**: es desplaça 1 posició a la dreta i s'incrementa l'exponent: $e = 14 + 1 = 15$. **Comprovació de sobreeiximent**: $e = 15$ és exactament l'exponent màxim del format ($E_u = 30$; $E_u = 31$ està reservat per a $\pm\infty$ i NaN): el resultat queda **just al límit**, sense sobreeiximent.
+**Pas 3. Normalitzar**: es desplaça 1 posició a la dreta i s'incrementa l'exponent: $e = 14 + 1 = 15$. **Comprovació de desbordament**: $e = 15$ és exactament l'exponent màxim del format ($E_u = 30$; $E_u = 31$ està reservat per a $\pm\infty$ i NaN): el resultat queda **just al límit**, sense desbordament.
 
 ```{.default filename="Producte normalitzat"}
 1,0001 0111 1011 1010 1100 0   × 2¹⁵
@@ -1205,11 +1205,11 @@ $$B + C = 0\ |\ 11010\ |\ 0000101000 = \texttt{0x6828} = 1000\,0101\,0000_2 = 21
 
 **Operació 2: $A \times (B + C)$**
 
-Exponent: $e = 4 + 11 = 15$, **just el màxim del format**: si el producte de mantisses arribés a 2, la renormalització provocaria sobreeiximent. Signe: $(-) \cdot (+) = -$.
+Exponent: $e = 4 + 11 = 15$, **just el màxim del format**: si el producte de mantisses arribés a 2, la renormalització provocaria desbordament. Signe: $(-) \cdot (+) = -$.
 
 ```{.default filename="Producte de mantisses"}
 1785 × 1064 = 1 899 240 = 1 1100 1111 1010 1110 1000b   (21 bits)
-Producte = 1,1100 1111 1010 1110 1000                   (< 2: e = 15, sense sobreeiximent)
+Producte = 1,1100 1111 1010 1110 1000                   (< 2: e = 15, sense desbordament)
 ```
 
 $G = 1$, $R = 0$, $S = 1$ → **al següent**: $F = 1100111110 + 1 = 1100111111$:
@@ -1218,9 +1218,9 @@ $$A \times (B + C) = 1\ |\ 11110\ |\ 1100111111 = \texttt{0xFB3F} = -1855 \times
 
 (El producte exacte és $-59\,351{,}25$: error $8{,}75 < \tfrac{1}{2}\,\text{ULP} = 2^4 = 16$.)
 
-**Operacions 3 i 4: $A \times B$ i $A \times C$ — sobreeiximent**
+**Operacions 3 i 4: $A \times B$ i $A \times C$ — desbordament**
 
-Per a $A \times B$, la suma d'exponents ja és $e = 4 + 12 = 16 > e_{max} = 15$. Com que el producte de dues mantisses normalitzades és sempre $\geq 1$, la normalització **mai no redueix** l'exponent per sota d'aquesta suma: el resultat supera amb seguretat el màxim representable del format *half*, $(2 - 2^{-10}) \times 2^{15} = 65\,504$, sense necessitat de multiplicar les mantisses. **Sobreeiximent**: amb RNE el resultat es converteix en infinit, amb el signe del producte:
+Per a $A \times B$, la suma d'exponents ja és $e = 4 + 12 = 16 > e_{max} = 15$. Com que el producte de dues mantisses normalitzades és sempre $\geq 1$, la normalització **mai no redueix** l'exponent per sota d'aquesta suma: el resultat supera amb seguretat el màxim representable del format *half*, $(2 - 2^{-10}) \times 2^{15} = 65\,504$, sense necessitat de multiplicar les mantisses. **Desbordament**: amb RNE el resultat es converteix en infinit, amb el signe del producte:
 
 $$A \times B \to (-)(-) = +\infty = \texttt{0x7C00} \qquad (|A \times B| \approx 2{,}3 \times 10^5)$$
 
@@ -1238,6 +1238,6 @@ $$\boxed{A \times (B + C) = -59\,360 \;(\texttt{0xFB3F}) \neq \text{NaN} = (A \t
 
 **Conclusió**
 
-La multiplicació **no és distributiva** sobre la suma en coma flotant. L'apartat a) mostra que la igualtat es pot donar fortuïtament; l'apartat b) mostra la fallada extrema: **factoritzar** l'expressió (calcular primer $B + C = 2128$) manté tots els resultats intermedis representables, mentre que **expandir-la** fa sobreeixir els dos productes parcials cap a $\pm\infty$ i el resultat final és NaN. Com en la no-associativitat (@cau-no-associativitat), l'ordre de les operacions altera el resultat: reordenar algebraicament un càlcul en coma flotant no és mai «gratuït».
+La multiplicació **no és distributiva** sobre la suma en coma flotant. L'apartat a) mostra que la igualtat es pot donar fortuïtament; l'apartat b) mostra la fallada extrema: **factoritzar** l'expressió (calcular primer $B + C = 2128$) manté tots els resultats intermedis representables, mentre que **expandir-la** fa desbordar els dos productes parcials cap a $\pm\infty$ i el resultat final és NaN. Com en la no-associativitat (@cau-no-associativitat), l'ordre de les operacions altera el resultat: reordenar algebraicament un càlcul en coma flotant no és mai «gratuït».
 
 :::

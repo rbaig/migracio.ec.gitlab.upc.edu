@@ -9,7 +9,7 @@ Escriu dos SVG natius a `22_figs_originals/`:
 - `A4_semisumador_sumador_complet.svg`: (a) semisumador (XOR i AND) i
   (b) sumador complet fet amb dos semisumadors i una OR.
 - `A4_sumador_propagacio_rossec.svg`: cadena de sumadors complets amb la
-  XOR que dona el sobreeiximent, v = c_{n-1} xor c_n.
+  XOR que dona el desbordament, v = c_{n-1} xor c_n.
 
 No forma part del pre-render: el font versionat és l'SVG, i aquest script
 és l'eina per regenerar-lo. Convencions (portes, colors, subíndexs i
@@ -90,7 +90,7 @@ def box(x, y, w, h, ports):
         out.append(f'<text x="{px}" y="{py+4}" font-family="{SANS}" font-size="11" font-style="italic" fill="{BS}" text-anchor="{anchor}">{name}</text>')
 
 
-RF, RS = "#f8d7da", "#842029"   # ressaltat: detecció del sobreeiximent
+RF, RS = "#f8d7da", "#842029"   # ressaltat: detecció del desbordament
 
 
 def adder(x, y, w, h):
@@ -194,7 +194,7 @@ def fig_sumador_propagacio_rossec():
     line([(130, CY), (22.5, CY)], RS); term(20, CY, RS)
     sig(22, CY - 8, [("c", "v"), ("n", "s")], color=RS)
 
-    # porta XOR del sobreeiximent
+    # porta XOR del desbordament
     XX, XC = 60, 215
     xo = xor_gate(XX, XC, RS, RF)
     dot(40, CY, RS); line([(40, CY), (40, XC - 10), (XX + 3, XC - 10)], RS)
@@ -204,10 +204,10 @@ def fig_sumador_propagacio_rossec():
 
     W_, H_ = 750, 265
     svg = [f'<svg width="{W_}" height="{H_}" viewBox="0 0 {W_} {H_}" xmlns="http://www.w3.org/2000/svg" role="img">',
-           '<title>Sumador amb propagació del ròssec i detecció del sobreeiximent</title>',
+           '<title>Sumador amb propagació del ròssec i detecció del desbordament</title>',
            '<desc>Cadena de n sumadors complets, del bit de més pes (n-1, a l\'esquerra) al de menys pes (0, a la dreta). '
            'Cada sumador complet rep a_i, b_i i el ròssec c_i del sumador de la seva dreta, i dona s_i i el ròssec c_(i+1) al de la seva esquerra. '
-           'Una porta XOR rep el ròssec d\'entrada c_(n-1) i el de sortida c_n del darrer sumador i dona el bit de sobreeiximent v.</desc>']
+           'Una porta XOR rep el ròssec d\'entrada c_(n-1) i el de sortida c_n del darrer sumador i dona el bit de desbordament v.</desc>']
     svg += out + ["</svg>", ""]
     return "\n".join(svg)
 

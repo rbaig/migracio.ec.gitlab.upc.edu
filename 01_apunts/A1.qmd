@@ -611,29 +611,29 @@ Per sumar dos enters en Ca2, s'aplica directament la suma binària, ignorant el 
 
 $$a + b \quad\Rightarrow\quad \text{Ca2}(a) + \text{Ca2}(b) \pmod{2^n}$$ {#eq-suma-ca2}
 
-El resultat és correcte si no hi ha **sobreeiximent** (***overflow***). El sobreeiximent es produeix quan el resultat matemàtic exacte cau fora del rang $[-2^{n-1},\ 2^{n-1}-1]$. La regla de detecció és: **hi ha sobreeiximent si i només si els dos operands tenen el mateix signe i el resultat té signe contrari**.
+El resultat és correcte si no hi ha **desbordament** (***overflow***). El desbordament es produeix quan el resultat matemàtic exacte cau fora del rang $[-2^{n-1},\ 2^{n-1}-1]$. La regla de detecció és: **hi ha desbordament si i només si els dos operands tenen el mateix signe i el resultat té signe contrari**.
 
 ::: {#tip-suma-ca2 .callout-tip}
 ## Suma en Ca2
 
 Amb $n = 8$ bits (rang $[-128, +127]$):
 
-**Sense sobreeiximent**: $45 + 30 = 75$
+**Sense desbordament**: $45 + 30 = 75$
 
 $$\underbrace{0010\,1101}_{+45} + \underbrace{0001\,1110}_{+30} = \underbrace{0100\,1011}_{+75} \checkmark$$
 
-**Amb sobreeiximent**: $100 + 80 = 180$, però $180 > 127$:
+**Amb desbordament**: $100 + 80 = 180$, però $180 > 127$:
 
 $$\underbrace{0110\,0100}_{+100} + \underbrace{0101\,0000}_{+80} = \underbrace{1011\,0100}_{?}$$
 
-El resultat $1011\,0100_2$ s'interpreta com a $-76$ en Ca2, no com a $+180$. Els dos operands eren positius i el resultat sembla negatiu: **sobreeiximent**.
+El resultat $1011\,0100_2$ s'interpreta com a $-76$ en Ca2, no com a $+180$. Els dos operands eren positius i el resultat sembla negatiu: **desbordament**.
 :::
 ::: {#tip-suma-ca2-mono .callout-tip}
 ## Suma en Ca2 — visualització bit a bit
 
 Els mateixos exemples amb la fila de **ròssec** (*carry*) explícita:
 
-**Sense sobreeiximent**: $45 + 30 = 75$
+**Sense desbordament**: $45 + 30 = 75$
 
 ```
   Ròssec:     0 1 1 1 1 0 0 0
@@ -643,7 +643,7 @@ Els mateixos exemples amb la fila de **ròssec** (*carry*) explícita:
               0 1 0 0 1 0 1 1   (+75) ✓
 ```
 
-**Amb sobreeiximent**: $100 + 80$
+**Amb desbordament**: $100 + 80$
 
 ```
   Ròssec:     1 0 0 0 0 0 0 0
@@ -653,7 +653,7 @@ Els mateixos exemples amb la fila de **ròssec** (*carry*) explícita:
               1 0 1 1 0 1 0 0   (−76 en Ca2, no +180)
 ```
 
-El ròssec entra al bit de signe (posició 7), però **no en surt**: aquesta asimetria és exactament la condició de sobreeiximent detectable per maquinari.
+El ròssec entra al bit de signe (posició 7), però **no en surt**: aquesta asimetria és exactament la condició de desbordament detectable per maquinari.
 :::
 
 
@@ -702,7 +702,7 @@ El valor mínim de Ca2 ($-2^{n-1}$, representat com $1000\ldots0$) **no té opos
   Complement: 0111 1111
             +          1
             ───────────
-  Resultat:   1000 0000   (−128)  ← sobreeiximent: el resultat és el mateix!
+  Resultat:   1000 0000   (−128)  ← desbordament: el resultat és el mateix!
 ```
 
 El valor $+2^{n-1}$ ($+128$ amb 8 bits) requeriria $n+1$ bits per ser representat en Ca2. És l'única excepció del format.
@@ -721,24 +721,24 @@ Gràcies a aquesta equivalència, el maquinari necessita **un sol circuit** per 
 
 Amb $n = 8$ bits:
 
-**Sense sobreeiximent**: $45 - 30 = 45 + (-30) = 15$
+**Sense desbordament**: $45 - 30 = 45 + (-30) = 15$
 
 $$\text{Ca2}(-30): \overline{0001\,1110} + 1 = 1110\,0010$$
 $$\underbrace{0010\,1101}_{+45} + \underbrace{1110\,0010}_{-30} = \underbrace{0000\,1111}_{+15} \checkmark$$
 
-**Amb sobreeiximent**: $-100 - 45 = -100 + (-45) = -145$, però $-145 < -128$:
+**Amb desbordament**: $-100 - 45 = -100 + (-45) = -145$, però $-145 < -128$:
 
 $$\text{Ca2}(-45): \overline{0010\,1101} + 1 = 1101\,0011$$
 $$\underbrace{1001\,1100}_{-100} + \underbrace{1101\,0011}_{-45} = \underbrace{0110\,1111}_{?}$$
 
-El resultat $0110\,1111_2 = +111$ en Ca2, no $-145$: **sobreeiximent** (dos operands negatius, resultat positiu).
+El resultat $0110\,1111_2 = +111$ en Ca2, no $-145$: **desbordament** (dos operands negatius, resultat positiu).
 :::
 ::: {#tip-resta-ca2-mono .callout-tip}
 ## Resta en Ca2 — visualització bit a bit
 
 Els mateixos exemples amb la fila de **préstec** (*borrow*) explícita:
 
-**Sense sobreeiximent**: $45 - 30 = 15$
+**Sense desbordament**: $45 - 30 = 15$
 
 ```
   Préstec:    0 0 1 1 1 1 0 0
@@ -748,7 +748,7 @@ Els mateixos exemples amb la fila de **préstec** (*borrow*) explícita:
               0 0 0 0 1 1 1 1   (+15) ✓
 ```
 
-**Amb sobreeiximent**: $-100 - 45 = -145$
+**Amb desbordament**: $-100 - 45 = -145$
 
 ```
   Préstec:    1 1 0 1 1 1 1 0
@@ -758,7 +758,7 @@ Els mateixos exemples amb la fila de **préstec** (*borrow*) explícita:
               0 1 1 0 1 1 1 1   (+111 en Ca2, no −145)
 ```
 
-El minuend és negatiu i el subtrahend positiu (signes contraris), però el resultat surt amb signe **contrari al del minuend** (positiu, quan el resultat exacte, −145, és negatiu): **sobreeiximent**.
+El minuend és negatiu i el subtrahend positiu (signes contraris), però el resultat surt amb signe **contrari al del minuend** (positiu, quan el resultat exacte, −145, és negatiu): **desbordament**.
 :::
 
 
@@ -772,14 +772,14 @@ Per obtenir el producte complet de $2n$ bits en Ca2, **no** es pot aplicar direc
 3. **Multiplicar les magnituds** com a naturals (sumes i desplaçaments).
 4. Aplicar el **signe** al resultat i codificar-lo en Ca2.
 
-El resultat és correcte si no hi ha sobreeiximent; el rang representable en $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$, que per al producte s'esgota ràpidament (calen $2n$ bits per garantir que no hi hagi sobreeiximent).
+El resultat és correcte si no hi ha desbordament; el rang representable en $n$ bits és $[-2^{n-1},\ 2^{n-1}-1]$, que per al producte s'esgota ràpidament (calen $2n$ bits per garantir que no hi hagi desbordament).
 
 ::: {#tip-multiplicacio-ca2 .callout-tip}
 ## Multiplicació en Ca2
 
 Amb $n = 8$ bits:
 
-**Sense sobreeiximent**: $(-6) \times 5 = -30$
+**Sense desbordament**: $(-6) \times 5 = -30$
 
 Magnituds: $6 \times 5 = 30$. Signe: $(-)\times(+) \rightarrow (-)$.
 
@@ -806,7 +806,7 @@ El mètode pràctic és:
 4. Aplicar el **signe del quocient** al quocient i codificar-lo en Ca2.
 5. El **residu** pren el signe del **dividend** i es codifica en Ca2.
 
-L'única divisió que produeix sobreeiximent és $-2^{n-1} \div (-1)$, pel mateix motiu que @wrn-inversio-limit. Els casos especials de RISC-V, inclosa la divisió per zero, són a @sec-casos-especials-divisio.
+L'única divisió que produeix desbordament és $-2^{n-1} \div (-1)$, pel mateix motiu que @wrn-inversio-limit. Els casos especials de RISC-V, inclosa la divisió per zero, són a @sec-casos-especials-divisio.
 
 ::: {#tip-divisio-ca2 .callout-tip}
 ## Divisió en Ca2

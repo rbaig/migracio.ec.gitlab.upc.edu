@@ -44,11 +44,11 @@ Resum:
 :::
 
 ::: {#sol-t4-sr-overflow-enters-8bits .callout-tip}
-## Solució: sobreeiximent en enters Ca2 de 8 bits
+## Solució: desbordament en enters Ca2 de 8 bits
 
 **Enunciat**: @exr-t4-sr-overflow-enters-8bits.
 
-El rang dels enters en Ca2 de 8 bits és $[-128, 127]$. Es produeix sobreeiximent quan els dos operands tenen el mateix signe i el resultat en té de diferent.
+El rang dels enters en Ca2 de 8 bits és $[-128, 127]$. Es produeix desbordament quan els dos operands tenen el mateix signe i el resultat en té de diferent.
 
 **a) $(-25) + (-34)$**
 
@@ -61,7 +61,7 @@ Codificació: $-25 =$ `1110 0111`, $-34 =$ `1101 1110`.
 1 1100 0101   (descartant el ròssec de sortida: 0xC5)
 ```
 
-El resultat truncat a 8 bits és `1100 0101` = $-59_{10}$ en Ca2. Els dos operands són negatius i el resultat també és negatiu: **no hi ha sobreeiximent**. El resultat és correcte: $-25 + (-34) = -59$.
+El resultat truncat a 8 bits és `1100 0101` = $-59_{10}$ en Ca2. Els dos operands són negatius i el resultat també és negatiu: **no hi ha desbordament**. El resultat és correcte: $-25 + (-34) = -59$.
 
 **b) $(-25) - (-34) = (-25) + 34$**
 
@@ -74,7 +74,7 @@ Codificació: $-25 =$ `1110 0111`. El subtrahend, $-34 =$ `1101 1110`, es nega c
 1 0000 1001   (descartant el ròssec de sortida: 0x09)
 ```
 
-Resultat: `0000 1001` = $+9_{10}$. Els operands tenen signes oposats: **no hi ha sobreeiximent**. Correcte: $-25 + 34 = +9$.
+Resultat: `0000 1001` = $+9_{10}$. Els operands tenen signes oposats: **no hi ha desbordament**. Correcte: $-25 + 34 = +9$.
 
 **c) $(+127) - (-20) = (+127) + 20$**
 
@@ -87,7 +87,7 @@ Codificació: $+127 =$ `0111 1111`. El subtrahend, $-20 =$ `1110 1100`, es nega:
   1001 0011   (0x93)
 ```
 
-Resultat: `1001 0011` = $-109_{10}$ en Ca2. Tots dos operands eren positius, però el resultat és negatiu: **hi ha sobreeiximent**. El resultat correcte seria $+147$, que no és representable amb 8 bits en Ca2.
+Resultat: `1001 0011` = $-109_{10}$ en Ca2. Tots dos operands eren positius, però el resultat és negatiu: **hi ha desbordament**. El resultat correcte seria $+147$, que no és representable amb 8 bits en Ca2.
 
 **d) $(-128) - (-20) = (-128) + 20$**
 
@@ -100,7 +100,7 @@ Codificació: $-128 =$ `1000 0000`. El subtrahend negat és, com a c), $+20 =$ `
   1001 0100   (0x94)
 ```
 
-Resultat: `1001 0100` = $-108_{10}$ en Ca2. Els operands tenien signes oposats: **no hi ha sobreeiximent**. Correcte: $-128 + 20 = -108$.
+Resultat: `1001 0100` = $-108_{10}$ en Ca2. Els operands tenien signes oposats: **no hi ha desbordament**. Correcte: $-128 + 20 = -108$.
 :::
 
 ::: {#sol-t4-sr-overflow-deteccio-natural .callout-tip}
@@ -123,13 +123,13 @@ Dues instruccions en total. Comparar el resultat amb qualsevol dels dos sumands 
 :::
 
 ::: {#sol-t4-sr-overflow-deteccio-enter .callout-tip}
-## Solució: detecció de sobreeiximent d'enters sense salts
+## Solució: detecció de desbordament d'enters sense salts
 
 **Enunciat**: @exr-t4-sr-overflow-deteccio-enter.
 
-Les variables `t1` i `t2` contenen els sumands; el resultat ha d'anar a `t0` i l'indicador de sobreeiximent a `t3` (1 si hi ha sobreeiximent, 0 altrament), sense cap instrucció de salt.
+Les variables `t1` i `t2` contenen els sumands; el resultat ha d'anar a `t0` i l'indicador de desbordament a `t3` (1 si hi ha desbordament, 0 altrament), sense cap instrucció de salt.
 
-La condició de sobreeiximent en la suma de dos enters és: els operands **tenen el mateix signe** i el resultat **té signe diferent** (@eq-sobreeiximent-software):
+La condició de desbordament en la suma de dos enters és: els operands **tenen el mateix signe** i el resultat **té signe diferent** (@eq-sobreeiximent-software):
 
 $$v = \overline{(A_{31} \oplus B_{31})} \land (A_{31} \oplus S_{31})$$
 
@@ -138,9 +138,9 @@ $$v = \overline{(A_{31} \oplus B_{31})} \land (A_{31} \oplus S_{31})$$
         xor     t3, t1, t2      # t1 XOR t2: bit 31 = 0 si mateix signe
         not     t3, t3          # NOT(t1 XOR t2): bit 31 = 1 si mateix signe
         xor     t4, t1, t0      # t1 XOR resultat: bit 31 = 1 si signes diferents
-        and     t3, t3, t4      # condició de sobreeiximent als 32 bits
+        and     t3, t3, t4      # condició de desbordament als 32 bits
         srli    t3, t3, 31      # desplaça el bit 31 a la posició 0
-                                # t3 = 1 si sobreeiximent, 0 altrament
+                                # t3 = 1 si desbordament, 0 altrament
 ```
 
 **Anàlisi pas a pas**:
@@ -226,9 +226,9 @@ El residu té el signe del dividend i satisfà la identitat $x = y \cdot q + r$:
 
 $$r = 5 - (-2) \times (-2) = 5 - 4 = +1$$
 
-**c) Casos de sobreeiximent en la divisió entera**
+**c) Casos de desbordament en la divisió entera**
 
-Un únic cas: $-2^{31} \div (-1)$, el resultat matemàtic del qual ($+2^{31}$) no és representable en Ca2 de 32 bits. RISC-V no genera cap excepció: `div` retorna $-2^{31}$ i `rem` retorna $0$ (@sec-casos-especials-divisio). La divisió per zero **no** és un cas de sobreeiximent, sinó un cas especial amb resultat definit (`div` → $-1$, `rem` → dividend).
+Un únic cas: $-2^{31} \div (-1)$, el resultat matemàtic del qual ($+2^{31}$) no és representable en Ca2 de 32 bits. RISC-V no genera cap excepció: `div` retorna $-2^{31}$ i `rem` retorna $0$ (@sec-casos-especials-divisio). La divisió per zero **no** és un cas de desbordament, sinó un cas especial amb resultat definit (`div` → $-1$, `rem` → dividend).
 :::
 
 ## Matrius

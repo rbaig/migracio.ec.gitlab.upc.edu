@@ -500,7 +500,7 @@ Les cinc figures de T6 ja no són el resultat directe de l'extracció: no porten
 Convenció de les figures del sumador de T4 ([D-93](registre_de_decisions.md#d-93)). Hi ha una implementació de referència a `25_scripts/gen_T4_sumador.py` (funcions `and_gate`, `or_gate`, `xor_gate`, `line`, `dot`, `term`, `sig`).
 
 - **Símbols**: forma distintiva ANSI/IEEE 91 (la de les diapositives i la d'IC), no la rectangular de l'IEC. Mides de referència: AND de 36 × 32, OR de 40 × 32 i XOR com l'OR desplaçada 6 px, amb una segona corba al darrere. Les entrades són a ±10 del centre; a l'OR i la XOR, els fils s'aturen sobre la corba del darrere (+3 px).
-- **Colors**: portes i fils amb traç `#343a40` (al fosc, `#ffffff`), de 1,5 px i sense farciment. Els blocs funcionals (semisumador, sumador complet) són caixes blaves `#cfe2ff`/`#084298`, i el nom del bloc i dels ports va en blau a 11 px. El que la figura vol fer veure (p. ex. la XOR del sobreeiximent i els seus fils) es ressalta en rosa: traç `#842029`, farciment de la porta `#f8d7da`.
+- **Colors**: portes i fils amb traç `#343a40` (al fosc, `#ffffff`), de 1,5 px i sense farciment. Els blocs funcionals (semisumador, sumador complet) són caixes blaves `#cfe2ff`/`#084298`, i el nom del bloc i dels ports va en blau a 11 px. El que la figura vol fer veure (p. ex. la XOR del desbordament i els seus fils) es ressalta en rosa: traç `#842029`, farciment de la porta `#f8d7da`.
 - **Unions i terminals**: una derivació és un punt ple de radi 2,5. Una entrada o sortida de la figura és un cercle buit de radi 2,5 (farciment `#ffffff`). Dos fils que es creuen sense punt no estan connectats.
 - **Senyals**: variables en cursiva a 13 px i subíndexs a 9 px, amb `<tspan dy>` dins d'un sol `<text>` (mai `textLength`, que `rsvg-convert` no implementa). Els senyals intermedis van en gris de text neutre (`#6c757d`) a 11 px.
 - **Operadors ⊕ i ∧**: Liberation Sans no en té els glifs, i cada renderitzador els pren d'una font de reserva. L'operador va en un `<tspan>` propi, separat del que el volta amb `dx="3"` a l'operador i al `<tspan>` següent, **no amb espais**: rsvg col·locava malament els espais del voltant del glif de reserva (verificat a rsvg i a Chrome).
@@ -508,7 +508,7 @@ Convenció de les figures del sumador de T4 ([D-93](registre_de_decisions.md#d-9
 | Figura | Generador | Contingut |
 |:---|:---|:---|
 | `A4_semisumador_sumador_complet` | `25_scripts/gen_T4_sumador.py` | (a) Semisumador; (b) sumador complet amb dos semisumadors i una OR |
-| `A4_sumador_propagacio_rossec` | `25_scripts/gen_T4_sumador.py` | Cadena de sumadors complets i XOR del sobreeiximent |
+| `A4_sumador_propagacio_rossec` | `25_scripts/gen_T4_sumador.py` | Cadena de sumadors complets i XOR del desbordament |
 
 Els SVG generats es versionen a `22_figs_originals/`: el generador no forma part del pre-render. Si es canvia, cal regenerar-los (`25_scripts/gen_T4_sumador.py`) i versionar-ne el resultat.
 
