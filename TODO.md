@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**11 entrades vives** (recompte del 2026-10-13, en retirar de §Tasques per tema → T3 «Retoc pendent d'`A3_deps_exemple.svg`», fet per l'usuari; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**10 entrades vives** (recompte del 2026-10-13, en retirar de §Tasques globals → SVG «Revisió de la paleta de colors per reduir-ne la quantitat», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 3 (suma 11, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 2 (suma 10, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -101,14 +101,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ---
 
 ## Tasques globals
-
-### SVG
-
-- **Revisió de la paleta de colors per reduir-ne la quantitat** (petició de l'usuari, 2026-10-06, en migrar els colors llegats a la paleta). Després de la migració, la paleta de `24_specs/svg.md §10` i `§16` té 20 colors, i alguns papers es repeteixen amb tons gairebé iguals: dos vermells de traç (`#cc0000`, dependències de dades; `#dc3545`, fallada), dos fons rosats (`#f8d7da`, `.text`; `#f8d0d3`, fallada), dos fons verds (`#d1e7dd`, heap; `#c8ebd8`, encert), dos fons blaus (`#cfe2ff`, `.data`; `#e6f1fb`, zona o contenidor) i cinc grisos (`#f8f9fa`, `#dee2e6`, `#adb5bd`, `#6c757d` i `#343a40`). Cal decidir quins es fusionen i amb quin paper; cada fusió vol dir regenerar o editar les figures que el fan servir (`25_scripts/inventari_figures.py` les llista per color) i retirar-ne l'entrada de §13. **Proposta de Claude Code** (2026-10-12; l'usuari: «Les teves recomanacions»), amb les figures de `auto_figs/` que fan servir cada color (sense els fotogrames): (1) `#f8d0d3` (fons de fallada) no el fa servir cap figura: fora de la paleta; (2) `#c8ebd8` (fons d'encert) → `#d1e7dd`, una figura (`A8_mv_flux_traduccio`, de `gen_T8.py`); (3) `#cc0000` (dependències de dades) → `#dc3545`, dues figures natives (`A3_deps_exemple`, `A3_deps_multi`). Amb les tres, de 20 a 17 colors. Es mantenen `#e6f1fb` (zona o contenidor, 2 figures), perquè el contenidor ha de ser més clar que el contingut (`#cfe2ff`), i `#dee2e6` (graella, 3), més clar que el traç `#adb5bd`; i els cinc grisos i els dos verds de traç (`#198754` encert, `#0a3622` heap), que tenen papers diferents. Falta la decisió de l'usuari; aplicar-la és una sessió curta (Sonnet, effort mitjà), amb `revisor-figures`.
-
-  ```bash
-  python3 -c "import re; md=open('24_specs/svg.md').read(); s=md.split('## 10.')[1].split('## 11.')[0]+md.split('## 16.')[1].split('## 17.')[0]; print(len({c.lower() for c in re.findall(r'#[0-9a-fA-F]{6}', s)}))"   # 20, 2026-10-06
-  ```
 
 ### Contingut global
 

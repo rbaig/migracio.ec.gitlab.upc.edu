@@ -719,6 +719,12 @@ Els 12 originals conservats no s'hi van tocar, per decisió de l'usuari (2026-10
 
 **La comprovació, des del 2026-10-12** (proposta de Claude Code, acceptada per l'usuari): `25_scripts/comprova_vores.py`, a `comprova.py`, mira l'ordre de dibuix i no només la geometria. Avisa d'un traç que un `<rect>` posterior tapa en part, amb el farciment o amb un traç d'un altre color; no compten el contingut dibuixat a sobre d'un contenidor (les pàgines dins de la columna d'`A8_mv_espais`), un rect que en tapa un altre sencer, ni un solapament de menys de 0,1 px. Sobre els SVG de `22_figs_originals/` i les sortides de `gen_regs.py` i `gen_MC.py`, el primer dia en va trobar un: les cinc cel·les blaves de la columna de la MP d'`A7_mc_fallada`, de 6 px d'alt, amb traç d'1 px centrat, que s'estenia sobre les grises del costat (a 0,09 px). Com a cel·les arrodonides, ara dibuixen el traç per dins.
 
+### D-113
+
+**La paleta, de 20 a 17 colors** · `24_specs/svg.md §10`, `§13` i `§14` · 2026-10-13
+
+Petició de l'usuari del 2026-10-06 (revisar la paleta per reduir-ne els colors), amb la proposta de Claude Code del 2026-10-12, que l'usuari va donar per bona el 2026-10-13. Tres colors fora, perquè repetien un paper amb un to gairebé igual: `#f8d0d3` (fons de fallada), que cap figura del llibre no feia servir, passa a `#f8d7da`; `#c8ebd8` (fons d'encert) passa a `#d1e7dd`, a `A8_mv_flux_traduccio` (`gen_T8.py`); i `#cc0000` (dependències de dades) passa a `#dc3545`, a `A3_deps_exemple` i `A3_deps_multi`. També l'original conservat `A7_conflicte_exemple`, que en feia servir dos. Les seves entrades de §13 surten. Es mantenen `#e6f1fb` (contenidor, més clar que el contingut), `#dee2e6` (graella, més clara que el traç), els cinc grisos i els dos verds de traç, que tenen papers diferents.
+
 ## Eines
 
 ### D-58

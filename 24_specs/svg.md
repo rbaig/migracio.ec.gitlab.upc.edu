@@ -298,16 +298,16 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | `.data` / fitxers font `.c` `.h` / variables locals (BA) | `#cfe2ff` | `#084298` |
 | Heap / fitxers objecte `.o` / registres segurs (BA) | `#d1e7dd` | `#0a3622` |
 | Pila / biblioteques `lib.a` / `ra` desat (BA) | `#fff3cd` | `#664d03` |
-| Dependències de dades — resultat intermedi | — | `#cc0000` |
+| Dependències de dades — resultat intermedi | — | `#dc3545` |
 | Miss (fallada de MC) — etiqueta de resultat | — | `#dc3545` |
 | Hit (encert de MC) — etiqueta de resultat   | — | `#198754` |
-| Miss (zona de bloc) — fons de cel·la MC/MP  | `#f8d0d3` | `#dc3545` |
-| Hit (zona de bloc) — fons de cel·la MC/MP   | `#c8ebd8` | `#198754` |
+| Miss (zona de bloc) — fons de cel·la MC/MP  | `#f8d7da` | `#dc3545` |
+| Hit (zona de bloc) — fons de cel·la MC/MP   | `#d1e7dd` | `#198754` |
 | Zona o contenidor (la CPU, el maquinari d'un flux) | `#e6f1fb` | `#084298` |
 | Graella i vores secundàries | — | `#dee2e6` |
 | Pila ocupada abans d'una crida (piles en fila) | `#adb5bd` | `#6c757d` |
 
-La paleta s'ha de revisar per reduir-ne la quantitat de colors (`TODO.md`). Els colors que s'hi han afegit i els de fora de la paleta que s'hi han migrat, a [D-92](registre_de_decisions.md#d-92).
+Els colors que s'hi han afegit i els de fora de la paleta que s'hi han migrat, a [D-92](registre_de_decisions.md#d-92); els que s'hi han fusionat per reduir-la, a [D-113](registre_de_decisions.md#d-113).
 
 ---
 
@@ -432,10 +432,7 @@ REPLACEMENTS = [
     ('#664d03', '#ffd966'),
     ('#f8d7da', '#3a1a1e'),  # .text / executable (rosa)
     ('#842029', '#f1a8ae'),
-    ('#cc0000', '#ff6b6b'),  # dependències de dades: resultats intermedis (A3_deps_*, vegeu §14)
-    ('#f8d0d3', '#3d1a1e'),  # Miss zona bloc (vermell clar → fosc)
     ('#dc3545', '#f07080'),  # Miss zona bloc stroke
-    ('#c8ebd8', '#1a3328'),  # Hit zona bloc (verd clar → fosc)
     ('#198754', '#70c898'),  # Hit zona bloc stroke
     ('#e6f1fb', '#173349'),  # zona o contenidor: fons blau molt clar
     ('#dee2e6', '#495057'),  # graella i vores secundàries (Bootstrap gray-300 → gray-700)
@@ -456,7 +453,7 @@ Els colors dins els marcadors `<polygon fill="...">` també es substitueixen aut
 
 Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
-**Figures de dependències de dades** (`A3_deps_*`): el color `#cc0000` (resultats intermedis i usos posteriors a la crida) forma part de la taula de substitució dark (§13) amb l'equivalent `#ff6b6b`; la variant dark es genera automàticament.
+**Figures de dependències de dades** (`A3_deps_*`): els resultats intermedis i els usos posteriors a la crida van en `#dc3545`, el vermell de la paleta (fins al 2026-10-13, `#cc0000`, D-113); la variant fosca la fa `gen_dark.py`.
 
 **Colors fora de la paleta.** Les figures natives no en fan servir cap: es van migrar a §10 ([D-92](registre_de_decisions.md#d-92)). Un color nou fora de §10 s'ha d'afegir a §13 en el mateix commit, o el fosc el deixa igual (`gen_dark.py` l'avisa al render).
 

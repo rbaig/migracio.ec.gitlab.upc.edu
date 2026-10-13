@@ -70,8 +70,8 @@ P1_F, P1_S = "#cfe2ff", "#084298"        # procés 1, PTE vàlides, memòria cau
 P2_F, P2_S = "#d1e7dd", "#0a3622"        # procés 2, memòria principal
 TLB_F, TLB_S = "#fff3cd", "#664d03"      # TLB i fallada de TLB
 DISC_F, DISC_S = "#f8d7da", "#842029"    # disc
-HIT_F, HIT_S = "#c8ebd8", "#198754"      # encert (diagrama de flux)
-MISS_F, MISS_S = "#f8d0d3", "#dc3545"    # fallada de pàgina (diagrama de flux)
+HIT_F, HIT_S = "#d1e7dd", "#198754"      # encert (diagrama de flux)
+MISS_F, MISS_S = "#f8d7da", "#dc3545"    # fallada de pàgina (diagrama de flux)
 
 # La taula de pàgines i el TLB de #tip-mv-tlb-exemple (estat inicial).
 TAULA = [('0x00000', '1', '0', '1', '0x01'),
