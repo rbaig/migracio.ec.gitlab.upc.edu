@@ -13,7 +13,7 @@ Abans de començar, llegeix:
 - `13_contrib.qmd §Llenguatge`, sencer: referència normativa, criteris generals, puntuació, ressaltat, anglicismes, les formes que no s'han de fer servir, sigles i notació, codi i cursiva;
 - el lèxic anglès–català del llibre, `24_specs/termes.toml` (D-115), del qual es genera el glossari de `12_sigles_simbols.qmd §Termes`: un terme anglès es diu com hi consta, amb les observacions d'ús del seu camp `obs`, i els de `[en_angles]` es mantenen en anglès. Les presentacions «**terme** (*english*)» ja les comprova `make comprova`; la teva feina és l'ús del terme a la resta del text;
 - `13_contrib.qmd §Decisions per tema`, la part del tema del fitxer;
-- `12_sigles_simbols.qmd`, per a les sigles.
+- les sigles, a `[sigles]` de `24_specs/termes.toml` (D-118), del qual es genera la taula de `12_sigles_simbols.qmd §Sigles`.
 
 ## Les eines, primer
 

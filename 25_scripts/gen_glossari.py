@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Glossari anglès → català (secció «Termes» de 12_sigles_simbols.qmd) i taula de
-formes que no s'han de fer servir (13_contrib.qmd), generats a partir de
-24_specs/termes.toml, i comprovació de les presentacions del text.
+"""Glossari anglès → català (secció «Termes» de 12_sigles_simbols.qmd), taula de
+sigles (secció «Sigles» del mateix fitxer) i taula de formes que no s'han de fer
+servir (13_contrib.qmd), generats a partir de 24_specs/termes.toml, i comprovació
+de les presentacions del text.
 
 Petició de l'usuari (2026-10-05; TODO.md, «Glossari de termes català–anglès»).
 La font de veritat del lèxic és 24_specs/termes.toml (D-115, que inverteix D-100):
@@ -28,7 +29,7 @@ La comprovació (--comprova, i també en generar) troba:
   - i, com a avís, un terme que sembla en plural i no és a `nombre` (D-108).
 
 S'exclouen les sigles (terme «català» tot en majúscules: van a §Sigles), les
-expansions de sigla (l'anglès és l'expansió d'una sigla que ja és a §Sigles, com
+expansions de sigla (l'anglès és l'expansió d'una sigla de [sigles] de termes.toml, com
 «**NaN** (*Not a Number*)», o la cursiva va seguida de la sigla, com «(*fused
 multiply-add*, FMA)»: no és una traducció), els mots de [no_presentacions] de
 termes.toml (glosses de la interfície de RARS, de camps o de bits, que no són termes)
@@ -40,16 +41,19 @@ i el contingut dels blocs de codi, dels comentaris HTML i de la capçalera YAML.
     python3 25_scripts/gen_glossari.py --diccionari  # escriu 24_specs/diccionari_termes.txt (make registres)
     python3 25_scripts/gen_glossari.py --diccionari --comprova   # 1 si no és al dia
 
-La secció la inclou 12_sigles_simbols.qmd amb dos {{< include auto_termes/… >}}, un per taula,
-i la taula de formes, 13_contrib.qmd §Formes que no s'han de fer servir. Com auto_riscv/
+12_sigles_simbols.qmd n'inclou les taules amb un {{< include auto_termes/… >}} per taula (la de
+sigles a §Sigles, i les dues del glossari a §Termes), i la taula de formes, 13_contrib.qmd §Formes
+que no s'han de fer servir. La taula de sigles és la de [sigles] de termes.toml, cel·la a cel·la,
+per ordre alfabètic sense els signes (E/S com «es»; D-118). Com auto_riscv/
 (D-3), els fitxers han d'existir abans d'invocar `quarto`, perquè Quarto resol els include
 abans del pre-render: `make render` i `make taules` els generen. No es versionen (D-104).
 
 El diccionari de termes (--diccionari) són els mots de termes.toml, perquè els
 correctors (hunspell a ortografia.py, i cSpell a VS Code) acceptin els termes del
 llibre: el terme anglès i la forma catalana, les formes de `presentacio` i les de
-`mots` (les flexions que el corrector ha d'acceptar; cap plural no es calcula). Es versiona, perquè VS Code el llegeix sense cap
-render, i no depèn de hunspell, perquè surti igual a tot arreu (D-115).
+`mots` (les flexions que el corrector ha d'acceptar; cap plural no es calcula), i els dels
+significats de les sigles (D-118). Es versiona, perquè VS Code el llegeix sense cap render, i
+no depèn de hunspell, perquè surti igual a tot arreu (D-115).
 """
 
 import re
@@ -61,11 +65,11 @@ from urllib.parse import quote
 from taula_md import majuscula, taula
 
 ARREL = Path(__file__).resolve().parent.parent
-SIGLES = ARREL / "12_sigles_simbols.qmd"
 DADES = ARREL / "24_specs" / "termes.toml"
 SORTIDA = ARREL / "auto_termes" / "glossari.qmd"
 SORTIDA_ANGLES = ARREL / "auto_termes" / "glossari_angles.qmd"
 SORTIDA_FORMES = ARREL / "auto_termes" / "formes.qmd"
+SORTIDA_SIGLES = ARREL / "auto_termes" / "sigles.qmd"
 DICCIONARI = ARREL / "24_specs" / "diccionari_termes.txt"
 MOT = re.compile(r"[^\W\d_]+(?:-[^\W\d_]+)*")
 
@@ -183,16 +187,14 @@ def normalitza(s):
     return re.sub(r"\s+", " ", re.sub(r"[*_]", "", s)).strip().lower()
 
 
-def expansions_de_sigles():
-    """Les expansions de la taula de §Sigles de 12_sigles_simbols.qmd, normalitzades."""
-    text = SIGLES.read_text(encoding="utf-8")
-    seccio = text.split("\n## Sigles", 1)[1].split("\n## ", 1)[0]
-    return {normalitza(m.group(1)) for m in re.finditer(r"^\| \*\*[^|]+\*\* \| ([^|]+) \|", seccio, re.M)}
+def expansions_de_sigles(d):
+    """Els significats de [sigles] de termes.toml, normalitzats."""
+    return {normalitza(e["significat"]) for e in d.get("sigles", {}).values()}
 
 
-def recull():
+def recull(d):
     """[(anglès, català, fitxer, línia, tema)] de les presentacions del text, en l'ordre del llibre."""
-    sigles = expansions_de_sigles()
+    sigles = expansions_de_sigles(d)
     return [p for p in presentacions() if normalitza(p[0]) not in sigles]
 
 
@@ -346,6 +348,18 @@ def taula_angles(en_angles):
                  'Termes mantinguts en anglès. {#tbl-termes-angles tbl-colwidths="[18,28,54]" .striped}')
 
 
+def clau_sigla(sigla):
+    """L'ordre alfabètic de la taula de sigles: sense els signes (E/S, «es»; S&M, «sm») i, a
+    igualtat, la majúscula primer (LSB, LSb)."""
+    return re.sub(r"[^0-9a-z]", "", sigla.lower()), sigla
+
+
+def taula_sigles(sigles):
+    files = [[f"**{s}**", sigles[s]["significat"], sigles[s].get("obs", "")] for s in sorted(sigles, key=clau_sigla)]
+    return taula([("Sigla", ":---"), ("Significat", ":---"), ("Observacions", ":---")], files,
+                 'Sigles i acrònims. {#tbl-sigles tbl-colwidths="[13,50,37]" .striped}')
+
+
 def taula_formes(no_admeses):
     files = [[no, e["si"], e.get("obs", "")] for no, e in no_admeses.items()]
     return taula([("No s'escriu", ":---"), ("S'escriu", ":---"), ("Observacions", ":---")], files,
@@ -358,17 +372,21 @@ def sortides(d, temes):
     marca = "<!-- generat per 25_scripts/gen_glossari.py a partir de 24_specs/termes.toml; no l'editeu a mà -->\n"
     return {SORTIDA: f"{marca}{taula_termes(d, temes)}\n",
             SORTIDA_ANGLES: f"{marca}{taula_angles(d.get('en_angles', {}))}\n",
-            SORTIDA_FORMES: f"{marca}{taula_formes(d.get('no_admeses', {}))}\n"}
+            SORTIDA_FORMES: f"{marca}{taula_formes(d.get('no_admeses', {}))}\n",
+            SORTIDA_SIGLES: f"{marca}{taula_sigles(d.get('sigles', {}))}\n"}
 
 
 def mots_diccionari(d):
-    """Els mots dels termes de termes.toml, sense els de menys de tres lletres ni les sigles. No s'hi
+    """Els mots dels termes i dels significats de les sigles de termes.toml, sense els de menys de
+    tres lletres ni els que són tot majúscules (les sigles). No s'hi
     afegeix cap plural calculat: un plural que no existeix («aliàsings») amagaria un error; les
     flexions que el corrector ha d'acceptar són a `mots`."""
     fonts = []
     for clau, e in d.get("termes", {}).items():
         fonts += [clau, e["ca"], *e.get("presentacio", []), *e.get("mots", [])]
     fonts += [p.strip() for clau in d.get("en_angles", {}) for p in clau.split(",")]
+    for sigla, e in d.get("sigles", {}).items():
+        fonts += [sigla, re.sub(r"\$[^$]*\$", " ", e["significat"])]
     mots = {m for f in fonts for m in MOT.findall(f) if len(m) >= 3 and not m.isupper()}
     return sorted(mots, key=lambda m: (m.lower(), m))
 
@@ -393,7 +411,7 @@ def main():
     d = dades()
     if "--diccionari" in sys.argv:
         return diccionari(d)
-    pres = recull()
+    pres = recull(d)
     errors, avisos, temes = comprova(pres, d)
     for a in avisos:
         print(f"[gen-glossari] avís: {a}", file=sys.stderr)

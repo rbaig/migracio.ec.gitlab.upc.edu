@@ -62,7 +62,7 @@ Un fitxer o directori de l'arrel per línia. `make comprova` comprova que la lli
 ├── _book/                      # Generat · Quarto: directori de sortida
 ├── auto_figs/                  # Generat · Figures per script (el pre-render l'esborra i el refà)
 ├── auto_riscv/                 # Generat · Taules fusionades de `11_riscv.qmd` (`make taules`; `make render` ja el crida)
-├── auto_termes/                # Generat · Glossari de termes i taula de formes, de `24_specs/termes.toml` (`make taules`; `make render` ja el crida)
+├── auto_termes/                # Generat · Glossari de termes, taula de sigles i taula de formes, de `24_specs/termes.toml` (`make taules`; `make render` ja el crida)
 ├── .gitignore
 ├── 10_continguts.qmd           # Pàgina «📑 Continguts»: l'índex dels apunts, només a l'HTML; l'escriu `25_scripts/continguts.lua`
 ├── 11_riscv.qmd                # Compendi de referència RISC-V
@@ -101,7 +101,7 @@ cd ~/git/EC
 
 | Ordre | Efecte |
 | :--- | :--- |
-| `make render` | Genera les taules fusionades (`auto_riscv/`) i el glossari de termes (`auto_termes/`), i renderitza **només l'HTML** (1–3 min): el bucle diari |
+| `make render` | Genera les taules fusionades (`auto_riscv/`) i les taules del lèxic (`auto_termes/`: el glossari de termes i les sigles), i renderitza **només l'HTML** (1–3 min): el bucle diari |
 | `make comprova` | Les comprovacions del nivell dels canvis, abans de cada commit (de segons a 8 min) |
 | `make comprova-tot` | Totes les comprovacions, amb l'HTML, el PDF i RARS (5–10 min): abans d'obrir una MR o de publicar |
 | `make gramatica` | LanguageTool sobre la prosa del corpus, sense el que al llibre és soroll (`24_specs/gramatica.toml`); també és a `make comprova-tot` |

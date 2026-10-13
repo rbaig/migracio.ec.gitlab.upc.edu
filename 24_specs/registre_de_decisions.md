@@ -519,6 +519,16 @@ Decisions de l'usuari (2026-10-13), sobre les sis decisions de l'anàlisi del l�
 
 **Seguiment del 2026-10-13: les expansions dels mnemònics, en cursiva** (bloc K9). Decisió de l'usuari, literal, sobre les expansions de les taules d'instruccions de `21_riscv/` («load half», «branch equal»…), que eren en pla a tota la columna: «Sí, en cursiva». La columna «Nom» de les taules d'instruccions ja era en cursiva als fragments de RV32F (llevat de conversió i moviment de bits), de Zicsr i de `mret`: ara ho és a tots, 43 noms a 13 fragments. No hi entren les columnes «Nom» que no són l'expansió d'un mnemònic: les crides al sistema (codi), els modes de `mtvec` (en català) i les dues taules d'A9. I la vinyeta d'A2 que LanguageTool marcava (`FRASE_INFINITIU`), literal: «Proposta acceptada. Fes el canvi»: «Escriure, en C, els comentaris…», com les altres vinyetes de la llista. De pas, una excepció de LanguageTool que havia fet sortir K3: a «l'operador `&`, que es llegeix **et**», «et» és el nom del signe, no el pronom feble (`gramatica.toml`). I la nota per als revisors externs (`24_specs/revisio_externa.md`) ja diu D-116 i que la revisió del lèxic és feta.
 
+### D-118
+
+**Les sigles, a `24_specs/termes.toml`: el compendi de sigles es genera** · `13_contrib.qmd §Sigles, símbols i notació`, `§Registres`; `24_specs/termes.toml` (`[sigles]`), `25_scripts/gen_glossari.py` · 2026-10-13
+
+Petició de l'usuari (2026-10-13), literal: «EC: les sigles a 24_specs/termes.toml, i la comprovació de l'expansió a la primera aparició del llibre (D-89).» És l'últim pas de la revisió del lèxic: [D-115](#d-115) havia deixat les sigles per després de la fase 2, perquè tenien una sola font i passar-les al fitxer donaria comprovacions noves ([D-89](#d-89)), no menys duplicació. Decisions de l'usuari sobre la llista de Claude Code (2026-10-13, literal: «Recomanacions acceptades»), per al primer commit:
+
+- **Una secció `[sigles]` de `termes.toml`**, amb la sigla com a clau, tal com s'escriu (LSB i LSb en són dues), i dos camps: `significat`, la cel·la de la taula tal com surt, i `obs`, les observacions. La taula de `12_sigles_simbols.qmd §Sigles` se'n genera en renderitzar (`auto_termes/sigles.qmd`, amb `gen_glossari.py`, com el glossari de termes), i el detector de presentacions de termes en llegeix els significats, que abans llegia de la taula del `.qmd`.
+- **Per ordre alfabètic, sense comptar els signes** (E/S com «es», S&M com «sm»; a igualtat, la majúscula primer: LSB, LSb). La taula feta a mà tenia dues parelles fora d'ordre, AMAT davant d'ALU i S&M davant de SI, i aquesta és l'única diferència entre la taula generada i la d'abans: les mateixes 104 files, cel·la a cel·la (`grep -c '^| \*\*' auto_termes/sigles.qmd`), la mateixa capçalera i el mateix peu.
+- **El diccionari de termes** (`24_specs/diccionari_termes.txt`) **inclou els mots dels significats**, però no les sigles, que són tot majúscules: Electrotechnical, Lookaside, LSb, MSb i NaN surten del diccionari escrit a mà.
+
 ## Format
 
 ### D-70

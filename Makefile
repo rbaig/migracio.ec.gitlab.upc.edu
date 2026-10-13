@@ -44,7 +44,7 @@ registres:              ## regenera els registres versionats: diccionari de term
 gramatica:              ## LanguageTool sobre la prosa del corpus, sense el soroll (24_specs/gramatica.toml); el baixa la primera vegada
 	@python3 25_scripts/gramatica.py --tot || [ $$? -eq 1 ]
 
-glossari:               ## només les taules del lèxic (auto_termes/: glossari i formes), des de 24_specs/termes.toml
+glossari:               ## només les taules del lèxic (auto_termes/: glossari, sigles i formes), des de 24_specs/termes.toml
 	python3 25_scripts/gen_glossari.py
 
 inventari:              ## l'inventari de figures, a demanda (25_scripts/out_inventari_figures/figures.md)
