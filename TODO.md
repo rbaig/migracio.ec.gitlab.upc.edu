@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**10 entrades vives** (recompte del 2026-10-13, en retirar de §Tasques globals → SVG «Revisió de la paleta de colors per reduir-ne la quantitat», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**9 entrades vives** (recompte del 2026-10-13, en retirar de §Tasques per tema → T2 «A2, `#sec-punters` i `#sec-vectors`: el que la revisió del 2026-10-12 no va aplicar, per decidir», feta; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 2 (suma 10, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques globals` 2 (suma 9, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -86,17 +86,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ---
 
 ## Tasques per tema
-
-### T2
-
-- **A2, `#sec-punters` i `#sec-vectors`: el que la revisió del 2026-10-12 no va aplicar, per decidir** (registrada el 2026-10-12; retallada el mateix dia, en aplicar-ne, per recomanació de Claude Code acceptada per l'usuari, les remissions cap endavant i la regla que s'havia perdut: el text d'abans, a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). L'usuari va reescriure les dues seccions a mà (`5aa5bc9`) i en va demanar la revisió tècnica i la lingüística; dos subagents la van fer (el tècnic, amb RARS 1.6), i les errades i les harmonitzacions que diu la guia es van aplicar (`2da1542`, `132edbf`). Queda el que demana una decisió de l'editor, perquè toca l'estructura o l'estil d'un text seu, i A2 ja és dels revisors externs (`CLAUDE.md §Estat del projecte`). Treballeu per àncora:
-  - **Ordre**: el paràgraf que presenta el **declarador** (el que comença «En una declaració») va després del que ja en parla (sota `#tip-punters-c-declaracio`), i les definicions no lliguen («el declarador `*`» o el `*` com a part del declarador `*<nom>`); `#cau-void-main` diu «A partir d'aquí», però el primer `void main()` d'A2 és abans, a `#tip-inicialitzacio-punters-1`; `#wrn-index-aritmetica-punters` fa servir `3[vec]` ≡ `*(3 + vec)` abans que el text defineixi `vec[i]` ≡ `*(vec + i)`; i `#wrn-punters-funcions` és dins de §Absència de control en l'accés a memòria, amb què no té relació.
-  - **Títols**: el criteri que es dedueix de `5aa5bc9` («C — » quan la secció no té part en RV32I) donaria «C — » a §Relació entre punters i vectors; el títol de §C — Tipus `<tipus> nom_vector[…]` no lliga amb el cos (`<tipus_elements>`, `<quantitat_elements>`); `#tip-desreferencia-punters-c` es diu «C — …» i conté RV32I; i `#tip-optimitzacio-acces-sequencial` i el seu germà d'accés aleatori no tenen el mateix patró de títol.
-  - **Estil**: una sola forma de «punter a tipus enter» (hi ha també «punter de tipus enter» i «punter al tipus»); «**punter nul** (*null pointer*)», en negreta, perquè el glossari l'agafi; l'abast de `&` («davant del nom d'una variable», però més avall `&vec[0]`); el cas `int *p4, p5;`, dues vegades; la nota `[^decau]`, que remet a la seva pròpia secció; el títol de `#tip-c-tipus-vector-matriu-decaiment`, gairebé igual que el de §Relació entre punters i vectors; i la mateixa `n` per a `.space` i `.align` a `#nte-directives-align-space`.
-
-  ```bash
-  git grep -n -E "A partir d'aquí|punter de tipus enter|punter nul \(" -- 01_apunts/A2.qmd
-  ```
 
 ---
 

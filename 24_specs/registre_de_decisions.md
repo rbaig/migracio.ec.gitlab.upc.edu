@@ -99,6 +99,12 @@ L'experiment va impedir una conversió de 121 directives a la forma llarga que n
 
 Decisió de l'usuari (2026-10-09), després de la fase 8a, que va trobar que l'expansió de `ret` s'escrivia de dues maneres: `jalr x0, 0(ra)` a A1, A3 i la guia, i `jalr zero, ra, 0` a les taules de pseudoinstruccions del compendi (`TODO.md`, «Fase 8a: el que queda…»). RARS 1.6 admet totes dues formes i les codifica igual (`jalr zero, 0(ra)` i `jalr zero, ra, 0` donen `0x00008067`). La regla fixa la de les instruccions de lectura i escriptura, `desplaçament(base)`, també per a `jalr`, que és del mateix mode d'adreçament (A3, §Revisió dels modes d'adreçament), i el nom ABI del registre (`zero`, no `x0`), com la resta del codi del llibre. A2 la presenta a `#imp-notacio-base-desplacament`, just després de definir el mode.
 
+### D-114
+
+**Títols «C — »: només quan el contingut és només de C** · `13_contrib.qmd §T2 i T3` · 2026-10-13
+
+L'usuari va harmonitzar a mà els títols de §Punters i §Vectors d'A2 (`5aa5bc9`, 2026-10-12), i la revisió que en va demanar en va deduir el criteri: «C — » quan la secció no té part en RV32I (`TODO.md`, entrada de T2, avui a l'arxiu). Recomanació de Claude Code, acceptada per l'usuari (2026-10-13, «totes les propostes (1--20) acceptades»): fer-ne regla, estesa als títols dels callouts, i que els fills d'una secció «C — » no el repeteixin, que és el que ja feien els callouts de §C — Tipus `<tipus_elements> nom_vector[<quantitat_elements>]`. En aplicar-la, §Relació entre punters i vectors va passar a «C — », i els seus callouts i `#tip-desreferencia-punters-c` (que té part en RV32I) el van perdre. Aquell dia, fora d'A2 només en portava un títol, el callout `## C — Pas de paràmetres: vector i variables globals` d'A3, que ja compleix la regla (`git grep -n -E '^#{2,4} C — ' -- 01_apunts`).
+
 ### D-9
 
 **Notació de la multiplicació i la divisió (T4)** · `13_contrib.qmd §T4` · 2026-10-03 · `e0ff377`

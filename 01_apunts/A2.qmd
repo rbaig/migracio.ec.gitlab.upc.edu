@@ -1501,11 +1501,11 @@ A **x86-64** i a **RV64I**, els punters tenen 8 bytes.
 
 Aritmèticament, els punters són nombres naturals. En **C**, però, no només es consideren un **tipus de dada específic**, diferent dels naturals, sinó que hi ha un **tipus de punter** per cada **tipus de dada**. Per exemple, el tipus «punter a tipus enter» és diferent del tipus «punter a tipus caràcter».
 
-Per abús de llenguatge, es sol dir «punter a enter» o «punter a caràcter» en lloc de «punter de tipus enter» i «punter de tipus caràcter», respectivament.
+Per abús de llenguatge, es sol dir «punter a enter» o «punter a caràcter» en lloc de «punter a tipus enter» i «punter a tipus caràcter», respectivament.
 
 ### Declaració {#sec-punters-c-declaracio}
 
-En **C**, en una **declaració**, el caràcter `*`, precedit del nom d'un tipus i seguit del nom d'una variable, indica «**variable de tipus punter al tipus**» que el precedeix.
+En **C**, en una **declaració**, el caràcter `*`, precedit del nom d'un tipus i seguit del nom d'una variable, indica «**variable de tipus punter a tipus** `<tipus>`», on `<tipus>` és el tipus que el precedeix.
 
 En C, la sintaxi de declaració d'un punter és:
 
@@ -1516,7 +1516,9 @@ En C, la sintaxi de declaració d'un punter és:
 
 Així doncs, per exemple, la declaració `int *p;` declara `p` com a «variable de tipus punter a tipus enter». Tècnicament, `p` és de tipus `int *`, això és, «punter a tipus enter» o, més habitualment, per abús de llenguatge, «punter a enter».
 
-A l'@tip-punters-c-declaracio, `p1` i `p4` són del tipus `int *`, és a dir, són punters a variables de tipus `int`. Anàlogament, `p2` és un punter del tipus `char *`, és a dir, un punter a una variable de tipus `char`, mentre que `p3` és un punter del tipus `short *`, per tant, un punter a una variable de tipus `short`. Finalment, `p5` no és un punter, sinó un enter, ja que el declarador `*` només afecta `p4`.
+En les **declaracions**, el caràcter `*` és un modificador que forma part del **declarador**, `*<nom_del_punter>`, i no del nom del tipus que el precedeix.
+
+A l'@tip-punters-c-declaracio, `p1` i `p4` són del tipus `int *`, és a dir, són punters a variables de tipus `int`. Anàlogament, `p2` és un punter del tipus `char *`, és a dir, un punter a una variable de tipus `char`, mentre que `p3` és un punter del tipus `short *`, per tant, un punter a una variable de tipus `short`. Finalment, `p5` no és un punter, sinó un enter, ja que el `*` forma part del declarador de `p4` (`*p4`), no d'`int`.
 
 ::: {#tip-punters-c-declaracio .callout-tip}
 ## Declaració de punters en C
@@ -1528,15 +1530,13 @@ int *p4, p5;      // p4 és un punter a enter, però p5 és un enter!
 ```
 :::
 
-Tècnicament, en C, el caràcter `*` en les **declaracions** és un modificador que és part del **declarador** «punter a» (essent `*<nom_del_punter>` el declarador complet).
-
 ::: {#cau-asterisc-declaracio-vs-sentencia .callout-caution}
 No s'ha de confondre l'ús de `*` en les **declaracions**, on denota «punter a», amb l'ús en les **sentències**, on, com a operador unari, és l'operador de desreferència o indirecció (@sec-punters-desreferencia).
 :::
 
 En **RV32I** **no hi ha una distinció explícita entre diferents tipus de punters**; tots són sempre adreces de 32 bits.
 
-A l'@tip-punters-rv32i-declaracio es tradueixen a RV32I les declaracions en C dels punters `p1`, `p2` i `p3` de l'@tip-punters-c-declaracio suposant que les variables `p1`, `p2` i `p3` són variables globals. S'hi inicialitzen a zero, el punter nul (*null pointer*) de C, per explicitar que no apunten a cap adreça vàlida, per exemple, perquè encara no es coneix l'adreça de les variables a les quals apuntaran.
+A l'@tip-punters-rv32i-declaracio es tradueixen a RV32I les declaracions en C dels punters `p1`, `p2` i `p3` de l'@tip-punters-c-declaracio suposant que les variables `p1`, `p2` i `p3` són variables globals. S'hi inicialitzen a zero, el **punter nul** (*null pointer*) de C, per explicitar que no apunten a cap adreça vàlida, per exemple, perquè encara no es coneix l'adreça de les variables a les quals apuntaran.
 
 ::: {#tip-punters-rv32i-declaracio .callout-tip}
 ## Declaració de punters en RV32I
@@ -1550,7 +1550,7 @@ p3:     .word   0     # Punter a short (inicialitzat a null)
 
 ### C — `&`: l'operador «adreça de» {#sec-punters-ampersand}
 
-En **C**, l'**operador** `&` («*ampersand*»), davant del nom d'una variable, és l'**operador** «**adreça de la variable**» que precedeix. Així doncs, `&x` representa l'«adreça de la variable» `x`.
+En **C**, l'**operador** `&` («*ampersand*»), davant d'una variable o d'un element d'un vector, és l'**operador** «**adreça de la variable**» (o de l'element) que precedeix. Així doncs, `&x` representa l'«adreça de la variable» `x`.
 
 ::: {#cau-c-ampersand-adreca-vs-bitwise .callout-caution}
 No s'ha de confondre l'ús de `&` en punters, on és un operador **unari**, amb l'ús en lògica bit a bit, on és l'operador **binari** AND (@sec-instruccions-logiques-bit-a-bit).
@@ -1588,8 +1588,6 @@ En **C**, una declaració com `int *p1 = &x;` té tres parts:
 - L'**inicialitzador** (`&x`): l'expressió que assigna el valor inicial al punter.
 
 El caràcter `=` és el **delimitador d'inicialització**, que separa el declarador de l'inicialitzador.
-
-La distinció entre tipus base i declarador és important: en `int *p1, p2;`, el `*` pertany al declarador de `p1`, no al tipus `int`. Per tant, `p2` és un `int`, no un punter.
 :::
 
 En **RV32I**, l'**assignació** d'un punter es pot fer:
@@ -1598,6 +1596,10 @@ En **RV32I**, l'**assignació** d'un punter es pot fer:
 - Explícitament (per exemple mitjançant la pseudoinstrucció `li`).
 
 L'**inicialització en la declaració de variables globals** es pot fer mitjançant etiquetes de dades, com es mostra a l'@tip-inicialitzacio-punters-1. En aquest exemple, `p1` s'inicialitza amb l'adreça de la variable global `x`, mentre que `p2` s'inicialitza a zero (punter nul). A la funció `main`, s'assigna `p1` a `p2`, de manera que `p2` també apunta a `x`.
+
+::: {#cau-void-main .callout-caution}
+A partir d'aquí, els programes en C d'aquests apunts s'escriuen amb `void main()`: són **notació** del programa que es tradueix a mà a assemblador, no codi que es compili, i no hi ha cap SO que en reculli el valor de retorn (@imp-directe-sobre-processador). **En un programa de C normal, compilat per a un sistema operatiu, cal `int main`.**
+:::
 
 ::: {#tip-inicialitzacio-punters-1 .callout-tip}
 ## Inicialització de punters a variables globals
@@ -1634,11 +1636,11 @@ En **C**, s'expressa precedint el nom del punter amb el caràcter `*` en les **s
 Així doncs, l'expressió `*p` significa «**contingut de la posició de memòria** apuntada pel punter `p`».
 
 ::: {#cau-asterisc-sentencia-vs-declaracio .callout-caution}
-No s'ha de confondre l'ús de `*` com a operador en les **sentències** amb l'ús en les **declaracions**, on forma part del declarador «variable de tipus punter al \<tipus\>» (@sec-punters-c-declaracio).  En C només té sentit parlar d’operadors en expressions, no en declaracions. 
+No s'ha de confondre l'ús de `*` com a operador en les **sentències** amb l'ús en les **declaracions**, on forma part del declarador (`*<nom_del_punter>`, @sec-punters-c-declaracio). En C només té sentit parlar d'operadors en expressions, no en declaracions.
 :::
 
 ::: {#tip-desreferencia-punters-c .callout-tip}
-## C — Operació de desreferència de punters
+## Operació de desreferència de punters
 ```{.c filename="C"}
 char *pglob;     // variable global: exemple il·lustratiu; en ús
                  // real cal inicialitzar abans de desreferenciar
@@ -1670,6 +1672,15 @@ g:
 ```
 
 La primera sentència llegeix el contingut de la posició de memòria apuntada per `ploc` i el copia a la variable local `tmp`. Com que `ploc` està en un registre, n'hi ha prou amb executar una instrucció `lb` on el registre-base sigui el que conté el punter. La segona sentència és similar, però com que `pglob` és global, està emmagatzemada en memòria. Cal llegir prèviament la variable global `pglob` al registre `t3` (es carrega l'adreça de `pglob`, la de l'etiqueta, a `t2` amb `la`, i a continuació s'accedeix al punter en memòria amb `lw`). Un cop llegit el punter `pglob` en un registre, es fa la desreferència de la mateixa manera que en el cas de `ploc`, amb `lb`.
+:::
+
+::: {#wrn-punters-funcions .callout-warning collapse=true}
+## Punters a funcions
+Les funcions també resideixen en memòria (al segment `.text`). Un **punter a funció** és una variable escalar que conté l'**adreça de la primera instrucció** d'una funció.
+
+En **C** es declara indicant el tipus de retorn i els tipus dels paràmetres; per exemple, `int (*op)(int, int);` declara `op` com a punter a una funció que rep dos `int` i en retorna un. Els punters a funció permeten decidir en temps d'execució quina funció s'invoca (taules de salts, *callbacks*, etc.).
+
+En **RV32I**, invocar un punter a funció és una **crida a subrutina indirecta**: es carrega l'adreça en un registre i s'hi salta amb `jalr` (@sec-subrutines). A **EC** no es treballen explícitament.
 :::
 
 ### Aritmètica de punters {#sec-aritmetica-punters}
@@ -1736,15 +1747,6 @@ L'**estàndard** de C **no especifica** què passa si s'accedeix a una àrea de 
 2. **Corrupció (silenciosa) de dades**: Si l'adreça calculada amb l'aritmètica de punters encara cau dins de la memòria que el programa té assignada (per exemple, on hi ha una altra variable veïna al segment de dades, @sec-memoria-t2), **el programa continuarà funcionant**, però **accedint a dades indeterminades** sense cap indicació d'error.
 3. **Vulnerabilitats de seguretat**: Si l'accés és a la pila (*stack*, @sec-multinivell-pila), es pot produir un **desbordament de memòria intermèdia** (***buffer overflow***), fet que podria arribar a permetre a un **atacant** modificar l'adreça de retorn d'una funció i **executar codi maliciós**.
 
-::: {#wrn-punters-funcions .callout-warning collapse=true}
-## Punters a funcions
-Les funcions també resideixen en memòria (al segment `.text`). Un **punter a funció** és una variable escalar que conté l'**adreça de la primera instrucció** d'una funció.
-
-En **C** es declara indicant el tipus de retorn i els tipus dels paràmetres; per exemple, `int (*op)(int, int);` declara `op` com a punter a una funció que rep dos `int` i en retorna un. Els punters a funció permeten decidir en temps d'execució quina funció s'invoca (taules de salts, *callbacks*, etc.).
-
-En **RV32I**, invocar un punter a funció és una **crida a subrutina indirecta**: es carrega l'adreça en un registre i s'hi salta amb `jalr` (@sec-subrutines). A **EC** no es treballen explícitament.
-:::
-
 En **RV32I** tampoc no es comproven els límits: el programador és responsable que els punters apuntin a adreces vàlides. Un accés fora d'un vector però dins d'un segment accessible s'executa sense cap avís; només es produeix una excepció si l'adreça no és alineada (@sec-restriccio-alineacio-carrega) o, a **RARS**, si cau fora de la memòria del programa (per exemple, en desreferenciar el punter nul).
 
 ## Vectors {#sec-vectors}
@@ -1798,14 +1800,14 @@ mat:    .word   11, 12, 13
 ```
 :::
 
-Per a vectors llargs no inicialitzats (valor **zero** per defecte, tant a **RARS** com en **C** per a les variables globals; en **C**, només les variables locals sense inicialitzar tenen un valor **indeterminat**), s'usa la directiva `.space n`, que reserva `n` **bytes**. Per assegurar l'alineació que correspon al tipus del vector, cal precedir `.space` de la directiva `.align n`, que alinea l'adreça següent a un múltiple de $2^n$.
+Per a vectors llargs no inicialitzats (valor **zero** per defecte, tant a **RARS** com en **C** per a les variables globals; en **C**, només les variables locals sense inicialitzar tenen un valor **indeterminat**), s'usa la directiva `.space n`, que reserva `n` **bytes**. Per assegurar l'alineació que correspon al tipus del vector, cal precedir `.space` de la directiva `.align k`, que alinea l'adreça següent a un múltiple de $2^k$.
 
 ::: {#nte-directives-align-space .callout-note}
 ## Directives — Reserva de memòria: `.space`, `.align`
 
 | Directiva | Operands | Descripció |
 | :--- | :--- | :--- |
-| `.align` | `n` | Alinea l'element següent a la frontera de $2^n$ bytes |
+| `.align` | `k` | Alinea l'element següent a la frontera de $2^k$ bytes |
 | `.space` | `n` | Reserva `n` bytes al segment de dades |
 :::
 
@@ -1823,7 +1825,7 @@ v:      .space  400     # Reserva 400 bytes (100 enters * 4 bytes)
 ```
 :::
 
-### C — Tipus `<tipus> nom_vector[<quantitat_d_elements>]` {#sec-tipus-declaracio-vector}
+### C — Tipus `<tipus_elements> nom_vector[<quantitat_elements>]` {#sec-tipus-declaracio-vector}
 
 En **C**, `int vec[<quantitat_elements>]` no és només una declaració: constitueix un **tipus complet** (`int[<quantitat_elements>]`).
 
@@ -1858,10 +1860,10 @@ c = a;  // ⚠️ ERROR: + tipus incompatibles (int[5] vs. int[10]) ⚠️
 ::: {#tip-c-tipus-vector-matriu .callout-tip}
 ## Les matrius com a vectors de vectors
 
-En **C**, una matriu `int mat[2][3]` és un **vector de 2 elements**, on cada element és de tipus `int[3]` (un vector de 3 enters). 
+En **C**, una matriu `int mat[2][3]` és un **vector de 2 elements**, on cada element és de tipus `int[3]` (un vector de 3 enters).
 
 ```{.c filename="C"}
-int mat[2][3] = {{1, 2, 3}, {4, 5, 60}}; 
+int mat[2][3] = {{1, 2, 3}, {4, 5, 60}};
 
 int x = mat[1][2];  // equivalent a *(*(mat + 1) + 2) => x <- 60
 ```
@@ -1872,7 +1874,7 @@ L'emmagatzemament a memòria és **per files**, de dalt a baix (primer tots els 
 En **C**, `sizeof(element)` és un operador unari que retorna la mida d'`element`, que pot ser un escalar o una dada estructurada.
 
 ::: {#tip-c-tipus-vector-matriu-sizeof .callout-tip}
-## `sizeof ()`
+## `sizeof()`
 
 | Codi | Retorna |
 | :--- | :--- |
@@ -1939,12 +1941,7 @@ Accés a un element d'un vector.
 Com que el compilador de C no comprova si un accés es fa a una adreça il·legítima (@sec-c-punters-absencia-control-limits), no comprova si l'índex està fora del rang del vector. Simplement suma l'índex a l'adreça i accedeix a la memòria resultant, encara que sigui fora de l'àrea de memòria del vector.
 :::
 
-::: {#wrn-index-aritmetica-punters .callout-warning collapse=true}
-## C — Commutativitat de l'operador `[]`
-Com que la suma és commutativa (`a + i` és el mateix que `i + a`), en C és perfectament vàlid escriure `3[vec]` en lloc de `vec[3]`. El compilador ho tradueix igualment a `*(3 + vec)`.
-:::
-
-### Relació entre punters i vectors {#sec-punters-vectors}
+### C — Relació entre punters i vectors {#sec-punters-vectors}
 
 En **C**, en la majoria d'expressions, el nom d'un vector **decau** automàticament a un **punter al seu primer element** (del tipus `<tipus_element> *`), excepte en dos contextos específics: quan és operand de l'operador `&` i quan és operand de `sizeof`. Aquest fenomen es coneix com a **decaïment de vectors a punters**.
 
@@ -1954,13 +1951,11 @@ Una **conseqüència** del decaïment és l'**equivalència** entre `vec` i `&ve
 Per tant, en **C**, l'**adreça base** del vector `vec` es pot obtenir de dues maneres (equivalents) següents:
 
 - `&vec[0]`.
-- `vec`[^decau].
-
-[^decau]: Perquè, en **C**, els vectors decauen automàticament a punters al primer element (@sec-punters-vectors).
+- `vec`.
 :::
 
 ::: {#tip-c-vector-decaiment .callout-tip}
-## C — Decaïment de vectors a punters
+## Decaïment de vectors a punters
 ```{.c filename="C"}
 int vec[100];
 int *p = vec;
@@ -1980,7 +1975,7 @@ Anàlisi:
 :::
 
 ::: {#tip-c-tipus-vector-matriu-decaiment .callout-tip}
-## C — Decaïment d'un vector a punter
+## Decaïment d'una fila d'una matriu a punter
 
 ```{.c filename="C"}
 int mat[2][3] = {{1, 2, 3},
@@ -2005,6 +2000,11 @@ En **C**, en sentències, l'operador `[]`, precedit del nom d'una variable de ti
 2. La **desreferència** (accedeix a l'element apuntat; lectura o escriptura, segons correspongui).
 
 Per tant, és una forma compacta de realitzar aritmètica de punters i desreferència simultàniament.
+:::
+
+::: {#wrn-index-aritmetica-punters .callout-warning collapse=true}
+## Commutativitat de l'operador `[]`
+Com que la suma és commutativa (`a + i` és el mateix que `i + a`), en C és perfectament vàlid escriure `3[vec]` en lloc de `vec[3]`. El compilador ho tradueix igualment a `*(3 + vec)`.
 :::
 
 ### Accés a vectors amb bucles {#sec-acces-vectors-bucles}
@@ -2032,10 +2032,6 @@ L'accés aleatori **no implica atzar**[^comram], sinó la capacitat d'accedir di
 
 ::: {#cau-avancament-instruccions-bucles .callout-caution}
 Els exemples de bucle d'aquesta secció usen instruccions de salt condicional (`beq`) i incondicional (`j`), i de desplaçament de bits (`slli`), que es presenten formalment al [Tema 3](#sec-tema-traduccio) (@sec-desplacaments-de-bits, @sec-salts). De moment n'hi ha prou amb entendre-les intuïtivament pel comentari: `beq rs1, rs2, etq` salta a `etq` si `rs1 = rs2`; `j etq` salta sempre a `etq`; `slli rd, rs1, n` desplaça `rs1` `n` bits cap a l'esquerra (equivalent a multiplicar per $2^n$).
-:::
-
-::: {#cau-void-main .callout-caution}
-A partir d'aquí, els programes en C d'aquests apunts s'escriuen amb `void main()`: són **notació** del programa que traduireu a mà a assemblador, no codi que es compili, i no hi ha cap SO que en reculli el valor de retorn (@imp-directe-sobre-processador). **En un programa de C normal, compilat per a un sistema operatiu, cal `int main`.**
 :::
 
 ::: {#tip-vector-acces-aleatori .callout-tip}
@@ -2084,7 +2080,7 @@ L'adreça base `@V[0]` és un invariant i s'ha extret del bucle (`la t4, V`). La
 #### Accés seqüencial {#sec-acces-sequencial-exemple}
 
 ::: {#tip-optimitzacio-acces-sequencial .callout-tip}
-## Recorregut d'un vector: accés seqüencial (optimització #1)
+## Recorregut d'un vector per accés seqüencial (optimització #1)
 
 Aquest programa fa servir un punter (`p`) per recórrer el vector i accedeix
 als seus elements desreferenciant-lo.
@@ -2111,7 +2107,7 @@ Suposem que `suma`, `i` i `p` ocupen `t0`, `t1` i `t3`:
         .eqv    N, 4                # define N 4
 
 .data
-V:      .word   0, 1, 2, 3         # vector d'enters
+V:      .word   0, 1, 2, 3          # vector d'enters
 
 .text
         mv      t0, zero            # suma <- 0
