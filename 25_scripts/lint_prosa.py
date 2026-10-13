@@ -168,6 +168,8 @@ def termes_anglesos(root):
     dades = tomllib.loads((Path(root) / '24_specs' / 'termes.toml').read_text(encoding='utf-8'))
     missatges = {}
     for clau, e in dades.get('termes', {}).items():
+        if clau.lower() == e['ca'].lower():     # *subnormal*, «subnormal»: el mot català és el mateix
+            continue
         missatges[clau.lower()] = f'terme anglès en pla: s\'escriu «{e["ca"]}» (o *{clau}*, en cursiva, com a glossa)'
     for clau in dades.get('en_angles', {}):
         for part in clau.split(','):

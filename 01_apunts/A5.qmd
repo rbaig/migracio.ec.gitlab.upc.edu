@@ -45,7 +45,7 @@ Com que la condició de normalització garanteix que el bit a l'esquerra de la c
 
 Cal tenir-lo en compte en tots els càlculs: si el camp de fracció $F$ té $p-1$ bits emmagatzemats, la mantissa completa té $p$ bits significatius: els $p-1$ bits de $F$ més el bit ocult.
 
-Els únics casos en què el bit ocult no s'aplica són els nombres denormals i el zero, a més de les codificacions especials $\pm\infty$ i NaN (***Not a Number***), que no representen cap mantissa (@sec-codificacions-especials).
+Els únics casos en què el bit ocult no s'aplica són els nombres subnormals i el zero, a més de les codificacions especials $\pm\infty$ i NaN (***Not a Number***), que no representen cap mantissa (@sec-codificacions-especials).
 
 :::
 
@@ -127,7 +127,7 @@ El valor complet representat per una codificació normalitzada és:
 
 $$v = (-1)^S \times 1{,}F \times 2^{E_u - 127}$$ {#eq-ieee754-valor}
 
-La @fig-exponent-ieee754 mostra la correspondència entre l'exponent emmagatzemat $E_u$ i el valor real $e = E_u - 127$, i n'indica les zones reservades per a denormals i codificacions especials.
+La @fig-exponent-ieee754 mostra la correspondència entre l'exponent emmagatzemat $E_u$ i el valor real $e = E_u - 127$, i n'indica les zones reservades per a subnormals i codificacions especials.
 
 ::: {#fig-exponent-ieee754}
 ::: {.content-visible when-format="html"}
@@ -141,7 +141,7 @@ La @fig-exponent-ieee754 mostra la correspondència entre l'exponent emmagatzema
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A5_exponent__original_light.svg)
 :::
-Correspondència entre l'exponent emmagatzemat $E_u$ (0–255) i l'exponent real $e = E_u - 127$: $E_u = 0$ reservat per a denormals i $\pm 0$; $E_u = 255$ per a $\pm\infty$ i NaN.
+Correspondència entre l'exponent emmagatzemat $E_u$ (0–255) i l'exponent real $e = E_u - 127$: $E_u = 0$ reservat per a subnormals i $\pm 0$; $E_u = 255$ per a $\pm\infty$ i NaN.
 :::
 
 ::: {#tip-ieee754-codificacio .callout-tip}
@@ -298,7 +298,7 @@ La quantitat $1\ \text{ULP}$ (***Unit in the Last Place***) és el valor $0{,}0\
 
 Hi ha una excepció important a la fita d'error relatiu. Quan el valor absolut del resultat és inferior al mínim positiu normalitzat representable $2^{E_{min}} = 2^{-126}$, si s'aproxima simplement per zero l'error relatiu és $\eta = 1$, és a dir, de l'ordre del 100 %. Això pot invalidar completament el significat del resultat.
 
-Quan el maquinari detecta aquesta situació, genera una excepció de **subdesbordament** (*underflow*), que permet al programari tractar-la adequadament. Els nombres **denormals** (@sec-codificacions-especials) són el mecanisme que defineix l'IEEE 754 per reduir aquest error de forma gradual.
+Quan el maquinari detecta aquesta situació, genera una excepció de **subdesbordament** (*underflow*), que permet al programari tractar-la adequadament. Els nombres **subnormals** (@sec-codificacions-especials) són el mecanisme que defineix l'IEEE 754 per reduir aquest error de forma gradual.
 :::
 
 ::: {#wrn-error-relatiu-formal .callout-warning collapse=true}
@@ -332,7 +332,7 @@ L'estàndard IEEE 754 reserva dos valors del camp d'exponent per a codificacions
 | Exponent $E$ | Fracció $F$ | Interpretació |
 | :---: | :---: | :--- |
 | $0000\,0000$ | $000\ldots0$ | **Zero** ($\pm 0$) |
-| $0000\,0000$ | $\neq 000\ldots0$ | **Denormal** $(\pm 0{,}F \times 2^{-126})$ |
+| $0000\,0000$ | $\neq 000\ldots0$ | **Subnormal** $(\pm 0{,}F \times 2^{-126})$ |
 | $0000\,0001$ a $1111\,1110$ | qualsevol | **Normalitzat** $(\pm 1{,}F \times 2^{e})$ |
 | $1111\,1111$ | $000\ldots0$ | **Infinit** ($\pm\infty$) |
 | $1111\,1111$ | $\neq 000\ldots0$ | **NaN** |
@@ -359,26 +359,26 @@ Mapa de codificacions IEEE 754 de precisió simple: els eixos $E$ i $F$ determin
 
 Els formats normalitzats no poden representar el zero, ja que el bit ocult imposa $m \geq 1{,}0$. El zero es codifica convencionalment amb tots els bits d'exponent i fracció a zero. A causa del bit de signe, existeixen dues representacions: $+0$ i $-0$. L'estàndard defineix que $+0 = -0$ en les comparacions.
 
-#### Denormals {#sec-denormals}
+#### Subnormals {#sec-denormals}
 
-Com s'ha vist a la @sec-error-representacio, quan $|v| < 2^{-126}$ l'error relatiu pot arribar al 100 % si s'arrodoneix a zero. Els nombres **denormals** (*subnormals*) cobreixen l'interval $(0,\ 2^{-126})$ amb nombres de la forma:
+Com s'ha vist a la @sec-error-representacio, quan $|v| < 2^{-126}$ l'error relatiu pot arribar al 100 % si s'arrodoneix a zero. Els nombres **subnormals** (*subnormals*), també anomenats **denormals** (*denormalized*), cobreixen l'interval $(0,\ 2^{-126})$ amb nombres de la forma:
 
 $$v = \pm 0{,}F \times 2^{-126} \qquad (F \neq 0)$$
 
-A diferència dels nombres normalitzats, **no hi ha bit ocult per als denormals**: la part entera de la mantissa és $0$ (en comptes d'$1$). L'exponent implícit dels denormals és sempre $e = -126$; és a dir, no s'obté aplicant la fórmula $e = E_u - 127$ (que amb $E_u = 0$ donaria $-127$), sinó que és, per definició, el mateix exponent que el del normal més petit ($2^{-126}$).
+A diferència dels nombres normalitzats, **no hi ha bit ocult per als subnormals**: la part entera de la mantissa és $0$ (en comptes d'$1$). L'exponent implícit dels subnormals és sempre $e = -126$; és a dir, no s'obté aplicant la fórmula $e = E_u - 127$ (que amb $E_u = 0$ donaria $-127$), sinó que és, per definició, el mateix exponent que el del normal més petit ($2^{-126}$).
 
-Amb denormals, la fita d'error absolut dins l'interval $(0,\ 2^{-126})$ és la mateixa que a l'interval normalitzat adjacent $(2^{-126},\ 2^{-125})$:
+Amb subnormals, la fita d'error absolut dins l'interval $(0,\ 2^{-126})$ és la mateixa que a l'interval normalitzat adjacent $(2^{-126},\ 2^{-125})$:
 
 $$\varepsilon_{max} < 2^{-149}$$
 
-L'**error relatiu creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense denormals. Per aquesta raó el mecanisme es coneix també com a **subdesbordament gradual** (*gradual underflow*).
+L'**error relatiu creix de forma gradual** a mesura que $v$ s'acosta a zero, en lloc d'augmentar de cop com passaria sense subnormals. Per aquesta raó el mecanisme es coneix també com a **subdesbordament gradual** (*gradual underflow*).
 
 En precisió simple, la fita d'error relatiu és $2^{-23}$ a l'extrem superior de l'interval $(0,\ 2^{-126})$ i creix progressivament fins a $2^0 = 1$ a mesura que $v$ s'acosta a zero i la mantissa no normalitzada perd dígits significatius.
 
 ::: {#cau-cardinalitat-codificacions .callout-caution}
 Per a cada exponent normalitzat $E \in [1, 254]$, la fracció $F$ pren els $2^{23}$ valors possibles $\{0, 1, \ldots, 2^{23}-1\}$. Per exemple, $F = 0$ correspon a la potència de 2 exacta $(\pm 1{,}0 \times 2^e)$, un nombre normalitzat vàlid.
 
-Tanmateix, per als denormals ($E = 0$), el rang de $F$ és el mateix, però el cas $F = 0$ codifica $\pm 0$, que no és un denormal. Per tant, hi ha $2^{23} - 1$ denormals per signe, enfront dels $2^{23}$ valors per exponent dels normals. Aquesta **asimetria** és visible comparant @fig-recta-zoom-zero amb @fig-recta-global.
+Tanmateix, per als subnormals ($E = 0$), el rang de $F$ és el mateix, però el cas $F = 0$ codifica $\pm 0$, que no és un subnormal. Per tant, hi ha $2^{23} - 1$ subnormals per signe, enfront dels $2^{23}$ valors per exponent dels normals. Aquesta **asimetria** és visible comparant @fig-recta-zoom-zero amb @fig-recta-global.
 :::
 
 ::: {#fig-recta-zoom-zero}
@@ -393,7 +393,7 @@ Tanmateix, per als denormals ($E = 0$), el rang de $F$ és el mateix, però el c
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A5_recta_zoom_zero__original_light.svg){width=100%}
 :::
-Zoom al voltant del zero: $\pm 0$ i els denormals ($E=0$) omplen el buit entre el zero i el normal més petit ($2^{-126}$).
+Zoom al voltant del zero: $\pm 0$ i els subnormals ($E=0$) omplen el buit entre el zero i el normal més petit ($2^{-126}$).
 :::
 
 #### Infinit {#sec-codificacio-infinit}

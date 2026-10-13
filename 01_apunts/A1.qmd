@@ -51,9 +51,9 @@ Per entendre la relació entre les interfícies (**API**, **ABI**, **ISA**), cal
 El procés de transformació d'una idea abstracta en un fitxer executable no és un pas directe, sinó una **cadena d'eines** (***toolchain***) altament coordinada on intervenen diferents eines de sistema. Aquest flux, que va des de l'escriptura del codi fins a la generació del binari executable, es pot desglossar en quatre (més una) etapes fonamentals on les interfícies **API**, **ABI** i **ISA** (vegeu @sec-interficies) actuen com a garanties de compatibilitat:
 
 0. **Desenvolupament**: El programador escriu el codi font (`.c`, `.h`) d'acord amb l'**API**.
-1. **Preprocessat** (`cpp`): El preprocessador és el primer a actuar. Neteja el text i resol directives (com `#include` o `#define`) per generar el codi expandit (`.i`), una versió completa però encara en llenguatge d'alt nivell.
+1. **Preprocessament** (`cpp`): El preprocessador és el primer a actuar. Neteja el text i resol directives (com `#include` o `#define`) per generar el codi expandit (`.i`), una versió completa però encara en llenguatge d'alt nivell.
 2. **Compilació** (`cc1`): El compilador tradueix la lògica de l'alt nivell a un llenguatge de baix nivell anomenat assemblador (`.s`). En aquest punt, el compilador actua com a pont: ha d'entendre l'**API** escrita pel programador i, alhora, començar a aplicar les regles de l'**ABI** per determinar com s'estructuraran les dades en memòria.
-3. **Assemblat** (`as`): L'assemblador agafa el fitxer de text (`.s`) i el converteix en codi objecte (`.o`). Aquí és on l'**ISA** pren protagonisme, ja que el programari s'ha de traduir a les instruccions específiques del processador diana, com x86 o ***Advanced RISC Machines*** (**ARM**), mantenint l'estructura binària que dicta l'**ABI**.
+3. **Assemblatge** (`as`): L'assemblador agafa el fitxer de text (`.s`) i el converteix en codi objecte (`.o`). Aquí és on l'**ISA** pren protagonisme, ja que el programari s'ha de traduir a les instruccions específiques del processador diana, com x86 o ***Advanced RISC Machines*** (**ARM**), mantenint l'estructura binària que dicta l'**ABI**.
 4. **Enllaçament** (`ld`, *linking*): L'enllaçador és el pas final i crític de síntesi. La seva funció és combinar el codi objecte generat pel programador amb les biblioteques del sistema, tant estàtiques (`.a`) com dinàmiques (`.so`). Per fer-ho, l'enllaçador ha de tenir un coneixement profund de l'**ISA** (per resoldre salts i adreces de memòria) i de l'**ABI** (per assegurar que totes les peces «parlen» el mateix llenguatge binari), i produeix l'**executable final** llest per ser carregat a la memòria.
 
 ::: {#fig-flux-compilacio}
@@ -189,7 +189,7 @@ Tot i que el codi C és portable, el seu comportament final depèn de l'**ABI**:
 
 ### Traducció: de C al llenguatge màquina {#sec-traduccio-c-asm}
 
-El procés de traducció no és un pas únic, sinó una cadena de transformacions, la cadena d'eines, on cada etapa acosta el codi una mica més al maquinari (vegeu les quatre etapes a @sec-flux-de-generacio i la visió general a @sec-interficies i @fig-flux-compilacio). **El compilador de referència a EC és el GCC**, amb les eines `cpp` (preprocessat), `cc1` (compilació), `as` (assemblat) i `ld` (enllaçament).
+El procés de traducció no és un pas únic, sinó una cadena de transformacions, la cadena d'eines, on cada etapa acosta el codi una mica més al maquinari (vegeu les quatre etapes a @sec-flux-de-generacio i la visió general a @sec-interficies i @fig-flux-compilacio). **El compilador de referència a EC és el GCC**, amb les eines `cpp` (preprocessament), `cc1` (compilació), `as` (assemblatge) i `ld` (enllaçament).
 
 #### El llenguatge d'assemblador: la visió de l'ISA {#sec-visio-isa}
 
