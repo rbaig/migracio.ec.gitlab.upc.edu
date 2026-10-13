@@ -5,7 +5,8 @@ Passa la prosa per LanguageTool 6.6 (`-l ca-ES`), una sola vegada per a tots
 els fitxers, i en filtra el que al llibre no és error, segons
 `24_specs/gramatica.toml`: les regles desactivades (`--disable`), les formes
 correctes d'una regla que es manté activa (les excepcions) i les coincidències
-que només toquen el marcador. L'ortografia no és aquí: la fa `ortografia.py`
+que només toquen el marcador. I, de `24_specs/termes.toml`, els termes que el
+llibre manté en anglès, que les regles d'anglicisme no marquen (D-115). L'ortografia no és aquí: la fa `ortografia.py`
 amb hunspell i el diccionari del projecte.
 
 La prosa és la de `lint_prosa.prose_lines`, l'única neteja del projecte: sense
@@ -59,6 +60,7 @@ import lint_prosa                                                    # noqa: E40
 
 ARREL = Path(__file__).resolve().parent.parent
 CONFIG = ARREL / '24_specs' / 'gramatica.toml'
+TERMES = ARREL / '24_specs' / 'termes.toml'
 VERSIO = '6.6'
 LT_URL = f'https://languagetool.org/download/LanguageTool-{VERSIO}.zip'
 # El de la baixada del 2026-10-10: languagetool.org no en publica cap.
@@ -237,6 +239,13 @@ def configuracio():
     return tomllib.loads(CONFIG.read_text(encoding='utf-8'))
 
 
+def en_angles():
+    """Els termes que el llibre manté en anglès ([en_angles] de termes.toml), en minúscules: les
+    regles d'anglicisme de LanguageTool (CA_SIMPLE_REPLACE_ANGLICISM_*) no hi són errors (D-115)."""
+    claus = tomllib.loads(TERMES.read_text(encoding='utf-8')).get('en_angles', {})
+    return {p.strip().lower() for clau in claus for p in clau.split(',')}
+
+
 def languagetool(text, lt, desactivades):
     """Les coincidències de LanguageTool per al text sencer (una sola execució de Java)."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -272,6 +281,7 @@ def revisa(objectius, lt):
     cfg = configuracio()
     desactivades = sorted(d['id'] for d in cfg.get('desactivada', []))
     descarta = re.compile(cfg['marcador']['descarta'])
+    angles = en_angles()
     text, mapa = text_i_mapa(objectius)
     if not mapa:
         return []
@@ -286,6 +296,8 @@ def revisa(objectius, lt):
         _, fitxer, linia = mapa[bisect.bisect_right(inicis, o) - 1]
         context = text[max(0, o - 80):o + n + 80]
         if excepcio(cfg, regla, fitxer, frag, context):
+            continue
+        if regla.startswith('CA_SIMPLE_REPLACE_ANGLICISM') and frag.lower() in angles:
             continue
         only = objectius.get(fitxer)
         if only is not None and linia not in only:

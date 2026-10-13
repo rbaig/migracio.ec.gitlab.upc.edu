@@ -75,6 +75,7 @@ CLASSES = [
     ('05_diapositives/*', 'operatiu', set()),
     ('22_figs_originals/conservats/*', 'operatiu', {'fora_orfes'}),
     ('24_specs/diccionari.txt', 'operatiu', set()),
+    ('24_specs/diccionari_termes.txt', 'operatiu', set()),
     ('24_specs/gramatica.toml', 'operatiu', set()),
     ('25_scripts/comprova.py', 'eina', set()),
     ('25_scripts/escombrada.sh', 'eina', set()),
@@ -267,7 +268,8 @@ def c_lexic(ctx):
 
 def c_registres(ctx):
     r = []
-    for ordre, nom in [((PY, '25_scripts/gen_T4_sumador.py', '--comprova'), 'les figures de gen_T4_sumador.py'),
+    for ordre, nom in [((PY, '25_scripts/gen_glossari.py', '--diccionari', '--comprova'), '24_specs/diccionari_termes.txt'),
+                       ((PY, '25_scripts/gen_T4_sumador.py', '--comprova'), 'les figures de gen_T4_sumador.py'),
                        ((PY, '25_scripts/gen_T7.py', '--comprova'), 'les figures de gen_T7.py'),
                        ((PY, '25_scripts/gen_T8.py', '--comprova'), 'les figures de gen_T8.py')]:
         rc, sortida = executa(*ordre)
@@ -403,9 +405,9 @@ def c_ortografia(ctx):
         mots = sorted(compte, key=lambda m: -compte[m])
         return [(AVIS, f'{len(mots)} mots desconeguts al corpus (els més freqüents: '
                        + ', '.join(f'{m} ({compte[m]})' for m in mots[:30])
-                       + '). Si són legítims, van a 24_specs/diccionari.txt; la llista sencera: '
+                       + '). Si són legítims, van a 24_specs/diccionari.txt, o, si són d\'un terme, a 24_specs/termes.toml; la llista sencera: '
                          'python3 25_scripts/ortografia.py --resum $(git ls-files \'*.qmd\')')]
-    return [(AVIS, f'{f}:{n}: «{m}» (si és legítim, a 24_specs/diccionari.txt)') for (f, n), m in trobats]
+    return [(AVIS, f'{f}:{n}: «{m}» (si és legítim, a 24_specs/diccionari.txt, o a 24_specs/termes.toml si és d\'un terme)') for (f, n), m in trobats]
 
 
 def c_gramatica(ctx):
@@ -484,13 +486,20 @@ def c_coherencia(ctx):
     if diccionari.exists():
         mots = [m for m in diccionari.read_text(encoding='utf-8').split('\n') if m]
         text = '\n'.join((ARREL / f).read_text(encoding='utf-8', errors='replace') for f in versionats()
-                         if not f.startswith(('.vscode/', '24_specs/diccionari.txt')) and (ARREL / f).is_file()
+                         if not f.startswith(('.vscode/', '24_specs/diccionari')) and (ARREL / f).is_file()
                          and not f.endswith(('.png', '.jpg', '.pdf')))
         usats = set(re.findall(r"(?<![\w'’])(" + '|'.join(map(re.escape, sorted(mots, key=len, reverse=True)))
                                + r")(?![\w'’])", text, re.I))
         sobren = {m for m in mots if m.lower() not in {u.lower() for u in usats}}
         if sobren:
             r.append((AVIS, '24_specs/diccionari.txt té mots que no fa servir cap fitxer: ' + ', '.join(sorted(sobren))))
+        termes = ARREL / '24_specs/diccionari_termes.txt'
+        if termes.exists():
+            de_termes = {m.lower() for m in termes.read_text(encoding='utf-8').split()}
+            repetits = sorted(m for m in mots if m.lower() in de_termes)
+            if repetits:
+                r.append((AVIS, '24_specs/diccionari.txt repeteix mots del diccionari de termes, que es genera de '
+                                '24_specs/termes.toml: ' + ', '.join(repetits)))
     return r
 
 
@@ -599,7 +608,7 @@ QMD = lambda ctx: ctx.tot or bool(ctx.canvis.qmd())            # noqa: E731
 TERMES = '24_specs/termes.toml'
 
 COMPROVACIONS = [
-    Comprovacio('registres', 'Registres', 'Els registres versionats són al dia: els SVG de model (a) '
+    Comprovacio('registres', 'Registres', 'Els registres versionats són al dia: el diccionari de termes, els SVG de model (a) '
                 'i les dues taules d\'aquesta secció (els arregla `make registres`); el recompte de la capçalera del '
                 '`TODO.md` i l\'arbre del `README.md` (a mà)', SEMPRE, 'Sempre', 'Atura', c_registres),
     Comprovacio('lexic', 'Lèxic', 'Les presentacions «**terme català** (*english*)» del text coincideixen amb '
@@ -619,7 +628,7 @@ COMPROVACIONS = [
                 'En tocar un `.qmd`: les línies afegides; en tocar `24_specs/termes.toml`, les formes a tot el corpus',
                 'Atura (formes) o avisa', c_prosa),
     Comprovacio('ortografia', 'Ortografia', 'Mots que no són als diccionaris de `hunspell` (català i anglès) ni al '
-                'del projecte, `24_specs/diccionari.txt` (`ortografia.py`)', QMD,
+                'del projecte, `24_specs/diccionari.txt` i el de termes, generat de `24_specs/termes.toml` (`ortografia.py`)', QMD,
                 'En tocar un `.qmd`: les línies afegides', 'Avisa', c_ortografia),
     Comprovacio('gramatica', 'Gramàtica', 'Concordances, preposicions, puntuació i la resta de regles de LanguageTool, '
                 'sense les que al llibre fan soroll ni les formes correctes que marquen (`gramatica.py`, amb '

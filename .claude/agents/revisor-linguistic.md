@@ -29,7 +29,7 @@ Si revises un diff d'un altre rang, passa-les sobre els fitxers sencers i queda'
 
 Classifica cada troballa:
 - un **error**, que va a l'informe amb la correcció;
-- **soroll**: un mot legítim, que va a `24_specs/diccionari.txt`, o una forma correcta que LanguageTool marca, que va a `24_specs/gramatica.toml` (amb el perquè, com les altres entrades). Proposa'n l'entrada.
+- **soroll**: un mot legítim, que va a `24_specs/diccionari.txt` (si és d'un terme del llibre, a `24_specs/termes.toml`, i una flexió, a `mots` del terme), o una forma correcta que LanguageTool marca, que va a `24_specs/gramatica.toml` (amb el perquè, com les altres entrades). Proposa'n l'entrada.
 
 La teva lectura és per al que les eines no veuen: la terminologia del glossari, el registre, la claredat i la coherència amb la resta del llibre.
 

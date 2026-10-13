@@ -3,9 +3,11 @@
 
 Passa la prosa per `hunspell` amb els diccionaris `ca_ES` i `en_US` (un mot és
 bo si és a qualsevol dels dos: els termes anglesos van en cursiva, però en
-català i en anglès s'escriuen igual molts mots) i amb el diccionari del
-projecte, `24_specs/diccionari.txt` (un mot per línia), que és el mateix que fa
-servir el corrector de VS Code (`.vscode/settings.json`). La prosa és la de
+català i en anglès s'escriuen igual molts mots) i amb els dos diccionaris del
+projecte, que són els mateixos que fa servir el corrector de VS Code
+(`.vscode/settings.json`): `24_specs/diccionari.txt` (un mot per línia, a mà) i
+`24_specs/diccionari_termes.txt`, els mots dels termes, generat de
+`24_specs/termes.toml` (`make registres`; D-115). La prosa és la de
 `lint_prosa.prose_lines`, l'única neteja del projecte: sense la capçalera YAML,
 els blocs de codi, les matemàtiques, les taules, el codi en línia, les imatges,
 les citacions, les notes al peu, les referències @ ni les URL, i dels enllaços,
@@ -14,7 +16,8 @@ rutes, els dominis, les sigles (dues o més majúscules, també apostrofades:
 «l'MC») ni els mots amb xifres.
 
 Només avisa: un mot desconegut pot ser un error o un mot legítim que cal afegir
-al diccionari del projecte, en el mateix commit que el fa servir. Les regles de
+al diccionari del projecte, en el mateix commit que el fa servir; si és d'un
+terme del llibre, a `24_specs/termes.toml` (`mots`, si és una flexió). Les regles de
 la guia que són mecàniques (les formes que no s'han de fer servir) no són aquí,
 sinó a `lint_prosa.py`, que les atura.
 
@@ -34,12 +37,14 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import lint_prosa
 
 ARREL = Path(__file__).resolve().parent.parent
 DICCIONARI = ARREL / '24_specs' / 'diccionari.txt'
+DICCIONARI_TERMES = ARREL / '24_specs' / 'diccionari_termes.txt'
 DICCIONARIS = 'ca_ES,en_US'
 
 NETEJA = [
@@ -74,10 +79,13 @@ def hunspell(text):
     """Els mots de text que hunspell no coneix. `-l` només els llista; `-a` en
     calcularia els suggeriments, que amb un mot llarg poden trigar minuts."""
     ordre = ['hunspell', '-l', '-i', 'utf-8', '-d', DICCIONARIS]
-    if DICCIONARI.exists():
-        ordre += ['-p', str(DICCIONARI)]
-    return set(subprocess.run(ordre, input=text, capture_output=True, text=True,
-                              check=True).stdout.split())
+    # hunspell només llegeix un diccionari personal (-p): els dos del projecte, ajuntats.
+    mots = ''.join(d.read_text(encoding='utf-8') for d in (DICCIONARI, DICCIONARI_TERMES) if d.exists())
+    with tempfile.NamedTemporaryFile('w', encoding='utf-8', suffix='.dic') as personal:
+        personal.write(mots)
+        personal.flush()
+        return set(subprocess.run(ordre + ['-p', personal.name], input=text, capture_output=True, text=True,
+                                  check=True).stdout.split())
 
 
 def ignora(mot):

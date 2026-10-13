@@ -29,11 +29,19 @@ dels comentaris HTML i de la capçalera YAML.
 Ús:
     python3 25_scripts/gen_glossari.py               # escriu les taules a auto_termes/
     python3 25_scripts/gen_glossari.py --comprova    # 1 si el text no coincideix amb termes.toml
+    python3 25_scripts/gen_glossari.py --diccionari  # escriu 24_specs/diccionari_termes.txt (make registres)
+    python3 25_scripts/gen_glossari.py --diccionari --comprova   # 1 si no és al dia
 
 La secció la inclou 12_sigles_simbols.qmd amb dos {{< include auto_termes/… >}}, un per taula,
 i la taula de formes, 13_contrib.qmd §Formes que no s'han de fer servir. Com auto_riscv/
 (D-3), els fitxers han d'existir abans d'invocar `quarto`, perquè Quarto resol els include
 abans del pre-render: `make render` i `make taules` els generen. No es versionen (D-104).
+
+El diccionari de termes (--diccionari) són els mots de termes.toml, perquè els
+correctors (hunspell a ortografia.py, i cSpell a VS Code) acceptin els termes del
+llibre: el terme anglès i la forma catalana, les formes de `presentacio` i les de
+`mots` (les flexions que el corrector ha d'acceptar; cap plural no es calcula). Es versiona, perquè VS Code el llegeix sense cap
+render, i no depèn de hunspell, perquè surti igual a tot arreu (D-115).
 """
 
 import re
@@ -49,6 +57,8 @@ DADES = ARREL / "24_specs" / "termes.toml"
 SORTIDA = ARREL / "auto_termes" / "glossari.qmd"
 SORTIDA_ANGLES = ARREL / "auto_termes" / "glossari_angles.qmd"
 SORTIDA_FORMES = ARREL / "auto_termes" / "formes.qmd"
+DICCIONARI = ARREL / "24_specs" / "diccionari_termes.txt"
+MOT = re.compile(r"[^\W\d_]+(?:-[^\W\d_]+)*")
 
 PRESENTACIO = re.compile(
     r"\*\*([^*\n]{2,60}?)\*\*\s*\((?:\*\*\*|\*)([^*()\n]{2,60}?)(?:\*\*\*|\*)\)")
@@ -217,11 +227,38 @@ def sortides(d, temes):
             SORTIDA_FORMES: f"{marca}{taula_formes(d.get('no_admeses', {}))}\n"}
 
 
+def mots_diccionari(d):
+    """Els mots dels termes de termes.toml, sense els de menys de tres lletres ni les sigles. No s'hi
+    afegeix cap plural calculat: un plural que no existeix («aliàsings») amagaria un error; les
+    flexions que el corrector ha d'acceptar són a `mots`."""
+    fonts = []
+    for clau, e in d.get("termes", {}).items():
+        fonts += [clau, e["ca"], *e.get("presentacio", []), *e.get("mots", [])]
+    fonts += [p.strip() for clau in d.get("en_angles", {}) for p in clau.split(",")]
+    mots = {m for f in fonts for m in MOT.findall(f) if len(m) >= 3 and not m.isupper()}
+    return sorted(mots, key=lambda m: (m.lower(), m))
+
+
+def diccionari(d):
+    nou = "".join(f"{m}\n" for m in mots_diccionari(d))
+    if "--comprova" in sys.argv:
+        if not DICCIONARI.exists() or DICCIONARI.read_text(encoding="utf-8") != nou:
+            print(f"[gen-glossari] {DICCIONARI.name} no és al dia (make registres)", file=sys.stderr)
+            return 1
+        return 0
+    if not DICCIONARI.exists() or DICCIONARI.read_text(encoding="utf-8") != nou:
+        DICCIONARI.write_text(nou, encoding="utf-8")
+    print(f"[gen-glossari] {DICCIONARI.relative_to(ARREL)}: {nou.count(chr(10))} mots")
+    return 0
+
+
 def main():
-    if set(sys.argv[1:]) - {"--comprova"}:
+    if set(sys.argv[1:]) - {"--comprova", "--diccionari"}:
         print(__doc__.split("Ús:")[1].split("La secció")[0].rstrip(), file=sys.stderr)
         return 2
     d = dades()
+    if "--diccionari" in sys.argv:
+        return diccionari(d)
     pres = recull()
     errors, avisos, temes = comprova(pres, d)
     for a in avisos:

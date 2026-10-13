@@ -34,7 +34,8 @@ comprova-branca:        ## les de la branca sencera respecte d'origin/main: aban
 comprova-tot:           ## totes, sobre el corpus sencer, amb el PDF i RARS (5–10 min): abans d'una MR o de publicar
 	@python3 25_scripts/comprova.py --tot || [ $$? -eq 1 ]
 
-registres:              ## regenera els registres versionats: SVG de model (a) i taules de la guia
+registres:              ## regenera els registres versionats: diccionari de termes, SVG de model (a) i taules de la guia
+	python3 25_scripts/gen_glossari.py --diccionari
 	python3 25_scripts/gen_T4_sumador.py
 	python3 25_scripts/gen_T7.py
 	python3 25_scripts/gen_T8.py
