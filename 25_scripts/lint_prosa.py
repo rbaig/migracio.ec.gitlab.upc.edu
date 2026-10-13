@@ -21,6 +21,9 @@ les referències @ i les URL; dels enllaços i dels spans ([…]{…}) en deixa 
 text. És l'única neteja de la prosa del projecte: prose_lines() la fan servir
 també ortografia.py i gramatica.py, que només hi afegeixen el que és seu (D-105).
 Els dos espais a final de línia (salt de línia forçat de Markdown) no compten.
+Les cel·les de les taules (prose_lines(text, taules=True)), netejades com la
+prosa, només es miren per a les formes i els termes anglesos (D-116): els dobles
+espais hi són permesos, i ortografia.py i gramatica.py no les llegeixen.
 
 Ús:
     python3 25_scripts/lint_prosa.py               # només les línies afegides respecte d'HEAD,
@@ -80,8 +83,21 @@ def neteja(line):
     return REFERENCIA_RE.sub('X', line)
 
 
-def prose_lines(text):
-    """Retorna {número de línia: text de prosa net} per a les línies de prosa."""
+def neteja_spans(line):
+    """neteja() i, després, els spans de SPANS canviats per X."""
+    line = neteja(line)
+    for span in SPANS:
+        line = span.sub('X', line)
+    return line
+
+
+SEPARADOR_RE = re.compile(r'\|[\s:|-]+\|?')
+CELLA_RE = re.compile(r'(?<!\\)\|')
+
+
+def prose_lines(text, taules=False):
+    """Retorna {número de línia: text de prosa net} per a les línies de prosa. Amb taules=True,
+    també les files de les taules, amb cada cel·la netejada com la prosa i separada per « | »."""
     lines = text.split('\n')
     result = {}
     fence = None          # (caràcter, llargada) del bloc de codi obert
@@ -118,6 +134,10 @@ def prose_lines(text):
             if stripped.count('$$') == 1:
                 in_math = True
             continue
+        if taules and stripped.startswith('|') and not SEPARADOR_RE.fullmatch(stripped):
+            celles = CELLA_RE.split(re.sub(r'<!--.*?-->', '', stripped).strip('|'))
+            result[idx + 1] = ' | '.join(neteja_spans(c.strip()) for c in celles)
+            continue
         if not stripped or stripped.startswith(('|', '+-', '+=', ':::')):
             continue
         line = re.sub(r'<!--.*?-->', '', raw)
@@ -126,10 +146,7 @@ def prose_lines(text):
             line = line.split('<!--', 1)[0]
         line = line.rstrip()
         line = LIST_MARKER_RE.sub('', line.lstrip())
-        line = neteja(line)
-        for span in SPANS:
-            line = span.sub('X', line)
-        result[idx + 1] = line
+        result[idx + 1] = neteja_spans(line)
     return result
 
 
@@ -184,10 +201,12 @@ def termes_anglesos(root):
 
 def check(path, only_lines=None, formes=None, angles=None):
     """Troballes d'un .qmd. formes, la llista de formes_no_admeses() (None: no les mira); angles,
-    la de termes_anglesos() (None: no els mira)."""
+    la de termes_anglesos() (None: no els mira). Les formes i els termes anglesos es miren també
+    a les cel·les de les taules; els dobles espais i les cometes, només a la prosa."""
     text = Path(path).read_text(encoding='utf-8')
     findings = []
-    for n, line in sorted(prose_lines(text).items()):
+    prosa = prose_lines(text)
+    for n, line in sorted(prose_lines(text, taules=True).items()):
         if only_lines is not None and n not in only_lines:
             continue
         for rx, terme, substitut in formes or []:
@@ -200,6 +219,8 @@ def check(path, only_lines=None, formes=None, angles=None):
                 pla = pla.replace(text_exclos, 'X' * len(text_exclos))
             for m in rx.finditer(pla):
                 findings.append((path, n, f'«{m.group(0)}»: {missatges[m.group(1).lower()]}'))
+        if n not in prosa:                      # una fila de taula
+            continue
         if DOUBLE_SPACE_RE.search(line):
             findings.append((path, n, 'doble espai'))
         if '"' in line:

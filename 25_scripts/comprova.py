@@ -629,7 +629,7 @@ COMPROVACIONS = [
                 'l\'autoprova de la classificació', lambda ctx: ctx.tot or any(
                     f.endswith(('.py', '.sh')) or f.startswith('.githooks/') for f in ctx.canvis.fitxers),
                 'En tocar un `.py` o un `.sh`', 'Atura', c_eines),
-    Comprovacio('prosa', 'Prosa', 'Les formes que no s\'han de fer servir i els termes anglesos fora de la cursiva '
+    Comprovacio('prosa', 'Prosa', 'Les formes que no s\'han de fer servir i els termes anglesos fora de la cursiva, a la prosa i a les cel·les de les taules '
                 '(§Anglicismes i terminologia obligatòria), que aturen; i els dobles espais i les cometes, que avisen (`lint_prosa.py`)',
                 lambda ctx: QMD(ctx) or TERMES in ctx.canvis.fitxers,
                 'En tocar un `.qmd`: les línies afegides; en tocar `24_specs/termes.toml`, les formes i els termes a tot el corpus',
