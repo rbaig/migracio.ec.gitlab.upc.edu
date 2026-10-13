@@ -83,7 +83,7 @@ La clau és construir la màscara en temps d'execució: `1 << X` produeix un `1`
 
 ## Sentències condicionals
 
-Una sentència `if-then-else` imbricada es tradueix aplicant el patró de @sec-if-then-else de manera recursiva: cada `if` interior es tracta com una sentència del cos de l'`else` exterior. L'avaluació gandula (*lazy*) de `&&` i `||` (@cau-lazy-evaluation, @sec-avaluacio-lazy-encadenats) s'implementa encadenant salts condicionals sense avaluar la segona condició quan la primera ja determina el resultat.
+Una sentència `if-then-else` imbricada es tradueix aplicant el patró de @sec-if-then-else de manera recursiva: cada `if` interior es tracta com una sentència del cos de l'`else` exterior. L'avaluació tardana (*lazy*) de `&&` i `||` (@cau-lazy-evaluation, @sec-avaluacio-lazy-encadenats) s'implementa encadenant salts condicionals sense avaluar la segona condició quan la primera ja determina el resultat.
 
 ---
 
@@ -106,7 +106,7 @@ void main() {
 }
 ```
 
-El programa ha de respectar l'avaluació lazy de `&&` i `||` (@cau-lazy-evaluation). Comproveu que, per als valors `'m'`, `'Z'`, `' '`, `'!'` i `'7'` de `num` (codis ASCII: `0x6D`, `0x5A`, `0x20`, `0x21`, `0x37`), `result` val, respectivament, `0x6D`, `0x5A`, `0`, `0` i `-1` (`0xFFFFFFFF`).
+El programa ha de respectar l'avaluació tardana de `&&` i `||` (@cau-lazy-evaluation). Comproveu que, per als valors `'m'`, `'Z'`, `' '`, `'!'` i `'7'` de `num` (codis ASCII: `0x6D`, `0x5A`, `0x20`, `0x21`, `0x37`), `result` val, respectivament, `0x6D`, `0x5A`, `0`, `0` i `-1` (`0xFFFFFFFF`).
 :::
 
 ---
@@ -163,7 +163,7 @@ fi:
         ecall
 ```
 
-La primera branca del `||` exterior usa dos `&&` encadenats (dos rangs); la segona branca usa un `||` simple entre dues igualtats. En el `||` intern (`' '` o `'!'`), el salt a `es_esp` quan la primera condició és certa implementa l'avaluació lazy: si `num == ' '`, no s'avalua la comparació amb `'!'`.
+La primera branca del `||` exterior usa dos `&&` encadenats (dos rangs); la segona branca usa un `||` simple entre dues igualtats. En el `||` intern (`' '` o `'!'`), el salt a `es_esp` quan la primera condició és certa implementa l'avaluació tardana: si `num == ' '`, no s'avalua la comparació amb `'!'`.
 :::
 
 ---

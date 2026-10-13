@@ -143,7 +143,7 @@ Justificació dels casos clau:
 | Bytes totals MP | 74 | 144 |
 : {tbl-colwidths="[30,35,35]" .striped}
 
-L'escriptura retardada amb assignació té una taxa de fallades inferior (l'accés #4 passa de fallada a encert perquè el bloc es va assignar al pas 3), però genera més tràfic total amb MP: cada assignació per escriptura carrega un bloc de 16 B, i cada write-back d'un bloc modificat n'escriu 16 B més. L'escriptura immediata sense assignació genera menys tràfic perquè les escriptures que fallen només transfereixen la paraula escrita (2 B), sense carregar blocs sencers.
+L'escriptura retardada amb assignació té una taxa de fallades inferior (l'accés #4 passa de fallada a encert perquè el bloc es va assignar al pas 3), però genera més tràfic total amb MP: cada assignació per escriptura carrega un bloc de 16 B, i cada escriptura a MP d'un bloc modificat n'escriu 16 B més. L'escriptura immediata sense assignació genera menys tràfic perquè les escriptures que fallen només transfereixen la paraula escrita (2 B), sense carregar blocs sencers.
 :::
 
 ## Rendiment
@@ -157,7 +157,7 @@ Dades: $p_e = 20\ \%$, $p_m = 1/3$, $t_h = 10$ ns, $t_{bloc} = 100$ ns, $h_1 = 0
 
 **a)** Aplicant @eq-tam, amb el temps de penalització mitjà per fallada de cada política (@cau-model-temps; per a l'escriptura retardada, @cau-tam-retardada). Se suposa que la taxa de fallades és independent del tipus d'accés: així, la fracció de fallades que corresponen a escriptures coincideix amb el percentatge d'escriptures $p_e$.
 
-*Escriptura immediata sense assignació* ($m_1 = 0{,}10$): les fallades de lectura paguen $t_{bloc} + t_h$ i les d'escriptura paguen 0 (el buffer absorbeix l'escriptura):
+*Escriptura immediata sense assignació* ($m_1 = 0{,}10$): les fallades de lectura paguen $t_{bloc} + t_h$ i les d'escriptura paguen 0 (la memòria intermèdia absorbeix l'escriptura):
 
 $$t_{p_1} = (1 - p_e)(t_{bloc} + t_h) = 0{,}80 \cdot 110 = 88 \text{ ns}$$
 
@@ -169,7 +169,7 @@ $$t_{p_2} = (1 + p_m) \cdot t_{bloc} + t_h = \frac{4}{3} \cdot 100 + 10 = 133{,}
 
 $$\text{TAM}_2 = t_h + m_2 \cdot t_{p_2} = 10 + 0{,}15 \cdot 143{,}3 \approx 10 + 21{,}5 = \mathbf{31{,}5} \text{ ns}$$
 
-L'escriptura immediata sense assignació és més ràpida ($18{,}8$ vs. $31{,}5$ ns). Té una taxa de fallades inferior ($10\ \%$ vs. $15\ \%$) i, sobretot, una penalització mitjana per fallada molt menor: les fallades d'escriptura no paguen penalització i les de lectura no generen write-backs. La penalització mitjana de l'escriptura retardada és un 63 % més gran ($143{,}3$ vs. $88$ ns).
+L'escriptura immediata sense assignació és més ràpida ($18{,}8$ vs. $31{,}5$ ns). Té una taxa de fallades inferior ($10\ \%$ vs. $15\ \%$) i, sobretot, una penalització mitjana per fallada molt menor: les fallades d'escriptura no paguen penalització i les de lectura no generen escriptures de blocs modificats a MP. La penalització mitjana de l'escriptura retardada és un 63 % més gran ($143{,}3$ vs. $88$ ns).
 
 **b)** Per a un programa de només lectures ($p_e = 0$), ambdues polítiques es comporten de manera **idèntica**: en absència d'escriptures, no hi ha diferència entre escriptura immediata i retardada ($p_m = 0$, cap bloc es modifica), i ambdues polítiques carreguen blocs a l'MC exactament igual en les fallades de lectura. La taxa de fallades seria la mateixa per a ambdues i la penalització també ($t_{bloc} + t_h = 110$ ns), de manera que cap de les dues alternatives seria més ràpida que l'altra.
 :::
@@ -214,7 +214,7 @@ $$\text{CPI} = \text{CPI}_{ideal} + \text{CPI}_{penal,i} + \text{CPI}_{penal,d} 
 
 $$t_{exe} = \text{CPI} \cdot t_c = 2{,}86 \cdot 10 = \mathbf{28{,}6} \text{ ns/instrucció}$$
 
-Observació: les fallades de memòria cau incrementen el CPI un $90{,}7\ \%$ respecte del valor ideal (d'$1{,}5$ a $2{,}86$). L'MC de dades, amb només el $37{,}5\ \%$ dels accessos, contribueix el $70{,}6\ \%$ de la penalització ($0{,}96 / 1{,}36$), a causa de la seva taxa de fallades més alta i la penalització per write-backs.
+Observació: les fallades de memòria cau incrementen el CPI un $90{,}7\ \%$ respecte del valor ideal (d'$1{,}5$ a $2{,}86$). L'MC de dades, amb només el $37{,}5\ \%$ dels accessos, contribueix el $70{,}6\ \%$ de la penalització ($0{,}96 / 1{,}36$), a causa de la seva taxa de fallades més alta i la penalització per les escriptures de blocs modificats a MP.
 :::
 
 ## Associativitat i multinivell

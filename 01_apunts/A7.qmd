@@ -24,9 +24,9 @@ La RAM es pot implementar com a memòria estàtica (**SRAM**) o dinàmica (**DRA
 | Mem. secundària (disc) | 1 – 20 TB | 5 – 10 ms | ~0,02 $/GB |
 : Capacitat, temps d'accés i cost per GB típics de les principals tecnologies d'emmagatzematge {#tbl-tecnologies-memoria tbl-colwidths="[30,23,24,23]" style="width: 75%; margin: auto;" .striped}
 
-### El problema de la diferència (*gap*) entre processador i memòria {#sec-gap-memoria}
+### El problema de la bretxa (*gap*) entre processador i memòria {#sec-gap-memoria}
 
-Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidament que la velocitat de la memòria principal. La @fig-gap-processador-memoria il·lustra aquesta divergència entre 1980 i 2010: mentre el rendiment dels processadors creixia a un ritme d'entre el 35 % i el 55 % anual fins al 2000, i molt més lentament a partir del 2003–2005 (@sec-fi-escalat-dennard), la latència de la DRAM millorava menys d'un 7 % anual. El resultat és que el temps d'accés a la memòria principal pot arribar a ser de 200 a 400 cicles de CPU, és a dir, centenars de vegades superior al temps que tarda la resta d'operacions d'una instrucció (descodificació, lectura de registres, ALU, etc.). Aquesta diferència s'anomena **gap** entre processador i memòria.
+Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidament que la velocitat de la memòria principal. La @fig-gap-processador-memoria il·lustra aquesta divergència entre 1980 i 2010: mentre el rendiment dels processadors creixia a un ritme d'entre el 35 % i el 55 % anual fins al 2000, i molt més lentament a partir del 2003–2005 (@sec-fi-escalat-dennard), la latència de la DRAM millorava menys d'un 7 % anual. El resultat és que el temps d'accés a la memòria principal pot arribar a ser de 200 a 400 cicles de CPU, és a dir, centenars de vegades superior al temps que tarda la resta d'operacions d'una instrucció (descodificació, lectura de registres, ALU, etc.). Aquesta diferència s'anomena **bretxa** (*gap*) entre processador i memòria.
 
 ::: {#fig-gap-processador-memoria}
 ::: {.content-visible when-format="html"}
@@ -40,7 +40,7 @@ Al llarg dels anys, el rendiment dels processadors ha crescut molt més ràpidam
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A7_gap_processador_memoria__original_light.svg)
 :::
-Evolució del rendiment relatiu de processadors i memòria DRAM entre 1980 i 2010 (escala logarítmica). El creixement anual dels processadors (35–55 % fins al 2000, molt més lent des del 2003–2005) supera àmpliament el de la latència de la DRAM (<7 %), cosa que genera un gap de més de tres ordres de magnitud.
+Evolució del rendiment relatiu de processadors i memòria DRAM entre 1980 i 2010 (escala logarítmica). El creixement anual dels processadors (35–55 % fins al 2000, molt més lent des del 2003–2005) supera àmpliament el de la latència de la DRAM (<7 %), cosa que genera una bretxa de més de tres ordres de magnitud.
 :::
 
 Per veure l'impacte d'aquest gap en el rendiment, s'aplica la llei d'Amdahl (@sec-amdahl). Si $t_{MP}$ és el temps d'accés a la memòria principal i $t_{proc}$ el temps de la resta d'operacions d'una instrucció, el **CPI** és proporcional a $t_{proc} + t_{MP}$. Suposant $t_{MP} = 200 \cdot t_{proc}$, la fracció del temps d'execució que correspon al processament de la instrucció (sense l'accés a memòria) és:
@@ -59,17 +59,17 @@ Cap al 2003–2005, la indústria va topar amb un límit físic fonamental: el *
 
 La indústria va respondre amb dues estratègies complementàries:
 
-- Els processadors **multinucli** (*multicore*): en lloc d'un sol nucli molt ràpid, es van integrar dos, quatre, vuit o més nuclis en un mateix xip. Això va permetre continuar aprofitant els transistors addicionals que oferia cada nova generació tecnològica per augmentar el **rendiment en paral·lel**, però sense millorar el rendiment d'un sol fil d'execució (*single-thread*), que és el que determina el gap amb la memòria. Des del 2010, el creixement del rendiment single-thread ha caigut a un modest 5–10 % anual, molt per sota del ritme anterior.
+- Els processadors **multinucli** (*multicore*): en lloc d'un sol nucli molt ràpid, es van integrar dos, quatre, vuit o més nuclis en un mateix xip. Això va permetre continuar aprofitant els transistors addicionals que oferia cada nova generació tecnològica per augmentar el **rendiment en paral·lel**, però sense millorar el rendiment d'un sol fil d'execució (*single-thread*), que és el que determina la bretxa amb la memòria. Des del 2010, el creixement del rendiment d'un sol fil ha caigut a un modest 5–10 % anual, molt per sota del ritme anterior.
 - La **reducció del consum energètic**. La generalització dels dispositius mòbils —telèfons intel·ligents, tauletes, portàtils ultraprims— va convertir l'eficiència energètica en una prioritat de primer ordre: no es tracta només d'impacte ambiental, sinó de l'autonomia de la bateria i de la possibilitat de dissenyar dispositius sense ventilador. Avui dia, l'arquitectura de qualsevol processador modern es dissenya tant per al rendiment com per al consum per instrucció.
 
 #### La diferència entre processador i memòria avui {#sec-gap-avui}
 
-Malgrat tot, el gap entre processador i memòria no ha desaparegut: la latència de la DRAM segueix sent de l'ordre de centenars de cicles, i la DRAM tampoc ha resolt el problema de fons (continua optimitzant capacitat per davant de velocitat). El creixement dels processadors multinucli augmenta, a més, la **pressió sobre la memòria**: diversos nuclis competeixen simultàniament pels mateixos recursos de memòria, de manera que l'**amplada de banda** (*bandwidth*) disponible per nucli es redueix. En aquest context, **les memòries cau continuen sent tan imprescindibles com sempre**, i les jerarquies s'han fet cada cop més profundes i complexes per absorbir aquesta pressió creixent (vegeu la @sec-multinivell).
+Malgrat tot, la bretxa entre processador i memòria no ha desaparegut: la latència de la DRAM segueix sent de l'ordre de centenars de cicles, i la DRAM tampoc ha resolt el problema de fons (continua optimitzant capacitat per davant de velocitat). El creixement dels processadors multinucli augmenta, a més, la **pressió sobre la memòria**: diversos nuclis competeixen simultàniament pels mateixos recursos de memòria, de manera que l'**amplada de banda** (*bandwidth*) disponible per nucli es redueix. En aquest context, **les memòries cau continuen sent tan imprescindibles com sempre**, i les jerarquies s'han fet cada cop més profundes i complexes per absorbir aquesta pressió creixent (vegeu la @sec-multinivell).
 
 ::: {#wrn-gpu-memoria .callout-warning collapse="true"}
 ## Les GPU i la memòria en l'era de la IA
 
-Qui tingui una targeta gràfica per a jocs —o hagi llegit sobre els acceleradors que entrenen models d'intel·ligència artificial com els que hi ha darrere de ChatGPT— potser s'ha preguntat com funciona la seva memòria. La resposta és fascinant, i il·lustra fins on arriba el gap quan s'escalen les demandes.
+Qui tingui una targeta gràfica per a jocs —o hagi llegit sobre els acceleradors que entrenen models d'intel·ligència artificial com els que hi ha darrere de ChatGPT— potser s'ha preguntat com funciona la seva memòria. La resposta és fascinant, i il·lustra fins on arriba la bretxa quan s'escalen les demandes.
 
 Una GPU moderna per a jocs (per exemple, una NVIDIA RTX 4090) integra milers de nuclis de càlcul dissenyats per executar moltíssimes operacions en paral·lel. Per alimentar tots aquests nuclis, necessita una amplada de banda de memòria enorme: mentre que un processador convencional accedeix a la DRAM amb una amplada de banda de l'ordre de desenes de GB/s, una GPU d'alt rendiment en necessita centenars de GB/s, o fins i tot més d'un TB/s. Per aconseguir-ho s'usa memòria **GDDR6** o **GDDR6X** o, en els acceleradors d'IA professionals, **HBM** (*High Bandwidth Memory*), una tecnologia que apila diverses capes de DRAM l'una sobre l'altra, en una pila que es col·loca al costat del xip de càlcul, dins del mateix encapsulat, i s'hi connecta amb un bus de milers de fils.
 
@@ -77,19 +77,19 @@ La latència, però, segueix sent el problema de sempre: la GDDR6 augmenta l'**a
 
 Els acceleradors d'IA porten aquesta lògica a l'extrem. En entrenar una xarxa neuronal, s'han de moure quantitats ingents de dades (pesos del model, activacions, gradients) entre la memòria i els nuclis de càlcul milers de vegades per segon. El coll d'ampolla no sol ser la velocitat de càlcul sinó precisament l'**amplada de banda de memòria**: és el que determina quants paràmetres del model es poden processar per segon. Això ha portat a dissenyar xips com l'H100 d'NVIDIA amb fins a 80 GiB d'HBM3 i una amplada de banda de 3,35 TB/s, un valor que hauria semblat de ciència-ficció fa una dècada.
 
-En definitiva: el gap entre càlcul i memòria no és un problema exclusiu dels processadors convencionals, sinó un repte fonamental de tota l'arquitectura de computadors moderna, especialment visible en les aplicacions d'IA que definiran la computació dels anys vinents.
+En definitiva: la bretxa entre càlcul i memòria no és un problema exclusiu dels processadors convencionals, sinó un repte fonamental de tota l'arquitectura de computadors moderna, especialment visible en les aplicacions d'IA que definiran la computació dels anys vinents.
 :::
 
 ### Localitat dels programes {#sec-localitat}
 
-La solució al gap no consisteix a construir una memòria principal tan ràpida com el processador —el cost seria prohibitiu— sinó a explotar una propietat que presenten la majoria dels programes: la **localitat**. L'estudi del comportament dels programes mitjançant simulació ha permès identificar-ne dues formes:
+La solució a la bretxa no consisteix a construir una memòria principal tan ràpida com el processador —el cost seria prohibitiu— sinó a explotar una propietat que presenten la majoria dels programes: la **localitat**. L'estudi del comportament dels programes mitjançant simulació ha permès identificar-ne dues formes:
 
 - **Localitat temporal**: si s'accedeix a una adreça de memòria, és probable que s'hi torni a accedir en un futur pròxim. La causa principal és l'existència de **bucles**: s'accedeix repetidament a les mateixes instruccions i dades a cada iteració.
 - **Localitat espacial**: si s'accedeix a una adreça de memòria, és probable que s'accedeixi a adreces properes en un futur pròxim. En el cas de les instruccions, la causa és el **seqüenciament implícit**: llevat dels salts, el processador sempre incrementa el PC i busca la instrucció següent en memòria. En el cas de les dades, la localitat espacial és característica dels **recorreguts de vectors i matrius** emmagatzemats en posicions contigües.
 
 ### La jerarquia de memòria {#sec-jerarquia}
 
-La localitat permet una solució elegant al gap: interposar entre el processador i la memòria principal una memòria petita i ràpida que retingui les dades a què és més probable que s'accedeixi. Si la majoria d'accessos es resolen en aquesta memòria ràpida, el temps d'accés mitjà s'aproximarà al de la memòria ràpida, no al de la lenta.
+La localitat permet una solució elegant a la bretxa: interposar entre el processador i la memòria principal una memòria petita i ràpida que retingui les dades a què és més probable que s'accedeixi. Si la majoria d'accessos es resolen en aquesta memòria ràpida, el temps d'accés mitjà s'aproximarà al de la memòria ràpida, no al de la lenta.
 
 Aplicant la mateixa idea de forma recursiva —una jerarquia de nivells, cada un més gran i més lent que l'anterior— s'obté el subsistema de memòria tal com s'implementa als processadors actuals (@fig-jerarquia-piramide):
 
@@ -493,7 +493,7 @@ Quan una escriptura produeix un encert, la dada és present a l'MC i cal decidir
 
 **Escriptura immediata** (***write-through***): S'escriu simultàniament a l'MC i a la memòria principal. La memòria principal rep totes les escriptures i mai no queda cap bloc modificat només a l'MC. Quan calgui reemplaçar un bloc, es pot fer directament sense cap escriptura prèvia a la memòria principal, ja que aquesta ja té la versió actualitzada.
 
-L'inconvenient és que cada escriptura accedeix a la memòria principal, que és lenta. Per mitigar-ho s'usa una **memòria intermèdia d'escriptura** (*write buffer*): les escriptures pendents es posen a la cua del buffer i es transfereixen a la memòria principal en segon pla mentre la CPU continua executant. Si el buffer s'omple (perquè el ritme d'escriptures supera la velocitat de buidatge), la CPU s'ha d'aturar fins que hi hagi espai.
+L'inconvenient és que cada escriptura accedeix a la memòria principal, que és lenta. Per mitigar-ho s'usa una **memòria intermèdia d'escriptura** (*write buffer*): les escriptures pendents es posen a la cua de la memòria intermèdia i es transfereixen a la memòria principal en segon pla mentre la CPU continua executant. Si la memòria intermèdia s'omple (perquè el ritme d'escriptures supera la velocitat de buidatge), la CPU s'ha d'aturar fins que hi hagi espai.
 
 **Escriptura retardada** (***write-back*** o ***copy-back***): S'escriu únicament a l'MC. La memòria principal queda temporalment desactualitzada. Per saber si un bloc ha estat modificat, cada línia incorpora un **bit de modificació** (*dirty bit*, $D$; @fig-escriptura-dirty-bit). $D = 1$ indica que el bloc ha estat modificat i la memòria principal no té la versió actualitzada. Quan calgui reemplaçar un bloc amb $D = 1$, caldrà copiar-lo prèviament a la memòria principal per no perdre les modificacions.
 
@@ -789,7 +789,7 @@ El TAM pondera les penalitzacions de cada memòria cau per la seva fracció d'ac
 $$\text{TAM} = t_h + \frac{n_{ins}}{n_{refs}} \cdot m_i \cdot t_{pi}
 + \frac{n_{dat}}{n_{refs}} \cdot m_d \cdot t_{pd}$$ {#eq-tam-split}
 
-És habitual expressar-ho en funció del nombre de **referències a memòria per instrucció** $n_r = n_{refs} / n_{ins}$, que és sempre $\geq 1$ (tota instrucció requereix almenys un accés per al fetch):
+És habitual expressar-ho en funció del nombre de **referències a memòria per instrucció** $n_r = n_{refs} / n_{ins}$, que és sempre $\geq 1$ (tota instrucció requereix almenys un accés per a la captura):
 
 $$\text{TAM} = t_h + \frac{1}{n_r} \cdot m_i \cdot t_{pi}
 + \left(1 - \frac{1}{n_r}\right) \cdot m_d \cdot t_{pd}$$ {#eq-tam-nr}
@@ -1071,7 +1071,7 @@ Jerarquia de memòries cau en un processador multinucli: L1 i L2 són privades d
 
 Habitualment, cada nucli disposa de L1i, L1d i L2 privades, orientades a minimitzar la latència per a aquell nucli. La L3 compartida actua com a darrer filtre abans de la memòria principal: redueix el nombre d'accessos a la DRAM i, per tant, el tràfic sobre el bus de memòria.
 
-La incorporació de L3 respon a la mateixa lògica que va motivar L2: a mesura que el gap entre el processador i la memòria principal continua creixent, afegir un nivell intermedi addicional permet reduir la penalització efectiva i mantenir el $\text{CPI}_{penal}$ sota control.
+La incorporació de L3 respon a la mateixa lògica que va motivar L2: a mesura que la bretxa entre el processador i la memòria principal continua creixent, afegir un nivell intermedi addicional permet reduir la penalització efectiva i mantenir el $\text{CPI}_{penal}$ sota control.
 
 ::: {#fig-i9-13900k-die}
 <!-- https://commons.wikimedia.org/wiki/File:Intel_Core_i9-13900K_Labelled_Die_Shot.jpg -->

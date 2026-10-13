@@ -365,12 +365,12 @@ Si `t0`, `t1` i `t2` són enters:
 - **Atenció**: Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes les traduccions d'aquest exemple.
 :::
 
-### Traducció de `&&` i `||`: avaluació gandula {#sec-traduccio-operadors-logics}
+### Traducció de `&&` i `||`: avaluació tardana {#sec-traduccio-operadors-logics}
 
-En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de forma **gandula** (***lazy***): si el valor del primer operand ja determina el resultat de tota la condició, **el segon operand no s'avalua**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert. La seva traducció implica l'ús d'instruccions de salt i s'estudia a @sec-avaluacio-lazy-encadenats.
+En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de forma **tardana** (***lazy***): si el valor del primer operand ja determina el resultat de tota la condició, **el segon operand no s'avalua**. Això succeeix si el primer operand d'una `&&` és fals, o si el primer operand d'una `||` és cert. La seva traducció implica l'ús d'instruccions de salt i s'estudia a @sec-avaluacio-lazy-encadenats.
 
 ::: {#cau-lazy-evaluation .callout-caution}
-En **C**, l'avaluació lazy de `&&` i `||` **no és opcional**: la imposa la semàntica del llenguatge. Per tant, la **traducció a assemblador l'ha de respectar**.
+En **C**, l'avaluació tardana de `&&` i `||` **no és opcional**: la imposa la semàntica del llenguatge. Per tant, la **traducció a assemblador l'ha de respectar**.
 :::
 
 ## Salts {#sec-salts}
@@ -573,7 +573,7 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 :::
 
 ::: {#imp-ec-rol-salts .callout-important}
-A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'usen per implementar el control de flux local (`if-then-else`, bucles); `jal` (amb `rd = ra`), per cridar subrutines; i els salts **indirectes** (`jalr`, `jr`, `ret`), quan la destinació està en un registre, com en retorns de subrutina o en els vectors de salts (@sec-switch).
+A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'usen per implementar el control de flux local (`if-then-else`, bucles); `jal` (amb `rd = ra`), per cridar subrutines; i els salts **indirectes** (`jalr`, `jr`, `ret`), quan la destinació està en un registre, com en retorns de subrutina o en les taules de salts (@sec-switch).
 :::
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
@@ -647,9 +647,9 @@ fisi:
 ```
 :::
 
-### Avaluació gandula als salts condicionals encadenats {#sec-avaluacio-lazy-encadenats}
+### Avaluació tardana als salts condicionals encadenats {#sec-avaluacio-lazy-encadenats}
 
-L'avaluació lazy es tradueix naturalment amb salts condicionals encadenats.
+L'avaluació tardana es tradueix naturalment amb salts condicionals encadenats.
 
 ::: {#tip-traduccio-if-and .callout-tip}
 ## `if` amb operador `&&`
@@ -715,10 +715,10 @@ switch (expressio) {
 }
 ```
 
-El mètode més senzill de traducció és una **cadena d'`if-then-else`** que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en un **vector de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
+El mètode més senzill de traducció és una **cadena d'`if-then-else`** que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en una **taula de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
 
 ::: {#tip-traduccio-switch .callout-tip}
-## `switch` amb vector de salts
+## `switch` amb taula de salts
 
 Suposem que `t0` conté el resultat de l'expressió del `switch` i que `switch_vec` és un vector de paraules amb les adreces de cada clàusula:
 
@@ -730,7 +730,7 @@ Suposem que `t0` conté el resultat de l'expressió del `switch` i que `switch_v
         jalr    zero, 0(t3)     # salta al codi de la clàusula (equivalent a: jr t3)
 ```
 
-El vector de salts es declara a la secció `.data`:
+La taula de salts es declara a la secció `.data`:
 
 ```{.s filename="RV32I"}
 .data
@@ -745,9 +745,9 @@ Aquesta versió simplificada assumeix que l'expressió del `switch` només pot v
 :::
 
 ::: {#wrn-switch-jump-table .callout-warning collapse=true}
-## Implementació del vector de salts en detall
+## Implementació de la taula de salts en detall
 
-El vector de salts és eficient quan les constants del `switch` formen un rang dens (per exemple, `0`, `1`, `2`, `3`). Si les constants estan disperses o el seu rang és molt gran, és preferible la cadena d'`if-then-else`, ja que el vector de salts requeriria moltes entrades per a constants que no existeixen.
+La taula de salts és eficient quan les constants del `switch` formen un rang dens (per exemple, `0`, `1`, `2`, `3`). Si les constants estan disperses o el seu rang és molt gran, és preferible la cadena d'`if-then-else`, ja que la taula de salts requeriria moltes entrades per a constants que no existeixen.
 
 Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor mínim al resultat de l'expressió abans d'indexar el vector. Per exemple, si les constants van de `5` a `8`:
 
@@ -1043,9 +1043,9 @@ RARS: *Settings* → *Memory Configuration...* mostra totes les regions de memò
 :::
 
 ::: {#wrn-gp-global-pointer .callout-warning collapse=true}
-## El registre `gp` (*global pointer*)
+## El punter global `gp` (*global pointer*)
 
-L'ABI reserva el registre `gp` (`x3`, *global pointer*) per optimitzar l'accés a variables globals petites situades dins d'un rang de ±2 KiB respecte al valor de `gp`. L'entorn d'execució l'inicialitza en arrencar el programa (a RARS, a `0x10008000`); el programador no l'ha de manipular mai directament. A **EC** no s'estudia aquest mecanisme.
+L'ABI reserva el punter global `gp` (`x3`, *global pointer*) per optimitzar l'accés a variables globals petites situades dins d'un rang de ±2 KiB respecte al valor de `gp`. L'entorn d'execució l'inicialitza en arrencar el programa (a RARS, a `0x10008000`); el programador no l'ha de manipular mai directament. A **EC** no s'estudia aquest mecanisme.
 :::
 
 ### Accés a variables globals {#sec-acces-variables-globals}
@@ -1326,11 +1326,11 @@ a = f?(*p);         // (5)
 Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen visibilitat local i durada temporal: es creen cada cop que s'executa la subrutina i deixen d'existir quan retorna. Per això, l'espai de les que resideixen en memòria es reserva **dinàmicament**, en temps d'execució, i s'allibera en retornar.
 
 ::: {#nte-bloc-activacio .callout-note}
-## RV32I ABI — El bloc d'activació — Registre de pila `sp`
+## RV32I ABI — El bloc d'activació — Punter de pila `sp`
 
 Les subrutines reserven tot l'espai que necessitaran a l'inici de la seva execució i l'alliberen just abans de retornar el control de flux a la subrutina que crida. Aquest espai de memòria s'anomena **bloc d'activació** (**BA**, ***stack frame***).
 
-La reserva i l'alliberament d'espai de memòria per al BA es fan mitjançant el registre de pila `sp` (***stack pointer***, `x2`).
+La reserva i l'alliberament d'espai de memòria per al BA es fan mitjançant el punter de pila `sp` (***stack pointer***, `x2`).
 
 El BA **creix** cap a **adreces més baixes**.
 
@@ -1463,7 +1463,7 @@ func:
 
 Una subrutina multinivell en pot cridar una altra, que al seu torn en pot cridar una altra, i així successivament. En aquest cas, el bloc d'activació de cada subrutina s'apila sobre el de la subrutina que l'ha cridada.
 
-La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política d'«última en entrar, primera en sortir» (***last in, first out***, **LIFO**), la qual s'implementa mitjançant el registre de pila `sp`.
+La pila del programa és, doncs, una successió de blocs d'activació que creix i decreix a mesura que les subrutines es criden i retornen seguint la política d'«última en entrar, primera en sortir» (***last in, first out***, **LIFO**), la qual s'implementa mitjançant el punter de pila `sp`.
 
 ::: {#nte-rars-fons-pila .callout-note}
 ## RARS — Fons de pila
@@ -1813,7 +1813,7 @@ exemple:
 ```
 ::::
 
-## Compilació, assemblatge, enllaçat i càrrega {#sec-compilacio}
+## Compilació, assemblatge, enllaçament i càrrega {#sec-compilacio}
 
 ::: {#wrn-godbolt .callout-warning collapse=true}
 ## Compiler Explorer (Godbolt)
@@ -1825,7 +1825,7 @@ En general, el procés pel qual un programa escrit en **C** es **converteix en**
 
 1. **Compilació**.
 2. **Assemblatge**.
-3. **Enllaçat**.
+3. **Enllaçament**.
 4. **Càrrega**.
 
 A la @sec-traduccio-c-asm hi ha una introducció a aquest procés. En aquesta secció s'analitza amb més detall, posant èmfasi en com cada pas gestiona les **etiquetes** i les **adreces** del programa.
@@ -1844,7 +1844,7 @@ Hi ha moltes situacions en què resulta convenient separar el codi i les dades e
 Els mòduls es compilen i assemblen **per separat**, generant fitxers objecte independents que més tard s'**enllaçaran** per crear l'executable (@fig-compilacio-separada).
 
 ::: {#cau-abus-llenguatge-compilació .callout-caution}
-De vegades, per abús de llenguatge, s'anomena «compilar» tot el procés de traducció de codi font a executable, incloent-hi l'assemblatge i l'enllaçat. Cal, però, tenir present que, en realitat, cada un d'aquests passos és una fase diferent del procés de traducció, amb funcionalitats i sortides diferents.
+De vegades, per abús de llenguatge, s'anomena «compilar» tot el procés de traducció de codi font a executable, incloent-hi l'assemblatge i l'enllaçament. Cal, però, tenir present que, en realitat, cada un d'aquests passos és una fase diferent del procés de traducció, amb funcionalitats i sortides diferents.
 :::
 
 ::: {#fig-compilacio-separada}
@@ -1977,7 +1977,7 @@ Els fitxers objecte contindran:
 - Referències externes: posició `+36` (text), tipus `la`, etiqueta `X`.
 :::
 
-### Enllaçat {#sec-enllacat}
+### Enllaçament {#sec-enllacat}
 
 L'**enllaçador** (*linker*) combina múltiples fitxers objecte i fitxers de biblioteca en un sol fitxer executable. Ho fa en quatre passos:
 
@@ -1992,7 +1992,7 @@ L'**enllaçador** (*linker*) combina múltiples fitxers objecte i fitxers de bib
 Finalment, s'escriu al disc el **fitxer executable**, que té una estructura similar a un fitxer objecte però sense informació de reubicació ni referències externes no resoltes.
 
 ::: {#tip-exemple-enllacat .callout-tip}
-## Resultat de l'enllaçat dels mòduls A i B
+## Resultat de l'enllaçament dels mòduls A i B
 
 Enllaçant els mòduls A i B de l'exemple anterior, el programa definitiu queda:
 
@@ -2031,7 +2031,7 @@ Quan la subrutina `main` retorna, la rutina d'arrencada invoca la crida al siste
 ::: {#cau-carrega-ec .callout-caution}
 El mecanisme descrit en aquesta secció és el d'un **sistema real amb SO**. A **EC** no hi ha ni SO ni carregador (@imp-directe-sobre-processador): els programes no reben `argc` ni `argv` i no tornen enlloc en acabar. El punt d'entrada és la **primera instrucció del segment `.text`**, sense cap etiqueta que l'anomeni (@nte-punt-entrada-etiqueta), i la sortida es fa amb `li a7, 93` + `ecall` (@nte-programa-esquelet).
 
-El `void main()` dels programes en C d'aquests apunts no contradiu res del que s'acaba de dir: és **notació** del programa que es tradueix a mà (@cau-void-main), no un punt d'entrada que cap rutina de *startup* no arriba a cridar.
+El `void main()` dels programes en C d'aquests apunts no contradiu res del que s'acaba de dir: és **notació** del programa que es tradueix a mà (@cau-void-main), no un punt d'entrada que cap rutina d'arrencada no arriba a cridar.
 :::
 
 ### GCC/Clang — El flux de generació complet {#sec-flux-generacio-complet}

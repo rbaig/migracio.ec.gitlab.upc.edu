@@ -336,7 +336,7 @@ Un cop el maquinari ha completat les accions de @sec-ei-flux-hardware-accions, e
 
 1. **Desar l'estat del programa interromput**: l'RSE ha de desar a memòria tots els registres generals (`x1`–`x31`), per poder-los restaurar en acabar. A diferència d'una subrutina normal, aquí no s'apliquen les regles de l'ABI sobre registres salvats i temporals: com que l'RSE no ha estat invocada voluntàriament pel programa, cal salvar-los tots sense excepció.
 
-2. **Identificar la causa**: l'RSE llegeix el registre `mcause` per determinar el tipus d'excepció o interrupció i saltar a la rutina específica (*exception handler*) corresponent.
+2. **Identificar la causa**: l'RSE llegeix el registre `mcause` per determinar el tipus d'excepció o interrupció i saltar a la **rutina específica** (*exception handler*) corresponent.
 
 3. **Tractar l'excepció o interrupció**: el tractament depèn de la causa:
     - **Resoldre el problema i retornar** (fallada de pàgina): l'RSE resol la situació i el programa es reprèn reexecutant la instrucció causant.
@@ -386,7 +386,7 @@ Si l'RSE retornés sense ajustar `mepc` en el cas d'una `ecall`, el processador 
 
 ### Exemple: RSE mínima en RISC-V {#sec-ei-rse-exemple}
 
-El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que desa tots els registres, identifica la causa i en delega el tractament a un distribuïdor (*dispatcher*). Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
+El codi següent és un exemple **il·lustratiu** (no executable directament) d'una RSE mínima que desa tots els registres, identifica la causa i en delega el tractament a un **distribuïdor** (*dispatcher*). Com que una RSE real no viu al segment `.text` habitual d'un programa d'usuari, l'exemple usa la directiva `.section` de GNU `as`, fora de l'abast de RARS:
 
 ```{.s filename="RV32IZicsr"}
 .section .text.trap, "ax"
@@ -478,7 +478,7 @@ rse:
         mret
 ```
 
-El distribuïdor (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres desats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar l'RSE. El dispatcher consulta `mcause` per cridar el handler específic i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
+El distribuïdor (`handler_dispatcher`) rep la causa (`mcause`), l'adreça de retorn (`mepc`) i un punter als registres desats. Aquest punter li permet llegir els paràmetres de la crida al sistema i modificar els valors que es restauraran; per exemple, escriure el resultat d'una crida a la posició salvada d'`a0`, que serà la que torni al programa en acabar l'RSE. El distribuïdor consulta `mcause` per cridar la rutina específica i retorna l'adreça on ha de continuar el programa: `mepc` (per reexecutar la instrucció causant), `mepc + 4` (per continuar a la instrucció següent) o una altra adreça (per exemple, en un canvi de context).
 
 ::: {#wrn-rse-pila .callout-warning collapse=true}
 ## La pila de l'RSE
@@ -698,7 +698,7 @@ bucle:
 - **Sincronització per interrupcions**: el processador continua executant altres tasques mentre el dispositiu treballa. Quan l'operació acaba, el dispositiu activa un senyal de **petició d'interrupció** que notifica al processador. El processador interromp el programa en curs, atén el dispositiu a l'RSE i després reprèn el programa.
 
 ::: {#cau-polling-vs-interrupcions .callout-caution}
-La sincronització per **interrupcions** és molt més eficient que el polling: permet al processador fer feina útil mentre el dispositiu treballa, en lloc d'esperar activament. L'SO pot aprofitar aquest temps per executar altres programes.
+La sincronització per **interrupcions** és molt més eficient que la sincronització per enquesta: permet al processador fer feina útil mentre el dispositiu treballa, en lloc d'esperar activament. L'SO pot aprofitar aquest temps per executar altres programes.
 :::
 
 ### El cicle de vida d'una interrupció {#sec-ei-interrupcions-cicle}
@@ -711,7 +711,7 @@ El flux complet d'una interrupció, des de la petició fins al retorn, segueix l
 
 3. **Acceptació**: el maquinari executa les accions de @sec-ei-flux-hardware-accions: guarda el PC a `mepc`, escriu `mcause` amb bit 31=1 i el codi de causa, desactiva `MIE` i salta a `mtvec`.
 
-4. **Servei**: l'RSE identifica el dispositiu (llegint `mcause` i `mip`) i crida el tractament específic d'aquell dispositiu (l'*exception handler*), que en fa el servei (per exemple, llegir-ne les dades).
+4. **Servei**: l'RSE identifica el dispositiu (llegint `mcause` i `mip`) i crida la rutina específica d'aquell dispositiu, que en fa el servei (per exemple, llegir-ne les dades).
 
 5. **Retorn**: l'RSE executa `mret`, que restaura `MIE` i retorna al programa interromput, que reprèn l'execució a la instrucció que hauria executat a continuació (ja guardada a `mepc`).
 
@@ -776,7 +776,7 @@ Com s'ha vist a @sec-mv-tlb, el **TLB** (*Translation Lookaside Buffer*) és una
 A RISC-V, la fallada de TLB **no és una excepció**: la resol de manera transparent el recorregut de la taula de pàgines (*page-table walker*), un circuit de l'MMU que hi llegeix la PTE, la copia al TLB i deixa continuar l'accés sense interrompre el programa (@sec-mv-tlb-fallada). L'excepció apareix quan el walker troba que la pàgina **no és a la memòria física** (bit V = 0 a la PTE): aleshores es genera una **fallada de pàgina** (*page fault*), que el sistema operatiu tracta per programari. Amb la PTE ja al TLB, una escriptura en una pàgina amb E = 0 també genera una excepció, la de protecció (@sec-mv-proteccio-escriptura).
 
 ::: {#cau-tlb-miss-excepcio .callout-caution}
-A RISC-V, la **fallada de TLB** la resol el maquinari (el recorregut de la taula de pàgines) de forma transparent. Només la **fallada de pàgina** (V = 0) és una excepció: la instrucció causant s'avorta, `sepc` (o `mepc`) hi apunta, i l'RSE l'ha de **reexecutar** en acabar (sense incrementar `sepc`). En la reexecució, el walker troba la PTE vàlida i l'accés continua normalment.
+A RISC-V, la **fallada de TLB** la resol el maquinari (el recorregut de la taula de pàgines) de forma transparent. Només la **fallada de pàgina** (V = 0) és una excepció: la instrucció causant s'avorta, `sepc` (o `mepc`) hi apunta, i l'RSE l'ha de **reexecutar** en acabar (sense incrementar `sepc`). En la reexecució, el recorregut de la taula de pàgines troba la PTE vàlida i l'accés continua normalment.
 :::
 
 El bit V de la PTE que desencadena la fallada és el que s'ha estudiat a @sec-mv-pte. Cal recordar que l'especificació RISC-V l'anomena `V` —no `P`—, tal com s'explica a @wrn-mv-notacio-v.
