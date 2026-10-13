@@ -22,6 +22,9 @@ Presentació (index.qmd) al principi i el compendi (11_riscv.qmd) al final, i el
   - una expansió que no segueix el format únic, on sigui, també als aprofundiments: la sigla dins
     d'un parèntesi que va darrere de la forma catalana o de l'expansió anglesa, o que les conté, o la
     sigla seguida d'un parèntesi que les conté («**NaN** (*Not a Number*)»);
+  - per a qualsevol sigla, també les dels aprofundiments que no són a la taula, una de les variants
+    que el format exclou (VARIANTS): la sigla en negreta dins del parèntesi, l'anglès en negreta i
+    cursiva, «(*anglès* o SIGLA)» i «**SIGLA** (*anglès*)»;
   - una sigla del text, fora dels aprofundiments, que no és a la taula ni a [no_sigles]: un mot de
     dues majúscules o més, sense minúscules, fora del codi, de les fórmules i de les cursives (les
     parts d'un compost amb barra, per separat), tret de les unitats (KB, GB), els noms de les
@@ -58,6 +61,21 @@ TEXT_MATES = re.compile(r"\\text\{([^{}]*)\}")
 UNITATS = re.compile(r"[KMGTPE]B")
 RISCV = re.compile(r"RV\d+[A-Z]*|RV[A-Z]+\d+[A-Z0-9]*")
 LOGIQUES = {"AND", "OR", "XOR", "NOT", "NAND", "NOR", "XNOR"}
+# Les variants del format únic, per a qualsevol sigla, també les que no són a la taula (les dels
+# aprofundiments): no cal saber-ne l'expansió per veure que la forma no és la bona.
+SIGLA = r"(?P<s>[A-Z][A-Za-z0-9&/]*[A-Z0-9])"
+VARIANTS = [
+    (re.compile(rf"\((?:\*{{1,3}}[^*()\n]+\*{{1,3}},\s*)?\*\*{SIGLA}\*\*\s*\)"), "la sigla, en negreta dins del parèntesi"),
+    (re.compile(rf"\*\*\*[^*\n]+\*\*\*,?\s*\(?\s*\**{SIGLA}\**\s*\)"), "l'expansió anglesa, en negreta i cursiva"),
+    (re.compile(rf"\(\*[^*()\n]+\*\s+o\s+\**{SIGLA}\**\)"), "«(*anglès* o SIGLA)»"),
+    (re.compile(rf"(?<![\w*])\*\*{SIGLA}\*\*\s*\(\*{{1,3}}[^*()\n]+\*{{1,3}}\)"), "«**SIGLA** (*anglès*)»"),
+]
+
+
+def es_sigla(s):
+    """Si un mot té forma de sigla per a VARIANTS: dues majúscules o més, i no és el nom d'una
+    variant de RISC-V (RV32G, RV64)."""
+    return sum(c.isupper() for c in s) >= 2 and not RISCV.fullmatch(s)
 
 
 def capitols():
@@ -287,6 +305,11 @@ class Sigles:
         u = unitats(self.literals)
         primera, aparicions, errors, intents = {}, {}, [], []
         for idx, (f, n, tipus, text, wrn, bloc, mates) in enumerate(u):
+            for rx, que in VARIANTS:
+                for m in rx.finditer(text):
+                    if not es_sigla(m.group("s")) or m.group("s") in self.mots_no:
+                        continue
+                    errors.append(f"{f}:{n}: una variant del format únic de l'expansió ({que}): …{m.group(0)}…")
             trobats = [(p, w, "mot") for p, w in mots(text)] + [(None, w, "formula")
                                                                  for t in mates for w in MOT.findall(t)]
             for pos, mot, on in trobats:

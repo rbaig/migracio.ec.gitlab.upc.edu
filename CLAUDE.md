@@ -25,7 +25,7 @@ Repartiment de responsabilitats entre fitxers:
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
 - `TODO.md` només conté contingut transitori. El que ha de quedar buit al final és **el fitxer mateix**: no hi ha de restar cap entrada viva. El que en surt —una entrada que es tanca, o l'historial de les parts ja fetes d'una entrada viva— va **literal** a `24_specs/arxiu_todo.md` ([D-91](24_specs/registre_de_decisions.md#d-91)).
 
-Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `12_sigles_simbols.qmd` (glossari de sigles i símbols).
+Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `12_sigles_simbols.qmd` (sigles, símbols, notació i termes; les sigles i els termes es generen de `24_specs/termes.toml`, la font única del lèxic, D-115 i D-118).
 
 ## Abast del projecte
 

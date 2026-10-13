@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**12 entrades vives** (recompte del 2026-10-14, en afegir «PDF: capçaleres i títols sols al peu de la pàgina» a §Tasques globals; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**13 entrades vives** (recompte del 2026-10-14, en afegir §Llarg termini, amb «Les formes catalanes de les expansions de sigles que avui només són en anglès»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 4 (suma 12, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 4 · `§Llarg termini` 1 (suma 13, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -133,3 +133,14 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
 - **Equacions a MathML**: **decisió presa — mantenir MathJax 3**; el pendent és reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa). Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`): funciona (`underbrace`, `cases`, taules amb math correctes a Chrome) i elimina el JS de MathJax (render instantani, offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), numeració d'equacions inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. El desbordament mòbil ja està resolt via CSS.
 
+---
+
+## Llarg termini
+
+Tasques sense data ni urgència (secció creada el 2026-10-14, a petició de l'usuari).
+
+- **Les formes catalanes de les expansions de sigles que avui només són en anglès** (petició de l'usuari, 2026-10-14, literal: «Apunta-ho a `TODO.md` en una secció nova de "Llarg termini"», sobre un punt obert del tancament de les sigles, [D-118](24_specs/registre_de_decisions.md#d-118)). El format únic de l'expansió admet «forma catalana (*expansió anglesa*, SIGLA)», però les sigles noves de `[sigles]` de `24_specs/termes.toml` només van rebre la forma catalana que el text ja feia servir (i la de LED). N'hi ha 28 amb només l'expansió anglesa: 13 són noms propis (ARM, ASCII, ELF, GCC, HTML, IEC, IEEE, ISO, JRE, MARS, MIPS, POSIX i RARS), que es queden en anglès, i les altres 15 en poden tenir una de catalana segons les fonts lèxiques de [D-116](24_specs/registre_de_decisions.md#d-116): ABI, AMAT (l'equivalent anglès de TAM: potser es queda així), AMO, API, CISC, CMOS, FIFO, LRU, MRU, NaN, RAM, RISC, ROM, TLB i ULP. Per a cadascuna: la consulta de les fonts, el camp `ca` a `termes.toml` i, si n'hi ha forma, l'expansió del text, on la comprovació de les sigles (`25_scripts/sigles.py`) la demanarà. Afecta A1–A8: amb la revisió externa en curs, s'ha de coordinar amb els equips (D-65).
+
+  ```bash
+  python3 -c "import tomllib; d=tomllib.load(open('24_specs/termes.toml','rb'))['sigles']; l=sorted(s for s,e in d.items() if e.get('en') and not e.get('ca')); print(len(l), *l)"   # 28 (2026-10-14)
+  ```
