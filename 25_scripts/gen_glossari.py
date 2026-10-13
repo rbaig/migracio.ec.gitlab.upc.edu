@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
-"""Glossari anglès → català, generat a partir del corpus (secció «Termes» de
-12_sigles_simbols.qmd).
+"""Glossari anglès → català (secció «Termes» de 12_sigles_simbols.qmd), generat a
+partir de 24_specs/termes.toml, i comprovació de les presentacions del text.
 
 Petició de l'usuari (2026-10-05; TODO.md, «Glossari de termes català–anglès»).
-La font de veritat és el text: el glossari recull les presentacions
-«**terme català** (*english*)» i «**terme català** (***english***)» dels capítols
-de teoria, problemes, solucions i laboratori, en l'ordre del llibre
-(`chapters:` de `_quarto.yml`), i per a cada terme anglès dona la forma catalana
-i el tema de la primera presentació. Només compten les presentacions amb el terme
-català en negreta: sense negreta no se sap on comença el terme català.
+La font de veritat del lèxic és 24_specs/termes.toml (D-115, que inverteix D-100):
+per a cada terme anglès, la forma catalana, les observacions d'ús i, si es manté
+en anglès, el motiu. El text només hi posa on es presenta cada terme: la columna
+«Tema» és la del capítol de la primera presentació «**terme català** (*english*)»
+o «**terme català** (***english***)», en l'ordre del llibre (`chapters:` de
+`_quarto.yml`; teoria, problemes, solucions i laboratori). Només compten les
+presentacions amb el terme català en negreta: sense negreta no se sap on comença
+el terme català.
 
-Avisa de les TRADUCCIONS DIVERGENTS (un mateix terme anglès presentat amb més
-d'una forma catalana) i no en corregeix cap: decidir-les és de l'usuari. El
-glossari en mostra la forma de la primera presentació.
+La comprovació (--comprova, i també en generar) troba:
+  - una presentació d'un terme que no és a termes.toml (un terme nou: s'hi afegeix);
+  - una presentació amb una forma catalana que no és la de termes.toml, ni el seu
+    plural, ni una de les formes de `presentacio` del terme;
+  - una presentació en català d'un terme que el llibre manté en anglès;
+  - un terme de termes.toml sense cap presentació al text, que no tindria tema;
+  - i, com a avís, un terme que sembla en plural i no és a `nombre` (D-108).
 
 S'exclouen les sigles (terme «català» tot en majúscules: van a §Sigles), les
 expansions de sigla que ja són a §Sigles (l'anglès és l'expansió d'una sigla, com
@@ -20,16 +26,13 @@ expansions de sigla que ja són a §Sigles (l'anglès és l'expansió d'una sigl
 dels comentaris HTML i de la capçalera YAML.
 
 Ús:
-    python3 25_scripts/gen_glossari.py               # reescriu la secció
-    python3 25_scripts/gen_glossari.py --comprova    # 1 si la secció no és al dia
-    python3 25_scripts/gen_glossari.py --divergencies   # només la llista d'avisos
+    python3 25_scripts/gen_glossari.py               # escriu auto_termes/glossari.qmd i glossari_angles.qmd
+    python3 25_scripts/gen_glossari.py --comprova    # 1 si el text no coincideix amb termes.toml
 
-La secció és entre els marcadors <!-- glossari:inici … --> i <!-- glossari:fi -->
-de 12_sigles_simbols.qmd. El que no surt del text és a 24_specs/glossari.toml (D-100):
-les observacions de cada terme (la quarta columna), la taula dels termes que el
-llibre manté en anglès i la forma en singular dels termes presentats en plural (D-108); --comprova també avisa d'una observació d'un terme que el
-glossari ja no té. Com els generadors de model (a) de les figures, la
-sortida és versionada: cal tornar-lo a executar quan una presentació canvia.
+La secció la inclou 12_sigles_simbols.qmd amb dos {{< include auto_termes/… >}}, un per taula.
+Com auto_riscv/ (D-3), el fitxer ha d'existir abans d'invocar `quarto`, perquè Quarto
+resol els include abans del pre-render: `make render` i `make taules` el generen. No
+es versiona (D-104).
 """
 
 import re
@@ -37,17 +40,20 @@ import sys
 import tomllib
 from pathlib import Path
 
+from taula_md import majuscula, taula
+
 ARREL = Path(__file__).resolve().parent.parent
-DESTI = ARREL / "12_sigles_simbols.qmd"
-DADES = ARREL / "24_specs" / "glossari.toml"
-INICI = "<!-- glossari:inici"
-FI = "<!-- glossari:fi -->"
+SIGLES = ARREL / "12_sigles_simbols.qmd"
+DADES = ARREL / "24_specs" / "termes.toml"
+SORTIDA = ARREL / "auto_termes" / "glossari.qmd"
+SORTIDA_ANGLES = ARREL / "auto_termes" / "glossari_angles.qmd"
 
 PRESENTACIO = re.compile(
     r"\*\*([^*\n]{2,60}?)\*\*\s*\((?:\*\*\*|\*)([^*()\n]{2,60}?)(?:\*\*\*|\*)\)")
 CODI = re.compile(r"^```.*?^```", re.S | re.M)
 COMENTARI = re.compile(r"<!--.*?-->", re.S)
 YAML = re.compile(r"\A---\n.*?\n---\n", re.S)
+PREPOSICIO = {"de", "a", "en", "per", "amb", "sense", "del", "al"}
 
 
 def capitols():
@@ -85,139 +91,147 @@ def normalitza(s):
 
 def expansions_de_sigles():
     """Les expansions de la taula de §Sigles de 12_sigles_simbols.qmd, normalitzades."""
-    text = DESTI.read_text(encoding="utf-8")
+    text = SIGLES.read_text(encoding="utf-8")
     seccio = text.split("\n## Sigles", 1)[1].split("\n## ", 1)[0]
     return {normalitza(m.group(1)) for m in re.finditer(r"^\| \*\*[^|]+\*\* \| ([^|]+) \|", seccio, re.M)}
 
 
 def recull():
-    termes = {}
+    """[(anglès, català, fitxer, línia)] de les presentacions del text, en l'ordre del llibre."""
     sigles = expansions_de_sigles()
-    for angles, catala, f, linia in presentacions():
-        if normalitza(angles) in sigles:     # expansió d'una sigla: ja és a §Sigles
-            continue
-        clau = re.sub(r"\s+", " ", angles.lower())
-        termes.setdefault(clau, []).append((angles, catala, f, linia))
-    return termes
-
-
-def divergencies(termes):
-    """Termes anglesos amb més d'una forma catalana (sense distingir majúscules)."""
-    return {k: v for k, v in termes.items()
-            if len({c.lower() for _, c, _, _ in v}) > 1}
+    return [p for p in presentacions() if normalitza(p[0]) not in sigles]
 
 
 def dades():
     return tomllib.loads(DADES.read_text(encoding="utf-8"))
 
 
-def majuscula(s):
-    """La primera lletra de la cel·la, en majúscula, encara que vagi darrere de `*`, `«` o `(` (D-108)."""
-    m = re.search(r"[^\W\d_]", s)
-    return s if not m else s[:m.start()] + s[m.start()].upper() + s[m.start() + 1:]
+def plural_mot(m):
+    """El plural d'un mot català, per a les formes regulars dels termes."""
+    if m.endswith("ió"):
+        return m[:-2] + "ions"
+    for sing, plur in (("ca", "ques"), ("ga", "gues"), ("ja", "ges"), ("ça", "ces"),
+                       ("qua", "qües"), ("gua", "gües"), ("a", "es")):
+        if m.endswith(sing):
+            return m[:-len(sing)] + plur
+    return m + "s"
 
 
-def en_angles_claus(d):
-    return {c.strip().lower() for clau in d.get("en_angles", {}) for c in clau.split(",")}
+def plural(forma):
+    """El plural d'una forma catalana: cada mot fins a la primera preposició («fil d'execució»)."""
+    mots = forma.split(" ")
+    for i, m in enumerate(mots):
+        if m.lower() in PREPOSICIO or re.match(r"[dl]['’]", m.lower()):
+            break
+        mots[i] = "/".join(plural_mot(p) for p in m.split("/"))
+    return " ".join(mots)
 
 
-def files_termes(termes, d):
-    """(anglès, català, tema, observació) de cada terme de la taula, amb la forma de [formes] si n'hi ha."""
-    formes, obs, fora = d.get("formes", {}), d.get("observacions", {}), en_angles_claus(d)
+def clau_angles(s):
+    return re.sub(r"\s+", " ", s).strip().lower()
+
+
+def index_termes(d):
+    """{clau anglesa: (clau de termes.toml, estat)}, amb el plural anglès (-s, -es) de cada terme."""
+    index = {}
+    for clau in d.get("termes", {}):
+        k = clau_angles(clau)
+        for variant in (k, k + "s", k + "es"):
+            index.setdefault(variant, (clau, "catala"))
+    for clau in d.get("en_angles", {}):
+        for part in clau.split(","):
+            index[clau_angles(part)] = (clau, "angles")
+    return index
+
+
+def admeses(entrada):
+    """Les formes catalanes que pot tenir la presentació d'un terme, en minúscules."""
+    ca = entrada["ca"]
+    return {f.lower() for f in [ca, plural(ca), *entrada.get("presentacio", [])]}
+
+
+def comprova(pres, d):
+    """(errors, avisos, {clau: tema}) de les presentacions del text contra termes.toml."""
+    termes, index = d.get("termes", {}), index_termes(d)
+    errors, avisos, temes = [], [], {}
+    for angles, catala, f, linia in pres:
+        lloc = f"{f}:{linia}"
+        trobat = index.get(clau_angles(angles))
+        if not trobat:
+            errors.append(f"{lloc}: «**{catala}** (*{angles}*)»: *{angles}* no és a {DADES.name}; "
+                          f"si és un terme nou, afegiu-hi a [termes]: \"{angles}\" = {{ ca = \"{catala}\" }}")
+            continue
+        clau, estat = trobat
+        if estat == "angles":
+            errors.append(f"{lloc}: «**{catala}** (*{angles}*)»: el llibre manté *{angles}* en anglès "
+                          f"([en_angles] de {DADES.name})")
+            continue
+        if catala.lower() not in admeses(termes[clau]):
+            errors.append(f"{lloc}: «**{catala}** (*{angles}*)»: {DADES.name} diu «{termes[clau]['ca']}»; "
+                          f"corregiu el text o, si la forma és bona, poseu-la a `presentacio` del terme")
+        temes.setdefault(clau, tema(f))
+    for clau in termes:
+        if clau not in temes:
+            errors.append(f"{DADES.name}: «{clau}» no té cap presentació «**…** (*{clau}*)» al text")
+    for clau, entrada in termes.items():
+        if entrada.get("nombre"):
+            continue
+        if clau.lower().endswith("s") or entrada["ca"].split()[0].lower().endswith("s"):
+            avisos.append(f"sembla un plural (13_contrib.qmd §Glossari, D-108): *{clau}* | {entrada['ca']}; "
+                          f"poseu-ne el singular a {DADES.name}, o `nombre` al terme")
+    return errors, avisos, temes
+
+
+def taula_termes(d, temes):
     files = []
-    for clau, presentacions in termes.items():
-        if clau in fora:                      # el llibre el manté en anglès: és a la taula de sota
-            continue
-        angles, catala, f, _ = presentacions[0]
-        forma = formes.get(clau, {})
-        files.append((forma.get("angles", angles), forma.get("catala", catala), tema(f), obs.get(clau, ""), clau))
-    return sorted(files, key=lambda r: r[0].lower())
-
-
-def plurals(termes, d):
-    """Termes de la taula que semblen en plural i no són a [formes] ni a les llistes de [nombre] (D-108)."""
-    nombre, formes = d.get("nombre", {}), d.get("formes", {})
-    exempts = {k.lower() for k in nombre.get("plural", []) + nombre.get("no_plural", [])}
-    sospitosos = []
-    for angles, catala, _, _, clau in files_termes(termes, d):
-        if clau in formes or clau in exempts:
-            continue
-        if angles.lower().endswith("s") or catala.split()[0].lower().endswith("s"):
-            sospitosos.append(f"*{angles}* | {catala}")
-    return sospitosos
-
-
-def taula(termes, d):
-    files = ["| Anglès | Català | Tema | Observacions |", "| :--- | :--- | :---: | :--- |"]
-    for angles, catala, tema_, obs, _ in files_termes(termes, d):
-        files.append(f"| *{majuscula(angles)}* | {majuscula(catala)} | {tema_} | {majuscula(obs)} |")
-    files.append(': Termes anglesos i la forma catalana que fa servir el llibre. {#tbl-termes tbl-colwidths="[24,24,8,44]" .striped}')
-    return "\n".join(files)
+    for clau in sorted(d.get("termes", {}), key=str.lower):
+        e = d["termes"][clau]
+        files.append([f"*{majuscula(clau)}*", majuscula(e["ca"]), temes.get(clau, ""), majuscula(e.get("obs", ""))])
+    return taula([("Anglès", ":---"), ("Català", ":---"), ("Tema", ":---:"), ("Observacions", ":---")], files,
+                 'Termes anglesos i la forma catalana que fa servir el llibre. {#tbl-termes tbl-colwidths="[24,24,8,44]" .striped}')
 
 
 def taula_angles(en_angles):
-    files = ["| Anglès | Terme català | Motiu |", "| :--- | :--- | :--- |"]
+    files = []
     for clau in sorted(en_angles, key=str.lower):
         angles = majuscula(", ".join(f"*{a.strip()}*" for a in clau.split(",")))
-        files.append(f"| {angles} | {majuscula(en_angles[clau]['catala'])} | {majuscula(en_angles[clau]['motiu'])} |")
-    files.append(': Termes mantinguts en anglès. {#tbl-termes-angles tbl-colwidths="[18,28,54]" .striped}')
-    return "\n".join(files)
+        files.append([angles, majuscula(en_angles[clau]["ca"]), majuscula(en_angles[clau]["motiu"])])
+    return taula([("Anglès", ":---"), ("Terme català", ":---"), ("Motiu", ":---")], files,
+                 'Termes mantinguts en anglès. {#tbl-termes-angles tbl-colwidths="[18,28,54]" .striped}')
 
 
-def seccio(termes, d):
-    return (f"{INICI} (generat per 25_scripts/gen_glossari.py a partir del corpus i de 24_specs/glossari.toml; no l'editeu a mà) -->\n"
-            f"{taula(termes, d)}\n\n"
-            f"{taula_angles(d.get('en_angles', {}))}\n\n{FI}")   # la línia en blanc: si no, Pandoc ajunta el comentari al peu i n'escriu els atributs
-
-
-def informe(div):
-    linies = []
-    for clau in sorted(div):
-        formes = {}
-        for _, catala, f, linia in div[clau]:
-            formes.setdefault(catala, []).append(f"{Path(f).name}:{linia}")
-        detall = "; ".join(f"«{c}» ({', '.join(llocs)})" for c, llocs in formes.items())
-        linies.append(f"- *{div[clau][0][0]}*: {detall}")
-    return "\n".join(linies)
+def sortides(d, temes):
+    """{fitxer: contingut}: una taula per fitxer, perquè verifica_taules.py, que llegeix un include
+    sense les línies en blanc, no ajunti el peu de la primera amb la segona."""
+    marca = "<!-- generat per 25_scripts/gen_glossari.py a partir de 24_specs/termes.toml; no l'editeu a mà -->\n"
+    return {SORTIDA: f"{marca}{taula_termes(d, temes)}\n",
+            SORTIDA_ANGLES: f"{marca}{taula_angles(d.get('en_angles', {}))}\n"}
 
 
 def main():
-    if set(sys.argv[1:]) - {"--comprova", "--divergencies"}:
+    if set(sys.argv[1:]) - {"--comprova"}:
         print(__doc__.split("Ús:")[1].split("La secció")[0].rstrip(), file=sys.stderr)
         return 2
-    termes = recull()
-    div = divergencies(termes)
-    n = sum(len(v) for v in termes.values())
-    if "--divergencies" in sys.argv:
-        print(informe(div))
-        return 0
-    text = DESTI.read_text(encoding="utf-8")
-    i, j = text.find(INICI), text.find(FI)
-    if i < 0 or j < 0:
-        print(f"ERROR: falten els marcadors {INICI} … {FI} a {DESTI.name}", file=sys.stderr)
-        return 2
     d = dades()
-    sobreres = sorted(set(d.get("observacions", {})) - set(termes))
-    for s in sobreres:
-        print(f"[gen-glossari] {DADES.name}: «{s}» té observació i el glossari no té aquest terme", file=sys.stderr)
-    for clau in sorted(set(d.get("formes", {})) - set(termes)):
-        sobreres.append(clau)
-        print(f"[gen-glossari] {DADES.name}: «{clau}» té forma a [formes] i el glossari no té aquest terme", file=sys.stderr)
-    sospitosos = plurals(termes, d)
-    for t in sospitosos:
-        print(f"[gen-glossari] sembla un plural (13_contrib.qmd §Glossari, D-108): {t}; "
-              f"poseu-ne el singular a [formes] de {DADES.name}, o el terme a [nombre]", file=sys.stderr)
-    nou = text[:i] + seccio(termes, d) + text[j + len(FI):]
+    pres = recull()
+    errors, avisos, temes = comprova(pres, d)
+    for a in avisos:
+        print(f"[gen-glossari] avís: {a}", file=sys.stderr)
+    for e in errors:
+        print(f"[gen-glossari] {e}", file=sys.stderr)
+    n = len(d.get("termes", {}))
     if "--comprova" in sys.argv:
-        if nou != text or sobreres or sospitosos:
-            print(f"[gen-glossari] {DESTI.name}: la secció «Termes» no és al dia", file=sys.stderr)
+        if errors or avisos:
+            print(f"[gen-glossari] el text no coincideix amb {DADES.name} (13_contrib.qmd §Anglicismes)", file=sys.stderr)
             return 1
-        print(f"[gen-glossari] al dia: {len(termes)} termes, {n} presentacions")
+        print(f"[gen-glossari] al dia: {n} termes, {len(pres)} presentacions")
         return 0
-    if nou != text:
-        DESTI.write_text(nou, encoding="utf-8")
-    print(f"[gen-glossari] {len(termes)} termes, {n} presentacions, "
-          f"{len(div)} amb traduccions divergents (--divergencies)")
+    SORTIDA.parent.mkdir(exist_ok=True)
+    for fitxer, nou in sortides(d, temes).items():
+        if not fitxer.exists() or fitxer.read_text(encoding="utf-8") != nou:
+            fitxer.write_text(nou, encoding="utf-8")
+    print(f"[gen-glossari] {SORTIDA.parent.relative_to(ARREL)}/: {n} termes, {len(pres)} presentacions"
+          + (f", {len(errors)} errors (--comprova)" if errors else ""))
     return 0
 
 

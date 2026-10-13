@@ -74,7 +74,6 @@ CLASSES = [
     ('.gitignore', 'operatiu', set()),
     ('05_diapositives/*', 'operatiu', set()),
     ('22_figs_originals/conservats/*', 'operatiu', {'fora_orfes'}),
-    ('24_specs/glossari.toml', 'operatiu', set()),
     ('24_specs/diccionari.txt', 'operatiu', set()),
     ('24_specs/gramatica.toml', 'operatiu', set()),
     ('25_scripts/comprova.py', 'eina', set()),
@@ -87,13 +86,15 @@ CLASSES = [
     ('25_scripts/inventari_figures.py', 'eina', set()),
     ('25_scripts/comprova_vores.py', 'eina', set()),
     ('25_scripts/verifica_*.py', 'eina', set()),
-    ('25_scripts/gen_glossari.py', 'eina', set()),
+    ('25_scripts/gen_glossari.py', 'contingut', set()),   # genera el glossari del llibre (auto_termes/)
+    ('25_scripts/taula_md.py', 'contingut', set()),
     ('25_scripts/gen_T4_sumador.py', 'eina', set()),
     ('25_scripts/gen_T7.py', 'eina', set()),
     ('25_scripts/gen_T8.py', 'eina', set()),
     ('13_contrib.qmd', 'contingut', {'documenta', 'html'}),
     ('10_continguts.qmd', 'contingut', {'html'}),
     ('*.qmd', 'contingut', set()),
+    ('24_specs/termes.toml', 'contingut', set()),
     ('LICENSE.md', 'contingut', set()),
     ('15_bibliografia.bib', 'contingut', set()),
     ('_variables.yml', 'contingut', set()),
@@ -259,10 +260,14 @@ def retalla(text, n=40):
 # Les comprovacions. Cadascuna rep el context i retorna una llista de
 # (gravetat, missatge); una llista buida vol dir neta.
 # ---------------------------------------------------------------------------
+def c_lexic(ctx):
+    rc, sortida = executa(PY, '25_scripts/gen_glossari.py', '--comprova')
+    return [(ERROR, f'el text no coincideix amb 24_specs/termes.toml:\n{retalla(sortida, 15)}')] if rc else []
+
+
 def c_registres(ctx):
     r = []
-    for ordre, nom in [((PY, '25_scripts/gen_glossari.py', '--comprova'), 'el glossari de termes (make glossari)'),
-                       ((PY, '25_scripts/gen_T4_sumador.py', '--comprova'), 'les figures de gen_T4_sumador.py'),
+    for ordre, nom in [((PY, '25_scripts/gen_T4_sumador.py', '--comprova'), 'les figures de gen_T4_sumador.py'),
                        ((PY, '25_scripts/gen_T7.py', '--comprova'), 'les figures de gen_T7.py'),
                        ((PY, '25_scripts/gen_T8.py', '--comprova'), 'les figures de gen_T8.py')]:
         rc, sortida = executa(*ordre)
@@ -584,9 +589,12 @@ SEMPRE = lambda ctx: True                                      # noqa: E731
 QMD = lambda ctx: ctx.tot or bool(ctx.canvis.qmd())            # noqa: E731
 
 COMPROVACIONS = [
-    Comprovacio('registres', 'Registres', 'Els registres versionats són al dia: el glossari de termes, els SVG de model (a) '
+    Comprovacio('registres', 'Registres', 'Els registres versionats són al dia: els SVG de model (a) '
                 'i les dues taules d\'aquesta secció (els arregla `make registres`); el recompte de la capçalera del '
                 '`TODO.md` i l\'arbre del `README.md` (a mà)', SEMPRE, 'Sempre', 'Atura', c_registres),
+    Comprovacio('lexic', 'Lèxic', 'Les presentacions «**terme català** (*english*)» del text coincideixen amb '
+                '`24_specs/termes.toml`: cap terme sense entrada, cap forma catalana diferent, cap terme del fitxer '
+                'sense presentació (`gen_glossari.py --comprova`; D-115)', SEMPRE, 'Sempre', 'Atura', c_lexic),
     Comprovacio('decisions', 'Decisions citades', 'Cada `D-n` citat en un fitxer versionat existeix al registre de decisions',
                 SEMPRE, 'Sempre', 'Atura', c_decisions),
     Comprovacio('exr_sol', 'Enunciats i solucions', 'Cada `#sol-` té el seu `#exr-` amb el mateix slug (D-22)',
@@ -722,7 +730,7 @@ def escriu_taules():
 # ---------------------------------------------------------------------------
 CASOS = [
     ('TODO.md', 'operatiu'), ('24_specs/registre_de_decisions.md', 'operatiu'), ('.claude/hooks/x.sh', 'operatiu'),
-    ('22_figs_originals/conservats/A7_x.svg', 'operatiu'), ('24_specs/glossari.toml', 'operatiu'),
+    ('22_figs_originals/conservats/A7_x.svg', 'operatiu'), ('24_specs/termes.toml', 'contingut'),
     ('25_scripts/orfes.py', 'eina'), ('25_scripts/gen_T7.py', 'eina'), ('25_scripts/verifica_taules.py', 'eina'),
     ('01_apunts/A3.qmd', 'contingut'), ('21_riscv/RV32I_x.qmd', 'contingut'), ('LICENSE.md', 'contingut'),
     ('13_contrib.qmd', 'contingut'),
