@@ -43,7 +43,7 @@ i el contingut dels blocs de codi, dels comentaris HTML i de la capçalera YAML.
 
 12_sigles_simbols.qmd n'inclou les taules amb un {{< include auto_termes/… >}} per taula (la de
 sigles a §Sigles, i les dues del glossari a §Termes), i la taula de formes, 13_contrib.qmd §Formes
-que no s'han de fer servir. La taula de sigles és la de [sigles] de termes.toml, cel·la a cel·la,
+que no s'han de fer servir. La taula de sigles es fa amb els camps de [sigles] de termes.toml,
 per ordre alfabètic sense els signes (E/S com «es»; D-118). Com auto_riscv/
 (D-3), els fitxers han d'existir abans d'invocar `quarto`, perquè Quarto resol els include
 abans del pre-render: `make render` i `make taules` els generen. No es versionen (D-104).
@@ -51,9 +51,9 @@ abans del pre-render: `make render` i `make taules` els generen. No es versionen
 El diccionari de termes (--diccionari) són els mots de termes.toml, perquè els
 correctors (hunspell a ortografia.py, i cSpell a VS Code) acceptin els termes del
 llibre: el terme anglès i la forma catalana, les formes de `presentacio` i les de
-`mots` (les flexions que el corrector ha d'acceptar; cap plural no es calcula), i els dels
-significats de les sigles (D-118). Es versiona, perquè VS Code el llegeix sense cap render, i
-no depèn de hunspell, perquè surti igual a tot arreu (D-115).
+`mots` (les flexions que el corrector ha d'acceptar; cap plural no es calcula), i els de
+les sigles i les seves expansions (D-118). Es versiona, perquè VS Code el llegeix sense cap
+render, i no depèn de hunspell, perquè surti igual a tot arreu (D-115).
 """
 
 import re
@@ -148,20 +148,24 @@ def presentacions():
                 if "`" in catala:                # nom de codi (`ecall`, `fcsr`): no és una traducció
                     continue
                 linia = text[:m.start()].count("\n") + 1
-                for angles in cursives_del_parentesi(text, m.end()):
-                    yield angles, catala, f, linia, tema(capitol)
+                cursives, sigla = cursives_del_parentesi(text, m.end())
+                for angles in cursives:
+                    yield angles, catala, f, linia, tema(capitol), sigla
 
 
 def cursives_del_parentesi(text, inici):
-    """Els termes en cursiva del cap del parèntesi que s'obre just abans d'`inici`.
+    """(termes, sigla): els termes en cursiva del cap del parèntesi que s'obre just abans
+    d'`inici`, i la sigla que els segueix, si n'hi ha, que és el format de l'expansió d'una sigla
+    («**bloc d'activació** (*stack frame*, BA)», D-118).
 
     El parèntesi es parteix en segments (per «,», «;» i «:»). El cap són els segments del
     principi que només tenen un sinònim o una sigla en negreta («o **de col·lisió**», «**BA**»),
     codi o una fórmula, i el primer segment que comença amb una o més cursives unides per «o», «i»
     o «/» («***write-back*** o ***copy-back***»), que en dona els termes. Una cursiva més
-    endavant («(en **C**, categoria *static*)», «(format *tiling* / original)») no presenta res,
-    ni una cursiva seguida d'una sigla, que n'és l'expansió («(*fused multiply-add*, FMA)»), també
-    la d'una sigla que no és a §Sigles perquè només surt en un aprofundiment."""
+    endavant («(en **C**, categoria *static*)», «(format *tiling* / original)») no presenta res.
+    Una cursiva seguida d'una sigla és l'expansió de la sigla («(*fused multiply-add*, FMA)»),
+    també la d'una sigla que no és a [sigles] perquè només surt en un aprofundiment: recull() la
+    descarta, tret que sigui l'expansió anglesa de la sigla a [sigles] i un terme de [termes]."""
     fondaria, i = 1, inici
     while i < len(text) and text[i] != "\n":
         fondaria += {"(": 1, ")": -1}.get(text[i], 0)
@@ -169,18 +173,20 @@ def cursives_del_parentesi(text, inici):
             break
         i += 1
     if fondaria:
-        return []
+        return [], None
     contingut = re.sub(r"`[^`\n]*`|\$[^$\n]*\$", "\x00", text[inici:i])
     segments = [s.strip() for s in re.split(r"[,;:]", contingut)]
     for k, segment in enumerate(segments):
         if re.fullmatch(r"(?:o\s+)?(?:\*\*[^*]+\*\*|\x00)", segment):
             continue
         cap = re.match(rf"{UNA_CURSIVA}(?:\s+(?:o|i|/)\s+{UNA_CURSIVA})*", segment)
+        if not cap:
+            return [], None
         seguent = segments[k + 1] if k + 1 < len(segments) else ""
-        if not cap or re.fullmatch(r"\*\*[A-Z0-9]{2,}\*\*|[A-Z0-9]{2,}", seguent):
-            return []
-        return [m.group(2).strip() for m in CURSIVA.finditer(cap.group(0))]
-    return []
+        sigla = re.fullmatch(r"\*\*([A-Z0-9]{2,})\*\*|([A-Z0-9]{2,})", seguent)
+        return ([m.group(2).strip() for m in CURSIVA.finditer(cap.group(0))],
+                sigla and (sigla.group(1) or sigla.group(2)))
+    return [], None
 
 
 def normalitza(s):
@@ -188,14 +194,25 @@ def normalitza(s):
 
 
 def expansions_de_sigles(d):
-    """Els significats de [sigles] de termes.toml, normalitzats."""
-    return {normalitza(e["significat"]) for e in d.get("sigles", {}).values()}
+    """Les expansions angleses de [sigles] de termes.toml, normalitzades."""
+    return {normalitza(e["en"]) for e in d.get("sigles", {}).values() if e.get("en")}
 
 
 def recull(d):
-    """[(anglès, català, fitxer, línia, tema)] de les presentacions del text, en l'ordre del llibre."""
-    sigles = expansions_de_sigles(d)
-    return [p for p in presentacions() if normalitza(p[0]) not in sigles]
+    """[(anglès, català, fitxer, línia, tema)] de les presentacions del text, en l'ordre del llibre.
+    L'expansió d'una sigla no hi entra, tret que l'anglès sigui l'`en` de la sigla a [sigles] i un
+    terme de [termes]: «**bloc d'activació** (*stack frame*, BA)» presenta *stack frame*."""
+    sigles, expansions, termes = d.get("sigles", {}), expansions_de_sigles(d), index_termes(d)
+    res = []
+    for angles, catala, f, linia, t, sigla in presentacions():
+        terme = clau_angles(angles) in termes
+        if sigla:                   # «(*english*, SIGLA)»: l'expansió de la sigla
+            if not terme or normalitza(sigles.get(sigla, {}).get("en", "")) != normalitza(angles):
+                continue
+        elif normalitza(angles) in expansions and not terme:
+            continue
+        res.append((angles, catala, f, linia, t))
+    return res
 
 
 def dades():
@@ -354,8 +371,17 @@ def clau_sigla(sigla):
     return re.sub(r"[^0-9a-z]", "", sigla.lower()), sigla
 
 
+def significat(e):
+    """La cel·la «Significat» d'una sigla, en el format de l'expansió sense la sigla (D-118):
+    «ca (*en*)», «*en*» o «ca»."""
+    if e.get("ca") and e.get("en"):
+        return f"{majuscula(e['ca'])} (*{e['en']}*)"
+    return f"*{majuscula(e['en'])}*" if e.get("en") else majuscula(e["ca"])
+
+
 def taula_sigles(sigles):
-    files = [[f"**{s}**", sigles[s]["significat"], sigles[s].get("obs", "")] for s in sorted(sigles, key=clau_sigla)]
+    files = [[f"**{s}**", significat(sigles[s]), majuscula(sigles[s].get("obs", ""))]
+             for s in sorted(sigles, key=clau_sigla)]
     return taula([("Sigla", ":---"), ("Significat", ":---"), ("Observacions", ":---")], files,
                  'Sigles i acrònims. {#tbl-sigles tbl-colwidths="[13,50,37]" .striped}')
 
@@ -377,7 +403,7 @@ def sortides(d, temes):
 
 
 def mots_diccionari(d):
-    """Els mots dels termes i dels significats de les sigles de termes.toml, sense els de menys de
+    """Els mots dels termes i de les expansions de les sigles de termes.toml, sense els de menys de
     tres lletres ni els que són tot majúscules (les sigles). No s'hi
     afegeix cap plural calculat: un plural que no existeix («aliàsings») amagaria un error; les
     flexions que el corrector ha d'acceptar són a `mots`."""
@@ -386,7 +412,7 @@ def mots_diccionari(d):
         fonts += [clau, e["ca"], *e.get("presentacio", []), *e.get("mots", [])]
     fonts += [p.strip() for clau in d.get("en_angles", {}) for p in clau.split(",")]
     for sigla, e in d.get("sigles", {}).items():
-        fonts += [sigla, re.sub(r"\$[^$]*\$", " ", e["significat"])]
+        fonts += [sigla] + [re.sub(r"\$[^$]*\$", " ", e.get(camp, "")) for camp in ("ca", "en")]
     mots = {m for f in fonts for m in MOT.findall(f) if len(m) >= 3 and not m.isupper()}
     return sorted(mots, key=lambda m: (m.lower(), m))
 
