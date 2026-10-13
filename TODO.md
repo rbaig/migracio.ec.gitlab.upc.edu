@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**9 entrades vives** (recompte del 2026-10-13, en passar a §Tasques per tema → T8 l'últim punt obert de «Fase 8a: el que queda de la revisió d'A1–A8», que surt de §Tasques transversals; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**10 entrades vives** (recompte del 2026-10-13, en afegir a §Tasques transversals «Registres que es mantenen a mà»; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 2 · `§Tasques per tema` 1 · `§Tasques globals` 2 (suma 9, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 2 (suma 10, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -83,8 +83,15 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   - ✅ **B1** (el primer commit del conjunt): `termes.toml` mana, el glossari se'n genera a `auto_termes/`, i la comprovació del lèxic atura una presentació que no hi coincideixi.
   - ✅ **B2**: les formes que no s'han de fer servir, de la taula de `13_contrib.qmd` a `termes.toml`; `lint_prosa.py` les hi llegeix, i la taula de la guia se'n genera.
   - ✅ **B3**: la part del diccionari d'ortografia que repeteix termes, generada de `termes.toml` (un segon diccionari, versionat, per a hunspell i VS Code), i les excepcions de LanguageTool dels termes que es mantenen en anglès, derivades del fitxer.
-  - **Fase 2**, després de B3: les decisions de l'anàlisi del 2026-10-12, aplicades sobre el sistema nou, i el que el sistema nou fa visible: les presentacions que el detector no reconeix (*stack frame*, *write-back*, *conflict*, *coherence*, *valid bit*, *return address*…, i `21_riscv/`, que no llegeix), les decisions de terme de `13_contrib.qmd §Decisions per tema` sense presentació (*significand*, *nibble*, «càrrega capacitiva»), la forma curta «la cau» (només a `gramatica.toml`) i el motiu de *caller, callee*, que remet a «la taula de dalt», on ja no són.
+  - **Fase 2**, després de B3: les decisions de l'anàlisi del 2026-10-12, aplicades sobre el sistema nou, i el que el sistema nou fa visible: les presentacions que el detector no reconeix (*stack frame*, *write-back*, *conflict*, *coherence*, *valid bit*…) i els termes que no són al glossari perquè el detector no llegeix `21_riscv/` ni `11_riscv.qmd`, o perquè el terme català no hi va en negreta: els noms dels registres de la taula de registres del compendi (`21_riscv/RV32I_registres_proposit_general.qmd`), *return address*, *stack pointer*, *global pointer*, *thread pointer* i *frame pointer* (pregunta de l'usuari, 2026-10-13: «a `stack pointer` hi ha com a mínim alguns termes que ara no són al compendi. s'hi afegiran a la fase 2?»), amb una forma per decidir, perquè A3 presenta `sp` com a «registre de pila» (***stack pointer***) i el compendi, com a «**Punter de pila**»; les decisions de terme de `13_contrib.qmd §Decisions per tema` sense presentació (*significand*, *nibble*, «càrrega capacitiva»), la forma curta «la cau» (només a `gramatica.toml`) i el motiu de *caller, callee*, que remet a «la taula de dalt», on ja no són.
   - **Després de la fase 2**: les sigles a `termes.toml`, amb la comprovació de l'expansió a la primera aparició (D-89).
+
+- **Registres que es mantenen a mà: quins es poden generar d'una sola font** (petició de l'usuari, 2026-10-13, literal: «Endavant», a la proposta de Claude Code d'anotar-ho; la pregunta que la va originar: «El treball que facis en aquesta sessió es podrà reaprofitar per a la resta de taules de "12_sigles_simbols.qmd". I per altres inventaris o registres?»). El patró de [D-115](24_specs/registre_de_decisions.md#d-115) (un fitxer de dades, una taula generada en renderitzar amb `25_scripts/taula_md.py`, i una comprovació contra el que descriu) es pot aplicar als registres del punt 3 de `13_contrib.qmd §Registres`, que es mantenen a mà i que `comprova.py` només vigila: l'arbre del `README.md`, el recompte d'aquesta capçalera, i les taules de la guia de les peces del render, del directori `.claude/` i dels sufixos d'origen. També hi ha llistes que repeteixen dades d'un altre fitxer, com la taula dels generadors del pre-render de `24_specs/svg.md §17`, que repeteix el `pre-render` de `_quarto.yml`; no s'han inventariat. Les taules Símbols i Notació de `12_sigles_simbols.qmd` no hi entren: tenen una sola font, i passar-les a un fitxer de dades només en canviaria el format. Primer, l'inventari, amb la proposta per a cadascun (generar-lo, comprovar-lo o deixar-lo com és); sense tocar A1–A8.
+
+  ```bash
+  sed -n '/^#### Registres/,/^### Verificació de l/p' 13_contrib.qmd    # els tres punts
+  grep -n 'gen_' _quarto.yml 24_specs/svg.md                              # el pre-render i la taula de svg.md §17
+  ```
 
 ---
 
