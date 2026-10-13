@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**12 entrades vives** (recompte del 2026-10-12, en retirar de §Tasques per tema → T5 «Figura font única per a les rectes de T5, amb retalls», descartada, i de §Tasques globals → Eines «Valorar si les taules de `21_riscv/` haurien de passar a `.json` o `.toml`», valorada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**11 entrades vives** (recompte del 2026-10-13, en retirar de §Tasques per tema → T3 «Retoc pendent d'`A3_deps_exemple.svg`», fet per l'usuari; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 2 · `§Tasques globals` 3 (suma 12, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 3 (suma 11, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -96,14 +96,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ```bash
   git grep -n -E "A partir d'aquí|punter de tipus enter|punter nul \(" -- 01_apunts/A2.qmd
-  ```
-
-### T3
-
-- **Retoc pendent d'`A3_deps_exemple.svg`** (des del 2026-10-04; retallada el 2026-10-12: el text d'abans, amb els cinc originals de T3, a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Dels cinc originals de T3 amb retocs pendents, l'usuari en va esborrar quatre el 2026-10-10, perquè ja no calien (`e79ff2c`, «esporgada de figures conservades innecessàries»). Queda el cinquè, que és la subfigura (a) de `#fig-deps-exemple` d'A3: l'error surt al llibre fins que s'esmeni. Posa fletxes a `a` i `b`, que no travessen cap crida, i hi diu `e = res_g + res_f`, quan el text diu `res_f + res_g`. 🗓️ **Opcions per a la reunió** (l'usuari, 2026-10-12, literal: «Només anota aquestes opcions a `TODO.md`. Vull consensuar les decisions a la reunió.»): (a) l'esmena l'editor, que també fa servir la figura a les diapositives; (b) l'esmena Claude Code (recomanació de Claude Code: és l'única de les cinc que el llibre consumeix).
-
-  ```bash
-  ls 22_figs_originals/A3_deps_exemple.svg; ls 22_figs_originals/conservats/ | grep -c "^A3_"   # 0 conservats de T3 (2026-10-12)
   ```
 
 ---
