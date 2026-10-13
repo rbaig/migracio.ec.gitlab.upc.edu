@@ -40,6 +40,10 @@ registres:              ## regenera els registres versionats: diccionari de term
 	python3 25_scripts/gen_T7.py
 	python3 25_scripts/gen_T8.py
 	python3 25_scripts/comprova.py --taula
+	python3 25_scripts/autoproves.py --taula
+
+autoproves:             ## les autoproves de les comprovacions: cada eina, sobre llibres mínims amb errors coneguts (uns segons)
+	@python3 25_scripts/autoproves.py
 
 gramatica:              ## LanguageTool sobre la prosa del corpus, sense el soroll (24_specs/gramatica.toml); el baixa la primera vegada
 	@python3 25_scripts/gramatica.py --tot || [ $$? -eq 1 ]
@@ -61,4 +65,4 @@ clean:                  ## esborra els artefactes del render, sense tocar cap fo
 	rm -rf _book *_files
 	rm -f $(filter-out $(shell git ls-files '*.html'),$(wildcard *.html)) *.log Estructura-de-computadors.tex
 
-.PHONY: help render render-complet comprova comprova-branca comprova-tot gramatica registres glossari inventari taules instal·la-hooks clean
+.PHONY: help render render-complet comprova comprova-branca comprova-tot autoproves gramatica registres glossari inventari taules instal·la-hooks clean

@@ -960,6 +960,24 @@ Pregunta de l'usuari (2026-10-10): si un corrector local reduiria la dependènci
 
 **Seguiment del 2026-10-10, a la nit: una sola neteja de la prosa, i el revisor lingüístic parteix de les eines** (fase 11, a petició de la fase 12; recomanacions de Claude Code acceptades per l'usuari). La neteja del que no és prosa (imatges, citacions, notes al peu, referències, URL, enllaços i *spans*) era a tres llocs, que no coincidien: `lint_prosa.py`, `ortografia.py` i `gramatica.py`. Ara és una de sola, a `lint_prosa.prose_lines`, amb els patrons de `gramatica.py`, que eren els més complets; les altres dues hi afegeixen només el que és seu. Sobre el corpus sencer, les tres eines en donen la mateixa sortida que abans. El subagent `revisor-linguistic` passa `ortografia.py` i `gramatica.py` sobre el mateix abast que revisa, en classifica les troballes (error o soroll, amb l'entrada per al diccionari o per a `gramatica.toml`) i dedica la seva lectura al que les eines no veuen; i la guia diu que una persona comença la revisió de la mateixa manera. Justificació de l'usuari, literal: «La justificació bàsica és què no puc forçar als revisors ni als contribuidors futurs a utilitzar-te. És un argument important.»
 
+### D-120
+
+**Autoproves de les comprovacions: cada eina, sobre llibres mínims amb errors coneguts** · `13_contrib.qmd §Comprovacions per nivells` (§Autoproves de les comprovacions); `25_scripts/autoproves.py`, `25_scripts/comprova.py`, `Makefile` · 2026-10-14
+
+Pregunta de l'usuari (2026-10-14), en acabar les sigles ([D-118](#d-118)), literal: «Confirma que la feina que has fet inclou la generació dels scripts necessaris per a poder fer els testos off-line d'ara endvant.» Les comprovacions ja eren versionades i es podien passar fora de línia, però les proves negatives de `sigles.py` s'havien fet a mà, i cap eina no tenia una prova que en vigilés el comportament (només la classificació de `comprova.py`, amb `autotest()`). A la proposta de Claude Code (una autoprova de `sigles.py`), literal: «Sí, endavant. M'interessa que hi hagi un sistema bastant complet de testos automàtics, per exemple, pels revisors externs.» i «Documenta bé els testos que introdueixis i com es disparen.»
+
+- **Un executor comú**, `25_scripts/autoproves.py`, amb una bateria per comprovació, i no una opció a cada eina. Hi ha vuit bateries i 66 casos (`python3 25_scripts/autoproves.py --llista`): les sigles, el lèxic, la prosa, el format del codi, els callouts, el calendari del laboratori, les decisions citades amb els enunciats i les solucions, i la classificació.
+- **Els casos de cada bateria**: un text correcte, en què l'eina no ha de trobar res, i un text per cada error que ha d'aturar, en què ha de trobar aquell error.
+- **Com proven**: cada cas munta un llibre mínim en un directori temporal i hi executa l'eina real, com a procés a part (una còpia de l'script al directori) o important-ne les funcions amb l'arrel apuntant-hi. No toquen el llibre, i el resultat no depèn del contingut, que pot canviar. Només demanen Python i git, perquè els revisors les puguin passar sense res més.
+- **Quan es disparen**:
+    - La comprovació «Autoproves» de `comprova.py`, que atura el commit, en tocar una eina provada o `autoproves.py`.
+    - `make comprova-tot`.
+    - `make autoproves`.
+    - La CI de les branques.
+- **La documentació**: la taula de les bateries i els casos de la guia la genera `autoproves.py --taula` (`make registres`), i la comprovació «Registres» la vigila, com les taules de `comprova.py`. Així la documentació no es pot quedar enrere dels casos.
+- **Verificat amb mutacions**: desactivar la regla de les variants de `sigles.py` i la lectura de les cel·les de `lint_prosa.py` fa fallar cinc casos; amb les eines restaurades, passen tots. En calibrar-los, dos casos estaven mal plantejats, i no eren errors de les eines. Un era un plural irregular, «memòries cau», que l'eina no fa i que, com diu la guia, demana `presentacio`; s'hi queda com a cas. L'altre era un bloc de codi amb les tanques a mitja línia.
+- **Fora, de moment**: les comprovacions que fan servir eines externes (hunspell, LanguageTool, fontTools i les fonts del PDF, RARS) i les de les figures. És una entrada del `TODO.md`.
+
 ## Operació de les sessions
 
 Els perquès de les regles de `CLAUDE.md`, que fins al 2026-10-07 hi eren al costat.

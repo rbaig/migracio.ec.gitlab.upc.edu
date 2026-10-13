@@ -104,6 +104,7 @@ cd ~/git/EC
 | `make render` | Genera les taules fusionades (`auto_riscv/`) i les taules del lèxic (`auto_termes/`: el glossari de termes i les sigles), i renderitza **només l'HTML** (1–3 min): el bucle diari |
 | `make comprova` | Les comprovacions del nivell dels canvis, abans de cada commit (de segons a 8 min) |
 | `make comprova-tot` | Totes les comprovacions, amb l'HTML, el PDF i RARS (5–10 min): abans d'obrir una MR o de publicar |
+| `make autoproves` | Les autoproves de les comprovacions: cada eina, sobre llibres mínims amb errors coneguts, només amb Python i git (uns segons) |
 | `make gramatica` | LanguageTool sobre la prosa del corpus, sense el que al llibre és soroll (`24_specs/gramatica.toml`); també és a `make comprova-tot` |
 | `make help` | Totes les ordres de `make`, amb el que fa cadascuna |
 

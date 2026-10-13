@@ -81,6 +81,7 @@ CLASSES = [
     ('25_scripts/escombrada.sh', 'eina', set()),
     ('25_scripts/lint_prosa.py', 'eina', set()),
     ('25_scripts/sigles.py', 'eina', set()),
+    ('25_scripts/autoproves.py', 'eina', set()),
     ('25_scripts/ortografia.py', 'eina', set()),
     ('25_scripts/gramatica.py', 'eina', set()),
     ('25_scripts/eines_externes.py', 'eina', set()),
@@ -267,6 +268,15 @@ def c_lexic(ctx):
     return [(ERROR, f'el text no coincideix amb 24_specs/termes.toml:\n{retalla(sortida, 15)}')] if rc else []
 
 
+PROVADES = {f'25_scripts/{f}' for f in ('autoproves.py', 'sigles.py', 'gen_glossari.py', 'taula_md.py', 'lint_prosa.py',
+                                         'verifica_format_codi.py', 'verifica_callouts.py', 'verifica_calendari.py', 'comprova.py')}
+
+
+def c_autoproves(ctx):
+    rc, sortida = executa(PY, '25_scripts/autoproves.py')
+    return [(ERROR, f'una comprovació no fa el que ha de fer:\n{retalla(sortida, 20)}')] if rc else []
+
+
 def c_sigles(ctx):
     rc, sortida = executa(PY, '25_scripts/sigles.py', '--comprova')
     return [(ERROR, f'les sigles del text no coincideixen amb [sigles] de 24_specs/termes.toml:\n{retalla(sortida, 15)}')] if rc else []
@@ -277,7 +287,8 @@ def c_registres(ctx):
     for ordre, nom in [((PY, '25_scripts/gen_glossari.py', '--diccionari', '--comprova'), '24_specs/diccionari_termes.txt'),
                        ((PY, '25_scripts/gen_T4_sumador.py', '--comprova'), 'les figures de gen_T4_sumador.py'),
                        ((PY, '25_scripts/gen_T7.py', '--comprova'), 'les figures de gen_T7.py'),
-                       ((PY, '25_scripts/gen_T8.py', '--comprova'), 'les figures de gen_T8.py')]:
+                       ((PY, '25_scripts/gen_T8.py', '--comprova'), 'les figures de gen_T8.py'),
+                       ((PY, '25_scripts/autoproves.py', '--taula', '--comprova'), 'la taula de les autoproves de 13_contrib.qmd')]:
         rc, sortida = executa(*ordre)
         if rc:
             r.append((ERROR, f'{nom} no és al dia (make registres):\n{retalla(sortida, 15)}'))
@@ -622,8 +633,12 @@ TERMES = '24_specs/termes.toml'
 
 COMPROVACIONS = [
     Comprovacio('registres', 'Registres', 'Els registres versionats són al dia: el diccionari de termes, els SVG de model (a) '
-                'i les dues taules d\'aquesta secció (els arregla `make registres`); el recompte de la capçalera del '
+                'i les taules generades d\'aquesta secció (els arregla `make registres`); el recompte de la capçalera del '
                 '`TODO.md` i l\'arbre del `README.md` (a mà)', SEMPRE, 'Sempre', 'Atura', c_registres),
+    Comprovacio('autoproves', 'Autoproves', 'Les comprovacions mateixes: cada eina provada, sobre llibres mínims amb errors '
+                'coneguts, troba els que ha de trobar i cap més (`autoproves.py`; §Autoproves de les comprovacions, D-120)',
+                lambda ctx: ctx.tot or any(f in PROVADES for f in ctx.canvis.fitxers),
+                'En tocar una eina provada o `autoproves.py`', 'Atura', c_autoproves),
     Comprovacio('lexic', 'Lèxic', 'Les presentacions «**terme català** (*english*)» del text coincideixen amb '
                 '`24_specs/termes.toml`: cap terme sense entrada, cap forma catalana diferent, cap terme del fitxer '
                 'sense presentació (`gen_glossari.py --comprova`; D-115)', SEMPRE, 'Sempre', 'Atura', c_lexic),

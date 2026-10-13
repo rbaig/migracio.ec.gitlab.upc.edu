@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**13 entrades vives** (recompte del 2026-10-14, en afegir §Llarg termini, amb «Les formes catalanes de les expansions de sigles que avui només són en anglès»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**14 entrades vives** (recompte del 2026-10-14, en afegir a §Tasques transversals «Autoproves de les comprovacions que fan servir eines externes»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 4 · `§Llarg termini` 1 (suma 13, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 1 · `§Tasques globals` 4 · `§Llarg termini` 1 (suma 14, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -88,6 +88,12 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 
   ```bash
   git grep -o -I -E -i -e '\b(exemples?|figures?|taules?|callouts?) (següents?|anteriors?)\b' -- '*.qmd' ':!TODO.md' ':!24_specs/arxiu_todo.md' ':!24_specs/registre_de_decisions.md' ':!24_specs/revisio_externa.md' ':!24_specs/lexic/' ':!.claude/' ':!13_contrib.qmd' | wc -l   # 7 (0e5431d): A2 2, A3 1, A7 1, A8 1, A9 2
+  ```
+
+- **Autoproves de les comprovacions que fan servir eines externes** (petició de l'usuari, 2026-10-14, literal: «M'interessa que hi hagi un sistema bastant complet de testos automàtics, per exemple, pels revisors externs.»; [D-120](24_specs/registre_de_decisions.md#d-120)). `25_scripts/autoproves.py` prova les comprovacions de Python pur: les sigles, el lèxic, la prosa, el format del codi, els callouts, el calendari, les decisions citades amb els enunciats i les solucions, i la classificació (`13_contrib.qmd §Autoproves de les comprovacions`). Queden les que depenen d'una eina externa o de les figures: l'ortografia (`ortografia.py`, hunspell), la gramàtica (`gramatica.py`, LanguageTool i Java), les taules del PDF (`verifica_taules.py`, fontTools i les fonts del PDF), els programes del laboratori (`verifica_laboratoris.py`, RARS i Java), les figures (`inventari_figures.py`, `comprova_vores.py`), els fitxers orfes (`orfes.py`) i `escombrada.sh`. Proposta de Claude Code: una bateria per eina, que surti com a «omesa» si l'eina externa no hi és, com fan les comprovacions mateixes; la CI del mirall, que les té, les passaria sempre.
+
+  ```bash
+  python3 25_scripts/autoproves.py --llista | grep -c '^[a-z]'   # 8 bateries (2026-10-14)
   ```
 
 ---
