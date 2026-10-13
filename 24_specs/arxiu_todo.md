@@ -759,6 +759,14 @@ Retallada el 2026-10-12, en decidir-ne la resta amb les recomanacions de Claude 
   - **Majúscula després de dos punts a les definicions** (lectura lingüística d'A7 i A8): «**LRU** (…): Reemplaça…», «**Escriptura immediata** (…): S'escriu…». La guia demana minúscula en explicacions breus i majúscula en frases independents; aquestes són frases completes, i s'han deixat. S'han passat a minúscula els casos clarament breus («**Cas d'encert**: el bloc…», «**Accés 1**: escriptura…»).
   - **No aplicat, de les lectures, per ser preferència o canvi de matís**: A3 «El seu valor ha estat generat per **última vegada ABANS** d'una crida» (`#sec-determinacio-registres-segurs`); A6 «On $t_{exe}$ és…» després d'una fórmula (també A6 «On:», que caldria decidir sistemàticament); A8 «A petició del procés P1» (redundant amb la frase anterior) i «el camp PPN no té validesa».
 
+### «Fase 8a: el que queda de la revisió d'A1–A8», tercera retallada (§Tasques transversals)
+
+Retirada el 2026-10-13, a petició de l'usuari (literal: «Si només queda oberta la tasca específica d'A8, elimina la vinyeta principal i promou la secundària a principal i mou-la a `## Tasques per tema`»): només hi quedava obert el punt per al revisor de T8, que passa a ser una entrada de §Tasques per tema → T8. El text d'abans:
+
+- **Fase 8a: el que queda de la revisió d'A1–A8** (registrada el 2026-10-09, en tancar la fase 8a de `CLAUDE.md §Pla de treball`; retallada el 2026-10-12, amb les recomanacions de Claude Code acceptades per l'usuari, «Les teves recomanacions»: la majúscula després de dos punts de les definicions d'A7 i A8 es manté; «on» després d'una fórmula, en minúscula ([D-112](24_specs/registre_de_decisions.md#d-112)); i la resta de matisos de les lectures, sense canvi. El text d'abans, a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). Hi queda el que ha de decidir el revisor de T8:
+
+  - **Per al revisor de T8** (decisió de l'usuari 10): A8 `#sec-mv-vipt`, «És una condició suficient per evitar l'aliàsing en una memòria cau VIPT, no una equivalència amb la PIPT en tots els aspectes» (`9db74b7`). Amb $N_C \cdot B \le T$, una VIPT tria el mateix conjunt i compara la mateixa etiqueta física que una PIPT de la mateixa geometria: fan els mateixos encerts i les mateixes fallades. Si es volia dir «suficient, però no necessària», ho ha de decidir el revisor. És també al missatge d'obertura de la fase 8.
+
 ### «Retocs manuals pendents (Roger) a cinc originals de T3», segona retallada (§Tasques per tema → T3)
 
 Retallada el 2026-10-12: quatre dels cinc originals ja no hi eren (`e79ff2c`), i s'hi anoten les opcions per a la reunió. El text d'abans:
