@@ -34,7 +34,7 @@ java -jar rars1_6.jar h                                      # la llista complet
 
 ⚠️ **Una afirmació sobre el comportament de RARS no es comprova per l'absència
 d'error, sinó per les adreces del bolcat o per l'estat final dels registres.**
-A l'experiment de `.section`, **tres
+A l'experiment de `.section` (D-8 del registre de decisions, amb les ordres per reproduir-lo), **tres
 de les formes provades assemblaven sense queixar-se i no feien el que
 semblava**: una no commutava de segment (es veu només perquè dues dades
 consecutives cauen a `0x10010000` i `0x10010004`, contigües) i dues descartaven

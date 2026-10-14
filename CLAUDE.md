@@ -12,7 +12,7 @@ Abans de qualsevol acció, llegeix:
 
 1. `_quarto.yml` — configuració del projecte i fitxers que componen el llibre (`chapters:`).
 2. `13_contrib.qmd` — les regles del llibre: contingut, llenguatge (terminologia), format (callouts, codi, figures, SVG), laboratori, decisions per tema i eines.
-3. `TODO.md` — tasques pendents i decisions obertes. El seu arxiu, `24_specs/arxiu_todo.md` (les entrades retirades i l'historial), no: s'hi va quan una entrada o el registre hi remeten.
+3. `TODO.md` — tasques pendents i decisions obertes.
 
 Per a tasques que impliquin figures SVG, llegeix també `24_specs/svg.md` (paleta de colors, mapes de fonts i taula de substitució dark) i `24_specs/registres.toml` (definicions dels registres de bits, font de veritat); la skill `figures` en dona l'ordre de la feina. Abans de proposar de canviar una regla, llegeix-ne el perquè al registre de decisions.
 
@@ -23,7 +23,7 @@ Repartiment de responsabilitats entre fitxers:
 - `.claude/skills/` recull els procediments que només fan servir les sessions de Claude Code: `escombrada`, `render`, `rars`, `figures` i `tancar-fase` (`13_contrib.qmd §IA`).
 - `CLAUDE.md` (aquest fitxer) recull **només** l'operació de les sessions de Claude Code. Qualsevol altre aspecte va a `13_contrib.qmd`.
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
-- `TODO.md` només conté contingut transitori. El que ha de quedar buit al final és **el fitxer mateix**: no hi ha de restar cap entrada viva. El que en surt —una entrada que es tanca, o l'historial de les parts ja fetes d'una entrada viva— va **literal** a `24_specs/arxiu_todo.md` ([D-91](24_specs/registre_de_decisions.md#d-91)).
+- `TODO.md` només conté contingut transitori. El que ha de quedar buit al final és **el fitxer mateix**: no hi ha de restar cap entrada viva. Una entrada que es tanca s'esborra, i el commit que la treu en diu el motiu; el text d'abans és a git ([D-122](24_specs/registre_de_decisions.md#d-122)). Abans d'esborrar-la, les declaracions vigents de l'usuari que hi consten passen on siguin vigents (§Flux de treball).
 
 Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `12_sigles_simbols.qmd` (sigles, símbols, notació i termes; les sigles i els termes es generen de `24_specs/termes.toml`, la font única del lèxic, D-115 i D-118).
 
@@ -57,8 +57,7 @@ Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ s�
 | Fase | Què | Estat | Sessió | Model i effort |
 | :---: | :--- | :--- | :--- | :--- |
 | 8 | **Preparar el material per als equips de revisió d'A1–A8** (l'abast i les branques, a §Estat del projecte). La feina d'aquesta fase és el material, no les branques: una nota per als revisors i l'estat de cada fitxer d'A1–A8. Els equips i el calendari els decideix l'usuari; cada equip crea la seva branca, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). T8 ja és en revisió: `!8`, fusionada el 2026-10-06 fins a §8.7 exclosa. **Esborrany del material**: `24_specs/revisio_externa.md` (2026-10-12), punt de l'ordre del dia de la reunió del 2 de novembre (`TODO.md §Decisions obertes`). | Esborrany | — | — |
-| 10 | **Neteja profunda dels fitxers operatius** ([D-122](24_specs/registre_de_decisions.md#d-122); el detall i les decisions de l'usuari, a `TODO.md §Tasques globals → Eines`). S0 feta el 2026-10-14: la branca `operacions`, l'etiqueta `arxiu/pre-neteja-2026-10-14`, D-122 i D-123 i aquest fitxer al dia. 10a feta el 2026-10-14: el registre de decisions, de 217 a 74 kB (115 entrades vigents, la major part escurçades, i 8 retirades en una línia), sense l'§Historial de l'estat del projecte. | En curs | — | — |
-| 10b | L'arxiu del `TODO.md`: triar-ne el que encara és viu, moure-ho on toqui i esborrar-lo; retirar D-91; documentar `24_specs/lexic/` (els scripts i els criteris), que es conserva sencer. | Pendent | Nova | Opus, alt |
+| 10 | **Neteja profunda dels fitxers operatius** ([D-122](24_specs/registre_de_decisions.md#d-122); el detall i les decisions de l'usuari, a `TODO.md §Tasques globals → Eines`). S0 feta el 2026-10-14: la branca `operacions`, l'etiqueta `arxiu/pre-neteja-2026-10-14`, D-122 i D-123 i aquest fitxer al dia. 10a feta el 2026-10-14: el registre de decisions, de 217 a 74 kB (115 entrades vigents, la major part escurçades, i 8 retirades en una línia), sense l'§Historial de l'estat del projecte. 10b feta el 2026-10-14: l'arxiu del `TODO.md`, esborrat, amb el que hi era viu al seu lloc (D-8, D-115, D-124, D-125), D-91 retirada, la comprovació `slugs` i `24_specs/lexic/README.md`. | En curs | — | — |
 | 10c | `TODO.md` (sense el recompte de la capçalera ni la seva comprovació), la skill `tancar-fase` (o retirar-la: `TODO.md`), `escombrada/regles.md`, l'arbre del `README.md` i les regles perquè els fitxers no tornin a créixer. | Pendent | Nova | Opus, mitjà–alt |
 | 10d | `13_contrib.qmd` (la taula de les autoproves, els paràgrafs de les eines, el text transitori), `svg.md`, i la instal·lació i el render, que passen al `README.md`. | Pendent | Nova | Opus, alt |
 

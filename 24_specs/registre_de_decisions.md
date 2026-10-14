@@ -78,7 +78,28 @@ El prefix de sortida `fi-` és la forma majoritària al corpus. Quan hi ha dos b
 
 **`.section` no s'utilitza: RARS 1.6 no admet la forma llarga** · `13_contrib.qmd §T2 i T3` · 2026-09-23, 2026-09-24 · `6fcee2c`, `5514d08`
 
-Verificat executant RARS 1.6 (2026-09-23; les ordres de reproducció són a `24_specs/arxiu_todo.md` §Entrades retirades, «Canvi de criteri `.section` — retirat per l'experiment»). `.section .data` i `.section .text` no assemblen: l'analitzador lèxic consumeix `.data` i `.text` com a directives pròpies, i cap grafia no ho salva. Les formes que assemblen fallen en silenci: `.section` no commuta de segment, i amb un nom reconegut (`.rodata`, `.sdata`) descarta tot el codi que la segueix, sense error ni avís.
+Verificat executant RARS 1.6 (2026-09-23; reproduït el 2026-10-14). La proposta de l'usuari era fer `.section` obligatòria a tots els fragments d'assemblador, i es va aturar en provar-la. `.section .data` i `.section .text` no assemblen: l'analitzador lèxic consumeix `.data` i `.text` com a directives pròpies, i cap grafia no ho salva. Les formes que assemblen fallen en silenci: `.section` no commuta de segment, i amb un nom reconegut (`.rodata`, `.sdata`) descarta tot el codi que la segueix, sense error ni avís. Per això `.section .foo`, que RARS no reconeix, és més segura que les que sí que reconeix.
+
+| Forma | Assembla? | Què fa |
+| :--- | :---: | :--- |
+| `.section .data`, `.section .text` | No | Error: `.section must be followed by a section name` |
+| `.section .rodata`, `.section .sdata` | Sí | No commuta de segment, i el codi que la segueix desapareix |
+| `.section .bss`, `.section data`, `.section .foo` | Avís | `section name "X" is ignored`; l'assemblador es queda al segment on era |
+| `.section .data.x`, `.section .text.trap, "ax"` | Sí | És la forma de l'exemple il·lustratiu d'A9 |
+
+Com es reprodueix, amb el `.jar` de la skill `rars`:
+
+```bash
+printf '.section .data\nx: .word 1\n' > t1.s
+java -jar rars1_6.jar nc t1.s          # .section must be followed by a section name
+printf '.data\na: .word 0xAA\n.section .rodata\nb: .word 0xBB\n.text\n la t0,a\n la t1,b\n li a7,10\n ecall\n' > t2.s
+java -jar rars1_6.jar nc t2.s t0 t1    # t0 = 0x10010000, t1 = 0x10010004: contigües, no ha commutat
+printf '.text\n li t0,0x77\n.section .rodata\n li t1,0x88\n li a7,10\n ecall\n' > t3.s
+java -jar rars1_6.jar nc a t3.s dump .text HexText /dev/stdout   # només 07700293: de quatre instruccions, una
+java -jar rars1_6.jar nc a t3.s dump .data HexText /dev/stdout   # «has not been written to»: no són enlloc
+printf '.section .bss\nx: .word 1\n' > t4.s
+java -jar rars1_6.jar nc a t4.s        # avís, i «.word cannot appear in text segment»: es queda al de text
+```
 
 **On es presenta a teoria** (decisió de l'usuari, 2026-09-24): com a forma de GNU, al cos visible de `#nte-segments-memoria` (A2), on l'alumne aprèn què és una directiva de segment, i no a `#wrn-segments-elf`, que és plegat. **Invariant**: cap `.section` dins d'un bloc plegat d'`01_apunts/`, mesurat per forma (seguint la imbricació dels divs `:::`, cap línia amb `.section` no és dins d'un nivell obert amb `collapse`).
 
@@ -269,6 +290,12 @@ Són fitxers de subrutines que s'enllacen amb el fitxer que porta el programa pr
 
 És un *dirty hack* per evitar que la capçalera de pàgina del PDF quedi fixada a «Lectura prèvia», efecte que sí que es produeix amb el nivell 2.
 
+### D-125
+
+**La sortida del programa, amb `exit2`; no es fa servir `startup.s`** · `13_contrib.qmd §Convencions globals del laboratori` · 2026-07-19 · `3843c5a`
+
+Decisió de l'assignatura, de tots els professors (2026-07-19): el mecanisme `startup.s` (una rutina d'arrencada que crida `main` i, quan torna, fa la sortida) en queda exclòs, i el programa acaba amb `li a7, 93` + `ecall`. La regla ja era a la guia des de `3843c5a`; amb la decisió, A2 en va perdre els quatre blocs comentats, i E9 i S9 van passar a la mateixa sortida. És coherent amb [D-25](#d-25): ningú no crida el programa. El bolcat de RARS d'un programa amb `startup.s` i les dues versions del fitxer (la que presentava A2, i l'original de RARS, amb `__start` i el servei 10) només tenen valor si la decisió es reobre: `git show arxiu/pre-neteja-2026-10-14:24_specs/arxiu_todo.md`, §Dades preservades del bloc eliminat `A2.qmd:744-810`.
+
 ## Llenguatge
 
 ### D-29
@@ -429,6 +456,8 @@ Declaració de l'usuari: com a política general, cada informació ha de tenir u
 - **El glossari i la taula de formes no admeses es generen en renderitzar** (`auto_termes/`) i no es versionen ([D-104](#d-104)). `lint_prosa.py` llegeix les formes de `[no_admeses]`, i, quan canvia `termes.toml`, les busca a tots els `.qmd`.
 - **El diccionari de termes** es genera de `termes.toml` i es versiona, perquè VS Code el llegeix sense render; cap plural no es calcula, perquè els calculats hi feien entrar formes que no existeixen.
 - **El detector de presentacions** llegeix els fragments de `21_riscv/` on els inclou el capítol, i `[no_presentacions]` recull, amb el motiu, les glosses que semblen presentacions i no ho són.
+
+Alternativa descartada: una columna castellana al glossari, amb el Termcat com a referència. L'usuari la va retirar el 2026-10-09, com a decisió ferma, el mateix dia que l'havia acceptada.
 
 ### D-116
 
@@ -697,6 +726,12 @@ L'usuari va estendre la regla de [D-67](#d-67) a totes les figures: dos `<rect>`
 
 Cada color té un paper, i cada paper un sol color. Decisions de l'usuari, a proposta de Claude Code: `#e6f1fb` (contenidor) i `#dee2e6` (graella) s'hi van afegir perquè diverses figures ja els feien servir amb aquest paper (2026-10-06); els colors de fora de la paleta es van migrar, i §13 només conserva les substitucions que algun fitxer fa servir; i tres colors en van sortir perquè repetien un paper amb un to gairebé igual (2026-10-13). Les figures extretes de PDF (§15) no porten `textLength`, que `rsvg-convert` no implementa.
 
+### D-124
+
+**`A1_flux_compilacio`: «Objecte», no «Fitxer objecte»** · `22_figs_originals/A1_flux_compilacio.svg` · 2026-09-23
+
+La Fase C de T1 va proposar que l'etiqueta digués «Fitxer objecte», com el text, i ho va descartar perquè no cabia al requadre. L'usuari va revisar la figura en tancar la revisió interna de T1 i la dona per correcta: l'etiqueta es queda com és.
+
 ## Eines
 
 ### D-58
@@ -808,9 +843,7 @@ Amb altres professors dins de la revisió, qualsevol canvi transversal té un co
 
 ### D-91
 
-**El passat del `TODO.md` va a un arxiu, literal** · `CLAUDE.md §Fitxers de referència obligatòria` i la capçalera del `TODO.md` i de `24_specs/arxiu_todo.md` · 2026-10-09
-
-Petició de l'usuari (2026-10-09): «En algun moment, aviat, caldrà fer pruning dels fitxers operatius, tant de Claude com d'humans (`TODO.md`, `13_contrib.qmd`, etc.)». El `TODO.md` feia 207 kB: 128 kB d'entrades retirades i dades preservades, 14 kB d'historial dels recomptes, i la resta, les entrades vives, amb l'historial de les parts ja fetes. Una sessió nova el llegeix sencer abans de començar. Proposta de Claude Code, acceptada per l'usuari («Endavant»): les entrades retirades, les dades preservades, la mesura dels slugs, l'historial de la capçalera i el text d'abans de sis entrades vives que es retallen van a `24_specs/arxiu_todo.md`, **literals**. Moure-les sense reescriure-les fa que cap declaració de l'usuari no es perdi per construcció ([D-63](#d-63)), i es comprova línia a línia: cada línia que surt del `TODO.md` és a l'arxiu. L'historial dels recomptes no hi va: és el registre de canvis del fitxer mateix (`git log -p TODO.md`), i només hi surten títols d'entrades i xifres. Alternativa descartada: substituir les entrades retirades per un punter al darrer commit que les contenia, que és el que D-63 prohibeix (les tres declaracions del 2026-07-12 es van haver de recuperar amb `git show`). Dues invariants i dues decisions de l'usuari que eren vigents i només constaven en files retirades van passar al registre ([D-8](#d-8), [D-25](#d-25)), i en passar-les es va veure que una de les invariants ja no es complia. L'arxiu s'exclou de les escombrades i de l'avís de `make render-complet` del hook d'abans del commit, com el `TODO.md` i el registre.
+**El passat del `TODO.md` va a un arxiu, literal** · Retirada el 2026-10-14: substituïda per [D-122](#d-122); l'arxiu es va esborrar en fer la fase 10b.
 
 ### D-122
 

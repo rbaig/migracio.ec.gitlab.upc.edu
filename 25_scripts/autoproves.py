@@ -427,7 +427,7 @@ def executa_decisions(dir_):
     c.ARREL = dir_
     try:
         subprocess.run(["git", "init", "-q"], cwd=dir_, check=True)
-        trobat = c.c_decisions(None) + c.c_exr_sol(None)
+        trobat = c.c_decisions(None) + c.c_exr_sol(None) + c.c_slugs(None)
     finally:
         c.ARREL = vella
         os.environ.update(vells)
@@ -435,13 +435,19 @@ def executa_decisions(dir_):
 
 
 BASE_DECISIONS = {"24_specs/registre_de_decisions.md": "# Registre\n\n### D-1\n\nUna decisió.\n",
-                  "A1.qmd": "Segons la regla (D-1).\n", "P1.qmd": "::: {#exr-t1-a}\n:::\n", "S1.qmd": "::: {#sol-t1-a}\n:::\n"}
+                  "A1.qmd": "Segons la regla (D-1).\n", "P1.qmd": "::: {#exr-t1-a}\n:::\n", "S1.qmd": "::: {#sol-t1-a}\n:::\n",
+                  "01_apunts/A1.qmd": "# A1 {#sec-a1}\n\n## Una secció {#sec-una}\n\n:::: {#nte-a .callout-note}\n"
+                                      "## El títol del callout\n\n::: {.resposta}\n:::\n\n### Encara dins del callout\n::::\n\n"
+                                      "```{.s filename=\"RV32I\"}\n## un comentari, no una capçalera\n```\n"}
 CASOS_DECISIONS = [
-    Cas("Cada decisió citada és al registre, i cada solució té el seu enunciat"),
+    Cas("Cada decisió citada és al registre, cada solució té el seu enunciat, i les capçaleres dels apunts, la seva "
+        "etiqueta `{#sec-}` (les dels callouts, també dels encastats, i els comentaris del codi no en porten)"),
     Cas("Una decisió citada que no és al registre", afegeix={"A1.qmd": "I l'altra (D-7).\n"},
         espera=["D-7, citat a A1.qmd"]),
     Cas("Una solució sense el seu enunciat (D-22)", afegeix={"S1.qmd": "::: {#sol-t1-b}\n:::\n"},
         espera=["#sol-t1-b no té el seu #exr-t1-b"]),
+    Cas("Una capçalera dels apunts sense etiqueta `{#sec-}`, després d'un callout amb un altre encastat",
+        afegeix={"01_apunts/A1.qmd": "\n#### Sense etiqueta\n"}, espera=["01_apunts/A1.qmd:18: capçalera sense etiqueta"]),
 ]
 
 
@@ -557,8 +563,8 @@ BATERIES = [
     Bateria("callouts", "`verifica_callouts.py`", "§Imbricacions (D-110)", {}, executa_callouts, CASOS_CALLOUTS),
     Bateria("calendari", "`verifica_calendari.py`", "§Convencions globals del laboratori (D-74)", BASE_CALENDARI,
             executa_calendari, CASOS_CALENDARI),
-    Bateria("decisions", "`comprova.py` (decisions citades, enunciats i solucions)", "Registre de decisions; "
-            "§Problemes i solucions (D-22)", BASE_DECISIONS, executa_decisions, CASOS_DECISIONS),
+    Bateria("decisions", "`comprova.py` (decisions citades, enunciats i solucions, etiquetes `{#sec-}`)", "Registre de decisions; "
+            "§Problemes i solucions (D-22); §Etiquetes `{#sec-}` a les capçaleres", BASE_DECISIONS, executa_decisions, CASOS_DECISIONS),
     Bateria("classificacio", "`comprova.py` (`autotest()`)", "§Comprovacions per nivells (D-103)", {},
             executa_classificacio, [Cas("Els fitxers d'exemple, a la classe i al nivell que els toca, i les taules de la "
                                         "guia, generades")]),

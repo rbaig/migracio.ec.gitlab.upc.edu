@@ -57,7 +57,7 @@ Un fitxer o directori de l'arrel per línia. `make comprova` comprova que la lli
 ├── 21_riscv/                   # Fragments de taula del compendi RISC-V i dels callouts
 ├── 22_figs_originals/          # Figures natives (SVG); `conservats/`, les que el llibre ja no consumeix
 ├── 23_figs_externes/           # Figures d'una font externa
-├── 24_specs/                   # Especificacions: figures (`svg.md` i els `.toml`), registre de decisions, arxiu del TODO, lèxic (`termes.toml`), diccionaris, gramàtica
+├── 24_specs/                   # Especificacions: figures (`svg.md` i els `.toml`), registre de decisions, lèxic (`termes.toml`), diccionaris, gramàtica
 ├── 25_scripts/                 # Generadors del pre-render, filtres Lua i eines de comprovació
 ├── _book/                      # Generat · Quarto: directori de sortida
 ├── auto_figs/                  # Generat · Figures per script (el pre-render l'esborra i el refà)
