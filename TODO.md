@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**15 entrades vives** (recompte del 2026-10-14, en afegir a §Tasques globals → Eines «Workflows de GitHub: validar-ne el YAML a `comprova.py`»; abans, 14, en afegir a §Tasques transversals «Autoproves de les comprovacions que fan servir eines externes»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**14 entrades vives** (recompte del 2026-10-14, en retirar de §Tasques transversals «Remissions `@lst-` en lloc de «el codi següent»», executada; abans, 15, en afegir a §Tasques globals → Eines «Workflows de GitHub: validar-ne el YAML a `comprova.py`»; abans, 14, en afegir a §Tasques transversals «Autoproves de les comprovacions que fan servir eines externes»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 1 · `§Tasques globals` 5 · `§Llarg termini` 1 (suma 15, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 5 · `§Llarg termini` 1 (suma 14, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -69,13 +69,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 ---
 
 ## Tasques transversals
-
-- **Remissions `@lst-` en lloc de «el codi següent»** (decisió de l'usuari, 2026-10-09: «Decisió, remissions»; la investigació del render i les decisions del 2026-10-13, a [D-117](24_specs/registre_de_decisions.md#d-117); el text d'abans, a l'arxiu, `24_specs/arxiu_todo.md` §Historial retallat de les entrades vives). ✅ **Bloc 1, la regla i el render**: `13_contrib.qmd §Referències creuades`, `preamble.tex` i `25_scripts/llistats.lua`; només es numeren els llistats `#lst-`, en forma de div, als dos formats. **Bloc 2**: les remissions per posició dels 86 blocs mesurats per la forma a `0e5431d`, amb el veredicte cas a cas (el bloc 1 en deia 62, d'un recompte amb un patró defectuós, i el 2a, 85: D-117), en dos commits. ✅ **2a, els apunts**: 17 blocs (A2 7, A3 5, A5 2, A7 2 i A9 1; A2, A3, A5 i A7 són a l'abast de la revisió externa, i s'ha fet abans d'avisar-ne els equips). ✅ **2b, els problemes, les solucions i el laboratori**: 69 blocs (P2 15, P3 14, P4 14, P7 2, P8 3, S3 1, L1 1, L2 7, L3 3, L4 3, L5 2 i L6 4). **Entrada executada**: la tanca l'usuari (`/tancar-fase`). La regla la comproven `verifica_llistats.py` i les autoproves ([D-121](24_specs/registre_de_decisions.md#d-121)). Del patró d'abans n'han quedat 5 línies, que no són remissions a un bloc: dues a A3 (el peu de dues figures, «el codi anterior i el posterior a la crida»), una a L6 (un bloc de memòria cau) i dues a P2 (fragments en línia, i una sèrie d'apartats amb lletra, que no porta `#lst-`).
-
-  ```bash
-  git grep -o -I -E -i -e '(codi|programa|fragment|bloc) (de codi )?(següent|anterior)|(codis|programes|fragments|blocs) (següents|anteriors)' -- '*.qmd' ':!TODO.md' ':!13_contrib.qmd' | wc -l   # 23 (0e5431d); 5 en acabar (2026-10-14)
-  git grep -o -E '^:{3,} *\{#lst-' -- '*.qmd' | wc -l                                                                                                              # cap (0e5431d); 17 després del 2a; 86 en acabar (2026-10-14)
-  ```
 
 - **Registres que es mantenen a mà: quins es poden generar d'una sola font** (petició de l'usuari, 2026-10-13, literal: «Endavant», a la proposta de Claude Code d'anotar-ho; la pregunta que la va originar: «El treball que facis en aquesta sessió es podrà reaprofitar per a la resta de taules de "12_sigles_simbols.qmd". I per altres inventaris o registres?»). El patró de [D-115](24_specs/registre_de_decisions.md#d-115) (un fitxer de dades, una taula generada en renderitzar amb `25_scripts/taula_md.py`, i una comprovació contra el que descriu) es pot aplicar als registres del punt 3 de `13_contrib.qmd §Registres`, que es mantenen a mà i que `comprova.py` només vigila: l'arbre del `README.md`, el recompte d'aquesta capçalera, i les taules de la guia de les peces del render, del directori `.claude/` i dels sufixos d'origen. També hi ha llistes que repeteixen dades d'un altre fitxer, com la taula dels generadors del pre-render de `24_specs/svg.md §17`, que repeteix el `pre-render` de `_quarto.yml`; no s'han inventariat. Les taules Símbols i Notació de `12_sigles_simbols.qmd` no hi entren: tenen una sola font, i passar-les a un fitxer de dades només en canviaria el format. Primer, l'inventari, amb la proposta per a cadascun (generar-lo, comprovar-lo o deixar-lo com és); sense tocar A1–A8.
 
