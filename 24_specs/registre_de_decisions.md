@@ -804,7 +804,7 @@ Petició de l'usuari: inventariar els registres i reduir-los (una sola font, fus
 
 ### D-105
 
-**Ortografia amb `hunspell`, gramàtica amb LanguageTool, i les formes que no s'han de fer servir, comprovades** · `13_contrib.qmd §Comprovacions per nivells`, `§Requisits previs` · 2026-10-10
+**Ortografia amb `hunspell`, gramàtica amb LanguageTool, i les formes que no s'han de fer servir, comprovades** · `13_contrib.qmd §Comprovacions per nivells`, `README.md §Instal·lació` · 2026-10-10
 
 Pregunta de l'usuari: si un corrector local reduiria la dependència de Claude Code. Una prova va trobar errors reals que la revisió interna no havia vist. Propostes de Claude Code, acceptades:
 

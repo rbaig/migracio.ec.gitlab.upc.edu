@@ -12,7 +12,7 @@ Aquest document de convencions només està disponible en la versió web:
 ## Ús d'aquesta guia
 
 - Recull les regles del llibre: contingut, llenguatge, format i eines. S'ha d'actualitzar sempre que es prengui una decisió de format, estil, etc.
-- El perquè i l'historial de cada regla, datats i amb els commits, són al registre de decisions, [`24_specs/registre_de_decisions.md`]({{< var decisions >}}). Les regles que hi tenen entrada hi enllacen amb el seu identificador, com ara [D-1]({{< var decisions >}}#d-1). Una regla nova o canviada porta la seva entrada al registre, en el mateix commit.
+- El perquè de cada regla, datat i amb els commits, és al registre de decisions, [`24_specs/registre_de_decisions.md`]({{< var decisions >}}). Les regles que hi tenen entrada hi enllacen amb el seu identificador, com ara [D-1]({{< var decisions >}}#d-1). Una regla nova o canviada porta la seva entrada al registre, en el mateix commit.
 - Per al flux de treball, el model d'IA i la fase actual del projecte, vegeu `CLAUDE.md`; els procediments que només fan servir les sessions de Claude Code són a les skills de `.claude/skills/` (§IA).
 - Per a tasques pendents i decisions obertes, vegeu `TODO.md`.
 - **Temes**: `Tx` (T1–T9) designa un tema, el conjunt dels seus apunts, problemes i solucions (`Ax.qmd`, `Px.qmd` i `Sx.qmd`); és el sentit de §Decisions per tema. El laboratori (`Ly.qmd`) es numera per sessions: «Laboratori 1», o L1, a «Laboratori 6», o L6 ([D-97]({{< var decisions >}}#d-97)).
@@ -232,6 +232,7 @@ El títol de `{#exr-...}` és el nom del fitxer de lliurament. Si hi ha dos lliu
     4. El [diccionari anglès-català de Softcatalà](https://www.softcatala.org/diccionari-angles-catala/).
     5. La [Viquipèdia](https://ca.wikipedia.org/) en català: un article sobre el concepte informàtic que en porti la forma al títol o com a denominació explícita a l'entradeta, no una menció de passada. Pot aportar una forma que les fonts 1–4 no tenen («taula de salts»), però no contradir-les.
     - Les fonts 2–4 es poden consultar amb els scripts de `24_specs/lexic/` (`24_specs/lexic/README.md`).
+- **Diccionari del projecte**: els mots que els diccionaris de l'ortografia no tenen (els mnemònics, els noms propis i la resta) són a `24_specs/diccionari.txt`, un per línia; el fa servir `make comprova` i el corrector de VS Code. Un mot legítim nou s'hi afegeix en el mateix commit que el fa servir. Els dels termes del llibre no hi van: són a `24_specs/diccionari_termes.txt`, que es genera de `24_specs/termes.toml` (`make registres`), i una flexió d'un terme que el corrector no coneix va a `mots` del terme ([D-115]({{< var decisions >}}#d-115)).
 - El català normatiu és el criteri de resolució per a qualsevol dubte lèxic o ortogràfic no cobert explícitament per aquesta guia.
 - **Noms de persona**: com els escriu la Viquipèdia i, si no hi tenen article, com els escriu la Wikipedia en anglès: «John von Neumann», «l'arquitectura de von Neumann» ([D-107]({{< var decisions >}}#d-107)).
 
@@ -796,28 +797,9 @@ h1, h2, h3, h4,
 
 ## Eines
 
-### Requisits previs
+### Instal·lació
 
-Abans de contribuir cal tenir instal·lat:
-
-- **Git** i accés com a **Developer** al repositori de GitLab, [gitlab.upc.edu/ec/migracio](https://gitlab.upc.edu/ec/migracio) ([cal ser membre del grup `ec`](https://gitlab.upc.edu/groups/ec/)).
-- **VS Code**: [code.visualstudio.com](https://code.visualstudio.com/). Extensions recomanades, que VS Code proposa en obrir el repositori (`.vscode/extensions.json`):
-    - [Quarto](https://marketplace.visualstudio.com/items?itemName=quarto.quarto)
-    - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
-    - [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker), amb el diccionari [català](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker-catalan)
-        - Els mots del projecte (els mnemònics, els noms propis i els altres mots que els diccionaris no tenen) són a `24_specs/diccionari.txt`, un per línia, el mateix diccionari que fa servir `make comprova` (§Comprovacions per nivells). Un mot legítim nou s'hi afegeix en el mateix commit que el fa servir. Els dels termes del llibre no hi van: són a `24_specs/diccionari_termes.txt`, que es genera de `24_specs/termes.toml` (`make registres`), i una flexió d'un terme que el corrector no coneix va a `mots` del terme ([D-115]({{< var decisions >}}#d-115)).
-- **Quarto** (versió ≥ 1.5): [quarto.org/docs/get-started](https://quarto.org/docs/get-started/).
-- **Una distribució LaTeX** per renderitzar PDF. Es recomana TinyTeX, que s'instal·la des de la CLI de Quarto mateixa:
-
-```bash
-quarto install tinytex
-```
-
-- **Python** (versió ≥ 3.11), per a les comprovacions de `25_scripts/`. La de les taules fa servir, a més, el paquet **fontTools** (`pip install fonttools`) i les fonts del PDF, Latin Modern i DejaVu Sans Mono (a Debian i Ubuntu, els paquets `fonts-lmodern` i `fonts-dejavu-core`); sense, surt com a «omesa».
-- Opcionals: sense ells, la comprovació que els fa servir surt com a «omesa», i no com a neta.
-    - **hunspell** amb els diccionaris català i anglès (a Debian i Ubuntu, els paquets `hunspell`, `hunspell-ca` i `hunspell-en-us`), per a l'ortografia.
-    - **Java**: la versió 8 o posterior per a RARS (§Verificació empírica a RARS), i la 17 o posterior per a LanguageTool (la gramàtica, `make gramatica`). Ni RARS ni LanguageTool no s'instal·len a mà: si no són al sistema (les variables d'entorn `RARS_JAR` i `LANGUAGETOOL_DIR`), els scripts que els fan servir els baixen la primera vegada al directori `.cache/` del clon, que git ignora i que comparteixen tots els *worktrees*, i en comproven el sha256 ([D-62]({{< var decisions >}}#d-62), [D-105]({{< var decisions >}}#d-105)).
-- **RARS** (simulador RISC-V), per treballar el laboratori: [RARS](https://github.com/TheThirdOne/rars/releases).
+L'entorn de treball (l'accés al repositori, VS Code i les seves extensions, Quarto, TinyTeX, Python i les eines de les comprovacions, Java i RARS) i com s'instal·la són a `README.md §Instal·lació`. Les eines opcionals (hunspell, Java, fontTools i les fonts del PDF) no són imprescindibles: sense, la comprovació que les fa servir surt com a «omesa», i no com a neta.
 
 ### Comprovacions per nivells
 
@@ -829,7 +811,7 @@ make comprova       # abans de cada commit: les comprovacions del nivell del can
 make comprova-tot   # abans d'obrir una MR o de publicar: totes, amb el PDF i RARS (5–10 min)
 ```
 
-`make comprova-branca` passa les de tota la branca respecte d'`origin/main`, i `python3 25_scripts/comprova.py --explica` diu el nivell i què faria, sense executar res. `make gramatica` passa LanguageTool sobre la prosa del corpus (també ho fa `make comprova-tot`); el que al llibre hi és soroll —les regles desactivades i les formes correctes que marca alguna regla activa— és a `24_specs/gramatica.toml`, que es manté a mà, amb el perquè de cada entrada. Una comprovació que **atura** el commit ha trobat un error; una que **avisa** no l'atura, però l'avís s'ha de llegir.
+`make comprova-branca` passa les de tota la branca respecte d'`origin/main`; les altres opcions són a `python3 25_scripts/comprova.py --help` i `make help`. El que a la gramàtica hi és soroll —les regles de LanguageTool desactivades i les formes correctes que marca alguna regla activa— és a `24_specs/gramatica.toml`, que es manté a mà, amb el perquè de cada entrada. Una comprovació que **atura** el commit ha trobat un error; una que **avisa** no l'atura, però l'avís s'ha de llegir.
 
 #### Nivells
 
@@ -880,8 +862,6 @@ make comprova-tot   # abans d'obrir una MR o de publicar: totes, amb el PDF i RA
 | Llistats a la sortida | Cada llistat `#lst-`, a l'HTML i al PDF amb la mateixa posició dins del capítol, i cap bloc més numerat al PDF (`verifica_llistats.py --sortida`; D-117) | Només `comprova-tot` | Atura |
 <!-- comprova:comprovacions:fi -->
 
-Les dues taules les escriu `comprova.py --taula` (`make registres`), a partir de la classificació dels fitxers i de la llista de comprovacions de l'script mateix: és l'única font, i la fan servir també `orfes.py` i `escombrada.sh`. Un fitxer nou que no hi té classe es tracta com a nivell 2, i la comprovació «Classificació» ho avisa.
-
 **El que no es dedueix dels fitxers** ho tria qui treballa:
 
 - **Revisió estètica**: mirar el canvi renderitzat, a l'HTML en clar i en fosc i al PDF. La recorda `make comprova` als nivells 3 i 4.
@@ -890,41 +870,32 @@ Les dues taules les escriu `comprova.py --taula` (`make registres`), a partir de
 
 #### Autoproves de les comprovacions
 
-Una comprovació que deixa de veure un error dona per bo el que no ho és, i ningú no se n'adona. Les **autoproves** ho vigilen: fan passar cada comprovació per uns casos coneguts i en comproven el resultat ([D-120]({{< var decisions >}}#d-120)).
+Una comprovació que deixa de veure un error dona per bo el que no ho és, i ningú no se n'adona. Les **autoproves** ho vigilen: cada **bateria** fa passar una eina per un text correcte, en què no ha de trobar res, i per un text per cada error que ha d'aturar, en què ha de trobar aquell error. Cada cas munta un llibre mínim en un directori temporal, i per això el resultat no depèn del contingut del llibre; només demanen Python 3.11 o posterior i git, i qualsevol revisor les pot passar al seu ordinador (`make autoproves`). Quan es passen soles, ho diu la fila «Autoproves» de la taula de més amunt ([D-120]({{< var decisions >}}#d-120)).
 
-- **Què fan**: cada **bateria** prova una eina amb un text correcte, en què no ha de trobar res, i amb un text per cada error que ha d'aturar, en què ha de trobar aquell error. Si una eina canvia i deixa de veure un error, o en comença a trobar on no n'hi ha, l'autoprova falla i atura el commit.
-- **Què no toquen**: el llibre. Cada cas munta un llibre mínim en un directori temporal, amb el seu `_quarto.yml`, el seu `24_specs/termes.toml` i els fitxers del cas, i hi executa l'eina real. Per això el resultat no depèn del contingut del llibre, que pot canviar sense que les autoproves canviïn.
-- **Què demanen**: Python 3.11 o posterior i git. Res més: ni xarxa, ni render, ni hunspell, ni Java, ni Claude Code. Qualsevol revisor les pot passar al seu ordinador.
-- **Quan es disparen**:
-    - Soles, amb `make comprova` (la comprovació «Autoproves» de la taula de més amunt): en tocar una de les eines provades o `25_scripts/autoproves.py`. També amb el hook de git `pre-commit`, si està activat, que fa les mateixes comprovacions.
-    - Sempre, amb `make comprova-tot`.
-    - A les branques, a la CI del mirall de GitHub (`make comprova-branca`), si la branca toca una eina provada.
-    - A mà: `make autoproves`, o `python3 25_scripts/autoproves.py`, que les passa totes; `python3 25_scripts/autoproves.py sigles prosa` només passa aquestes bateries, i `--llista` en dona els casos, amb el que espera cadascun.
 - **Si una autoprova falla**, el missatge diu la bateria, el cas i què esperava trobar. O l'eina s'ha espatllat i s'arregla l'eina, o la regla ha canviat i s'actualitza el cas, en el mateix commit que la regla.
-- **Un cas nou** va a la seva bateria, a `BATERIES` de `25_scripts/autoproves.py`, en el mateix commit que canvia la regla o l'eina. També hi va l'error que una comprovació hagi deixat passar, perquè no torni. `make registres` posa al dia la taula següent, que la comprovació «Registres» vigila.
+- **Un cas nou** va a la seva bateria, a `BATERIES` de `25_scripts/autoproves.py`, en el mateix commit que canvia la regla o l'eina. També hi va l'error que una comprovació hagi deixat passar, perquè no torni.
+- **Una bateria nova** surt a la taula següent amb `make registres`, i la comprovació «Registres» ho vigila.
 
-Les bateries, amb els casos de cadascuna; «cap troballa» vol dir que l'eina no hi ha de trobar res:
+Les bateries (els casos de cadascuna, amb el que esperen, a `python3 25_scripts/autoproves.py --llista`):
 
 <!-- autoproves:inici — la genera 25_scripts/autoproves.py --taula; no l'editeu a mà -->
-| Bateria | Eina | Regla | Casos |
-| :--- | :--- | :--- | :--- |
-| `sigles` | `sigles.py --comprova` | §Sigles, símbols i notació (D-89, D-118) | 20: Text correcte: les tres variants del format, la negreta a la forma catalana, el plural, la presentació d'un terme a l'expansió (BA), una sigla amb `excepcio` (L1) i els mots que no són sigles (GNU i un text literal de `[no_sigles]`, KB, RV32IM, AND) (cap troballa); La sigla, en negreta dins de l'expansió; L'anglès, amb majúscules que `termes.toml` no té; L'anglès, en negreta i cursiva; «(*anglès* o SIGLA)»; «SIGLA (*anglès*)», l'expansió darrere de la sigla; La forma catalana sense l'anglès, en una sigla que en té; El parèntesi dins de la negreta; La primera aparició, sense expansió; La primera aparició, a la Presentació, que es llegeix abans que els apunts; La primera aparició, en un aprofundiment, que no compta (cap troballa); La primera aparició, en un títol, i l'expansió al paràgraf següent (cap troballa); La primera aparició, en un títol, i el paràgraf següent sense expansió; La primera aparició, en una fórmula, i l'expansió al paràgraf següent (cap troballa); Una sigla dins d'una cursiva (una expansió anglesa) no és una aparició (cap troballa); Una sigla en plural (D-79); Una sigla del text que no és a la taula ni a `[no_sigles]`; Una sigla de la taula sense cap aparició fora dels aprofundiments; L'expansió anglesa d'un terme de `[termes]`, amb una forma catalana diferent de la del terme; Una variant del format en una sigla que no és a la taula, dins d'un aprofundiment |
-| `lexic` | `gen_glossari.py --comprova` | §Anglicismes i terminologia obligatòria (D-115, D-116) | 9: Text correcte: una presentació, la d'un terme a l'expansió d'una sigla (*stack frame*, BA), una glossa de `[no_presentacions]` i l'expansió d'una sigla que no és un terme (NaN) (cap troballa); Una forma catalana que no és la de `termes.toml`; El plural regular (cada mot fins a la primera preposició) és una presentació del mateix terme (cap troballa); Un plural que no és el regular («memòries cau», no «memòries caus») demana `presentacio`; Un terme presentat que no és a `termes.toml`; Un terme de `termes.toml` sense cap presentació; Un terme que el llibre manté en anglès, presentat en català; Una presentació dins d'un bloc de codi no compta; Un terme sense `fonts` |
-| `prosa` | `lint_prosa.py` | §Anglicismes, §Formes que no s'han de fer servir, §Commits (D-105, D-116) | 11: Prosa correcta: el terme català, la glossa en cursiva, el codi i un text de `[angles_en_pla]` (cap troballa); Una forma que no s'ha de fer servir, a la prosa; Una forma que no s'ha de fer servir, a una cel·la; Un terme de `[termes]` en pla, a la prosa; Un terme de `[termes]` en pla i en plural; Un terme de `[termes]` en pla, a una cel·la; Un terme de `[en_angles]` sense cursiva; Un doble espai, a la prosa; Un doble espai, a una cel·la, que és permès (cap troballa); Unes cometes rectes; Dins d'un bloc de codi, res (cap troballa) |
-| `format_codi` | `verifica_format_codi.py` | §Estil de codi RISC-V (D-50, D-111) | 10: Una instrucció ben sagnada i alineada (cap troballa); Una etiqueta amb una instrucció, a la columna 8 (cap troballa); Directives de segment i de visibilitat, a la columna 0 (cap troballa); F1: una directiva de segment sagnada; F2: una etiqueta sagnada; F3: un sagnat que no és de 8 espais; F4: un tabulador (i, per tant, el sagnat); F5: els operands, fora de la columna 16; F6: una etiqueta `b`; F6: una constant `B` |
-| `callouts` | `verifica_callouts.py` | §Imbricacions (D-110) | 4: Un div que no és un callout, dins d'un callout (cap troballa); Un callout dins d'un altre (D-110); Un include, dins d'un callout, d'un fragment que porta un callout; Un callout dins d'un bloc de codi no compta (cap troballa) |
-| `calendari` | `verifica_calendari.py` | §Convencions globals del laboratori (D-74) | 8: Un calendari correcte: les dates, al dia de la fila, creixents, i les columnes, les sessions del laboratori (cap troballa); Una data que no cau en el dia de la fila; Dues dates d'una fila que no són creixents; Un canvi de dia (D-74) ben marcat, amb la seva nota «†» (cap troballa); Un canvi de dia marcat sense la nota «†»; Un canvi de dia marcat en una data que és del dia de la fila; Unes columnes de sessió que no són les seccions del laboratori; Sense la línia del quadrimestre |
-| `decisions` | `comprova.py` (decisions citades, enunciats i solucions, etiquetes `{#sec-}`) | Registre de decisions; §Problemes i solucions (D-22); §Etiquetes `{#sec-}` a les capçaleres | 4: Cada decisió citada és al registre, cada solució té el seu enunciat, i les capçaleres dels apunts, la seva etiqueta `{#sec-}` (les dels callouts, també dels encastats, i els comentaris del codi no en porten) (cap troballa); Una decisió citada que no és al registre; Una solució sense el seu enunciat (D-22); Una capçalera dels apunts sense etiqueta `{#sec-}`, després d'un callout amb un altre encastat |
-| `classificacio` | `comprova.py` (`autotest()`) | §Comprovacions per nivells (D-103) | 1: Els fitxers d'exemple, a la classe i al nivell que els toca, i les taules de la guia, generades (cap troballa) |
-| `llistats` | `verifica_llistats.py` | §Referències creuades (D-117, D-121) | 16: Un llistat en forma de div, amb el peu i la remissió, i un bloc que no és un llistat (cap troballa); L1: la forma d'atribut (`lst-cap`), que dins d'un callout dona dos números al PDF; L2: un div `#lst-` sense bloc de codi; L2: un div `#lst-` sense peu; L3: un peu que no acaba en punt; L4: un llistat dins d'un bloc `when-format`; L5: un llistat sense cap remissió; L6: una remissió a un llistat que no existeix; L7: «el codi següent», al paràgraf de davant d'un bloc; L7: «la funció C anterior», al paràgraf de davant; L7: «aquest programa», al paràgraf de darrere; L7: «el codi següent», davant del div d'un llistat (el paràgraf de davant és el del div, no el del bloc); L7: un mot de codi, «el `for` anterior»; Un «següents» al paràgraf de darrere apunta al que ve després, no al bloc (cap troballa); Una presentació adverbial no és una remissió (D-117) (cap troballa); Una remissió per posició dins d'un bloc de codi no compta (cap troballa) |
-| `llistats_sortida` | `verifica_llistats.py --sortida` | §Referències creuades (D-117, D-121) | 5: El llistat, amb la mateixa posició a l'HTML i al PDF, i cap bloc més numerat (cap troballa); Una posició diferent a l'HTML i al PDF; El mateix número de posició amb un altre número de capítol, com P2 (11 a l'HTML, 2 al PDF), és bo (cap troballa); Un llistat que no és a l'HTML; Un bloc numerat al PDF que no és un llistat (preamble.tex o llistats.lua espatllats) |
+| Bateria | Eina | Regla |
+| :--- | :--- | :--- |
+| `sigles` | `sigles.py --comprova` | §Sigles, símbols i notació (D-89, D-118) |
+| `lexic` | `gen_glossari.py --comprova` | §Anglicismes i terminologia obligatòria (D-115, D-116) |
+| `prosa` | `lint_prosa.py` | §Anglicismes, §Formes que no s'han de fer servir, §Commits (D-105, D-116) |
+| `format_codi` | `verifica_format_codi.py` | §Estil de codi RISC-V (D-50, D-111) |
+| `callouts` | `verifica_callouts.py` | §Imbricacions (D-110) |
+| `calendari` | `verifica_calendari.py` | §Convencions globals del laboratori (D-74) |
+| `decisions` | `comprova.py` (decisions citades, enunciats i solucions, etiquetes `{#sec-}`) | Registre de decisions; §Problemes i solucions (D-22); §Etiquetes `{#sec-}` a les capçaleres |
+| `classificacio` | `comprova.py` (`autotest()`) | §Comprovacions per nivells (D-103) |
+| `llistats` | `verifica_llistats.py` | §Referències creuades (D-117, D-121) |
+| `llistats_sortida` | `verifica_llistats.py --sortida` | §Referències creuades (D-117, D-121) |
 <!-- autoproves:fi -->
-
-Encara no tenen autoproves les comprovacions que fan servir eines externes o les figures: l'ortografia (hunspell), la gramàtica (LanguageTool), les taules del PDF (fontTools i les fonts), els programes del laboratori (RARS), les figures, els fitxers orfes i `escombrada.sh`. És una entrada del `TODO.md`.
 
 #### Hooks de git
 
-Les sessions de Claude Code passen `comprova.py` soles abans de cada commit (el hook `abans-commit.sh`, §IA). Per a qui no en fa servir, hi ha dos hooks de git opcionals, a `.githooks/`, que s'activen un cop per clon amb `make instal·la-hooks`:
+Les sessions de Claude Code passen `comprova.py` soles abans de cada commit (el hook `abans-commit.sh`, §IA). Per a qui no en fa servir, hi ha dos hooks de git opcionals, a `.githooks/` (com s'activen, a `README.md §Instal·lació`):
 
 - `pre-commit`: les comprovacions del nivell del canvi, sense el render. Uns segons.
 - `pre-push`: les de la branca sencera, amb el render que demana el seu nivell (`make comprova-branca`).
@@ -939,7 +910,7 @@ El GitLab de la UPC no té *runners*, i el mirall de GitHub rep totes les branqu
 
 | Es pot fer en local | Depèn de Claude Code |
 | :--- | :--- |
-| Totes les comprovacions de `comprova.py` i les seves autoproves (`make autoproves`), `make render`, `make render-complet` i RARS, amb els requisits de §Requisits previs | El hook `abans-commit.sh`, que crida `comprova.py`: els hooks de git en fan l'equivalent |
+| Totes les comprovacions de `comprova.py` i les seves autoproves (`make autoproves`), `make render`, `make render-complet` i RARS, amb l'entorn de `README.md §Instal·lació` | El hook `abans-commit.sh`, que crida `comprova.py`: els hooks de git en fan l'equivalent |
 | | Les skills, que són procediments per al model: les regles són en aquesta guia |
 | | Els subagents `revisor-linguistic`, `auditor-xifres` i `verificador-calendari`, que fa un model: una persona en fa l'equivalent a mà. La revisió lingüística comença igual en tots dos casos, amb les eines locals sobre el canvi (`python3 25_scripts/ortografia.py` i `python3 25_scripts/gramatica.py`, sense arguments: les línies afegides respecte d'`HEAD`) |
 
@@ -964,7 +935,7 @@ Les sessions de Claude Code tenen el procediment de verificació del render (com
 ### Verificació empírica a RARS
 
 - Quan una afirmació del llibre diu què fa RARS —que una directiva s'accepta, que una pseudoinstrucció existeix, que un programa acaba d'una certa manera—, la manera de resoldre-la és **executar RARS 1.6**. Es comprova per les adreces del bolcat o per l'estat final dels registres, **no per l'absència d'error** ([D-62]({{< var decisions >}}#d-62)).
-- **El `.jar` no es versiona**: es baixa de la *release* que cita `README.md §RARS` al directori `.cache/` del clon, que git ignora ([D-62]({{< var decisions >}}#d-62)). `25_scripts/verifica_laboratoris.py`, que assembla i executa els blocs `.s` de L1–L6, el busca a la variable d'entorn `RARS_JAR` (una còpia que ja és al sistema) o a `.cache/rars1_6.jar` i, si no hi és, l'hi baixa i en comprova el sha256 ([D-103]({{< var decisions >}}#d-103)).
+- **El `.jar` no es versiona**: el de la *release* que cita `README.md §RARS` es baixa al directori `.cache/` del clon, que git ignora, i `25_scripts/verifica_laboratoris.py` ho fa sol, la primera vegada ([D-62]({{< var decisions >}}#d-62), [D-103]({{< var decisions >}}#d-103)).
 - Les sessions de Claude Code en tenen el procediment a la skill `rars` (§IA).
 
 ### Escombrades i verificació del corpus
@@ -1062,23 +1033,9 @@ Qualsevol altre canvi requereix una **Merge Request**. Els **Developers** sempre
 
 ### Renderitzar el projecte
 
-El projecte té dues sortides independents: **HTML** i **PDF**. Són pipelines completament separades — HTML usa Bootstrap, PDF usa LaTeX (`scrbook`). Cap de les dues es construeix sobre l'altra.
-
-```bash
-make render               # bucle diari: taules fusionades + HTML (1–3 min)
-make render-complet       # HTML + PDF (4–8 min)
-quarto render --to html   # només HTML, sense generar les taules fusionades
-quarto render --to pdf    # només PDF (compilació LaTeX)
-quarto render             # les dues sortides
-```
-
-`make help` llista totes les ordres de `make`, amb el que fa cadascuna; les de les comprovacions són a §Comprovacions per nivells.
+El projecte té dues sortides independents: **HTML** i **PDF**. Són pipelines completament separades — HTML usa Bootstrap, PDF usa LaTeX (`scrbook`). Cap de les dues es construeix sobre l'altra. Les ordres del render, i què en queda a `_book/`, són a `README.md §Renderitzar el projecte`.
 
 **Renderitzeu amb `make`.** Dos renders del mateix *worktree* no es poden fer alhora, perquè el pre-render esborra `auto_figs/`: amb `make`, el segon espera que acabi el primer, fins a 15 min. `quarto render` cridat directament i la previsualització de VS Code no hi passen ([D-103]({{< var decisions >}}#d-103)).
-
-::: {.callout-warning}
-**`make render` (i `quarto render --to html`) neteja `_book` i no hi deixa cap PDF**: el que hi hagués d'un render anterior desapareix. És el comportament per defecte i el que volem al bucle diari, que és prosa i referències. Quan necessiteu el PDF —verificació final abans d'obrir la Merge Request, material per a alumnes, o qualsevol canvi que el toqui— feu `make comprova-tot` o `make render-complet`. Si voleu conservar un PDF concret, guardeu-lo fora de `_book/` abans.
-:::
 
 **Peces del render que no són al Makefile** (totes dues sortides passen per `_quarto.yml`, de manera que valen per a `make render`, `make render-complet`, `quarto render` i el CI):
 
@@ -1100,8 +1057,6 @@ quarto render             # les dues sortides
 
 **Font monoespaiada del PDF: DejaVu Sans Mono**, amb `Scale=MatchLowercase` (`_quarto.yml`, `monofont`): Latin Modern Mono, la de per defecte, no té els glifs de caixa (`─`) ni el ✓ que fan servir alguns blocs de codi. El CI la instal·la amb el paquet `fonts-dejavu-core` (`.github/workflows/publish.yml`), al pas que fa el PDF. La font monoespaiada dels SVG continua sent Liberation Mono (`24_specs/svg.md §12`) ([D-60]({{< var decisions >}}#d-60)).
 
-`make clean` elimina els artefactes de render (`_book`, `*_files`, els `*.html` de l'arrel que no són versionats, `*.log`, `Estructura-de-computadors.tex`) sense tocar fitxers font.
-
 ### IA
 
 Fitxers obligatoris a passar a les IA: vegeu `CLAUDE.md §Fitxers de referència obligatòria`.
@@ -1115,7 +1070,7 @@ El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi
 | Peça | Què fa | Regla |
 | :--- | :--- | :--- |
 | Hook `guarda-git.sh` | Bloqueja el push al remot `mirror` i les ordres que reescriuen l'historial (`--force`, `rebase`, `--amend`, `reset --hard`, `filter-branch`) | `CLAUDE.md §Flux de treball` |
-| Hook `abans-commit.sh` | Abans de cada `git commit`, `python3 25_scripts/comprova.py`: les comprovacions del nivell del canvi. Si alguna atura el commit, el commit no es fa; els avisos no l'aturen ni pregunten, sinó que passen a Claude i es mostren a l'usuari. Als nivells 2–4 renderitza, i el `make render` del nivell 2, com qualsevol `make render`, esborra el PDF de `_book/` (§Renderitzar el projecte) ([D-74]({{< var decisions >}}#d-74), [D-98]({{< var decisions >}}#d-98), [D-103]({{< var decisions >}}#d-103)) | §Comprovacions per nivells |
+| Hook `abans-commit.sh` | Abans de cada `git commit`, `python3 25_scripts/comprova.py`: les comprovacions del nivell del canvi. Si alguna atura el commit, el commit no es fa; els avisos no l'aturen ni pregunten, sinó que passen a Claude i es mostren a l'usuari. Als nivells 2–4 renderitza, i el `make render` del nivell 2, com qualsevol `make render`, esborra el PDF de `_book/` (`README.md §Renderitzar el projecte`) ([D-74]({{< var decisions >}}#d-74), [D-98]({{< var decisions >}}#d-98), [D-103]({{< var decisions >}}#d-103)) | §Comprovacions per nivells |
 | Hook `guarda-generats.sh` | Bloqueja l'edició a mà dels fitxers generats: `auto_figs/`, `auto_riscv/`, `auto_termes/`, `_book/` i les variants `_dark.svg`, que el pròxim render desfaria | §Paleta de colors, §Renderitzar el projecte |
 | Skill `escombrada` | Les regles de les escombrades (`regles.md`), amb el cas de cadascuna, i `25_scripts/escombrada.sh` | §Escombrades i verificació del corpus |
 | Skill `render` | Verificació del render: esperar-lo en segon pla, referències trencades, HTML en clar i en fosc, registre de LaTeX | §Verificació de l'entorn, §Renderitzar el projecte |
