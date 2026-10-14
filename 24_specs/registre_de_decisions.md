@@ -1002,6 +1002,8 @@ Els perquès de les regles de `CLAUDE.md`, que fins al 2026-10-07 hi eren al cos
 
 El cas: la fusió de les dues seccions d'estat de `CLAUDE.md` (2026-09-23) va descartar tres declaracions del 2026-07-12 per «no verificables», i es van haver de recuperar de `git show 397c2da:CLAUDE.md`. Fins al 2026-10-07 la regla era dues vegades a `CLAUDE.md` (§Estat dels materials i §Flux de treball).
 
+**Restringida el 2026-10-14 per [D-122](#d-122)**: es registren les declaracions vigents, en prosa; les que només tenen valor històric són a git.
+
 ### D-64
 
 **Fusió de prova abans de tocar un fitxer que una branca de revisió també toca** · `CLAUDE.md §Regles de la revisió externa` · 2026-10-01
@@ -1020,11 +1022,39 @@ Amb altres professors ja dins de la revisió, qualsevol canvi transversal té un
 
 **Tancada el 2026-10-12.** Petició de l'usuari, literal: «Quan hagis acabat, elimina les referències a el límit de fins ahir diumnege per fer canvis abans que en facin els revisors externs. Un cop hagis acabat, ja passo el control als revisors externs.» Els canvis d'aquell dia, que l'usuari va demanar dins del mateix encàrrec, són els últims de la finestra (D-108 a D-111, i la revisió de `#sec-punters` i `#sec-vectors` d'A2). La regla de `CLAUDE.md` que la descrivia en surt; la de coordinar els canvis transversals amb els revisors torna a valer quan l'usuari els comuniqui que hi poden tornar a treballar. El mateix vespre, literal: «De moment encara no els he comunicat que ja hi poden tornar a treballar. Per tant, fes canvis tranquil·lament.»: fins a la comunicació, A1–A8 es pot continuar canviant sense coordinar-ho.
 
+**Torna a valer des del 2026-10-14**: l'usuari va comunicar aquell dia als revisors que podien reprendre la revisió. Des de llavors, un canvi transversal a A1–A8 es coordina amb els equips, i Claude Code treballa per branca ([D-123](#d-123)).
+
 ### D-91
 
 **El passat del `TODO.md` va a un arxiu, literal** · `CLAUDE.md §Fitxers de referència obligatòria` i la capçalera del `TODO.md` i de `24_specs/arxiu_todo.md` · 2026-10-09
 
 Petició de l'usuari (2026-10-09): «En algun moment, aviat, caldrà fer pruning dels fitxers operatius, tant de Claude com d'humans (`TODO.md`, `13_contrib.qmd`, etc.)». El `TODO.md` feia 207 kB: 128 kB d'entrades retirades i dades preservades, 14 kB d'historial dels recomptes, i la resta, les entrades vives, amb l'historial de les parts ja fetes. Una sessió nova el llegeix sencer abans de començar. Proposta de Claude Code, acceptada per l'usuari («Endavant»): les entrades retirades, les dades preservades, la mesura dels slugs, l'historial de la capçalera i el text d'abans de sis entrades vives que es retallen van a `24_specs/arxiu_todo.md`, **literals**. Moure-les sense reescriure-les fa que cap declaració de l'usuari no es perdi per construcció ([D-63](#d-63)), i es comprova línia a línia: cada línia que surt del `TODO.md` és a l'arxiu. L'historial dels recomptes no hi va: és el registre de canvis del fitxer mateix (`git log -p TODO.md`), i només hi surten títols d'entrades i xifres. Alternativa descartada: substituir les entrades retirades per un punter al darrer commit que les contenia, que és el que D-63 prohibeix (les tres declaracions del 2026-07-12 es van haver de recuperar amb `git show`). Dues invariants i dues decisions de l'usuari que eren vigents i només constaven en files retirades van passar al registre ([D-8](#d-8), [D-25](#d-25)), i en passar-les es va veure que una de les invariants ja no es complia. L'arxiu s'exclou de les escombrades i de l'avís de `make render-complet` del hook d'abans del commit, com el `TODO.md` i el registre.
+
+### D-122
+
+**Els fitxers operatius només guarden el que serveix d'ara endavant; el passat és a git** · `CLAUDE.md §Flux de treball` i `§Pla de treball` (fase 10) · 2026-10-14 · etiqueta `arxiu/pre-neteja-2026-10-14`
+
+L'usuari va demanar una neteja profunda dels fitxers operatius (`TODO.md`, el seu arxiu, aquest registre, `13_contrib.qmd`, `CLAUDE.md`, les skills): s'hi ha de quedar només el que té sentit per gestionar i millorar el repositori, i el que s'hi guardava només per raons històriques se'n va. La política, proposada per Claude Code i acceptada per l'usuari amb dos matisos seus:
+
+- **Una etiqueta anotada abans de començar**, `arxiu/pre-neteja-2026-10-14` (sobre `ae6c355`), conserva l'estat sencer dels fitxers: és el punt de recuperació, en lloc d'un arxiu dins del repositori.
+- **L'arxiu del `TODO.md` s'esborra**, després de moure on toqui el que encara és viu. D-91 es retira en fer-ho.
+- **Aquest registre**: cada entrada vigent queda amb la decisió, el perquè i les alternatives descartades. Una cita de l'usuari només s'hi queda si fixa l'abast de la regla, i passa a prosa descriptiva (matís de l'usuari). Una entrada substituïda o sense regla vigent queda reduïda a una línia que diu quan es va retirar i quina la substitueix, perquè l'identificador no canviï i les remissions continuïn resolent. L'historial de l'estat del projecte surt, i l'estat vigent és a `CLAUDE.md`.
+- **Les declaracions de l'usuari** ([D-63](#d-63)): es registren les vigents, en prosa, on són vigents. Les que només tenen valor històric són a git.
+- **`24_specs/lexic/` es conserva sencer**, amb la documentació de com fer servir els scripts i dels criteris del lèxic (matís de l'usuari).
+
+L'alternativa, conservar a l'arxiu un índex curt de les entrades retirades, es va descartar: l'etiqueta ja dona el text sencer, i un índex seria un registre més que caldria mantenir.
+
+### D-123
+
+**Les sessions de Claude Code treballen a la branca `operacions`** · `CLAUDE.md §Flux de treball`, `13_contrib.qmd §Convenció de noms de branques` · 2026-10-14
+
+Proposta de l'usuari, el dia que va comunicar als revisors externs que podien reprendre la revisió: les sessions de Claude Code treballen per branques, com els equips, sempre a la mateixa, `operacions`, i s'hi va fusionant. Fins llavors empenyien directament a `main`, amb el permís de l'editor ([D-59](#d-59)). Amb els equips treballant a les seves branques, els canvis de Claude Code a `main` arribaven sense revisió prèvia i es barrejaven amb els seus.
+
+Detalls, a proposta de Claude Code i confirmats per l'usuari:
+
+- **És una branca permanent**: a l'inici de cada sessió hi entra `origin/main`, i quan l'usuari confirma un bloc, `git merge --no-ff operacions` a `main`. El commit de fusió marca cada bloc a l'historial de `main`.
+- **La CI del mirall** hi passa `make comprova-branca` a cada push, com a qualsevol branca que no sigui `main`.
+- **Una segona sessió simultània** treballa a `operacions-2`: git no admet alhora una branca `operacions` i una `operacions/<x>`.
 
 ## Historial de l'estat del projecte
 

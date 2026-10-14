@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**14 entrades vives** (recompte del 2026-10-14, en retirar de §Tasques transversals «Remissions `@lst-` en lloc de «el codi següent»», executada; abans, 15, en afegir a §Tasques globals → Eines «Workflows de GitHub: validar-ne el YAML a `comprova.py`»; abans, 14, en afegir a §Tasques transversals «Autoproves de les comprovacions que fan servir eines externes»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**16 entrades vives** (recompte del 2026-10-14, en afegir a §Decisions obertes «Nota per als revisors externs» i a §Tasques globals → Eines «Neteja profunda dels fitxers operatius»; abans, 14, en retirar de §Tasques transversals «Remissions `@lst-` en lloc de «el codi següent»», executada; abans, 15, en afegir a §Tasques globals → Eines «Workflows de GitHub: validar-ne el YAML a `comprova.py`»; abans, 14, en afegir a §Tasques transversals «Autoproves de les comprovacions que fan servir eines externes»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 5 · `§Llarg termini` 1 (suma 14, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 5 · `§Tasques transversals` 3 · `§Tasques per tema` 1 · `§Tasques globals` 6 · `§Llarg termini` 1 (suma 16, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -64,6 +64,12 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   git grep -o -I -E -e '^:{3,} *\{#sol-' -- 03_solucions | wc -l    # 108: S1 15, S2 14, S3 12, S4 17, S5 14, S6 14, S7 8, S8 7, S9 7
   git grep -o -I -E -e '^:{3,} *\{#sol-' -- 04_laboratori | wc -l   # 43: L1 7, L2 8, L3 6, L4 4, L5 4, L6 14 (i 43 #exr-)
   git grep -o -I -E -e '@sol-' -- 04_laboratori | wc -l               # 5 (2026-10-09): L3 1, L4 1, L6 3, totes a solucions del laboratori
+  ```
+
+- **Nota per als revisors externs, `24_specs/revisio_externa.md`: punt de l'ordre del dia de la reunió del 2 de novembre** (decisió de l'usuari, 2026-10-14, en la neteja dels fitxers operatius: el fitxer no s'esborra). És l'esborrany de la fase 8 (2026-10-12), amb les convencions noves des del 2026-10-06 i l'estat de cada fitxer d'A1–A8. A la reunió cal decidir si es distribueix, i com es manté: les xifres de la taula d'estat són d'una mesura (`281606d`), i la llista de convencions creix amb cada D-n nova.
+
+  ```bash
+  git log --oneline -1 -- 24_specs/revisio_externa.md   # l'última versió
   ```
 
 ---
@@ -133,6 +139,17 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
 - **Equacions a MathML**: **decisió presa — mantenir MathJax 3**; el pendent és reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa). Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`): funciona (`underbrace`, `cases`, taules amb math correctes a Chrome) i elimina el JS de MathJax (render instantani, offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), numeració d'equacions inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. El desbordament mòbil ja està resolt via CSS.
 
 ### Eines
+
+- **Neteja profunda dels fitxers operatius** (petició de l'usuari, 2026-10-14; política a [D-122](24_specs/registre_de_decisions.md#d-122); fases 10a–10d de `CLAUDE.md §Pla de treball`, una sessió per fase). S0, feta el 2026-10-14: la branca `operacions` (D-123), l'etiqueta `arxiu/pre-neteja-2026-10-14` i `CLAUDE.md` al dia. Decisions de l'usuari sobre la proposta de Claude Code, totes amb la recomanació:
+    - **10a, el registre de decisions** (213 kB; objectiu, 60–75 kB). Classificar les 121 entrades i presentar-ne la taula a l'usuari abans d'aplicar-la. Una entrada retirada queda en una línia («Retirada el …: substituïda per D-x»), amb el mateix identificador. Les cites de l'usuari, només les que fixen l'abast de la regla, i en prosa descriptiva. Candidates a retirada, per confirmar: D-100, D-29, D-88, D-61, D-75, D-92, D-113. L'§Historial de l'estat del projecte surt: el que encara és vigent passa a `CLAUDE.md §Estat del projecte`.
+    - **10b, l'arxiu del `TODO.md`** (250 kB): primer, triar-ne el que encara és viu (les declaracions de l'usuari vigents, l'experiment de `.section` que cita D-8, les dades preservades d'A2 i de L2) i moure-ho on toqui; després, esborrar-lo, retirar D-91 i treure'n les remissions (`git grep -l arxiu_todo`) i la fila de `comprova.py`. `24_specs/lexic/` es conserva sencer: cal documentar com es fan servir els scripts d'ara endavant i quins són els criteris del lèxic.
+    - **10c, `TODO.md` i les eines de Claude**: es treuen el recompte de la capçalera i la comprovació que el vigila (`comprova.py`, «Registres»; la regla 12 bis de l'escombrada); les entrades, sense cadenes de procedència; la skill `tancar-fase`, sense l'arxiu; els casos d'`escombrada/regles.md`, en una línia; l'arbre del `README.md`; i les regles perquè els fitxers no tornin a créixer (una entrada del registre s'edita al lloc, sense «Seguiment del…»; una entrada del `TODO.md` que es tanca s'esborra, i el commit en diu el motiu).
+    - **10d, `13_contrib.qmd`, `svg.md` i `README.md`**: la taula de les autoproves, reduïda a una fila per bateria (els casos, a `autoproves.py --llista`); els paràgrafs que descriuen les eines; el text transitori («Encara no tenen autoproves…»); la instal·lació i el render, al `README.md`, i la guia hi remet; a `svg.md`, la referència a `extract_pdf_figure.py`, que no ha existit mai, i les taules que repeteixen `_quarto.yml`.
+
+  ```bash
+  wc -c 24_specs/registre_de_decisions.md 24_specs/arxiu_todo.md TODO.md 13_contrib.qmd 24_specs/svg.md CLAUDE.md   # 213 kB, 250 kB, 28 kB, 149 kB, 37 kB, 13 kB (ae6c355)
+  git grep -l arxiu_todo                                                                                            # els fitxers que hi remeten
+  ```
 
 - **Workflows de GitHub: validar-ne el YAML a `comprova.py`** (petició de l'usuari, 2026-10-14, en corregir la línia 51 de `.github/workflows/publish.yml`, literal: «Valora si cal fer extensiu el canvi a totes les entrades -name. Si no vols fer-ho en aquesta sessió, apunta-ho a TODO.md»). La línia, `- name: Genera les taules del lèxic (auto_termes/: glossari, sigles i formes)`, trencava el YAML des de `54f9c4b` (el «: » d'un valor sense cometes en fa una clau) i aturava la publicació; ara va entre cometes. **Valoració de Claude Code**: no cal posar cometes als 20 `name:` (13 de `publish.yml` i 7 de `comprova.yml`), perquè només aquest portava «: », i el risc no és dels `name:` sinó de qualsevol valor sense cometes amb «: » o « #» (també un `run:`). La protecció és una comprovació: avui `.github/` és de nivell 0 i res no en mira la sintaxi, i per això no ho va aturar res. **Proposta**: que la comprovació «Eines» de `comprova.py` validi el YAML dels `.github/workflows/*.yml` canviats (`yaml.safe_load`; «omesa» si no hi ha PyYAML, com les altres eines externes), amb la seva bateria d'autoproves (un workflow vàlid, i un amb un «: » en un valor sense cometes). Sessió curta (Sonnet, effort baix o mitjà).
 
