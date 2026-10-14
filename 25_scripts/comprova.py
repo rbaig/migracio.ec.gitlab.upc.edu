@@ -269,7 +269,8 @@ def c_lexic(ctx):
 
 
 PROVADES = {f'25_scripts/{f}' for f in ('autoproves.py', 'sigles.py', 'gen_glossari.py', 'taula_md.py', 'lint_prosa.py',
-                                         'verifica_format_codi.py', 'verifica_callouts.py', 'verifica_calendari.py', 'comprova.py')}
+                                         'verifica_format_codi.py', 'verifica_callouts.py', 'verifica_calendari.py', 'comprova.py',
+                                         'verifica_llistats.py')}
 
 
 def c_autoproves(ctx):
@@ -439,6 +440,29 @@ def c_gramatica(ctx):
     if rc == 3:
         raise Omesa(sortida.split('\n')[-1].removeprefix('[gramatica] omesa: '))
     return [(AVIS, retalla(sortida))] if rc else []
+
+
+def c_llistats(ctx):
+    """Els llistats #lst- i les remissions als blocs de codi (verifica_llistats.py; D-117, D-121). L1, L2 i
+    L4–L6 aturen, a tot el llibre; el peu sense punt (L3) i la remissió per posició (L7) avisen, a les línies
+    afegides (o a tot el llibre amb --tot)."""
+    import verifica_llistats
+    objectius = objectius_prosa(ctx)
+    r = []
+    for t in verifica_llistats.revisa(ARREL):
+        if t.regla in verifica_llistats.ATUREN:
+            r.append((ERROR, str(t)))
+        elif t.fitxer in objectius and (objectius[t.fitxer] is None or t.linia in objectius[t.fitxer]):
+            r.append((AVIS, str(t)))
+    return r
+
+
+def c_llistats_sortida(ctx):
+    import verifica_llistats
+    try:
+        return [(ERROR, x) for x in verifica_llistats.sortida(ARREL)]
+    except FileNotFoundError as e:
+        return [(OMESA, f'la numeració dels llistats: {e}')]
 
 
 def c_marques(ctx):
@@ -669,6 +693,11 @@ COMPROVACIONS = [
     Comprovacio('callouts', 'Callouts imbricats', 'Cap callout dins d\'un altre, tampoc per un `include` '
                 '(`verifica_callouts.py`; §Imbricacions, D-110)', QMD, 'En tocar un `.qmd`', 'Atura',
                 script('verifica_callouts.py', gravetat=ERROR)),
+    Comprovacio('llistats', 'Llistats', 'Els llistats `#lst-` i les remissions als blocs de codi (`verifica_llistats.py`; '
+                '§Referències creuades, D-117): la forma de div amb peu, fora dels blocs `when-format`, cada llistat amb '
+                'remissió i cada remissió amb llistat (L1, L2 i L4–L6), que aturen; el peu sense punt (L3) i la remissió '
+                'per posició, «el codi següent» (L7), que avisen', QMD,
+                'En tocar un `.qmd`: L3 i L7, a les línies afegides', 'Atura (L1, L2, L4–L6) o avisa', c_llistats),
     Comprovacio('marques', 'Marques TODO', '`TODO` a les línies afegides dels `.qmd` (§Commits)',
                 lambda ctx: not ctx.tot and bool(ctx.canvis.qmd()), 'En tocar un `.qmd`', 'Avisa', c_marques),
     Comprovacio('format_codi', 'Format del codi', 'Els criteris mecànics del format dels blocs d\'assemblador '
@@ -710,6 +739,9 @@ COMPROVACIONS = [
                 'Nivells 2, 3 i 4', 'Atura', c_render),
     Comprovacio('sortida', 'Sortida', 'Referències sense resoldre (`?@`) al `_book/` i al PDF, i que hi hagi PDF',
                 lambda ctx: ctx.tot and not ctx.sense_render, 'Només `comprova-tot`', 'Atura', c_sortida),
+    Comprovacio('llistats_sortida', 'Llistats a la sortida', 'Cada llistat `#lst-`, a l\'HTML i al PDF amb la mateixa '
+                'posició dins del capítol, i cap bloc més numerat al PDF (`verifica_llistats.py --sortida`; D-117)',
+                lambda ctx: ctx.tot and not ctx.sense_render, 'Només `comprova-tot`', 'Atura', c_llistats_sortida),
 ]
 
 

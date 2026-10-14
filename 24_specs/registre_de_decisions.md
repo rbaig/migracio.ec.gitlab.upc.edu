@@ -599,6 +599,18 @@ Les presentacions amb dos punts tampoc no són remissions: «es poden declarar �
 
 Als enunciats dels problemes, el peu que diu què fa el codi pot donar la resposta: «Expliqueu … què fa el fragment següent», «Quin és el valor final de `Q` després d'executar el codi següent?». En aquests casos, Claude Code hi va posar un peu neutre, que diu de quin apartat és («Fragment de l'apartat b).»), i ho va proposar a l'usuari com a part de la regla.
 
+### D-121
+
+**Els llistats i les remissions als blocs de codi, comprovats** · `13_contrib.qmd §Referències creuades` i `§Comprovacions per nivells`; `25_scripts/verifica_llistats.py`, `25_scripts/comprova.py`, `25_scripts/autoproves.py` · 2026-10-14
+
+Petició de l'usuari (2026-10-14), en acabar les remissions `@lst-` ([D-117](#d-117)), literal: «M'interessa que hi hagi un sistema bastant complet de testos automàtics, per exemple, pels revisors externs. Automatitza la part dels testos que has fet en aquesta sessió que et sembli raonable i integra-ho al sistema de testos existent. Documenta bé els testos que introdueixis i com es disparen.» Les comprovacions d'aquella sessió s'havien fet amb scripts de prova, fora del repositori.
+
+Què es va automatitzar, a `verifica_llistats.py`: la forma dels llistats (L1, L2 i L4, que aturen; el peu sense punt, L3, que avisa), la correspondència entre llistats i remissions (L5 i L6, que aturen), la cerca de remissions per posició (L7, que avisa) i, després del render, la numeració de l'HTML i del PDF (`--sortida`). Les dues primeres coses vénen de la regla mateixa; L7, de l'escombrada del bloc 2 de D-117, que es va fer a mà amb el paràgraf de davant i el de darrere de cada bloc i un veredicte cas a cas; i `--sortida`, de la verificació de cada render, que comparava les dues numeracions a mà. L7 és un avís, i a les línies afegides: la tria entre una remissió i la prosa sobre l'execució («la instrucció següent») o una presentació («es declara així:») és de qui escriu.
+
+L7 es va calibrar sobre el llibre d'abans de D-117 (`0e5431d`): hi marca 86 línies, i totes van ser remissions que es van reescriure, cap fals positiu; sobre el llibre de després, cap. Tres regles van sortir de la calibració: al paràgraf de darrere d'un bloc només compten les formes que miren enrere («anterior», «aquest…»), perquè un «següent» de darrere apunta al que ve després; «de la manera següent» és una presentació (la decisió de D-117); i un mot de codi pot fer de nom («el `for` anterior»). Una quarta va sortir de provar `comprova.py` d'extrem a extrem, amb un error posat a posta en un fitxer: d'un bloc dins d'un llistat, els paràgrafs que compten són els de davant i de darrere del div, i no els del bloc, que topen amb les tanques del div. Se n'escapa una remissió que la frase separa del bloc amb una llista (la d'L5, «el programa C següent, repartint el codi en dos fitxers»).
+
+Com es disparen: la comprovació «Llistats» de `comprova.py`, en tocar un `.qmd`; «Llistats a la sortida», només a `make comprova-tot`; i les autoproves, en tocar `verifica_llistats.py`, amb dues bateries noves, `llistats` (16 casos, entre els quals els que no s'han de marcar) i `llistats_sortida` (5 casos, amb un HTML, un `.tex` i un text de PDF de prova, sense render). No es va automatitzar: la revisió visual, la mesura de les capçaleres soles al peu de la pàgina, que és una tasca oberta del `TODO.md` i que, quan es resolgui, pot passar a ser una comprovació de `comprova-tot`, ni la integració amb les sessions paral·leles, que és operació de git.
+
 ### D-45
 
 **El títol dels blocs de pseudocodi** · `13_contrib.qmd §Blocs de codi` · 2026-10-01 · `f066a8e`

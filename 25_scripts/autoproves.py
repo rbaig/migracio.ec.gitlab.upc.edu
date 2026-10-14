@@ -453,6 +453,99 @@ def executa_classificacio(dir_):
     return not errors, "\n".join(errors)
 
 
+# ---------------------------------------------------------------------------
+# llistats: verifica_llistats.revisa() i verifica_llistats.sortida() (D-117, D-121)
+# ---------------------------------------------------------------------------
+A1_LLISTATS = """# A1 {#sec-a1}
+
+El @lst-suma suma dos registres.
+
+::: {#lst-suma}
+```{.s filename="RV32I"}
+        add     t0, t1, t2
+```
+Suma de dos registres.
+:::
+
+Un bloc sense remissió, que no és un llistat:
+
+```{.s filename="RV32I"}
+        nop
+```
+"""
+A1 = "01_apunts/A1.qmd"
+BLOC = '\n```{.s filename="RV32I"}\n        sub     t0, t1, t2\n```\n'
+
+
+def executa_llistats(dir_):
+    v = amb_arrel("verifica_llistats", dir_)
+    trobat = [str(t) for t in v.revisa(dir_)]
+    return not trobat, "\n".join(trobat)
+
+
+CASOS_LLISTATS = [
+    Cas("Un llistat en forma de div, amb el peu i la remissió, i un bloc que no és un llistat"),
+    Cas("L1: la forma d'atribut (`lst-cap`), que dins d'un callout dona dos números al PDF",
+        afegeix={A1: '\nEl @lst-attr.\n\n```{#lst-attr .s filename="RV32I" lst-cap="Peu."}\n        nop\n```\n'},
+        espera=["L1 forma d'atribut"]),
+    Cas("L2: un div `#lst-` sense bloc de codi", afegeix={A1: "\nEl @lst-buit.\n\n::: {#lst-buit}\nNomés text.\n:::\n"},
+        espera=["L2 #lst-buit sense bloc de codi"]),
+    Cas("L2: un div `#lst-` sense peu", subst=[(A1, "```\nSuma de dos registres.\n:::", "```\n:::")],
+        espera=["L2 #lst-suma sense peu"]),
+    Cas("L3: un peu que no acaba en punt", subst=[(A1, "Suma de dos registres.", "Suma de dos registres")],
+        espera=["L3 el peu de #lst-suma"]),
+    Cas("L4: un llistat dins d'un bloc `when-format`",
+        afegeix={A1: '\nEl @lst-html.\n\n::: {.content-visible when-format="html"}\n::: {#lst-html}\n```\nx\n```\nPeu.\n:::\n:::\n'},
+        espera=["L4 #lst-html dins d'un bloc when-format"]),
+    Cas("L5: un llistat sense cap remissió", subst=[(A1, "El @lst-suma suma", "El codi suma")],
+        espera=["L5 #lst-suma sense cap remissió"]),
+    Cas("L6: una remissió a un llistat que no existeix", afegeix={A1: "\nVegeu el @lst-cap.\n"},
+        espera=["L6 @lst-cap: no hi ha cap llistat"]),
+    Cas("L7: «el codi següent», al paràgraf de davant d'un bloc", afegeix={A1: "\nEl codi següent resta:\n" + BLOC},
+        espera=["L7 remissió per posició", "«codi següent»"]),
+    Cas("L7: «la funció C anterior», al paràgraf de davant", afegeix={A1: "\nTradueix la funció C anterior:\n" + BLOC},
+        espera=["«funció C anterior»"]),
+    Cas("L7: «aquest programa», al paràgraf de darrere", afegeix={A1: BLOC + "\nCarregueu aquest programa a RARS.\n"},
+        espera=["«aquest programa»"]),
+    Cas("L7: «el codi següent», davant del div d'un llistat (el paràgraf de davant és el del div, no el del bloc)",
+        afegeix={A1: '\nEl codi següent multiplica:\n\n::: {#lst-mul}\n```{.s filename="RV32I"}\n        mul     t0, t1, t2\n```\n'
+                     'Producte.\n:::\n'},
+        espera=["«codi següent»"]),
+    Cas("L7: un mot de codi, «el `for` anterior»", afegeix={A1: "\nEn el `for` anterior, el punter avança:\n" + BLOC},
+        espera=["«`for` anterior»"]),
+    Cas("Un «següents» al paràgraf de darrere apunta al que ve després, no al bloc",
+        afegeix={A1: BLOC + "\nTraduïu les sentències següents:\n\na) `x = 1;`\n"}),
+    Cas("Una presentació adverbial no és una remissió (D-117)",
+        afegeix={A1: "\nEs declara de la manera següent:\n" + BLOC + "\nI en C es declara així:\n" + BLOC}),
+    Cas("Una remissió per posició dins d'un bloc de codi no compta",
+        afegeix={A1: '\n```{.s filename="RV32I"}\n        nop             # el codi següent\n```\n'}),
+]
+
+HTML_LLISTATS = ('<div id="lst-suma" class="s listing quarto-float">\n<figure class="quarto-float">\n'
+                 '<figcaption class="quarto-float-caption">\nCodi&nbsp;1.1: Suma de dos registres.\n</figcaption>\n')
+BASE_LLISTATS_SORTIDA = {A1: A1_LLISTATS, "_book/01_apunts/A1.html": HTML_LLISTATS,
+                         "Estructura-de-computadors.tex": "\\caption{\\label{lst-suma}\\protect\\ecfitxer{RV32I}Suma.}\n",
+                         "pdf.txt": "Codi 1.1: Suma de dos registres.\nRV32I\n        add     t0, t1, t2\nRV32I\n"}
+
+
+def executa_llistats_sortida(dir_):
+    v = amb_arrel("verifica_llistats", dir_)
+    trobat = v.sortida(dir_, text_pdf=(dir_ / "pdf.txt").read_text(encoding="utf-8"))
+    return not trobat, "\n".join(trobat)
+
+
+CASOS_LLISTATS_SORTIDA = [
+    Cas("El llistat, amb la mateixa posició a l'HTML i al PDF, i cap bloc més numerat"),
+    Cas("Una posició diferent a l'HTML i al PDF",
+        subst=[("_book/01_apunts/A1.html", "Codi&nbsp;1.1", "Codi&nbsp;1.2")], espera=["la posició dins del capítol"]),
+    Cas("El mateix número de posició amb un altre número de capítol, com P2 (11 a l'HTML, 2 al PDF), és bo",
+        subst=[("_book/01_apunts/A1.html", "Codi&nbsp;1.1", "Codi&nbsp;11.1")]),
+    Cas("Un llistat que no és a l'HTML", subst=[("_book/01_apunts/A1.html", 'id="lst-suma"', 'id="lst-altre"')],
+        espera=["#lst-suma: no és a l'HTML"]),
+    Cas("Un bloc numerat al PDF que no és un llistat (preamble.tex o llistats.lua espatllats)",
+        afegeix={"pdf.txt": "Codi 1.2: RV32I\n"}, espera=["el PDF numera 1 blocs més"]),
+]
+
 BATERIES = [
     Bateria("sigles", "`sigles.py --comprova`", "§Sigles, símbols i notació (D-89, D-118)", BASE_SIGLES,
             executa_sigles, CASOS_SIGLES),
@@ -469,6 +562,10 @@ BATERIES = [
     Bateria("classificacio", "`comprova.py` (`autotest()`)", "§Comprovacions per nivells (D-103)", {},
             executa_classificacio, [Cas("Els fitxers d'exemple, a la classe i al nivell que els toca, i les taules de la "
                                         "guia, generades")]),
+    Bateria("llistats", "`verifica_llistats.py`", "§Referències creuades (D-117, D-121)", {A1: A1_LLISTATS},
+            executa_llistats, CASOS_LLISTATS),
+    Bateria("llistats_sortida", "`verifica_llistats.py --sortida`", "§Referències creuades (D-117, D-121)",
+            BASE_LLISTATS_SORTIDA, executa_llistats_sortida, CASOS_LLISTATS_SORTIDA),
 ]
 
 
