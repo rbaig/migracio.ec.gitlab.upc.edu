@@ -126,8 +126,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`. 
   EOF
   ```
 
-- **Equacions: reavaluar MathML quan Quarto adopti MathJax 4** (partició de línies nativa). La decisió és mantenir MathJax 3 (prova de 2026-07-04, amb T5 i `-M html-math-method:mathml`): MathML funciona i treu el JS de MathJax (render instantani i sense CDN), però a Chrome la tipografia és inferior (MathML Core), els números de les equacions surten en línia (`\qquad(5.1)`) en lloc d'alineats a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`.
-
 ### Eines
 
 - **Neteja profunda dels fitxers operatius** (petició de l'usuari, 2026-10-14; política a [D-122](24_specs/registre_de_decisions.md#d-122); fases 10a–10d de `CLAUDE.md §Pla de treball`, una sessió per fase). S0, 10a, 10b i 10c, fetes el 2026-10-14 (el detall, als missatges dels commits). Queda la **10d, `13_contrib.qmd`, `svg.md` i `README.md`**, amb les decisions de l'usuari sobre la proposta de Claude Code, totes amb la recomanació: la taula de les autoproves, reduïda a una fila per bateria (els casos, a `autoproves.py --llista`); els paràgrafs que descriuen les eines; el text transitori («Encara no tenen autoproves…»); la instal·lació i el render, al `README.md`, i la guia hi remet; a `svg.md`, la referència a `extract_pdf_figure.py`, que no ha existit mai, i les taules que repeteixen `_quarto.yml`. Dos punts que la 10c ha vist fora del seu abast, per proposar a la 10d: l'entrada «Equacions: reavaluar MathML…» porta una decisió presa (mantenir MathJax 3) que no és a `13_contrib.qmd`, on han d'aterrar les decisions; i el paràgraf de sobre la taula de `CLAUDE.md §Pla de treball` encadena tres punters a git per dir on són les fases fetes.
@@ -147,6 +145,8 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`. 
 ## Llarg termini
 
 Tasques sense data ni urgència.
+
+- **Equacions: reavaluar MathML quan Quarto adopti MathJax 4**, que parteix les línies sol. La decisió de mantenir MathJax 3, amb el perquè, és a [D-126](24_specs/registre_de_decisions.md#d-126).
 
 - **Les formes catalanes de les expansions de sigles que avui només són en anglès** (petició de l'usuari, 2026-10-14; [D-118](24_specs/registre_de_decisions.md#d-118)). El format únic de l'expansió admet «forma catalana (*expansió anglesa*, SIGLA)», però les sigles de `[sigles]` de `24_specs/termes.toml` només tenen la forma catalana que el text ja feia servir. N'hi ha 28 amb només l'expansió anglesa: 13 són noms propis (ARM, ASCII, ELF, GCC, HTML, IEC, IEEE, ISO, JRE, MARS, MIPS, POSIX i RARS), que es queden en anglès, i les altres 15 en poden tenir una de catalana segons les fonts lèxiques de [D-116](24_specs/registre_de_decisions.md#d-116): ABI, AMAT (l'equivalent anglès de TAM: potser es queda així), AMO, API, CISC, CMOS, FIFO, LRU, MRU, NaN, RAM, RISC, ROM, TLB i ULP. Per a cadascuna: la consulta de les fonts, el camp `ca` a `termes.toml` i, si n'hi ha forma, l'expansió del text, on la comprovació de les sigles (`25_scripts/sigles.py`) la demanarà. Afecta A1–A8: s'ha de coordinar amb els equips (D-65).
 

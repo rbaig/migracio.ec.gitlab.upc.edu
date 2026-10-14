@@ -39,7 +39,7 @@ Els PDF originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas 
 
 - **Revisió interna: tancada sencera** (declaracions de l'usuari): teoria i laboratori, el 2026-09-23; enunciats i solucions, el 2026-10-01.
 - **Revisió externa: en curs.** La fan altres professors de l'assignatura. Abast (declaracions de l'usuari, 2026-10-06): A1–A8, també T3–T6; A9, Px, Sx i Ly en queden fora, de moment; les branques de revisió les crea cada equip. L'estat de les branques és a `TODO.md §Decisions obertes → Branques del remot`. Les revisions de T3 (`!5`), T4–T6 (`!7`) i T8 (`!8`, fins a §8.7 exclosa) ja són a `main`. **Els revisors hi tornen a treballar des del 2026-10-14**: l'usuari els va comunicar aquell dia que podien reprendre la revisió. Des de llavors, un canvi transversal a A1–A8 es coordina amb els equips ([D-65](24_specs/registre_de_decisions.md#d-65)), i les sessions de Claude Code treballen a la branca `operacions` (§Flux de treball, [D-123](24_specs/registre_de_decisions.md#d-123)).
-- L'historial de les dues revisions i de les fases fetes del pla és a git: el registre de decisions de l'etiqueta `arxiu/pre-neteja-2026-10-14` el porta a `§Historial de l'estat del projecte` ([D-122](24_specs/registre_de_decisions.md#d-122)).
+- L'historial de les dues revisions i de les fases fetes del pla és a git ([D-122](24_specs/registre_de_decisions.md#d-122)): fins a la fase 9, a `§Historial de l'estat del projecte` del registre de decisions de l'etiqueta `arxiu/pre-neteja-2026-10-14`; des de la fase 10, als missatges dels commits que les fan (`git log --grep '^Fase'`).
 - El fitxer en curs (WiP) l'indica l'usuari a l'inici de cada xat.
 
 ### Regles de la revisió externa
@@ -52,7 +52,7 @@ Els PDF originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas 
 
 ### Pla de treball
 
-Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ són allà. **Una sessió nova per fase o per grup de fases**, amb el model de la columna: aquesta taula és la que ho decideix, no el nom de la tasca. Les fases fetes (de la 1 a la 7i, la 8a i la 9; del 2026-10-01 al 2026-10-10), amb la descripció, les decisions i els commits de cadascuna, són a `git show arxiu/pre-neteja-2026-10-14:24_specs/registre_de_decisions.md` (`§Historial de l'estat del projecte → Fases del pla de treball`); les fases següents, als missatges dels seus commits; la taula que les llistava amb la sessió i el model de cadascuna, a `git show c29b58d:CLAUDE.md`.
+Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ són allà. **Una sessió nova per fase o per grup de fases**, amb el model de la columna: aquesta taula és la que ho decideix, no el nom de la tasca.
 
 | Fase | Què | Estat | Sessió | Model i effort |
 | :---: | :--- | :--- | :--- | :--- |
