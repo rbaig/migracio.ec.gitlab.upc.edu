@@ -2,13 +2,13 @@
 
 Tasques pendents i decisions obertes. Ha de quedar buit: cap entrada viva. Cada entrada porta la comprovació que la sosté. Una entrada que es tanca en surt, i l'historial de les parts ja fetes d'una entrada viva, també: tots dos van **literals** a l'arxiu, [`24_specs/arxiu_todo.md`](24_specs/arxiu_todo.md), amb el motiu i on en queda còpia ([D-91](24_specs/registre_de_decisions.md#d-91)). L'arxiu no es llegeix en començar una sessió.
 
-**14 entrades vives** (recompte del 2026-10-14, en afegir a §Tasques transversals «Autoproves de les comprovacions que fan servir eines externes»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
+**15 entrades vives** (recompte del 2026-10-14, en afegir a §Tasques globals → Eines «Workflows de GitHub: validar-ne el YAML a `comprova.py`»; abans, 14, en afegir a §Tasques transversals «Autoproves de les comprovacions que fan servir eines externes»; abans, 11, en retirar de §Tasques transversals «Revisió completa de la norma de lèxic anglès/català», executada; l'historial dels recomptes és a `git log -p TODO.md`, i l'última versió que el portava, a `git show c29b58d:TODO.md`). Una entrada = una vinyeta de primer nivell (`^- `); les vinyetes indentades en són sub-ítems i no compten. Ordre que ho mesura:
 
 ```bash
 grep -cE '^- ' TODO.md
 ```
 
-Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 1 · `§Tasques globals` 4 · `§Llarg termini` 1 (suma 14, regla 12 bis). Ordre que el mesura, secció per secció:
+Repartiment: `§Decisions obertes` 4 · `§Tasques transversals` 4 · `§Tasques per tema` 1 · `§Tasques globals` 5 · `§Llarg termini` 1 (suma 15, regla 12 bis). Ordre que el mesura, secció per secció:
 
 ```bash
 awk '/^## /{s=$0} /^- /{c[s]++} END{for(k in c) print c[k], k}' TODO.md
@@ -138,6 +138,14 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`.
   ```
 
 - **Equacions a MathML**: **decisió presa — mantenir MathJax 3**; el pendent és reavaluar quan Quarto adopti MathJax 4 (partició de línies nativa). Avaluació preliminar (2026-07-04, prova real amb T5 + `-M html-math-method:mathml`): funciona (`underbrace`, `cases`, taules amb math correctes a Chrome) i elimina el JS de MathJax (render instantani, offline sense CDN). En contra: tipografia inferior a Chrome (MathML Core), numeració d'equacions inline (`\qquad(5.1)`) en lloc d'alineada a la dreta, i caldria adaptar els selectors `mjx-container` de `styles.css` a `math[display="block"]`. El desbordament mòbil ja està resolt via CSS.
+
+### Eines
+
+- **Workflows de GitHub: validar-ne el YAML a `comprova.py`** (petició de l'usuari, 2026-10-14, en corregir la línia 51 de `.github/workflows/publish.yml`, literal: «Valora si cal fer extensiu el canvi a totes les entrades -name. Si no vols fer-ho en aquesta sessió, apunta-ho a TODO.md»). La línia, `- name: Genera les taules del lèxic (auto_termes/: glossari, sigles i formes)`, trencava el YAML des de `54f9c4b` (el «: » d'un valor sense cometes en fa una clau) i aturava la publicació; ara va entre cometes. **Valoració de Claude Code**: no cal posar cometes als 20 `name:` (13 de `publish.yml` i 7 de `comprova.yml`), perquè només aquest portava «: », i el risc no és dels `name:` sinó de qualsevol valor sense cometes amb «: » o « #» (també un `run:`). La protecció és una comprovació: avui `.github/` és de nivell 0 i res no en mira la sintaxi, i per això no ho va aturar res. **Proposta**: que la comprovació «Eines» de `comprova.py` validi el YAML dels `.github/workflows/*.yml` canviats (`yaml.safe_load`; «omesa» si no hi ha PyYAML, com les altres eines externes), amb la seva bateria d'autoproves (un workflow vàlid, i un amb un «: » en un valor sense cometes). Sessió curta (Sonnet, effort baix o mitjà).
+
+  ```bash
+  python3 -c "import glob, yaml; [yaml.safe_load(open(f)) for f in glob.glob('.github/workflows/*.yml')]; print('vàlid')"   # vàlid (2026-10-14, després de la correcció)
+  ```
 
 ---
 
