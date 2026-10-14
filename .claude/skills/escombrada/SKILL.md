@@ -28,7 +28,7 @@ Copia-hi la línia `Ordre:` i la data o el commit de la línia `# Mesura:`. Una 
 
 - Si l'script acaba amb `✗` (el repartiment no suma el total), atura't: no publiquis cap de les dues xifres.
 - Si una xifra no coincideix amb una de publicada, la primera pregunta és **quan**: torna-la a mesurar amb `--commit` al commit on es va publicar.
-- Si trobes ocurrències als fitxers exclosos que no són cites, l'afirmació és la que està malament, no l'exclusió (regla 12, ⚠️).
+- Si trobes ocurrències als fitxers exclosos que no són cites, l'afirmació és la que està malament, no l'exclusió (regla 12).
 
 ## El que l'script no fa
 

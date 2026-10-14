@@ -849,7 +849,7 @@ make comprova-tot   # abans d'obrir una MR o de publicar: totes, amb el PDF i RA
 <!-- comprova:comprovacions:inici — la genera 25_scripts/comprova.py --taula; no l'editeu a mà -->
 | Comprovació | Què mira | Quan | Efecte |
 | :--- | :--- | :--- | :--- |
-| Registres | Els registres versionats són al dia: el diccionari de termes, els SVG de model (a) i les taules generades d'aquesta secció (els arregla `make registres`); el recompte de la capçalera del `TODO.md` i l'arbre del `README.md` (a mà) | Sempre | Atura |
+| Registres | Els registres versionats són al dia: el diccionari de termes, els SVG de model (a) i les taules generades d'aquesta secció (els arregla `make registres`); l'arbre del `README.md` (a mà) | Sempre | Atura |
 | Autoproves | Les comprovacions mateixes: cada eina provada, sobre llibres mínims amb errors coneguts, troba els que ha de trobar i cap més (`autoproves.py`; §Autoproves de les comprovacions, D-120) | En tocar una eina provada o `autoproves.py` | Atura |
 | Lèxic | Les presentacions «**terme català** (*english*)» del text coincideixen amb `24_specs/termes.toml`: cap terme sense entrada, cap forma catalana diferent, cap terme del fitxer sense presentació (`gen_glossari.py --comprova`; D-115) | Sempre | Atura |
 | Sigles | Les sigles del text, contra `[sigles]` de `24_specs/termes.toml`: l'expansió a la primera aparició del llibre, en el format únic; cap expansió en un altre format; cap sigla del text que no sigui a la taula ni a `[no_sigles]`, ni cap en plural; cap sigla de la taula sense aparició (`sigles.py --comprova`; D-89, D-118) | Sempre | Atura |
@@ -949,7 +949,7 @@ Un **registre** és un fitxer, o una part d'un fitxer, que descriu el repositori
 
 1. Si es pot generar en renderitzar, es genera i no es versiona: l'índex «📑 Continguts» (`continguts.lua`), `auto_figs/`, `auto_riscv/` i les taules del lèxic, `auto_termes/`: el glossari de termes, la taula de sigles i la de formes que no s'han de fer servir (`gen_glossari.py`, a partir de `24_specs/termes.toml`).
 2. Si s'ha de versionar, el genera un script amb `--comprova`, i `make registres` els regenera tots: el diccionari de termes (`gen_glossari.py --diccionari`, que VS Code llegeix sense cap render), els SVG de model (a) (`gen_T4_sumador.py`, `gen_T7.py` i `gen_T8.py`) i les taules generades de §Comprovacions per nivells (les dues de `comprova.py --taula` i la de les autoproves, `autoproves.py --taula`). Un registre desactualitzat atura el commit.
-3. Si conté text que no es pot generar, es manté a mà, i `comprova.py` en vigila les files: l'arbre del `README.md` i el recompte de la capçalera del `TODO.md` aturen el commit; les taules de les peces del render (§Renderitzar el projecte), del directori `.claude/` (§IA) i dels sufixos d'origen (§Convencions SVG), i els mots del diccionari del projecte que ja no fa servir cap fitxer, avisen.
+3. Si conté text que no es pot generar, es manté a mà, i `comprova.py` en vigila les files: l'arbre del `README.md` atura el commit; les taules de les peces del render (§Renderitzar el projecte), del directori `.claude/` (§IA) i dels sufixos d'origen (§Convencions SVG), i els mots del diccionari del projecte que ja no fa servir cap fitxer, avisen.
 4. Una llista que es pot obtenir amb una ordre no s'escriu: s'escriu l'ordre. L'inventari de figures es genera quan es demana (`make inventari`), i qui fa servir un fitxer, amb `git grep`.
 5. Les durades s'escriuen en rangs («1–3 min»), no amb la xifra d'una mesura: una xifra exacta seria un registre més, que caldria tornar a mesurar.
 
@@ -1110,7 +1110,7 @@ Abans d'incorporar qualsevol contingut generat per una IA al repositori, cal fer
 
 #### Claude Code: el directori `.claude/`
 
-El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi troba les mateixes regles. Els hooks i els subagents apliquen regles d'aquest fitxer o de `CLAUDE.md`. Les skills contenen els procediments que només fan servir aquestes sessions —les escombrades, la verificació del render, RARS, les figures i el tancament d'una fase—, amb les regles pròpies del procediment i el cas que justifica cadascuna; les regles del llibre continuen sent aquí.
+El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi troba les mateixes regles. Els hooks i els subagents apliquen regles d'aquest fitxer o de `CLAUDE.md`. Les skills contenen els procediments que només fan servir aquestes sessions —les escombrades, la verificació del render, RARS i les figures—, amb les regles pròpies del procediment i el cas que justifica cadascuna; les regles del llibre continuen sent aquí.
 
 | Peça | Què fa | Regla |
 | :--- | :--- | :--- |
@@ -1121,7 +1121,6 @@ El directori `.claude/` és versionat: qui obri el repositori amb Claude Code hi
 | Skill `render` | Verificació del render: esperar-lo en segon pla, referències trencades, HTML en clar i en fosc, registre de LaTeX | §Verificació de l'entorn, §Renderitzar el projecte |
 | Skill `rars` | Verificació empírica a RARS 1.6 sense interfície, i `verifica_laboratoris.py` | §Verificació empírica a RARS |
 | Skill `figures` | Llista de comprovacions per a una figura nova, canviada o retirada | §Figures i material gràfic |
-| Skill `tancar-fase` | El tancament d'una fase del pla o d'una entrada executada del `TODO.md`: l'entrada fora, el recompte i un sol commit. Només la invoca l'usuari (`/tancar-fase`) | `CLAUDE.md §Pla de treball`, [D-122]({{< var decisions >}}#d-122) |
 | Subagent `auditor-xifres` | Reprodueix les xifres que publica un commit o un rang (Opus, effort alt, només lectura) | §Escombrades i verificació del corpus |
 | Subagent `revisor-figures` | Compara les figures que canvia un diff abans i després, en clar i en fosc, i informa de les diferències que el canvi declarat no explica (Sonnet, només informa) | §Figures i material gràfic |
 | Subagent `revisor-linguistic` | Revisió en català normatiu d'un diff: parteix de les troballes d'`ortografia.py` i `gramatica.py` i llegeix el que les eines no veuen, com la terminologia, el registre i la claredat (Sonnet, només informa) | §Llenguatge |

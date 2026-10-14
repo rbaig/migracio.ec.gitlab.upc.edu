@@ -8,88 +8,56 @@ Elaborat amb [Quarto](https://quarto.org/) i [Claude](https://claude.ai/) (Anthr
 
 ## Estructura del projecte
 
-### Teoria (T1–T9)
-
-Directori `01_apunts/`:
-
-| Fitxer | Contingut |
-| :--- | :--- |
-| `A1.qmd`–`A9.qmd` | Teoria del Tema x (x = 1–9) |
-
-Directori `02_problemes/`:
-
-| Fitxer | Contingut |
-| :--- | :--- |
-| `P1.qmd`–`P9.qmd` | Problemes: enunciats del Tema x (x = 1–9) |
-
-Directori `03_solucions/`:
-
-| Fitxer | Contingut |
-| :--- | :--- |
-| `S1.qmd`–`S9.qmd` | Solucions d'una selecció dels problemes del Tema x (x = 1–9) |
-
-La correspondència entre els temes d'EC i els PDF originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6; els PDF T6–T8 corresponen als temes T7–T9.
-
-### Laboratori (L1–L6)
-
-Directori `04_laboratori/`:
-
-| Fitxer | Contingut |
-| :--- | :--- |
-| `L1.qmd`–`L6.qmd` | Laboratori y, Ly (y = 1–6) |
-
-### Fitxers i directoris
-
-Un fitxer o directori de l'arrel per línia. `make comprova` comprova que la llista coincideix amb els fitxers versionats (`13_contrib.qmd §Comprovacions per nivells`).
+Un fitxer o directori de l'arrel per línia; `make comprova` comprova que la llista coincideix amb els fitxers versionats (`13_contrib.qmd §Registres`).
 
 ```
 .
-├── .cache/                     # Generat · RARS i LanguageTool, baixats pels scripts que els fan servir (no versionat, `.gitignore`)
+├── .cache/                     # Generat · RARS i LanguageTool, baixats pels scripts (no versionat)
 ├── .claude/                    # Claude Code: hooks, skills i subagents (`13_contrib.qmd §IA`)
-├── .github/                    # Workflows de GitHub: la publicació a GitHub Pages i les comprovacions de les branques
-├── .githooks/                  # Hooks de git opcionals: `make instal·la-hooks`
+├── .github/                    # Workflows de GitHub: publicació i comprovacions de les branques
+├── .githooks/                  # Hooks de git opcionals (`make instal·la-hooks`)
 ├── .vscode/                    # VS Code: corrector ortogràfic i extensions recomanades
-├── 01_apunts/                  # Apunts        (`Ax.qmd`, x ∈ [1, 9])
-├── 02_problemes/               # Problemes     (`Px.qmd`, x ∈ [1, 9])
-├── 03_solucions/               # Solucions     (`Sx.qmd`, x ∈ [1, 9])
-├── 04_laboratori/              # Laboratori    (`Ly.qmd`, y ∈ [1, 6]) i calendari
+├── 01_apunts/                  # Teoria: `Ax.qmd`, tema x (x = 1–9)
+├── 02_problemes/               # Enunciats dels problemes: `Px.qmd`
+├── 03_solucions/               # Solucions d'una selecció dels problemes: `Sx.qmd`
+├── 04_laboratori/              # Laboratori: `Ly.qmd`, sessió y (y = 1–6), i el calendari
 ├── 05_diapositives/            # Reservat (encara sense contingut)
 ├── 21_riscv/                   # Fragments de taula del compendi RISC-V i dels callouts
-├── 22_figs_originals/          # Figures natives (SVG); `conservats/`, les que el llibre ja no consumeix
+├── 22_figs_originals/          # Figures natives (SVG)
 ├── 23_figs_externes/           # Figures d'una font externa
-├── 24_specs/                   # Especificacions: figures (`svg.md` i els `.toml`), registre de decisions, lèxic (`termes.toml`), diccionaris, gramàtica
-├── 25_scripts/                 # Generadors del pre-render, filtres Lua i eines de comprovació
-├── _book/                      # Generat · Quarto: directori de sortida
-├── auto_figs/                  # Generat · Figures per script (el pre-render l'esborra i el refà)
-├── auto_riscv/                 # Generat · Taules fusionades de `11_riscv.qmd` (`make taules`; `make render` ja el crida)
-├── auto_termes/                # Generat · Glossari de termes, taula de sigles i taula de formes, de `24_specs/termes.toml` (`make taules`; `make render` ja el crida)
+├── 24_specs/                   # Especificacions: figures, lèxic, registre de decisions
+├── 25_scripts/                 # Generadors del pre-render, filtres Lua i comprovacions
+├── _book/                      # Generat · Sortida de Quarto
+├── auto_figs/                  # Generat · Figures per script (pre-render)
+├── auto_riscv/                 # Generat · Taules fusionades de `11_riscv.qmd`
+├── auto_termes/                # Generat · Glossari, sigles i formes, de `24_specs/termes.toml`
 ├── .gitignore
-├── 10_continguts.qmd           # Pàgina «📑 Continguts»: l'índex dels apunts, només a l'HTML; l'escriu `25_scripts/continguts.lua`
+├── 10_continguts.qmd           # Índex dels apunts (només HTML)
 ├── 11_riscv.qmd                # Compendi de referència RISC-V
-├── 12_sigles_simbols.qmd       # Glossari de sigles, símbols i termes
-├── 13_contrib.qmd              # Guia de contribució (capítol «Contribueix-hi»): les regles del llibre i el flux de treball
-├── 14_LICENSE.qmd              # Capítol de la llicència i els reconeixements
-├── 15_bibliografia.bib         # Base de dades bibliogràfica (BibTeX)
-├── CLAUDE.md                   # Instruccions operatives per a les sessions de Claude Code
-├── custom_dark.scss            # Estils addicionals del mode fosc (HTML)
-├── custom_light.scss           # Estils addicionals del mode clar (HTML)
+├── 12_sigles_simbols.qmd       # Sigles, símbols, notació i termes
+├── 13_contrib.qmd              # Guia de contribució: les regles del llibre
+├── 14_LICENSE.qmd              # Llicència i reconeixements
+├── 15_bibliografia.bib         # Bibliografia (BibTeX)
+├── CLAUDE.md                   # Instruccions de les sessions de Claude Code
+├── custom_dark.scss            # Estils del mode fosc (HTML)
+├── custom_light.scss           # Estils del mode clar (HTML)
 ├── custom.scss                 # Estils comuns als dos modes (HTML)
-├── Estructura-de-computadors.tex   # Generat · Font LaTeX del PDF (no versionada)
+├── Estructura-de-computadors.tex   # Generat · Font LaTeX del PDF
 ├── figures_dinamiques.html     # Navegador de passos de les figures dinàmiques (HTML)
-├── formules_en_linia.html      # Desplaçament horitzontal de les fórmules en línia que no caben (HTML)
-├── ieee.csl                    # Estil de citació IEEE (CSL)
-├── index.qmd                   # Pàgina de presentació (avaluació, eines, bibliografia)
-├── LICENSE.md                  # Text de la llicència (l'inclou `14_LICENSE.qmd`)
-├── Makefile                    # Les ordres del projecte: `make help`
-├── preamble.tex                # Preàmbul LaTeX addicional (PDF)
+├── formules_en_linia.html      # Desplaçament de les fórmules en línia que no caben (HTML)
+├── ieee.csl                    # Estil de citació IEEE
+├── index.qmd                   # Presentació (avaluació, eines, bibliografia)
+├── LICENSE.md                  # Text de la llicència
+├── Makefile                    # Ordres del projecte (`make help`)
+├── preamble.tex                # Preàmbul LaTeX (PDF)
 ├── _quarto.yml                 # Configuració del projecte Quarto
 ├── README.md
 ├── styles.css                  # Estils addicionals (HTML)
-├── TODO.md                     # Tasques pendents (contingut transitori)
-└── _variables.yml              # Variables globals del projecte (títols de tema, URL, etc.)
+├── TODO.md                     # Tasques pendents
+└── _variables.yml              # Variables globals (títols de tema, URL…)
 ```
 
-**Temes.** Un tema `Tx` (T1–T9) és el conjunt dels seus apunts, problemes i solucions, `Ax.qmd`, `Px.qmd` i `Sx.qmd`; és el sentit de «T3» a la guia, al `TODO.md` i al registre de decisions (`13_contrib.qmd §T2 i T3`, per exemple). El laboratori (`Ly.qmd`) es numera per sessions, no per temes.
+**Temes.** Un tema `Tx` (T1–T9) és el conjunt dels seus apunts, problemes i solucions, `Ax.qmd`, `Px.qmd` i `Sx.qmd`; és el sentit de «T3» a la guia, al `TODO.md` i al registre de decisions. El laboratori (`Ly.qmd`) es numera per sessions, no per temes. La correspondència entre els temes d'EC i els PDF originals (MIPS) **no és 1:1**: la introducció de rendiment, potència i llei d'Amdahl (PDF T1) s'ha segregat al T6, i els PDF T6–T8 corresponen als temes T7–T9.
 
 ## Renderitzar el projecte
 

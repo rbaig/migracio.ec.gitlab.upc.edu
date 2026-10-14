@@ -295,34 +295,7 @@ def c_registres(ctx):
     for marca in TAULES_GUIA:
         if bloc_guia(marca) != taula_guia(marca):
             r.append((ERROR, f'la taula «{marca}» de 13_contrib.qmd no és al dia (make registres)'))
-    r += recompte_todo()
     r += arbre_readme()
-    return r
-
-
-def recompte_todo():
-    text = (ARREL / 'TODO.md').read_text(encoding='utf-8')
-    vives = len(re.findall(r'^- ', text, re.M))
-    per_seccio, seccio = {}, None
-    for l in text.split('\n'):
-        if l.startswith('## '):
-            seccio = l[3:].strip()
-        elif l.startswith('- ') and seccio:
-            per_seccio[seccio] = per_seccio.get(seccio, 0) + 1
-    r = []
-    m = re.search(r'\*\*(\d+) entrades vives\*\*', text)
-    if not m or int(m.group(1)) != vives:
-        r.append((ERROR, f'TODO.md diu {m.group(1) if m else "?"} entrades vives i en té {vives} '
-                         f'(grep -cE \'^- \' TODO.md): cal actualitzar-ne la capçalera'))
-    rep = re.search(r'^Repartiment: (.*)$', text, re.M)
-    if rep:
-        escrit = {s: int(n) for s, n in re.findall(r'`§([^`]+)` (\d+)', rep.group(1))}
-        suma = re.search(r'\(suma (\d+)', rep.group(1))
-        if escrit != {s: n for s, n in per_seccio.items() if n}:
-            r.append((ERROR, f'el repartiment de la capçalera del TODO.md no coincideix amb les seccions: '
-                             f'{per_seccio}'))
-        if suma and int(suma.group(1)) != vives:
-            r.append((ERROR, f'la suma del repartiment del TODO.md ({suma.group(1)}) no és {vives}'))
     return r
 
 
@@ -330,9 +303,9 @@ def arbre_readme():
     """L'arbre del README.md té una entrada per a cada fitxer i directori versionat de l'arrel, i
     cap més que les generades (marcades «Generat»)."""
     text = (ARREL / 'README.md').read_text(encoding='utf-8')
-    m = re.search(r'### Fitxers i directoris\n.*?```\n(.*?)```', text, re.S)
+    m = re.search(r'## Estructura del projecte\n.*?```\n(.*?)```', text, re.S)
     if not m:
-        return [(ERROR, 'no trobo l\'arbre de README.md §Fitxers i directoris')]
+        return [(ERROR, 'no trobo l\'arbre de README.md §Estructura del projecte')]
     entrades, generades = set(), set()
     for l in m.group(1).split('\n'):
         mm = re.match(r'^[├└]── (\S+)', l)
@@ -676,8 +649,8 @@ TERMES = '24_specs/termes.toml'
 
 COMPROVACIONS = [
     Comprovacio('registres', 'Registres', 'Els registres versionats són al dia: el diccionari de termes, els SVG de model (a) '
-                'i les taules generades d\'aquesta secció (els arregla `make registres`); el recompte de la capçalera del '
-                '`TODO.md` i l\'arbre del `README.md` (a mà)', SEMPRE, 'Sempre', 'Atura', c_registres),
+                'i les taules generades d\'aquesta secció (els arregla `make registres`); l\'arbre del `README.md` '
+                '(a mà)', SEMPRE, 'Sempre', 'Atura', c_registres),
     Comprovacio('autoproves', 'Autoproves', 'Les comprovacions mateixes: cada eina provada, sobre llibres mínims amb errors '
                 'coneguts, troba els que ha de trobar i cap més (`autoproves.py`; §Autoproves de les comprovacions, D-120)',
                 lambda ctx: ctx.tot or any(f in PROVADES for f in ctx.canvis.fitxers),
