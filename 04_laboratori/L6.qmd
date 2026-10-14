@@ -133,6 +133,7 @@ void main() {
 
 La traducció a RV32I segueix el patró d'accés seqüencial (@tip-optimitzacio-acces-sequencial), mantenint un punter `t2` que avança 4 bytes a cada iteració:
 
+::: {#lst-suma-vector}
 ```{.s filename="suma_vector.s"}
 .eqv N, 100
 
@@ -157,8 +158,10 @@ fifor:
         li      a0, 0
         ecall
 ```
+Suma dels elements d'un vector amb accés seqüencial.
+:::
 
-Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator*. Configureu la memòria cau amb 32 línies (*Number of blocks*) amb blocs de 4 paraules i correspondència directa. Premeu *Connect to Program* abans d'executar.
+Carregueu el programa del @lst-suma-vector a RARS i activeu el mòdul *Tools → Data Cache Simulator*. Configureu la memòria cau amb 32 línies (*Number of blocks*) amb blocs de 4 paraules i correspondència directa. Premeu *Connect to Program* abans d'executar.
 
 ---
 
@@ -344,8 +347,9 @@ void main() {
 }
 ```
 
-La traducció a RV32I que es fa servir en aquesta secció és la següent:
+La traducció a RV32I que es fa servir en aquesta secció és el @lst-ordenacio:
 
+::: {#lst-ordenacio}
 ```{.s filename="ordenacio.s"}
 .eqv N, 5
 
@@ -398,8 +402,10 @@ fibuc_i:
         li      a0, 0
         ecall
 ```
+Ordenació per selecció d'un vector de 5 enters.
+:::
 
-Carregueu aquest programa a RARS i activeu el mòdul *Tools → Data Cache Simulator* amb 32 línies (*Number of blocks*) amb blocs de 4 paraules i correspondència directa. El simulador de RARS no té cap opció de política d'escriptura: en comptar encerts i fallades, tracta cada escriptura com una lectura (una escriptura amb fallada porta el bloc a la memòria cau), que és el comportament de la política **amb assignació** d'aquest exercici, i no compta el trànsit cap a la memòria principal.
+Carregueu el programa del @lst-ordenacio a RARS i activeu el mòdul *Tools → Data Cache Simulator* amb 32 línies (*Number of blocks*) amb blocs de 4 paraules i correspondència directa. El simulador de RARS no té cap opció de política d'escriptura: en comptar encerts i fallades, tracta cada escriptura com una lectura (una escriptura amb fallada porta el bloc a la memòria cau), que és el comportament de la política **amb assignació** d'aquest exercici, i no compta el trànsit cap a la memòria principal.
 
 ---
 
@@ -553,6 +559,7 @@ void main() {
 
 La traducció a RV32I fa servir tres punters que avancen en paral·lel:
 
+::: {#lst-suma-vectors}
 ```{.s filename="suma_vectors.s"}
 .eqv N, 128
 
@@ -584,8 +591,10 @@ fifor:
         li      a0, 0
         ecall
 ```
+Suma de dos vectors en un tercer, amb tres punters.
+:::
 
-Carregueu aquest programa a RARS i activeu el *Data Cache Simulator*.
+Carregueu el programa del @lst-suma-vectors a RARS i activeu el *Data Cache Simulator*.
 
 ---
 
@@ -807,8 +816,9 @@ El cas confirma que aquí la degradació de la correspondència directa (taxa 0 
 
 El programa de suma de vectors de la secció anterior té un patró d'accés favorable: recorre les tres estructures de manera estrictament seqüencial i en paral·lel, de manera que la localitat espacial és màxima. No tots els programes tenen aquest comportament. En alguns casos, el patró d'accés provoca que elements carregats a la memòria cau siguin expulsats abans de ser reutilitzats, malbaratant la localitat temporal.
 
-El programa següent calcula el producte d'una matriu per un vector:
+El programa del @lst-matvec calcula el producte d'una matriu per un vector:
 
+::: {#lst-matvec}
 ```{.c filename="matvec.c"}
 int V1[16], M[16][16], V2[16];
 
@@ -822,6 +832,8 @@ void main() {
     }
 }
 ```
+Producte d'una matriu per un vector.
+:::
 
 `M` s'emmagatzema per files (*row-major order*, @sec-matrius-declaracio): els elements `M[i][0]`, `M[i][1]`, …, `M[i][15]` són contigus en memòria. El bucle interior recorre la fila `i` de `M` i tot el vector `V2` de manera seqüencial. A cada iteració del bucle exterior, `V2` es llegeix sencer (16 elements). Si la memòria cau pot mantenir alhora `V2`, la fila de `M` i el bloc de `V1` en ús, sense que es facin conflicte, els accessos a `V2` a partir de la segona iteració exterior són encerts. Si la memòria cau és massa petita, `V2` és expulsat a cada iteració i s'ha de tornar a carregar des de la memòria principal.
 

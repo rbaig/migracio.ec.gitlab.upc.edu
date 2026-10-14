@@ -49,9 +49,10 @@ b) Ompliu la mateixa taula suposant que la memòria cau té una política d'escr
 c) Indiqueu per a cada política: taxa de fallades, nombre de bytes llegits d'MP i nombre de bytes escrits a MP.
 :::
 
-::: {#exr-t7-cache-matriu}
-El programa següent multiplica una matriu `A(32×32)` per un vector `B(32)` produint com a resultat un vector `C(32)`:
+:::: {#exr-t7-cache-matriu}
+El programa del @lst-t7-cache-matriu multiplica una matriu `A(32×32)` per un vector `B(32)` produint com a resultat un vector `C(32)`:
 
+::: {#lst-t7-cache-matriu}
 ```{.c filename="C"}
 char A[32][32], B[32], C[32];
 void main() {
@@ -61,11 +62,13 @@ void main() {
             C[i] = A[i][j] * B[j] + C[i];
 }
 ```
+Producte d'una matriu de bytes per un vector.
+:::
 
 Els elements d'`A`, `B` i `C` són bytes. Tots els elements de `C` han estat prèviament inicialitzats a zero. `A` s'emmagatzema a partir de l'adreça 0 (adreces 0..1023), `B` a continuació (adreces 1024..1055) i `C` tot seguit (adreces 1056..1087). Les variables `i` i `j` estan en registres.
 
 El computador disposa d'una memòria cau de correspondència directa amb 4 línies i blocs de 32 bytes, amb escriptura immediata. Suposant que en iniciar-se l'execució la memòria cau és buida, calculeu la taxa d'encerts.
-:::
+::::
 
 ::: {#exr-t7-cache-alternatives}
 Es vol dissenyar una nova versió d'un processador que disposa d'una memòria cau de correspondència directa amb 4 línies i blocs d'una paraula (32 bits). La nova versió tindrà el doble de capacitat. Es consideren dues alternatives:
@@ -278,9 +281,10 @@ b) Per a la seqüència C, quin canvi de disseny de la memòria cau eliminaria l
 c) Una memòria cau associativa de 2 vies (mateixa capacitat total) milloraria els resultats de la seqüència C? I de la seqüència B?
 :::
 
-::: {#exr-t7-fallades-programa}
-Considereu el programa C següent, on `N = 256` i els elements d'`A` i `B` són enters de 4 bytes:
+:::: {#exr-t7-fallades-programa}
+Considereu el programa C del @lst-t7-fallades-programa, on `N = 256` i els elements d'`A` i `B` són enters de 4 bytes:
 
+::: {#lst-t7-fallades-programa}
 ```{.c filename="C"}
 int A[N], B[N];
 void main() {
@@ -289,6 +293,8 @@ void main() {
         suma += A[i] + B[i];
 }
 ```
+Suma dels elements de `A` i de `B`.
+:::
 
 `A` s'emmagatzema a partir de l'adreça `0x000` i `B` a partir de `0x400`. La memòria cau té correspondència directa, 16 línies amb blocs de 32 bytes i política d'escriptura immediata.
 
@@ -297,4 +303,4 @@ void main() {
 a) Quantes fallades d'arrencada en fred es produeixen en el primer recorregut d'`A`? I en el de `B`?
 b) Es produeixen fallades de conflicte entre `A` i `B`? Raoneu la resposta calculant a quines línies de la memòria cau es mapen.
 c) Si `B` comencés a `0x600` en comptes de `0x400`, canviaria la resposta a l'apartat b)?
-:::
+::::

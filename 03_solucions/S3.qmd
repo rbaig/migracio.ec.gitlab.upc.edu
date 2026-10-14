@@ -335,7 +335,7 @@ $$\text{CPI} = \frac{t_{exe} \times f_{clock}}{n_{ins}} = \frac{5 \times 10^{-9}
 És a dir, el programa fa 10 cicles per a 10 instruccions.
 :::
 
-::: {#sol-t3-bucles-suma-vector .callout-tip}
+:::: {#sol-t3-bucles-suma-vector .callout-tip}
 ## Solució: anàlisi de cost de bucles de suma de vector
 
 **Enunciat**: @exr-t3-bucles-suma-vector.
@@ -413,8 +413,9 @@ Per iteració (condició al final; salt `bne` pres $N-1$ vegades):
 
 **f) Nova versió que millora l'apartat e)**
 
-L'apartat e) ja avalua la condició al final i fa accés seqüencial amb un punter, però encara manté el comptador `t1` per detectar el final del bucle. La millora d'aquesta versió és eliminar la variable d'inducció, comparant directament el punter amb una sentinella que marca el final del vector:
+L'apartat e) ja avalua la condició al final i fa accés seqüencial amb un punter, però encara manté el comptador `t1` per detectar el final del bucle. La millora que fa el @lst-t3-bucles-suma-vector-f és eliminar la variable d'inducció, comparant directament el punter amb una sentinella que marca el final del vector:
 
+::: {#lst-t3-bucles-suma-vector-f}
 ```{.s filename="RV32I"}
         li      t0, 0           # suma = 0
         la      t2, v           # p = @v[0]
@@ -427,6 +428,8 @@ bucle:
         addi    t2, t2, 4       # p++
         bltu    t2, t1, bucle   # salta si p < sentinella
 ```
+Versió de l'apartat f), sense la variable d'inducció.
+:::
 
 Instruccions fora del bucle: `li t0` (1) + `la t2` (2) + `li t1` (1) + `slli` (1) + `add` (1) = 6 cicles.
 
@@ -437,7 +440,7 @@ Per iteració: `lw` (4) + `add` (1) + `addi` (1) + `bltu` pres (2) = **8 cicles*
 **Total**: $6 + 8(N-1) + 7 = 8N + 5$ cicles.
 
 Respecte a l'apartat e) ($9N + 3$), s'estalvia 1 cicle per iteració a cost de 2 instruccions d'inicialització addicionals (+2 cicles). Totes dues versions costen el mateix per a $N = 2$; a partir de $N = 3$, la versió f) és millor.
-:::
+::::
 
 ## Subrutines: introducció
 

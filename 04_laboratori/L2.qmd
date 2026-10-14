@@ -47,11 +47,12 @@ Quan es declaren diverses variables globals consecutivament, l'assemblador inser
 
 ---
 
-::: {#exr-declaracio-variables}
+:::: {#exr-declaracio-variables}
 ## `s2_1_1.s`
 
-Traduïu a RV32I la declaració següent de variables globals en C:
+Traduïu a RV32I la declaració de variables globals en C del @lst-declaracio-variables:
 
+::: {#lst-declaracio-variables}
 ```{.c filename="C"}
 char      aa = -5;
 short     bb = -344;
@@ -60,9 +61,11 @@ unsigned char dd = 0xA0;
 int       ee = 5799;
 short     ff = -1;
 ```
+Variables globals de tipus diferents.
+:::
 
 Afegiu-hi l'esquelet mínim del programa (@nte-programa-esquelet).
-:::
+::::
 
 ---
 
@@ -226,19 +229,22 @@ i RARS el mostra com `0xFEA800FB`.
 
 ---
 
-::: {#exr-rars-vista-memoria}
+:::: {#exr-rars-vista-memoria}
 ## `s2_1_3.md`
 
-Després d'assemblar el programa de l'@exr-declaracio-variables, RARS mostra la vista de memòria següent:
+Després d'assemblar el programa de l'@exr-declaracio-variables, RARS mostra la vista de memòria del @lst-rars-vista-memoria:
 
+::: {#lst-rars-vista-memoria}
 ```{.default}
 Address      Value (+0)  Value (+4)  Value (+8)  Value (+c)  Value (+10) Value (+14) Value (+18) Value (+1c)
 0x10010000   0xfea800fb  0x00000000  0xfffffffd  0xffffffff  0x000000a0  0x000016a7  0x0000ffff  0x00000000
 ```
+Vista de memòria de RARS.
+:::
 
 Per a cada paraula, identifiqueu a quina variable correspon cada byte i expliqueu per què apareix en aquest ordre.
 
-:::
+::::
 
 ---
 
@@ -280,16 +286,19 @@ Un **punter** és una variable que conté l'adreça de memòria d'una altra vari
 
 ---
 
-::: {#exr-punters-valors}
+:::: {#exr-punters-valors}
 ## `s2_3_1.md`
 
-Donada la declaració següent, on `pdada` és un punter inicialitzat amb l'adreça de `dada`:
+Donada la declaració del @lst-punters-valors, on `pdada` és un punter inicialitzat amb l'adreça de `dada`:
 
+::: {#lst-punters-valors}
 ```{.s filename="RV32I"}
 .data
 dada:   .half   3
 pdada:  .word   dada
 ```
+Variable `dada` i punter `pdada`.
+:::
 
 Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els blancs de les vinyetes i calculeu el valor de cada expressió C:
 
@@ -306,7 +315,7 @@ Sabent que les variables s'emmagatzemen a partir de `0x10010000`, ompliu els bla
 : {.striped .hover}
 
 Comproveu que, en assemblar la declaració a RARS, la paraula a `0x10010000` mostra `0x00000003` i la paraula a `0x10010004`, `0x10010000`.
-:::
+::::
 
 ---
 
@@ -333,11 +342,12 @@ No cal executar el programa: n'hi ha prou d'assemblar-lo i obrir la vista del se
 
 ---
 
-::: {#exr-punters-codi}
+:::: {#exr-punters-codi}
 ## `s2_3_2.s`
 
-Traduïu a RV32I el programa C següent. La variable temporal `temp` s'emmagatzema al registre `s0`:
+Traduïu a RV32I el programa C del @lst-punters-codi. La variable temporal `temp` s'emmagatzema al registre `s0`:
 
+::: {#lst-punters-codi}
 ```{.c filename="C"}
 int A[3] = {3, 5, 7};
 int *punter = 0;
@@ -350,9 +360,11 @@ void main() {
     A[1] = temp;
 }
 ```
+Programa amb un punter al vector `A`.
+:::
 
 Comproveu que, en acabar l'execució, `s0` val `0x0000000C` (12), que `A[1]` (`0x10010004`) conté `0x0000000C` i que `punter` (`0x1001000C`) conté `0x10010008`, l'adreça d'`A[2]`.
-:::
+::::
 
 ---
 
@@ -405,20 +417,23 @@ on $T$ és la mida en bytes de cada element. En RV32I, l'accés indexat requerei
 
 ---
 
-::: {#exr-vectors-declaracio}
+:::: {#exr-vectors-declaracio}
 ## `s2_4_1.md` i `s2_4_1.s`
 
-Donat el vector global següent en C:
+Donat el vector global en C del @lst-vectors-declaracio:
 
+::: {#lst-vectors-declaracio}
 ```{.c filename="C"}
 int vec[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 ```
+Vector global `vec` de deu enters.
+:::
 
 1. Escriviu la fórmula per calcular l'adreça de `vec[i]` en funció de l'adreça base de `vec` i de l'índex `i`.
 2. Escriviu un fragment de codi RV32I, amb la declaració corresponent, que copiï el valor de `vec[i]` al registre `s1`, suposant que `i` es troba al registre `s2`.
 
 Comproveu que, afegint `li s2, 7` abans del fragment i executant-lo a RARS, `s1` val `0x00000002` (= `vec[7]`).
-:::
+::::
 
 ---
 
@@ -446,11 +461,12 @@ vec:    .word   9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
 ---
 
-::: {#exr-vectors-fibonacci}
+:::: {#exr-vectors-fibonacci}
 ## `s2_4_2.s`
 
-Traduïu a RV32I el programa C següent, que calcula els 10 primers termes de la sèrie de Fibonacci i els escriu al vector `fib`. La variable `i` s'emmagatzema al registre `s0`:
+Traduïu a RV32I el programa C del @lst-vectors-fibonacci, que calcula els 10 primers termes de la sèrie de Fibonacci i els escriu al vector `fib`. La variable `i` s'emmagatzema al registre `s0`:
 
+::: {#lst-vectors-fibonacci}
 ```{.c filename="C"}
 int fib[10];
 
@@ -464,9 +480,11 @@ void main() {
     }
 }
 ```
+Programa que calcula els deu primers termes de la sèrie de Fibonacci.
+:::
 
 Comproveu que, en acabar l'execució, el segment de dades conté els 10 termes: `0x0`, `0x1`, `0x1`, `0x2`, `0x3`, `0x5`, `0x8`, `0xD`, `0x15`, `0x22`.
-:::
+::::
 
 ---
 
@@ -525,11 +543,12 @@ Una **cadena de caràcters** (*string*) és un vector de caràcters (`char`) que
 
 ---
 
-::: {#exr-strings-ascii}
+:::: {#exr-strings-ascii}
 ## `s2_5_1.s`
 
-El vector `vec` conté els dígits decimals del nombre 19865, ordenats de menys a més pes. El programa següent converteix cada dígit a la seva representació ASCII i l'escriu a la cadena `cadena`; els caràcters queden ordenats de més a menys pes per poder imprimir el nombre correctament.
+El vector `vec` conté els dígits decimals del nombre 19865, ordenats de menys a més pes. El programa del @lst-strings-ascii converteix cada dígit a la seva representació ASCII i l'escriu a la cadena `cadena`; els caràcters queden ordenats de més a menys pes per poder imprimir el nombre correctament.
 
+::: {#lst-strings-ascii}
 ```{.c filename="C"}
 char         cadena[6];
 unsigned int vec[5] = {5, 6, 8, 9, 1};
@@ -543,13 +562,15 @@ void main() {
     cadena[5] = 0;
 }
 ```
+Conversió dels dígits de `vec` a caràcters ASCII.
+:::
 
 Traduïu el programa a RV32I. La variable `i` s'emmagatzema al registre `s0`.
 
 **Nota**: la conversió de dígit a caràcter ASCII consisteix a sumar el valor del dígit al codi ASCII de `'0'` (`0x30`). Per interpretar el contingut de `cadena` a la vista de memòria de RARS, vegeu @cau-rars-vista-memoria.
 
 Comproveu que, en acabar l'execució, la paraula a `0x10010000` mostra `0x36383931` i la paraula a `0x10010004`, `0x00000035`.
-:::
+::::
 
 ---
 

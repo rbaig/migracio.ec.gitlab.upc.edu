@@ -91,14 +91,15 @@ A la solució de l'exercici hi ha els dos segments de text comparats instrucció
 
 ---
 
-::: {#exr-compilacio-separada}
+:::: {#exr-compilacio-separada}
 ## `s5_1_1.s` i `s5_1_2.s`
 
-Traduïu a RV32I el programa C següent, repartint el codi en **dos fitxers** tal com s'indica:
+Traduïu a RV32I el programa C del @lst-compilacio-separada, repartint el codi en **dos fitxers** tal com s'indica:
 
 - `s5_1_1.s`: conté únicament la subrutina `abs`.
 - `s5_1_2.s`: conté el programa principal, que crida `abs` i escriu el resultat a `resultat`.
 
+::: {#lst-compilacio-separada}
 ```{.c filename="abs.c"}
 int resultat;
 
@@ -113,6 +114,8 @@ void main() {
     resultat = abs(-7);
 }
 ```
+Subrutina `abs` i programa principal.
+:::
 
 Tingueu en compte:
 
@@ -121,7 +124,7 @@ Tingueu en compte:
 - Obriu els dos fitxers a RARS, activeu *Settings → Assemble all files currently open* i assembleu. Comproveu que `abs` apareix al panell *Labels*.
 
 Comproveu que, en acabar, la variable global `resultat` conté `7`, i que conté `0` si el programa principal crida `abs(0)`.
-:::
+::::
 
 ---
 
@@ -285,6 +288,7 @@ void main() {
 
 La subrutina `descompon` extreu de `cfixa` els tres camps que necessita IEEE 754: el signe, la fracció (els 23 bits que segueixen el bit ocult de la mantissa normalitzada) i l'exponent esbiaixat amb biaix 127 (8 bits):
 
+::: {#lst-descompon}
 ```{.c filename="descompon.c"}
 void descompon(int cf, int *s, int *e, int *m) {
     int exp;
@@ -305,8 +309,10 @@ void descompon(int cf, int *s, int *e, int *m) {
     *m = cf;
 }
 ```
+Descomposició d'un nombre de coma fixa en els camps d'IEEE 754.
+:::
 
-Aquest codi descriu l'algorisme bit a bit: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, per això en assemblador es fa servir `srli`, el desplaçament lògic, que és el que descriu l'algorisme. (Aquí `srai` donaria el mateix resultat: la màscara `0x7FFFFF` esborra els 8 bits que entren per l'esquerra.)
+El @lst-descompon descriu l'algorisme bit a bit: alguns dels desplaçaments sobre valors amb signe (`cf << 1`, `cf >> 8`) queden fora de la definició estricta del llenguatge C, per això en assemblador es fa servir `srli`, el desplaçament lògic, que és el que descriu l'algorisme. (Aquí `srai` donaria el mateix resultat: la màscara `0x7FFFFF` esborra els 8 bits que entren per l'esquerra.)
 
 L'algorisme treballa en tres fases. Primer, separa el signe de la magnitud: codifica el signe a `*s` i elimina el bit de signe de `cf` desplaçant tots els bits una posició a l'esquerra. En aquest punt la coma implícita ha avançat una posició i se situa entre els bits 13 i 12 (el bit 12 és ara el primer bit fraccionari). Segon, si la magnitud no és zero, normalitza: inicialitza l'exponent a 18 (que correspon a situar la coma a la dreta del bit 31) i desplaça `cf` a l'esquerra iterativament fins que el bit 31 sigui `1`, decrementant l'exponent a cada iteració. Tercer, alinea la mantissa normalitzada als 23 bits de menys pes fent un desplaçament a la dreta de 8 posicions i elimina el bit ocult (posició 23) amb una màscara `0x7FFFFF`; finalment, suma 127 a l'exponent per codificar-lo en forma esbiaixada.
 

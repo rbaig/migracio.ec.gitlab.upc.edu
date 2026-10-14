@@ -87,11 +87,12 @@ Una sentència `if-then-else` imbricada es tradueix aplicant el patró de @sec-i
 
 ---
 
-::: {#exr-classifica-caracter}
+:::: {#exr-classifica-caracter}
 ## `s3_2_1.s`
 
-Traduïu a RV32I el programa C següent. Les variables globals `num` i `result` s'han de declarar a la secció `.data`. Tots els temporals van a registres `t`.
+Traduïu a RV32I el programa C del @lst-classifica-caracter. Les variables globals `num` i `result` s'han de declarar a la secció `.data`. Tots els temporals van a registres `t`.
 
+::: {#lst-classifica-caracter}
 ```{.c filename="C"}
 char   num    = '7';
 int    result = 0;
@@ -105,9 +106,11 @@ void main() {
         result = -1;
 }
 ```
+Classificació del caràcter `num`.
+:::
 
 El programa ha de respectar l'avaluació tardana de `&&` i `||` (@cau-lazy-evaluation). Comproveu que, per als valors `'m'`, `'Z'`, `' '`, `'!'` i `'7'` de `num` (codis ASCII: `0x6D`, `0x5A`, `0x20`, `0x21`, `0x37`), `result` val, respectivament, `0x6D`, `0x5A`, `0`, `0` i `-1` (`0xFFFFFFFF`).
-:::
+::::
 
 ---
 
@@ -452,11 +455,12 @@ La depuració és el procés d'identificar i corregir errors en un programa. En 
 
 ---
 
-::: {#exr-depuracio}
+:::: {#exr-depuracio}
 ## `s3_5_1.s`
 
-El programa següent declara el vector global `alfabet` amb les lletres majúscules de l'A a la Z i una cadena de caràcters d'entrada `w1`. La funció `codifica` recorre `w1` caràcter a caràcter i, per a cada lletra, crida la funció `g`, que calcula la lletra simètrica (A↔Z, B↔Y, etc.) i en retorna el codi ASCII. El resultat s'escriu al vector de sortida `w2`.
+El programa del @lst-depuracio-c declara el vector global `alfabet` amb les lletres majúscules de l'A a la Z i una cadena de caràcters d'entrada `w1`. La funció `codifica` recorre `w1` caràcter a caràcter i, per a cada lletra, crida la funció `g`, que calcula la lletra simètrica (A↔Z, B↔Y, etc.) i en retorna el codi ASCII. El resultat s'escriu al vector de sortida `w2`.
 
+::: {#lst-depuracio-c}
 ```{.c filename="C"}
 char alfabet[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 char w1[13]      = "ARQUITECTURA";
@@ -482,9 +486,12 @@ void main() {
     codifica(w1, w2);
 }
 ```
+Programa amb les funcions `codifica` i `g`.
+:::
 
-La traducció RV32I següent conté **tres errors**, tots dins de `codifica`. La funció `g` és correcta. Identifiqueu cada error, expliqueu per què és incorrecte i escriviu-ne la correcció. Les explicacions van com a comentaris dins del mateix `s3_5_1.s`, a la línia de cada correcció.
+El @lst-depuracio-s, la traducció a RV32I, conté **tres errors**, tots dins de `codifica`. La funció `g` és correcta. Identifiqueu cada error, expliqueu per què és incorrecte i escriviu-ne la correcció. Les explicacions van com a comentaris dins del mateix `s3_5_1.s`, a la línia de cada correcció.
 
+::: {#lst-depuracio-s}
 ```{.s filename="s3_5_1.s"}
 .data
 alfabet: .asciz "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -544,9 +551,11 @@ fiwhile:
         addi    sp, sp, 16
         ret
 ```
+Traducció amb tres errors dins de `codifica`.
+:::
 
 Comproveu que, un cop esmenats els errors, `w2` conté `"ZIJFRGVXGFIZ"` al final de l'execució.
-:::
+::::
 
 ---
 

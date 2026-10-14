@@ -43,9 +43,10 @@ b)
 
 *Vegeu @sec-operands-immediat i @nte-pseudoinstruccio-li.*
 
-::: {#exr-t2-immediats-declaracio}
-Donades les declaracions de variables següents, emmagatzemades a partir de l'adreça `0x10010000`:
+:::: {#exr-t2-immediats-declaracio}
+Donades les declaracions de variables del @lst-t2-immediats-declaracio, emmagatzemades a partir de l'adreça `0x10010000`:
 
+::: {#lst-t2-immediats-declaracio}
 ```{.s filename="RV32I"}
 .data
 P:      .word   5, 2
@@ -53,11 +54,14 @@ Q:      .word   3
 R:      .word   4, 0x0FFFF, 0x4180
 S:      .word   0x10010008, 0
 ```
+Quatre etiquetes, `P`, `Q`, `R` i `S`, amb paraules inicialitzades.
+:::
 
 Tots els apartats parteixen del mateix estat inicial.
 
-a) Quin és el valor final de la variable `Q` després d'executar el codi següent?
+a) Quin és el valor final de la variable `Q` després d'executar el @lst-t2-immediats-declaracio-a?
 
+::: {#lst-t2-immediats-declaracio-a}
 ```{.s filename="RV32I"}
 .text
         la      t1, R
@@ -68,21 +72,27 @@ a) Quin és el valor final de la variable `Q` després d'executar el codi següe
         add     t1, t1, t4
         sb      t1, 0(t3)
 ```
+Codi de l'apartat a).
+:::
 
-b) Expliqueu textualment i de forma concisa què fa el fragment següent:
+b) Expliqueu textualment i de forma concisa què fa el @lst-t2-immediats-declaracio-b:
 
+::: {#lst-t2-immediats-declaracio-b}
 ```{.s filename="RV32I"}
 .text
         la      t1, P+1
         lw      t1, 0(t1)
 ```
-
-**Nota**: la sintaxi `la label+offset` és admesa a EC (teoria i exàmens), però a RARS cal substituir-la per `la` + `addi`.
+Fragment de l'apartat b).
 :::
 
-::: {#exr-t2-immediats-contingut}
-Indiqueu quin és el contingut de memòria a partir de l'adreça `0x10010000`, per paraules, per a la declaració de variables globals següent, amb les restriccions d'alineació de l'ABI (@nte-restriccions-alineacio; un `.dword` s'alinea a 8 bytes, encara que RARS 1.6 l'alinea a 4):
+**Nota**: la sintaxi `la label+offset` és admesa a EC (teoria i exàmens), però a RARS cal substituir-la per `la` + `addi`.
+::::
 
+:::: {#exr-t2-immediats-contingut}
+Indiqueu quin és el contingut de memòria a partir de l'adreça `0x10010000`, per paraules, per a la declaració de variables globals del @lst-t2-immediats-contingut, amb les restriccions d'alineació de l'ABI (@nte-restriccions-alineacio; un `.dword` s'alinea a 8 bytes, encara que RARS 1.6 l'alinea a 4):
+
+::: {#lst-t2-immediats-contingut}
 ```{.s filename="RV32I"}
 .data
         .byte   0, 1, 2
@@ -94,7 +104,9 @@ T:      .byte   25
 U:      .byte   0x08
 V:      .dword  0x10010008
 ```
+Declaració de bytes, mitges paraules, paraules i una doble paraula.
 :::
+::::
 
 ::: {#exr-t2-immediats-luiaddi}
 En RISC-V, la pseudoinstrucció `li rd, imm` s'expandeix en una sola instrucció real (`addi`) si l'immediat cap en 12 bits amb extensió de signe, i en dues (`lui` + `addi`) si no hi cap.
@@ -108,18 +120,21 @@ c) Quin és el rang de valors immediats que accepta `addi` (és a dir, el rang d
 
 *Vegeu @sec-operands-base-desplacament.*
 
-::: {#exr-t2-memoria-declaracio}
-Donada la declaració de dades següent, emmagatzemada a partir de l'adreça `0x10010000`:
+:::: {#exr-t2-memoria-declaracio}
+Donada la declaració de dades del @lst-t2-memoria-declaracio, emmagatzemada a partir de l'adreça `0x10010000`:
 
+::: {#lst-t2-memoria-declaracio}
 ```{.s filename="RV32I"}
 .data
         .byte   1, 2, 3, 4
         .word   -1, 1, -2, 2, -3, 3
         .word   0x12345678
 ```
+Declaració de bytes i paraules sense etiqueta.
+:::
 
 Indiqueu quin és el valor en hexadecimal del **byte** emmagatzemat a cada una de les adreces `0x1001000C` i `0x1001001C`. Si no es pot determinar a partir de la declaració, indiqueu-ho amb la sigla de no aplicable (NA).
-:::
+::::
 
 ::: {#exr-t2-memoria-lw-sw}
 Donats els continguts inicials de registres i memòria següents (en hexadecimal):
@@ -143,20 +158,24 @@ Determineu, per a cada instrucció, quin registre o adreça de memòria es modif
 ```
 :::
 
-::: {#exr-t2-memoria-byte-noexcepcio}
-Donada la declaració següent:
+:::: {#exr-t2-memoria-byte-noexcepcio}
+Donada la declaració del @lst-t2-memoria-byte-noexcepcio:
 
+::: {#lst-t2-memoria-byte-noexcepcio}
 ```{.s filename="RV32I"}
 .data
 A:      .byte   0, 0, 0, 0, 0
 ```
-
-Escriviu un fragment de no més de 12 línies de codi assemblador que guardi **el valor complet de `t1`** (32 bits) a partir de l'adreça `A+1`, sense produir cap excepció d'alineació. Podeu escriure valors temporals a la posició `A` de memòria si cal (és una adreça alineada a paraula).
+Vector `A` de cinc bytes.
 :::
 
-::: {#exr-t2-memoria-contingut}
-Indiqueu quin és el contingut de memòria a partir de l'adreça `0x10010000`, byte a byte, per a la declaració de variables globals següent, amb les restriccions d'alineació de l'ABI (@nte-restriccions-alineacio; un `.dword` s'alinea a 8 bytes, encara que RARS 1.6 l'alinea a 4):
+Escriviu un fragment de no més de 12 línies de codi assemblador que guardi **el valor complet de `t1`** (32 bits) a partir de l'adreça `A+1`, sense produir cap excepció d'alineació. Podeu escriure valors temporals a la posició `A` de memòria si cal (és una adreça alineada a paraula).
+::::
 
+:::: {#exr-t2-memoria-contingut}
+Indiqueu quin és el contingut de memòria a partir de l'adreça `0x10010000`, byte a byte, per a la declaració de variables globals del @lst-t2-memoria-contingut, amb les restriccions d'alineació de l'ABI (@nte-restriccions-alineacio; un `.dword` s'alinea a 8 bytes, encara que RARS 1.6 l'alinea a 4):
+
+::: {#lst-t2-memoria-contingut}
 ```{.s filename="RV32I"}
 .data
         .byte   0x10
@@ -169,15 +188,18 @@ U:      .byte   'C'
 V:      .half   0x66
 W:      .dword  579
 ```
+Declaració de bytes, mitges paraules, paraules i dobles paraules, amb caràcters.
 :::
+::::
 
-::: {#exr-t2-memoria-endianness}
+:::: {#exr-t2-memoria-endianness}
 RISC-V és una arquitectura *little-endian*.
 
 a) Expliqueu què significa *little-endian* i en quin ordre s'emmagatzemen els bytes d'un enter de 32 bits a memòria.
 b) La variable global `int x = 0x12345678` s'emmagatzema a partir de l'adreça `0x10010000`. Indiqueu el contingut byte a byte de les adreces `0x10010000` a `0x10010003`.
-c) Després d'executar el codi següent, quin valor té `t1`? Raoneu la resposta tenint en compte l'ordre dels bytes.
+c) Després d'executar el @lst-t2-memoria-endianness, quin valor té `t1`? Raoneu la resposta tenint en compte l'ordre dels bytes.
 
+::: {#lst-t2-memoria-endianness}
 ```{.s filename="RV32I"}
 .data
 x:      .word   0x12345678
@@ -185,11 +207,13 @@ x:      .word   0x12345678
         la      t0, x
         lb      t1, 0(t0)
 ```
-
-d) Quin hauria de ser el resultat si l'arquitectura fos *big-endian*?
+Codi de l'apartat c).
 :::
 
-::: {#exr-t2-memoria-lb-lh}
+d) Quin hauria de ser el resultat si l'arquitectura fos *big-endian*?
+::::
+
+:::: {#exr-t2-memoria-lb-lh}
 Suposeu que el registre `t0` conté l'adreça `0x10010000` i que la memòria té el contingut inicial següent:
 
 | Adreça | `+0` | `+1` | `+2` | `+3` |
@@ -207,13 +231,16 @@ a) Determineu el valor dels registres resultants de l'execució de cada instrucc
 | `lbu t1, 2(t0)` | |
 | `lhu t1, 2(t0)` | |
 
-b) Determineu l'estat final de la memòria després d'executar les instruccions següents de forma **seqüencial** (una rere l'altra, partint del contingut inicial):
+b) Determineu l'estat final de la memòria després d'executar les instruccions del @lst-t2-memoria-lb-lh de forma **seqüencial** (una rere l'altra, partint del contingut inicial):
 
+::: {#lst-t2-memoria-lb-lh}
 ```{.s filename="RV32I"}
         lb      t1, 2(t0)
         sb      t1, 1(t0)
 ```
+Un `lb` i un `sb`.
 :::
+::::
 
 ## Representació de naturals i enters
 
@@ -223,22 +250,26 @@ b) Determineu l'estat final de la memòria després d'executar les instruccions 
 
 *Vegeu @sec-caracters-cadenes.*
 
-::: {#exr-t2-ascii-suma}
-Donades les declaracions següents:
+:::: {#exr-t2-ascii-suma}
+Donades les declaracions del @lst-t2-ascii-suma:
 
+::: {#lst-t2-ascii-suma}
 ```{.s filename="RV32I"}
 .data
 u1:     .byte   '9'
 u2:     .byte   '3'
 d3:     .byte   0
 ```
-
-Cadascuna de les dades `u1` i `u2` conté un caràcter ASCII que representa un **dígit decimal individual**. Escriviu un programa en assemblador que sumi els naturals representats per `u1` i `u2` i deixi el resultat en binari (natural) a `d3`. Com que cada operand és un sol dígit (rang $[0, 9]$), la suma màxima és $9+9=18$ i sempre cap en un sol byte.
+Dos dígits en ASCII, `u1` i `u2`, i el byte del resultat, `d3`.
 :::
 
-::: {#exr-t2-ascii-contingut}
-Escriviu en hexadecimal el contingut de memòria ocupat per les declaracions següents, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`, amb les restriccions d'alineació de l'ABI (@nte-restriccions-alineacio):
+Cadascuna de les dades `u1` i `u2` conté un caràcter ASCII que representa un **dígit decimal individual**. Escriviu un programa en assemblador que sumi els naturals representats per `u1` i `u2` i deixi el resultat en binari (natural) a `d3`. Com que cada operand és un sol dígit (rang $[0, 9]$), la suma màxima és $9+9=18$ i sempre cap en un sol byte.
+::::
 
+:::: {#exr-t2-ascii-contingut}
+Escriviu en hexadecimal el contingut de memòria ocupat per les declaracions del @lst-t2-ascii-contingut, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`, amb les restriccions d'alineació de l'ABI (@nte-restriccions-alineacio):
+
+::: {#lst-t2-ascii-contingut}
 ```{.s filename="RV32I"}
 .data
 p:      .half   54
@@ -248,6 +279,8 @@ s:      .word   0x4F3C
 t:      .byte   -18
 u:      .dword  0x00000000FFFFEEEE
 ```
+Declaració de mitges paraules, bytes, paraules i una doble paraula.
+:::
 
 Feu servir el format següent:
 
@@ -255,11 +288,12 @@ Feu servir el format següent:
 | :--- | :--- |
 | `0x10010000` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
 | `0x10010010` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
-:::
+::::
 
-::: {#exr-t2-ascii-align}
-Escriviu en hexadecimal el contingut de memòria ocupat per les declaracions següents, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`. Recordeu que la directiva `.align 0` desactiva l'alineació automàtica fins al final del segment `.data` actual (cap `.align k` amb $k>0$ posterior no la reactiva):
+:::: {#exr-t2-ascii-align}
+Escriviu en hexadecimal el contingut de memòria ocupat per les declaracions del @lst-t2-ascii-align, suposant que comencen a emmagatzemar-se a partir de l'adreça `0x10010000`. Recordeu que la directiva `.align 0` desactiva l'alineació automàtica fins al final del segment `.data` actual (cap `.align k` amb $k>0$ posterior no la reactiva):
 
+::: {#lst-t2-ascii-align}
 ```{.s filename="RV32I"}
 .data
         .align 0
@@ -270,6 +304,8 @@ R:      .half   512, 0xAAAA
 S:      .word   0x43, 0xF3C, 'a'
 T:      .byte   -18, 'A'
 ```
+Declaració amb `.align 0` i `.align 1`.
+:::
 
 Feu servir el format següent:
 
@@ -277,9 +313,9 @@ Feu servir el format següent:
 | :--- | :--- |
 | `0x10010000` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
 | `0x10010010` | `__ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __` |
-:::
+::::
 
-::: {#exr-t2-ascii-char-int}
+:::: {#exr-t2-ascii-char-int}
 Donada la declaració en C:
 
 ```{.c filename="C"}
@@ -288,8 +324,9 @@ int  Y = -1;
 ```
 
 a) Traduïu la declaració a llenguatge assemblador RISC-V.
-b) Especifiqueu el valor hexadecimal de `t0` després d'executar el codi següent:
+b) Especifiqueu el valor hexadecimal de `t0` després d'executar el @lst-t2-ascii-char-int:
 
+::: {#lst-t2-ascii-char-int}
 ```{.s filename="RV32I"}
 .text
         la      t0, X
@@ -298,7 +335,9 @@ b) Especifiqueu el valor hexadecimal de `t0` després d'executar el codi següen
         lw      t1, 0(t1)
         add     t0, t0, t1
 ```
+Codi de l'apartat b).
 :::
+::::
 
 ## Format de les instruccions
 
@@ -340,9 +379,10 @@ b) I en la mida total d'una instrucció de tipus I?
 
 *Vegeu @sec-punters.*
 
-::: {#exr-t2-punters-basics}
-Suposeu les declaracions en C següents:
+:::: {#exr-t2-punters-basics}
+Suposeu les declaracions en C del @lst-t2-punters-basics:
 
+::: {#lst-t2-punters-basics}
 ```{.c filename="C"}
 int *m1, *m2;   // m1 i m2 són punters a int (en memòria)
 void main() {
@@ -350,6 +390,8 @@ void main() {
     ...
 }
 ```
+Dos punters globals i dos de locals.
+:::
 
 Suposant que `r1` i `r2` ocupen els registres `t1` i `t2`, traduïu a assemblador RISC-V les sentències en C següents, pertanyents a `main`:
 
@@ -357,7 +399,7 @@ a) `r1 = r2;`
 b) `*r1 = *r2;`
 c) `m1 = m2;`
 d) `*m1 = *m2;`
-:::
+::::
 
 ::: {#exr-t2-punters-global}
 Donada la declaració de dades global en C:
@@ -591,9 +633,10 @@ b) Escriviu el bucle que, usant el punter `p`, dobla el valor de cada element de
 
 *Vegeu @sec-cadenes-de-caracters.*
 
-::: {#exr-t2-strings-minus}
-Traduïu a assemblador RISC-V el programa en C següent, que escriu a la cadena `minus` els caràcters ASCII en minúscules corresponents a cada element del vector `vec`:
+:::: {#exr-t2-strings-minus}
+Traduïu a assemblador RISC-V el programa en C del @lst-t2-strings-minus, que escriu a la cadena `minus` els caràcters ASCII en minúscules corresponents a cada element del vector `vec`:
 
+::: {#lst-t2-strings-minus}
 ```{.c filename="C"}
 #define N 8
 char         minus[N+1];
@@ -608,7 +651,9 @@ void main() {
     minus[N] = 0;
 }
 ```
+Programa que omple la cadena `minus` a partir del vector `vec`.
 :::
+::::
 
 ::: {#exr-t2-strings-longitud}
 Escriviu en assemblador RISC-V una funció `longitud` que, donada una cadena de caràcters acabada en `'\0'` amb adreça base a `a0`, retorni la seva longitud (sense comptar el `'\0'`) a `a0`.

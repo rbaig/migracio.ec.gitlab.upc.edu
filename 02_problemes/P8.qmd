@@ -89,7 +89,7 @@ Ompliu la taula següent per a la seqüència de referències donada (E = escrip
 : {tbl-colwidths="[11,10,10,11,12,14,16,16]"}
 :::
 
-::: {#exr-t8-mv-matriu-lru}
+:::: {#exr-t8-mv-matriu-lru}
 Un sistema experimental gestiona la memòria virtual amb paginació i algorisme LRU. Té 64 KiB de memòria virtual, 8 KiB de memòria física i pàgines d'1 KiB. La taula de pàgines ocupa sempre l'últim marc de pàgina.
 
 Una aplicació s'ubica a l'espai lògic de la manera següent:
@@ -105,21 +105,24 @@ short MAT[32][256];
 
 emmagatzemada a partir de l'adreça base `0x0400`. Els `short` es codifiquen en 16 bits (2 bytes). La resta de variables i la pila s'emmagatzemen a partir de `0x4400`. El compilador reserva registres per a `i` i `j`.
 
-Considereu el fragment de codi següent:
+Considereu el fragment de codi del @lst-t8-mv-matriu-lru:
 
+::: {#lst-t8-mv-matriu-lru}
 ```{.c filename="C"}
 for (i = 0; i < 32; i++)
     for (j = 0; j < 256; j++)
         MAT[i][j] = i + j;
 ```
+Bucles que escriuen la matriu `MAT`.
+:::
 
-Abans d'executar aquest codi, la taula de pàgines indica que només hi ha carregada a memòria física la pàgina corresponent al codi de l'aplicació.
+Abans d'executar el @lst-t8-mv-matriu-lru, la taula de pàgines indica que només hi ha carregada a memòria física la pàgina corresponent al codi de l'aplicació.
 
 a) Quins elements de `MAT` es porten a memòria física en la primera fallada de pàgina?
 b) Indiqueu, justificant-ho, el nombre total de fallades de pàgina que es produiran.
 c) En alguns llenguatges com ara FORTRAN, les matrius s'emmagatzemen per columnes. Considerant aquest emmagatzematge, quins elements de `MAT` es portarien a memòria física en la primera fallada de pàgina?
 d) Considerant l'emmagatzematge per columnes, indiqueu el nombre total de fallades de pàgina que es produirien.
-:::
+::::
 
 ## TLB
 
@@ -170,9 +173,10 @@ c) Calculeu la mida de la taula de pàgines per als dos sistemes següents:
 | 64 bits | 16 KiB | 8 bytes |
 :::
 
-::: {#exr-t8-tlb-basic}
-Considereu el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
+:::: {#exr-t8-tlb-basic}
+Considereu el codi assemblador RISC-V del @lst-t8-tlb-basic, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
 
+::: {#lst-t8-tlb-basic}
 ```{.s filename="RV32I"}
         la      s0, A
         li      s1, 0
@@ -194,17 +198,20 @@ for:
         j       for
 fi:
 ```
+Bucle que llegeix i escriu paraules a partir de `A`.
+:::
 
 Suposant pàgines de 8 KiB i un TLB de 4 entrades completament associatiu amb reemplaçament LRU:
 
 a) Per a cadascuna de les instruccions d'accés a dades de memòria (`lw`/`sw`) i per a les primeres 5 iteracions del bucle, indiqueu a quina pàgina de la memòria virtual s'accedeix.
 b) Indiqueu el nombre total de fallades del TLB de dades en tot el bucle (només es consideren els accessos a dades; les captures d'instruccions passen per un TLB d'instruccions a part, que no es té en compte).
 c) Responeu les mateixes preguntes suposant pàgines de 4 KiB.
-:::
+::::
 
-::: {#exr-t8-tlb-optimitzacio}
-Considereu el codi assemblador RISC-V següent, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
+:::: {#exr-t8-tlb-optimitzacio}
+Considereu el codi assemblador RISC-V del @lst-t8-tlb-optimitzacio, on a l'etiqueta `A` li correspon l'adreça `0x10010000`:
 
+::: {#lst-t8-tlb-optimitzacio}
 ```{.s filename="RV32I"}
         la      s0, A
         li      s1, 0
@@ -224,6 +231,8 @@ for:
         j       for
 fi:
 ```
+Bucle que llegeix i escriu mitges paraules a partir de `A`.
+:::
 
 Suposant pàgines d'1 KiB i un TLB completament associatiu de 4 entrades amb reemplaçament LRU:
 
@@ -231,7 +240,7 @@ a) Indiqueu el nombre de pàgines diferents accedides per a cadascuna de les qua
 b) Calculeu el nombre de fallades del TLB de dades en tot el bucle (només es consideren els accessos a dades, no les captures d'instruccions).
 c) Es vol redissenyar el TLB, mantenint el reemplaçament LRU, per minimitzar el nombre de fallades en aquest programa. Indiqueu quin és el nombre mínim de fallades assolible i quin és el nombre mínim d'entrades de TLB necessàries per obtenir-lo.
 d) Repetiu els apartats anteriors considerant pàgines de 4 KiB.
-:::
+::::
 
 ## Protecció
 

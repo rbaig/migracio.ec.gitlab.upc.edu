@@ -154,30 +154,36 @@ f) `mat[i*10+4][6]`
 *Vegeu @eq-acces-aleatori-matriu.*
 :::
 
-::: {#exr-t4-matrius-funcio}
-Traduïu a assemblador RISC-V la funció següent, on `N` és una constant:
+:::: {#exr-t4-matrius-funcio}
+Traduïu a assemblador RISC-V la funció del @lst-t4-matrius-funcio, on `N` és una constant:
 
+::: {#lst-t4-matrius-funcio}
 ```{.c filename="C"}
 void func(int mat[][N], int i, int j) {
     if (i > j)
         mat[i][j] = mat[j][i];
 }
 ```
+Funció `func` sobre una matriu de `N` columnes.
 :::
+::::
 
-::: {#exr-t4-matrius-diagonal}
+:::: {#exr-t4-matrius-diagonal}
 Donada la declaració de variable global (on `N` és una constant):
 
 ```{.c filename="C"}
 int M[N][N];
 ```
 
-Traduïu a assemblador RISC-V el fragment de codi en C següent, usant el nombre mínim d'instruccions, suposant que `i` i `suma` ocupen els registres `t0` i `t1`:
+Traduïu a assemblador RISC-V el fragment de codi en C del @lst-t4-matrius-diagonal, usant el nombre mínim d'instruccions, suposant que `i` i `suma` ocupen els registres `t0` i `t1`:
 
+::: {#lst-t4-matrius-diagonal}
 ```{.c filename="C"}
 suma += M[i][i+1] - M[i+1][i];
 ```
+Sentència amb dos accessos a la matriu `M`.
 :::
+::::
 
 ::: {#exr-t4-matrius-punter-offset}
 Sigui la declaració en C:
@@ -189,21 +195,24 @@ char mat[6][10];
 Si el registre `t0` és un punter que apunta a l'element `mat[i][j]`, és possible modificar `t0` amb una sola instrucció perquè apunti a `mat[i-3][j+5]`? Si la resposta és sí, escriviu-la.
 :::
 
-::: {#exr-t4-matrius-longlong}
+:::: {#exr-t4-matrius-longlong}
 Sigui la declaració de la variable global:
 
 ```{.c filename="C"}
 long long mat[10][50];
 ```
 
-Suposant que inicialment `t0` conté l'adreça de l'element `mat[4][45]`, a quin element de la matriu apunta `t0` després d'executar la instrucció següent?
+Suposant que inicialment `t0` conté l'adreça de l'element `mat[4][45]`, a quin element de la matriu apunta `t0` després d'executar la instrucció del @lst-t4-matrius-longlong?
 
+::: {#lst-t4-matrius-longlong}
 ```{.s filename="RV32I"}
         addi    t0, t0, 1384
 ```
+Instrucció `addi` sobre `t0`.
 :::
+::::
 
-::: {#exr-t4-matrius-inversa}
+:::: {#exr-t4-matrius-inversa}
 Donades les declaracions en C:
 
 ```{.c filename="C"}
@@ -216,8 +225,9 @@ void f(int n) {
 }
 ```
 
-El fragment de codi RISC-V següent correspon a la traducció de la sentència incògnita. Determineu quina és aquesta sentència i expresseu-la en C, tenint en compte que `t0` conté la variable `j`:
+El fragment de codi RISC-V del @lst-t4-matrius-inversa correspon a la traducció de la sentència incògnita. Determineu quina és aquesta sentència i expresseu-la en C, tenint en compte que `t0` conté la variable `j`:
 
+::: {#lst-t4-matrius-inversa}
 ```{.s filename="RV32IM"}
         li      t0, 0
 bucle:
@@ -233,7 +243,9 @@ bucle:
         j       bucle
 final:
 ```
+Traducció de la sentència incògnita.
 :::
+::::
 
 ::: {#exr-t4-matrius-func-veci}
 Donades les declaracions en C:
@@ -347,7 +359,7 @@ for (i = N-1; i >= 0; i--)
 ```
 :::
 
-::: {#exr-t4-seq-mixed}
+:::: {#exr-t4-seq-mixed}
 Siguin les declaracions en C:
 
 ```{.c filename="C"}
@@ -360,14 +372,18 @@ void func(int i, int j) {
 }
 ```
 
-a) Traduïu a RISC-V la sentència següent, que pertany a `func`:
+a) Traduïu a RISC-V la sentència del @lst-t4-seq-mixed-a, que pertany a `func`:
 
+::: {#lst-t4-seq-mixed-a}
 ```{.c filename="C"}
 vector[i] = z[4][j];
 ```
+Sentència de l'apartat a).
+:::
 
-b) El codi assemblador RISC-V següent s'ha obtingut en traduir el bucle següent implementant accés seqüencial. Completeu les quatre constants inicials perquè la traducció sigui correcta:
+b) El @lst-t4-seq-mixed-b, en assemblador RISC-V, s'ha obtingut en traduir el bucle del @lst-t4-seq-mixed-bucle implementant accés seqüencial. Completeu les quatre constants inicials perquè la traducció sigui correcta:
 
+::: {#lst-t4-seq-mixed-b}
 ```{.s filename="RV32I"}
 .eqv    offset_vector, ?
 .eqv    offset_z,      ?
@@ -389,14 +405,19 @@ for:
 fifor:
         ret
 ```
+Traducció de l'apartat b), amb les quatre constants per completar.
+:::
 
+::: {#lst-t4-seq-mixed-bucle}
 ```{.c filename="C"}
 for (k = 0; k < 5; k++)
     vector[2] += z[k][2];
 ```
+Bucle de l'apartat b), en C.
 :::
+::::
 
-::: {#exr-t4-seq-diagonal-do}
+:::: {#exr-t4-seq-diagonal-do}
 Donades les declaracions en C:
 
 ```{.c filename="C"}
@@ -404,8 +425,9 @@ Donades les declaracions en C:
 int mat[N][N];
 ```
 
-Traduïu a assemblador RISC-V el codi següent amb accés seqüencial i un sol punter:
+Traduïu a assemblador RISC-V el codi del @lst-t4-seq-diagonal-do amb accés seqüencial i un sol punter:
 
+::: {#lst-t4-seq-diagonal-do}
 ```{.c filename="C"}
 i = 0;
 do {
@@ -413,9 +435,11 @@ do {
     i += 2;
 } while (i < N);
 ```
+Bucle `do-while` sobre la diagonal de `mat`.
 :::
+::::
 
-::: {#exr-t4-seq-short}
+:::: {#exr-t4-seq-short}
 Donades les declaracions en C:
 
 ```{.c filename="C"}
@@ -426,17 +450,21 @@ void examen(short p1[100], int p2) {
 }
 ```
 
-a) Traduïu a C, amb una única sentència, el fragment d'assemblador RISC-V següent, sabent que forma part del cos d'`examen`:
+a) Traduïu a C, amb una única sentència, el fragment d'assemblador RISC-V del @lst-t4-seq-short-a, sabent que forma part del cos d'`examen`:
 
+::: {#lst-t4-seq-short-a}
 ```{.s filename="RV32I"}
         addi    t2, a1, 3
         slli    t2, t2, 1
         add     t2, a0, t2
         sh      zero, 0(t2)
 ```
+Fragment de l'apartat a).
+:::
 
-b) El fragment incomplet de codi C i RISC-V següent pertany al cos d'`examen` i inicialitza tots els elements de `p1` a zero amb accés seqüencial. Completeu les tres sentències que falten en C i les línies corresponents en assemblador, suposant que `i` i `p` es guarden a `t0` i `t1`:
+b) El fragment incomplet de codi C del @lst-t4-seq-short-c i el de RISC-V del @lst-t4-seq-short-s pertanyen al cos d'`examen` i inicialitzen tots els elements de `p1` a zero amb accés seqüencial. Completeu les tres sentències que falten en C i les línies corresponents en assemblador, suposant que `i` i `p` es guarden a `t0` i `t1`:
 
+::: {#lst-t4-seq-short-c}
 ```{.c filename="C"}
 p = _______ ;
 for (i = 0; i < 100; i++) {
@@ -444,7 +472,10 @@ for (i = 0; i < 100; i++) {
     _______ ;
 }
 ```
+Fragment incomplet en C de l'apartat b).
+:::
 
+::: {#lst-t4-seq-short-s}
 ```{.s filename="RV32I"}
         li      t0, 0
         li      t2, 100
@@ -456,11 +487,14 @@ bucle:
         j       bucle
 fibucle:
 ```
+Fragment incomplet en RISC-V de l'apartat b).
 :::
+::::
 
-::: {#exr-t4-seq-diagonal-ptr}
+:::: {#exr-t4-seq-diagonal-ptr}
 La funció `func` recorre la matriu `matriu` amb un punter. Suposeu que `N` i `M` són constants, amb $N \leq M$:
 
+::: {#lst-t4-seq-diagonal-ptr}
 ```{.c filename="C"}
 int matriu[N][M];
 
@@ -473,14 +507,17 @@ void func() {
     }
 }
 ```
-
-a) Enumereu els elements de la matriu que s'escriuen i indiqueu quin valor s'assigna a cada un.
-b) Traduïu a RISC-V el bucle anterior usant accés seqüencial, suposant que `i` i `p` ocupen `t0` i `t1`.
+Funció `func`, que recorre `matriu` amb un punter.
 :::
 
-::: {#exr-t4-seq-dispersa}
+a) Enumereu els elements de la matriu que s'escriuen i indiqueu quin valor s'assigna a cada un.
+b) Traduïu a RISC-V el bucle del @lst-t4-seq-diagonal-ptr usant accés seqüencial, suposant que `i` i `p` ocupen `t0` i `t1`.
+::::
+
+:::: {#exr-t4-seq-dispersa}
 La funció `fila_dispersa` escriu els elements de la fila `i` d'una matriu dispersa, representada pels vectors `A`, `IA` i `JA`, a les posicions corresponents de la matriu global `mat`:
 
+::: {#lst-t4-seq-dispersa}
 ```{.c filename="C"}
 int mat[N][M];
 
@@ -490,14 +527,17 @@ void fila_dispersa(int *A, int *IA, int *JA, int i) {
         mat[i][JA[k]] = A[k];
 }
 ```
-
-a) Dels accessos a memòria que fa aquest bucle (`IA[i]`, `IA[i+1]`, `JA[k]`, `mat[i][JA[k]]`, `A[k]`), quins es poden traduir amb accés seqüencial i quins només amb accés aleatori?
-b) Traduïu la funció `fila_dispersa` usant accés seqüencial per als recorreguts que ho permetin, suposant que `k` es guarda a `t0`.
+Funció `fila_dispersa`.
 :::
 
-::: {#exr-t4-opt-condicio-final}
-Donada la versió inicial del bucle següent (on `N` és una constant i `v` és un vector global d'enters):
+a) Dels accessos a memòria que fa el bucle del @lst-t4-seq-dispersa (`IA[i]`, `IA[i+1]`, `JA[k]`, `mat[i][JA[k]]`, `A[k]`), quins es poden traduir amb accés seqüencial i quins només amb accés aleatori?
+b) Traduïu la funció `fila_dispersa` usant accés seqüencial per als recorreguts que ho permetin, suposant que `k` es guarda a `t0`.
+::::
 
+:::: {#exr-t4-opt-condicio-final}
+Donada la versió inicial del bucle del @lst-t4-opt-condicio-final (on `N` és una constant i `v` és un vector global d'enters):
+
+::: {#lst-t4-opt-condicio-final}
 ```{.s filename="RV32I"}
         li      t0, 0
 bucle:
@@ -512,13 +552,15 @@ bucle:
         j       bucle
 fibucle:
 ```
+Versió inicial del bucle, sense optimitzar.
+:::
 
 a) Identifiqueu quantes instruccions s'executen per iteració i calculeu el temps total en cicles per a $N$ iteracions (useu el model de costos: memòria = 4 cicles, salt pres = 2, salt no pres = 1, resta = 1).
 b) Apliqueu l'optimització de condició al final del bucle (`do-while`). Escriviu la versió optimitzada i calculeu de nou el temps total.
 c) Quina reducció percentual del temps s'obté per a $N = 100$?
 
 *Vegeu @sec-opt-condicio-final.*
-:::
+::::
 
 ::: {#exr-t4-opt-variable-induccio}
 Donada la declaració (on `N` és una constant):
