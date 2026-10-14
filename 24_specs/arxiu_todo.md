@@ -830,6 +830,12 @@ Retirada el 2026-10-14, executada (§Entrades retirades → Executades). El text
   git grep -o -E '^:{3,} *\{#lst-' -- '*.qmd' | wc -l                                                                                                              # cap (0e5431d); 17 després del 2a; 86 en acabar (2026-10-14)
   ```
 
+### «Neteja profunda dels fitxers operatius», subpunt 10a (§Tasques globals → Eines)
+
+Retallat el 2026-10-14, en fer la fase 10a (el registre de decisions compactat). Text literal:
+
+    - **10a, el registre de decisions** (213 kB; objectiu, 60–75 kB). Classificar les 121 entrades i presentar-ne la taula a l'usuari abans d'aplicar-la. Una entrada retirada queda en una línia («Retirada el …: substituïda per D-x»), amb el mateix identificador. Les cites de l'usuari, només les que fixen l'abast de la regla, i en prosa descriptiva. Candidates a retirada, per confirmar: D-100, D-29, D-88, D-61, D-75, D-92, D-113. L'§Historial de l'estat del projecte surt: el que encara és vigent passa a `CLAUDE.md §Estat del projecte`.
+
 ## Capçalera del `TODO.md` fins al 2026-10-09
 
 Sense l'historial dels recomptes (línia 9, `git show c29b58d:TODO.md`).

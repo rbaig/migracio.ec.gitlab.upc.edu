@@ -307,7 +307,7 @@ Paleta unificada per a **totes** les figures SVG del projecte (memòria, BA i fl
 | Graella i vores secundàries | — | `#dee2e6` |
 | Pila ocupada abans d'una crida (piles en fila) | `#adb5bd` | `#6c757d` |
 
-Els colors que s'hi han afegit i els de fora de la paleta que s'hi han migrat, a [D-92](registre_de_decisions.md#d-92); els que s'hi han fusionat per reduir-la, a [D-113](registre_de_decisions.md#d-113).
+Els colors que s'hi han afegit i els de fora de la paleta que s'hi han migrat, a [D-113](registre_de_decisions.md#d-113).
 
 ---
 
@@ -455,7 +455,7 @@ Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
 **Figures de dependències de dades** (`A3_deps_*`): els resultats intermedis i els usos posteriors a la crida van en `#dc3545`, el vermell de la paleta (fins al 2026-10-13, `#cc0000`, D-113); la variant fosca la fa `gen_dark.py`.
 
-**Colors fora de la paleta.** Les figures natives no en fan servir cap: es van migrar a §10 ([D-92](registre_de_decisions.md#d-92)). Un color nou fora de §10 s'ha d'afegir a §13 en el mateix commit, o el fosc el deixa igual (`gen_dark.py` l'avisa al render).
+**Colors fora de la paleta.** Les figures natives no en fan servir cap: es van migrar a §10 ([D-113](registre_de_decisions.md#d-113)). Un color nou fora de §10 s'ha d'afegir a §13 en el mateix commit, o el fosc el deixa igual (`gen_dark.py` l'avisa al render).
 
 ---
 
@@ -490,7 +490,7 @@ Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com
 | `A6_not_1_0` | `A6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=V_{CC}(1-e^{-t/RC})$ |
 | `A6_not_0_1` | `A6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=V_{CC}\,e^{-t/RC}$ |
 
-Les cinc figures de T6 ja no són el resultat directe de l'extracció: no porten `textLength` (que `rsvg-convert` no implementa), els subíndexs són `<tspan dy>` dins d'un sol `<text>`, el text és en la notació d'A6 i els colors són de la paleta ([D-92](registre_de_decisions.md#d-92)). Si mai es tornen a extreure del PDF, cal refer-ho. Un espai que obre un `<tspan>` després d'un subíndex, `rsvg-convert` se'l menja si el `<text>` no porta `xml:space="preserve"`.
+Les cinc figures de T6 ja no són el resultat directe de l'extracció: no porten `textLength` (que `rsvg-convert` no implementa), els subíndexs són `<tspan dy>` dins d'un sol `<text>`, el text és en la notació d'A6 i els colors són de la paleta ([D-113](registre_de_decisions.md#d-113)). Si mai es tornen a extreure del PDF, cal refer-ho. Un espai que obre un `<tspan>` després d'un subíndex, `rsvg-convert` se'l menja si el `<text>` no porta `xml:space="preserve"`.
 
 
 ---
