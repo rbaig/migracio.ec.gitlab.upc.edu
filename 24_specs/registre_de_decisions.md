@@ -843,9 +843,7 @@ Amb altres professors dins de la revisió, qualsevol canvi transversal té un co
 
 ### D-91
 
-**El passat del `TODO.md` va a un arxiu, literal** · `CLAUDE.md §Fitxers de referència obligatòria` i la capçalera del `TODO.md` i de `24_specs/arxiu_todo.md` · 2026-10-09
-
-Petició de l'usuari (2026-10-09): «En algun moment, aviat, caldrà fer pruning dels fitxers operatius, tant de Claude com d'humans (`TODO.md`, `13_contrib.qmd`, etc.)». El `TODO.md` feia 207 kB: 128 kB d'entrades retirades i dades preservades, 14 kB d'historial dels recomptes, i la resta, les entrades vives, amb l'historial de les parts ja fetes. Una sessió nova el llegeix sencer abans de començar. Proposta de Claude Code, acceptada per l'usuari («Endavant»): les entrades retirades, les dades preservades, la mesura dels slugs, l'historial de la capçalera i el text d'abans de sis entrades vives que es retallen van a `24_specs/arxiu_todo.md`, **literals**. Moure-les sense reescriure-les fa que cap declaració de l'usuari no es perdi per construcció ([D-63](#d-63)), i es comprova línia a línia: cada línia que surt del `TODO.md` és a l'arxiu. L'historial dels recomptes no hi va: és el registre de canvis del fitxer mateix (`git log -p TODO.md`), i només hi surten títols d'entrades i xifres. Alternativa descartada: substituir les entrades retirades per un punter al darrer commit que les contenia, que és el que D-63 prohibeix (les tres declaracions del 2026-07-12 es van haver de recuperar amb `git show`). Dues invariants i dues decisions de l'usuari que eren vigents i només constaven en files retirades van passar al registre ([D-8](#d-8), [D-25](#d-25)), i en passar-les es va veure que una de les invariants ja no es complia. L'arxiu s'exclou de les escombrades i de l'avís de `make render-complet` del hook d'abans del commit, com el `TODO.md` i el registre.
+**El passat del `TODO.md` va a un arxiu, literal** · Retirada el 2026-10-14: substituïda per [D-122](#d-122); l'arxiu es va esborrar en fer la fase 10b.
 
 ### D-122
 

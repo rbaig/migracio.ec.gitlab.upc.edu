@@ -61,7 +61,6 @@ PY = sys.executable or 'python3'
 # ---------------------------------------------------------------------------
 CLASSES = [
     ('TODO.md', 'operatiu', {'documenta', 'no_cita'}),
-    ('24_specs/arxiu_todo.md', 'operatiu', {'documenta', 'no_cita'}),
     ('24_specs/registre_de_decisions.md', 'operatiu', {'documenta', 'no_cita'}),
     ('24_specs/revisio_externa.md', 'operatiu', {'documenta', 'no_cita'}),
     ('24_specs/lexic/*', 'operatiu', {'documenta', 'no_cita', 'fora_orfes'}),

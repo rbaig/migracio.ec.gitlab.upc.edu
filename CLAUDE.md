@@ -12,7 +12,7 @@ Abans de qualsevol acció, llegeix:
 
 1. `_quarto.yml` — configuració del projecte i fitxers que componen el llibre (`chapters:`).
 2. `13_contrib.qmd` — les regles del llibre: contingut, llenguatge (terminologia), format (callouts, codi, figures, SVG), laboratori, decisions per tema i eines.
-3. `TODO.md` — tasques pendents i decisions obertes. El seu arxiu, `24_specs/arxiu_todo.md` (les entrades retirades i l'historial), no: s'hi va quan una entrada o el registre hi remeten.
+3. `TODO.md` — tasques pendents i decisions obertes.
 
 Per a tasques que impliquin figures SVG, llegeix també `24_specs/svg.md` (paleta de colors, mapes de fonts i taula de substitució dark) i `24_specs/registres.toml` (definicions dels registres de bits, font de veritat); la skill `figures` en dona l'ordre de la feina. Abans de proposar de canviar una regla, llegeix-ne el perquè al registre de decisions.
 
@@ -23,7 +23,7 @@ Repartiment de responsabilitats entre fitxers:
 - `.claude/skills/` recull els procediments que només fan servir les sessions de Claude Code: `escombrada`, `render`, `rars`, `figures` i `tancar-fase` (`13_contrib.qmd §IA`).
 - `CLAUDE.md` (aquest fitxer) recull **només** l'operació de les sessions de Claude Code. Qualsevol altre aspecte va a `13_contrib.qmd`.
 - `README.md` és el fitxer de presentació del repositori (documentació habitual d'un projecte Quarto tipus *book*).
-- `TODO.md` només conté contingut transitori. El que ha de quedar buit al final és **el fitxer mateix**: no hi ha de restar cap entrada viva. El que en surt —una entrada que es tanca, o l'historial de les parts ja fetes d'una entrada viva— va **literal** a `24_specs/arxiu_todo.md` ([D-91](24_specs/registre_de_decisions.md#d-91)).
+- `TODO.md` només conté contingut transitori. El que ha de quedar buit al final és **el fitxer mateix**: no hi ha de restar cap entrada viva. Una entrada que es tanca s'esborra, i el commit que la treu en diu el motiu; el text d'abans és a git ([D-122](24_specs/registre_de_decisions.md#d-122)). Abans d'esborrar-la, les declaracions vigents de l'usuari que hi consten passen on siguin vigents (§Flux de treball).
 
 Altres fitxers transversals: `11_riscv.qmd` (compendi de referència RISC-V, inclòs via `{{< include >}}`) i `12_sigles_simbols.qmd` (sigles, símbols, notació i termes; les sigles i els termes es generen de `24_specs/termes.toml`, la font única del lèxic, D-115 i D-118).
 
