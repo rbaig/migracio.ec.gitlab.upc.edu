@@ -614,6 +614,12 @@ Regla de l'usuari (2026-10-12): cap etiqueta `B:` als blocs `.s`, perquè `b` é
 
 Regla de l'usuari (2026-10-12): no es permet la imbricació de callouts. Criteri de Claude Code per desfer, cas a cas, les que hi havia: un aprofundiment dins d'un callout RISC-V surt a continuació, perquè té sentit sol; un exemple o una taula que només tenen sentit dins d'un aprofundiment s'hi fonen, amb el títol en negreta, perquè fora haurien passat a ser matèria avaluable; i un `#cau-` dins d'una solució passa a un paràgraf que comença amb «**Atenció**:». `verifica_callouts.py`, a `comprova.py`, atura el commit si en troba cap, també a través d'un `include`.
 
+### D-126
+
+**Equacions de l'HTML amb MathJax 3, no amb MathML** · `13_contrib.qmd §Equacions` · 2026-07-04 · `22ea075`
+
+Recomanació de l'avaluació del 2026-07-04, que el `TODO.md` va recollir com a decisió presa: una prova real amb T5 i `-M html-math-method:mathml`. MathML funciona (`underbrace`, `cases` i les taules amb matemàtiques surten bé a Chrome) i treu el JavaScript de MathJax, de manera que el render és instantani i no depèn de cap CDN. Es descarta perquè a Chrome la tipografia és inferior (MathML Core), els números de les equacions surten en línia (`\qquad(5.1)`) en lloc d'alineats a la dreta, i caldria adaptar a `math[display="block"]` els selectors `mjx-container` de `styles.css`, que resolen el desbordament de les equacions a les pantalles estretes. Es reavalua quan Quarto adopti MathJax 4, que parteix les línies sol (`TODO.md §Llarg termini`).
+
 ## Figures
 
 ### D-51
@@ -804,7 +810,7 @@ Petició de l'usuari: inventariar els registres i reduir-los (una sola font, fus
 
 ### D-105
 
-**Ortografia amb `hunspell`, gramàtica amb LanguageTool, i les formes que no s'han de fer servir, comprovades** · `13_contrib.qmd §Comprovacions per nivells`, `§Requisits previs` · 2026-10-10
+**Ortografia amb `hunspell`, gramàtica amb LanguageTool, i les formes que no s'han de fer servir, comprovades** · `13_contrib.qmd §Comprovacions per nivells`, `README.md §Instal·lació` · 2026-10-10
 
 Pregunta de l'usuari: si un corrector local reduiria la dependència de Claude Code. Una prova va trobar errors reals que la revisió interna no havia vist. Propostes de Claude Code, acceptades:
 
@@ -847,7 +853,7 @@ Amb altres professors dins de la revisió, qualsevol canvi transversal té un co
 
 ### D-122
 
-**Els fitxers operatius només guarden el que serveix d'ara endavant; el passat és a git** · `CLAUDE.md §Flux de treball` i `§Pla de treball` (fase 10) · 2026-10-14 · etiqueta `arxiu/pre-neteja-2026-10-14`
+**Els fitxers operatius només guarden el que serveix d'ara endavant; el passat és a git** · `CLAUDE.md §Flux de treball`, i les capçaleres del `TODO.md` i d'aquest registre · 2026-10-14 · etiqueta `arxiu/pre-neteja-2026-10-14`
 
 L'usuari va demanar una neteja profunda dels fitxers operatius (`TODO.md`, el seu arxiu, aquest registre, `13_contrib.qmd`, `CLAUDE.md`, les skills): s'hi ha de quedar només el que té sentit per gestionar i millorar el repositori, i el que s'hi guardava només per raons històriques se'n va. La política, proposada per Claude Code i acceptada per l'usuari amb dos matisos seus:
 

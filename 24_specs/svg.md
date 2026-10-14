@@ -386,8 +386,8 @@ FONT_MAP = {
     "freemono, 'courier new', monospace":            MONO,
     "freemono,'courier new',monospace":              MONO,
     "freemono, \"courier new\", monospace":          MONO,
-    # Figures externes extretes de PDF via pymupdf (text traçat, vegeu §15)
-    # o exportades de LO Draw / draw.io (23_figs_externes/T7_*)
+    # Fonts que deixen l'extracció d'un PDF amb pymupdf (§15)
+    # i les exportacions de LO Draw o draw.io
     "arial embedded":                                SANS,
     "arial, sans-serif":                              SANS,
     "courier":                                        MONO,
@@ -453,7 +453,7 @@ Els colors dins els marcadors `<polygon fill="...">` també es substitueixen aut
 
 Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
-**Figures de dependències de dades** (`A3_deps_*`): els resultats intermedis i els usos posteriors a la crida van en `#dc3545`, el vermell de la paleta (fins al 2026-10-13, `#cc0000`, D-113); la variant fosca la fa `gen_dark.py`.
+**Figures de dependències de dades** (`A3_deps_*`): els resultats intermedis i els usos posteriors a la crida van en `#dc3545`, el vermell de la paleta ([D-113](registre_de_decisions.md#d-113)); la variant fosca la fa `gen_dark.py`.
 
 **Colors fora de la paleta.** Les figures natives no en fan servir cap: es van migrar a §10 ([D-113](registre_de_decisions.md#d-113)). Un color nou fora de §10 s'ha d'afegir a §13 en el mateix commit, o el fosc el deixa igual (`gen_dark.py` l'avisa al render).
 
@@ -461,26 +461,9 @@ Les variants dark de totes les figures es generen automàticament (vegeu §13).
 
 ## 15. Figures extretes dels PDF existents
 
-Algunes figures del projecte provenen dels PDF originals (material docent anterior) i es generen amb el script Python `25_scripts/extract_pdf_figure.py` (o equivalent), que fa servir `pymupdf` i `text_as_path=True`.
+Les cinc figures de T6 de la taula següent provenen dels PDF originals (material docent anterior): es van extreure amb `pymupdf` (`text_as_path=True`), sense cap script versionat, i després es van refer a mà ([D-113](registre_de_decisions.md#d-113)). Avui són SVG com els natius, a `22_figs_originals/`: el text és text, en la notació d'A6, els subíndexs són `<tspan dy>` dins d'un sol `<text>`, sense `textLength` (que `rsvg-convert` no implementa), i els colors són de la paleta; la variant fosca la fa `gen_dark.py`, com per a la resta. Una figura que es torni a extreure d'un PDF s'ha de refer de la mateixa manera: l'extracció deixa el text traçat i els colors del PDF.
 
-### Característiques tècniques
-
-- **Text traçat**: el text es converteix a corbes de Bézier. No és editable com a text, però és totalment portable (sense dependència de fonts instal·lades al sistema). Per editar el text cal partir del PDF original i regenerar.
-- **Negre implícit fet explícit**: el SVG generat afegeix `fill="#000000" stroke="none"` a l'element `<svg>` arrel. Això fa que el negre per defecte (heretat implícitament per tots els paths i formes sense color explícit) sigui substituïble per `gen_dark.py` com qualsevol altre color de la paleta.
-- **Fons verd eliminat**: el color `#d9ffd9` (realçat del visor de PDF) s'elimina durant l'extracció.
-
-### Generació de la variant dark
-
-Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com la resta de figures, gràcies a les dues entrades específiques de la taula `REPLACEMENTS` (§13):
-
-| Light | Dark | Ús |
-|:---|:---|:---|
-| `#000000` | `#adb5bd` | Línies, contorns i text de figures de línia negra |
-| `#ffffff` | `#2d2d2d` | Zones blanques internes (p. ex. àrea buida de barres) |
-
-**El pipeline automàtic gestiona correctament totes les figures extretes de PDF**: no cal cap configuració addicional.
-
-### Figures del projecte generades per aquest mètode
+### Les figures extretes
 
 | Figura | PDF d'origen | Contingut |
 |:---|:---|:---|
@@ -490,7 +473,7 @@ Les figures extretes de PDF **es generen automàticament** per `gen_dark.py` com
 | `A6_not_1_0` | `A6_not__cmos___1_0___0_1.pdf` | Càrrega RC, $V(t)=V_{CC}(1-e^{-t/RC})$ |
 | `A6_not_0_1` | `A6_not__cmos___1_0___0_1.pdf` | Descàrrega RC, $V(t)=V_{CC}\,e^{-t/RC}$ |
 
-Les cinc figures de T6 ja no són el resultat directe de l'extracció: no porten `textLength` (que `rsvg-convert` no implementa), els subíndexs són `<tspan dy>` dins d'un sol `<text>`, el text és en la notació d'A6 i els colors són de la paleta ([D-113](registre_de_decisions.md#d-113)). Si mai es tornen a extreure del PDF, cal refer-ho. Un espai que obre un `<tspan>` després d'un subíndex, `rsvg-convert` se'l menja si el `<text>` no porta `xml:space="preserve"`.
+Un espai que obre un `<tspan>` després d'un subíndex, `rsvg-convert` se'l menja si el `<text>` no porta `xml:space="preserve"`.
 
 
 ---
@@ -521,16 +504,7 @@ Dos models de generació ([D-94](registre_de_decisions.md#d-94)):
 - **Model (b), per a les famílies**: la definició és el font, en un TOML de `24_specs/`, i un script del pre-render (`_quarto.yml`) n'escriu les figures a `auto_figs/`, amb un sufix propi; l'SVG no es versiona. Retocar una figura és canviar-ne la definició, i una convenció nova s'aplica a tota la família d'un sol cop.
 - **Model (a), per a les figures soltes**: el font és l'SVG versionat a `22_figs_originals/`, i un script el regenera. L'script té l'opció `--comprova`, que compara el que generaria amb l'SVG versionat sense escriure res, i `make comprova` les passa totes a cada commit: un SVG retocat a mà i no a l'script hi surt com a diferència, i `make registres` els regenera.
 
-Generadors del pre-render (model (b)). El sufix de cada un és a la taula de sufixos de `13_contrib.qmd §Convencions SVG`:
-
-| Definició | Generador | Sufix | Figures |
-|:---|:---|:---|:---|
-| `24_specs/registres.toml` | `25_scripts/gen_regs.py` | `__registre` | Registres de bits i formats d'instrucció (T2, T3, T5, T9) |
-| `24_specs/BA.toml` | `25_scripts/gen_BA.py` | `__BA` | Blocs d'activació, amb les zones de §3–§11 (T3): escalars, vectors, alineació i zones genèriques amb text lliure, i, si cal, el desplaçament de cada zona (§9) |
-| `24_specs/mapa.toml` | `25_scripts/gen_mapa.py` | `__mapa` | Mapes de memòria (T3): les regions de la memòria de RARS, amb les adreces i les fletxes de creixement, i la pila en diversos moments d'una crida, una columna per moment |
-| `24_specs/subrutines.toml` | `25_scripts/gen_subrutines.py` | `__subrutina` | Dependències de dades d'una subrutina: el codi, les crides en franges i una barra de vida per dada (T3) |
-| `24_specs/MC.toml` | `25_scripts/gen_MC.py` | `__MC` | Memòria cau (T7): simula la MC sobre una seqüència d'accessos i en dibuixa la seqüència pas a pas, la taula de traça o l'estat en un moment donat; i els diagrames de blocs de la lectura |
-| `24_specs/memoria.toml` | `25_scripts/gen_memoria.py` | `__memoria` | Memòria per bytes (T2): una fila per byte, amb l'adreça, la dada i una nota (MSB, LSB) o una fletxa de creixement |
+Generadors del pre-render (model (b)): el pipeline és a `_quarto.yml` (`project.pre-render`), i la definició, el generador i el sufix de cada família, a la taula de sufixos de `13_contrib.qmd §Convencions SVG`. Què dibuixa cada família, i el format de les seves entrades, ho diu la capçalera del seu TOML.
 
 `gen_BA.py` i `gen_mapa.py` comparteixen les primitives de la columna de memòria (zones, ratlles, etiquetes, fletxes), que són a `25_scripts/columna_memoria.py`: no és cap generador, i no té sufix.
 

@@ -12,15 +12,7 @@ els fitxers del cas i el seu `24_specs/termes.toml`) i hi executa l'eina, com a 
 còpia de l'script al directori temporal) o important-ne les funcions amb l'arrel apuntant-hi.
 Només fan servir Python (3.11 o posterior) i git: cap xarxa, cap render ni cap eina externa.
 
-Bateries (els casos de cadascuna: --llista, i la taula de la guia):
-  sigles        25_scripts/sigles.py --comprova
-  lexic         25_scripts/gen_glossari.py --comprova
-  prosa         lint_prosa.check()
-  format_codi   verifica_format_codi.comprova_linia()
-  callouts      verifica_callouts.revisa()
-  calendari     25_scripts/verifica_calendari.py
-  decisions     comprova.c_decisions() i comprova.c_exr_sol()
-  classificacio comprova.autotest(), la classificació dels fitxers del repositori
+Les bateries són a BATERIES, una per eina; --llista en dona els casos.
 
 Ús:
     python3 25_scripts/autoproves.py                  # totes; surt amb 1 si en falla algun cas
@@ -31,8 +23,9 @@ Bateries (els casos de cadascuna: --llista, i la taula de la guia):
 
 Les fa córrer comprova.py (la comprovació «Autoproves») quan canvia una de les eines provades o
 aquest fitxer, i sempre amb `make comprova-tot`; `make autoproves` les passa totes. Un cas nou
-s'afegeix al seu lloc de BATERIES, en el mateix commit que canvia la regla o l'eina, i
-`make registres` en posa al dia la taula de la guia.
+s'afegeix al seu lloc de BATERIES, en el mateix commit que canvia la regla o l'eina. La taula de
+la guia té una fila per bateria, sense els casos: només canvia amb una bateria nova, i
+`make registres` la posa al dia.
 """
 
 import importlib
@@ -597,10 +590,9 @@ def passa(b, cas):
 
 
 def taula():
-    files = ["| Bateria | Eina | Regla | Casos |", "| :--- | :--- | :--- | :--- |"]
+    files = ["| Bateria | Eina | Regla |", "| :--- | :--- | :--- |"]
     for b in BATERIES:
-        casos = "; ".join(f"{c.que}{'' if c.espera else ' (cap troballa)'}" for c in b.casos)
-        files.append(f"| `{b.nom}` | {b.eina} | {b.regla} | {len(b.casos)}: {casos} |".replace("\n", " "))
+        files.append(f"| `{b.nom}` | {b.eina} | {b.regla} |".replace("\n", " "))
     return "\n".join(files)
 
 
