@@ -303,9 +303,9 @@ def arbre_readme():
     """L'arbre del README.md té una entrada per a cada fitxer i directori versionat de l'arrel, i
     cap més que les generades (marcades «Generat»)."""
     text = (ARREL / 'README.md').read_text(encoding='utf-8')
-    m = re.search(r'### Fitxers i directoris\n.*?```\n(.*?)```', text, re.S)
+    m = re.search(r'## Estructura del projecte\n.*?```\n(.*?)```', text, re.S)
     if not m:
-        return [(ERROR, 'no trobo l\'arbre de README.md §Fitxers i directoris')]
+        return [(ERROR, 'no trobo l\'arbre de README.md §Estructura del projecte')]
     entrades, generades = set(), set()
     for l in m.group(1).split('\n'):
         mm = re.match(r'^[├└]── (\S+)', l)
