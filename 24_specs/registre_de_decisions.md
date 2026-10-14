@@ -853,7 +853,7 @@ Amb altres professors dins de la revisió, qualsevol canvi transversal té un co
 
 ### D-122
 
-**Els fitxers operatius només guarden el que serveix d'ara endavant; el passat és a git** · `CLAUDE.md §Flux de treball` i `§Pla de treball` (fase 10) · 2026-10-14 · etiqueta `arxiu/pre-neteja-2026-10-14`
+**Els fitxers operatius només guarden el que serveix d'ara endavant; el passat és a git** · `CLAUDE.md §Flux de treball`, i les capçaleres del `TODO.md` i d'aquest registre · 2026-10-14 · etiqueta `arxiu/pre-neteja-2026-10-14`
 
 L'usuari va demanar una neteja profunda dels fitxers operatius (`TODO.md`, el seu arxiu, aquest registre, `13_contrib.qmd`, `CLAUDE.md`, les skills): s'hi ha de quedar només el que té sentit per gestionar i millorar el repositori, i el que s'hi guardava només per raons històriques se'n va. La política, proposada per Claude Code i acceptada per l'usuari amb dos matisos seus:
 

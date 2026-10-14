@@ -57,8 +57,6 @@ Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ s�
 | Fase | Què | Estat | Sessió | Model i effort |
 | :---: | :--- | :--- | :--- | :--- |
 | 8 | **Preparar el material per als equips de revisió d'A1–A8** (l'abast i les branques, a §Estat del projecte). La feina d'aquesta fase és el material, no les branques: una nota per als revisors i l'estat de cada fitxer d'A1–A8. Els equips i el calendari els decideix l'usuari; cada equip crea la seva branca, `revisio/<grup>-t<N>-t<M>` (`13_contrib.qmd §Convenció de noms de branques`). T8 ja és en revisió: `!8`, fusionada el 2026-10-06 fins a §8.7 exclosa. **Esborrany del material**: `24_specs/revisio_externa.md` (2026-10-12), punt de l'ordre del dia de la reunió del 2 de novembre (`TODO.md §Decisions obertes`). | Esborrany | — | — |
-| 10 | **Neteja profunda dels fitxers operatius** ([D-122](24_specs/registre_de_decisions.md#d-122); el detall i les decisions de l'usuari, a `TODO.md §Tasques globals → Eines`). S0, 10a, 10b i 10c, fetes el 2026-10-14: el detall de cadascuna és al missatge dels seus commits. | En curs | — | — |
-| 10d | `13_contrib.qmd` (la taula de les autoproves, els paràgrafs de les eines, el text transitori), `svg.md`, i la instal·lació i el render, que passen al `README.md`. | Pendent | Nova | Opus, alt |
 
 Les eines de les sessions són a `13_contrib.qmd §IA` (skills, subagents i hooks).
 

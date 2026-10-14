@@ -128,12 +128,6 @@ Decisions pendents de criteri. Un cop preses, han d'aterrar a `13_contrib.qmd`. 
 
 ### Eines
 
-- **Neteja profunda dels fitxers operatius** (petició de l'usuari, 2026-10-14; política a [D-122](24_specs/registre_de_decisions.md#d-122); fases 10a–10d de `CLAUDE.md §Pla de treball`, una sessió per fase). S0, 10a, 10b i 10c, fetes el 2026-10-14 (el detall, als missatges dels commits). Queda la **10d, `13_contrib.qmd`, `svg.md` i `README.md`**, amb les decisions de l'usuari sobre la proposta de Claude Code, totes amb la recomanació: la taula de les autoproves, reduïda a una fila per bateria (els casos, a `autoproves.py --llista`); els paràgrafs que descriuen les eines; el text transitori («Encara no tenen autoproves…»); la instal·lació i el render, al `README.md`, i la guia hi remet; a `svg.md`, la referència a `extract_pdf_figure.py`, que no ha existit mai, i les taules que repeteixen `_quarto.yml`. Dos punts que la 10c ha vist fora del seu abast, per proposar a la 10d: l'entrada «Equacions: reavaluar MathML…» porta una decisió presa (mantenir MathJax 3) que no és a `13_contrib.qmd`, on han d'aterrar les decisions; i el paràgraf de sobre la taula de `CLAUDE.md §Pla de treball` encadena tres punters a git per dir on són les fases fetes.
-
-  ```bash
-  wc -c 13_contrib.qmd 24_specs/svg.md README.md   # 150 kB, 37 kB, 9 kB (2026-10-14, en tancar la 10c)
-  ```
-
 - **Workflows de GitHub: validar-ne el YAML a `comprova.py`** (petició de l'usuari, 2026-10-14, en corregir un `- name:` de `.github/workflows/publish.yml` que trencava el YAML i aturava la publicació). **Valoració de Claude Code**: no cal posar cometes als 20 `name:` (13 de `publish.yml` i 7 de `comprova.yml`), perquè el risc no és dels `name:` sinó de qualsevol valor sense cometes amb «: » o « #» (també un `run:`); el que ho evita és una comprovació, i avui `.github/` és de nivell 0 i res no en mira la sintaxi. **Proposta**: que la comprovació «Eines» de `comprova.py` validi el YAML dels `.github/workflows/*.yml` canviats (`yaml.safe_load`; «omesa» si no hi ha PyYAML, com les altres eines externes), amb la seva bateria d'autoproves (un workflow vàlid, i un amb un «: » en un valor sense cometes). Sessió curta (Sonnet, effort baix o mitjà).
 
   ```bash
