@@ -377,6 +377,26 @@ def c_exr_sol(ctx):
     return [(ERROR, f'#sol-{s} no té el seu #exr-{s} (13_contrib.qmd §Problemes i solucions, D-22)') for s in falten]
 
 
+def c_slugs(ctx):
+    """Les capçaleres `##`–`####` dels apunts, fora dels divs i dels blocs de codi, amb `{#sec-}`. Compta
+    nivells de div, i no alterna un booleà: un callout encastat obre amb `::::` i descompensaria el booleà."""
+    r = []
+    for f in sorted((ARREL / '01_apunts').glob('A*.qmd')):
+        nivell, codi = 0, False
+        for n, l in enumerate(f.read_text(encoding='utf-8').split('\n'), 1):
+            s = l.strip()
+            if re.match(r'`{3,}|~{3,}', s):
+                codi = not codi
+            elif codi:
+                continue
+            elif s.startswith(':::'):
+                nivell = nivell + 1 if s.lstrip(':').strip() else max(0, nivell - 1)
+            elif nivell == 0 and (m := re.match(r'#{2,4}\s+(.*)$', l)) and '{#sec-' not in m.group(1):
+                r.append((ERROR, f'{f.relative_to(ARREL)}:{n}: capçalera sense etiqueta {{#sec-}}, «{m.group(1)[:60]}» '
+                                 '(13_contrib.qmd §Etiquetes `{#sec-}` a les capçaleres)'))
+    return r
+
+
 def objectius_prosa(ctx):
     """{fitxer: línies o None} dels .qmd a mirar: les línies afegides, o tot el corpus amb --tot
     (sense els fitxers que documenten els casos, que citen el que les comprovacions busquen)."""
@@ -674,6 +694,8 @@ COMPROVACIONS = [
                 SEMPRE, 'Sempre', 'Atura', c_decisions),
     Comprovacio('exr_sol', 'Enunciats i solucions', 'Cada `#sol-` té el seu `#exr-` amb el mateix slug (D-22)',
                 SEMPRE, 'Sempre', 'Atura', c_exr_sol),
+    Comprovacio('slugs', 'Etiquetes `{#sec-}`', 'Cada capçalera `##`–`####` d\'A1–A9, fora dels callouts i dels blocs de codi, '
+                'porta la seva etiqueta `{#sec-}` (§Etiquetes `{#sec-}` a les capçaleres)', SEMPRE, 'Sempre', 'Atura', c_slugs),
     Comprovacio('eines', 'Eines', 'La sintaxi dels `.py` (`compile`) i dels `.sh` (`bash -n`) canviats; si canvia `comprova.py`, '
                 'l\'autoprova de la classificació', lambda ctx: ctx.tot or any(
                     f.endswith(('.py', '.sh')) or f.startswith('.githooks/') for f in ctx.canvis.fitxers),
