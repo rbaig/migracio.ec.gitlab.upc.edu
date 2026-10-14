@@ -52,7 +52,7 @@ Els PDF originals (MIPS) són al directori `/PDF_originals`; consulta'ls en cas 
 
 ### Pla de treball
 
-Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ són allà. **Una sessió nova per fase o per grup de fases**, amb el model de la columna: aquesta taula és la que ho decideix, no el nom de la tasca. Les fases fetes (de la 1 a la 7i, i la 8a; del 2026-10-01 al 2026-10-09), amb la descripció, les decisions i els commits de cadascuna, són al registre de decisions (`§Historial de l'estat del projecte → Fases del pla de treball`); la taula que les llistava amb la sessió i el model de cadascuna, a `git show c29b58d:CLAUDE.md`.
+Cada fase remet a les entrades del `TODO.md`; el detall, les ordres i els ⛔ són allà. **Una sessió nova per fase o per grup de fases**, amb el model de la columna: aquesta taula és la que ho decideix, no el nom de la tasca. Les fases fetes (de la 1 a la 7i, la 8a i la 9; del 2026-10-01 al 2026-10-10), amb la descripció, les decisions i els commits de cadascuna, són al registre de decisions (`§Historial de l'estat del projecte → Fases del pla de treball`); la taula que les llistava amb la sessió i el model de cadascuna, a `git show c29b58d:CLAUDE.md`.
 
 | Fase | Què | Estat | Sessió | Model i effort |
 | :---: | :--- | :--- | :--- | :--- |
