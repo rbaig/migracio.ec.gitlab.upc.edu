@@ -24,6 +24,8 @@ INCLUDE = re.compile(r'\{\{<\s*include\s+(\S+)\s*>\}\}')
 
 def te_callout(fitxer):
     """Si un fitxer inclòs obre algun callout (fora del codi)."""
+    if not fitxer.exists():   # fitxer generat (auto_riscv/) que encara no s'ha generat
+        return False
     dins_codi = False
     for linia in fitxer.read_text(encoding='utf-8').split('\n'):
         if CODI.match(linia):
