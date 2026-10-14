@@ -14,7 +14,7 @@ Abans de començar, llegeix `.claude/skills/escombrada/regles.md`, on hi ha les 
 
 1. **Abast**: el commit, el rang o el diff que t'han donat. Si no te n'han donat cap, pregunta-ho en lloc de triar-lo tu.
 2. **Inventari** de cada afirmació mesurable:
-   - xifres amb l'ordre que les sosté (blocs `bash`, «N entrades vives», «N ocurrències»);
+   - xifres amb l'ordre que les sosté (blocs `bash`, «N ocurrències»);
    - afirmacions d'absència o d'unicitat («cap», «és l'únic», «ja no hi és», «enlloc»);
    - repartiments al costat d'un total;
    - punters `fitxer:línia` («mesurat a <commit>»).
