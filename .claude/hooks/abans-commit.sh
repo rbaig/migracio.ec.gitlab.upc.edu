@@ -7,7 +7,7 @@
 #     falla o dona cap WARNING, un registre desactualitzat, una forma no admesa…),
 #     el hook surt amb 2 i el commit no es fa.
 #   - Els avisos i els recordatoris (sortida 1) no l'aturen ni pregunten: arriben
-#     a Claude (additionalContext) i a l'usuari, a la pantalla (systemMessage) (D-61).
+#     a Claude (additionalContext) i a l'usuari, a la pantalla (systemMessage) (D-103).
 # Les persones que no fan servir Claude Code tenen el mateix amb els hooks de git
 # de `.githooks/` (`make instal·la-hooks`).
 #
