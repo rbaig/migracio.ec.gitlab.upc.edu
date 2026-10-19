@@ -876,64 +876,85 @@ def claudator(x0, x1, y, s, size=10, amunt=False):
 
 
 def pipt():
-    """Com la figura 7.10 del tema antic: el TLB, completament associatiu, amb un comparador per entrada i
-    l'OR que dona l'encert de TLB; el PPN de l'entrada que encerta i el desplaçament de pàgina formen
-    l'adreça física, que es parteix en etiqueta, índex i desplaçament de bloc per accedir a una memòria cau
-    de correspondència directa (com la de `#fig-cd-diagrama`). A sota, el cronograma, com a `vipt`."""
+    """Com la figura 7.10 del tema antic, amb el TLB dibuixat com la memòria cau completament associativa de
+    T7 (`#fig-ca-diagrama`): cada entrada (V, VPN, D, E i PPN) té un comparador del VPN i una AND amb el bit V,
+    perquè una entrada lliure (V = 0) no pot encertar; l'OR de les AND dona l'encert de TLB, i un multiplexor
+    tria el PPN de l'entrada que encerta. El PPN i el desplaçament de pàgina formen l'adreça física, que es
+    parteix en etiqueta, índex i desplaçament de bloc per accedir a una memòria cau de correspondència directa
+    (com la de `#fig-cd-diagrama`). A sota, el cronograma, com a `vipt`."""
     o = []
     lin = figlib.line
     # Adreça lògica.
-    XV, XD = 200, 450                                  # VPN i desplaçament de pàgina
+    XV, XD, XDF = 150, 420, 610                        # VPN i desplaçament de pàgina
     o.append(t(XV - 8, 47, 'Adreça lògica', 12, INK, 'end', bold=True))
-    r_, pl = registre(XV, 30, [('VPN', XD - XV), ('desplaçament de pàgina', 190)])
+    r_, pl = registre(XV, 30, [('VPN', XD - XV), ('desplaçament de pàgina', XDF - XD)])
     o += r_
-    # TLB: VPN | comparadors | V D E PPN, quatre entrades; encerta la tercera.
-    Y0, rh, HIT = 104, 24, 2
-    cols_esq = [('VPN', 90, 80)]
-    cols_dre = [('V', 246, 22), ('D', 268, 22), ('E', 290, 22), ('PPN', 312, 70)]
-    o.append(t(20, Y0 + 2 * rh + 5, 'TLB', 14, TLB_S, 'start', bold=True))
-    for nom, x, w in cols_esq + cols_dre:
-        o.append(t(x + w / 2, Y0 - 8, nom, 10, INK, bold=True))
-    XB, XC = 182, 202                                  # bus del VPN de l'adreça i comparadors
-    xs_sort = [236, 230, 224, 218]                     # baixada de la sortida de cada comparador
-    for r in range(4):
-        y, cy = Y0 + r * rh, Y0 + r * rh + rh / 2
-        f, s = (TLB_F, TLB_S) if r == HIT else (NEUTRE, TRAC)
-        for _, x, w in cols_esq + cols_dre:
-            o.append(cel(x, y, w, rh, f, s))
-        o.append(lin([(170, cy - 4), (XC - 9.2, cy - 4)]))            # VPN de l'entrada (creua el bus sense punt)
-        o.append(lin([(XB, cy + 5), (XC - 8.6, cy + 5)]))             # VPN de l'adreça
-        if r < 3:
-            o.append(figlib.dot(XB, cy + 5))
-        o.append(lin([(XC + 10, cy), (xs_sort[r], cy), (xs_sort[r], 250 - 12 + 8 * (3 - r) - 0)]))
-    for r in range(4):
-        o.append(comparador(XC, Y0 + r * rh + rh / 2))
-    o.append(lin([(XB + 50, 56), (XB + 50, 76), (XB, 76), (XB, Y0 + 3 * rh + rh / 2 + 5)]))
-    # OR de l'encert de TLB, girada cap a l'esquerra.
-    YO, XO = 250, 214
-    for r in range(4):
-        yi = YO - 12 + 8 * (3 - r)
-        o.append(lin([(xs_sort[r], yi), (XO - 3, yi)]))
+    # TLB: tres entrades dibuixades (0, 1 i N − 1), cadascuna amb V, VPN, D, E i PPN; encerta l'1.
+    cols = [('V', 0, 20), ('VPN', 20, 62), ('D', 82, 20), ('E', 102, 20), ('PPN', 122, 50)]
+    WE, YE, rh, HIT = 172, 116, 24, 1
+    xs = [80, 268, 480]
+    noms = ['entrada 0', 'entrada 1', 'entrada N−1']
+    o.append(t(14, YE + 17, 'TLB', 14, TLB_S, 'start', bold=True))
+    for k, xe in enumerate(xs):
+        o.append(t(xe + WE / 2, YE - 26, noms[k], 11, INK, bold=True))
+        f, s = (TLB_F, TLB_S) if k == HIT else (NEUTRE, TRAC)
+        for nom, dx, w in cols:
+            o.append(t(xe + dx + w / 2, YE - 8, nom, 10, INK, bold=True))
+            o.append(cel(xe + dx, YE, w, rh, f, s))
+    o.append(t(xs[1] + WE + (xs[2] - xs[1] - WE) / 2, YE + 16, '· · ·', 14, GRIS))
+    yb = YE + rh
+    YBUS, YCMP, YAND = yb + 18, yb + 48, yb + 92
+    # Bus del VPN de l'adreça, fins als comparadors.
+    o.append(lin([(XV + 30, 56), (XV + 30, 76), (62, 76), (62, YBUS), (xs[-1] + 51 - 16, YBUS)]))
+    sortides = []
+    for k, xe in enumerate(xs):
+        xc, xv, xp, xa = xe + 51, xe + 10, xe + 147, xe + 66
+        o.append(lin([(xc, yb), (xc, YCMP - 10)]))                              # VPN de l'entrada
+        o.append(lin([(xc - 16, YBUS), (xc - 16, YCMP), (xc - 10, YCMP)]))      # VPN de l'adreça
+        if k < len(xs) - 1:
+            o.append(figlib.dot(xc - 16, YBUS))
+        o.append(comparador(xc, YCMP))
+        o.append(lin([(xc, YCMP + 10), (xc, YAND - 8), (xa + 3, YAND - 8)]))
+        o.append(lin([(xv, yb), (xv, YAND + 8), (xa + 3, YAND + 8)]))          # V: una entrada lliure no encerta
+        o.append(figlib.and_gate(xa, YAND))
+        sortides.append(xa + 36)
+    # OR de l'encert de TLB, girada cap a l'esquerra, sota l'entrada 0.
+    YO, XO = YAND + 56, 168
+    for k, xo in enumerate(sortides):
+        yi = YO - 10 + 10 * k
+        o.append(lin([(xo, YAND), (xo + 8, YAND), (xo + 8, yi), (XO - 3, yi)]))
     o.append(or_esq(XO, YO))
     o.append(lin([(XO - 40, YO), (118, YO)], HIT_S))
     o.append(figlib.term(115.5, YO, HIT_S))
     o.append(t(108, YO + 4, 'Encert de TLB', 12, HIT_S, 'end', bold=True))
+    # Multiplexor d'entrada: tria el PPN de l'entrada que encerta.
+    YM = YO + 34
+    xps = [xe + 147 for xe in xs]
+    for xp in xps:
+        o.append(lin([(xp, yb), (xp, YM)]))
+    XM0, XM1 = xps[0] - 30, xps[-1] + 30
+    o.append(f'<path d="M{XM0},{YM} L{XM1},{YM} L{XM1 - 30},{YM + 26} L{XM0 + 30},{YM + 26} z" fill="{NEUTRE}" stroke="{INK}" stroke-width="1.5"/>')
+    XMC = (XM0 + XM1) / 2
+    o.append(t(XMC, YM + 17, "multiplexor d'entrada", 10, INK))
+    o.append(lin([(XM0 - 30, YM + 13), (XM0 + 15, YM + 13)], GRIS, 1))
+    o.append(t(XM0 - 34, YM + 11, "selecció: l'entrada", 9, GRIS, 'end', italic=True))
+    o.append(t(XM0 - 34, YM + 22, 'amb encert', 9, GRIS, 'end', italic=True))
     # Adreça física: el PPN de l'entrada que encerta i el desplaçament de pàgina, que no es tradueix.
-    YF, XP = 296, 330
+    YF, XP = YM + 70, 300
     o.append(t(XP - 8, YF + 17, 'Adreça física', 12, INK, 'end', bold=True))
-    r_, pf = registre(XP, YF, [('PPN', XD - XP), ('desplaçament de pàgina', 190)])
+    r_, pf = registre(XP, YF, [('PPN', XD - XP), ('desplaçament de pàgina', XDF - XD)])
     o += r_
-    xppn = 347
-    o.append(figlib.dot(xppn, Y0 + HIT * rh + rh / 2, TLB_S))
-    o.append(cami([(xppn, Y0 + HIT * rh + rh / 2), (xppn, 270), (390, 270), (390, YF - 2)], TLB_S, 1.5))
-    o.append(cami([(545, 56), (545, YF - 2)], INK, 1.5))
+    xppn = (XP + XD) / 2
+    o.append(cami([(XMC, YM + 26), (XMC, YF - 18), (xppn, YF - 18), (xppn, YF - 2)], INK, 1.5))
+    xdp = (XD + XDF) / 2
+    o.append(cami([(XDF, 43), (668, 43), (668, YF - 18), (xdp, YF - 18), (xdp, YF - 2)], INK, 1.5))
     # Camps de l'adreça física per a la memòria cau.
-    XE, XI, XO2, XF = XP, 490, 560, 640
-    o += claudator(XE, XI, YF + 30, 'etiqueta')
+    XI, XO2, XF = 480, 550, XDF
+    o += claudator(XP, XI, YF + 30, 'etiqueta')
     o += claudator(XI, XO2, YF + 30, 'índex')
     o += claudator(XO2, XF, YF + 30, ['desplaçament', 'de bloc'])
     # Memòria cau de correspondència directa: V | Etiqueta | Dades (bloc).
-    YC, rc = 400, 20
+    YC, rc = YF + 104, 20
     files = ['0', '1', '⋮', 'i', '⋮', 'N<tspan dy="3" font-size="8">L</tspan><tspan dy="-3">−1</tspan>']
     SEL = 3
     cc = [('V', 340, 22), ('Etiqueta', 362, 90), ('Dades (bloc)', 452, 168)]
@@ -953,46 +974,49 @@ def pipt():
         if f != '⋮':
             o.append(t(626, YC + r * rc + 14, f, 10, GRIS, 'start', italic=f not in '01'))
     ysel = YC + SEL * rc + rc / 2
-    yb = YC + len(files) * rc
+    ybc = YC + len(files) * rc
     # L'índex selecciona la línia.
-    o.append(cami([(525, YF + 54), (525, 370), (318, 370), (318, ysel), (338, ysel)], INK, 1.5))
+    xi = (XI + XO2) / 2
+    o.append(cami([(xi, YF + 54), (xi, YC - 30), (318, YC - 30), (318, ysel), (338, ysel)], INK, 1.5))
     # L'etiqueta de l'adreça, al comparador.
-    YCMP, XCMP = yb + 34, 407
-    o.append(lin([(410, YF + 54), (410, 360), (290, 360), (290, YCMP), (XCMP - 10, YCMP)]))
+    YCC, XCMP = ybc + 34, 407
+    xe_ = (XP + XI) / 2
+    o.append(lin([(xe_, YF + 54), (xe_, YC - 40), (290, YC - 40), (290, YCC), (XCMP - 10, YCC)]))
     for x in (351, XCMP, 536):
         o.append(figlib.dot(x, ysel, P1_S))
-    o.append(lin([(XCMP, ysel), (XCMP, YCMP - 10)]))                   # etiqueta guardada
-    o.append(comparador(XCMP, YCMP))
-    YA, XA = YCMP + 40, 426
-    o.append(lin([(XCMP, YCMP + 10), (XCMP, YA - 8), (XA + 3, YA - 8)]))
+    o.append(lin([(XCMP, ysel), (XCMP, YCC - 10)]))                    # etiqueta guardada
+    o.append(comparador(XCMP, YCC))
+    YA, XA = YCC + 40, 426
+    o.append(lin([(XCMP, YCC + 10), (XCMP, YA - 8), (XA + 3, YA - 8)]))
     o.append(lin([(351, ysel), (351, YA + 8), (XA + 3, YA + 8)]))      # V
     o.append(figlib.and_gate(XA, YA))
-    YE = YA + 46
-    o.append(lin([(XA + 36, YA), (XA + 44, YA), (XA + 44, YE), (118, YE)], HIT_S))
-    o.append(figlib.term(115.5, YE, HIT_S))
-    o.append(t(108, YE + 4, "Encert a l'MC", 12, HIT_S, 'end', bold=True))
+    YE2 = YA + 46
+    o.append(lin([(XA + 36, YA), (XA + 44, YA), (XA + 44, YE2), (118, YE2)], HIT_S))
+    o.append(figlib.term(115.5, YE2, HIT_S))
+    o.append(t(108, YE2 + 4, "Encert a l'MC", 12, HIT_S, 'end', bold=True))
     # Multiplexor: el desplaçament de bloc tria la dada del bloc.
-    YM = YA + 4
-    XM = 536
-    o.append(lin([(XM, ysel), (XM, YM)]))
-    o.append(f'<path d="M{XM - 50},{YM} L{XM + 50},{YM} L{XM + 30},{YM + 26} L{XM - 30},{YM + 26} z" fill="{NEUTRE}" stroke="{INK}" stroke-width="1.5"/>')
-    o.append(t(XM, YM + 17, 'multiplexor', 10, INK))
-    o.append(lin([(XF - 1, YF + 35), (664, YF + 35), (664, YM + 13), (XM + 41, YM + 13)]))
-    o.append(lin([(XM, YM + 26), (XM, YM + 46)]))
-    o.append(figlib.term(XM, YM + 48.5))
-    o.append(t(XM + 10, YM + 53, 'Dada', 12, INK, 'start', bold=True))
-    yk = YM + 76
+    YMC, XMD = YA + 4, 536
+    o.append(lin([(XMD, ysel), (XMD, YMC)]))
+    o.append(f'<path d="M{XMD - 50},{YMC} L{XMD + 50},{YMC} L{XMD + 30},{YMC + 26} L{XMD - 30},{YMC + 26} z" fill="{NEUTRE}" stroke="{INK}" stroke-width="1.5"/>')
+    o.append(t(XMD, YMC + 17, 'multiplexor', 10, INK))
+    o.append(lin([(XF - 1, YF + 35), (664, YF + 35), (664, YMC + 13), (XMD + 41, YMC + 13)]))
+    o.append(lin([(XMD, YMC + 26), (XMD, YMC + 46)]))
+    o.append(figlib.term(XMD, YMC + 48.5))
+    o.append(t(XMD + 10, YMC + 53, 'Dada', 12, INK, 'start', bold=True))
+    yk = YMC + 76
     o += cronograma(yk, 'serie')
     return svg(680, yk + 76, 'Memòria cau indexada físicament (PIPT)',
                "Com la figura 7.10 del tema antic. A dalt, l'adreça lògica, partida en VPN i desplaçament de pàgina. "
-               "El TLB, en groc, té quatre entrades amb les columnes VPN, V, D, E i PPN; el VPN de l'adreça arriba a "
-               "un comparador per entrada, que el confronta amb el VPN guardat, i una porta OR de les quatre sortides "
-               "dona l'encert de TLB. La tercera entrada encerta, ressaltada, i el seu PPN baixa a l'adreça física, "
-               "on s'ajunta amb el desplaçament de pàgina, que no es tradueix. L'adreça física es parteix en "
-               "etiqueta, índex i desplaçament de bloc. L'índex selecciona una línia de la memòria cau, en blau, amb "
-               "les columnes V, etiqueta i dades; l'etiqueta guardada es compara amb la de l'adreça, i una porta AND "
-               "amb el bit V dona l'encert a l'MC. Un multiplexor, governat pel desplaçament de bloc, tria la dada "
-               "del bloc. A sota, el cronograma: l'accés al TLB i el de l'MC, un darrere l'altre, en sèrie.", o)
+               "El TLB, en groc, es dibuixa com una memòria cau completament associativa: tres entrades (0, 1 i N "
+               "menys 1), cadascuna amb V, VPN, D, E i PPN. El VPN de l'adreça arriba a un comparador per entrada, que "
+               "el confronta amb el VPN guardat, i una porta AND amb el bit V de l'entrada fa que una entrada lliure no "
+               "pugui encertar; una porta OR de les AND dona l'encert de TLB. L'entrada 1 encerta, ressaltada, i un "
+               "multiplexor d'entrada en tria el PPN, que baixa a l'adreça física, on s'ajunta amb el desplaçament de "
+               "pàgina, que no es tradueix. L'adreça física es parteix en etiqueta, índex i desplaçament de bloc. "
+               "L'índex selecciona una línia de la memòria cau, en blau, amb les columnes V, etiqueta i dades; "
+               "l'etiqueta guardada es compara amb la de l'adreça, i una porta AND amb el bit V dona l'encert a l'MC. "
+               "Un multiplexor, governat pel desplaçament de bloc, tria la dada del bloc. A sota, el cronograma: "
+               "l'accés al TLB i el de l'MC, un darrere l'altre, en sèrie.", o)
 
 
 def bloc_alt(x, y, w, h, fill, stroke, s):
