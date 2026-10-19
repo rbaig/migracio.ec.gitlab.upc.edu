@@ -31,8 +31,12 @@ Escriu els SVG natius de T8 a `22_figs_originals/`, un per figura d'A8
   de la traducció. Substitueix el placeholder.
 - `A8_mv_comparticio.svg` (`#fig-mv-comparticio`): dues taules de pàgines que
   apunten al mateix marc.
-- `A8_mv_pipt.svg` i `A8_mv_vipt.svg` (`#fig-mv-pipt`, `#fig-mv-vipt`): la
-  integració del TLB i la memòria cau, en sèrie i en paral·lel.
+- `A8_mv_pipt.svg` (`#fig-mv-pipt`): el TLB i una memòria cau de
+  correspondència directa, indexada físicament, com la figura 7.10 del tema
+  antic, amb el cronograma de l'accés.
+- `A8_mv_vivt.svg` i `A8_mv_vipt.svg` (`#fig-mv-vivt`, `#fig-mv-vipt`): la
+  memòria cau VIVT i la VIPT en diagrames de blocs, les dues meitats de la
+  figura 7.11 del tema antic, amb el cronograma a la mateixa escala.
 - `A8_mv_exemple_tlb.svg` (`#fig-mv-tlb-exemple`): la traça dels cinc accessos
   de `#tip-mv-tlb-exemple`, simulats per `simula_exemple()`, i els fotogrames
   `A8_mv_exemple_tlb_pas<k>.svg` (k = 0, l'estat inicial) de la figura
@@ -816,15 +820,19 @@ def comparticio():
 
 # ── Integració del TLB i la memòria cau ──────────────────────
 
-def cronograma(y, en_paralel):
-    """Cronograma comú a PIPT i VIPT, a la mateixa escala: 90 px per accés."""
+def cronograma(y, mode):
+    """Cronograma comú a PIPT, VIVT i VIPT, a la mateixa escala: 90 px per accés. `mode`: 'serie' (PIPT),
+    'virtual' (VIVT, amb encert: només l'MC) o 'paralel' (VIPT)."""
     o = [t(20, y + 22, "Temps d'accés", 11, INK, 'start', bold=True)]
     X0 = 160
-    if en_paralel:
+    if mode == 'paralel':
         o.append(cel(X0, y + 4, 90, 18, TLB_F, TLB_S, 'TLB', TLB_S, 10, mono=False))
         o.append(cel(X0, y + 24, 90, 18, P1_F, P1_S, 'MC', P1_S, 10, mono=False))
         o.append(cel(X0 + 90, y + 14, 24, 18, NEUTRE, GRIS, '=', INK, 11, mono=False))
         o.append(t(X0 + 124, y + 27, 'en paral·lel, i després la comparació', 10, GRIS, 'start', italic=True))
+    elif mode == 'virtual':
+        o.append(cel(X0, y + 14, 90, 18, P1_F, P1_S, 'MC', P1_S, 10, mono=False))
+        o.append(t(X0 + 100, y + 27, "amb encert, només l'MC; el TLB, en una fallada", 10, GRIS, 'start', italic=True))
     else:
         o.append(cel(X0, y + 14, 90, 18, TLB_F, TLB_S, 'TLB', TLB_S, 10, mono=False))
         o.append(cel(X0 + 90, y + 14, 90, 18, P1_F, P1_S, 'MC', P1_S, 10, mono=False))
@@ -834,62 +842,243 @@ def cronograma(y, en_paralel):
     return o
 
 
+def or_esq(xb, cy, color=INK):
+    """OR de 40 × 32 girada cap a l'esquerra (com la figura 7.10 antiga): les entrades, per la dreta,
+    s'aturen a xb − 3; la sortida és a xb − 40."""
+    return (f'<path d="M{xb},{cy - 16} Q{xb - 10},{cy} {xb},{cy + 16} Q{xb - 28},{cy + 16} {xb - 40},{cy} '
+            f'Q{xb - 28},{cy - 16} {xb},{cy - 16} z" fill="none" stroke="{color}" stroke-width="{figlib.W}" '
+            f'stroke-linejoin="round"/>')
+
+
+def comparador(cx, cy, r=10):
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#ffffff" stroke="{INK}" stroke-width="1.5"/>'
+            + t(cx, cy + 4.5, '=', 13, INK, bold=True))
+
+
+def registre(x, y, camps, h=26, size=11):
+    """Registre d'adreça partit en camps [(nom, amplada)], com a les figures de T7 (gen_MC.py)."""
+    o, pos = [], {}
+    for nom, w in camps:
+        o.append(cel(x, y, w, h, NEUTRE, INK, nom, INK, size, mono=False))
+        pos[nom] = (x, x + w)
+        x += w
+    return o, pos
+
+
+def claudator(x0, x1, y, s, size=10, amunt=False):
+    """Claudàtor sota (o sobre) un tram de registre, amb el nom del camp."""
+    d = -5 if amunt else 5
+    o = [figlib.line([(x0 + 1, y), (x0 + 1, y + d), (x1 - 1, y + d), (x1 - 1, y)], GRIS, 1)]
+    ls = s if isinstance(s, list) else [s]
+    for k, l in enumerate(ls):
+        o.append(t((x0 + x1) / 2, y + d + (-5 - 12 * (len(ls) - 1 - k) if amunt else 13 + 12 * k), l, size, GRIS))
+    return o
+
+
 def pipt():
+    """Com la figura 7.10 del tema antic: el TLB, completament associatiu, amb un comparador per entrada i
+    l'OR que dona l'encert de TLB; el PPN de l'entrada que encerta i el desplaçament de pàgina formen
+    l'adreça física, que es parteix en etiqueta, índex i desplaçament de bloc per accedir a una memòria cau
+    de correspondència directa (com la de `#fig-cd-diagrama`). A sota, el cronograma, com a `vipt`."""
     o = []
-    o.append(caixa(20, 46, 80, 48, NEUTRE, GRIS, 'CPU', 13))
-    o.append(caixa(200, 46, 90, 48, TLB_F, TLB_S, 'TLB', 13))
-    o.append(caixa(390, 46, 90, 48, P1_F, P1_S, 'MC', 13))
-    o.append(caixa(390, 150, 90, 48, P2_F, P2_S, 'MP', 13))
-    o.append(fletxa(100, 70, 198, 70, INK, doble=False))
-    o.append(t(149, 62, 'adreça lògica', 10, GRIS))
-    o.append(fletxa(290, 70, 388, 70, INK, doble=False))
-    o.append(t(339, 62, 'adreça física', 10, GRIS))
-    o.append(t(339, 86, '(encert de TLB)', 9, GRIS, italic=True))
-    o.append(fletxa(480, 70, 578, 70, INK, doble=False))
-    o.append(t(529, 62, 'encert', 10, GRIS))
-    o.append(t(584, 74, 'dada', 11, INK, 'start', bold=True))
-    o.append(fletxa(435, 96, 435, 148, INK))
-    o.append(t(443, 126, 'fallada', 10, GRIS, 'start'))
-    o += cronograma(222, False)
-    return svg(680, 300, 'Memòria cau indexada físicament (PIPT)',
-               "Diagrama de blocs en una fila: la CPU envia l'adreça lògica al TLB, en groc; amb un encert de TLB, "
-               "l'adreça física passa a l’MC, en blau, i amb un encert d’MC en surt la dada. Si l’MC falla, "
-               "accedeix a l’MP, en verd, a sota. A sota, el cronograma: l'accés al TLB i el de l’MC, un darrere "
-               "l'altre, en sèrie.", o)
+    lin = figlib.line
+    # Adreça lògica.
+    XV, XD = 200, 450                                  # VPN i desplaçament de pàgina
+    o.append(t(XV - 8, 47, 'Adreça lògica', 12, INK, 'end', bold=True))
+    r_, pl = registre(XV, 30, [('VPN', XD - XV), ('desplaçament de pàgina', 190)])
+    o += r_
+    # TLB: VPN | comparadors | V D E PPN, quatre entrades; encerta la tercera.
+    Y0, rh, HIT = 104, 24, 2
+    cols_esq = [('VPN', 90, 80)]
+    cols_dre = [('V', 246, 22), ('D', 268, 22), ('E', 290, 22), ('PPN', 312, 70)]
+    o.append(t(20, Y0 + 2 * rh + 5, 'TLB', 14, TLB_S, 'start', bold=True))
+    for nom, x, w in cols_esq + cols_dre:
+        o.append(t(x + w / 2, Y0 - 8, nom, 10, INK, bold=True))
+    XB, XC = 182, 202                                  # bus del VPN de l'adreça i comparadors
+    xs_sort = [236, 230, 224, 218]                     # baixada de la sortida de cada comparador
+    for r in range(4):
+        y, cy = Y0 + r * rh, Y0 + r * rh + rh / 2
+        f, s = (TLB_F, TLB_S) if r == HIT else (NEUTRE, TRAC)
+        for _, x, w in cols_esq + cols_dre:
+            o.append(cel(x, y, w, rh, f, s))
+        o.append(lin([(170, cy - 4), (XC - 9.2, cy - 4)]))            # VPN de l'entrada (creua el bus sense punt)
+        o.append(lin([(XB, cy + 5), (XC - 8.6, cy + 5)]))             # VPN de l'adreça
+        if r < 3:
+            o.append(figlib.dot(XB, cy + 5))
+        o.append(lin([(XC + 10, cy), (xs_sort[r], cy), (xs_sort[r], 250 - 12 + 8 * (3 - r) - 0)]))
+    for r in range(4):
+        o.append(comparador(XC, Y0 + r * rh + rh / 2))
+    o.append(lin([(XB + 50, 56), (XB + 50, 76), (XB, 76), (XB, Y0 + 3 * rh + rh / 2 + 5)]))
+    # OR de l'encert de TLB, girada cap a l'esquerra.
+    YO, XO = 250, 214
+    for r in range(4):
+        yi = YO - 12 + 8 * (3 - r)
+        o.append(lin([(xs_sort[r], yi), (XO - 3, yi)]))
+    o.append(or_esq(XO, YO))
+    o.append(lin([(XO - 40, YO), (118, YO)], HIT_S))
+    o.append(figlib.term(115.5, YO, HIT_S))
+    o.append(t(108, YO + 4, 'Encert de TLB', 12, HIT_S, 'end', bold=True))
+    # Adreça física: el PPN de l'entrada que encerta i el desplaçament de pàgina, que no es tradueix.
+    YF, XP = 296, 330
+    o.append(t(XP - 8, YF + 17, 'Adreça física', 12, INK, 'end', bold=True))
+    r_, pf = registre(XP, YF, [('PPN', XD - XP), ('desplaçament de pàgina', 190)])
+    o += r_
+    xppn = 347
+    o.append(figlib.dot(xppn, Y0 + HIT * rh + rh / 2, TLB_S))
+    o.append(cami([(xppn, Y0 + HIT * rh + rh / 2), (xppn, 270), (390, 270), (390, YF - 2)], TLB_S, 1.5))
+    o.append(cami([(545, 56), (545, YF - 2)], INK, 1.5))
+    # Camps de l'adreça física per a la memòria cau.
+    XE, XI, XO2, XF = XP, 490, 560, 640
+    o += claudator(XE, XI, YF + 30, 'etiqueta')
+    o += claudator(XI, XO2, YF + 30, 'índex')
+    o += claudator(XO2, XF, YF + 30, ['desplaçament', 'de bloc'])
+    # Memòria cau de correspondència directa: V | Etiqueta | Dades (bloc).
+    YC, rc = 400, 20
+    files = ['0', '1', '⋮', 'i', '⋮', 'N<tspan dy="3" font-size="8">L</tspan><tspan dy="-3">−1</tspan>']
+    SEL = 3
+    cc = [('V', 340, 22), ('Etiqueta', 362, 90), ('Dades (bloc)', 452, 168)]
+    o.append(t(20, YC + 3 * rc + 5, 'Memòria cau', 14, P1_S, 'start', bold=True))
+    for nom, x, w in cc:
+        o.append(t(x + w / 2, YC - 8, nom, 10, INK, bold=True))
+    for r, f in enumerate(files):
+        y = YC + r * rc
+        if f == '⋮':
+            for x in (340, 362, 452, 620):
+                o.append(f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y + rc}" stroke="{TRAC}" stroke-width="0.75" stroke-dasharray="3,3"/>')
+            continue
+        fl, s = (P1_F, P1_S) if r == SEL else (NEUTRE, TRAC)
+        for _, x, w in cc:
+            o.append(cel(x, y, w, rc, fl, s, sw=0.75))
+    for r, f in enumerate(files):
+        if f != '⋮':
+            o.append(t(626, YC + r * rc + 14, f, 10, GRIS, 'start', italic=f not in '01'))
+    ysel = YC + SEL * rc + rc / 2
+    yb = YC + len(files) * rc
+    # L'índex selecciona la línia.
+    o.append(cami([(525, YF + 54), (525, 370), (318, 370), (318, ysel), (338, ysel)], INK, 1.5))
+    # L'etiqueta de l'adreça, al comparador.
+    YCMP, XCMP = yb + 34, 407
+    o.append(lin([(410, YF + 54), (410, 360), (290, 360), (290, YCMP), (XCMP - 10, YCMP)]))
+    for x in (351, XCMP, 536):
+        o.append(figlib.dot(x, ysel, P1_S))
+    o.append(lin([(XCMP, ysel), (XCMP, YCMP - 10)]))                   # etiqueta guardada
+    o.append(comparador(XCMP, YCMP))
+    YA, XA = YCMP + 40, 426
+    o.append(lin([(XCMP, YCMP + 10), (XCMP, YA - 8), (XA + 3, YA - 8)]))
+    o.append(lin([(351, ysel), (351, YA + 8), (XA + 3, YA + 8)]))      # V
+    o.append(figlib.and_gate(XA, YA))
+    YE = YA + 46
+    o.append(lin([(XA + 36, YA), (XA + 44, YA), (XA + 44, YE), (118, YE)], HIT_S))
+    o.append(figlib.term(115.5, YE, HIT_S))
+    o.append(t(108, YE + 4, "Encert a l'MC", 12, HIT_S, 'end', bold=True))
+    # Multiplexor: el desplaçament de bloc tria la dada del bloc.
+    YM = YA + 4
+    XM = 536
+    o.append(lin([(XM, ysel), (XM, YM)]))
+    o.append(f'<path d="M{XM - 50},{YM} L{XM + 50},{YM} L{XM + 30},{YM + 26} L{XM - 30},{YM + 26} z" fill="{NEUTRE}" stroke="{INK}" stroke-width="1.5"/>')
+    o.append(t(XM, YM + 17, 'multiplexor', 10, INK))
+    o.append(lin([(XF - 1, YF + 35), (664, YF + 35), (664, YM + 13), (XM + 41, YM + 13)]))
+    o.append(lin([(XM, YM + 26), (XM, YM + 46)]))
+    o.append(figlib.term(XM, YM + 48.5))
+    o.append(t(XM + 10, YM + 53, 'Dada', 12, INK, 'start', bold=True))
+    yk = YM + 76
+    o += cronograma(yk, 'serie')
+    return svg(680, yk + 76, 'Memòria cau indexada físicament (PIPT)',
+               "Com la figura 7.10 del tema antic. A dalt, l'adreça lògica, partida en VPN i desplaçament de pàgina. "
+               "El TLB, en groc, té quatre entrades amb les columnes VPN, V, D, E i PPN; el VPN de l'adreça arriba a "
+               "un comparador per entrada, que el confronta amb el VPN guardat, i una porta OR de les quatre sortides "
+               "dona l'encert de TLB. La tercera entrada encerta, ressaltada, i el seu PPN baixa a l'adreça física, "
+               "on s'ajunta amb el desplaçament de pàgina, que no es tradueix. L'adreça física es parteix en "
+               "etiqueta, índex i desplaçament de bloc. L'índex selecciona una línia de la memòria cau, en blau, amb "
+               "les columnes V, etiqueta i dades; l'etiqueta guardada es compara amb la de l'adreça, i una porta AND "
+               "amb el bit V dona l'encert a l'MC. Un multiplexor, governat pel desplaçament de bloc, tria la dada "
+               "del bloc. A sota, el cronograma: l'accés al TLB i el de l'MC, un darrere l'altre, en sèrie.", o)
+
+
+def bloc_alt(x, y, w, h, fill, stroke, s):
+    """La CPU i l'MP de les figures 7.11 del tema antic: un bloc alt amb el nom al mig."""
+    return caixa(x, y, w, h, fill, stroke, s, 13)
+
+
+def vivt():
+    """Com la figura 7.11 (esquerra) del tema antic: la CPU dona l'adreça lògica, que indexa l'MC i se'n
+    compara l'etiqueta; amb un encert, la dada torna a la CPU sense passar pel TLB. Només en una fallada
+    l'adreça lògica va al TLB, i l'adreça física, a l'MP, que en torna el bloc. A sota, el cronograma."""
+    o = []
+    o.append(bloc_alt(20, 20, 44, 180, NEUTRE, GRIS, 'CPU'))
+    o.append(bloc_alt(616, 20, 44, 180, P2_F, P2_S, 'MP'))
+    o.append(f'<rect x="210" y="70" width="130" height="100" rx="4" fill="{P1_F}" stroke="{P1_S}" stroke-width="1"/>')
+    o.append(t(262, 140, 'MC', 13, P1_S, bold=True))
+    o.append(caixa(424, 70, 80, 40, TLB_F, TLB_S, 'TLB', 13))
+    # Adreça lògica: l'etiqueta, al comparador, i l'índex i el desplaçament, a l'MC.
+    o.append(cami([(64, 44), (318, 44), (318, 82)], INK, 1.5, cap=False))
+    o.append(t(84, 38, 'adreça lògica', 10, GRIS, 'start'))
+    o.append(t(312, 62, 'etiqueta', 10, GRIS, 'end'))
+    o.append(figlib.dot(100, 44))
+    o.append(cami([(100, 44), (100, 100), (208, 100)], INK, 1.5))
+    o.append(t(154, 94, 'índex i desplaçament', 10, GRIS))
+    o.append(comparador(318, 92))
+    # Dada i encert, cap a la CPU.
+    o.append(cami([(210, 132), (66, 132)], INK, 1.5))
+    o.append(t(138, 126, 'dada', 10, GRIS))
+    o.append(cami([(318, 102), (318, 186), (66, 186)], HIT_S, 1.5))
+    o.append(t(138, 180, 'encert', 10, HIT_S, bold=True))
+    # Fallada: el TLB tradueix l'adreça i l'MP en torna el bloc.
+    o.append(cami([(340, 90), (422, 90)], INK, 1.5))
+    o.append(t(381, 84, 'adreça lògica', 10, GRIS))
+    o.append(t(381, 104, 'en una fallada', 9, GRIS, italic=True))
+    o.append(cami([(504, 90), (614, 90)], INK, 1.5))
+    o.append(t(559, 84, 'adreça física', 10, GRIS))
+    o.append(fletxa(342, 150, 614, 150, INK, w=1.5))
+    o.append(t(478, 144, 'bloc', 10, GRIS))
+    o += cronograma(222, 'virtual')
+    return svg(680, 300, 'Memòria cau indexada i etiquetada virtualment (VIVT)',
+               "Com la figura 7.11 (esquerra) del tema antic. A l'esquerra, la CPU; a la dreta, l'MP, en verd. La "
+               "CPU dona l'adreça lògica: l'índex i el desplaçament van a l'MC, en blau, i l'etiqueta, a un "
+               "comparador dins de l'MC. De l'MC tornen a la CPU la dada i el senyal d'encert. Només en una "
+               "fallada l'MC envia l'adreça lògica al TLB, en groc, que en dona l'adreça física per a l'MP, i l'MP "
+               "en torna el bloc a l'MC. A sota, el cronograma: amb un encert, només l'accés a l'MC.", o)
 
 
 def vipt():
+    """Com la figura 7.11 (dreta) del tema antic: el VPN va al TLB i, alhora, l'índex i el desplaçament van a
+    l'MC; l'adreça física que dona el TLB fa d'etiqueta al comparador de l'MC i, en una fallada, va a l'MP.
+    A sota, el cronograma, a la mateixa escala que el de `pipt`."""
     o = []
-    o.append(caixa(20, 106, 70, 48, NEUTRE, GRIS, 'CPU', 13))
-    o.append(fletxa(90, 130, 128, 130, INK, doble=False))
-    o.append(t(230, 110, 'adreça lògica', 10, GRIS))
-    o.append(cel(130, 117, 100, 26, NEUTRE, GRIS, 'VPN', INK, 11))
-    o.append(cel(230, 117, 100, 26, NEUTRE, GRIS, 'desplaçament', INK, 11, mono=False))
-    o.append(f'<rect x="400" y="30" width="100" height="60" rx="4" fill="{P1_F}" stroke="{P1_S}" stroke-width="1"/>')
-    o.append(linies(450, 60, ['MC', ('(etiquetes i dades)', 9, P1_S)], 13, P1_S, bold=True))
-    o.append(caixa(400, 176, 100, 48, TLB_F, TLB_S, 'TLB', 13))
-    o.append(cami([(280, 117), (280, 60), (398, 60)]))
-    o.append(t(286, 92, 'índex', 10, GRIS, 'start'))
-    o.append(cami([(180, 143), (180, 200), (398, 200)]))
-    o.append(t(186, 176, 'VPN', 10, GRIS, 'start'))
-    o.append(cel(552, 102, 36, 36, NEUTRE, INK, '=', INK, 16, mono=False, sw=1.2))
-    o.append(cami([(500, 50), (520, 50), (520, 112), (550, 112)]))
-    o.append(t(506, 44, 'etiqueta', 10, GRIS, 'start'))
-    o.append(cami([(500, 200), (535, 200), (535, 128), (550, 128)]))
-    o.append(t(506, 194, 'PPN', 10, GRIS, 'start'))
-    o.append(fletxa(588, 120, 628, 120, INK, doble=False))
-    o.append(t(608, 112, 'encert', 10, GRIS))
-    o.append(t(634, 124, 'dada', 11, INK, 'start', bold=True))
-    o.append(fletxa(570, 138, 570, 250, INK, doble=False))
-    o.append(t(576, 200, 'fallada', 10, GRIS, 'start'))
-    o.append(caixa(525, 252, 90, 48, P2_F, P2_S, 'MP', 13))
-    o += cronograma(322, True)
-    return svg(680, 400, 'Memòria cau indexada virtualment i etiquetada físicament (VIPT)',
-               "La CPU genera l'adreça lògica, dividida en VPN i desplaçament. Dos camins en paral·lel: a dalt, els "
-               "bits del desplaçament indexen l’MC, en blau, que en llegeix les etiquetes i les dades; a sota, el VPN "
-               "va al TLB, en groc, que dona el PPN. Un comparador, a la dreta, confronta l'etiqueta llegida de l’MC "
-               "amb el PPN: si coincideixen, encert, i en surt la dada; si no, fallada, i s'accedeix a l’MP, en verd. "
-               "A sota, el cronograma: el TLB i l’MC alhora, i després la comparació.", o)
+    o.append(bloc_alt(20, 20, 44, 180, NEUTRE, GRIS, 'CPU'))
+    o.append(bloc_alt(616, 20, 44, 180, P2_F, P2_S, 'MP'))
+    o.append(caixa(300, 26, 80, 40, TLB_F, TLB_S, 'TLB', 13))
+    o.append(f'<rect x="280" y="96" width="160" height="80" rx="4" fill="{P1_F}" stroke="{P1_S}" stroke-width="1"/>')
+    o.append(t(340, 150, 'MC', 13, P1_S, bold=True))
+    # Adreça lògica: el VPN, al TLB, i l'índex i el desplaçament, a l'MC, alhora.
+    o.append(cami([(64, 46), (298, 46)], INK, 1.5))
+    o.append(t(84, 40, 'adreça lògica', 10, GRIS, 'start'))
+    o.append(t(240, 40, 'VPN', 10, GRIS))
+    o.append(figlib.dot(150, 46))
+    o.append(cami([(150, 46), (150, 122), (278, 122)], INK, 1.5))
+    o.append(t(214, 116, 'índex i desplaçament', 10, GRIS))
+    # Adreça física: l'etiqueta, al comparador de l'MC, i, en una fallada, a l'MP.
+    o.append(cami([(380, 46), (614, 46)], INK, 1.5))
+    o.append(t(510, 40, 'adreça física', 10, GRIS))
+    o.append(figlib.dot(420, 46))
+    o.append(cami([(420, 46), (420, 108)], INK, 1.5, cap=False))
+    o.append(t(426, 82, 'etiqueta', 10, GRIS, 'start'))
+    o.append(comparador(420, 118))
+    # Dada i encert, cap a la CPU; el bloc, entre l'MC i l'MP.
+    o.append(cami([(280, 156), (66, 156)], INK, 1.5))
+    o.append(t(170, 150, 'dada', 10, GRIS))
+    o.append(cami([(420, 128), (420, 188), (66, 188)], HIT_S, 1.5))
+    o.append(t(170, 182, 'encert', 10, HIT_S, bold=True))
+    o.append(fletxa(442, 156, 614, 156, INK, w=1.5))
+    o.append(t(528, 150, 'bloc', 10, GRIS))
+    o += cronograma(222, 'paralel')
+    return svg(680, 300, 'Memòria cau indexada virtualment i etiquetada físicament (VIPT)',
+               "Com la figura 7.11 (dreta) del tema antic. A l'esquerra, la CPU; a la dreta, l'MP, en verd. La CPU "
+               "dona l'adreça lògica: el VPN va al TLB, en groc, a dalt, i alhora l'índex i el desplaçament van a "
+               "l'MC, en blau, a sota. L'adreça física que dona el TLB fa d'etiqueta en un comparador dins de l'MC, "
+               "i també va a l'MP, per a una fallada. De l'MC tornen a la CPU la dada i el senyal d'encert, i "
+               "entre l'MC i l'MP passa el bloc. A sota, el cronograma: el TLB i l'MC alhora, i després la "
+               "comparació.", o)
 
 
 # ── Exemple de traducció amb TLB: simulació i figures ───────
@@ -1136,6 +1325,7 @@ FIGURES = {
     'A8_mv_flux_traduccio.svg': flux,
     'A8_mv_comparticio.svg': comparticio,
     'A8_mv_pipt.svg': pipt,
+    'A8_mv_vivt.svg': vivt,
     'A8_mv_vipt.svg': vipt,
     'A8_mv_exemple_tlb.svg': exemple_tlb,
 }

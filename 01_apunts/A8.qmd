@@ -467,14 +467,29 @@ L'esquema més senzill és la **memòria cau indexada i etiquetada físicament**
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A8_mv_pipt__original_light.svg)
 :::
-Memòria cau indexada físicament (PIPT): la traducció i l'accés a la memòria cau es fan en sèrie. A sota, el temps d'accés: el del TLB i el de la memòria cau, un darrere l'altre.
+Memòria cau indexada físicament (PIPT), amb un TLB completament associatiu de quatre entrades i una memòria cau de correspondència directa (@fig-cd-diagrama): el PPN de l'entrada del TLB que encerta i el desplaçament de pàgina formen l'adreça física, que es parteix en etiqueta, índex i desplaçament de bloc. La traducció i l'accés a la memòria cau es fan en sèrie. A sota, el temps d'accés: el del TLB i el de la memòria cau, un darrere l'altre.
 :::
 
 L'avantatge és la simplicitat: no hi ha ambigüitat possible, ja que cada adreça física identifica unívocament una dada. L'inconvenient és el **temps d'accés**: la memòria cau no pot començar a operar fins que el TLB hagi acabat la traducció, de manera que els dos accessos es fan en sèrie.
 
 ### Memòria cau indexada i etiquetada virtualment {#sec-mv-cache-virtual}
 
-Una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtually tagged*, VIVT) redueix la latència perquè usa l'adreça lògica directament, sense esperar la traducció. Si hi ha encert, la dada s'obté sense necessitat de la traducció; només cal el TLB en cas de fallada, per anar a buscar el bloc a la memòria principal amb l'adreça física.
+Una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtually tagged*, VIVT) redueix la latència perquè usa l'adreça lògica directament, sense esperar la traducció (@fig-mv-vivt). Si hi ha encert, la dada s'obté sense necessitat de la traducció; només cal el TLB en cas de fallada, per anar a buscar el bloc a la memòria principal amb l'adreça física.
+
+::: {#fig-mv-vivt}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/A8_mv_vivt__original_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/A8_mv_vivt__original_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/A8_mv_vivt__original_light.svg)
+:::
+Memòria cau indexada i etiquetada virtualment (VIVT): l'adreça lògica indexa la memòria cau i en dona l'etiqueta; el TLB només intervé en una fallada, per obtenir l'adreça física del bloc. A sota, el temps d'accés amb encert, a la mateixa escala que a la @fig-mv-pipt.
+:::
 
 El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física (@sec-mv-comparticio), el mateix bloc pot ocupar dues línies diferents de la memòria cau, una per a cada adreça lògica. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, cosa que trenca la coherència.
 
