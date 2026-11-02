@@ -527,8 +527,9 @@ Figures de model (a): les del sumador de T4 (taula de §16) i aquestes:
 | `A8_mv_tlb_estructura` | `25_scripts/gen_T8.py` | El TLB com a còpia parcial de la taula de pàgines |
 | `A8_mv_flux_traduccio` | `25_scripts/gen_T8.py` | Diagrama de flux de la traducció, amb les zones del maquinari i del SO |
 | `A8_mv_comparticio` | `25_scripts/gen_T8.py` | Dues taules de pàgines que apunten al mateix marc |
-| `A8_mv_pipt` | `25_scripts/gen_T8.py` | TLB i MC en sèrie, amb el cronograma de l'accés |
-| `A8_mv_vipt` | `25_scripts/gen_T8.py` | TLB i MC en paral·lel i el comparador, amb el cronograma a la mateixa escala |
+| `A8_mv_pipt` | `25_scripts/gen_T8.py` | TLB completament associatiu i MC de correspondència directa, indexada físicament, amb el cronograma de l'accés (figura 7.10 del tema antic) |
+| `A8_mv_vivt` | `25_scripts/gen_T8.py` | MC indexada i etiquetada virtualment, amb el TLB només en una fallada, i el cronograma a la mateixa escala (figura 7.11 esquerra del tema antic) |
+| `A8_mv_vipt` | `25_scripts/gen_T8.py` | TLB i MC en paral·lel i el comparador, amb el cronograma a la mateixa escala (figura 7.11 dreta del tema antic) |
 | `A8_mv_exemple_tlb` | `25_scripts/gen_T8.py` | Traça dels cinc accessos de `#tip-mv-tlb-exemple`, simulats, i els fotogrames `_pas<k>` de la figura dinàmica |
 
 **Figures dinàmiques (només a l'HTML).** Amb `fotogrames = true`, `gen_MC.py` escriu també un fotograma per pas, `<nom>_pas<k>__MC_{light,dark}.svg`, tots de la mateixa mida (i `gen_T8.py`, de model (a), els de `#fig-mv-tlb-exemple`, `22_figs_originals/A8_mv_exemple_tlb_pas<k>.svg`, que el pre-render converteix com la resta d'originals). El navegador, el marcatge i la figura estàtica del PDF són a `13_contrib.qmd §Figures dinàmiques` ([D-55](registre_de_decisions.md#d-55)).

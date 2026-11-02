@@ -1,32 +1,150 @@
-<svg width="100%" viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" role="img">
+<svg width="100%" viewBox="0 0 680 846" xmlns="http://www.w3.org/2000/svg" role="img">
 <title>Memòria cau indexada físicament (PIPT)</title>
-<desc>Diagrama de blocs en una fila: la CPU envia l'adreça lògica al TLB, en groc; amb un encert de TLB, l'adreça física passa a l’MC, en blau, i amb un encert d’MC en surt la dada. Si l’MC falla, accedeix a l’MP, en verd, a sota. A sota, el cronograma: l'accés al TLB i el de l’MC, un darrere l'altre, en sèrie.</desc>
-<rect x="20" y="46" width="80" height="48" rx="4" fill="#f8f9fa" stroke="#6c757d" stroke-width="1"/><text x="60.0" y="74.33333333333333" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#6c757d" text-anchor="middle" font-weight="bold">CPU</text>
-<rect x="200" y="46" width="90" height="48" rx="4" fill="#fff3cd" stroke="#664d03" stroke-width="1"/><text x="245.0" y="74.33333333333333" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#664d03" text-anchor="middle" font-weight="bold">TLB</text>
-<rect x="390" y="46" width="90" height="48" rx="4" fill="#cfe2ff" stroke="#084298" stroke-width="1"/><text x="435.0" y="74.33333333333333" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#084298" text-anchor="middle" font-weight="bold">MC</text>
-<rect x="390" y="150" width="90" height="48" rx="4" fill="#d1e7dd" stroke="#0a3622" stroke-width="1"/><text x="435.0" y="178.33333333333334" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#0a3622" text-anchor="middle" font-weight="bold">MP</text>
-<line x1="100" y1="70" x2="198" y2="70" stroke="#343a40" stroke-width="1.2"/>
-<polygon points="198,70 190.6,73.1 190.6,66.9" fill="#343a40"/>
-<text x="149" y="62" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">adreça lògica</text>
-<line x1="290" y1="70" x2="388" y2="70" stroke="#343a40" stroke-width="1.2"/>
-<polygon points="388,70 380.6,73.1 380.6,66.9" fill="#343a40"/>
-<text x="339" y="62" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">adreça física</text>
-<text x="339" y="86" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="9" fill="#6c757d" text-anchor="middle" font-style="italic">(encert de TLB)</text>
-<line x1="480" y1="70" x2="578" y2="70" stroke="#343a40" stroke-width="1.2"/>
-<polygon points="578,70 570.6,73.1 570.6,66.9" fill="#343a40"/>
-<text x="529" y="62" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">encert</text>
-<text x="584" y="74" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="start" font-weight="bold">dada</text>
-<line x1="435" y1="96" x2="435" y2="148" stroke="#343a40" stroke-width="1.2"/>
-<polygon points="435,148 431.9,140.6 438.1,140.6" fill="#343a40"/>
-<polygon points="435,96 438.1,103.4 431.9,103.4" fill="#343a40"/>
-<text x="443" y="126" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="start">fallada</text>
-<text x="20" y="244" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="start" font-weight="bold">Temps d'accés</text>
-<rect x="160" y="236" width="90" height="18" fill="#fff3cd"/>
-<rect x="160.5" y="236.5" width="89" height="17" fill="none" stroke="#664d03" stroke-width="1"/><text x="205.0" y="248.83333333333334" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#664d03" text-anchor="middle">TLB</text>
-<rect x="250" y="236" width="90" height="18" fill="#cfe2ff"/>
-<rect x="250.5" y="236.5" width="89" height="17" fill="none" stroke="#084298" stroke-width="1"/><text x="295.0" y="248.83333333333334" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#084298" text-anchor="middle">MC</text>
-<text x="350" y="249" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="start" font-style="italic">en sèrie</text>
-<line x1="160" y1="274" x2="560" y2="274" stroke="#6c757d" stroke-width="1"/>
-<polygon points="560,274 552.6,277.1 552.6,270.9" fill="#6c757d"/>
-<text x="560" y="288" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="end" font-style="italic">temps</text>
+<desc>Com la figura 7.10 del tema antic. A dalt, l'adreça lògica, partida en VPN i desplaçament de pàgina. El TLB, en groc, es dibuixa com una memòria cau completament associativa: tres entrades (0, 1 i N menys 1), cadascuna amb V, VPN, D, E i PPN. El VPN de l'adreça arriba a un comparador per entrada, que el confronta amb el VPN guardat, i una porta AND amb el bit V de l'entrada fa que una entrada lliure no pugui encertar; una porta OR de les AND dona l'encert de TLB. L'entrada 1 encerta, ressaltada, i un multiplexor d'entrada en tria el PPN, que baixa a l'adreça física, on s'ajunta amb el desplaçament de pàgina, que no es tradueix. L'adreça física es parteix en etiqueta, índex i desplaçament de bloc. L'índex selecciona una línia de la memòria cau, en blau, amb les columnes V, etiqueta i dades; l'etiqueta guardada es compara amb la de l'adreça, i una porta AND amb el bit V dona l'encert a l'MC. Un multiplexor, governat pel desplaçament de bloc, tria la dada del bloc. A sota, el cronograma: l'accés al TLB i el de l'MC, un darrere l'altre, en sèrie.</desc>
+<text x="142" y="47" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="12" fill="#343a40" text-anchor="end" font-weight="bold">Adreça lògica</text>
+<rect x="150" y="30" width="270" height="26" fill="#f8f9fa" stroke="#343a40" stroke-width="1"/><text x="285.0" y="47.166666666666664" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="middle">VPN</text>
+<rect x="420" y="30" width="190" height="26" fill="#f8f9fa" stroke="#343a40" stroke-width="1"/><text x="515.0" y="47.166666666666664" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="middle">desplaçament de pàgina</text>
+<text x="14" y="133" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="14" fill="#664d03" text-anchor="start" font-weight="bold">TLB</text>
+<text x="166.0" y="90" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="middle" font-weight="bold">entrada 0</text>
+<text x="90.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">V</text>
+<rect x="80" y="116" width="20" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="131.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">VPN</text>
+<rect x="100" y="116" width="62" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="172.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">D</text>
+<rect x="162" y="116" width="20" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="192.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">E</text>
+<rect x="182" y="116" width="20" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="227.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">PPN</text>
+<rect x="202" y="116" width="50" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="354.0" y="90" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="middle" font-weight="bold">entrada 1</text>
+<text x="278.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">V</text>
+<rect x="268" y="116" width="20" height="24" fill="#fff3cd" stroke="#664d03" stroke-width="1"/>
+<text x="319.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">VPN</text>
+<rect x="288" y="116" width="62" height="24" fill="#fff3cd" stroke="#664d03" stroke-width="1"/>
+<text x="360.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">D</text>
+<rect x="350" y="116" width="20" height="24" fill="#fff3cd" stroke="#664d03" stroke-width="1"/>
+<text x="380.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">E</text>
+<rect x="370" y="116" width="20" height="24" fill="#fff3cd" stroke="#664d03" stroke-width="1"/>
+<text x="415.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">PPN</text>
+<rect x="390" y="116" width="50" height="24" fill="#fff3cd" stroke="#664d03" stroke-width="1"/>
+<text x="566.0" y="90" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="middle" font-weight="bold">entrada N−1</text>
+<text x="490.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">V</text>
+<rect x="480" y="116" width="20" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="531.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">VPN</text>
+<rect x="500" y="116" width="62" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="572.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">D</text>
+<rect x="562" y="116" width="20" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="592.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">E</text>
+<rect x="582" y="116" width="20" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="627.0" y="108" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">PPN</text>
+<rect x="602" y="116" width="50" height="24" fill="#f8f9fa" stroke="#adb5bd" stroke-width="1"/>
+<text x="460.0" y="132" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="14" fill="#6c757d" text-anchor="middle">· · ·</text>
+<polyline points="180,56 180,76 62,76 62,158 515,158" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="131,140 131,178" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="115,158 115,188 121,188" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="115" cy="158" r="2.5" fill="#343a40"/>
+<circle cx="131" cy="188" r="10" fill="#ffffff" stroke="#343a40" stroke-width="1.5"/><text x="131" y="192.5" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#343a40" text-anchor="middle" font-weight="bold">=</text>
+<polyline points="131,198 131,224 149,224" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="90,140 90,240 149,240" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M146,216 h20 a16,16 0 0 1 0,32 h-20 z" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="319,140 319,178" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="303,158 303,188 309,188" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="303" cy="158" r="2.5" fill="#343a40"/>
+<circle cx="319" cy="188" r="10" fill="#ffffff" stroke="#343a40" stroke-width="1.5"/><text x="319" y="192.5" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#343a40" text-anchor="middle" font-weight="bold">=</text>
+<polyline points="319,198 319,224 337,224" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="278,140 278,240 337,240" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M334,216 h20 a16,16 0 0 1 0,32 h-20 z" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="531,140 531,178" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="515,158 515,188 521,188" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="531" cy="188" r="10" fill="#ffffff" stroke="#343a40" stroke-width="1.5"/><text x="531" y="192.5" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#343a40" text-anchor="middle" font-weight="bold">=</text>
+<polyline points="531,198 531,224 549,224" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="490,140 490,240 549,240" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M546,216 h20 a16,16 0 0 1 0,32 h-20 z" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="182,232 190,232 190,278 165,278" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="370,232 378,232 378,288 165,288" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="582,232 590,232 590,298 165,298" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M168,272 Q158,288 168,304 Q140,304 128,288 Q140,272 168,272 z" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="128,288 118,288" fill="none" stroke="#198754" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="115.5" cy="288" r="2.5" fill="#ffffff" stroke="#198754" stroke-width="1.5"/>
+<text x="108" y="292" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="12" fill="#198754" text-anchor="end" font-weight="bold">Encert de TLB</text>
+<polyline points="227,140 227,322" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="415,140 415,322" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="627,140 627,322" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M197,322 L657,322 L627,348 L227,348 z" fill="#f8f9fa" stroke="#343a40" stroke-width="1.5"/>
+<text x="427.0" y="339" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle">multiplexor d'entrada</text>
+<polyline points="167,335 212,335" fill="none" stroke="#6c757d" stroke-width="1" stroke-linejoin="round"/>
+<text x="163" y="333" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="9" fill="#6c757d" text-anchor="end" font-style="italic">selecció: l'entrada</text>
+<text x="163" y="344" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="9" fill="#6c757d" text-anchor="end" font-style="italic">amb encert</text>
+<text x="292" y="409" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="12" fill="#343a40" text-anchor="end" font-weight="bold">Adreça física</text>
+<rect x="300" y="392" width="120" height="26" fill="#f8f9fa" stroke="#343a40" stroke-width="1"/><text x="360.0" y="409.1666666666667" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="middle">PPN</text>
+<rect x="420" y="392" width="190" height="26" fill="#f8f9fa" stroke="#343a40" stroke-width="1"/><text x="515.0" y="409.1666666666667" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="middle">desplaçament de pàgina</text>
+<polyline points="427.0,348 427.0,374 360.0,374 360.0,390" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polygon points="360.0,390 356.9,382.6 363.1,382.6" fill="#343a40"/>
+<polyline points="610,43 668,43 668,374 515.0,374 515.0,390" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polygon points="515.0,390 511.9,382.6 518.1,382.6" fill="#343a40"/>
+<polyline points="301,422 301,427 479,427 479,422" fill="none" stroke="#6c757d" stroke-width="1" stroke-linejoin="round"/>
+<text x="390.0" y="440" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">etiqueta</text>
+<polyline points="481,422 481,427 549,427 549,422" fill="none" stroke="#6c757d" stroke-width="1" stroke-linejoin="round"/>
+<text x="515.0" y="440" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">índex</text>
+<polyline points="551,422 551,427 609,427 609,422" fill="none" stroke="#6c757d" stroke-width="1" stroke-linejoin="round"/>
+<text x="580.0" y="440" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">desplaçament</text>
+<text x="580.0" y="452" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">de bloc</text>
+<text x="20" y="561" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="14" fill="#084298" text-anchor="start" font-weight="bold">Memòria cau</text>
+<text x="351.0" y="488" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">V</text>
+<text x="407.0" y="488" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">Etiqueta</text>
+<text x="536.0" y="488" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle" font-weight="bold">Dades (bloc)</text>
+<rect x="340" y="496" width="22" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<rect x="362" y="496" width="90" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<rect x="452" y="496" width="168" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<rect x="340" y="516" width="22" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<rect x="362" y="516" width="90" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<rect x="452" y="516" width="168" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<line x1="340" y1="536" x2="340" y2="556" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<line x1="362" y1="536" x2="362" y2="556" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<line x1="452" y1="536" x2="452" y2="556" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<line x1="620" y1="536" x2="620" y2="556" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<rect x="340" y="556" width="22" height="20" fill="#cfe2ff" stroke="#084298" stroke-width="0.75"/>
+<rect x="362" y="556" width="90" height="20" fill="#cfe2ff" stroke="#084298" stroke-width="0.75"/>
+<rect x="452" y="556" width="168" height="20" fill="#cfe2ff" stroke="#084298" stroke-width="0.75"/>
+<line x1="340" y1="576" x2="340" y2="596" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<line x1="362" y1="576" x2="362" y2="596" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<line x1="452" y1="576" x2="452" y2="596" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<line x1="620" y1="576" x2="620" y2="596" stroke="#adb5bd" stroke-width="0.75" stroke-dasharray="3,3"/>
+<rect x="340" y="596" width="22" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<rect x="362" y="596" width="90" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<rect x="452" y="596" width="168" height="20" fill="#f8f9fa" stroke="#adb5bd" stroke-width="0.75"/>
+<text x="626" y="510" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="start">0</text>
+<text x="626" y="530" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="start">1</text>
+<text x="626" y="570" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="start" font-style="italic">i</text>
+<text x="626" y="610" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="start" font-style="italic">N<tspan dy="3" font-size="8">L</tspan><tspan dy="-3">−1</tspan></text>
+<polyline points="515.0,446 515.0,466 318,466 318,566.0 338,566.0" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polygon points="338,566.0 330.6,569.1 330.6,562.9" fill="#343a40"/>
+<polyline points="390.0,446 390.0,456 290,456 290,650 397,650" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="351" cy="566.0" r="2.5" fill="#084298"/>
+<circle cx="407" cy="566.0" r="2.5" fill="#084298"/>
+<circle cx="536" cy="566.0" r="2.5" fill="#084298"/>
+<polyline points="407,566.0 407,640" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="407" cy="650" r="10" fill="#ffffff" stroke="#343a40" stroke-width="1.5"/><text x="407" y="654.5" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="13" fill="#343a40" text-anchor="middle" font-weight="bold">=</text>
+<polyline points="407,660 407,682 429,682" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="351,566.0 351,698 429,698" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M426,674 h20 a16,16 0 0 1 0,32 h-20 z" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="462,690 470,690 470,736 118,736" fill="none" stroke="#198754" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="115.5" cy="736" r="2.5" fill="#ffffff" stroke="#198754" stroke-width="1.5"/>
+<text x="108" y="740" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="12" fill="#198754" text-anchor="end" font-weight="bold">Encert a l'MC</text>
+<polyline points="536,566.0 536,694" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M486,694 L586,694 L566,720 L506,720 z" fill="#f8f9fa" stroke="#343a40" stroke-width="1.5"/>
+<text x="536" y="711" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#343a40" text-anchor="middle">multiplexor</text>
+<polyline points="609,427 664,427 664,707 577,707" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<polyline points="536,720 536,740" fill="none" stroke="#343a40" stroke-width="1.5" stroke-linejoin="round"/>
+<circle cx="536" cy="742.5" r="2.5" fill="#ffffff" stroke="#343a40" stroke-width="1.5"/>
+<text x="546" y="747" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="12" fill="#343a40" text-anchor="start" font-weight="bold">Dada</text>
+<text x="20" y="792" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="11" fill="#343a40" text-anchor="start" font-weight="bold">Temps d'accés</text>
+<rect x="160" y="784" width="90" height="18" fill="#fff3cd"/>
+<rect x="160.5" y="784.5" width="89" height="17" fill="none" stroke="#664d03" stroke-width="1"/><text x="205.0" y="796.8333333333334" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#664d03" text-anchor="middle">TLB</text>
+<rect x="250" y="784" width="90" height="18" fill="#cfe2ff"/>
+<rect x="250.5" y="784.5" width="89" height="17" fill="none" stroke="#084298" stroke-width="1"/><text x="295.0" y="796.8333333333334" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#084298" text-anchor="middle">MC</text>
+<text x="350" y="797" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="start" font-style="italic">en sèrie</text>
+<line x1="160" y1="822" x2="560" y2="822" stroke="#6c757d" stroke-width="1"/>
+<polygon points="560,822 552.6,825.1 552.6,818.9" fill="#6c757d"/>
+<text x="560" y="836" font-family="'Liberation Sans', Arial, Helvetica, sans-serif" font-size="10" fill="#6c757d" text-anchor="end" font-style="italic">temps</text>
 </svg>
