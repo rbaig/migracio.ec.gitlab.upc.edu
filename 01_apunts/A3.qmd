@@ -4,6 +4,8 @@ number-sections: true
 
 # {{< var tema3 >}} {#sec-tema-traduccio}
 
+Al Tema 2 s'han presentat les instruccions bàsiques de RISC-V i la manera com es declaren i s'accedeix als tipus de dades bàsics del C. En aquest tema es completa la traducció de programes en C a llenguatge d'assemblador. Primer es tradueixen les operacions amb bits i les comparacions; després, gràcies a les instruccions de salt, les sentències alternatives i iteratives; a continuació, les subrutines, amb les regles de l'ABI que les fan possibles. El tema acaba amb l'estructura de la memòria d'un programa i amb el procés que converteix el codi font en un programa que s'executa.
+
 ::: {#imp-traduccions-literals .callout-important}
 A **EC**, les traduccions de C a assemblador han de ser **el més literals possible**, si no s'indica explícitament el contrari: cada sentència es tradueix en l'ordre del programa, **sense les transformacions d'un compilador optimitzador** (reordenar, fusionar o eliminar sentències, o les optimitzacions de bucles de @sec-optimitzacions-bucle). Literal no vol dir ineficient: dins de cada sentència, cal fer servir els registres i les instruccions amb criteri.
 :::
@@ -12,9 +14,29 @@ A **EC**, les traduccions de C a assemblador han de ser **el més literals possi
 
 ### Desplaçaments lògics {#sec-desplacaments-logics}
 
-Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions especificat als **5 bits** de menys pes del **registre** `rs2`, omplint les posicions vacants amb **zeros**. Les variants `slli` i `srli` fan la mateixa operació, però el nombre de posicions es codifica directament com un **immediat** de **5 bits** (`shamt`, *shift amount*)[^shamt]. En tots els casos, el nombre de posicions s'interpreta com un natural.
+Les instruccions `slli` i `srli` desplacen el contingut del registre `rs1` a l'esquerra o a la dreta el nombre de posicions indicat per un **immediat** de **5 bits** (`shamt`, *shift amount*)[^shamt]. Les posicions que queden vacants s'omplen amb **zeros**.
 
 [^shamt]: Els 7 bits de més pes de l'immediat de 12 bits (`imm[11:5]`) no formen part del nombre de posicions: fan de `funct7` i distingeixen `srli` (`0000000`) de `srai` (`0100000`).
+
+::: {#tip-exemple-sll-srl .callout-tip}
+## Desplaçaments lògics
+
+Desplaçar 1 posició a l'esquerra els bits de `t0`:
+
+```{.s filename="RV32I"}
+        li      t0, 0x88888888
+        slli    t0, t0, 1       # t0 = 0x11111110
+```
+
+Desplaçar 2 posicions a la dreta els bits de `t0`:
+
+```{.s filename="RV32I"}
+        li      t0, 0x99999999
+        srli    t0, t0, 2       # t0 = 0x26666666
+```
+:::
+
+El nombre de posicions és sempre un natural, de manera que calen instruccions diferents per a cada sentit. També es pot indicar en un **registre**, amb les instruccions `sll` i `srl`: en aquest cas, només compten els **5 bits** de menys pes de `rs2`, i la resta de bits s'ignoren, encara que no siguin zeros.
 
 ::: {#nte-instruccions-desplacament-logic .callout-note}
 ## RV32I ISA — Instruccions de desplaçament lògic
@@ -26,21 +48,79 @@ Les instruccions `sll` i `srl` desplacen el contingut del registre `rs1` a l'esq
 Les posicions vacants s'omplen amb `0`.
 :::
 
-::: {#tip-exemple-sll-srl .callout-tip}
-## Desplaçaments lògics
+### Desplaçament aritmètic a la dreta {#sec-desplacament-aritmetic-dreta}
 
-```{.s filename="RV32I"}
-        li      t0, 0x88888888
-        slli    t0, t0, 1       # t0 = 0x11111110
-```
+La instrucció `srai` desplaça el contingut de `rs1` a la dreta el nombre de posicions indicat, però les posicions que queden vacants a l'esquerra s'omplen amb una còpia del **bit de signe** de `rs1`, en lloc de zeros. Com als desplaçaments lògics, el nombre de posicions també es pot indicar en un registre, amb la instrucció `sra`.
+
+::: {#imp-notacio-desplacament-aritmetic .callout-important}
+## Notació $>>>$ a la taula ISA
+
+A la taula següent s'usa $>>>$ per denotar el **desplaçament aritmètic a la dreta** (amb extensió de signe), seguint la notació de Harris & Harris. Aquesta notació **no coincideix** amb la de l'operador `>>` de C usat més avall (@sec-traduccio-desplacament-c), on lògic i aritmètic es distingeixen pel tipus de l'operand (`unsigned` o amb signe) en lloc d'un símbol diferent. Són dues convencions vàlides, cadascuna pròpia del context on apareix (taula ISA vs. traducció d'operadors C): cal no barrejar-les.
+:::
+
+::: {#nte-instruccions-desplacament-aritmetic .callout-note}
+## RV32I ISA — Instrucció de desplaçament aritmètic
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include ../21_riscv/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}
+: {tbl-colwidths="[13,19,30,31,7]"}
+
+Les posicions vacants s'omplen amb una còpia del bit de signe.
+:::
+
+::: {#tip-exemple-sra .callout-tip}
+## Desplaçament aritmètic
 
 ```{.s filename="RV32I"}
         li      t0, 0x99999999
-        srli    t0, t0, 2       # t0 = 0x26666666
+        srai    t0, t0, 2       # t0 = 0xE6666666
+```
+
+El bit de signe de `0x99999999` és `1`, de manera que les dues posicions que queden vacants a l'esquerra s'omplen amb uns.
+:::
+
+No existeix la instrucció ~~`sla`~~ ni la ~~`slai`~~: un desplaçament a l'esquerra omple sempre les posicions vacants amb zeros, tant si l'operand és un natural com si és un enter.
+
+### Traducció dels operadors C `<<` i `>>` {#sec-traduccio-desplacament-c}
+
+L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix segons el tipus de l'operand esquerre: amb `srl`/`srli` si és un natural (de tipus `unsigned`), o amb `sra`/`srai` si és un enter (amb un enter negatiu, el resultat depèn de la implementació de C; els compiladors habituals, com `gcc`, fan el desplaçament aritmètic).
+
+::: {#tip-traduccio-desplacament-c .callout-tip}
+## Traducció de `<<` i `>>`
+
+```{.c filename="C"}
+a = (a << b) >> 2;   // a i b són enters (int)
+```
+
+Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
+
+```{.s filename="RV32I"}
+        sll     t4, t0, t1   # a << b
+        srai    t0, t4, 2    # resultat >> 2 (amb extensió de signe)
 ```
 :::
 
-::: {#wrn-ca2-a-ca1 .callout-warning collapse=true}
+### Aplicació d'`sll`/`slli`: multiplicació per potències de 2 {#sec-multiplicacio-potencies-2}
+
+Desplaçar a l'esquerra un enter o un natural amb `sll`/`slli` equival a **multiplicar-lo** per $2^k$ ($k$ = `shamt` o `rs2[4:0]`), sempre que el resultat sigui representable en 32 bits. El cas més freqüent és multiplicar l'índex d'un vector per la mida dels seus elements per calcular-ne el desplaçament.
+
+::: {#imp-ec-sll-acces-vector .callout-important}
+A **EC**, el **desplaçament** en bytes d'un element d'un vector o d'una matriu (@eq-acces-aleatori-vector) es calcula multiplicant l'índex per la mida de l'element amb `slli` (un desplaçament de bits de $\log_2$ de la mida), no amb `mul`: a EC, les mides dels elements (1, 2, 4 o 8 bytes) són sempre potències de 2. Amb elements d'1 byte, no cal desplaçar.
+:::
+
+### Aplicació d'`srl`/`srli` i `sra`/`srai`: divisió entera per potències de 2 {#sec-sll-divisio-potencies}
+
+Desplaçar a la dreta un natural amb `srl`/`srli` o un enter amb `sra`/`srai` equival a **dividir-lo** per una potència de 2: `rd` ← `rs1` / $2^{\texttt{shamt}}$. Però cal anar amb compte amb el significat d'aquesta divisió.
+
+La divisió entera del dividend $D$ entre el divisor $d$ consisteix a obtenir un quocient $q$ i un residu $r$ tals que $D = d \cdot q + r$, amb $|r| < |d|$. Aquesta definició és incompleta si no s'especifica el signe de $r$, i segons com es faci, se n'obtenen dues de diferents. L'operador `/` de C requereix que $r$ tingui el mateix signe que $D$, que és també la semàntica de la instrucció `div` (@sec-instruccions-divisio). En canvi, la divisió per potències de 2 de `sra`/`srai` requereix que $r \geq 0$.
+
+::: {#cau-sra-divisio .callout-caution}
+`sra`/`srai` **no és equivalent** a l'operador `/` de C quan el **dividend és negatiu**. Per exemple, la divisió entera `-15 / 4` dona quocient -3 i residu -3, mentre que el desplaçament `-15 >> 2` dona quocient -4 i residu 1. Només es pot traduir `/` amb `sra`/`srai` si es pot garantir que el dividend no és negatiu.
+:::
+
+### Altres aplicacions {#sec-altres-aplicacions-desplacaments}
+
+::: {#tip-exemple-ca2-a-ca1 .callout-tip}
 ## Conversió de Ca2 a Ca1 amb instruccions de desplaçament
 
 Donada la representació en Ca2 d'un enter $x_s$, guardada a `t2`,
@@ -80,83 +160,19 @@ $$x_u' = x_u - X_{n-1}$$
 El mètode val per a tot el rang de Ca1, $[-(2^{n-1}-1), 2^{n-1}-1]$; $-2^{n-1}$ no hi té representació, i el resultat seria `0x7FFFFFFF`.
 :::
 
-### Desplaçament aritmètic a la dreta {#sec-desplacament-aritmetic-dreta}
-
-La instrucció `sra` desplaça el contingut de `rs1` a la dreta el nombre de posicions indicat, però en lloc d'omplir les posicions vacants amb zeros, les omple amb una còpia del **bit de signe** de `rs1`. Igual que `srl`, admet tant la variant d'immediat com la de registre.
-
-::: {#imp-notacio-desplacament-aritmetic .callout-important}
-## Notació $>>>$ a la taula ISA
-
-A la taula següent s'usa $>>>$ per denotar el **desplaçament aritmètic a la dreta** (amb extensió de signe), seguint la notació de Harris & Harris. Aquesta notació **no coincideix** amb la de l'operador `>>` de C usat més avall (@sec-traduccio-desplacament-c), on lògic i aritmètic es distingeixen pel tipus de l'operand (`unsigned` o amb signe) en lloc d'un símbol diferent. Són dues convencions vàlides, cadascuna pròpia del context on apareix (taula ISA vs. traducció d'operadors C): cal no barrejar-les.
-:::
-
-::: {#nte-instruccions-desplacament-aritmetic .callout-note}
-## RV32I ISA — Instrucció de desplaçament aritmètic
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{< include ../21_riscv/RV32I_instruccions_desplacament_bits_aritmetics.qmd >}}
-: {tbl-colwidths="[13,19,30,31,7]"}
-
-Les posicions vacants s'omplen amb una còpia del bit de signe.
-:::
-
-::: {#tip-exemple-sra .callout-tip}
-## Desplaçament aritmètic
-
-```{.s filename="RV32I"}
-        li      t0, 0x99999999
-        srai    t0, t0, 2       # t0 = 0xE6666666
-```
-
-El bit de signe de `0x99999999` és `1`, de manera que les dues posicions que queden vacants a l'esquerra s'omplen amb uns.
-:::
-
-::: {#cau-instruccions-no-sla .callout-caution}
-No existeix la instrucció ~~`sla`~~ ni la ~~`slai`~~.
-:::
-
-### Traducció dels operadors C `<<` i `>>` {#sec-traduccio-desplacament-c}
-
-L'operador `<<` de **C** (desplaçament a l'esquerra) es tradueix sempre amb `sll`/`slli`. L'operador `>>` es tradueix segons el tipus de l'operand esquerre: amb `srl`/`srli` si és un natural (de tipus `unsigned`), o amb `sra`/`srai` si és un enter (amb un enter negatiu, el resultat depèn de la implementació de C; els compiladors habituals, com `gcc`, fan el desplaçament aritmètic).
-
-::: {#tip-traduccio-desplacament-c .callout-tip}
-## Traducció de `<<` i `>>`
-
-```{.c filename="C"}
-a = (a << b) >> 2;   // a i b són enters (int)
-```
-
-Suposem que `a` i `b` es guarden als registres `t0` i `t1`:
-
-```{.s filename="RV32I"}
-        sll     t4, t0, t1   # a << b
-        srai    t0, t4, 2    # resultat >> 2 (amb extensió de signe)
-```
-:::
-
-### Aplicació d'`sll`/`slli`: multiplicació per potències de 2 {#sec-multiplicacio-potencies-2}
-
-Desplaçar a l'esquerra un enter o natural amb `sll`/`slli` equival a **multiplicar-lo** per $2^k$ ($k$ = `shamt` o `rs2[4:0]`), sempre que el resultat sigui representable en 32 bits.
-
-::: {#imp-ec-sll-acces-vector .callout-important}
-A **EC**, el **desplaçament** en bytes d'un element d'un vector o d'una matriu (@eq-acces-aleatori-vector) es calcula multiplicant l'índex per la mida de l'element amb `slli` (un desplaçament de bits de $\log_2$ de la mida), no amb `mul`: a EC, les mides dels elements (1, 2, 4 o 8 bytes) són sempre potències de 2. Amb elements d'1 byte, no cal desplaçar.
-:::
-
-### Aplicació d'`srl`/`srli` i `sra`/`srai`: divisió entera per potències de 2 {#sec-sll-divisio-potencies}
-
-Desplaçar a la dreta naturals amb `srl`/`srli` o enters amb `sra`/`srai` equival a **dividir-los** per una potència de 2: `rd` ← `rs1` / $2^{\texttt{shamt}}$.
-
-::: {#cau-sra-divisio .callout-caution}
-La semàntica de l'operador `/` de C requereix que el residu tingui el **mateix signe** que el dividend. En canvi, `sra`/`srai` produeix sempre un residu **no negatiu**. Per tant, `sra`/`srai` **no és equivalent** a `/` quan el **dividend és negatiu**.
-
-Per exemple, la divisió entera (-15 / 4) dona quocient -3 i residu -3, mentre que el desplaçament `-15 >> 2` dona quocient -4 i residu 1. Només cal usar `sra`/`srai` per traduir `/` si es pot garantir que el dividend no és negatiu.
-:::
-
 ## Operacions lògiques bit a bit {#sec-operacions-logiques-bit-a-bit}
 
-### Operadors `&`, `|` i `^` (`and`, `or` i `xor`) {#sec-instruccions-logiques-bit-a-bit}
+### Operadors `&`, `|`, `^` i `~` {#sec-instruccions-logiques-bit-a-bit}
 
-Els operadors **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb `and`, `or` i `xor`. Cadascuna té també una variant amb immediat (`andi`, `ori` i `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que `addi`, `slti` i `sltiu`.
+Els operadors **bit a bit** `&`, `|` i `^` de **C** es tradueixen amb les instruccions `and`, `or` i `xor`, que apliquen l'operació a cada parell de bits dels operands. Cadascuna té també una variant amb immediat (`andi`, `ori` i `xori`), on l'immediat de 12 bits s'estén a 32 bits amb **extensió de signe**, igual que a `addi`, `slti` i `sltiu`.
+
+::: {#nte-instruccions-logiques .callout-note}
+## RV32I ISA — Instruccions lògiques bit a bit
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include ../21_riscv/RV32I_instruccions_logiques_bit_a_bit.qmd >}}
+: {tbl-colwidths="[13,19,31,30,7]"}
+:::
 
 ::: {#cau-immediats-logics-extensio-signe .callout-caution}
 Els immediats d'`andi`, d'`ori` i d'`xori` s'interpreten en **complement a 2**: si el bit 11 de l'immediat val `1`, el valor estès a 32 bits té els bits [31:12] a `1`. Això pot produir màscares no desitjades. Per exemple:
@@ -168,13 +184,7 @@ Els immediats d'`andi`, d'`ori` i d'`xori` s'interpreten en **complement a 2**: 
 Per a màscares arbitràries de 32 bits, cal carregar la màscara en un registre amb `li` i usar `and`/`or`/`xor`.
 :::
 
-::: {#nte-instruccions-logiques .callout-note}
-## RV32I ISA — Instruccions lògiques bit a bit
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{< include ../21_riscv/RV32I_instruccions_logiques_bit_a_bit.qmd >}}
-: {tbl-colwidths="[13,19,31,30,7]"}
-:::
+L'operador `~` no té cap instrucció pròpia: es tradueix amb una pseudoinstrucció.
 
 ::: {#nte-pseudoinstruccio-not .callout-note}
 ## Pseudoinstruccions — Negació bit a bit: `not`
@@ -188,9 +198,24 @@ Per a màscares arbitràries de 32 bits, cal carregar la màscara en un registre
 `xori rd, rs, -1` funciona perquè `-1` en Ca2 és `0xFFFFFFFF`, i fer XOR amb tots uns complementa tots els bits.
 :::
 
+::: {#tip-traduccio-logiques .callout-tip}
+## Traducció d'operadors bit a bit
+
+```{.c filename="C"}
+a = ~(a & b);
+```
+
+Suposant que `a` i `b` es guarden als registres `t0` i `t1`:
+
+```{.s filename="RV32I"}
+        and     t4, t0, t1      # a & b
+        not     t0, t4          # ~(a & b)
+```
+:::
+
 ### Aplicació d'`and`: selecció de bits (màscara) {#sec-and-mascara}
 
-La instrucció `and` s'usa per **seleccionar determinats bits** d'un registre posant a zero la resta. La tècnica consisteix a construir una **màscara** on els bits que es volen conservar valen `1` i la resta valen `0`.
+La instrucció `and` s'usa per **seleccionar determinats bits** d'un registre, posant a zero la resta. Primer es construeix una **màscara**, on valen `1` els bits que es volen conservar i `0` la resta. El resultat és una còpia del registre, amb zeros als bits que valen `0` a la màscara.
 
 ::: {#tip-exemple-and-mascara-1 .callout-tip}
 ## Selecció de bits amb màscara `and`
@@ -202,7 +227,11 @@ Selecció dels 16 bits de menys pes de `rs1`:
         and     rd, rs1, t0
 ```
 
-`0xFFFF` no cap en l'immediat de 12 bits d'`andi` (rang $[-2^{11}, 2^{11}-1]$, és a dir, $[-2048, 2047]$), per la qual cosa cal carregar la màscara en un registre i fer servir la variant registre-registre `and`.
+`0xFFFF` no cap a l'immediat de 12 bits d'`andi` (rang $[-2^{11}, 2^{11}-1]$, és a dir, $[-2048, 2047]$), per la qual cosa cal carregar la màscara en un registre i fer servir la variant registre-registre `and`. Una màscara que sí que hi cap es pot escriure directament:
+
+```{.s filename="RV32I"}
+        andi    rd, rs1, 0x55   # selecció dels bits 0, 2, 4 i 6
+```
 :::
 
 ### Aplicació d'`or`: posar bits a `1` {#sec-or-bits-a-1}
@@ -212,15 +241,14 @@ La instrucció `or` s'usa per **posar a 1** aquells bits d'un registre que valen
 ::: {#tip-exemple-or-mascara .callout-tip}
 ## Posar bits a `1` amb `or`
 
-Posada dels 16 bits de menys pes de `t0` a `1`:
+Posada dels 16 bits de menys pes de `t0` a `1` (com abans, `0xFFFF` no cap a l'immediat d'`ori`):
 
 ```{.s filename="RV32I"}
         li      t1, 0x0000FFFF  # màscara de 16 bits
         or      t0, t0, t1
 ```
-
-`0xFFFF` no cap en l'immediat de 12 bits d'`ori`, per la qual cosa cal carregar la màscara en un registre.
 :::
+
 
 ### Aplicació d'`xor`: complementar bits {#sec-xor-complementar-bits}
 
@@ -239,17 +267,15 @@ Complement dels bits parells de `t0`:
 
 ## Comparacions i operacions booleanes {#sec-comparacions-i-operacions-booleanes}
 
-En **C**, les expressions enteres admeten els **operadors de comparació** `==`, `!=`, `<`, `<=`, `>`, `>=`. El resultat d'una comparació **no és d'un tipus booleà**, sinó un `int`: l'enter `1` si la comparació és certa i `0` en cas contrari (el tipus `_Bool` de C99 no canvia aquesta regla). Les **comparacions** seran **amb signe o sense signe** segons el tipus declarat dels operands.
+En **C**, les expressions enteres admeten els **operadors de comparació** `==`, `!=`, `<`, `<=`, `>`, `>=`. El resultat d'una comparació **no és d'un tipus booleà**, sinó un `int`: l'enter `1` si la comparació és certa i `0` en cas contrari (el tipus `_Bool` de C99 no canvia aquesta regla). Les **comparacions** són **amb signe o sense signe** segons el tipus declarat dels operands.
 
-En **C** existeixen també els **operadors booleans** `&&`, `||`, `!`. Cada operand s'interpreta com a **fals** si val `0`, o com a **cert** si val **diferent de `0`**. El resultat és també un enter **normalitzat**: `1` si cert, `0` si fals.
+En **C** també hi ha els **operadors booleans** `&&`, `||` i `!`. Cada operand s'interpreta com a **fals** si val `0`, o com a **cert** si val **diferent de `0`**, i el resultat és també un enter: `1` si és cert, `0` si és fals.
 
-::: {#cau-boolea-c .callout-caution}
-En C, **qualsevol valor diferent de `0`** s'interpreta com a cert, de manera que dues expressions certes **no són necessàriament iguals**: `2` i `5` són totes dues certes, i `2 == 5` és fals. En canvi, les comparacions i els operadors booleans sempre donen com a resultat un enter normalitzat: `0` o `1`. Per exemple, si `y = 2` i `z = 0`, la sentència `x = (y >= z) + 5;` assigna a `x` el valor `6`.
-:::
+Aquesta manera de treballar sense un tipus booleà explícit demana atenció, perquè dues expressions certes **no són necessàriament iguals**: `2` i `5` són totes dues certes, i `2 == 5` és fals. En canvi, les comparacions i els operadors booleans sempre donen un resultat normalitzat, `0` o `1`, que pot formar part de qualsevol expressió entera. Per exemple, si `y = 2` i `z = 0`, la sentència `x = (y >= z) + 5;` assigna a `x` el valor `6`. Sovint, aquest resultat forma part de la condició d'una sentència alternativa o iterativa (@sec-if-then-else i @sec-bucles).
 
 ### Instruccions de comparació: `slt` i `sltu` {#sec-instruccions-comparacio-slt}
 
-La instrucció `slt` compara dos enters i **posa a** `1` al registre destinació (LSb a `1` i la resta a `0`) si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació, però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits amb **extensió de signe**.
+La instrucció `slt` compara dos enters i dona com a resultat `1` si el primer **és menor** que el segon, o `0` en cas contrari. La instrucció `sltu` fa la mateixa operació, però tractant els operands com a naturals. Les variants immediates `slti` i `sltiu` comparen amb un immediat de 12 bits, que s'estén a 32 bits amb **extensió de signe** tant si es comparen enters com naturals.
 
 ::: {#nte-instruccions-comparacio .callout-note}
 ## RV32I ISA — Instruccions de comparació
@@ -259,9 +285,9 @@ La instrucció `slt` compara dos enters i **posa a** `1` al registre destinació
 : {tbl-colwidths="[13,19,33,28,7]"}
 :::
 
-Per a les comparacions freqüents amb zero, RISC-V també defineix pseudoinstruccions de salt condicional específiques (`beqz`, `bnez`, `bltz`, `bgez`, `bgtz`, `blez`), que es presenten amb la resta de pseudoinstruccions de salt a @nte-pseudoinstruccions-salt-zero.
-
 ### Traducció de `==` i `!=` {#sec-traduccio-igualtat}
+
+Comparar amb zero és el cas més simple. Si es comparen naturals, «igual a zero» equival a «menor que u», perquè `0` és l'únic natural estrictament menor que `1`; i «diferent de zero» equival a «major que zero». Per comparar dos valors qualssevol, n'hi ha prou de comparar-ne la diferència amb zero.
 
 ::: {#tip-traduccio-igualtat .callout-tip}
 ## Traducció de `==` i `!=`
@@ -275,7 +301,7 @@ t2 = (t0 == 0);
 ```{.s filename="RV32I"}
         sltiu   t2, t0, 1       # si t0 < 1 com a natural, llavors t0 == 0
 ```
-- **Atenció**: És vàlid per a `t0 == 0` perquè comparar `t0` com a natural amb `1` dona `1` si i només si `t0 == 0` (ja que `0` és l'únic natural estrictament menor que `1`).
+
 
 ```{.c filename="C"}
 t2 = (t0 != 0);
@@ -305,7 +331,7 @@ t2 = (t0 != t1);        // equival a: t2 = ((t0 - t1) != 0)
 
 ### Traducció de la negació booleana `!` {#sec-traduccio-negacio-booleana}
 
-La negació booleana no es pot traduir amb `xori rd, rs, -1` (negació bit a bit), ja que aquest sempre dona un resultat diferent de zero tant si l'operand val `0` com `1`. La traducció correcta és convertir-la en una comparació amb zero:
+La negació booleana ha de produir `0` o `1`, de manera que no es pot traduir amb la negació bit a bit (`not`), que dona un resultat diferent de zero tant si l'operand val `0` com si val `1`. El més simple és convertir-la en una comparació amb zero. Si se sap amb certesa que el valor a negar val `0` o `1` (per exemple, si és el resultat d'una comparació), també es pot traduir amb `xori`.
 
 ::: {#tip-traduccio-negacio .callout-tip}
 ## Traducció de `!`
@@ -318,7 +344,8 @@ t1 = !t0;               // equival a: t1 = (t0 == 0)
         sltiu   t1, t0, 1
 ```
 
-- Si se sap amb certesa que `t0` val `0` o `1` (per exemple, si és el resultat d'una comparació anterior), es pot traduir també amb:
+Si `t0` només pot valer `0` o `1`:
+
 
 ```{.s filename="RV32I"}
         xori    t1, t0, 1       # inverteix l'LSb
@@ -327,42 +354,50 @@ t1 = !t0;               // equival a: t1 = (t0 == 0)
 
 ### Traducció de `<`, `>`, `<=`, `>=` {#sec-traduccio-comparacions}
 
+L'operador `<` es tradueix amb `slt` o amb `sltu`, segons si els operands són enters amb signe o de tipus `unsigned`. La resta de comparacions es redueixen a aquesta: `>` s'obté intercanviant els operands, i `<=` i `>=` són la negació de `>` i de `<`, respectivament.
+
+
 ::: {#tip-traduccio-comparacions .callout-tip}
 ## Traducció de `<`, `>`, `<=`, `>=`
 
 Si `t0`, `t1` i `t2` són enters:
 
 ```{.c filename="C"}
-        t2 = (t0 < t1);
+t2 = (t0 < t1);
 ```
+
 ```{.s filename="RV32I"}
         slt     t2, t0, t1
 ```
 
 ```{.c filename="C"}
-        t2 = (t0 > t1);        // equival a: t1 < t0
+t2 = (t0 > t1);        // equival a: t1 < t0
 ```
+
 ```{.s filename="RV32I"}
         slt     t2, t1, t0
 ```
 
 ```{.c filename="C"}
-        t2 = (t0 <= t1);       // equival a: !(t0 > t1)
+t2 = (t0 <= t1);       // equival a: !(t0 > t1)
 ```
+
 ```{.s filename="RV32I"}
         slt     t2, t1, t0
         sltiu   t2, t2, 1       # negació
 ```
 
 ```{.c filename="C"}
-        t2 = (t0 >= t1);       // equival a: !(t0 < t1)
+t2 = (t0 >= t1);       // equival a: !(t0 < t1)
 ```
+
 ```{.s filename="RV32I"}
         slt     t2, t0, t1
         sltiu   t2, t2, 1       # negació
 ```
 
-- **Atenció**: Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes les traduccions d'aquest exemple.
+Per a operands de tipus `unsigned`, cal substituir `slt` per `sltu` a totes aquestes traduccions.
+
 :::
 
 ### Traducció de `&&` i `||`: avaluació tardana {#sec-traduccio-operadors-logics}
@@ -372,7 +407,6 @@ En **C**, els operadors lògics `&&` i `||` s'avaluen d'esquerra a dreta de form
 ::: {#cau-lazy-evaluation .callout-caution}
 En **C**, l'avaluació tardana de `&&` i `||` **no és opcional**: la imposa la semàntica del llenguatge. Per tant, la **traducció a assemblador l'ha de respectar**.
 :::
-
 ## Salts {#sec-salts}
 
 Les instruccions de salt modifiquen el flux d'execució **desviant-lo** a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen dos eixos de classificació:
