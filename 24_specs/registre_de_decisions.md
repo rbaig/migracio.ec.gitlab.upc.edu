@@ -734,7 +734,7 @@ Cada color té un paper, i cada paper un sol color. Decisions de l'usuari, a pro
 
 ### D-124
 
-**`A1_flux_compilacio`: «Objecte», no «Fitxer objecte»** · `22_figs_originals/A1_flux_compilacio.svg` · 2026-09-23
+**`A1_flux_compilacio`: «Objecte», no «Fitxer objecte»** · `22_figs_originals/conservats/A1_flux_compilacio.svg` · 2026-09-23
 
 La Fase C de T1 va proposar que l'etiqueta digués «Fitxer objecte», com el text, i ho va descartar perquè no cabia al requadre. L'usuari va revisar la figura en tancar la revisió interna de T1 i la dona per correcta: l'etiqueta es queda com és.
 

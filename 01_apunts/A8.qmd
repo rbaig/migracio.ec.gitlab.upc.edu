@@ -19,7 +19,7 @@ La solució a tots dos problemes és la **memòria virtual**.
 
 La memòria virtual es fonamenta en la distinció entre dos espais d'adreçament independents.
 
-- L'**espai d'adreçament lògic** (o virtual) és el conjunt d'adreces que utilitza un programa: tant en temps de compilació com en temps d'execució, la CPU treballa exclusivament amb adreces lògiques. Cada procés té el seu propi espai d'adreçament lògic, independent del dels altres, amb una mida màxima determinada pel nombre de bits d'adreça del processador (per exemple, $2^{32}$ bytes = 4 GiB en un sistema de 32 bits; vegeu @cau-prefixos-binaris per a la notació). Això proporciona a cada procés la il·lusió de disposar de tota la memòria per a ell sol.
+- L'**espai d'adreçament lògic** (o virtual) és el conjunt d'adreces que utilitza un programa: tant en temps de compilació com en temps d'execució, la CPU treballa exclusivament amb adreces lògiques. Cada procés té el seu propi espai d'adreçament lògic, independent del dels altres, amb una mida màxima determinada pel nombre de bits d'adreça del processador (per exemple, $2^{32}$ bytes = 4 GiB en un sistema de 32 bits). Això proporciona a cada procés la il·lusió de disposar de tota la memòria per a ell sol.
 - L'**espai d'adreçament físic** és el conjunt d'adreces de la memòria física real. La seva mida depèn de la quantitat de RAM instal·lada al sistema, i és totalment independent de l'espai d'adreçament lògic.
 - La **unitat de gestió de memòria** (*memory management unit*, MMU) és el component de maquinari responsable de traduir, en temps d'execució, cada adreça lògica generada per la CPU en l'adreça física corresponent. Gràcies a aquesta traducció transparent, els programes no necessiten conèixer la seva ubicació real a la memòria física.
 
@@ -260,7 +260,7 @@ Com que un accés al disc és centenars o milers de vegades més lent que un acc
 Una fallada de pàgina es produeix quan V = 0 en la PTE del VPN sol·licitat. És una excepció: si la pàgina és vàlida, el sistema operatiu la carrega des del disc (reemplaçant-ne una altra si no hi ha cap marc lliure), actualitza les PTE afectades i reexecuta la instrucció causant. Si l'adreça és invàlida, el procés s'avorta.
 :::
 
-Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament. A l'assignatura es fa servir l'algorisme *least recently used* (LRU), com a les memòries cau (@sec-politica-reemplacament): es reemplaça la pàgina que fa més temps que no s'utilitza. Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions). Si el processador guarda traduccions en un TLB (@sec-mv-tlb), el sistema operatiu també n'ha d'invalidar l'entrada de la pàgina víctima, com s'explica a la @sec-mv-tlb-invalidacio.
+Quan no hi ha cap marc lliure, el sistema operatiu n'ha de reemplaçar un, seguint un algorisme de reemplaçament. A l'assignatura es fa servir l'algorisme *least recently used* (LRU), com a les memòries cau (@sec-politica-reemplacament): es reemplaça la pàgina que fa més temps que no s'utilitza. Abans de sobreescriure el marc seleccionat, comprova el bit D de la seva PTE: si D = 1, la pàgina ha estat modificada i cal escriure-la primer al disc per no perdre els canvis; si D = 0, es pot sobreescriure directament. Aquesta política és equivalent a l'escriptura retardada amb assignació que es fa servir a les memòries cau (@sec-escriptura-combinacions). Si el processador guarda traduccions en un *translation lookaside buffer* (TLB), que es descriu a @sec-mv-tlb, el sistema operatiu també n'ha d'invalidar l'entrada de la pàgina víctima, com s'explica a la @sec-mv-tlb-invalidacio.
 
 La zona del disc on s'emmagatzemen les pàgines reemplaçades s'anomena **espai d'intercanvi** (*swap space*).
 
@@ -488,7 +488,7 @@ Una **memòria cau indexada i etiquetada virtualment** (*virtually indexed virtu
 ::: {.content-visible when-format="pdf"}
 ![](/auto_figs/A8_mv_vivt__original_light.svg)
 :::
-Memòria cau indexada i etiquetada virtualment (VIVT): l'adreça lògica indexa la memòria cau i en dona l'etiqueta; el TLB només intervé en una fallada, per obtenir l'adreça física del bloc. A sota, el temps d'accés amb encert, a la mateixa escala que a la @fig-mv-pipt.
+Memòria cau indexada i etiquetada virtualment (*virtually indexed virtually tagged*, VIVT): l'adreça lògica indexa la memòria cau i en dona l'etiqueta; el TLB només intervé en una fallada, per obtenir l'adreça física del bloc. A sota, el temps d'accés amb encert, a la mateixa escala que a la @fig-mv-pipt.
 :::
 
 El problema és l'**aliàsing** (*aliasing*): si dos processos (o dues pàgines lògiques d'un mateix procés) comparteixen una mateixa pàgina física (@sec-mv-comparticio), el mateix bloc pot ocupar dues línies diferents de la memòria cau, una per a cada adreça lògica. Una escriptura feta a través d'una adreça lògica pot no ser visible quan es llegeix a través de l'altra, cosa que trenca la coherència.

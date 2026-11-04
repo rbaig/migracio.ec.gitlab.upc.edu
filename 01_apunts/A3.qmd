@@ -397,7 +397,7 @@ A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existei
 
 Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest desplaçament a partir de l'etiqueta.
 
-Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b), variant del format **Tipus-S** ja presentat a [Tema 2](#sec-format-instruccions) (@nte-instruccions-Tipus-S). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** (@cau-prefixos-binaris) respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*compressed*).
+Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b), variant del format **Tipus-S** ja presentat a [Tema 2](#sec-format-instruccions) (@nte-formats-instruccions). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*compressed*).
 
 :::: {#nte-format-b .callout-note}
 ## RV32I ISA — Format Tipus-B
@@ -508,7 +508,7 @@ Les instruccions de salt condicional són la base per implementar les sentèncie
 
 La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (vegeu la presentació del concepte de subrutina a @sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
 
-La instrucció `jal` és de format **Tipus-J** (@nte-format-j), variant del format **Tipus-U**, presentat a [Tema 2](#sec-format-instruccions) amb `lui` (@nte-format-u). Com en el format B (@nte-format-b), el bit 0 de l'immediat és implícit (val `0`), de manera que la instrucció codifica 20 bits i obté un rang efectiu de **±1 MiB** respecte al PC.
+La instrucció `jal` és de format **Tipus-J** (@nte-format-j), variant del format **Tipus-U**, presentat a [Tema 2](#sec-format-instruccions) amb `lui` (@nte-formats-instruccions). Com en el format B (@nte-format-b), el bit 0 de l'immediat és implícit (val `0`), de manera que la instrucció codifica 20 bits i obté un rang efectiu de **±1 MiB** respecte al PC.
 
 :::: {#nte-format-j .callout-note}
 ## RV32I ISA — Format Tipus-J
@@ -547,7 +547,7 @@ Com en el format B, els bits de l'immediat estan reordenats (`imm[20|10:1|11|19:
 
 ### Salts incondicionals indirectes {#sec-salts-incondicionals-indirectes}
 
-La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits (**mode base + desplaçament**), i guarda l'adreça de retorn a `rd`. A diferència de `jal`, l'adreça de destinació no és relativa al PC sinó que depèn del contingut d'un registre; d'aquí el terme **salt indirecte**. S'usa principalment per retornar de subrutines i per saltar a adreces llunyanes desconegudes en temps de compilació. S'escriu, com les instruccions de lectura i escriptura, amb l'operand en la forma `desplaçament(rs1)` (@imp-notacio-base-desplacament): `jalr rd, desplaçament(rs1)`.
+La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits (**mode base + desplaçament**), i guarda l'adreça de retorn a `rd`. A diferència de `jal`, l'adreça de destinació no és relativa al PC sinó que depèn del contingut d'un registre; d'aquí el terme **salt indirecte**. S'usa principalment per retornar de subrutines i per saltar a adreces llunyanes desconegudes en temps de compilació. S'escriu, com les instruccions de lectura i escriptura, amb l'operand en la forma `desplaçament(rs1)`: `jalr rd, desplaçament(rs1)`.
 
 ::: {#nte-instruccions-salt-incondicional-indirecte .callout-note}
 ## RV32I ISA — Instrucció de salt incondicional indirecte
@@ -1026,7 +1026,7 @@ int g() {
 
 ### RARS — Mapa de memòria {#sec-rars-mapa-memoria}
 
-RARS organitza l'espai d'adreces en les regions principals (segments, àrees, etc.) següents (@fig-mapa-memoria); n'hi ha d'altres, com la de l'E/S mapada en memòria, que a EC no es fan servir:
+RARS organitza l'espai d'adreces en les regions principals (segments, àrees, etc.) següents (@fig-mapa-memoria); n'hi ha d'altres, com la de l'entrada/sortida (E/S) mapada en memòria, que a EC no es fan servir:
 
 ::: {#fig-mapa-memoria}
 ::: {.content-visible when-format="html"}
@@ -1074,7 +1074,7 @@ En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que car
 
 Si s'accedeix diverses vegades a la mateixa variable, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
 
-La primera de les dues instruccions en què s'expandeix `la`, `auipc` (@nte-instruccio-auipc), és de format **Tipus-U**, com `lui`, presentat a [Tema 2](#sec-format-instruccions) (@nte-format-u); la segona, `addi`, és de format Tipus-I.
+La primera de les dues instruccions en què s'expandeix `la`, `auipc`, és de format **Tipus-U**, com `lui`, presentat a [Tema 2](#sec-format-instruccions) (@nte-formats-instruccions); la segona, `addi`, és de format Tipus-I.
 
 ## Subrutines {#sec-subrutines}
 
@@ -1883,9 +1883,9 @@ Flux de compilació separada: cada mòdul es compila i assembla independentment 
 
 En **GNU/Linux**, el punt d'entrada d'un executable es marca amb l'etiqueta **`_start`**, declarada global amb `.globl _start`. El nom no és decoratiu: l'**enllaçador** l'ha de localitzar per escriure'l a la capçalera de l'executable, i el **carregador** del sistema operatiu hi transfereix el control en engegar el procés. Hi ha, doncs, dos agents que llegeixen aquell nom, i per això el símbol ha de ser global i s'ha d'anomenar exactament així.
 
-A **EC** es programa directament sobre el processador (@imp-directe-sobre-processador), en un **entorn autònom** (*bare-metal*, @sec-entorn-autonom-bare-metal): no hi ha ni enllaçador ni carregador, i **cap agent no llegeix el nom del punt d'entrada**. L'execució comença sempre a la **primera instrucció del segment `.text`**, de manera que als programes d'aquests apunts el punt d'entrada **no porta etiqueta**.
+A **EC** es programa directament sobre el processador, en un **entorn autònom** (*bare-metal*): no hi ha ni enllaçador ni carregador, i **cap agent no llegeix el nom del punt d'entrada**. L'execució comença sempre a la **primera instrucció del segment `.text`**, de manera que als programes d'aquests apunts el punt d'entrada **no porta etiqueta**.
 
-No és una peculiaritat de l'assignatura, sinó la diferència entre un entorn **allotjat** (*hosted*) i un **autònom**: en un entorn autònom, la forma i el nom del punt d'entrada són **definits per la implementació**. És el mateix motiu pel qual el C d'aquests apunts declara `void main()` i no `int main` (@cau-void-main): una etiqueta que ningú no resol seria tan fictícia com un `return` que ningú no recull.
+No és una peculiaritat de l'assignatura, sinó la diferència entre un entorn **allotjat** (*hosted*) i un **autònom**: en un entorn autònom, la forma i el nom del punt d'entrada són **definits per la implementació**. És el mateix motiu pel qual el C d'aquests apunts declara `void main()` i no `int main`: una etiqueta que ningú no resol seria tan fictícia com un `return` que ningú no recull.
 ::::
 
 ### Compilació {#sec-compilacio-proces}
@@ -2045,9 +2045,9 @@ El **carregador** (*loader*) és un programa del sistema operatiu que llegeix el
 Quan la subrutina `main` retorna, la rutina d'arrencada invoca la crida al sistema `exit`, que allibera tots els recursos assignats al programa (memòria, fitxers oberts, etc.).
 
 ::: {#cau-carrega-ec .callout-caution}
-El mecanisme descrit en aquesta secció és el d'un **sistema real amb SO**. A **EC** no hi ha ni SO ni carregador (@imp-directe-sobre-processador): els programes no reben `argc` ni `argv` i no tornen enlloc en acabar. El punt d'entrada és la **primera instrucció del segment `.text`**, sense cap etiqueta que l'anomeni (@nte-punt-entrada-etiqueta), i la sortida es fa amb `li a7, 93` + `ecall` (@nte-programa-esquelet).
+El mecanisme descrit en aquesta secció és el d'un **sistema real** amb sistema operatiu (SO). A **EC** no hi ha ni SO ni carregador: els programes no reben `argc` ni `argv` i no tornen enlloc en acabar. El punt d'entrada és la **primera instrucció del segment `.text`**, sense cap etiqueta que l'anomeni (@nte-punt-entrada-etiqueta), i la sortida es fa amb `li a7, 93` + `ecall` (@nte-programa-esquelet).
 
-El `void main()` dels programes en C d'aquests apunts no contradiu res del que s'acaba de dir: és **notació** del programa que es tradueix a mà (@cau-void-main), no un punt d'entrada que cap rutina d'arrencada no arriba a cridar.
+El `void main()` dels programes en C d'aquests apunts no contradiu res del que s'acaba de dir: és **notació** del programa que es tradueix a mà, no un punt d'entrada que cap rutina d'arrencada no arriba a cridar.
 :::
 
 ### GCC/Clang — El flux de generació complet {#sec-flux-generacio-complet}
@@ -2055,7 +2055,7 @@ El `void main()` dels programes en C d'aquests apunts no contradiu res del que s
 ::: {#wrn-flux-gcc-complet .callout-warning collapse=true}
 ## Flux de generació detallat amb GCC/Clang
 
-El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa a l'amfitrió (*host*, x86-64 o ARM), però genera codi per al *target* (RV32I), com s'ha explicat a la @sec-host-vs-target.
+El flux de generació d'un executable es pot desglossar en les etapes següents. A **EC** es fa servir el **compilador creuat** (*cross-compiler*) (`riscv32-unknown-elf-gcc`, en el cas de GCC), que s'executa a la **màquina amfitriona** (*host*), x86-64 o ARM, però genera codi per al *target* (RV32I).
 
 ::: {#fig-flux-gcc-complet}
 ::: {.content-visible when-format="html"}
