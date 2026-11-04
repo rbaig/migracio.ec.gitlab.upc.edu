@@ -409,46 +409,11 @@ En **C**, l'avaluació tardana de `&&` i `||` **no és opcional**: la imposa la 
 :::
 ## Salts {#sec-salts}
 
-Les instruccions de salt modifiquen el flux d'execució **desviant-lo** a una adreça diferent de la instrucció següent. A **RV32I** es distingeixen dos eixos de classificació:
-
-- **Condicional vs. incondicional**: els **salts condicionals** (*branches*), com `beq` o `bne`, salten només si es compleix una condició; els **salts incondicionals** (*jumps*), com `jal` i `jalr`, salten sempre.
-- **Relatiu al PC vs. indirecte**: els **salts relatius al PC** calculen l'adreça de destinació sumant un desplaçament al valor actual del PC; els **salts indirectes** la calculen a partir d'un registre base (mode base + desplaçament, com `jalr`).
-
-La combinació d'aquests dos eixos dona lloc a tres categories:
-
-| | Relatiu al PC | Indirecte |
-| :--- | :--- | :--- |
-| **Condicional** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu` | — |
-| **Incondicional** | `jal` | `jalr` |
-
-Les pseudoinstruccions de salt (`j`, `jr`, `ret` i les de @nte-pseudoinstruccions-salt-condicional i @nte-pseudoinstruccions-salt-zero) s'expandeixen a aquestes instruccions.
-
-::: {#cau-salts-condicionals-relatius-pc .callout-caution}
-A **RV32I**, tots els salts **condicionals** són **relatius al PC**. No existeix cap salt condicional indirecte.
-:::
+Les instruccions de salt modifiquen el flux d'execució **desviant-lo** a una adreça diferent de la instrucció següent. Els **salts condicionals** (*branches*) salten només si es compleix una condició, i els **salts incondicionals** (*jumps*) salten sempre. Són la base per traduir les sentències alternatives (@sec-if-then-else) i els bucles (@sec-bucles).
 
 ### Salts condicionals {#sec-salts-condicionals}
 
-Els salts condicionals salten a l'adreça especificada per l'etiqueta si es compleix la condició, o continuen a la instrucció següent si no es compleix. En el llenguatge màquina no es codifica l'adreça absoluta de destinació, sinó un **desplaçament relatiu al PC**. L'assemblador calcula automàticament aquest desplaçament a partir de l'etiqueta.
-
-Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b), variant del format **Tipus-S** ja presentat a [Tema 2](#sec-format-instruccions) (@nte-formats-instruccions). El desplaçament codificat és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*compressed*).
-
-:::: {#nte-format-b .callout-note}
-## RV32I ISA — Format Tipus-B
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/auto_figs/A3_instruccio_tipus_B__registre_light.svg)
-:::
-::: {.dark-content}
-![](/auto_figs/A3_instruccio_tipus_B__registre_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/auto_figs/A3_instruccio_tipus_B__registre_light.svg)
-:::
-
-Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` a [31:25] i `imm[4:1|11]` a [11:7]) per mantenir `rs1` i `rs2` en les mateixes posicions que en els formats R i S, cosa que simplifica la descodificació al maquinari.
-::::
+Les instruccions `beq` i `bne` salten a l'adreça especificada per l'etiqueta si els operands són iguals o diferents, respectivament; si no, l'execució continua a la instrucció següent. `blt` i `bge` salten si el primer operand és menor o és major o igual que el segon, considerant-los enters, i `bltu` i `bgeu` fan el mateix considerant-los naturals.
 
 ::: {#nte-instruccions-salt-condicional .callout-note}
 ## RV32I ISA — Instruccions de salt condicional
@@ -458,6 +423,8 @@ Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` 
 {{< include ../21_riscv/RV32I_instruccions_salt_condicional_relatiu_PC.qmd >}}
 : {tbl-colwidths="[13,20,32,28,7]"}
 :::
+
+Els salts segons les comparacions `>` i `<=` no existeixen com a instruccions, perquè s'obtenen intercanviant els operands: `rs1 > rs2` equival a `rs2 < rs1`, i `rs1 <= rs2` equival a `rs2 >= rs1`. Com que resulten molt pràctics per escriure programes a mà, l'assemblador els ofereix com a pseudoinstruccions, i també n'ofereix per comparar amb zero:
 
 ::: {#nte-pseudoinstruccions-salt-condicional .callout-note}
 ## Pseudoinstruccions — Salt condicional
@@ -477,6 +444,32 @@ Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` 
 : {tbl-colwidths="[20,54,26]"}
 :::
 
+Per comoditat, en llenguatge d'assemblador l'adreça de destinació s'especifica amb una etiqueta. En llenguatge màquina, però, no es codifica aquesta adreça de 32 bits, que no cabria dins de la instrucció, sinó la distància a saltar: per això aquests salts s'anomenen **relatius al PC**. Concretament, el **desplaçament** és la diferència, en bytes, entre l'adreça de destinació i l'adreça de la instrucció de salt, codificada en Ca2. L'assemblador el calcula automàticament a partir de l'etiqueta.
+
+A **RV32I**, tots els salts condicionals són relatius al PC: no n'hi ha cap d'indirecte.
+
+Les instruccions de salt condicional són de format **Tipus-B** (@nte-format-b), variant del format **Tipus-S** ja presentat a [Tema 2](#sec-format-instruccions) (@nte-formats-instruccions). El desplaçament és de **13 bits amb signe**, però el bit 0 és sempre implícit (val `0`) perquè les destinacions de salt estan alineades a, com a mínim, 2 bytes. D'aquesta manera, la instrucció emmagatzema 12 bits i obté un rang efectiu de **±4 KiB** respecte al PC. A **RV32I** base (cas d'**EC**), les instruccions estan alineades a 4 bytes; el format B manté la granularitat de 2 bytes per compatibilitat amb l'extensió **C** (*compressed*).
+
+::: {#cau-prefixos-binaris .callout-caution}
+A **EC**, les mides que són potències de 2 s'expressen amb els prefixos binaris: 1 KiB = $2^{10}$ bytes, 1 MiB = $2^{20}$ bytes, 1 GiB = $2^{30}$ bytes i 1 TiB = $2^{40}$ bytes. Els prefixos decimals (KB, MB, GB i TB, de base 10) es reserven per a les mides genuïnament decimals, com la capacitat comercial d'un disc.
+:::
+
+:::: {#nte-format-b .callout-note}
+## RV32I ISA — Format Tipus-B
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/A3_instruccio_tipus_B__registre_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/A3_instruccio_tipus_B__registre_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/A3_instruccio_tipus_B__registre_light.svg)
+:::
+
+Els bits de l'immediat estan repartits en dos camps no contigus (`imm[12|10:5]` a [31:25] i `imm[4:1|11]` a [11:7]) per mantenir `rs1` i `rs2` en les mateixes posicions que en els formats R i S, cosa que simplifica la descodificació al maquinari.
+::::
 
 :::: {#tip-exemple-beq-offset .callout-tip}
 ## Càlcul del desplaçament d'un salt condicional
@@ -517,7 +510,7 @@ El desplaçament es calcula respecte a l'adreça de la instrucció de salt (`0x0
 ::: {#tip-exemple-and-mascara-2 .callout-tip}
 ## Execució condicional amb `bne`
 
-Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits 2 i 6:
+Execució si la variable `b` té actius els bits 0 i 4, i inactius els bits 2 i 6. Primer se seleccionen aquests quatre bits amb la màscara `0x55`, i després es compara el resultat amb `0x11`, que té actius els bits 0 i 4:
 
 ```{.c filename="C"}
 a = b & 0x55;       // màscara: selecció bits 0, 2, 4 i 6
@@ -525,7 +518,8 @@ if (a == 0x11)      // bits 0 i 4 actius, 2 i 6 inactius
     { ... }
 ```
 
-Suposem que `a` i `b` ocupen els registres `t0` i `t1`:
+Suposant que `a` i `b` ocupen els registres `t0` i `t1`:
+
 
 ```{.s filename="RV32I"}
         andi    t0, t1, 0x0055      # selecciona els bits 0, 2, 4 i 6
@@ -536,11 +530,27 @@ fisi:
 ```
 :::
 
-Les instruccions de salt condicional són la base per implementar les sentències alternatives (@sec-if-then-else) i els bucles (@sec-bucles).
-
 ### Salts incondicionals relatius al PC {#sec-salts-incondicionals-relatius}
 
-La instrucció `jal` (*jump and link*) salta a una adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`pc + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (vegeu la presentació del concepte de subrutina a @sec-subrutines). Si `rd = zero`, salta perdent l'adreça de retorn.
+La instrucció `jal` (*jump and link*) salta sempre a l'adreça especificada per una etiqueta, codificada com un desplaçament relatiu al PC, i guarda l'**adreça de retorn** (`PC + 4`) al registre `rd`. Quan `rd = ra`, s'usa per cridar subrutines (@sec-subrutines). Quan `rd = zero`, l'adreça de retorn es perd: és un salt simple, que té la seva pseudoinstrucció, `j`.
+
+::: {#nte-instruccions-salt-incondicional-relatiu-jal .callout-note}
+## RV32I ISA — Instrucció de salt incondicional relatiu al PC
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include ../21_riscv/RV32I_instruccions_salt_incondicional.qmd >}}
+: {tbl-colwidths="[13,18,32,30,7]"}
+:::
+
+::: {#nte-pseudoinstruccio-j .callout-note}
+## Pseudoinstruccions — Salt incondicional relatiu al PC: `j`
+
+| Pseudoinstrucció | Operació | Expansió |
+| :--- | :--- | :--- |
+{{< include ../21_riscv/RV32I_pseudo_j.qmd >}}
+: {tbl-colwidths="[22,48,30]"}
+:::
 
 La instrucció `jal` és de format **Tipus-J** (@nte-format-j), variant del format **Tipus-U**, presentat a [Tema 2](#sec-format-instruccions) amb `lui` (@nte-formats-instruccions). Com en el format B (@nte-format-b), el bit 0 de l'immediat és implícit (val `0`), de manera que la instrucció codifica 20 bits i obté un rang efectiu de **±1 MiB** respecte al PC.
 
@@ -561,27 +571,9 @@ La instrucció `jal` és de format **Tipus-J** (@nte-format-j), variant del form
 Com en el format B, els bits de l'immediat estan reordenats (`imm[20|10:1|11|19:12]` a [31:12]) perquè cada bit coincideixi tant com sigui possible amb la posició que ocupa als altres formats —el de signe, sempre al bit 31—, cosa que simplifica el maquinari que reconstrueix l'immediat. `rd` queda a la mateixa posició que en els formats R, I i U perquè l'immediat ocupa, com al format U, els bits [31:12].
 ::::
 
-::: {#nte-instruccions-salt-incondicional-relatiu-jal .callout-note}
-## RV32I ISA — Instrucció de salt incondicional relatiu al PC
-
-| Mnemònic | Operands | Operació | Nom | Tipus |
-| :--- | :--- | :--- | :--- | :---: |
-{{< include ../21_riscv/RV32I_instruccions_salt_incondicional.qmd >}}
-: {tbl-colwidths="[13,18,32,30,7]"}
-:::
-
-::: {#nte-pseudoinstruccio-j .callout-note}
-## Pseudoinstruccions — Salt incondicional relatiu al PC: `j`
-
-| Pseudoinstrucció | Operació | Expansió |
-| :--- | :--- | :--- |
-{{< include ../21_riscv/RV32I_pseudo_j.qmd >}}
-: {tbl-colwidths="[22,48,30]"}
-:::
-
 ### Salts incondicionals indirectes {#sec-salts-incondicionals-indirectes}
 
-La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits (**mode base + desplaçament**), i guarda l'adreça de retorn a `rd`. A diferència de `jal`, l'adreça de destinació no és relativa al PC sinó que depèn del contingut d'un registre; d'aquí el terme **salt indirecte**. S'usa principalment per retornar de subrutines i per saltar a adreces llunyanes desconegudes en temps de compilació. S'escriu, com les instruccions de lectura i escriptura, amb l'operand en la forma `desplaçament(rs1)`: `jalr rd, desplaçament(rs1)`.
+Si la destinació és més lluny que el rang de `jal`, o no es coneix en temps de compilació, cal un salt que la prengui d'un registre. La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sumant el registre `rs1` i un immediat de 12 bits (**mode base + desplaçament**), i guarda l'adreça de retorn a `rd`. Com que la destinació depèn del contingut d'un registre, es parla de **salt indirecte**. S'usa principalment per retornar de subrutines i per saltar a adreces llunyanes. S'escriu, com les instruccions de lectura i escriptura, amb l'operand en la forma `desplaçament(rs1)`: `jalr rd, desplaçament(rs1)`.
 
 ::: {#nte-instruccions-salt-incondicional-indirecte .callout-note}
 ## RV32I ISA — Instrucció de salt incondicional indirecte
@@ -589,7 +581,7 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 | Mnemònic | Operands | Operació | Nom | Tipus |
 | :--- | :--- | :--- | :--- | :---: |
 {{< include ../21_riscv/RV32I_instruccions_salt_incondicional_indirecte.qmd >}}
-: {tbl-colwidths="[13,19,33,28,7]"}`
+: {tbl-colwidths="[13,19,33,28,7]"}
 :::
 
 ::: {#nte-pseudoinstruccions-salt-indirecte .callout-note}
@@ -598,6 +590,17 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 | Pseudoinstrucció | Operació | Expansió |
 | :--- | :--- | :--- |
 {{< include ../21_riscv/RV32I_pseudo_salt_indirecte.qmd >}}
+:::
+
+Per carregar una adreça llunyana en un registre, s'usa la pseudoinstrucció `la` (@nte-pseudoinstruccio-la). S'expandeix en dues instruccions, `auipc` i `addi`, perquè una sola no pot contenir una adreça de 32 bits. La instrucció `auipc` suma al PC un immediat de 20 bits situat als bits de més pes, de manera semblant a com `lui` el carrega en un registre; `addi` hi afegeix els 12 bits restants. El resultat és una adreça expressada com una distància respecte al PC.
+
+::: {#nte-instruccio-auipc .callout-note}
+## RV32I ISA — Instrucció `auipc`
+
+| Mnemònic | Operands | Operació | Nom | Tipus |
+| :--- | :--- | :--- | :--- | :---: |
+{{< include ../21_riscv/RV32I_instruccions_auipc.qmd >}}
+: {tbl-colwidths="[13,19,33,28,7]"}
 :::
 
 ::: {#tip-salt-llunya .callout-tip}
@@ -609,21 +612,20 @@ La instrucció `jalr` (*jump and link register*) salta a l'adreça calculada sum
 ```
 :::
 
+Els salts es classifiquen, doncs, segons dos eixos: si són condicionals o incondicionals, i si la destinació és relativa al PC o indirecta. Les pseudoinstruccions de salt s'expandeixen a aquestes instruccions.
+
+| | Relatiu al PC | Indirecte |
+| :--- | :--- | :--- |
+| **Condicional** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu` | — |
+| **Incondicional** | `jal` | `jalr` |
+
 ::: {#imp-ec-rol-salts .callout-important}
 A **EC**, els salts tenen rols ben diferenciats: els **condicionals** i `j` s'usen per implementar el control de flux local (`if-then-else`, bucles); `jal` (amb `rd = ra`), per cridar subrutines; i els salts **indirectes** (`jalr`, `jr`, `ret`), quan la destinació està en un registre, com en retorns de subrutina o en les taules de salts (@sec-switch).
 :::
 
 ## Revisió dels modes d'adreçament {#sec-modes-adrecament-revisio}
 
-Ara que ja s'han presentat totes les instruccions de processament i control de flux de la base **RV32I** (@nte-riscv-rv32i), tret d'`ecall` (@sec-ei-ecall) —les instruccions de sistema, com `ecall` i `ebreak` (presentada a Tema 9), queden fora d'aquesta classificació—, l'exercici de classificar-les segons el **mode d'adreçament**
-(@imp-modes-adrecament-llista) pot ajudar no només a interioritzar el repertori de l'ISA, sinó també, a un nivell més abstracte, a anar conceptualitzant el domini d'estructura de computadors com a disciplina i el rol que li pertoca dins del context maquinari-programari (@sec-nivells-abstraccio).
-
-La classificació proposada inclou quatre decisions que cal justificar:
-
-- **`lui`** s'ha classificat com a mode **immediat** perquè el seu únic operand font és un valor constant de 20 bits codificat directament a la instrucció; no hi ha cap registre base ni cap referència al PC.
-- **`auipc`** s'ha classificat com a mode **relatiu al PC** perquè suma un immediat de 20 bits al valor actual del PC per construir adreces relatives a la posició actual del programa.
-- **`jalr`** s'ha classificat com a mode **base + desplaçament** perquè calcula l'adreça de salt sumant un registre base (`rs1`) i un immediat de 12 bits, exactament com fan les instruccions de lectura i escriptura. L'única diferència és que el resultat s'usa com a adreça de salt en lloc d'adreça de memòria.
-- **`ecall`** no s'ha inclòs perquè no té cap operand ni accedeix a cap dada: el servei el decideix el contingut d'`a7` (@sec-ei-ecall).
+Un **mode d'adreçament** és una manera d'especificar un operand en una instrucció (@imp-modes-adrecament-llista). Ara que ja s'han presentat les instruccions de processament i de control de flux de **RV32I** (@nte-riscv-rv32i), es poden classificar segons els quatre modes que es distingeixen a **EC**:
 
 | Mode | Instruccions |
 | :--- | :--- |
@@ -632,6 +634,10 @@ La classificació proposada inclou quatre decisions que cal justificar:
 | **Base + desplaçament** | `lw`, `lh`, `lb`, `lhu`, `lbu`, `sw`, `sh`, `sb`, `jalr` |
 | **Relatiu al PC** | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu`, `jal`, `auipc` |
 : {tbl-colwidths="[20,80]"}
+
+Tres d'aquestes classificacions mereixen un comentari. `lui` és de mode **immediat** perquè el seu únic operand font és un valor constant, sense cap registre base ni cap referència al PC. `auipc` és de mode **relatiu al PC** perquè suma un immediat al valor actual del PC. I `jalr` és de mode **base + desplaçament** perquè calcula l'adreça de salt com les instruccions de lectura i escriptura calculen l'adreça de memòria.
+
+Les instruccions de sistema, com `ecall` (@sec-ei-ecall), queden fora d'aquesta classificació.
 
 ## Sentències alternatives: `if-then-else` i `switch` {#sec-if-then-else}
 
