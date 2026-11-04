@@ -267,7 +267,7 @@ Circuit multiplicador combinacional en arbre.
 
 Com s'ha vist a la @sec-multiplicacio-potencies-2, `slli` permet multiplicar per potències de 2 de manera eficient; és la solució adequada per escalar índexs de vectors quan la mida de l'element és 1, 2, 4 o 8 bytes (@imp-ec-sll-acces-vector). Per al cas general, però, cal una instrucció de multiplicació d'enters: per exemple, per accedir a un element qualsevol d'una matriu, cal calcular `i*NC`, on el nombre de columnes `NC` no té per què ser una potència de 2.
 
-Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv): l'extensió **M** (@sec-extensio-m-t2) afegeix instruccions de multiplicació i divisió entera per maquinari. Per activar-la, cal afegir `m` al paràmetre `-march` del compilador: `-march=rv32im`.
+Aquí és on es manifesta la potència del disseny modular de RISC-V (@sec-riscv): l'extensió **M** afegeix instruccions de multiplicació i divisió entera per maquinari. Per activar-la, cal afegir `m` al paràmetre `-march` del compilador: `-march=rv32im`.
 
 ::: {#nte-rv32im-instruccions-multiplicacio .callout-note}
 ## RV32IM ISA — Instruccions de multiplicació entera
@@ -541,7 +541,7 @@ mat2:   .word   -1, 2, 0, 1, -12, 4
 ::: {#imp-eqv-dimensions .callout-important}
 A **EC**, es recomana definir les dimensions de la matriu (`NF`, `NC`) com a constants (`#define` en C, `.eqv` en assemblador) per facilitar la lectura del codi, el càlcul d'adreces i l'aplicació d'optimitzacions.
 
-Els blocs d'aquest tema usen aquestes constants dins d'expressions aritmètiques (`NF*NC*4`, `NC*4`, `mat + 3*NC*4`) per fer visible l'estructura del càlcul d'adreces. **RARS no les assembla**: vegeu @imp-ec-operands-expressions per a què se n'admet a la teoria i què cal escriure al laboratori.
+Els blocs d'aquest tema usen aquestes constants dins d'expressions aritmètiques (`NF*NC*4`, `NC*4`, `mat + 3*NC*4`) per fer visible l'estructura del càlcul d'adreces. **RARS no les assembla**: vegeu @nte-rars-operands-literals per a què cal escriure al laboratori.
 :::
 
 ### Accés aleatori {#sec-matrius-acces-aleatori}
@@ -683,7 +683,7 @@ Els bucles que recorren vectors i matrius sovint admeten optimitzacions que redu
 
 Les tres optimitzacions que es presenten a continuació s'apliquen de manera progressiva sobre el mateix bucle: cada una parteix del resultat de l'anterior.
 
-Els blocs d'aquesta secció mantenen les expressions aritmètiques als operands (`li t0, NC*4`, `li t2, NC*2`) per fer visible l'*stride* de cada recorregut (@imp-ec-operands-expressions).
+Els blocs d'aquesta secció mantenen les expressions aritmètiques als operands (`li t0, NC*4`, `li t2, NC*2`) per fer visible l'*stride* de cada recorregut.
 
 ### Optimització #1 — Accés seqüencial {#sec-opt-acces-sequencial}
 
