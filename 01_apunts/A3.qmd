@@ -1005,90 +1005,6 @@ bucle:
 El bucle avança per `v` fins a trobar el primer element no negatiu. La condició s'avalua després d'executar el cos, de manera que sempre es llegeix almenys un element.
 :::
 
-## Estructura de la memòria {#sec-estructura-memoria}
-
-Les dades (instruccions i variables) d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
-
-A l'emmagatzemament **estàtic**, l'espai de memòria reservat per cada objecte és el mateix durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució. Les **instruccions**, les **variables globals** i les **constants globals** sempre s'emmagatzemen estàticament. Els segments de memòria estàtica principals són `.text` per a les instruccions del programa en assemblador i `.data` per a les variables i les constants globals, als quals s'escriu en temps de compilació mitjançant les directives de segment (@nte-segments-memoria).
-
-A l'emmagatzemament **dinàmic** la gestió de memòria (reserva i alliberament) es fa en **temps d'execució**. Els segments de memòria dinàmica principals són la **pila** (***stack***) i el ***heap*** (a l'Optimot, *monticle*, un terme poc usat). La pila s'usa per a les **variables locals** i els **registres desats** (@sec-multinivell-pila), mentre que el *heap* s'usa per a les variables dinàmiques, on la reserva i l'alliberament es fan explícitament per part del programador (mitjançant `malloc()` i `free()`).
-
-::: {#tip-exemple-tipus-variables .callout-tip}
-## Les tres ubicacions de les dades: `.data`, pila i *heap*
-
-```{.c filename="C"}
-int gvec[100];      // global: emmagatzemament estàtic (.data)
-int *pvec;          // global: punter a dada dinàmica (heap)
-
-int f() {
-    int lvec[100];  // local: emmagatzemament dinàmic (pila)
-    ...
-    pvec = malloc(400);     // reserva espai al heap
-    ...
-    pvec[10] = gvec[10] + lvec[10];
-    ...
-}
-
-int g() {
-    ...
-    free(pvec);     // allibera espai del heap
-    ...
-}
-```
-:::
-
-### RARS — Mapa de memòria {#sec-rars-mapa-memoria}
-
-RARS organitza l'espai d'adreces en les regions principals (segments, àrees, etc.) següents (@fig-mapa-memoria); n'hi ha d'altres, com la de l'entrada/sortida (E/S) mapada en memòria, que a EC no es fan servir:
-
-::: {#fig-mapa-memoria}
-::: {.content-visible when-format="html"}
-::: {.light-content}
-![](/auto_figs/A3_mapa_memoria__mapa_light.svg)
-:::
-::: {.dark-content}
-![](/auto_figs/A3_mapa_memoria__mapa_dark.svg)
-:::
-:::
-::: {.content-visible when-format="pdf"}
-![](/auto_figs/A3_mapa_memoria__mapa_light.svg)
-:::
-Mapa de memòria de RARS: regions `.text`, `.data`, *heap* i pila, amb les adreces d'inici de cada segment.
-:::
-
-::: {#nte-mapa-memoria-rars .callout-note}
-## RARS — Segments de memòria
-| Regió | Tipus | Adreça d'inici | Contingut | Creix cap a ... |
-| :--- | :--- | :--- | :--- | :--- |
-{{< include ../21_riscv/RARS_memoria_regions.qmd >}}
-: {tbl-colwidths="[15,10,20,40,15]"}
-:::
-
-::: {#wrn-rars-mapa-memoria .callout-warning}
-RARS: *Settings* → *Memory Configuration...* mostra totes les regions de memòria.
-:::
-
-::: {#wrn-gp-global-pointer .callout-warning collapse=true}
-## El punter global `gp` (*global pointer*)
-
-L'ABI reserva el punter global `gp` (`x3`, *global pointer*) per optimitzar l'accés a variables globals petites situades dins d'un rang de ±2 KiB respecte al valor de `gp`. L'entorn d'execució l'inicialitza en arrencar el programa (a RARS, a `0x10008000`); el programador no l'ha de manipular mai directament. A **EC** no s'estudia aquest mecanisme.
-:::
-
-### Accés a variables globals {#sec-acces-variables-globals}
-
-En **RV32I**, la pseudoinstrucció `la` s'expandeix en dues instruccions que carreguen l'adreça de 32 bits de la variable en un registre. Un cop carregada l'adreça, l'accés a la variable es fa amb una instrucció de `lw`/`sw` (o les variants de byte i de mitja paraula):
-
-```{.s filename="RV32I"}
-        la      t0, variable    # t0 <- adreça de variable
-        lw      t1, 0(t0)       # t1 <- valor de variable
-        addi    t1, t1, 1       # t1++
-        sw      t1, 0(t0)       # variable <- t1
-```
-
-Si s'accedeix diverses vegades a la mateixa variable, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
-
-La primera de les dues instruccions en què s'expandeix `la`, `auipc`, és de format **Tipus-U**, com `lui`, presentat a [Tema 2](#sec-format-instruccions) (@nte-formats-instruccions); la segona, `addi`, és de format Tipus-I.
-
 ## Subrutines {#sec-subrutines}
 
 Una **subrutina** és un subprograma que executa una tasca concreta amb uns determinats **paràmetres** i que pot retornar un **resultat**. Es pot invocar des de múltiples punts d'un programa sense haver de reescriure-la cada vegada. És la generalització del que en altres contextos s'anomena acció, **funció** (C), procediment, mètode, etc., i permet escriure programes estructurats aplicant conceptes com el disseny descendent, la reutilització de codi i la programació modular.
@@ -1370,7 +1286,7 @@ funcB:
 
 Com s'ha vist a la @sec-visibilitat-i-durada, les variables locals tenen visibilitat local i durada temporal: es creen cada cop que s'executa la subrutina i deixen d'existir quan retorna. El seu espai pot ser en registres o en memòria, i l'ABI defineix les regles per decidir-ho. El de les que resideixen en memòria es reserva **dinàmicament**, en temps d'execució, i s'allibera en retornar.
 
-Si una subrutina A en crida una altra B, i aquesta una altra C, i totes tres necessiten memòria, primer en reserva A, després B i finalment C. Quan C acaba, allibera la seva; quan B acaba, la seva; i, finalment, A allibera la seva. Els blocs es van alliberant en ordre invers a com s'han reservat, de manera que l'estructura de dades ideal per guardar-los és una **pila**, que creix amb cada nova crida i decreix amb cada retorn, seguint la política d'«última en entrar, primera en sortir» (*last in, first out*, LIFO). Tots els programes en mantenen una a memòria per donar suport a les subrutines: la **pila del programa**.
+Si una subrutina A en crida una altra B, i aquesta una altra C, i totes tres necessiten memòria, primer en reserva A, després B i finalment C. Quan C acaba, allibera la seva; quan B acaba, la seva; i, finalment, A allibera la seva. Els blocs es van alliberant en ordre invers a com s'han reservat, de manera que l'estructura de dades ideal per guardar-los és una **pila** (***stack***), que creix amb cada nova crida i decreix amb cada retorn, seguint la política d'«última en entrar, primera en sortir» (*last in, first out*, LIFO). Tots els programes en mantenen una a memòria per donar suport a les subrutines: la **pila del programa**.
 
 ::: {#nte-bloc-activacio .callout-note}
 ## RV32I ABI — El bloc d'activació — Punter de pila `sp`
@@ -1873,6 +1789,94 @@ exemple:
         ret
 ```
 ::::
+
+## Estructura de la memòria {#sec-estructura-memoria}
+
+En general, les dades d'un programa poden tenir un mode d'emmagatzemament **estàtic** o **dinàmic**.
+
+El mode d'emmagatzemament és **estàtic** quan l'objecte es guarda al mateix lloc durant tot el temps d'execució del programa. Les reserves es fan en **temps de compilació** i no es poden modificar en temps d'execució, de manera que la regió estàtica té una mida fixa per a cada programa. Les **instruccions**, les **variables globals** i les **constants globals** sempre s'emmagatzemen estàticament: les instruccions, al segment `.text`, i les variables i les constants, al segment `.data` (@nte-segments-memoria).
+
+El mode d'emmagatzemament és **dinàmic** quan l'objecte es guarda en una àrea de memòria de manera temporal, i la reserva i l'alliberament es fan en **temps d'execució**. Hi pertanyen les **variables locals**: algunes es poden guardar en registres, però la resta es guarden a la pila (@sec-variables-locals).
+
+Les variables que s'anomenen pròpiament **dinàmiques** són aquelles en què la reserva i l'alliberament els fa explícitament el programador, amb funcions de la biblioteca estàndard com `malloc()` i `free()`. Com que es poden invocar en qualsevol punt del programa, l'espai no es reserva i s'allibera de manera ordenada, com passa amb la pila, i la seva gestió requereix una estructura de dades que s'anomena ***heap*** (a l'Optimot, *monticle*, un terme poc usat). Aquestes dues funcions fan d'interfície amb el sistema operatiu, que és qui gestiona realment la reserva de l'espai al *heap*. Per crear una variable dinàmica en C, cal declarar un punter (local o global, segons l'abast que hagi de tenir), cridar `malloc()` i assignar al punter l'adreça que retorna.
+
+::: {#tip-exemple-tipus-variables .callout-tip}
+## Les tres ubicacions de les dades: `.data`, pila i *heap*
+
+```{.c filename="C"}
+int gvec[100];      // global: emmagatzemament estàtic (.data)
+int *pvec;          // global: punter a dada dinàmica (heap)
+
+int f() {
+    int lvec[100];  // local: emmagatzemament dinàmic (reserva espai a la pila)
+    ...
+    pvec = malloc(400);     // reserva espai al heap
+    ...
+    pvec[10] = gvec[10] + lvec[10];
+    ...
+}                   // allibera espai de la pila
+
+int g() {
+    ...
+    free(pvec);     // allibera espai del heap
+    ...
+}
+```
+:::
+
+### RARS — Mapa de memòria {#sec-rars-mapa-memoria}
+
+RARS organitza l'espai d'adreces en les regions principals següents (@fig-mapa-memoria); n'hi ha d'altres, com la de l'entrada/sortida (E/S) mapada en memòria, que a EC no es fan servir. El menú *Settings* → *Memory Configuration...* de RARS les mostra totes.
+
+::: {#fig-mapa-memoria}
+::: {.content-visible when-format="html"}
+::: {.light-content}
+![](/auto_figs/A3_mapa_memoria__mapa_light.svg)
+:::
+::: {.dark-content}
+![](/auto_figs/A3_mapa_memoria__mapa_dark.svg)
+:::
+:::
+::: {.content-visible when-format="pdf"}
+![](/auto_figs/A3_mapa_memoria__mapa_light.svg)
+:::
+Mapa de memòria de RARS: regions `.text`, `.data`, *heap* i pila, amb les adreces d'inici de cada segment.
+:::
+
+::: {#nte-mapa-memoria-rars .callout-note}
+## RARS — Segments de memòria
+| Regió | Tipus | Adreça d'inici | Contingut | Creix cap a ... |
+| :--- | :--- | :--- | :--- | :--- |
+{{< include ../21_riscv/RARS_memoria_regions.qmd >}}
+: {tbl-colwidths="[15,10,20,40,15]"}
+:::
+
+El *heap* i la pila són les dues regions de dades dinàmiques. Com que totes dues poden créixer, ocupen els dos extrems de l'espai lliure, per no fragmentar-lo: el *heap* creix cap a les adreces altes, i la pila, cap a les adreces baixes. Les adreces que tenen el bit de més pes a 1, a partir de `0x80000000`, estan reservades al codi i a les dades del sistema operatiu.
+
+### Accés a variables globals {#sec-acces-variables-globals}
+
+L'accés a una variable global de `.data` comporta inicialitzar un registre amb la seva adreça de 32 bits. La pseudoinstrucció `la` (@nte-pseudoinstruccio-la) s'expandeix en dues instruccions, `auipc` i `addi` (@nte-instruccio-auipc). Un cop carregada l'adreça, l'accés a la variable es fa amb una instrucció de `lw`/`sw` (o les variants de byte i de mitja paraula):
+
+```{.s filename="RV32I"}
+        la      t0, variable    # t0 <- adreça de variable
+        lw      t1, 0(t0)       # t1 <- valor de variable
+        addi    t1, t1, 1       # t1++
+        sw      t1, 0(t0)       # variable <- t1
+```
+
+Si s'accedeix diverses vegades a la mateixa variable, és eficient carregar l'adreça una sola vegada en un registre i reutilitzar-la.
+
+### El punter global `gp` {#sec-punter-global}
+
+Per optimitzar aquest accés, els compiladors solen mantenir durant tot el programa, al registre `gp` (`x3`), un **punter global** (***global pointer***) que apunta a una adreça fixa. Les dades pròximes a aquesta adreça es poden accedir amb un desplaçament relatiu a `gp`, sense haver d'inicialitzar cap altre registre:
+
+```{.s filename="RV32I"}
+        lw      t0, desplacament(gp)
+```
+
+Com que el desplaçament de `lw` és un enter de 12 bits, de $-2048$ a $+2047$, amb el punter global només es pot accedir a $2^{12}$ bytes, és a dir, 4 KiB. Aquests bytes formen la secció `.sdata` (*small data*), destinada a variables globals petites d'ús freqüent, i `gp` s'inicialitza apuntant al seu punt mig.
+
+A **EC** aquest mecanisme no s'usa. RARS inicialitza `gp` a `0x10008000`, però el segment `.data` comença a `0x10010000`, fora de l'abast del desplaçament, i les variables globals s'accedeixen sempre amb `la`. El programador no ha de modificar `gp`.
 
 ## Compilació, assemblatge, enllaçament i càrrega {#sec-compilacio}
 
