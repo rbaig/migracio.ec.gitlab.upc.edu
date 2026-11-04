@@ -643,7 +643,7 @@ Les instruccions de sistema, com `ecall` (@sec-ei-ecall), queden fora d'aquesta 
 
 ### Sentència `if-then-else` {#sec-if-then-else-sentencia}
 
-En **C**, la condició d'un `if` és una expressió entera qualsevol: el resultat s'avalua com a fals si val zero, o com a cert si val diferent de zero. El cas més freqüent és que la condició sigui una comparació o una operació booleana, però no és obligatori.
+En **C**, la condició d'un `if` és una expressió numèrica. Sovint és una comparació o una operació booleana, amb un resultat que val 0 o 1, però pot ser una expressió entera qualsevol. En tots els casos, el resultat s'avalua com a fals si val zero, i com a cert si val diferent de zero.
 
 Sigui el cas general en C:
 
@@ -666,7 +666,9 @@ sino:
 fisi:
 ```
 
-La clàusula `sino` (`else`) és opcional. Si no existeix, el primer salt va directament a `fisi`, que es col·loca just després de la traducció de `sentencia_then`.
+La clàusula `else` és opcional. Si no existeix, el primer salt va directament a l'etiqueta `fisi`, que es col·loca just després de la traducció de `sentencia_then`. `sentencia_else` també pot ser un altre `if-then-else` niat, que es tradueix exactament amb el mateix patró.
+
+La condició pot ser tan simple que no necessiti cap instrucció a part del salt condicional (@tip-traduccio-if-simple), o pot constar de diverses operacions (@tip-traduccio-if-and i @tip-traduccio-if-or).
 
 ::: {#tip-traduccio-if-simple .callout-tip}
 ## `if-then-else` amb condició simple
@@ -678,7 +680,7 @@ else
     d = b;
 ```
 
-Suposem que `a`, `b`, `d` són enters i ocupen `t0`, `t1`, `t3`:
+Suposant que `a`, `b`, `d` són enters i ocupen `t0`, `t1`, `t3`:
 
 ```{.s filename="RV32I"}
         blt     t0, t1, sino    # salta si a < b
@@ -692,7 +694,7 @@ fisi:
 
 ### Avaluació tardana als salts condicionals encadenats {#sec-avaluacio-lazy-encadenats}
 
-L'avaluació tardana es tradueix naturalment amb salts condicionals encadenats.
+L'avaluació tardana dels operadors `&&` i `||` (@sec-traduccio-operadors-logics) es tradueix de manera natural amb salts condicionals encadenats, sense calcular cap valor booleà: cada operand té el seu salt, i si el primer ja determina el resultat, el segon no s'avalua.
 
 ::: {#tip-traduccio-if-and .callout-tip}
 ## `if` amb operador `&&`
@@ -704,7 +706,7 @@ else
     d = b;
 ```
 
-Suposem que `a`, `b`, `c`, `d` ocupen `t0`, `t1`, `t2`, `t3`:
+Suposant que `a`, `b`, `c`, `d` són enters i ocupen `t0`, `t1`, `t2`, `t3`:
 
 ```{.s filename="RV32I"}
         blt     t0, t1, sino    # salta si a < b  (1a condició falsa)
@@ -729,7 +731,7 @@ else
     d = b;
 ```
 
-Suposem que `a`, `b`, `c`, `d` ocupen `t0`, `t1`, `t2`, `t3`:
+Suposant que `a`, `b`, `c`, `d` són enters i ocupen `t0`, `t1`, `t2`, `t3`:
 
 ```{.s filename="RV32I"}
         bge     t0, t1, llavors # salta si a >= b (1a condició certa)
@@ -747,7 +749,7 @@ Si el primer operand de `||` és cert (`a >= b`), el salt a `llavors` evita aval
 
 ### Sentència `switch` {#sec-switch}
 
-La sentència `switch` selecciona una d'entre múltiples clàusules `case` comparant el resultat d'una expressió entera amb constants. Si no en coincideix cap, s'executa la clàusula `default` si existeix.
+La forma més típica d'una sentència alternativa múltiple `switch` en C és:
 
 ```{.c filename="C"}
 switch (expressio) {
@@ -758,12 +760,16 @@ switch (expressio) {
 }
 ```
 
-El mètode més senzill de traducció és una **cadena d'`if-then-else`** que comprova les etiquetes seqüencialment. Un mètode més eficient, quan les constants formen un rang dens, consisteix en una **taula de salts** (*jump table*): un vector de paraules on cada element conté l'adreça del codi d'una clàusula `case`, indexat pel resultat de l'expressió.
+El `switch` selecciona una d'entre múltiples clàusules `case`. La selecció es fa comparant el resultat de l'expressió, que ha de ser de tipus enter, amb les etiquetes constants enteres, que no es poden repetir. Si una hi coincideix, s'executen les sentències d'aquesta clàusula **i les de les següents**, fins a trobar un `break`. Si no en coincideix cap, s'executa la clàusula `default`, si existeix, i altrament no s'executa res.
+
+A la traducció, cada `break` és un salt incondicional `j` a l'etiqueta que marca el final del `switch`. Una clàusula sense `break` no necessita cap instrucció addicional: l'execució continua (*fall-through*) al codi de la clàusula següent.
+
+El `switch` es pot traduir com una **cadena d'`if-then-else`** que comprovi les etiquetes seqüencialment fins a trobar la que coincideix amb el resultat de l'expressió. Un mètode més eficient és la **taula de salts** (*jump table*): un vector de paraules que contenen adreces de codi i que s'indexa amb el resultat de l'expressió. L'element `n` conté l'adreça del codi de la clàusula `case n`. Si aquesta clàusula no existeix, conté l'adreça de la clàusula `default`, si està definida, o la del final del `switch` en cas contrari.
 
 :::: {#tip-traduccio-switch .callout-tip}
 ## `switch` amb taula de salts
 
-Suposem que `t0` conté el resultat de l'expressió del `switch` i que `switch_vec` és un vector de paraules amb les adreces de cada clàusula:
+Suposant que `t0` conté el resultat de l'expressió del `switch` i que `switch_vec` és la taula de salts:
 
 ::: {#lst-switch-taula-salts}
 ```{.s filename="RV32I"}
@@ -771,53 +777,51 @@ Suposem que `t0` conté el resultat de l'expressió del `switch` i que `switch_v
         slli    t2, t0, 2       # desplaçament = índex * 4 (mida d'una paraula)
         add     t1, t1, t2      # adreça efectiva de l'element
         lw      t3, 0(t1)       # llegeix l'adreça de la clàusula
-        jalr    zero, 0(t3)     # salta al codi de la clàusula (equivalent a: jr t3)
+        jr      t3              # salta al codi de la clàusula
 ```
 Salt a la clàusula del `switch` a través de la taula de salts.
 :::
 
-La taula de salts es declara a la secció `.data`:
+La taula de salts es declara a la secció `.data`, amb les etiquetes de les clàusules com a valors inicials:
 
 ```{.s filename="RV32I"}
 .data
 switch_vec:
-        .word   cas_0           # apunta al codi de case 0
-        .word   cas_1           # apunta al codi de case 1
-        .word   cas_2           # apunta al codi de case 2
-        .word   cas_3           # apunta al codi de case 3
+        .word   cas_0           # adreça del codi de case 0
+        .word   cas_1           # adreça del codi de case 1
+        .word   cas_2           # adreça del codi de case 2
+        .word   cas_3           # adreça del codi de case 3
 ```
-
-La versió simplificada del @lst-switch-taula-salts assumeix que l'expressió del `switch` només pot valer `0`–`3` (rang cobert exactament pel vector) i que no hi ha clàusula `default`. El cas general —amb `default` i sense garantia que l'expressió caigui dins del rang— es tracta a continuació.
 ::::
 
-::: {#wrn-switch-jump-table .callout-warning collapse=true}
-## Implementació de la taula de salts en detall
+La taula de salts és adequada quan les constants formen un rang dens (@tip-traduccio-switch). Si estan disperses o el seu rang és molt gran, és preferible la cadena d'`if-then-else`, perquè la taula necessitaria moltes entrades per a constants que no existeixen.
 
-La taula de salts és eficient quan les constants del `switch` formen un rang dens (per exemple, `0`, `1`, `2`, `3`). Si les constants estan disperses o el seu rang és molt gran, és preferible la cadena d'`if-then-else`, ja que la taula de salts requeriria moltes entrades per a constants que no existeixen.
+El @lst-switch-taula-salts suposa que l'expressió només pot valer de `0` a `3`. En general, si les constants no comencen a `0`, cal restar el valor mínim abans d'indexar el vector, i si l'expressió pot caure fora del rang, cal comprovar-ho abans de llegir la taula.
 
-Cal tenir en compte que si les constants no comencen a `0`, cal restar el valor mínim al resultat de l'expressió abans d'indexar el vector. Per exemple, si les constants van de `5` a `8`:
+::: {#tip-traduccio-switch-rang .callout-tip}
+## `switch` amb les constants de 5 a 8
 
 ```{.s filename="RV32I"}
-        addi    t0, t0, -5          # normalitza l'índex (resta el valor mínim)
-        li      t4, 4
-        bgeu    t0, t4, cas_defecte # si t0 >= 4, fora de rang
+        addi    t0, t0, -5          # índex = resultat - valor mínim
+        li      t4, 4               # nombre d'entrades de la taula
+        bgeu    t0, t4, cas_defecte # fora de rang
         la      t1, switch_vec
         slli    t2, t0, 2
         add     t1, t1, t2
         lw      t3, 0(t1)
-        jalr    zero, 0(t3)         # equivalent a: jr t3
+        jr      t3
 ```
 
-**Nota**: El `break` al final de cada `case` s'ha de traduir amb un salt incondicional `j` a l'etiqueta que marca el final del `switch`. Si no hi ha `break`, l'execució continua (*fall-through*) al codi del `case` següent, sense necessitat de cap instrucció addicional.
+Una sola comparació sense signe cobreix els dos extrems del rang: si el resultat és inferior a 5, la resta dona un valor negatiu, que interpretat sense signe és un nombre molt gran.
 :::
 
-## Sentències iteratives: `while`, `do-while` i `for` {#sec-bucles}
+## Sentències iteratives: `while`, `for` i `do-while` {#sec-bucles}
 
 ### Sentència `while` {#sec-while}
 
-La sentència `while` executa zero o més iteracions mentre es compleixi la condició. La condició s'avalua **abans** de cada iteració, de manera que si inicialment és falsa no s'executa cap iteració.
+La sentència `while` executa zero o més iteracions mentre es compleixi la condició.
 
-Sintaxi:
+Sigui el cas general en C:
 
 ```{.c filename="C"}
 while (condicio)
@@ -838,11 +842,9 @@ fibucle:
 Patró de traducció d'un `while`.
 :::
 
-::: {#imp-bucle-vs-while-for .callout-important}
-En aquesta secció s'usa l'etiqueta `bucle:` tant per al `while` com per al `do-while` i el `for` per fer explícit que tots tres tipus de bucles tenen la mateixa estructura bàsica de control de flux, i per poder parlar d'optimitzacions de bucle de manera genèrica.
+La condició és una expressió qualsevol de tipus enter o punter, com en el cas de l'`if`. Pot ser tan simple que no calgui cap instrucció per avaluar-la, perquè ja l'avalua el salt condicional a `fibucle`.
 
-En la pràctica, s'usen etiquetes més descriptives (per exemple, `while:`, `fiwhile:`, `do:`, `for:`, `fifor:`) per facilitar la lectura i el manteniment del codi.
-:::
+En aquesta secció, tots tres tipus de bucle usen les etiquetes `bucle` i `fibucle`, perquè tenen la mateixa estructura de control de flux. En un programa real, convé usar etiquetes més descriptives.
 
 ::: {#tip-traduccio-while .callout-tip}
 ## Divisió entera de nombres positius amb `while`
@@ -855,7 +857,7 @@ while (dd >= dr) {
 }
 ```
 
-Suposem que `dd`, `dr`, `q` ocupen `t1`, `t2`, `t3`:
+Suposant que `dd`, `dr`, `q` són enters i ocupen `t1`, `t2`, `t3`:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
@@ -871,11 +873,13 @@ fibucle:
 ::: {#tip-optimitzacio-bucle-2-avaluacio-condicio-final .callout-tip}
 ## Avaluació de la condició al final
 
-El patró del @lst-patro-while conté un salt incondicional `j bucle` al final de cada iteració. Es pot eliminar avaluant la condició al **final** del bucle en lloc de fer-ho al principi. Però cal assegurar que es manté la semàntica del `while`: si la condició és inicialment falsa, no s'ha d'executar cap iteració. Per això cal una comprovació prèvia a l'entrada:
+El patró del @lst-patro-while executa un salt incondicional `j bucle` a cada iteració. Es pot eliminar avaluant la condició al **final** del bucle. Però cal mantenir la semàntica del `while`: si la condició és inicialment falsa, no s'ha d'executar cap iteració.
+
+De vegades es pot garantir que el valor inicial de la condició serà sempre cert (per exemple, si s'inicialitza `x = 100` i la condició és `x > 0`), i llavors la transformació ja és correcta. Però sovint, com a l'exemple de la divisió, el valor inicial de la condició no es pot predir, i cal afegir una comprovació just abans d'entrar al bucle:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
-        blt     t1, t2, fibucle # comprovació inicial: salta si dd < dr
+        blt     t1, t2, fibucle # salta si dd < dr inicialment
 bucle:
         sub     t1, t1, t2      # dd = dd - dr
         addi    t3, t3, 1       # q++
@@ -883,80 +887,31 @@ bucle:
 fibucle:
 ```
 
-El cos del bucle s'executa ara sense cap salt incondicional: el salt condicional al final torna al principi si la condició segueix sent certa, o en cas contrari cau a `fibucle`. Això estalvia un salt per iteració. Aquesta transformació es formalitza més endavant com a Optimització #2 (@sec-opt-condicio-final).
+El salt condicional del final torna al principi si la condició continua sent certa, i en cas contrari l'execució continua a `fibucle`. S'estalvia un salt per iteració. Aquesta transformació es formalitza més endavant com a Optimització #2 (@sec-opt-condicio-final).
 
-Si la condició és complexa i escriure-la dues vegades seria costós, es pot substituir la comprovació inicial per un salt incondicional a la instrucció d'avaluació al final del bucle:
+Si el codi que avalua la condició és llarg i no es vol escriure dues vegades, la comprovació inicial es pot substituir per un salt incondicional a la instrucció on comença l'avaluació, cap al final del bucle:
 
 ```{.s filename="RV32I"}
         li      t3, 0           # q = 0
-        j       test            # salta a la comprovació inicial
+        j       test            # salta a fer la comprovació inicial
 bucle:
         sub     t1, t1, t2      # dd = dd - dr
         addi    t3, t3, 1       # q++
 test:
         bge     t1, t2, bucle   # salta si dd >= dr
-fibucle:
 ```
-:::
-
-### Sentència `do-while` {#sec-do-while}
-
-La sentència `do-while` executa el cos **sempre almenys una vegada**, i la condició s'avalua al final de cada iteració.
-
-```{.c filename="C"}
-do
-    sentencia_cos;
-while (condicio);
-```
-
-El patró de traducció és més senzill que el del `while` perquè no cal comprovació inicial: el cos s'executa primer i el salt condicional al final decideix si tornar a iterar:
-
-```{.s filename="RV32I"}
-bucle:
-        # traducció de sentencia_cos
-        # avaluar condicio
-        # salt si és certa a bucle
-```
-
-És el mateix patró que deixa l'avaluació de la condició al final d'un `while` (@tip-optimitzacio-bucle-2-avaluacio-condicio-final), sense la comprovació d'entrada.
-
-::: {#tip-traduccio-do-while .callout-tip}
-## `do-while`: cerca del primer element no negatiu
-
-```{.c filename="C"}
-int n;
-do {
-    n = v[i];
-    i++;
-} while (n < 0);
-```
-
-Suposem que `n`, `i` ocupen `t0`, `t1` i `v` és un vector global d'enters:
-
-```{.s filename="RV32I"}
-        la      t2, v               # adreça base de v
-bucle:
-        slli    t3, t1, 2           # i * 4
-        add     t3, t2, t3          # @v[i]
-        lw      t0, 0(t3)           # n = v[i]
-        addi    t1, t1, 1           # i++
-        bltz    t0, bucle           # n < 0: torna a iterar
-```
-
-El bucle avança per `v` fins a trobar el primer element no negatiu. La condició s'avalua després d'executar el cos, de manera que sempre es llegeix almenys un element.
 :::
 
 ### Sentència `for` {#sec-for}
 
-Al bucle `for`, el més habitual és que `sentencia1` inicialitzi la variable de control del bucle (típicament un comptador) i que `sentencia2` l'actualitzi després de cada iteració.
+Sigui el cas general en C:
 
 ```{.c filename="C"}
-for (sentencia1; condicio; sentencia2) {
+for (sentencia1; condicio; sentencia2)
     sentencia3;
-}
 ```
 
-Quan es fa així, el `for` agrupa tots els elements que controlen el bucle en una única capçalera, cosa que el fa més fàcil de llegir que el `while` equivalent (si el cos no conté cap `continue`):
+La sentència `for` és equivalent a un `while`, sempre que el cos no contingui cap sentència `continue`, que no s'estudia en aquesta assignatura:
 
 ```{.c filename="C"}
 sentencia1;
@@ -966,19 +921,18 @@ while (condicio) {
 }
 ```
 
-:::: {#tip-traduccio-for .callout-tip}
-## Traducció ingènua del bucle `for`
+El costum és que `sentencia1` inicialitzi la variable de la qual depèn la condició (típicament un comptador) i que `sentencia2` l'actualitzi després de cada iteració. Quan es fa així, el `for` agrupa tots els elements que controlen el bucle en una única capçalera, cosa que el fa més fàcil de llegir que el `while` equivalent.
 
-::: {#lst-suma-for}
+::: {#tip-traduccio-for .callout-tip}
+## Suma dels elements d'un vector amb un `for`
+
 ```{.c filename="C"}
 int sum = 0;
 for (int i = 0; i < N; i++)
     sum += v[i];
 ```
-Suma dels elements d'un vector amb un `for`.
-:::
 
-Suposem que `sum`, `i`, `N` ocupen `t0`, `t1`, `t2`, i que `v` és un vector global d'enters:
+Suposant que `sum`, `i`, `N` ocupen `t0`, `t1`, `t2`, i que `v` és un vector global d'enters:
 
 ```{.s filename="RV32I"}
         li      t0, 0           # sum = 0
@@ -994,42 +948,61 @@ bucle:
         j       bucle
 fibucle:
 ```
-::::
+:::
 
-::: {#tip-optimitzacio-eliminacio-variable-induccio .callout-tip}
-## Eliminació de la variable d'inducció
+### Sentència `do-while` {#sec-do-while}
 
-Una **variable d'inducció** és una variable que s'incrementa o decrementa en una quantitat constant a cada iteració d'un bucle. El compilador pot eliminar-les substituint-les per l'aritmètica de punters directament. Aquesta transformació es formalitza més endavant com a Optimització #3 (@sec-opt-eliminacio-induccio).
-
-Per exemple, en el `for` del @lst-suma-for, en lloc de calcular `@v[i] = @v[0] + i*4` a cada iteració, pot mantenir directament un punter `p` que avanci de 4 en 4 bytes:
+La sentència `do-while` executa una o més iteracions mentre es compleixi la condició: la primera iteració s'executa sempre.
 
 ```{.c filename="C"}
-int sum = 0;
-int *p = v;
-int *fi = v + N;    // adreça del primer element fora del vector
-while (p != fi) {
-    sum += *p;
-    p++;
-}
+do
+    sentencia_cos;
+while (condicio);
 ```
 
-Suposem que `sum`, `N`, `p` i `fi` ocupen `t0`, `t2`, `t3`, `t4`:
+El patró de traducció no necessita cap comprovació inicial: el cos s'executa primer, i el salt condicional del final decideix si es torna a iterar.
 
 ```{.s filename="RV32I"}
-        li      t0, 0           # sum = 0
-        la      t3, v           # p = @v[0]
-        slli    t4, t2, 2       # N * 4
-        add     t4, t3, t4      # fi = @v[0] + N*4
 bucle:
-        beq     t3, t4, fibucle # salta si p == fi
-        lw      t5, 0(t3)       # *p
-        add     t0, t0, t5      # sum += *p
-        addi    t3, t3, 4       # p++
-        j       bucle
-fibucle:
+        # traducció de sentencia_cos
+        # avaluar condicio
+        # salt si és certa a bucle
 ```
 
-Aquesta optimització elimina la multiplicació `i*4` dins el bucle i redueix el nombre d'instruccions per iteració. Els compiladors moderns l'apliquen automàticament.
+És el mateix patró que deixa l'avaluació de la condició al final d'un `while` (@tip-optimitzacio-bucle-2-avaluacio-condicio-final), sense la comprovació d'entrada.
+
+El `do-while` és útil quan la condició depèn d'un valor que es calcula precisament executant el cos del bucle, perquè evita replicar-lo:
+
+```{.c filename="C"}
+do
+    dada = obtenir_dada();
+while (dada != dada_esperada);
+```
+
+::: {#tip-traduccio-do-while .callout-tip}
+## `do-while`: cerca del primer element no negatiu
+
+```{.c filename="C"}
+int n;
+do {
+    n = v[i];
+    i++;
+} while (n < 0);
+```
+
+Suposant que `n`, `i` ocupen `t0`, `t1`, i que `v` és un vector global d'enters:
+
+```{.s filename="RV32I"}
+        la      t2, v               # adreça base de v
+bucle:
+        slli    t3, t1, 2           # i * 4
+        add     t3, t2, t3          # @v[i]
+        lw      t0, 0(t3)           # n = v[i]
+        addi    t1, t1, 1           # i++
+        bltz    t0, bucle           # n < 0: torna a iterar
+```
+
+El bucle avança per `v` fins a trobar el primer element no negatiu. La condició s'avalua després d'executar el cos, de manera que sempre es llegeix almenys un element.
 :::
 
 ## Estructura de la memòria {#sec-estructura-memoria}
